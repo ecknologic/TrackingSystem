@@ -7,15 +7,17 @@ const port = 8888;
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
-
 app.use(bodyParser.json());
 
-const config=require('./config/config.js');
 
 
 
-
+//Ware house rest services
   app.use("/warehouse",require('./routes/warehouse.js'));  
 
+
+
+
+  //app server to listen to the port
   app.listen(port, () => console.log(`app listening on port ${port}!`))
 

@@ -8,16 +8,11 @@ router.use(function timeLog(req, res, next) {
     next();
   });
 
-// Define the home page route
-/* router.get('/', function(req, res) {
-    res.send('home page');
-  });
- */
+
   
   router.get('/getroutes',(req,res)=>{
 
     let query="select * from routes";
-  console.log('dbconnection:::'+db)
     let result=db.query(query,(err,results)=>{
   
       if(err) throw err;
