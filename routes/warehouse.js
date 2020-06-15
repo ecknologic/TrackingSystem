@@ -21,7 +21,21 @@ router.use(function timeLog(req, res, next) {
   
   
     });
-
 });
+  router.get('/getNewStockDetails/:id',(req,res)=>{
+
+    let warehouseId=req.params.id;
+    console.log("warehouseId::::::::"+warehouseId);
+    let query="SELECT n.*,d.* FROM newstockDetails n INNER JOIN departmentmaster d ON d.departmentId=n.warehouseid where warehouseId="+warehouseId;
+
+    let result=db.query(query,(err,results)=>{
+  
+        if(err) throw err;
+    
+        res.send(JSON.stringify(results));
+    });
+
+  });
+
 
   module.exports = router;
