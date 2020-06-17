@@ -22,6 +22,21 @@ router.use(function timeLog(req, res, next) {
   
     });
 });
+
+router.get('/getdriverDetails/:warehouseId',(req,res)=>{
+
+  let warehouseId=req.params.warehouseId;
+
+  let query="select * from driverdetails where departmentId="+warehouseId;
+  let result=db.query(query,(err,results)=>{
+
+    if(err) throw err;
+
+    res.send(JSON.stringify(results));
+
+
+  });
+});
   router.get('/getNewStockDetails/:id',(req,res)=>{
 
     let warehouseId=req.params.id;
