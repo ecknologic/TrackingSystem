@@ -26,7 +26,7 @@ router.use(function timeLog(req, res, next) {
 
     let warehouseId=req.params.id;
     console.log("warehouseId::::::::"+warehouseId);
-    let query="SELECT n.*,d.* FROM newstockDetails n INNER JOIN departmentmaster d ON d.departmentId=n.warehouseid where warehouseId="+warehouseId;
+    let query="SELECT n.*,d.*,r.* FROM newstockDetails n INNER JOIN departmentmaster d ON d.departmentId=n.warehouseid INNER JOIN returnstockdetails r ON r.id=n.returnstockid  where warehouseId="+warehouseId;
 
     let result=db.query(query,(err,results)=>{
   
@@ -35,6 +35,47 @@ router.use(function timeLog(req, res, next) {
         res.send(JSON.stringify(results));
     });
 
+  });
+
+  router.post('/confirmStockRecieved',(req,res)=>{
+
+
+    console.log(req.body);
+
+    let returnStockDetails=req.body;
+     let updateQuery="update newstockdetails set returnStockId=? where id=?";
+    let insertQuery="insert into returnStockDetails (damaged20Lcans,damaged1LBoxes,damaged500MLBoxes,emptyCans) values(?,?,?,?)";
+
+    let insertQueryValues=[returnStockDetails.damaged20LCans,returnStockDetails.damaged1LBoxes,returnStockDetails.damaged500MLBoxes,returnStockDetails.emptyCans]
+
+    let result=db.query(insertQuery,insertQueryValues,(err,results)=>{
+  
+      console.log(insertQueryValues);
+
+        if(err) throw err;
+        else{
+          let inserted_id = results.insertId;
+
+
+          console.log("inserted_id:::::"+inserted_id);
+
+          let updateQueryValues=[inserted_id,returnStockDetails.id];
+
+          console.log(updateQueryValues);
+           db.query(updateQuery,updateQueryValues,(err1,results1)=>{
+  
+            if(err1) throw err1;
+            else{
+    
+              res.send("record inserted");
+            }
+        
+        });
+
+        }
+    
+    });
+ 
   });
 
 
