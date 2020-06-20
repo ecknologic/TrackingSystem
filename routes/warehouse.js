@@ -52,8 +52,27 @@ router.get('/getdriverDetails/:warehouseId',(req,res)=>{
 
   });
 
-  router.post('/confirmStockRecieved',(req,res)=>{
+  router.post('/createDC',(req,res)=>{
 
+    let dcCreateQuery="insert into CustomerOrderDetails (customerName,phoneNumber,address,routeId,driverId,20LCans,1LBoxes,500MLBoxes,warehouseId) values(?,?,?,?,?,?,?,?,?)";
+
+    console.log(req.body);
+
+    let dcDetails=req.body;
+
+    let insertQueryValues=[dcDetails.customerName,dcDetails.phoneNumber,dcDetails.address,dcDetails.routeId,dcDetails.driverId,dcDetails.Cans20L,dcDetails.Boxes1L,dcDetails.Boxes500ML,dcDetails.warehouseId]
+    db.query(dcCreateQuery,insertQueryValues,(err,results)=>{
+
+      console.log(insertQueryValues);
+
+        if(err) throw err;
+        else
+          res.send("Record Inserted");
+
+    });
+
+  });
+  router.post('/confirmStockRecieved',(req,res)=>{
 
     console.log(req.body);
 
