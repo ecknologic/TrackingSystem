@@ -11,7 +11,6 @@ router.post('/login',(req,res)=>{
 
     let username=req.body.username;
     let password=req.body.password;
-  console.log(req.body);
 
     let loginQuery="select * from usermaster where username=? and password=?";
 
@@ -19,7 +18,6 @@ router.post('/login',(req,res)=>{
   
         if(err) throw err;
     
-        console.log(results.length);
         if(results.length==0)
              res.send("Login Failure");
         else
