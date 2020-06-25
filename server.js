@@ -15,6 +15,7 @@ app.use(bodyParser.json());
 //Ware house rest services
   app.use("/warehouse",require('./routes/warehouse.js'));  
 
+  app.use("/bibo",require('./routes/utilities.js'));  
 
 
 
