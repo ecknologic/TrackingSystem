@@ -7,7 +7,7 @@ router.use(function timeLog(req, res, next) {
     next();
   });
 
-router.post('/login',(req,res)=>{
+/* router.post('/login',(req,res)=>{
 
     let username=req.body.username;
     let password=req.body.password;
@@ -27,4 +27,4 @@ router.post('/login',(req,res)=>{
 
 });
 
-module.exports = router;
+module.exports = router; */

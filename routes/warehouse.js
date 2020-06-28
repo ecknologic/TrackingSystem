@@ -77,7 +77,7 @@ router.get('/getdriverDetails/:warehouseId',(req,res)=>{
     console.log(req.body);
 
     let returnStockDetails=req.body;
-     let updateQuery="update newstockdetails set returnStockId=? where id=?";
+     let updateQuery="update newstockdetails set returnStockId=?,confirmed=? where id=?";
     let insertQuery="insert into returnStockDetails (damaged20Lcans,damaged1LBoxes,damaged500MLBoxes,emptyCans) values(?,?,?,?)";
 
     let insertQueryValues=[returnStockDetails.damaged20LCans,returnStockDetails.damaged1LBoxes,returnStockDetails.damaged500MLBoxes,returnStockDetails.emptyCans]
@@ -93,7 +93,7 @@ router.get('/getdriverDetails/:warehouseId',(req,res)=>{
 
           console.log("inserted_id:::::"+inserted_id);
 
-          let updateQueryValues=[inserted_id,returnStockDetails.id];
+          let updateQueryValues=[inserted_id,returnStockDetails.id,"1"];
 
           console.log(updateQueryValues);
            db.query(updateQuery,updateQueryValues,(err1,results1)=>{
@@ -112,5 +112,30 @@ router.get('/getdriverDetails/:warehouseId',(req,res)=>{
  
   });
 
+  router.get('/currentActiveStockDetails',(req,res)=>{
+
+    let currentActiveStockQuery="SELECT SUM(c.20LCans) AS total20LCans,SUM(c.1LBoxes) AS total1LBoxes,SUM(c.500MLBoxes) total500MLBoxes FROM customerorderdetails c WHERE isDelivered=0";
+
+    let result=db.query(currentActiveStockQuery,(err,results)=>{
+  
+      if(err) throw err;
+  
+      res.send(JSON.stringify(results));
+  });
+  });
+
+  router.get('/outForDeliveryDetails/:date',(req,res)=>{
+
+    var date=req.params.date;
+    
+    let currentActiveStockQuery="SELECT SUM(c.20LCans) AS total20LCans,SUM(c.1LBoxes) AS total1LBoxes,SUM(c.500MLBoxes) total500MLBoxes FROM customerorderdetails c WHERE isDelivered=1 and DATE(`deliveryDate`)="+date;
+
+    let result=db.query(currentActiveStockQuery,(err,results)=>{
+  
+      if(err) throw err;
+  
+      res.send(JSON.stringify(results));
+  });
+  });
 
   module.exports = router;
