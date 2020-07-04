@@ -41,7 +41,7 @@ router.get('/getdriverDetails/:warehouseId',(req,res)=>{
 
     let warehouseId=req.params.id;
     console.log("warehouseId::::::::"+warehouseId);
-    let query="SELECT n.*,d.*,r.* FROM newstockDetails n INNER JOIN departmentmaster d ON d.departmentId=n.warehouseid INNER JOIN returnstockdetails r ON r.id=n.returnstockid  where warehouseId="+warehouseId;
+    let query="SELECT n.20LCans AS twentyLCans,n.1LBoxes AS OneLBoxes,n.500MLBoxes AS fiveHLBoxes,n.MPDCNo,n.deliveryDate,n.returnStockId,d.*,r.* FROM newstockDetails n INNER JOIN departmentmaster d ON d.departmentId=n.warehouseid INNER JOIN returnstockdetails r ON r.id=n.returnstockid  WHERE warehouseId="+warehouseId;
 
     let result=db.query(query,(err,results)=>{
   
@@ -112,6 +112,19 @@ router.get('/getdriverDetails/:warehouseId',(req,res)=>{
  
   });
 
+
+  router.get('/deliveryDetails/:date',(req,res)=>{
+    var date=req.params.date;
+    console.log(date);
+    let deliveryDetailsQuery="c.*,c.20LCans AS twentyLCans,c.1LBoxes AS OneLBoxes,c.500MLBoxes AS fiveHLBoxes,r.*,d.* FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid INNER JOIN driverdetails d  ON c.driverId=d.driverid  WHERE DATE(`deliveryDate`) ='"+date+"'";
+
+    let result=db.query(deliveryDetailsQuery,(err,results)=>{
+  
+      if(err) throw err;
+  
+      res.send(JSON.stringify(results));
+  });
+  });
   router.get('/currentActiveStockDetails',(req,res)=>{
 
     let currentActiveStockQuery="SELECT SUM(c.20LCans) AS total20LCans,SUM(c.1LBoxes) AS total1LBoxes,SUM(c.500MLBoxes) total500MLBoxes FROM customerorderdetails c WHERE isDelivered=0";
@@ -128,7 +141,7 @@ router.get('/getdriverDetails/:warehouseId',(req,res)=>{
 
     var date=req.params.date;
     
-    let currentActiveStockQuery="SELECT SUM(c.20LCans) AS total20LCans,SUM(c.1LBoxes) AS total1LBoxes,SUM(c.500MLBoxes) total500MLBoxes FROM customerorderdetails c WHERE isDelivered=1 and DATE(`deliveryDate`)="+date;
+    let currentActiveStockQuery="SELECT SUM(c.20LCans) AS total20LCans,SUM(c.1LBoxes) AS total1LBoxes,SUM(c.500MLBoxes) total500MLBoxes FROM customerorderdetails c WHERE isDelivered=1 and DATE(`deliveryDate`)='"+date+"'";
 
     let result=db.query(currentActiveStockQuery,(err,results)=>{
   
