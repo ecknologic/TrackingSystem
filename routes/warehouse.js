@@ -116,7 +116,7 @@ router.get('/getdriverDetails/:warehouseId',(req,res)=>{
   router.get('/deliveryDetails/:date',(req,res)=>{
     var date=req.params.date;
     console.log(date);
-    let deliveryDetailsQuery="c.*,c.20LCans AS twentyLCans,c.1LBoxes AS OneLBoxes,c.500MLBoxes AS fiveHLBoxes,r.*,d.* FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid INNER JOIN driverdetails d  ON c.driverId=d.driverid  WHERE DATE(`deliveryDate`) ='"+date+"'";
+    let deliveryDetailsQuery="select c.*,c.20LCans AS twentyLCans,c.1LBoxes AS OneLBoxes,c.500MLBoxes AS fiveHLBoxes,r.*,d.* FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid INNER JOIN driverdetails d  ON c.driverId=d.driverid  WHERE DATE(`deliveryDate`) ='"+date+"'";
 
     let result=db.query(deliveryDetailsQuery,(err,results)=>{
   
