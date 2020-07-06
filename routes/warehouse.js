@@ -41,7 +41,7 @@ router.get('/getdriverDetails/:warehouseId',(req,res)=>{
 
     let warehouseId=req.params.id;
     console.log("warehouseId::::::::"+warehouseId);
-    let query="SELECT n.20LCans AS twentyLCans,n.1LBoxes AS OneLBoxes,n.500MLBoxes AS fiveHLBoxes,n.MPDCNo,n.deliveryDate,n.returnStockId,d.*,r.* FROM newstockDetails n INNER JOIN departmentmaster d ON d.departmentId=n.warehouseid INNER JOIN returnstockdetails r ON r.id=n.returnstockid  WHERE warehouseId="+warehouseId;
+    let query="SELECT n.20LCans AS twentyLCans,n.1LBoxes AS OneLBoxes,n.500MLBoxes AS fiveHLBoxes,n.isConfirmed,n.id,n.MPDCNo,n.deliveryDate,n.returnStockId,d.*,r.* FROM newstockDetails n INNER JOIN departmentmaster d ON d.departmentId=n.warehouseid INNER JOIN returnstockdetails r ON r.id=n.returnstockid  WHERE warehouseId="+warehouseId;
 
     let result=db.query(query,(err,results)=>{
   
