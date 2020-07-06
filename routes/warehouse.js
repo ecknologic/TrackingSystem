@@ -8,7 +8,19 @@ router.use(function timeLog(req, res, next) {
     next();
   });
 
-
+/**
+ * @swagger
+ * /warehouse/getroutes:
+ *   get:
+ *     tags:
+ *       - routes
+ *     description: Getting Routes
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Successfully 
+ */
   
   router.get('/getroutes',(req,res)=>{
 
@@ -23,6 +35,26 @@ router.use(function timeLog(req, res, next) {
     });
 });
 
+
+/**
+ * @swagger
+ * /warehouse/getdriverDetails/{warehouseId}:
+ *   get:
+ *     tags:
+ *       - driverdetails
+ *     description: Getting Driver Details
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: warehouseId
+ *         description: warehouse's Id
+ *         in: path
+ *         required: true
+ *         type: integer
+ *     responses:
+ *       200:
+ *         description: Getting Driver Details Successfully 
+ */
 router.get('/getdriverDetails/:warehouseId',(req,res)=>{
 
   let warehouseId=req.params.warehouseId;
@@ -37,6 +69,26 @@ router.get('/getdriverDetails/:warehouseId',(req,res)=>{
 
   });
 });
+
+/**
+ * @swagger
+ * /warehouse/getNewStockDetails/{id}:
+ *   get:
+ *     tags:
+ *       - stockdetails
+ *     description: Getting New stock Details
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: id
+ *         description: new stock's Id
+ *         in: path
+ *         required: true
+ *         type: integer
+ *     responses:
+ *       200:
+ *         description: Getting New stock Details Successfully 
+ */
   router.get('/getNewStockDetails/:id',(req,res)=>{
 
     let warehouseId=req.params.id;
@@ -51,6 +103,8 @@ router.get('/getdriverDetails/:warehouseId',(req,res)=>{
     });
 
   });
+
+
 
   router.post('/createDC',(req,res)=>{
 

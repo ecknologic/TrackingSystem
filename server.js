@@ -4,11 +4,48 @@ const app = express();
 const cors=require('cors');
 const port = 8888;
 
+//swagger ui configuration
+const swaggerJsdoc = require("swagger-jsdoc");
+const swaggerUi = require("swagger-ui-express");
+
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-console.log(new Date());
+
+
+// Swagger set up
+const options = {
+  swaggerDefinition: {
+    openapi: "3.0.0",
+    info: {
+      title: "Tracking System Rest APIs",
+      version: "1.0.0",
+      description:
+        "Node Js rest services for the tracking system which includes warehouse,driver and motherplant modules",
+
+      contact: {
+        name: "Swagger",
+        url: "https://swagger.io"
+      }
+    },
+    servers: [
+      {
+        url: "http://localhost:8888/"
+      }
+    ]
+  },
+  apis: ['./routes/*.js']
+};
+const specs = swaggerJsdoc(options);
+app.use("/docs", swaggerUi.serve);
+app.get(
+  "/docs",
+  swaggerUi.setup(specs, {
+    explorer: true
+  })
+);
+
 
 //Ware house rest services
   app.use("/warehouse",require('./routes/warehouse.js'));  
@@ -20,6 +57,9 @@ console.log(new Date());
 	  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 	  next();
 });
+
+
+
 
   //app server to listen to the port
   app.listen(port, () => console.log(`app listening on port ${port}!`))
