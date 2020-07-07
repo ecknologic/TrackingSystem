@@ -131,7 +131,7 @@ router.get('/getdriverDetails/:warehouseId',(req,res)=>{
     console.log(req.body);
 
     let returnStockDetails=req.body;
-     let updateQuery="update newstockdetails set returnStockId=?,confirmed=? where id=?";
+     let updateQuery="update newstockdetails set returnStockId=?,isConfirmed=? where id=?";
     let insertQuery="insert into returnStockDetails (damaged20Lcans,damaged1LBoxes,damaged500MLBoxes,emptyCans) values(?,?,?,?)";
 
     let insertQueryValues=[returnStockDetails.damaged20LCans,returnStockDetails.damaged1LBoxes,returnStockDetails.damaged500MLBoxes,returnStockDetails.emptyCans]
