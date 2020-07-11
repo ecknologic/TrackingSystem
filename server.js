@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const app = express();
 const cors=require('cors');
 const port = 8888;
+const utilities=require('./routes/utilities.js');
 
 //swagger ui configuration
 const swaggerJsdoc = require("swagger-jsdoc");
@@ -11,7 +12,6 @@ const swaggerUi = require("swagger-ui-express");
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
 
 
 // Swagger set up
@@ -49,6 +49,9 @@ app.get(
 
 //Ware house rest services
   app.use("/warehouse",require('./routes/warehouse.js'));  
+
+  //Driver app Rest Services
+  app.use("/driver",require('./routes/driver.js'));  
 
   app.use("/bibo",require('./routes/loginAuthentication.js'));  
 
