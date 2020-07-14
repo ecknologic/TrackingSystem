@@ -18,6 +18,14 @@ router.use(function timeLog(req, res, next) {
  *     description: Getting Order details
  *     produces:
  *       - application/json
+ *     parameters:
+ *       - name: date
+ *         description: YYYY-MM-DD
+ *         in: path
+ *         required: true
+ *         schema:
+ *          type: string
+ *          format: date
  *     responses:
  *       200:
  *         description: Successfully 
@@ -69,7 +77,26 @@ router.post('/addReturnEmptyCans',(req,res)=>{
     });
 
 });
-
+  /**
+ * @swagger
+ * /driver/updateDeliveryStatus/{orderId}:
+ *   post:
+ *     tags:
+ *       - order details
+ *     description: Update Order details
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: orderId
+ *         description: Order Id
+ *         in: path
+ *         required: true
+ *         schema:
+ *          type: integer
+ *     responses:
+ *       200:
+ *         description: Successfully 
+ */
 router.post('/updateDeliveryStatus/:orderId',(req,res)=>{
 
     var orderId=req.params.orderId;
@@ -85,6 +112,26 @@ router.post('/updateDeliveryStatus/:orderId',(req,res)=>{
 
 });
 
+/**
+ * @swagger
+ * /driver/customerOrderDetails/{orderId}:
+ *   get:
+ *     tags:
+ *       - order details
+ *     description: Getting Order details
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: orderId
+ *         description: Order Id
+ *         in: path
+ *         required: true
+ *         schema:
+ *          type: integer
+ *     responses:
+ *       200:
+ *         description: Successfully 
+ */
 router.get("/customerOrderDetails/:orderId",(req,res)=>{
 
     var orderId=req.params.orderId;

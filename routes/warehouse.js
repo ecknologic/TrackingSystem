@@ -166,7 +166,27 @@ router.get('/getdriverDetails/:warehouseId',(req,res)=>{
  
   });
 
-
+  /**
+ * @swagger
+ * /warehouse/deliveryDetails/{date}:
+ *   get:
+ *     tags:
+ *       - stockdetails
+ *     description: Getting Delevery details
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: date
+ *         description: YYYY-MM-DD
+ *         in: path
+ *         required: true
+ *         schema:
+ *          type: string
+ *          format: date
+ *     responses:
+ *       200:
+ *         description: Successfully 
+ */
   router.get('/deliveryDetails/:date',(req,res)=>{
     var date=req.params.date;
     console.log(date);
@@ -179,6 +199,19 @@ router.get('/getdriverDetails/:warehouseId',(req,res)=>{
       res.send(JSON.stringify(results));
   });
   });
+/**
+ * @swagger
+ * /warehouse/currentActiveStockDetails:
+ *   get:
+ *     tags:
+ *       - stockdetails
+ *     description: Getting current active stock details
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Successfully 
+ */
   router.get('/currentActiveStockDetails',(req,res)=>{
 
     let currentActiveStockQuery="SELECT SUM(c.20LCans) AS total20LCans,SUM(c.1LBoxes) AS total1LBoxes,SUM(c.500MLBoxes) total500MLBoxes FROM customerorderdetails c WHERE isDelivered=0";
@@ -190,7 +223,27 @@ router.get('/getdriverDetails/:warehouseId',(req,res)=>{
       res.send(JSON.stringify(results));
   });
   });
-
+  /**
+ * @swagger
+ * /warehouse/outForDeliveryDetails/{date}:
+ *   get:
+ *     tags:
+ *       - stockdetails
+ *     description: Getting out For Delivery details
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: date
+ *         description: YYYY-MM-DD
+ *         in: path
+ *         required: true
+ *         schema:
+ *          type: string
+ *          format: date
+ *     responses:
+ *       200:
+ *         description: Successfully 
+ */
   router.get('/outForDeliveryDetails/:date',(req,res)=>{
 
     var date=req.params.date;
