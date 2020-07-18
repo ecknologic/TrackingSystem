@@ -13,7 +13,7 @@ router.use(function timeLog(req, res, next) {
  * /warehouse/getroutes:
  *   get:
  *     tags:
- *       - routes
+ *       - Warehouse
  *     description: Getting Routes
  *     produces:
  *       - application/json
@@ -41,7 +41,7 @@ router.use(function timeLog(req, res, next) {
  * /warehouse/getdriverDetails/{warehouseId}:
  *   get:
  *     tags:
- *       - driverdetails
+ *       - Warehouse
  *     description: Getting Driver Details
  *     produces:
  *       - application/json
@@ -75,7 +75,7 @@ router.get('/getdriverDetails/:warehouseId',(req,res)=>{
  * /warehouse/getNewStockDetails/{id}:
  *   get:
  *     tags:
- *       - stockdetails
+ *       - Warehouse
  *     description: Getting New stock Details
  *     produces:
  *       - application/json
@@ -171,7 +171,7 @@ router.get('/getdriverDetails/:warehouseId',(req,res)=>{
  * /warehouse/deliveryDetails/{date}:
  *   get:
  *     tags:
- *       - stockdetails
+ *       - Warehouse
  *     description: Getting Delevery details
  *     produces:
  *       - application/json
@@ -204,7 +204,7 @@ router.get('/getdriverDetails/:warehouseId',(req,res)=>{
  * /warehouse/currentActiveStockDetails:
  *   get:
  *     tags:
- *       - stockdetails
+ *       - Warehouse
  *     description: Getting current active stock details
  *     produces:
  *       - application/json
@@ -228,7 +228,7 @@ router.get('/getdriverDetails/:warehouseId',(req,res)=>{
  * /warehouse/outForDeliveryDetails/{date}:
  *   get:
  *     tags:
- *       - stockdetails
+ *       - Warehouse
  *     description: Getting out For Delivery details
  *     produces:
  *       - application/json
