@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const app = express();
 const cors=require('cors');
 const port = 8888;
+
 const utilities=require('./routes/utilities.js');
 
 //swagger ui configuration
@@ -53,6 +54,10 @@ app.get(
   //Driver app Rest Services
   app.use("/driver",require('./routes/driver.js'));  
 
+  //Customer Rest Services
+  app.use("/customer",require('./routes/customer.js'));  
+
+
   app.use("/bibo",require('./routes/loginAuthentication.js'));  
 
   app.use(function(req, res, next) {
@@ -60,6 +65,7 @@ app.get(
 	  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 	  next();
 });
+
 
 
 
