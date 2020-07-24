@@ -14,7 +14,7 @@ router.use(function timeLog(req, res, next) {
  * /driver/getOrderDetails/{date}:
  *   get:
  *     tags:
- *       - order details
+ *       - Driver App
  *     description: Getting Order details
  *     produces:
  *       - application/json
@@ -82,7 +82,7 @@ router.post('/addReturnEmptyCans',(req,res)=>{
  * /driver/updateDeliveryStatus/{orderId}:
  *   post:
  *     tags:
- *       - order details
+ *       - Driver App
  *     description: Update Order details
  *     produces:
  *       - application/json
@@ -117,7 +117,7 @@ router.post('/updateDeliveryStatus/:orderId',(req,res)=>{
  * /driver/customerOrderDetails/{orderId}:
  *   get:
  *     tags:
- *       - order details
+ *       - Driver App
  *     description: Getting Order details
  *     produces:
  *       - application/json
