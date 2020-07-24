@@ -120,9 +120,23 @@ router.get('/getdriverDetails/:warehouseId',(req,res)=>{
       console.log(insertQueryValues);
 
         if(err) throw err;
-        else
-          res.send("Record Inserted");
+        else{
+          let inserted_id = results.insertId;
 
+          let updateQuery="update CustomerOrderDetails set dcNo=? where customerOrderId=?"
+          let updateQueryValues=["DC-"+inserted_id,inserted_id];
+
+          console.log(updateQueryValues);
+           db.query(updateQuery,updateQueryValues,(err1,results1)=>{
+  
+            if(err1) throw err1;
+            else{
+    
+              res.send("record inserted");
+            }
+        
+        });
+      }
     });
 
   });
@@ -147,7 +161,7 @@ router.get('/getdriverDetails/:warehouseId',(req,res)=>{
 
           console.log("inserted_id:::::"+inserted_id);
 
-          let updateQueryValues=[inserted_id,returnStockDetails.id,"1"];
+          let updateQueryValues=[returnStockDetails.id,"1",inserted_id];
 
           console.log(updateQueryValues);
            db.query(updateQuery,updateQueryValues,(err1,results1)=>{

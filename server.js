@@ -9,43 +9,22 @@ const utilities = require('./routes/utilities.js');
 //swagger ui configuration
 const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
+const swaggerDocument =require ("./swagger.json");
+
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-// Swagger set up
-const options = {
-  swaggerDefinition: {
-    openapi: "3.0.0",
-    info: {
-      title: "Tracking System Rest APIs",
-      version: "1.0.0",
-      description:
-        "Node Js rest services for the tracking system which includes warehouse,driver and motherplant modules",
 
-      contact: {
-        name: "Swagger",
-        url: "https://swagger.io"
-      }
-    },
-    servers: [
-      {
-        url: "http://localhost:8888/"
-      }
-    ]
-  },
-  apis: ['./routes/*.js']
-};
-const specs = swaggerJsdoc(options);
-app.use("/docs", swaggerUi.serve);
-app.get(
-  "/docs",
-  swaggerUi.setup(specs, {
-    explorer: true
-  })
-);
+
+app.get('/swagger.json', function(req, res) {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
+
 
 
 //Ware house rest services
@@ -70,7 +49,9 @@ app.use(function (req, res, next) {
 });
 
 
-
+process.on('uncaughtException', function (err) {
+  console.log(err);
+})
 
 
 //app server to listen to the port

@@ -1,0 +1,114 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "Tracking System Rest APIs",
+        "description": "Node Js rest services for the tracking system which includes warehouse,driver and motherplant modules"
+    },
+    "host": "localhost:8888",
+    "basePath": "/",
+    "tags": [
+        {
+            "name": "TrackingSystem",
+            "description": "API for  BIBO Tracking System"
+        }
+    ],
+    "schemes": [
+        "http"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/warehouse/getNewStockDetails/{id}": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "description": "ID of New Stock Details",
+                    "type": "string"
+                }
+            ],
+            "get": {
+                "tags": [
+                    "Warehouse"
+                ],
+                "summary": " Getting New stock Details",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/warehouse/createDC":{
+            "post": {
+                "tags": [
+                  "warehouse"
+                ],
+                "description": "Create new DC in system",
+                "parameters": [
+                    {
+                      "name": "customerOrderDetails",
+                      "in": "body",
+                      "description": "Customer Order Details",
+                      "schema": {
+                        "$ref": "#/definitions/CustomerOrderDetails"
+                      }
+                    }
+                  ],
+                "produces": [
+                  "application/json"
+                ],
+                "responses": {
+                  "200": {
+                    "description": "New DC is created"
+                  }
+                }
+        }
+    }
+    },
+    "definitions": {
+        "CustomerOrderDetails":{
+            "required": ["customerName","phoneNumber","address","routeId","driverId","Cans20L","Boxes1L","Boxes500ML","warehouseId"],
+            "properties": {
+                "customerName": {
+                    "type": "string",
+                    "uniqueItems": true
+                },
+                "phoneNumber": {
+                    "type": "string",
+                    "uniqueItems": true
+                },
+                "address": {
+                    "type": "string"
+                },
+                "routeId": {
+                    "type": "string"
+                },
+                "driverId": {
+                    "type": "string",
+                    "uniqueItems": true
+                },
+                "Cans20L": {
+                    "type": "string",
+                    "uniqueItems": true
+                },
+                "Boxes1L": {
+                    "type": "string"
+                },
+                "Boxes500ML": {
+                    "type": "string"
+                },
+                "warehouseId": {
+                    "type": "string"
+                }
+            }
+        }
+        }
+    
+}
