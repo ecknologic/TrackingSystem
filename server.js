@@ -1,10 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
-const cors=require('cors');
+const cors = require('cors');
 const port = 8888;
 
-const utilities=require('./routes/utilities.js');
+const utilities = require('./routes/utilities.js');
 
 //swagger ui configuration
 const swaggerJsdoc = require("swagger-jsdoc");
@@ -49,27 +49,30 @@ app.get(
 
 
 //Ware house rest services
-  app.use("/warehouse",require('./routes/warehouse.js'));  
+app.use("/warehouse", require('./routes/warehouse.js'));
 
-  //Driver app Rest Services
-  app.use("/driver",require('./routes/driver.js'));  
+//Driver app Rest Services
+app.use("/driver", require('./routes/driver.js'));
 
-  //Customer Rest Services
-  app.use("/customer",require('./routes/customer.js'));  
+//Customer Rest Services
+app.use("/customer", require('./routes/customer.js'));
+
+//MotherPlat Rest Services
+app.use("/motherPlant", require('./routes/motherPlant.js'));
 
 
-  app.use("/bibo",require('./routes/loginAuthentication.js'));  
+app.use("/bibo", require('./routes/loginAuthentication.js'));
 
-  app.use(function(req, res, next) {
-	  res.header("Access-Control-Allow-Origin", "*");
-	  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-	  next();
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
 });
 
 
 
 
 
-  //app server to listen to the port
-  app.listen(port, () => console.log(`app listening on port ${port}!`))
+//app server to listen to the port
+app.listen(port, () => console.log(`app listening on port ${port}!`))
 
