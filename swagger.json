@@ -23,6 +23,94 @@
         "application/json"
     ],
     "paths": {
+        "/customer/getQrcode/{id}": {
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "description": "User Details",
+                    "type": "string"
+                }
+            ],
+            "get": {
+                "tags": [
+                    "Driver App"
+                ],
+                "summary": " Getting QR Details",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/driver/getOrderDetails/{date}": {
+            "parameters": [
+                {
+                    "name": "date",
+                    "in": "path",
+                    "required": true,
+                    "description": "YYYY-MM-DD",
+                    "type": "string"
+                }
+            ],
+            "get": {
+                "tags": [
+                    "Driver App"
+                ],
+                "summary": " Getting Order Details",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/driver/updateDeliveryStatus/{orderId}": {
+            "parameters": [
+                {
+                    "name": "orderId",
+                    "in": "path",
+                    "required": true,
+                    "description": "Order id",
+                    "type": "integer"
+                }
+            ],
+            "post": {
+                "tags": [
+                    "Driver App"
+                ],
+                "summary": " Update Delivery Details",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/driver/customerOrderDetails/{orderId}": {
+            "parameters": [
+                {
+                    "name": "orderId",
+                    "in": "path",
+                    "required": true,
+                    "description": "Order Id",
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "tags": [
+                    "Driver App"
+                ],
+                "summary": "Getting customer order Details",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/warehouse/getNewStockDetails/{id}": {
             "parameters": [
                 {
@@ -45,36 +133,309 @@
                 }
             }
         },
-        "/warehouse/createDC":{
+        "/warehouse/getdriverDetails/{warehouseId}": {
+            "parameters": [
+                {
+                    "name": "warehouseId",
+                    "in": "path",
+                    "required": true,
+                    "description": "Driver Details of warehouse",
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "tags": [
+                    "Warehouse"
+                ],
+                "summary": "Getting Driver Details",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/warehouse/deliveryDetails/{date}": {
+            "parameters": [
+                {
+                    "name": "date",
+                    "in": "path",
+                    "required": true,
+                    "description": "YYYY-MM-DD",
+                    "type": "string"
+                }
+            ],
+            "get": {
+                "tags": [
+                    "Warehouse"
+                ],
+                "summary": "Getting Delivery Details ",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/warehouse/outForDeliveryDetails/{date}": {
+            "parameters": [
+                {
+                    "name": "date",
+                    "in": "path",
+                    "required": true,
+                    "description": "YYYY-MM-DD",
+                    "type": "string"
+                }
+            ],
+            "get": {
+                "tags": [
+                    "Warehouse"
+                ],
+                "summary": "Getting out for delivery details ",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/warehouse/getroutes": {
+            "get": {
+                "tags": [
+                    "Warehouse"
+                ],
+                "summary": " Getting Routes Details",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/warehouse/currentActiveStockDetails": {
+            "get": {
+                "tags": [
+                    "Warehouse"
+                ],
+                "summary": " Getting Current Active stock Details",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/warehouse/createDC": {
             "post": {
                 "tags": [
-                  "warehouse"
+                    "Warehouse"
                 ],
                 "description": "Create new DC in system",
                 "parameters": [
                     {
-                      "name": "customerOrderDetails",
-                      "in": "body",
-                      "description": "Customer Order Details",
-                      "schema": {
-                        "$ref": "#/definitions/CustomerOrderDetails"
-                      }
+                        "name": "customerOrderDetails",
+                        "in": "body",
+                        "description": "Customer Order Details",
+                        "schema": {
+                            "$ref": "#/definitions/CustomerOrderDetails"
+                        }
                     }
-                  ],
+                ],
                 "produces": [
-                  "application/json"
+                    "application/json"
                 ],
                 "responses": {
-                  "200": {
-                    "description": "New DC is created"
-                  }
+                    "200": {
+                        "description": "New DC is created"
+                    }
                 }
+            }
+        },
+        "/warehouse/confirmStockRecieved": {
+            "post": {
+                "tags": [
+                    "Warehouse"
+                ],
+                "description": "Confirm stock details",
+                "parameters": [
+                    {
+                        "name": "returnStockDetails",
+                        "in": "body",
+                        "description": "Confirm stock details",
+                        "schema": {
+                            "$ref": "#/definitions/ConfirmStockRecieved"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Added Returned empty can details"
+                    }
+                }
+            }
+        },
+        "/driver/addDamagedStock": {
+            "post": {
+                "tags": [
+                    "Driver App"
+                ],
+                "description": "Add damaged stock details",
+                "parameters": [
+                    {
+                        "name": "damagedStockDetails",
+                        "in": "body",
+                        "description": "Damaged Stock Details",
+                        "schema": {
+                            "$ref": "#/definitions/DamagedStock"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Added damaged stock details"
+                    }
+                }
+            }
+        },
+        "/driver/addReturnEmptyCans": {
+            "post": {
+                "tags": [
+                    "Driver App"
+                ],
+                "description": "Add returned empty can details",
+                "parameters": [
+                    {
+                        "name": "returnedEmptyCanDetails",
+                        "in": "body",
+                        "description": "Returned empty can Details",
+                        "schema": {
+                            "$ref": "#/definitions/ReturnedEmptyCans"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Added Returned empty can details"
+                    }
+                }
+            }
+        },
+        "/bibo/login": {
+            "post": {
+                "tags": [
+                    "Login"
+                ],
+                "description": "Enter details",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "body",
+                        "description": "Login Details",
+                        "schema": {
+                            "$ref": "#/definitions/Login"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Login successfull"
+                    }
+                }
+            }
         }
-    }
     },
     "definitions": {
-        "CustomerOrderDetails":{
-            "required": ["customerName","phoneNumber","address","routeId","driverId","Cans20L","Boxes1L","Boxes500ML","warehouseId"],
+        "DamagedStock": {
+            "required": [
+                "orderId",
+                "damagedStockCount"
+            ],
+            "properties": {
+                "orderId": {
+                    "type": "integer"
+                },
+                "damagedStockCount": {
+                    "type": "integer"
+                }
+            }
+        },
+        "Login": {
+            "required": [
+                "username",
+                "password"
+            ],
+            "properties": {
+                "username": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "ReturnedEmptyCans": {
+            "required": [
+                "orderId",
+                "returnEmptyCans"
+            ],
+            "properties": {
+                "orderId": {
+                    "type": "integer"
+                },
+                "returnEmptyCans": {
+                    "type": "integer"
+                }
+            }
+        },
+        "ConfirmStockRecieved": {
+            "required": [
+                "damaged20LCans",
+                "damaged1LBoxes",
+                "damaged500MLBoxes",
+                "emptyCans"
+            ],
+            "properties": {
+                "damaged20LCans": {
+                    "type": "integer"
+                },
+                "damaged1LBoxes": {
+                    "type": "integer"
+                },
+                "damaged500MLBoxes": {
+                    "type": "integer"
+                },
+                "emptyCans": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "CustomerOrderDetails": {
+            "required": [
+                "customerName",
+                "phoneNumber",
+                "address",
+                "routeId",
+                "driverId",
+                "Cans20L",
+                "Boxes1L",
+                "Boxes500ML",
+                "warehouseId"
+            ],
             "properties": {
                 "customerName": {
                     "type": "string",
@@ -109,6 +470,5 @@
                 }
             }
         }
-        }
-    
+    }
 }

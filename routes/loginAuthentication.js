@@ -11,10 +11,6 @@ router.use(function timeLog(req, res, next) {
     next();
   });
 
-/**
- * @swagger 
- * schema definition info goes here...
- */
 
   router.post('/login',(req,res)=>{
 
