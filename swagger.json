@@ -111,6 +111,58 @@
                 }
             }
         },
+        "/driver/addDamagedStock": {
+            "post": {
+                "tags": [
+                    "Driver App"
+                ],
+                "description": "Add damaged stock details",
+                "parameters": [
+                    {
+                        "name": "damagedStockDetails",
+                        "in": "body",
+                        "description": "Damaged Stock Details",
+                        "schema": {
+                            "$ref": "#/definitions/DamagedStock"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Added damaged stock details"
+                    }
+                }
+            }
+        },
+        "/driver/addReturnEmptyCans": {
+            "post": {
+                "tags": [
+                    "Driver App"
+                ],
+                "description": "Add returned empty can details",
+                "parameters": [
+                    {
+                        "name": "returnedEmptyCanDetails",
+                        "in": "body",
+                        "description": "Returned empty can Details",
+                        "schema": {
+                            "$ref": "#/definitions/ReturnedEmptyCans"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Added Returned empty can details"
+                    }
+                }
+            }
+        },
         "/warehouse/getNewStockDetails/{id}": {
             "parameters": [
                 {
@@ -277,58 +329,6 @@
                 }
             }
         },
-        "/driver/addDamagedStock": {
-            "post": {
-                "tags": [
-                    "Driver App"
-                ],
-                "description": "Add damaged stock details",
-                "parameters": [
-                    {
-                        "name": "damagedStockDetails",
-                        "in": "body",
-                        "description": "Damaged Stock Details",
-                        "schema": {
-                            "$ref": "#/definitions/DamagedStock"
-                        }
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Added damaged stock details"
-                    }
-                }
-            }
-        },
-        "/driver/addReturnEmptyCans": {
-            "post": {
-                "tags": [
-                    "Driver App"
-                ],
-                "description": "Add returned empty can details",
-                "parameters": [
-                    {
-                        "name": "returnedEmptyCanDetails",
-                        "in": "body",
-                        "description": "Returned empty can Details",
-                        "schema": {
-                            "$ref": "#/definitions/ReturnedEmptyCans"
-                        }
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Added Returned empty can details"
-                    }
-                }
-            }
-        },
         "/bibo/login": {
             "post": {
                 "tags": [
@@ -354,9 +354,269 @@
                     }
                 }
             }
+        },
+        "/motherPlant/getQualityControl": {
+            "get": {
+                "tags": [
+                    "Motherplant"
+                ],
+                "summary": " Getting Quality control Details",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/motherPlant/getRMDetails": {
+            "get": {
+                "tags": [
+                    "Motherplant"
+                ],
+                "summary": " Getting Required Raw Materials Details",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/motherPlant/getRMReceipt": {
+            "get": {
+                "tags": [
+                    "Motherplant"
+                ],
+                "summary": " Getting Raw Material Receipt Details",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/motherPlant/getProductionDetails": {
+            "get": {
+                "tags": [
+                    "Motherplant"
+                ],
+                "summary": " Getting Production Details",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/motherplant/addProductionDetails": {
+            "post": {
+                "tags": [
+                    "Motherplant"
+                ],
+                "description": "Add Production details",
+                "parameters": [
+                    {
+                        "name": "productiondetails",
+                        "in": "body",
+                        "description": "Add Production Details",
+                        "schema": {
+                            "$ref": "#/definitions/AddProductionDetails"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully added"
+                    }
+                }
+            }
+        },
+        "/motherplant/addDispatchDetails": {
+            "post": {
+                "tags": [
+                    "Motherplant"
+                ],
+                "description": "Add Dispatch details",
+                "parameters": [
+                    {
+                        "name": "dispatchdetails",
+                        "in": "body",
+                        "description": "Add Dispatch Details",
+                        "schema": {
+                            "$ref": "#/definitions/AddDispatchDetails"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully added"
+                    }
+                }
+            }
+        },
+        "/motherplant/createRMReceipt": {
+            "post": {
+                "tags": [
+                    "Motherplant"
+                ],
+                "description": "Add raw material receipt details",
+                "parameters": [
+                    {
+                        "name": "rawmaterialreceipt",
+                        "in": "body",
+                        "description": "Add raw material receipt",
+                        "schema": {
+                            "$ref": "#/definitions/CreateRawmaterialReceipt"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Add raw material receipt"
+                    }
+                }
+            }
+        },
+        "/motherplant/getDispatchDetails": {
+            "get": {
+                "tags": [
+                    "Motherplant"
+                ],
+                "summary": "Getting Dispatch Details",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "AddDispatchDetails": {
+            "required": [
+                "dispatchId",
+                "dispatchedDate",
+                "DCNO",
+                "vehicleNo",
+                "driverName",
+                "dispatchTo",
+                "itemDispatched",
+                "qtyDispatched"
+            ],
+            "properties": {
+                "dispatchId": {
+                    "type": "integer"
+                },
+                "dispatchedDate": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "DCNO": {
+                    "type": "string"
+                },
+                "vehicleNo": {
+                    "type": "string"
+                },
+                "driverName": {
+                    "type": "string"
+                },
+                "dispatchTo": {
+                    "type": "string"
+                },
+                "itemDispatched": {
+                    "type": "integer"
+                },
+                "qtyDispatched": {
+                    "type": "integer"
+                }
+            }
+        },
+        "AddProductionDetails": {
+            "required": [
+                "productionDate",
+                "batchNo",
+                "phLevel",
+                "TDS",
+                "ozonelevel",
+                "qtyproduced",
+                "itemproduced"
+            ],
+            "properties": {
+                "productionDate": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "batchNo": {
+                    "type": "integer"
+                },
+                "phLevel": {
+                    "type": "number"
+                },
+                "TDS": {
+                    "type": "number"
+                },
+                "ozonelevel": {
+                    "type": "number"
+                },
+                "qtyproduced": {
+                    "type": "integer"
+                },
+                "itemproduced": {
+                    "type": "integer"
+                }
+            }
+        },
+        "CreateRawmaterialReceipt": {
+            "required": [
+                "receiptdate",
+                "receivedFromParty",
+                "invoiceNo",
+                "itemreceived",
+                "price",
+                "qtyReceived",
+                "tax",
+                "invoiceValue",
+                "rawmaterialId"
+            ],
+            "properties": {
+                "receiptdate": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "receivedFromParty": {
+                    "type": "string"
+                },
+                "invoiceNo": {
+                    "type": "integer"
+                },
+                "itemreceived": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "qtyReceived": {
+                    "type": "integer"
+                },
+                "tax": {
+                    "type": "number"
+                },
+                "invoiceValue": {
+                    "type": "number"
+                },
+                "rawmaterialId": {
+                    "type": "integer"
+                }
+            }
+        },
         "DamagedStock": {
             "required": [
                 "orderId",
