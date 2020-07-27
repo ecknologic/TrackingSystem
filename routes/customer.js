@@ -4,6 +4,9 @@ var router = express.Router();
 const db = require('../config/db.js')
 var fs = require("fs");
 let filePath;
+var NodeGeocoder = require('node-geocoder');
+const { response } = require('express');
+
 
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -66,6 +69,18 @@ const createQrCode = (qrcodeText) => {
 
 }
 
+ 
+var geocoder = NodeGeocoder({
+  provider: 'opencage',
+  apiKey: 'edfcc79627bd4c93902c3b72295fe8bf'
+});
+
+
+router.get("/getLongitueandLatitude/:address",(req,response)=>{
+geocoder.geocode(req.params.address, function(err, res) {
+  response.send("lattitue:::"+res[0].latitude+"longitude:::"+res[0].longitude);
+});
+});
 
 
 
