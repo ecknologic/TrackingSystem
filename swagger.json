@@ -45,6 +45,28 @@
                 }
             }
         },
+        "/customer/getLongitudeandLatitude/address": {
+            "parameters": [
+                {
+                    "name": "address",
+                    "in": "path",
+                    "required": true,
+                    "description": "Latitude and Longitude Details",
+                    "type": "string"
+                }
+            ],
+            "get": {
+                "tags": [
+                    "Driver App"
+                ],
+                "summary": " Getting QR Details",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/driver/validateQRCode": {
             "parameters": [
                 {
@@ -104,6 +126,14 @@
                     "required": true,
                     "description": "Order id",
                     "type": "integer"
+                },
+                {
+                    "name": "status",
+                    "in": "body",
+                    "description": "Update Delivery Status",
+                    "schema": {
+                        "$ref": "#/definitions/UpdateDeliveryStatus"
+                    }
                 }
             ],
             "post": {
@@ -529,6 +559,21 @@
         }
     },
     "definitions": {
+        "UpdateDeliveryStatus": {
+            "required": [
+                "status"
+            ],
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "Cancel",
+                        "Inprogress",
+                        "Completed"
+                    ]
+                }
+            }
+        },
         "AddDispatchDetails": {
             "required": [
                 "dispatchId",

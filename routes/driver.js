@@ -60,7 +60,7 @@ router.post('/addReturnEmptyCans', (req, res) => {
 router.post('/updateDeliveryStatus/:orderId', (req, res) => {
     var orderId = req.params.orderId;
     let updateQuery = "update orderdetails set isDelivered=? where orderid=?"
-    db.query(updateQuery, [1, orderId], (err, results) => {
+    db.query(updateQuery, [req.body.status, orderId], (err, results) => {
 
         if (err) throw err;
         else
