@@ -45,6 +45,35 @@
                 }
             }
         },
+        "/driver/validateQRCode": {
+            "parameters": [
+                {
+                    "name": "customerId",
+                    "in": "query",
+                    "required": true,
+                    "description": "Customer Id",
+                    "type": "string"
+                },
+                {
+                    "name": "qrcode",
+                    "in": "query",
+                    "required": true,
+                    "description": "Qr code",
+                    "type": "string"
+                }
+            ],
+            "get": {
+                "tags": [
+                    "Driver App"
+                ],
+                "summary": "Validate QRcode",
+                "responses": {
+                    "200": {
+                        "description": "success"
+                    }
+                }
+            }
+        },
         "/driver/getOrderDetails/{date}": {
             "parameters": [
                 {

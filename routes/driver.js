@@ -9,6 +9,16 @@ router.use(function timeLog(req, res, next) {
 });
 
 
+router.get('/validateQRCode', (req, res) => {
+    let query = "select mobileNumber,adharNo from customerdetails  WHERE customerId =" + req.query.customerId;
+    let result = db.query(query, (err, results) => {
+        if (err) throw err;
+        else {
+            if (req.query.qrcode == String(results[0].adharNo) + String(results[0].mobileNumber)) res.send('Success')
+            else res.send('Invalid')
+        }
+    });
+});
 router.get('/getOrderDetails/:date', (req, res) => {
     var date = req.params.date;
     console.log(date);
