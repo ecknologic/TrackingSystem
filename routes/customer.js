@@ -5,9 +5,11 @@ const db = require('../config/db.js')
 var fs = require("fs");
 let filePath;
 var NodeGeocoder = require('node-geocoder');
+const opencage=require("../config/opencage.config.js");
+
 var geocoder = NodeGeocoder({
   provider: 'opencage',
-  apiKey: 'edfcc79627bd4c93902c3b72295fe8bf'
+  apiKey: opencage.apikey
 });
 
 //Middle ware that is specific to this router
