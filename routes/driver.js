@@ -23,7 +23,8 @@ router.get('/getOrderDetails/:date', (req, res) => {
     var date = req.params.date;
     console.log(date);
 
-    let query = "select * from orderdetails  WHERE DATE(`deliveryDate`) ='" + date + "'";
+    // let query = "select * from orderdetails  WHERE DATE(`deliveryDate`) ='" + date + "'";
+    let query = "SELECT orderdetails.orderid,orderdetails.ordertype,orderdetails.itemsCount,orderdetails.damagedCount,orderdetails.isDelivered,orderdetails.transactionid,orderdetails.returnEmptyCans,orderdetails.deliveryDate,customerdetails.customerName,customerdetails.Address1,customerdetails.Address2,customerdetails.latitude,customerdetails.longitude,customerdetails.mobileNumber FROM orderdetails INNER JOIN customerdetails  ON orderdetails.customerId = customerdetails.customerId WHERE DATE(`deliveryDate`) ='" + date + "'"
     let result = db.query(query, (err, results) => {
 
         if (err) throw err;
@@ -77,8 +78,32 @@ router.get("/customerOrderDetails/:orderId", (req, res) => {
 
     let result = db.query(customerOrderDetailsQuery, [orderId], (err, results) => {
         if (err) throw err;
-
-        res.send(JSON.stringify(results));
+        else {
+            let arr = [];
+            if (results.length) {
+                for (let i of results) {
+                    let obj = {
+                        "customerId": i.customerId,
+                        "customerName": i.customerName,
+                        "mobileNumber": i.mobileNumber,
+                        "AlternatePhNo": i.AlternatePhNo,
+                        "EmailId": i.EmailId,
+                        "Address1": i.Address1,
+                        "Address2": i.Address2,
+                        "contactperson": i.contactperson,
+                        "orderid": i.orderid,
+                        "isDelivered": i.isDelivered,
+                        "transactionid": i.transactionid,
+                        "deliveryDate": i.deliveryDate,
+                        "customerproducts": i.customerproducts
+                    }
+                    arr.push(obj)
+                }
+                res.send(JSON.stringify(arr));
+            } else {
+                res.send(JSON.stringify(results));
+            }
+        }
     });
 });
 module.exports = router;

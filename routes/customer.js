@@ -5,8 +5,12 @@ const db = require('../config/db.js')
 var fs = require("fs");
 let filePath;
 var NodeGeocoder = require('node-geocoder');
-const { response } = require('express');
+const opencage=require("../config/opencage.config.js");
 
+var geocoder = NodeGeocoder({
+  provider: 'opencage',
+  apiKey: opencage.apikey
+});
 
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -20,8 +24,8 @@ router.get('/getQrcode/:customerId', (req, res) => {
   let result = db.query(query, (err, results) => {
     let qrText;
     if (err) throw err;
-    if(results.length){
-       qrText=results[0].adharNo + results[0].mobileNumber
+    if (results.length) {
+      qrText = results[0].adharNo + results[0].mobileNumber
     }
     res.send(JSON.stringify(qrText));
 
@@ -30,25 +34,24 @@ router.get('/getQrcode/:customerId', (req, res) => {
 
 
 
-router.post('/createCustomer', (req, res) => {
+router.post('/createCustomer', async (req, res) => {
+  let customerDetailsQuery = "insert  into customerdetails (customerName,mobileNumber,AlternatePhNo,EmailId,Address1,Address2,gstNo,contactperson,panNo,adharNo,registeredDate,invoicetype,natureOfBussiness,creditPeriodInDays,referredBy,departmentId,deliveryDaysId,depositamount,isActive,qrCodeImage,latitude,longitude) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
-  let customerDetailsQuery = "insert  into customerdetails (customerName,mobileNumber,AlternatePhNo,EmailId,Address1,Address2,gstNo,contactperson,panNo,adharNo,registeredDate,invoicetype,natureOfBussiness,creditPeriodInDays,referredBy,departmentId,deliveryDaysId,depositamount,isActive,qrCodeImage) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-
-  console.log(req.body);
 
   let customerdetails = req.body;
-  createQrCode(customerdetails.adharNo + customerdetails.mobileNumber).then(response => {
-    let insertQueryValues = [customerdetails.customerName, customerdetails.mobileNumber, customerdetails.AlternatePhNo, customerdetails.EmailId, customerdetails.Address1, customerdetails.Address2, customerdetails.gstNo, customerdetails.contactperson, customerdetails.panNo, customerdetails.adharNo, customerdetails.registeredDate, customerdetails.invoicetype, customerdetails.natureOfBussiness, customerdetails.creditPeriodInDays, customerdetails.referredBy, customerdetails.departmentId, customerdetails.deliveryDaysId, customerdetails.depositamount, customerdetails.isActive, fs.readFileSync(response)]
-    db.query(customerDetailsQuery, insertQueryValues, (err, results) => {
+  Promise.all([createQrCode(customerdetails.adharNo + customerdetails.mobileNumber), getLatLongDetails(customerdetails)])
+    .then(response => {
+      let insertQueryValues = [customerdetails.customerName, customerdetails.mobileNumber, customerdetails.AlternatePhNo, customerdetails.EmailId, customerdetails.Address1, customerdetails.Address2, customerdetails.gstNo, customerdetails.contactperson, customerdetails.panNo, customerdetails.adharNo, customerdetails.registeredDate, customerdetails.invoicetype, customerdetails.natureOfBussiness, customerdetails.creditPeriodInDays, customerdetails.referredBy, customerdetails.departmentId, customerdetails.deliveryDaysId, customerdetails.depositamount, customerdetails.isActive, fs.readFileSync(response[0]), response[1].latitude, response[1].longitude]
+      db.query(customerDetailsQuery, insertQueryValues, (err, results) => {
 
-      console.log(insertQueryValues);
+        console.log(insertQueryValues);
 
-      if (err) throw err;
-      else
-        res.send("Record Inserted");
+        if (err) throw err;
+        else
+          res.send("Record Inserted");
 
-    });
-  })
+      });
+    })
 });
 
 const createQrCode = (qrcodeText) => {
@@ -69,18 +72,23 @@ const createQrCode = (qrcodeText) => {
 
 }
 
- 
-var geocoder = NodeGeocoder({
-  provider: 'opencage',
-  apiKey: 'edfcc79627bd4c93902c3b72295fe8bf'
-});
+const getLatLongDetails = (req) => {
+  return new Promise((resolve, reject) => {
+    geocoder.geocode(req.Address1 + "," + req.Address2, function (err, res) {
+      if (err) reject(err)
+      else resolve({
+        latitude: res.length ? res[0].latitude : "",
+        longitude: res.length ? res[0].longitude : ""
+      })
+    });
+  })
+}
 
-
-router.get("/getLongitueandLatitude/:address",(req,response)=>{
-geocoder.geocode(req.params.address, function(err, res) {
-  response.send("lattitue:::"+res[0].latitude+"longitude:::"+res[0].longitude);
-});
-});
+// router.get("/getLongitudeandLatitude/:address", (req, response) => {
+//   geocoder.geocode(req.params.address, function (err, res) {
+//     response.send("lattitue:::" + res[0].latitude + "longitude:::" + res[0].longitude);
+//   });
+// });
 
 
 
