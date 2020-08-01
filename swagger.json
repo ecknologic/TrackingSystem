@@ -45,21 +45,12 @@
                 }
             }
         },
-        "/customer/getLongitudeandLatitude/address": {
-            "parameters": [
-                {
-                    "name": "address",
-                    "in": "path",
-                    "required": true,
-                    "description": "Latitude and Longitude Details",
-                    "type": "string"
-                }
-            ],
+        "/customer/getCustomers": {
             "get": {
                 "tags": [
-                    "Driver App"
+                    "Warehouse"
                 ],
-                "summary": " Getting QR Details",
+                "summary": " Getting Customer Details",
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -362,6 +353,32 @@
                 }
             }
         },
+        "/customer/createCustomer": {
+            "post": {
+                "tags": [
+                    "Warehouse"
+                ],
+                "description": "Create Customer",
+                "parameters": [
+                    {
+                        "name": "customerDetails",
+                        "in": "body",
+                        "description": "Customer Details",
+                        "schema": {
+                            "$ref": "#/definitions/CreateCustomer"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "New Customer is created"
+                    }
+                }
+            }
+        },
         "/warehouse/confirmStockRecieved": {
             "post": {
                 "tags": [
@@ -559,6 +576,93 @@
         }
     },
     "definitions": {
+        "CreateCustomer": {
+            "required": [
+                "customerName",
+                "mobileNumber",
+                "AlternatePhNo",
+                "EmailId",
+                "Address1",
+                "Address2",
+                "gstNo",
+                "contactperson",
+                "panNo",
+                "adharNo",
+                "registeredDate",
+                "invoicetype",
+                "natureOfBussiness",
+                "creditPeriodInDays",
+                "referredBy",
+                "departmentId",
+                "deliveryDaysId",
+                "depositamount",
+                "isActive"
+            ],
+            "properties": {
+                "customerName": {
+                    "type": "string"
+                },
+                "mobileNumber": {
+                    "type": "number"
+                },
+                "AlternatePhNo": {
+                    "type": "number"
+                },
+                "EmailId": {
+                    "type": "string"
+                },
+                "Address1": {
+                    "type": "string"
+                },
+                "Address2": {
+                    "type": "string"
+                },
+                "gstNo": {
+                    "type": "string"
+                },
+                "contactperson": {
+                    "type": "string"
+                },
+                "panNo": {
+                    "type": "string"
+                },
+                "adharNo": {
+                    "type": "string"
+                },
+                "registeredDate": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "invoicetype": {
+                    "type": "string"
+                },
+                "natureOfBussiness": {
+                    "type": "string"
+                },
+                "creditPeriodInDays": {
+                    "type": "integer"
+                },
+                "referredBy": {
+                    "type": "string"
+                },
+                "departmentId": {
+                    "type": "integer"
+                },
+                "deliveryDaysId": {
+                    "type": "integer"
+                },
+                "depositamount": {
+                    "type": "number"
+                },
+                "isActive": {
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1
+                    ]
+                }
+            }
+        },
         "UpdateDeliveryStatus": {
             "required": [
                 "status"
