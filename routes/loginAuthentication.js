@@ -23,7 +23,7 @@ router.use(function timeLog(req, res, next) {
     let result=db.query(loginQuery,[username],(err,results)=>{
         //var  passwordIsValid= bcrypt.compareSync(password,encryptedPassword);
 
-        if(err) throw err;
+        if(err) res.send(err);
     
         if(results.length==0)
              res.send("User Not Available");

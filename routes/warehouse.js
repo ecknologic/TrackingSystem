@@ -14,7 +14,7 @@ router.get('/getroutes', (req, res) => {
   let query = "select * from routes";
   let result = db.query(query, (err, results) => {
 
-    if (err) throw err;
+    if (err) res.send(err);
 
     res.send(JSON.stringify(results));
 
@@ -30,7 +30,7 @@ router.get('/getdriverDetails/:warehouseId', (req, res) => {
   let query = "select * from driverdetails where departmentId=" + warehouseId;
   let result = db.query(query, (err, results) => {
 
-    if (err) throw err;
+    if (err) res.send(err);
 
     res.send(JSON.stringify(results));
 
@@ -46,7 +46,7 @@ router.get('/getNewStockDetails/:id', (req, res) => {
 
   let result = db.query(query, (err, results) => {
 
-    if (err) throw err;
+    if (err) res.send(err);
 
     res.send(JSON.stringify(results));
   });
@@ -68,7 +68,7 @@ router.post('/createDC', (req, res) => {
 
     console.log(insertQueryValues);
 
-    if (err) throw err;
+    if (err) res.send(err);
     else {
       let inserted_id = results.insertId;
 
@@ -104,7 +104,7 @@ router.post('/confirmStockRecieved', (req, res) => {
 
     console.log(insertQueryValues);
 
-    if (err) throw err;
+    if (err) res.send(err);
     else {
       let inserted_id = results.insertId;
 
@@ -138,7 +138,7 @@ router.get('/deliveryDetails/:date', (req, res) => {
 
   let result = db.query(deliveryDetailsQuery, (err, results) => {
 
-    if (err) throw err;
+    if (err) res.send(err);
 
     res.send(JSON.stringify(results));
   });
@@ -150,7 +150,7 @@ router.get('/currentActiveStockDetails', (req, res) => {
 
   let result = db.query(currentActiveStockQuery, (err, results) => {
 
-    if (err) throw err;
+    if (err) res.send(err);
 
     res.send(JSON.stringify(results));
   });
@@ -164,7 +164,7 @@ router.get('/outForDeliveryDetails/:date', (req, res) => {
 
   let result = db.query(currentActiveStockQuery, (err, results) => {
 
-    if (err) throw err;
+    if (err) res.send(err);
 
     res.send(JSON.stringify(results));
   });

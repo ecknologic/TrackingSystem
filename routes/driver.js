@@ -12,7 +12,7 @@ router.use(function timeLog(req, res, next) {
 router.get('/validateQRCode', (req, res) => {
     let query = "select mobileNumber,adharNo from customerdetails  WHERE customerId =" + req.query.customerId;
     let result = db.query(query, (err, results) => {
-        if (err) throw err;
+        if (err) res.send(err);
         else {
             if (req.query.qrcode == String(results[0].adharNo) + String(results[0].mobileNumber)) res.send('Success')
             else res.send('Invalid')
@@ -27,7 +27,7 @@ router.get('/getOrderDetails/:date', (req, res) => {
     let query = "SELECT orderdetails.orderid,orderdetails.ordertype,orderdetails.itemsCount,orderdetails.damagedCount,orderdetails.isDelivered,orderdetails.transactionid,orderdetails.returnEmptyCans,orderdetails.deliveryDate,customerdetails.customerName,customerdetails.Address1,customerdetails.Address2,customerdetails.latitude,customerdetails.longitude,customerdetails.mobileNumber FROM orderdetails INNER JOIN customerdetails  ON orderdetails.customerId = customerdetails.customerId WHERE DATE(`deliveryDate`) ='" + date + "'"
     let result = db.query(query, (err, results) => {
 
-        if (err) throw err;
+        if (err) res.send(err);
 
         res.send(JSON.stringify(results));
 
@@ -41,7 +41,7 @@ router.post('/addDamagedStock', (req, res) => {
     let updateQuery = "update orderdetails set damagedCount=? where orderid=?"
     db.query(updateQuery, [damagedStockCount, orderId], (err, results) => {
 
-        if (err) throw err;
+        if (err) res.send(err);
         else
             res.send('record updated');
     });
@@ -53,7 +53,7 @@ router.post('/addReturnEmptyCans', (req, res) => {
     var returnEmptyCans = req.body.returnEmptyCans;
     let updateQuery = "update orderdetails set returnEmptyCans=? where orderid=?"
     db.query(updateQuery, [returnEmptyCans, orderId], (err, results) => {
-        if (err) throw err;
+        if (err) res.send(err);
         else
             res.send('record updated');
     });
@@ -63,7 +63,7 @@ router.post('/updateDeliveryStatus/:orderId', (req, res) => {
     let updateQuery = "update orderdetails set isDelivered=? where orderid=?"
     db.query(updateQuery, [req.body.status, orderId], (err, results) => {
 
-        if (err) throw err;
+        if (err) res.send(err);
         else
             res.send('record updated');
     });
@@ -77,7 +77,7 @@ router.get("/customerOrderDetails/:orderId", (req, res) => {
         " productdetails p ON p.productId=cp.productId INNER JOIN orderdetails o ON o.customerId=cp.customerId WHERE o.orderid=?";
 
     let result = db.query(customerOrderDetailsQuery, [orderId], (err, results) => {
-        if (err) throw err;
+        if (err) res.send(err);
         else {
             let arr = [];
             if (results.length) {
