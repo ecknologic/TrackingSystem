@@ -5,7 +5,7 @@ const db = require('../config/db.js')
 var fs = require("fs");
 let filePath;
 var NodeGeocoder = require('node-geocoder');
-const opencage=require("../config/opencage.config.js");
+const opencage = require("../config/opencage.config.js");
 
 var geocoder = NodeGeocoder({
   provider: 'opencage',
@@ -23,11 +23,19 @@ router.get('/getQrcode/:customerId', (req, res) => {
   let query = "SELECT mobileNumber,adharNo FROM customerdetails WHERE customerId=" + customerId;
   let result = db.query(query, (err, results) => {
     let qrText;
-    if (err) throw err;
+    if (err) res.send(err);
     if (results.length) {
       qrText = results[0].adharNo + results[0].mobileNumber
     }
     res.send(JSON.stringify(qrText));
+
+  });
+});
+router.get('/getCustomers', (req, res) => {
+  let query = "SELECT * from customerdetails";
+  db.query(query, (err, results) => {
+    if (err) res.send(err);
+    res.send(JSON.stringify(results));
 
   });
 });
@@ -46,7 +54,7 @@ router.post('/createCustomer', async (req, res) => {
 
         console.log(insertQueryValues);
 
-        if (err) throw err;
+        if (err) res.send(err);
         else
           res.send("Record Inserted");
 

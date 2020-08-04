@@ -14,7 +14,7 @@ router.get('/getQualityControl', (req, res) => {
     let query = "select * from qualitycontrol";
     let result = db.query(query, (err, results) => {
 
-        if (err) throw err;
+        if (err) res.send(err);
 
         res.send(JSON.stringify(results));
 
@@ -34,7 +34,7 @@ router.post('/createQC', (req, res) => {
 
         console.log(insertQueryValues);
 
-        if (err) throw err;
+        if (err) res.send(err);
         else
             res.send("Record Inserted");
 
@@ -46,7 +46,7 @@ router.get('/getRMDetails', (req, res) => {
     let query = "select * from requiredrawmaterial";
     let result = db.query(query, (err, results) => {
 
-        if (err) throw err;
+        if (err) res.send(err);
 
         res.send(JSON.stringify(results));
 
@@ -65,7 +65,7 @@ router.post('/createRM', (req, res) => {
 
         console.log(insertQueryValues);
 
-        if (err) throw err;
+        if (err) res.send(err);
         else
             res.send("Record Inserted");
 
@@ -75,7 +75,7 @@ router.get('/getRMReceipt', (req, res) => {
     let query = "select * from rawmaterialreceipt";
     let result = db.query(query, (err, results) => {
 
-        if (err) throw err;
+        if (err) res.send(err);
 
         res.send(JSON.stringify(results));
 
@@ -94,7 +94,7 @@ router.post('/createRMReceipt', (req, res) => {
 
         console.log(insertQueryValues);
 
-        if (err) throw err;
+        if (err) res.send(err);
         else
             res.send("Record Inserted");
 
@@ -104,7 +104,7 @@ router.get('/getDispatchDetails', (req, res) => {
     let query = "select * from dispatches";
     let result = db.query(query, (err, results) => {
 
-        if (err) throw err;
+        if (err) res.send(err);
 
         res.send(JSON.stringify(results));
 
@@ -123,7 +123,7 @@ router.post('/addDispatchDetails', (req, res) => {
 
         console.log(insertQueryValues);
 
-        if (err) throw err;
+        if (err) res.send(err);
         else
             res.send("Record Inserted");
 
@@ -134,7 +134,7 @@ router.get('/getProductionDetails', (req, res) => {
     let query = "select * from production";
     let result = db.query(query, (err, results) => {
 
-        if (err) throw err;
+        if (err) res.send(err);
 
         res.send(JSON.stringify(results));
 
@@ -153,7 +153,7 @@ router.post('/addProductionDetails', (req, res) => {
 
         console.log(insertQueryValues);
 
-        if (err) throw err;
+        if (err) res.send(err);
         else
             res.send("Record Inserted");
 
