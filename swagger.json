@@ -596,7 +596,10 @@
                 "departmentId",
                 "deliveryDaysId",
                 "depositamount",
-                "isActive"
+                "isActive",
+                "shippingAddress",
+                "shippingContactPersion",
+                "shippingContactNo"
             ],
             "properties": {
                 "customerName": {
@@ -652,6 +655,15 @@
                     "type": "integer"
                 },
                 "depositamount": {
+                    "type": "number"
+                },
+                "shippingAddress": {
+                    "type": "string"
+                },
+                "shippingContactPersion": {
+                    "type": "string"
+                },
+                "shippingContactNo": {
                     "type": "number"
                 },
                 "isActive": {
