@@ -43,15 +43,14 @@ router.get('/getCustomers', (req, res) => {
 
 
 router.post('/createCustomer', async (req, res) => {
-  let customerDetailsQuery = "insert  into customerdetails (customerName,mobileNumber,AlternatePhNo,EmailId,Address1,Address2,gstNo,contactperson,panNo,adharNo,registeredDate,invoicetype,natureOfBussiness,creditPeriodInDays,referredBy,departmentId,deliveryDaysId,depositamount,isActive,qrCodeImage,latitude,longitude) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+  let customerDetailsQuery = "insert  into customerdetails (customerName,mobileNumber,AlternatePhNo,EmailId,Address1,Address2,gstNo,contactperson,panNo,adharNo,registeredDate,invoicetype,natureOfBussiness,creditPeriodInDays,referredBy,departmentId,deliveryDaysId,depositamount,isActive,qrcodeId,latitude,longitude,shippingAddress,shippingContactPersion,shippingContactNo) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
 
   let customerdetails = req.body;
   Promise.all([createQrCode(customerdetails.adharNo + customerdetails.mobileNumber), getLatLongDetails(customerdetails)])
     .then(response => {
-      let insertQueryValues = [customerdetails.customerName, customerdetails.mobileNumber, customerdetails.AlternatePhNo, customerdetails.EmailId, customerdetails.Address1, customerdetails.Address2, customerdetails.gstNo, customerdetails.contactperson, customerdetails.panNo, customerdetails.adharNo, customerdetails.registeredDate, customerdetails.invoicetype, customerdetails.natureOfBussiness, customerdetails.creditPeriodInDays, customerdetails.referredBy, customerdetails.departmentId, customerdetails.deliveryDaysId, customerdetails.depositamount, customerdetails.isActive, fs.readFileSync(response[0]), response[1].latitude, response[1].longitude]
+      let insertQueryValues = [customerdetails.customerName, customerdetails.mobileNumber, customerdetails.AlternatePhNo, customerdetails.EmailId, customerdetails.Address1, customerdetails.Address2, customerdetails.gstNo, customerdetails.contactperson, customerdetails.panNo, customerdetails.adharNo, customerdetails.registeredDate, customerdetails.invoicetype, customerdetails.natureOfBussiness, customerdetails.creditPeriodInDays, customerdetails.referredBy, customerdetails.departmentId, customerdetails.deliveryDaysId, customerdetails.depositamount, customerdetails.isActive, response[0], response[1].latitude, response[1].longitude, customerdetails.shippingAddress, customerdetails.shippingContactPersion, customerdetails.shippingContactNo]
       db.query(customerDetailsQuery, insertQueryValues, (err, results) => {
-
         console.log(insertQueryValues);
 
         if (err) res.send(err);
@@ -72,8 +71,16 @@ const createQrCode = (qrcodeText) => {
     }, function (err) {
       if (err) reject(err)
       else {
-        console.log('done');
-        resolve(filePath);
+        let customerDetailsQuery = "insert  into QRDetails (QRImage) values(?)";
+        let insertQueryValues = [fs.readFileSync(filePath)]
+        db.query(customerDetailsQuery, insertQueryValues, (err, results) => {
+          console.log("fdf", insertQueryValues);
+          if (err) res.send(err);
+          else {
+            console.log("JSJS", JSON.stringify(results))
+            resolve(results.insertId);
+          }
+        })
       }
     })
   })
