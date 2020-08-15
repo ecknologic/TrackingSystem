@@ -23,6 +23,32 @@
         "application/json"
     ],
     "paths": {
+        "/roles/getRoles": {
+            "get": {
+                "tags": [
+                    "Roles And Permissions"
+                ],
+                "summary": " Getting Roles Details",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/roles/getPrivileges": {
+            "get": {
+                "tags": [
+                    "Roles And Permissions"
+                ],
+                "summary": " Getting Privileges Details",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/customer/getQrcode/{id}": {
             "parameters": [
                 {
@@ -573,9 +599,193 @@
                     }
                 }
             }
+        },
+        "/users/createUser": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "description": "Add new User details",
+                "parameters": [
+                    {
+                        "name": "userDetails",
+                        "in": "body",
+                        "description": "Add new user details",
+                        "schema": {
+                            "$ref": "#/definitions/CreateUser"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Add raw material receipt"
+                    }
+                }
+            }
+        },
+        "/users/updateUser": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "description": "Update User details",
+                "parameters": [
+                    {
+                        "name": "userDetails",
+                        "in": "body",
+                        "description": "Update user details",
+                        "schema": {
+                            "$ref": "#/definitions/UpdateUser"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Add raw material receipt"
+                    }
+                }
+            }
+        },
+        "/users/updatePassword": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "description": "Update Password",
+                "parameters": [
+                    {
+                        "name": "userDetails",
+                        "in": "body",
+                        "description": "Update password",
+                        "schema": {
+                            "$ref": "#/definitions/UpdatePassword"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Add raw material receipt"
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "CreateUser": {
+            "required": [
+                "userName",
+                "roleId",
+                "emailid",
+                "password",
+                "privilegeDetails"
+            ],
+            "properties": {
+                "userName": {
+                    "type": "string"
+                },
+                "roleId": {
+                    "type": "integer"
+                },
+                "emailid": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "privilegeDetails": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "privilegeId": {
+                                "type": "integer"
+                            },
+                            "privilegeActions": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "enum": [
+                                    "create",
+                                    "edit",
+                                    "delete",
+                                    "view"
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "UpdateUser": {
+            "required": [
+                "userName",
+                "userId",
+                "roleId",
+                "emailid",
+                "privilegeDetails"
+            ],
+            "properties": {
+                "userName": {
+                    "type": "string"
+                },
+                "userId": {
+                    "type": "number"
+                },
+                "roleId": {
+                    "type": "integer"
+                },
+                "emailid": {
+                    "type": "string"
+                },
+                "privilegeDetails": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "privilegeId": {
+                                "type": "integer"
+                            },
+                            "privilegeActions": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "enum": [
+                                    "create",
+                                    "edit",
+                                    "delete",
+                                    "view"
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "UpdatePassword": {
+            "required": [
+                "userId",
+                "password"
+            ],
+            "properties": {
+                "userId": {
+                    "type": "integer"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
         "CreateCustomer": {
             "required": [
                 "customerName",
@@ -596,7 +806,10 @@
                 "departmentId",
                 "deliveryDaysId",
                 "depositamount",
-                "isActive"
+                "isActive",
+                "shippingAddress",
+                "shippingContactPersion",
+                "shippingContactNo"
             ],
             "properties": {
                 "customerName": {
@@ -654,6 +867,15 @@
                 "depositamount": {
                     "type": "number"
                 },
+                "shippingAddress": {
+                    "type": "string"
+                },
+                "shippingContactPersion": {
+                    "type": "string"
+                },
+                "shippingContactNo": {
+                    "type": "number"
+                },
                 "isActive": {
                     "type": "integer",
                     "enum": [
@@ -671,7 +893,7 @@
                 "status": {
                     "type": "string",
                     "enum": [
-                        "Cancel",
+                        "Postponed",
                         "Inprogress",
                         "Completed"
                     ]
