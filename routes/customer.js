@@ -190,7 +190,33 @@ const getLatLongDetails = (req) => {
     });
   })
 }
-
+router.get("/getCustomerDetails/:creatorId", (req, res) => {
+  let customerDetailsQuery = "SELECT * from customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.createdBy=" + req.params.creatorId
+  db.query(customerDetailsQuery, (err, results) => {
+    if (err) res.send(err);
+    else {
+      res.json({ status: 200, statusMessage: "Success", data: results })
+    }
+  })
+});
+router.get("/getCustomerDetailsById/:customerId", (req, res) => {
+  let customerDetailsQuery = "SELECT * from customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.customerId=" + req.params.customerId
+  db.query(customerDetailsQuery, (err, results) => {
+    if (err) res.send(err);
+    else {
+      res.json({ status: 200, statusMessage: "Success", data: results })
+    }
+  })
+});
+router.get("/getProductsDetails", (req, res) => {
+  let productDetailsQuery = "SELECT * from productdetails"
+  db.query(productDetailsQuery, (err, results) => {
+    if (err) res.send(err);
+    else {
+      res.json({ status: 200, statusMessage: "Success", data: results })
+    }
+  })
+});
 // router.get("/getLongitudeandLatitude/:address", (req, response) => {
 //   geocoder.geocode(req.params.address, function (err, res) {
 //     response.send("lattitue:::" + res[0].latitude + "longitude:::" + res[0].longitude);

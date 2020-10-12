@@ -71,6 +71,63 @@
                 }
             }
         },
+        "/customer/getCustomerDetails/{creatorId}": {
+            "parameters": [
+                {
+                    "name": "creatorId",
+                    "in": "path",
+                    "required": true,
+                    "description": "Customer Details",
+                    "type": "string"
+                }
+            ],
+            "get": {
+                "tags": [
+                    "Warehouse"
+                ],
+                "summary": " Getting Customers Details",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/customer/getCustomerDetailsById/{customerId}": {
+            "parameters": [
+                {
+                    "name": "customerId",
+                    "in": "path",
+                    "required": true,
+                    "description": "Customer Details",
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "tags": [
+                    "Warehouse"
+                ],
+                "summary": " Getting Customers Details",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/customer/getProductsDetails": {
+            "get": {
+                "tags": [
+                    "Warehouse"
+                ],
+                "summary": " Getting Product Details",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/customer/getCustomers": {
             "get": {
                 "tags": [
