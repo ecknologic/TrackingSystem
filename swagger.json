@@ -71,6 +71,63 @@
                 }
             }
         },
+        "/customer/getCustomerDetails/{creatorId}": {
+            "parameters": [
+                {
+                    "name": "creatorId",
+                    "in": "path",
+                    "required": true,
+                    "description": "Customer Details",
+                    "type": "string"
+                }
+            ],
+            "get": {
+                "tags": [
+                    "Warehouse"
+                ],
+                "summary": " Getting Customers Details",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/customer/getCustomerDetailsById/{customerId}": {
+            "parameters": [
+                {
+                    "name": "customerId",
+                    "in": "path",
+                    "required": true,
+                    "description": "Customer Details",
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "tags": [
+                    "Warehouse"
+                ],
+                "summary": " Getting Customers Details",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/customer/getProductsDetails": {
+            "get": {
+                "tags": [
+                    "Warehouse"
+                ],
+                "summary": " Getting Product Details",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/customer/getCustomers": {
             "get": {
                 "tags": [
@@ -808,8 +865,11 @@
                 "depositamount",
                 "isActive",
                 "shippingAddress",
-                "shippingContactPersion",
-                "shippingContactNo"
+                "shippingContactPerson",
+                "shippingContactNo",
+                "deliveryDetails",
+                "organizationName",
+                "createdBy"
             ],
             "properties": {
                 "customerName": {
@@ -870,7 +930,7 @@
                 "shippingAddress": {
                     "type": "string"
                 },
-                "shippingContactPersion": {
+                "shippingContactPerson": {
                     "type": "string"
                 },
                 "shippingContactNo": {
@@ -882,6 +942,98 @@
                         0,
                         1
                     ]
+                },
+                "organizationName": {
+                    "type": "string"
+                },
+                "createdBy": {
+                    "type": "integer"
+                },
+                "customerType": {
+                    "type": "string"
+                },
+                "deliveryDetails": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "gstNo": {
+                                "type": "string"
+                            },
+                            "address": {
+                                "type": "string"
+                            },
+                            "phoneNumber": {
+                                "type": "number"
+                            },
+                            "contactPerson": {
+                                "type": "string"
+                            },
+                            "depositAmount": {
+                                "type": "number"
+                            },
+                            "products": {
+                                "type": "array",
+                                "items": {
+                                    "type": "number"
+                                }
+                            },
+                            "deliveryDays": {
+                                "type": "object",
+                                "properties": {
+                                    "SUN": {
+                                        "type": "integer",
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    },
+                                    "MON": {
+                                        "type": "integer",
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    },
+                                    "TUE": {
+                                        "type": "integer",
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    },
+                                    "WED": {
+                                        "type": "integer",
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    },
+                                    "THU": {
+                                        "type": "integer",
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    },
+                                    "FRI": {
+                                        "type": "integer",
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    },
+                                    "SAT": {
+                                        "type": "integer",
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },
