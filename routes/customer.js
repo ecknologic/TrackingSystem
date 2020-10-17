@@ -112,13 +112,13 @@ const saveDeliveryDetails = (customerId, customerdetails, res) => {
       let count = 0
       for (let i of customerdetails.deliveryDetails) {
         saveDeliveryDays(i.deliveryDays).then(deliveryDays => {
-          let deliveryDetailsQuery = "insert  into DeliveryDetails (gstNo,address,phoneNumber,contactPerson,deliverydaysid,depositAmount,customer_Id) values(?,?,?,?,?,?,?)";
-          let insertQueryValues = [i.gstNo, i.address, i.phoneNumber, i.contactPerson, deliveryDays.insertId, i.depositAmount, customerId]
+          let deliveryDetailsQuery = "insert  into DeliveryDetails (gstNo,address,phoneNumber,contactPerson,deliverydaysid,depositAmount,customer_Id,routingId) values(?,?,?,?,?,?,?,?)";
+          let insertQueryValues = [i.gstNo, i.address, i.phoneNumber, i.contactPerson, deliveryDays.insertId, i.depositAmount, customerId, i.routingId]
           db.query(deliveryDetailsQuery, insertQueryValues, (err, results) => {
             if (err) res.send(err);
             else {
               count++
-              saveProductDetails(i.products, results.insertId).then(productDetails => {
+              saveProductDetails(i.products, results.insertId, customerId).then(productDetails => {
                 console.log(count, customerdetails.deliveryDetails.length)
                 if (count == customerdetails.deliveryDetails.length) res.send("Records Inserted");
               })
@@ -139,12 +139,12 @@ const saveDeliveryDays = (deliveryDays) => {
     });
   })
 }
-const saveProductDetails = (products, deliveryDetailsId) => {
+const saveProductDetails = (products, deliveryDetailsId, customerId) => {
   return new Promise((resolve, reject) => {
     if (products.length) {
       for (let i of products) {
-        let deliveryProductsQuery = "insert  into DeliveryProducts (deliverydetailsId,productid) values(?,?)";
-        let insertQueryValues = [deliveryDetailsId, i]
+        let deliveryProductsQuery = "insert  into customerproductdetails (deliverydetailsId,customerId,noOfJarsTobePlaced,productPrice,productName) values(?,?,?,?,?)";
+        let insertQueryValues = [deliveryDetailsId, customerId, i.quantity, i.price, i.name]
         db.query(deliveryProductsQuery, insertQueryValues, (err, results) => {
           if (err) res.send(err);
           else resolve(results)
