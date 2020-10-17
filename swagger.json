@@ -13,7 +13,7 @@
             "description": "API for  BIBO Tracking System"
         }
     ],
-    "schemes": [
+    "schemes": [ 
         "http"
     ],
     "consumes": [
