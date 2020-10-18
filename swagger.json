@@ -972,10 +972,24 @@
                             "depositAmount": {
                                 "type": "number"
                             },
+                            "routingId": {
+                                "type": "integer"
+                            },
                             "products": {
                                 "type": "array",
                                 "items": {
-                                    "type": "number"
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "type": "string"
+                                        },
+                                        "quantity": {
+                                            "type": "number"
+                                        },
+                                        "price": {
+                                            "type": "number"
+                                        }
+                                    }
                                 }
                             },
                             "deliveryDays": {
