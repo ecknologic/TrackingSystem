@@ -1,0 +1,119 @@
+
+.first_col{
+    /* background-image:url(../assets/images/login_img.png);
+    height:100vh; */
+    /* background-repeat: no-repeat; */
+    /* background-position: 50% 50%;
+    background-color: #30def7; */
+    /* background-size:cover; */
+    background: linear-gradient(to top left,#2edef8 56%,#6acef0 80%);
+}
+.first_col img{
+    height: 100vh;
+    float: right;   
+}
+.login_component{
+    background-color:#f9fafb;  
+}
+.login_container{
+    padding:10% 15%;
+}
+.login_card{
+box-shadow: 0 0 22px 0 rgba(0, 0, 0, 0.1);   
+}
+.login_card .ant-card-body{
+    padding: 24px 35px;
+}
+.login_btn{
+    float: right;
+    background-color: #0091ff !important;
+    border: 0px !important;
+    padding: 10px 25px !important;
+    height: 100% !important;
+    font-family: 'Lato-Bold';
+    box-shadow: none !important;
+    letter-spacing: 0.02px;
+    font-size: 15px !important;
+}
+.remembermelabel {
+    color:#999999;
+    font-family: 'Lato-Regular';
+}
+.forgotpasswordLink {
+    color: #1aa5df;
+    font-size: 12px;
+    vertical-align: middle;
+}
+.forgotpasswordLinktext{
+    text-decoration: underline;
+}
+.forgotpasswordLink{
+    color:#1aa5df;
+    font-size:12px;
+}
+.forgotpasswordLinkicon{
+    display: inline-block;
+    vertical-align: middle;
+}
+.loginmenu p{
+    margin-left: 8px;
+    font-size: 13px;
+    line-height: 1.54;
+    color: #b3b3b3;
+}
+.login_footer p{
+    font-size: 13px;
+    line-height: 1.54;
+    color: #b3b3b3;   
+}
+.loginmenu {
+    float: right;
+    float: right;
+    padding: 0px;
+    margin: 0px;
+}
+.login_component .first_col h2{
+    font-family: 'Lato-Light'; 
+    font-size: 34px;
+    font-weight: 300;
+    line-height: normal;
+    letter-spacing: -0.12px;
+    text-align: center;
+    color: #4e4d4d;  
+}
+.login_component .first_col p{
+    font-family: 'Lato-Regular';
+    font-size: 14px;
+    line-height: normal;
+    letter-spacing: -0.05px;
+    text-align: center;
+    color: #ffffff;   
+}
+.login_component_text{
+    position:absolute;
+    bottom:0px;
+    width: 100%;
+    margin-bottom: 30px;
+}
+.login_bibo_text{
+    color: #0062ff;   
+}
+.login_footer {
+    padding-top: 31px;
+}
+.login_container h3{
+    font-family: 'Lato-Regular';
+    font-size: 24px;
+    margin:0px;
+    padding-bottom:35px;
+  letter-spacing: -0.09px;
+  color: #4c4e4e;
+}
+.login_card h4{
+    font-family: 'Lato-Medium';
+    font-size: 24px;
+    padding-bottom:15px;
+    line-height: normal;
+    letter-spacing: normal;
+    color: #333333;     
+}
