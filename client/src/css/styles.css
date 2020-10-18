@@ -1,0 +1,424 @@
+/*--- Header ----- */
+.header .logo h2 {
+    font-size: 24px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: -0.09px;
+    text-align: center;
+    color: #4c4e4e;
+    font-family: 'Lato-Regular';
+    margin-bottom:0px;
+}
+.header .bibotext {
+    color: #0062ff;
+}
+.TopNavbar {
+    border-left: 1px solid #e2e2ea !important;
+} 
+.TopNavbar .ant-menu-item{
+    margin:0px 0px !important;    
+}
+/*----- ware House Info ------ */
+.warehouuseinfo_comp{
+    background-color:var(--thirdColor);
+    padding: 3% 1% 1% 4%;
+}
+.warehouuseinfo_comp h3{
+    color: #000;
+    font-family: 'PoppinsSemiBold600';
+    font-size:24px;
+}
+.warehouuseinfo_comp p{
+    color: #696974;
+    font-family: 'PoppinsMedium500';
+    font-size:16px;
+}
+/*---- Date Picker ----- */
+.DatePicker_comp_card {
+    padding-top: 15px;
+}
+.DatePicker_comp_card p:first-child{
+    font-size: 18.2px;
+}
+.DatePicker_comp_card p{
+    font-family: 'PoppinsSemiBold600' !important;
+    font-size: 11.3px;
+    margin: 0px;
+}
+.DatePicker_comp_card .ant-card{
+    color: #000;
+    display: inline-block;
+    vertical-align: middle;
+    margin: var(--m5px);
+    width: calc(100% - 622px);
+    border-radius: 21px;
+    text-align: center;
+}
+.DatePicker_comp_card {
+    overflow: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* IE 10+ */
+    white-space:nowrap;
+}
+.DatePicker_comp_card::-webkit-scrollbar {
+    width: 0px;
+    background: transparent; /* make scrollbar transparent */
+}
+.date_picker_maincomp{
+    background-color :var(--fourColor);
+}
+.swiper_prevbtns,.swiper_nextbtns{
+    display:inline-block;
+    vertical-align: middle;
+    width:5%;
+}
+.btn-r {
+    float: right;
+}
+.swiper_cardslist{
+    display: inline-block;
+    vertical-align: middle;
+    width:90%;
+}
+.dateMonthtext{
+    text-align: center;
+    margin:0px;
+    text-align: center;
+    margin: 0px;
+    padding-top: 25%;
+}
+.selectDateBtn {
+    font-family: 'PoppinsSemiBold600';
+    display: block !important;
+    margin: 42px auto;
+    border-radius: 9px !important;
+    font-size: 12px !important;
+    color: #0062ff !important;
+    border-color: #0062ff !important;
+}
+
+/*--- Side Bar ---- */
+.sider_bar_component{
+ border-right:1px solid #e0e0e0 !important;   
+}
+.TopNavbar {
+    background: #fff !important;
+    height: 100%;
+    border-bottom: 1px solid #e2e2ea !important;
+}
+
+
+/*--- tabs ---- */
+.tabscompgetreportsbtn{
+    background-color: #5c63ab !important;
+    font-size: 14px !important;
+    font-family: 'PoppinsSemiBold600';
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: 0.1px;
+    color: #ffffff;
+    height: 100% !important;
+    padding: 8px 25px !important;
+    border: 0px !important;
+}
+.TabsmaindivComp{
+    background-color:var(--thirdColor);   
+}
+.tabs_coponents_tabs {
+    margin: 0px;
+}
+.list-inline li{
+    display: inline-block;
+    vertical-align: middle;
+}
+.tabs_coponents_tabs li{
+    margin: 5px 25px 0px 5px;
+    text-align: center;
+    padding: 5px 15px 15px 15px;
+}
+.ActiveTab{
+border-bottom: 3px solid #0062ff;
+padding: 5px 15px 12px 15px !important;
+}
+.normalTab h5{
+color:#000;
+font-family: 'PoppinsMedium500';
+font-size: 14px;
+}
+.ActiveTab h5{
+font-family: 'PoppinsSemiBold600';
+color:#0062ff;
+font-size:14px;
+}
+/*---- Delivery -----*/
+.deliverymodalheader{
+    margin-bottom:0px;
+    font-size: 16px;
+    font-family: 'PoppinsSemiBold600';
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: 0.1px;
+    color: #171725;
+}
+.delivery_modalfoot_btn{
+    border-radius: 10px !important;
+    border: 1px solid #007aff !important;
+    background-color: #007aff !important;
+    height: 38px !important;
+    box-shadow: none !important;
+    outline: none !important;
+    font-size: 12px;
+    font-family: 'PoppinsSemiBold600';
+    line-height: normal;
+    letter-spacing: normal;
+    color: #ffffff;
+  
+}
+.stockview_textp{
+    
+    font-family: 'PoppinsRegular400';
+    font-size: 12px;
+    line-height: 1.75;
+    letter-spacing: -0.1px;
+    color: #535353;    
+}
+.stockview_texth4{
+    font-size: 18px;
+    font-family: 'PoppinsExtraBold800';
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: #2a2d37;   
+}
+.stockview_texth5{
+    font-family: 'PoppinsSemiBold600';
+    font-size:12px;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: 0.5px;
+    color: rgba(0, 0, 0, 0.85);   
+}
+.createNewDCModal .ant-modal-footer{
+    text-align: initial !important;
+}
+.padding-right_comp {
+    padding-right: 25px;
+}
+.createNewDCModal .ant-input {
+    height: 42px;
+    border-radius: 10px;
+    border: solid 1px #e2e2ea;
+    background-color: #fafcff;
+}
+.createNewDCModal .ant-select-selector {
+    height: 42px !important;
+    border-radius: 10px !important;
+    border: solid 1px #e2e2ea !important;
+    background-color: #fafcff !important;
+    padding: 4px 11px !important;
+}
+.ant-table-thead > tr > th{
+background-color:#fff !important;
+}
+.ant-table-tbody > tr.ant-table-row:hover > td{
+    background-color:transparent !important;   
+}
+.ant-table-tbody > tr:nth-child(odd){
+background-color: #f2f3f5 !important;
+}
+.deliveryCompTable td{
+    color:#333333;
+    font-size:12px;
+    font-family: 'PoppinsRegular400';
+}
+.deliveryCompTable th {
+    font-size: 14px;
+    font-family: 'PoppinsSemiBold600';
+    color: rgba(0, 0, 0, 0.85);
+}
+.deliveryCompTable {
+    margin: 0px 15px;
+}
+.deliveryCompTable .ant-table-cell {
+    padding: 17px 7px!important;
+}
+.deliverycomp_filters {
+    padding: 25px 15px;
+}
+.stockmodalcheck {
+    margin-top: 33px !important;
+}
+.rowspadding {
+    padding: 12px 10px 0px 10px;
+}
+.bbtm-1 {
+    border-bottom: solid 1px #e3e3e3;
+}
+.detailsmodalfooter {
+    padding: 10px;
+}
+.createNewDcbtn {
+    border-radius: 10px !important;
+    border: solid 1px #e9e9e9 !important;
+    background-color: #f1f1f5 !important;
+    box-shadow: none !important;
+    height: 100% !important;
+    margin: 0px 15px;
+    font-family: 'PoppinsSemiBold600';
+    font-size: 14px !important;
+    line-height: normal;
+    letter-spacing: 0.1px;
+    color: #005fff !important;
+}
+.deliveryCompSearchinput input.ant-input {
+    border-radius: 10px;
+    border: solid 0px #e2e2ea;
+    background-color: #fafcff;
+    border-right: 0px !important;
+    outline: none !important;
+    box-shadow: none !important;
+    color:#92929d;
+    font-family: 'PoppinsRegular400';
+
+}
+.deliveryCompSearchinput {
+    border: solid 1px #e2e2ea;
+    border-right: 0px;
+    border-radius: 10px;
+}
+.deliveryCompSearchinput .ant-btn.ant-input-search-button.ant-btn-primary {
+    border-radius: 10px;
+    border: solid 1px #e2e2ea;
+    background-color: #fafcff;
+    border-top: 0px;
+    border-bottom: 0px;
+    color:#92929d;
+}
+.deliveryCompMultiselect .ant-select-selector{
+ background-color:transparent !important;   
+ border: solid 1px #d8d8d8 !important;
+ font-family: 'PoppinsRegular400';
+ color:#333333 !important;
+}
+.createNewDCModal{
+    width: calc(100% - 50%) !important;
+}
+.createNewDCModal .ant-modal-header{
+    border-radius: 20px 20px 0 0 !important;   
+}
+.createNewDCModal .ant-modal-content{
+    border-radius:20px !important;
+}
+.form_modal_label{
+    font-size:12px;
+    font-family: 'PoppinsSemiBold600';
+    letter-spacing: 0.5px;
+    color: #92929d;
+}
+/* .deliveryCompSearchinput{
+    border-radius: 10px;
+    border: solid 1px #e2e2ea;
+    background-color: #fafcff;    
+} */
+/*------- Stock Details-------*/
+.stockdetailstopdiv {
+    background-color: #fff;
+    border-bottom: 1px solid #c6c6c6;
+    padding:15px 0px;
+}
+.StockdetailsComponents h4{
+font-family: 'PoppinsSemiBold600';
+}
+.StockdetailsComponents h3{
+font-family: 'PoppinsExtraBold800';
+}
+.StockdetailsComponents p{
+font-family: 'PoppinsRegular400';   
+}
+.stockDetailsh4 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #4f63bc;
+}
+.emptycandetailsh4{
+    font-size: 18px;
+    letter-spacing: 0.13px;
+    color: #000000;
+    text-align:left !important;
+}
+.stockDetailsp{
+    font-size: 11px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.85);
+    margin-bottom: 0.2em; 
+}
+.stockdetailstopdiv .StockDetailsCounth3{
+    font-size: 18px;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: #2a2d37;   
+}
+.stockdetailstop2nddiv .StockDetailsCounth3{
+    font-size: 14px;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: #2a2d37;
+}
+.getreportsbtn{
+    display: inline-block !important;
+    margin: 5px !important;
+    height: 26px !important;
+    border-radius: 8px !important;
+    border: solid 1px #9d9d9d !important;
+    background: #f0f0f1 !important;
+    font-size: 11px !important;
+    line-height: normal !important;
+    letter-spacing: normal;
+    color: #252525 !important;
+    font-family: 'PoppinsRegular400';
+}
+
+/* .stockdetailstop2nddiv .ant-row{
+    padding: 15px 0px;
+} */
+.SubStockdetailsRows{
+    border-bottom: 1px solid #c6c6c6;
+}
+.MainStockdetailsRows{
+    border-bottom: 1px solid #c6c6c6;
+}
+.StockdetailsComponents .ant-divider-vertical {
+    height: auto !important;
+    background: #c6c6c6 !important;
+}
+.stockdetailstop2nddiv {
+    background-color: #fafafb;
+}
+.divider_left {
+    padding: 0px 15px;
+}
+.expandable_dividers{
+    margin-left:25px !important;
+}
+.emptyCanDetailsdiv{
+    padding:10px 20px;
+}
+.StockDetailsStatusRows {
+    padding:15px 0px 15px 20px !important
+}
+.errors{
+    color:red;
+}

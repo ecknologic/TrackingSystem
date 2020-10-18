@@ -2,6 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 const cors = require('cors');
+var path = require('path');
+
 const port = 8888;
 
 const utilities = require('./routes/utilities.js');
@@ -15,6 +17,7 @@ const swaggerDocument = require("./swagger.json");
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, 'client/build')));
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
@@ -25,7 +28,9 @@ app.get('/swagger.json', function (req, res) {
   res.send(swaggerSpec);
 });
 
-
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname + '/client/build/index.html'));
+});
 
 //Ware house rest services
 app.use("/warehouse", require('./routes/warehouse.js'));
