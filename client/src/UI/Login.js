@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react'
-import axios from 'axios';
+import React, { useState } from 'react'
 import { Form, Row, Col, Input, Card, Button, Checkbox, message } from 'antd'
 import image from '../assets/images/login_img.png'
 import { QuestionCircleFilled } from '@ant-design/icons';
-import { baseUrl } from '../config'
 import './login.css'
+import { createOrUpdateAPI } from '../utils/apis';
 
 const Login = (props) => {
     const [username, setUserName] = useState('');
@@ -13,26 +12,25 @@ const Login = (props) => {
 
 
     const loginBtn = () => {
-        console.log("vaalue", username, password)
         let errors1 = {};
-        if (username == "") errors1.username = "Please enter username";
-        if (password == "") errors1.password = "Please enter password"
+        if (username.trim() === "") errors1.username = "Please enter username";
+        if (password.trim() === "") errors1.password = "Please enter password"
         setErrors(errors1)
-        if (Object.keys(errors1).length == 0) {
+        if (Object.keys(errors1).length === 0) {
             let userData = {
-                username, password
+                username: username, password: password
             }
-            axios.post(baseUrl + '/bibo/login', userData)
+            createOrUpdateAPI('bibo/login', userData, "POST")
                 .then(response => {
-                    let token = response.data.token;
-                    // let userDetails = response.data.userMasters;
-                    if (token) {
+                    if (response.token) {
+                        let token = response.token, isLogged = response.isLogged;
                         sessionStorage.setItem("token", token)
-                        // message.success(response.data)
+                        sessionStorage.setItem("isLogged", isLogged)
+                        message.success("Login Success")
                         props.history.push('/bibowarehouse');
+                    } else {
+                        message.error(response.message)
                     }
-                    // else setErrors({ password: "Invalid credentials" })
-                    // console.log(response.data);
                 })
                 .catch(error => {
                     console.log(error)
@@ -40,31 +38,12 @@ const Login = (props) => {
         }
     }
 
-
-
-
-    // const onFinish = values => {
-    //     console.log(values)
-
-    //     // let requsetData = {
-    //     //     userName: values.username,
-    //     //     password: values.password
-    //     // }
-
-
-    // };
-
-    // const onFinishFailed = errorInfo => {
-    //     console.log('Failed:', errorInfo);
-    // };
-
-    // console.log('Process.env', process.env.REACT_API_APP_HOST)
     const onInputChange = (value, key) => {
-        if (value != "") {
-            if (errors.key != "") setErrors({ ...errors, [key]: "" })
+        if (value.trim() !== "") {
+            if (errors.key !== "") setErrors({ ...errors, [key]: "" })
         }
-        if (key == "username") setUserName(value);
-        if (key == "password") setPassword(value)
+        if (key === "username") setUserName(value);
+        if (key === "password") setPassword(value)
 
     }
     return (
