@@ -12,16 +12,21 @@ router.post('/createUser', (req, res) => {
   let userDetails = req.body;
   let insertQueryValues = [userDetails.userName, userDetails.roleId, userDetails.emailid, createHash(userDetails.password)]
   db.query(query, insertQueryValues, (err, results) => {
-    if (err) res.send(err);
+    if (err) res.json({ status: 200, message: err });
     else {
+      let updateQuery = 'UPDATE usermaster SET loginId=? WHERE userId=?';
+      let idValue = userDetails.userName.substring(0, 3) + results.insertId
+      let updateValues = [idValue, results.insertId];
+      db.query(updateQuery, updateValues, (updateErr, updateResults) => {
+        if (updateErr) console.log(updateErr);
+      })
       for (let i of userDetails.privilegeDetails) {
         let privilegeQuery = "insert into userPrivilegesMaster (privilegeId,privilegeActions,userId) values(?,?,?)";
         let queryValues = [i.privilegeId, i.privilegeActions.join(), results.insertId]
-        db.query(privilegeQuery, queryValues, (err, results) => {
-          console.log(queryValues);
-          if (err) res.send(err);
+        db.query(privilegeQuery, queryValues, (privilegeErr, results) => {
+          if (privilegeErr) res.json({ status: 500, message: privilegeErr });
           else {
-            res.send("record inserted");
+            res.json({ status: 200, message: "User Added Successfully" });
           }
         })
       }
