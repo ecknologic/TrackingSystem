@@ -1,5 +1,6 @@
 import React from 'react'
 import { Scrollbars } from 'react-custom-scrollbars';
+import { BrowserRouter as Router, Route, Switch,Link } from 'react-router-dom';
 import { Layout, Menu, Breadcrumb } from 'antd';
 import dashboardIcon from '../assets/images/ic-manage-users.svg';
 import dashboardIcon12 from '../assets/images/ic-manage-accounts.svg';
@@ -31,10 +32,12 @@ const LayoutPage = (props) => {
                             defaultOpenKeys={['sub1']}
                             style={{ height: '100%', borderRight: 0 }}
                         >
-                            <Menu.Item key="1" key="sub1"><span></span> <span>Dashboard</span></Menu.Item>
+                            <Menu.Item key="1" key="sub1"><Link to="/bibowarehouse"><span></span> <span>Dashboard</span></Link></Menu.Item>
                             <Menu.Item key="2" key="sub2"><span><img src={dashboardIcon12} alt="contest-cover"/></span> <span>Manage Stock</span></Menu.Item>
                             <Menu.Item key="3" key="sub3"><span><img src={dashboardIcon} alt="contest-cover"/></span> <span>Manage Routes</span></Menu.Item>
-                            <Menu.Item key="4" key="sub4"><span></span> <span>Reports</span></Menu.Item>
+                            <Menu.Item key="4" key="sub4"><Link to="/addcustomer"><span><img src={dashboardIcon} alt="contest-cover"/></span> <span>Add Customer</span></Link></Menu.Item>
+                            
+                            <Menu.Item key="5" key="sub5"><span></span> <span>Reports</span></Menu.Item>
                             {/* <SubMenu key="sub1" icon={<UserOutlined />} title="Dashboard">
                                 <Menu.Item key="1">option1</Menu.Item>
                                 <Menu.Item key="2">option2</Menu.Item>
