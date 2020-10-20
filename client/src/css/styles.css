@@ -422,3 +422,27 @@ font-family: 'PoppinsRegular400';
 .errors{
     color:red;
 }
+
+.addcustomerheader {
+    background-color: rgba(72,92,186,0.05);
+    padding: 15px;
+}
+.addCustomerBody {
+    padding: 50px;
+}
+.normalnumTab{
+    height: 87px !important;
+    width: 451px;
+    border: 1px solid #E3E3E3;
+    border-radius: 8px;
+    margin:5px;
+    background-color: #EBEBEB !important;
+}
+.ActivenumTab{
+    height: 87px !important;
+    width: 451px;
+    border: 1px solid #E3E3E3;
+    border-radius: 8px;
+    margin:5px;
+    background-color: #5C63AB !important;
+}
