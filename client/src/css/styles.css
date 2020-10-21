@@ -209,13 +209,13 @@ font-size:14px;
 .padding-right_comp {
     padding-right: 25px;
 }
-.createNewDCModal .ant-input {
+.createNewDCModal .ant-input,.addCustomerBody .ant-input{
     height: 42px;
     border-radius: 10px;
     border: solid 1px #e2e2ea;
     background-color: #fafcff;
 }
-.createNewDCModal .ant-select-selector {
+.createNewDCModal .ant-select-selector,.addCustomerBody .ant-select-selector{
     height: 42px !important;
     border-radius: 10px !important;
     border: solid 1px #e2e2ea !important;
@@ -319,6 +319,9 @@ background-color: #f2f3f5 !important;
     font-family: 'PoppinsSemiBold600';
     letter-spacing: 0.5px;
     color: #92929d;
+}
+.addCustomerBody .form_modal_label{
+    color: #4D5775;
 }
 /* .deliveryCompSearchinput{
     border-radius: 10px;
@@ -429,6 +432,9 @@ font-family: 'PoppinsRegular400';
 }
 .addCustomerBody {
     padding: 50px;
+}
+.addcustomerfooter{
+    padding:0px 50px;
 }
 .normalnumTab{
     height: 87px !important;

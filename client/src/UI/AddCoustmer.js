@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { Row, Col, Button, Select, Form, Input, Checkbox, DatePicker, Space, Upload } from 'antd';
+import { Row, Col, Button, Select, Form, Input, Checkbox, DatePicker, Space, Upload, Modal } from 'antd';
 import '../css/styles.css'
 import FormItem from "antd/lib/form/FormItem";
-import { UploadOutlined } from '@ant-design/icons';
+import { UploadOutlined, PlusOutlined } from '@ant-design/icons';
 const { Option } = Select;
 const AddCoustmer = (props) => {
+    const [visible, setVisible] = useState(false)
     const [tab1, setTab1] = useState(true)
     const [tab2, setTab2] = useState(false)
     const children = [];
@@ -65,7 +66,7 @@ const AddCoustmer = (props) => {
                             <Row>
                                 <Col span={10}>
                                     <FormItem>
-                                        <h5>select id proof</h5>
+                                        <h5 className="form_modal_label">select id proof</h5>
                                         <Select defaultValue="lucy" style={{ width: '100%' }}>
                                             <Option value="jack">Jack</Option>
                                             <Option value="lucy">Lucy</Option>
@@ -105,12 +106,13 @@ const AddCoustmer = (props) => {
                             <Row>
                                 <Col span={10}>
                                     <FormItem>
-
+                                    <h5 className="form_modal_label">GST NUMBER</h5>
+                                    <Input placeholder="Basic usage"/><Button type="default">Verify</Button>
                                     </FormItem>
                                 </Col>
                                 <Col span={10} offset={1}>
                                     <FormItem>
-                                    <h5>ORGANIZATION NAME</h5>
+                                        <h5 className="form_modal_label">ORGANIZATION NAME</h5>
                                         <Input placeholder="Basic usage" />
                                     </FormItem>
                                 </Col>
@@ -118,7 +120,7 @@ const AddCoustmer = (props) => {
                             <Row>
                                 <Col span={21}>
                                     <FormItem>
-                                        <h5>ADDRESS</h5>
+                                        <h5 className="form_modal_label">ADDRESS</h5>
                                         <Input placeholder="Basic usage" />
                                     </FormItem>
                                 </Col>
@@ -126,13 +128,13 @@ const AddCoustmer = (props) => {
                             <Row>
                                 <Col span={10}>
                                     <FormItem>
-                                        <h5>PHONE NUMBER</h5>
+                                        <h5 className="form_modal_label">PHONE NUMBER</h5>
                                         <Input placeholder="Basic usage" />
                                     </FormItem>
                                 </Col>
                                 <Col span={10} offset={1}>
                                     <FormItem>
-                                        <h5>EMAIL</h5>
+                                        <h5 className="form_modal_label">EMAIL</h5>
                                         <Input placeholder="Basic usage" />
                                     </FormItem>
                                 </Col>
@@ -140,13 +142,13 @@ const AddCoustmer = (props) => {
                             <Row>
                                 <Col span={10}>
                                     <FormItem>
-                                        <h5>CONTACT PERSON</h5>
+                                        <h5 className="form_modal_label">CONTACT PERSON</h5>
                                         <Input placeholder="Basic usage" />
                                     </FormItem>
                                 </Col>
                                 <Col span={10} offset={1}>
                                     <FormItem>
-                                        <h5>NATURE OF BUSINESS</h5>
+                                        <h5 className="form_modal_label">NATURE OF BUSINESS</h5>
                                         <Select defaultValue="lucy" style={{ width: '100%' }}>
                                             <Option value="jack">Jack</Option>
                                             <Option value="lucy">Lucy</Option>
@@ -161,13 +163,13 @@ const AddCoustmer = (props) => {
                             <Row>
                                 <Col span={10}>
                                     <FormItem>
-                                        <h5>REGISTERED DATE</h5>
+                                        <h5 className="form_modal_label">REGISTERED DATE</h5>
                                         <Input placeholder="Basic usage" />
                                     </FormItem>
                                 </Col>
                                 <Col span={10} offset={1}>
                                     <FormItem>
-                                        <h5>INVOICE TYPE</h5>
+                                        <h5 className="form_modal_label">INVOICE TYPE</h5>
                                         <Select defaultValue="lucy" style={{ width: '100%' }}>
                                             <Option value="jack">Jack</Option>
                                             <Option value="lucy">Lucy</Option>
@@ -182,7 +184,7 @@ const AddCoustmer = (props) => {
                             <Row>
                                 <Col span={10}>
                                     <FormItem>
-                                        <h5>CREDIT PERIOD IN DAYS</h5>
+                                        <h5 className="form_modal_label">CREDIT PERIOD IN DAYS</h5>
                                         <Select defaultValue="lucy" style={{ width: '100%' }}>
                                             <Option value="jack">Jack</Option>
                                             <Option value="lucy">Lucy</Option>
@@ -196,7 +198,7 @@ const AddCoustmer = (props) => {
                                 </Col>
                                 <Col span={10} offset={1}>
                                     <FormItem>
-                                        <h5>REFERED BY</h5>
+                                        <h5 className="form_modal_label">REFERED BY</h5>
                                         <Input placeholder="Basic usage" />
                                     </FormItem>
                                 </Col>
@@ -211,7 +213,7 @@ const AddCoustmer = (props) => {
                             <div>
                                 <Row>
                                     <Col span={24}>
-                                        <h1>Delivery Details</h1>
+                                        <h1><span>Delivery Details</span> <span> <Button type="default"> <span><PlusOutlined /></span> Add New</Button></span></h1>
                                     </Col>
 
                                 </Row>
@@ -222,23 +224,30 @@ const AddCoustmer = (props) => {
                                     </Col>
                                 </Row>
                                 <Row>
-                                    <Col span={21}>
-                                        <FormItem>
-                                            <h5>ADDRESS</h5>
-                                            <Input placeholder="Basic usage" />
-                                        </FormItem>
-                                    </Col>
-                                </Row>
-                                <Row>
                                     <Col span={10}>
                                         <FormItem>
-                                            <h5>PHONE NUMBER</h5>
+                                            <h5 className="form_modal_label">DELIVERY LOCATION</h5>
                                             <Input placeholder="Basic usage" />
                                         </FormItem>
                                     </Col>
                                     <Col span={10} offset={1}>
                                         <FormItem>
-                                            <h5>CONTACT PERSON</h5>
+                                            <h5 className="form_modal_label">SELECT ROUTE</h5>
+                                            <Select defaultValue="lucy" style={{ width: '100%' }}>
+                                                <Option value="jack">Jack</Option>
+                                                <Option value="lucy">Lucy</Option>
+                                                <Option value="disabled" disabled>
+                                                    Disabled
+                                        </Option>
+                                                <Option value="Yiminghe">yiminghe</Option>
+                                            </Select>
+                                        </FormItem>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col span={21}>
+                                        <FormItem>
+                                            <h5 className="form_modal_label">ADDRESS</h5>
                                             <Input placeholder="Basic usage" />
                                         </FormItem>
                                     </Col>
@@ -246,7 +255,21 @@ const AddCoustmer = (props) => {
                                 <Row>
                                     <Col span={10}>
                                         <FormItem>
-                                            <h5>PRODUCTS</h5>
+                                            <h5 className="form_modal_label">PHONE NUMBER</h5>
+                                            <Input placeholder="Basic usage" />
+                                        </FormItem>
+                                    </Col>
+                                    <Col span={10} offset={1}>
+                                        <FormItem>
+                                            <h5 className="form_modal_label">CONTACT PERSON</h5>
+                                            <Input placeholder="Basic usage" />
+                                        </FormItem>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col span={10}>
+                                        <FormItem>
+                                            <h5 className="form_modal_label">PRODUCTS</h5>
                                             <Select
                                                 mode="multiple"
                                                 allowClear
@@ -261,7 +284,7 @@ const AddCoustmer = (props) => {
                                     </Col>
                                     <Col span={10} offset={1}>
                                         <FormItem>
-                                            <h5>DELIVERY DAYS</h5>
+                                            <h5 className="form_modal_label">DELIVERY DAYS</h5>
                                             <Select
                                                 mode="multiple"
                                                 allowClear
@@ -278,7 +301,7 @@ const AddCoustmer = (props) => {
                                 <Row>
                                     <Col span={10}>
                                         <FormItem >
-                                            <h5>PRICE</h5>
+                                            <h5 className="form_modal_label">PRICE</h5>
                                             <Select defaultValue="lucy" style={{ width: '100%' }}>
                                                 <Option value="jack">Jack</Option>
                                                 <Option value="lucy">Lucy</Option>
@@ -291,7 +314,7 @@ const AddCoustmer = (props) => {
                                     </Col>
                                     <Col span={10} offset={1}>
                                         <FormItem>
-                                            <h5>DEPOSIT AMOUNT</h5>
+                                            <h5 className="form_modal_label">DEPOSIT AMOUNT</h5>
                                             <Select defaultValue="lucy" style={{ width: '100%' }}>
                                                 <Option value="jack">Jack</Option>
                                                 <Option value="lucy">Lucy</Option>
@@ -310,7 +333,7 @@ const AddCoustmer = (props) => {
                             <Row>
                                 <Col span={10}>
                                     <FormItem>
-                                        <h5>select id proof</h5>
+                                        <h5 className="form_modal_label">select id proof</h5>
                                         <Select defaultValue="lucy" style={{ width: '100%' }}>
                                             <Option value="jack">Jack</Option>
                                             <Option value="lucy">Lucy</Option>
@@ -346,11 +369,14 @@ const AddCoustmer = (props) => {
                             </Row>
                             <Row>
                                 <Col span={10}>
-
+                                    <FormItem>
+                                    <h5 className="form_modal_label">GST NUMBER</h5>
+                                    <Input placeholder="Basic usage"/><Button type="default">Verify</Button>
+                                    </FormItem>
                                 </Col>
                                 <Col span={10} offset={1}>
                                     <FormItem>
-                                        <h5>NAME</h5>
+                                        <h5 className="form_modal_label">NAME</h5>
                                         <Input placeholder="Basic usage" />
                                     </FormItem>
                                 </Col>
@@ -358,7 +384,7 @@ const AddCoustmer = (props) => {
                             <Row>
                                 <Col span={21}>
                                     <FormItem>
-                                        <h5>ADDRESS</h5>
+                                        <h5 className="form_modal_label">ADDRESS</h5>
                                         <Input placeholder="Basic usage" />
                                     </FormItem>
                                 </Col>
@@ -366,13 +392,13 @@ const AddCoustmer = (props) => {
                             <Row>
                                 <Col span={10}>
                                     <FormItem>
-                                        <h5>PHONE NUMBER</h5>
+                                        <h5 className="form_modal_label">PHONE NUMBER</h5>
                                         <Input placeholder="Basic usage" />
                                     </FormItem>
                                 </Col>
                                 <Col span={10} offset={1}>
                                     <FormItem>
-                                        <h5>EMAIL</h5>
+                                        <h5 className="form_modal_label">EMAIL</h5>
                                         <Input placeholder="Basic usage" />
                                     </FormItem>
                                 </Col>
@@ -380,7 +406,7 @@ const AddCoustmer = (props) => {
                             <Row>
                                 <Col span={10}>
                                     <FormItem>
-                                        <h5>DELIVERY DAYS</h5>
+                                        <h5 className="form_modal_label">DELIVERY DAYS</h5>
                                         <Select
                                             mode="multiple"
                                             allowClear
@@ -395,7 +421,7 @@ const AddCoustmer = (props) => {
                                 </Col>
                                 <Col span={10} offset={1}>
                                     <FormItem>
-                                        <h5>REGISTERED DATE</h5>
+                                        <h5 className="form_modal_label">REGISTERED DATE</h5>
                                         <DatePicker onChange={onChange} />
                                     </FormItem>
 
@@ -404,7 +430,7 @@ const AddCoustmer = (props) => {
                             <Row>
                                 <Col span={10}>
                                     <FormItem>
-                                        <h5>ADD PRODUCTS</h5>
+                                        <h5 className="form_modal_label">ADD PRODUCTS</h5>
                                         <Select defaultValue="lucy" style={{ width: '100%' }}>
                                             <Option value="jack">Jack</Option>
                                             <Option value="lucy">Lucy</Option>
@@ -417,7 +443,7 @@ const AddCoustmer = (props) => {
                                 </Col>
                                 <Col span={10} offset={1}>
                                     <FormItem>
-                                        <h5>DEPOSIT AMOUNT</h5>
+                                        <h5 className="form_modal_label">DEPOSIT AMOUNT</h5>
                                         <Select defaultValue="lucy" style={{ width: '100%' }}>
                                             <Option value="jack">Jack</Option>
                                             <Option value="lucy">Lucy</Option>
@@ -433,13 +459,13 @@ const AddCoustmer = (props) => {
                             <Row>
                                 <Col span={10}>
                                     <FormItem>
-                                        <h5>PHONE NUMBER</h5>
+                                        <h5 className="form_modal_label">PHONE NUMBER</h5>
                                         <Input placeholder="Basic usage" />
                                     </FormItem>
                                 </Col>
                                 <Col span={10} offset={1}>
                                     <FormItem>
-                                        <h5>EMAIL</h5>
+                                        <h5 className="form_modal_label">EMAIL</h5>
                                         <Input placeholder="Basic usage" />
                                     </FormItem>
                                 </Col>
@@ -447,7 +473,7 @@ const AddCoustmer = (props) => {
                             <Row>
                                 <Col span={10}>
                                     <FormItem>
-                                        <h5>INVOICE TYPE</h5>
+                                        <h5 className="form_modal_label">INVOICE TYPE</h5>
                                         <Select defaultValue="lucy" style={{ width: '100%' }}>
                                             <Option value="jack">Jack</Option>
                                             <Option value="lucy">Lucy</Option>
@@ -463,16 +489,26 @@ const AddCoustmer = (props) => {
                         </div>}
                 </Form>
             </div>
-            <div>
+            <div className="addcustomerfooter">
                 <Row>
                     <Col span={10}>
                         <Button type="default">CANCEL</Button>
                     </Col>
                     <Col span={10} offset={1}>
-                        <Button type="primary">CREATE ACCOUNT</Button>
+                        <Button type="primary" onClick={() => setVisible(true)}>CREATE ACCOUNT</Button>
                     </Col>
                 </Row>
 
+            </div>
+            <div>
+                <Modal
+                    title="Basic Modal"
+                    visible={visible}
+                    onOk={() => { setVisible(false) }}
+                    onCancel={() => { setVisible(false) }}
+                >
+                    <h1>sucessfully done</h1>
+                </Modal>
             </div>
         </div>
     )
