@@ -69,10 +69,10 @@ const Login = (props) => {
                         </div>
                         <div>
                             <Card className="login_card">
-                                <h4>LOG IN</h4>
+                                <h4>LOGIN</h4>
                                 <Form>
                                     <Form.Item>
-                                        <h5>Use ID or E-mail</h5>
+                                        <h5>User ID or E-mail</h5>
                                         <Input placeholder="UserName" value={username} onChange={(e) => onInputChange(e.target.value, "username")} />
                                         <p className="errors">{errors.username}</p>
                                     </Form.Item>
