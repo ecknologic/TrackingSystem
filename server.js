@@ -60,6 +60,10 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname + '/client/build/index.html'));
 });
 
+app.use(function (req, res, next) {
+  var err = new Error('Not Found');
+  res.json({ status: 404, message: "API Not Found" });
+});
 process.on('uncaughtException', function (err) {
   console.log(err);
 })
