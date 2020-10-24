@@ -181,9 +181,9 @@ const Delivery = () => {
       </div>,
       route: delivery.RouteName,
       driverName: delivery.driverName,
-      orderDetails: ["1LBoxes" + "-" + delivery['1LBoxes'] + ", ", "20LCans" + "-" + delivery['20LCans'] + ", ", "500MLBoxes" + "-" + delivery['500MLBoxes'] + ", "
-      // , "250MLBoxes" + "-" + delivery['250MLBoxes']
-    ],
+      orderDetails: ["1LBoxes" + "-" + delivery['1LBoxes'] + ", ", "20LCans" + "-" + delivery['20LCans'] + ", ", "500MLBoxes" + "-" + delivery['500MLBoxes']
+        //  + ", ", "250MLBoxes" + "-" + delivery['250MLBoxes']
+      ],
       status: <div>
         {delivery.isDelivered ? <p><span> <Badge color="#0edd4d" /></span> <span>Delivered</span></p>
           : <p><span><Badge color="#a10101" /></span> <span>Pending</span></p>}
@@ -243,7 +243,7 @@ const Delivery = () => {
             visible={visible}
             onOk={() => onOk()}
             onCancel={() => onCancel()}
-            footer={<div className="detailsmodalfooter">{!disabled && <Button type="primary" disabled={disabled} className="delivery_modalfoot_btn" onClick={() => createOrUpdateDc()}>{customerOrderId === '' ? "Confirm Stock Received" : "Update Stock Received"}</Button>}</div>}
+            footer={<div className="detailsmodalfooter">{!disabled && <Button type="primary" disabled={disabled} className="delivery_modalfoot_btn" onClick={() => createOrUpdateDc()}>{customerOrderId === '' ? "Save" : "Update"}</Button>}</div>}
           >
             <CreateDCModal disabled={disabled} routesInfo={routesInfo} errors={errors} routeId={routeId} dropDownChange={dropDownChange} inputChange={inputChange} driverId={driverId} driversList={driversList} inputData={inputData} handleChange={handleChange} />
           </Modal>
