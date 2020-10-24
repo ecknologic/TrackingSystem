@@ -370,6 +370,11 @@
                     "required": true,
                     "description": "YYYY-MM-DD",
                     "type": "string"
+                },
+                {
+                    "name": "warehouseId",
+                    "in": "query",
+                    "required": true
                 }
             ],
             "get": {
@@ -401,6 +406,13 @@
             "get": {
                 "tags": [
                     "Warehouse"
+                ],
+                "parameters": [
+                    {
+                        "name": "warehouseId",
+                        "in": "query",
+                        "required": true
+                    }
                 ],
                 "summary": " Getting Current Active stock Details",
                 "responses": {

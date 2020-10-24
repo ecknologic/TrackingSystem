@@ -196,9 +196,9 @@ const getLatLongDetails = (req) => {
   })
 }
 router.get("/getCustomerDetails/:creatorId", (req, res) => {
-  let customerDetailsQuery = "SELECT * from customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.createdBy=" + req.params.creatorId
-  db.query(customerDetailsQuery, (err, results) => {
-    if (err) res.send(err);
+  let customerDetailsQuery = "SELECT c.organizationName,c.natureOfBussiness,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.createdBy=?  GROUP BY c.organizationName,c.natureOfBussiness,c.address1"
+  db.query(customerDetailsQuery, [req.params.creatorId], (err, results) => {
+    if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
       res.json({ status: 200, statusMessage: "Success", data: results })
     }

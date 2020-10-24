@@ -1,1 +1,1 @@
- export const baseUrl='http://15.207.25.20:8888'
+ export const baseUrl='http://localhost:8888'

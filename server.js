@@ -28,9 +28,7 @@ app.get('/swagger.json', function (req, res) {
   res.send(swaggerSpec);
 });
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname + '/client/build/index.html'));
-});
+
 
 //Ware house rest services
 app.use("/warehouse", require('./routes/warehouse.js'));
@@ -58,8 +56,14 @@ app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname + '/client/build/index.html'));
+});
 
-
+app.use(function (req, res, next) {
+  var err = new Error('Not Found');
+  res.json({ status: 404, message: "API Not Found" });
+});
 process.on('uncaughtException', function (err) {
   console.log(err);
 })

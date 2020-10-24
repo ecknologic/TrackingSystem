@@ -2,23 +2,38 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios';
 import { Row, Col, Button, Divider, Modal, Form, Checkbox, Input } from 'antd'
 import { baseUrl } from '../config'
+import { getAPI } from '../utils/apis';
 
 const StockDetails = () => {
   const [visible1, setVisible1] = useState(false);
-  const [stockDetails1, setStockDetails1] = useState([])
-  //   useEffect(() => {
-  //     // axios.get('http://localhost:9090/api/projectsubtype/all')
-
-  // }, [])
-
+  const [newStocks, setNewStocks] = useState([])
+  const [outForDelivery, setoutForDelivery] = useState([])
+  const [currentStocks, setCurrentStocks] = useState({})
+  const warehouseId = sessionStorage.getItem("warehouseId") || 1
+  const date = '2020-10-20'
+  useEffect(() => {
+    getActiveStocks();
+    getOutForDelivery()
+  }, [])
+  const getActiveStocks = () => {
+    let url = 'warehouse/currentActiveStockDetails?warehouseId=' + warehouseId
+    getAPI(url).then(response => {
+      if (response.length)
+        setCurrentStocks(response[0])
+    })
+  }
+  const getOutForDelivery = () => {
+    let url = `warehouse/outForDeliveryDetails/${date}?warehouseId=` + warehouseId
+    getAPI(url).then(response => {
+      if (response.length)
+        setoutForDelivery(response[0])
+    })
+  }
   const confirmedBtn = (visible1) => {
     setVisible1({ visible1: true });
-    axios.get(baseUrl + '/warehouse/getNewStockDetails/1')
-      .then(response => {
-        console.log("response", response.data)
-        setStockDetails1(response.data)
-
-      })
+    getAPI('warehouse/getNewStockDetails/' + warehouseId).then(res => {
+      setNewStocks()
+    })
       .catch(error => {
         console.log(error)
       });
@@ -31,23 +46,28 @@ const StockDetails = () => {
           <Col span={22}>
             <Row className="StockDetailsStatusRows">
               <Col span={4}>
-                <h4 className="stockDetailsh4">Curent Active Stock</h4>
+                <h4 className="stockDetailsh4">Current Active Stock</h4>
               </Col>
               <Divider type="vertical" />
               <Col span={4} className="divider_left">
                 <p className="stockDetailsp">Total Cans (20 ltr)</p>
-                <h3 className="StockDetailsCounth3">37234</h3>
+                <h3 className="StockDetailsCounth3">{currentStocks.total20LCans}</h3>
               </Col>
               <Divider type="vertical" />
               <Col span={4} className="divider_left">
                 <p className="stockDetailsp">Total 1 Ltr Boxes (1x12) </p>
-                <h3 className="StockDetailsCounth3">1669</h3>
+                <h3 className="StockDetailsCounth3">{currentStocks.total1LBoxes}</h3>
               </Col>
               <Divider type="vertical" />
               <Col span={4} className="divider_left">
                 <p className="stockDetailsp">Total 500 ml Boxes (1x12) </p>
-                <h3 className="StockDetailsCounth3">29680</h3>
+                <h3 className="StockDetailsCounth3">{currentStocks.total500MLBoxes}</h3>
               </Col>
+              {/* <Divider type="vertical" />
+              <Col span={4} className="divider_left">
+                <p className="stockDetailsp">Total 250 ml Boxes (1x12) </p>
+                <h3 className="StockDetailsCounth3">{currentStocks.total250MLBoxes}</h3>
+              </Col> */}
               <Divider type="vertical" />
               <Col span={6} className="divider_left">
                 <Button type="primary" ghost className="confirmbtn getreportsbtn" onClick={() => { confirmedBtn(visible1) }}>Confirmed</Button>
@@ -60,7 +80,7 @@ const StockDetails = () => {
               </Col>
               <Divider type="vertical" />
               <Col span={4} className="divider_left">
-                <p>Damaged  - 20</p>
+                <p>--</p>
               </Col>
               <Divider type="vertical" />
               <Col span={4} className="divider_left">
@@ -68,7 +88,7 @@ const StockDetails = () => {
               </Col>
               <Divider type="vertical" />
               <Col span={4} className="divider_left">
-                <p>Damaged  - 09</p>
+                <p>--</p>
               </Col>
             </Row>
           </Col>
@@ -85,18 +105,23 @@ const StockDetails = () => {
               <Divider type="vertical" />
               <Col span={4} className="divider_left">
                 <p className="stockDetailsp">Total Cans (20 ltr)</p>
-                <h3 className="StockDetailsCounth3">36254</h3>
+                <h3 className="StockDetailsCounth3">{outForDelivery.total20LCans}</h3>
               </Col>
               <Divider type="vertical" />
               <Col span={4} className="divider_left">
                 <p className="stockDetailsp">Total 1 Ltr Boxes (1x12) </p>
-                <h3 className="StockDetailsCounth3">1400</h3>
+                <h3 className="StockDetailsCounth3">{outForDelivery.total1LBoxes}</h3>
               </Col>
               <Divider type="vertical" />
               <Col span={4} className="divider_left">
                 <p className="stockDetailsp">Total 500 ml Boxes (1x12) </p>
-                <h3 className="StockDetailsCounth3">28,389</h3>
+                <h3 className="StockDetailsCounth3">{outForDelivery.total500MLBoxes}</h3>
               </Col>
+              {/* <Divider type="vertical" />
+              <Col span={4} className="divider_left">
+                <p className="stockDetailsp">Total 250 ml Boxes (1x12) </p>
+                <h3 className="StockDetailsCounth3">{outForDelivery.total250MLBoxes}</h3>
+              </Col> */}
               <Divider type="vertical" />
               <Col span={6} className="divider_left">
                 <Button type="primary" ghost className="getreportsbtn">21 - D.C Details</Button>
@@ -223,7 +248,7 @@ const StockDetails = () => {
           onCancel={() => { setVisible1(false) }}
           footer={<div className="detailsmodalfooter"><Button type="primary" className="delivery_modalfoot_btn">Confirm Stock Received</Button></div>}
         >
-          {stockDetails1.length ? stockDetails1.map((stockDetails, index) => (<div>
+          {newStocks.length ? newStocks.map((stockDetails, index) => (<div>
             <div>
               <Row className="bbtm-1">
                 <Col span={24}>
@@ -278,19 +303,19 @@ const StockDetails = () => {
                       <Col span={10} className="padding-right_comp">
                         <Form.Item>
                           <h5 className="form_modal_label">20 Ltrs</h5>
-                          <Input placeholder="1500" value={stockDetails.damaged20LCans}/>
+                          <Input placeholder="1500" value={stockDetails.damaged20LCans} />
                         </Form.Item>
                       </Col>
                       <Col span={6} className="padding-right_comp">
                         <Form.Item>
                           <h5 className="form_modal_label">1 Ltrs (Box-1x12)</h5>
-                          <Input placeholder="59" value={stockDetails.damaged1LBoxes}/>
+                          <Input placeholder="59" value={stockDetails.damaged1LBoxes} />
                         </Form.Item>
                       </Col>
                       <Col span={6} className="padding-right_comp">
                         <Form.Item>
                           <h5 className="form_modal_label">500 ml (Box-1x12)</h5>
-                          <Input placeholder="238" value={stockDetails.damaged500MLBoxes}/>
+                          <Input placeholder="238" value={stockDetails.damaged500MLBoxes} />
                         </Form.Item>
                       </Col>
                     </Row>
