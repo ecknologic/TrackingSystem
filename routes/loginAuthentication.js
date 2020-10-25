@@ -17,11 +17,11 @@ router.post('/login', (req, res) => {
     let password = req.body.password;
 
 
-    let loginQuery = "SELECT * FROM usermaster u INNER JOIN rolemaster r ON u.roleId=r.RoleId WHERE u.userName=?";
-    let result = db.query(loginQuery, [username], (err, results) => {
+    let loginQuery = "SELECT * FROM usermaster u INNER JOIN rolemaster r ON u.roleId=r.RoleId WHERE u.emailid=? OR u.loginId=?";
+    let result = db.query(loginQuery, [username, username], (err, results) => {
         //var  passwordIsValid= bcrypt.compareSync(password,encryptedPassword);
 
-        if (err) res.json({ status: 404, message: err });
+        if (err) res.json({ status: 404, message: err.sqlMessage });
         else if (results.length == 0)
             res.json({ status: 404, message: "User Not Available" });
         else {

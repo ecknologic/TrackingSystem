@@ -56,39 +56,45 @@ router.get('/getNewStockDetails/:id', (req, res) => {
 
 
 router.post('/createDC', (req, res) => {
-
-  let dcCreateQuery = "insert into CustomerOrderDetails (customerName,phoneNumber,address,routeId,driverId,20LCans,1LBoxes,500MLBoxes,warehouseId) values(?,?,?,?,?,?,?,?,?)";
-
-  console.log(req.body);
-
+  let dcCreateQuery = "insert into customerorderdetails (customerName,phoneNumber,address,routeId,driverId,20LCans,1LBoxes,500MLBoxes,250MLBoxes,warehouseId) values(?,?,?,?,?,?,?,?,?,?)";
   let dcDetails = req.body;
-
-  let insertQueryValues = [dcDetails.customerName, dcDetails.phoneNumber, dcDetails.address, dcDetails.routeId, dcDetails.driverId, dcDetails.Cans20L, dcDetails.Boxes1L, dcDetails.Boxes500ML, dcDetails.warehouseId]
+  let insertQueryValues = [dcDetails.customerName, dcDetails.phoneNumber, dcDetails.address, dcDetails.routeId, dcDetails.driverId, dcDetails.Cans20L, dcDetails.Boxes1L, dcDetails.Boxes500ML, dcDetails.Boxes250ML, dcDetails.warehouseId]
   db.query(dcCreateQuery, insertQueryValues, (err, results) => {
-
-    console.log(insertQueryValues);
-
-    if (err) res.send(err);
+    if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
       let inserted_id = results.insertId;
-
-      let updateQuery = "update CustomerOrderDetails set dcNo=? where customerOrderId=?"
+      let updateQuery = "update customerorderdetails set dcNo=? where customerOrderId=?"
       let updateQueryValues = ["DC-" + inserted_id, inserted_id];
-
       console.log(updateQueryValues);
       db.query(updateQuery, updateQueryValues, (err1, results1) => {
-
-        if (err1) throw err1;
+        if (err1) res.json({ status: 500, message: err.sqlMessage });
         else {
-
-          res.send("record inserted");
+          let deliveryDetailsQuery = "select c.*,c.20LCans AS twentyLCans,c.1LBoxes AS OneLBoxes,c.500MLBoxes AS fiveHLBoxes,c.250MLBoxes AS twofiftyLBoxes,r.*,d.* FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid INNER JOIN driverdetails d  ON c.driverId=d.driverid  WHERE customerOrderId =?";
+          db.query(deliveryDetailsQuery, [inserted_id], (deliveryErr, deliveryDetails) => {
+            if (deliveryErr) res.json({ status: 500, message: deliveryErr.sqlMessage });
+            else res.json({ status: 200, message: "DC created successfully", data: deliveryDetails })
+          })
         }
-
       });
     }
   });
-
 });
+
+router.put('/updateDC', (req, res) => {
+  let dcCreateQuery = "UPDATE customerorderdetails SET customerName=?,phoneNumber=?,address=?,routeId=?,driverId=?,20LCans=?,1LBoxes=?,500MLBoxes=?,250MLBoxes=?,warehouseId=? WHERE customerOrderId=?";
+  let dcDetails = req.body;
+  let updateQueryValues = [dcDetails.customerName, dcDetails.phoneNumber, dcDetails.address, dcDetails.routeId, dcDetails.driverId, dcDetails.Cans20L, dcDetails.Boxes1L, dcDetails.Boxes500ML, dcDetails.Boxes250ML, dcDetails.warehouseId, dcDetails.customerOrderId]
+  db.query(dcCreateQuery, updateQueryValues, (err, results) => {
+    if (err) res.json({ status: 500, message: err.sqlMessage });
+    else {
+      let deliveryDetailsQuery = "select c.*,c.20LCans AS twentyLCans,c.1LBoxes AS OneLBoxes,c.500MLBoxes AS fiveHLBoxes,c.250MLBoxes AS twofiftyLBoxes,r.*,d.* FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid INNER JOIN driverdetails d  ON c.driverId=d.driverid  WHERE customerOrderId =?";
+      db.query(deliveryDetailsQuery, [dcDetails.customerOrderId], (deliveryErr, deliveryDetails) => {
+        if (deliveryErr) res.json({ status: 500, message: deliveryErr.sqlMessage });
+        else res.json({ status: 200, message: "DC Updated successfully", data: deliveryDetails })
+      })
+    }
+  });
+})
 
 router.post('/confirmStockRecieved', (req, res) => {
 
@@ -121,20 +127,16 @@ router.post('/confirmStockRecieved', (req, res) => {
 
           res.send("record inserted");
         }
-
       });
-
     }
-
   });
-
 });
 
 
 router.get('/deliveryDetails/:date', (req, res) => {
   var date = req.params.date;
   console.log(date);
-  let deliveryDetailsQuery = "select c.*,c.20LCans AS twentyLCans,c.1LBoxes AS OneLBoxes,c.500MLBoxes AS fiveHLBoxes,r.*,d.* FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid INNER JOIN driverdetails d  ON c.driverId=d.driverid  WHERE DATE(`deliveryDate`) ='" + date + "'";
+  let deliveryDetailsQuery = "select c.*,c.20LCans AS twentyLCans,c.1LBoxes AS OneLBoxes,c.500MLBoxes AS fiveHLBoxes,c.250MLBoxes AS twofiftyLBoxes,r.*,d.* FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid INNER JOIN driverdetails d  ON c.driverId=d.driverid  WHERE DATE(`deliveryDate`) ='" + date + "'";
 
   let result = db.query(deliveryDetailsQuery, (err, results) => {
 
@@ -146,9 +148,9 @@ router.get('/deliveryDetails/:date', (req, res) => {
 
 router.get('/currentActiveStockDetails', (req, res) => {
 
-  let currentActiveStockQuery = "SELECT SUM(c.20LCans) AS total20LCans,SUM(c.1LBoxes) AS total1LBoxes,SUM(c.500MLBoxes) total500MLBoxes FROM customerorderdetails c WHERE isDelivered=0";
-
-  let result = db.query(currentActiveStockQuery, (err, results) => {
+  let currentActiveStockQuery = "SELECT SUM(c.20LCans) AS total20LCans,SUM(c.1LBoxes) AS total1LBoxes,SUM(c.500MLBoxes) total500MLBoxes,SUM(c.250MLBoxes) total250MLBoxes FROM customerorderdetails c WHERE isDelivered=0 AND warehouseId=?";
+  let { warehouseId } = req.query;
+  let result = db.query(currentActiveStockQuery, [warehouseId], (err, results) => {
 
     if (err) res.send(err);
 
@@ -158,11 +160,11 @@ router.get('/currentActiveStockDetails', (req, res) => {
 
 router.get('/outForDeliveryDetails/:date', (req, res) => {
 
-  var date = req.params.date;
+  var date = req.params.date, { warehouseId } = req.query;
 
-  let currentActiveStockQuery = "SELECT SUM(c.20LCans) AS total20LCans,SUM(c.1LBoxes) AS total1LBoxes,SUM(c.500MLBoxes) total500MLBoxes FROM customerorderdetails c WHERE isDelivered=1 and DATE(`deliveryDate`)='" + date + "'";
+  let currentActiveStockQuery = "SELECT SUM(c.20LCans) AS total20LCans,SUM(c.1LBoxes) AS total1LBoxes,SUM(c.500MLBoxes) total500MLBoxes,SUM(c.250MLBoxes) total250MLBoxes FROM customerorderdetails c WHERE isDelivered=1 and warehouseId=? and DATE(`deliveryDate`)='" + date + "'";
 
-  let result = db.query(currentActiveStockQuery, (err, results) => {
+  let result = db.query(currentActiveStockQuery, [warehouseId], (err, results) => {
 
     if (err) res.send(err);
 
