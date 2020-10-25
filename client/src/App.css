@@ -37,6 +37,23 @@ span.anticon.anticon-more {
   display: inline-block;
   float: right;
 }
+.uploadImage,
+.avatar-uploader-trigger,
+.uploadImage img {
+  width: 100px;
+  padding-top: 3em;
+  height: 100px;
+}
+.idProofImg {
+  width: 100px;
+  height: 100px;
+}
+.image-uploader {
+  display: inline-block;
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+}
 /* .site-layout-background {
   background:#fff;
 } */

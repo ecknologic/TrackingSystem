@@ -5,8 +5,8 @@ const CustomSelectComponent = (props) => {
     useEffect(() => {
 
     }, [props])
-    const { label, onChange, options, error, showSearch, value, colSpan, mode, className, placeholder, disabled } = props
-    return <Col span={colSpan}>
+    const { label, onChange, options, error, showSearch, value, colSpan, mode, className, placeholder, disabled, offset } = props
+    return <Col span={colSpan} offset={offset || 0}>
         <Form.Item>
             <h5 className="form_modal_label">{label || ''}</h5>
             <Select style={{ width: '200' }}
