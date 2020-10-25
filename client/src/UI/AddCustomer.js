@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Row, Col, Button, Select, Form, Input, Checkbox, DatePicker, Collapse, message, Upload, Modal } from 'antd';
+import { Row, Col, Button, Select, Form, Input, Checkbox, DatePicker, Collapse, message, Modal } from 'antd';
 import '../css/styles.css'
 import LayoutPage from '../UI/Layout';
 import CustomSelectComponent from '../components/selectComponent'
-import { UploadOutlined, PlusOutlined } from '@ant-design/icons';
-import { getAPI } from "../utils/apis";
+import { PlusOutlined } from '@ant-design/icons';
+import { createOrUpdateAPI, getAPI } from "../utils/apis";
 import { getBase64 } from '../utils/Functions'
 import UploadImage from '../components/UploadImage';
 import InputField from '../components/inputField';
@@ -19,9 +19,7 @@ const AddCustomer = (props) => {
     const [otherCustomer, setOtherCustomer] = useState(false)
     const [errors, setErrors] = useState({})
     const [disabled, setDisabled] = useState(false)
-    const [inputData, setInputData] = useState({
-    })
-    const [routeId, setRouteId] = useState('')
+    const [inputData, setInputData] = useState({})
     const [routesInfo, setRoutesInfo] = useState([]);
     // const [deliveryData, setDeliveryData] = useState([]);
     const [frontImage, setFrontImage] = useState('')
@@ -40,6 +38,7 @@ const AddCustomer = (props) => {
         "FRI": 0,
         "SAT": 0
     })
+    const [collapseActiveKey, setCollapseActiveKey] = useState('0')
     const children = [];
     for (let i = 10; i < 36; i++) {
         children.push(<Option key={i.toString(36) + i}>{i.toString(36) + i}</Option>);
@@ -47,6 +46,9 @@ const AddCustomer = (props) => {
     useEffect(() => {
         getRoutes();
     }, []);
+    const callback = (key) => {
+        setCollapseActiveKey(key)
+    }
     const getRoutes = () => {
         getAPI('/warehouse/getroutes')
             .then(response => {
@@ -101,11 +103,14 @@ const AddCustomer = (props) => {
         let arr = deliveryDetails;
         arr[index] = deliveryInputData
         arr[index].deliveryDays = deliveryDays
+        localStorage.setItem('deliveryDetails', JSON.stringify(deliveryDetails))
+        message.success('Delivery details Saved successfully')
         setDeliveryDetails(arr)
     }
     const saveOrUpdate = () => {
         let obj = {
             customertype: corpCustomer ? "Corporate" : 'Others',
+            organizationName: inputData.organizationName,
             idProofs: [frontImage, backImage],
             idProofType: inputData.idProofType,
             gstNo: inputData.gstNo,
@@ -117,13 +122,23 @@ const AddCustomer = (props) => {
             invoicetype: inputData.invoicetype,
             referredBy: inputData.referredBy,
             natureOfBussiness: inputData.natureOfBussiness,
+            isActive: 0,
             departmentId: WAREHOUSEID,
             referredBy: USERNAME,
             registeredDate: TODAYDATE,
             createdBy: USERID,
-            deliveryDetails
+            deliveryDetails,
+            deliveryDaysId: 1,
+            depositamount: 10,
+            shippingAddress: '',
+            shippingContactPerson: '',
+            shippingContactNo: 222
         }
         console.log('Obj', obj)
+        createOrUpdateAPI('customer/createCustomer', obj, 'POST').then(res => {
+            console.log("res", res)
+            message.success(res.message)
+        })
     }
     const fileList = [];
     const idProofsList = idProofs.length && idProofs.map(item => <Option key={item} value={item}>{item}</Option>)
@@ -192,7 +207,12 @@ const AddCustomer = (props) => {
                                     </Col>
                                 </Row>
                                 <Row>
-                                    <InputField colSpan={10} error={errors.gstNo} label="GST NUMBER" disabled={disabled} placeholder="Add GST No" name="gstNo" value={inputData.gstNo} onChange={inputChange} /><Button type="default">Verify</Button>
+                                    <Col span={10}>
+                                        <Row>
+                                            <InputField colSpan={21} error={errors.gstNo} label="GST NUMBER" disabled={disabled} placeholder="Add GST No" name="gstNo" value={inputData.gstNo} onChange={inputChange} />
+                                            <Col span={2}><Button type="default" style={{ marginTop: "2em" }}>Verify</Button></Col>
+                                        </Row>
+                                    </Col>
                                     <InputField offset={1} colSpan={10} error={errors.organizationName} label="ORGANIZATION NAME" disabled={disabled} placeholder="Add organization Name" name="organizationName" value={inputData.organizationName} onChange={inputChange} />
                                 </Row>
                                 <Row>
@@ -216,7 +236,7 @@ const AddCustomer = (props) => {
                                     />
                                 </Row>
                                 <Row>
-                                    <InputField colSpan={10} label='REGISTERED DATE' error={errors.registeredDate} disabled={disabled} placeholder="YYYY-MM-DD" name="registeredDate" value={inputData.organizationName} onChange={inputChange} />
+                                    <InputField colSpan={10} label='REGISTERED DATE' error={errors.registeredDate} disabled={disabled} placeholder="YYYY-MM-DD" name="registeredDate" value={inputData.registeredDate} onChange={inputChange} />
                                     <CustomSelectComponent
                                         onChange={(e) => dropDownChange(e, 'invoicetype', 'customerData')}
                                         label="Select Invoice Type"
@@ -248,8 +268,11 @@ const AddCustomer = (props) => {
 
                                     </Row>
                                     {deliveryDetails.length ? deliveryDetails.map((delivery, i) =>
-                                        <Collapse defaultActiveKey={['0']} accordion key={i}>
-                                            <Panel header={"Delivery Address"} key={String(i)}>
+                                        <Collapse onChange={callback} activeKey={[collapseActiveKey]} key={i} accordion>
+                                            <Panel header={"Delivery details"} key={String(i)}>
+                                                <Row>
+                                                    <InputField colSpan={10} label='GST NO' disabled={disabled} placeholder="GST No" name="gstNo" value={delivery.gstNo} onChange={deliveryInputChange} />
+                                                </Row>
                                                 <Row>
                                                     <InputField colSpan={10} label='DELIVERY LOCATION' disabled={disabled} placeholder="Add Delivery Location" name="address" value={delivery.address} onChange={deliveryInputChange} />
                                                     <CustomSelectComponent
@@ -271,53 +294,28 @@ const AddCustomer = (props) => {
                                                     <InputField colSpan={10} offset={1} label='CONTACT PERSON' disabled={disabled} placeholder="Contact Person Name" name="contactPerson" value={delivery.contactPerson} onChange={deliveryInputChange} />
                                                 </Row>
                                                 <Row>
-                                                    <CustomSelectComponent
-                                                        onChange={(e) => dropDownChange(e, 'productIds')}
-                                                        label="PRODUCTS"
-                                                        mode="multiple"
-                                                        value={delivery.productIds}
-                                                        colSpan={10}
-                                                        options={children}
-                                                        error={errors.products}
-                                                        disabled={disabled}
-                                                    />
+                                                    <InputField colSpan={2} label='20LTRS' disabled={disabled} placeholder="Add" name="quantity20L" value={delivery.quantity20L} onChange={deliveryInputChange} />
+                                                    <InputField colSpan={2} className='priceInput' label='PRICE' disabled={disabled} placeholder="Rs" name="price20L" value={delivery.price20ML} onChange={deliveryInputChange} />
+                                                    <InputField colSpan={2} offset={1} label='1LTR' disabled={disabled} placeholder="Add" name="quantity1L" value={delivery.quantity1L} onChange={deliveryInputChange} />
+                                                    <InputField colSpan={2} className='priceInput' label='PRICE' disabled={disabled} placeholder="Rs" name="price1L" value={delivery.price1ML} onChange={deliveryInputChange} />
+                                                    <InputField colSpan={2} offset={1} label='500ML' disabled={disabled} placeholder="Add" name="quantity500ML" value={delivery.quantity500ML} onChange={deliveryInputChange} />
+                                                    <InputField colSpan={2} className='priceInput' label='PRICE' disabled={disabled} placeholder="Rs" name="price500ML" value={delivery.price500ML} onChange={deliveryInputChange} />
+                                                    <InputField colSpan={2} offset={1} label='250ML' disabled={disabled} placeholder="Add" name="quantity250ML" value={delivery.quantity250ML} onChange={deliveryInputChange} />
+                                                    <InputField colSpan={2} className='priceInput' label='PRICE' disabled={disabled} placeholder="Rs" name="price250ML" value={delivery.price250ML} onChange={deliveryInputChange} />
+                                                </Row>
+                                                <Row>
                                                     <CustomSelectComponent
                                                         onChange={(e) => dropDownChange(e, 'deliveryDays')}
                                                         label="DELIVERY DAYS"
                                                         mode="multiple"
-                                                        offset={1}
                                                         value={delivery.deliveryDays}
                                                         colSpan={10}
                                                         options={deliveryDaysList}
                                                         error={errors.deliveryDays}
                                                         disabled={disabled}
                                                     />
-                                                </Row>
-                                                <Row>
-                                                    <InputField colSpan={10} label='PRICE' disabled={disabled} placeholder="Price" name="price" value={delivery.price} onChange={deliveryInputChange} />
                                                     <InputField colSpan={10} offset={1} label='DEPOSIT AMOUNT' disabled={disabled} placeholder="Amount" name="depositAmount" value={delivery.depositAmount} onChange={deliveryInputChange} />
 
-                                                    {/* <CustomSelectComponent
-                                                        // onChange={(e) => dropDownChange(e, 'routeId')}
-                                                        label="PRICE"
-                                                        mode="multiple"
-                                                        value={delivery.price}
-                                                        colSpan={10}
-                                                        options={children}
-                                                        error={errors.products}
-                                                        disabled={disabled}
-                                                    />
-                                                    <CustomSelectComponent
-                                                        onChange={(e) => dropDownChange(e, 'depositAmount')}
-                                                        label="DEPOSIT AMOUNT"
-                                                        mode="multiple"
-                                                        value={delivery.depositAmount}
-                                                        colSpan={10}
-                                                        options={children}
-                                                        error={errors.products}
-                                                        disabled={disabled}
-                                                        offset={1}
-                                                    /> */}
                                                 </Row>
                                                 <Button onClick={() => saveDeliveryDetails(i)}>Save Details</Button>
                                             </Panel>
@@ -328,35 +326,31 @@ const AddCustomer = (props) => {
 
                             <div>
                                 <Row>
-                                    <Col span={10}>
-                                        <FormItem>
-                                            <h5 className="form_modal_label">select id proof</h5>
-                                            <Select defaultValue="lucy" style={{ width: '100%' }}>
-                                                <Option value="jack">Jack</Option>
-                                                <Option value="lucy">Lucy</Option>
-                                                <Option value="disabled" disabled>
-                                                    Disabled
-                                        </Option>
-                                                <Option value="Yiminghe">yiminghe</Option>
-                                            </Select>
-                                        </FormItem>
-                                    </Col>
+                                    <CustomSelectComponent
+                                        onChange={(e) => dropDownChange(e, 'idProofType', 'customerData')}
+                                        label="Select Id Proof"
+                                        value={inputData.idProofType}
+                                        colSpan={10}
+                                        options={idProofsList}
+                                        error={errors.idProofType}
+                                    // disabled={disabled}
+                                    />
                                 </Row>
                                 <Row>
-                                    <Col span={10}>
-                                        <FormItem>
-                                            <Upload
-                                                action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                                                listType="picture"
-                                                defaultFileList={[...fileList]}
-                                            >
-                                                <Button icon={<UploadOutlined />}>Upload</Button>
-                                            </Upload>
-                                        </FormItem>
-                                    </Col>
-                                    <Col span={10}>
-
-                                    </Col>
+                                    <UploadImage
+                                        onUpload={customImageUpload}
+                                        error={errors.frontImage}
+                                        imageValue={frontImage}
+                                        name='frontImage'
+                                        colSpan={3}
+                                    />
+                                    <UploadImage
+                                        onUpload={customImageUpload}
+                                        error={errors.backImage}
+                                        imageValue={backImage}
+                                        name='backImage'
+                                        colSpan={3}
+                                    />
                                 </Row>
                                 <Row>
                                     <Col span={24}>
@@ -365,40 +359,15 @@ const AddCustomer = (props) => {
                                     </Col>
                                 </Row>
                                 <Row>
-                                    <Col span={10}>
-                                        <FormItem>
-                                            <h5 className="form_modal_label">GST NUMBER</h5>
-                                            <Input disabled={disabled} placeholder="Add organization Name" name="organizationName" value={inputData.organizationName} onChange={inputChange} /><Button type="default">Verify</Button>
-                                        </FormItem>
-                                    </Col>
-                                    <Col span={10} offset={1}>
-                                        <FormItem>
-                                            <h5 className="form_modal_label">NAME</h5>
-                                            <Input disabled={disabled} placeholder="Add organization Name" name="organizationName" value={inputData.organizationName} onChange={inputChange} />
-                                        </FormItem>
-                                    </Col>
+                                    <InputField colSpan={10} error={errors.gstNo} label="GST NUMBER" disabled={disabled} placeholder="Add GST No" name="gstNo" value={inputData.gstNo} onChange={inputChange} /><Button type="default">Verify</Button>
+                                    <InputField offset={1} colSpan={10} error={errors.organizationName} label="NAME" disabled={disabled} placeholder="Add organization Name" name="organizationName" value={inputData.organizationName} onChange={inputChange} />
                                 </Row>
                                 <Row>
-                                    <Col span={21}>
-                                        <FormItem>
-                                            <h5 className="form_modal_label">ADDRESS</h5>
-                                            <Input disabled={disabled} placeholder="Add organization Name" name="organizationName" value={inputData.organizationName} onChange={inputChange} />
-                                        </FormItem>
-                                    </Col>
+                                    <InputField colSpan={21} label="ADDRESS" disabled={disabled} error={errors.address} placeholder="Add Address" name="address" value={inputData.address} onChange={inputChange} />
                                 </Row>
                                 <Row>
-                                    <Col span={10}>
-                                        <FormItem>
-                                            <h5 className="form_modal_label">PHONE NUMBER</h5>
-                                            <Input disabled={disabled} placeholder="Add organization Name" name="organizationName" value={inputData.organizationName} onChange={inputChange} />
-                                        </FormItem>
-                                    </Col>
-                                    <Col span={10} offset={1}>
-                                        <FormItem>
-                                            <h5 className="form_modal_label">EMAIL</h5>
-                                            <Input disabled={disabled} placeholder="Add organization Name" name="organizationName" value={inputData.organizationName} onChange={inputChange} />
-                                        </FormItem>
-                                    </Col>
+                                    <InputField colSpan={10} label="PHONE NUMBER" disabled={disabled} error={errors.phoneNumber} placeholder="Add Phone Number" name="phoneNumber" value={inputData.phoneNumber} onChange={inputChange} />
+                                    <InputField colSpan={10} offset={1} label="EMAIL" disabled={disabled} error={errors.email} placeholder="Add Email" name="email" value={inputData.email} onChange={inputChange} />
                                 </Row>
                                 <Row>
                                     <Col span={10}>
@@ -438,6 +407,7 @@ const AddCustomer = (props) => {
                                             </Select>
                                         </FormItem>
                                     </Col>
+
                                     <Col span={10} offset={1}>
                                         <FormItem>
                                             <h5 className="form_modal_label">DEPOSIT AMOUNT</h5>

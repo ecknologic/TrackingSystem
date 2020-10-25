@@ -48,6 +48,9 @@ span.anticon.anticon-more {
   width: 100px;
   height: 100px;
 }
+.priceInput{
+  margin-left: 10px;
+}
 .image-uploader {
   display: inline-block;
   border: 1px dashed #d9d9d9;
