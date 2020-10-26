@@ -130,7 +130,6 @@ router.post('/addDispatchDetails', (req, res) => {
     });
 })
 router.get('/getProductionDetails', (req, res) => {
-    console.log("GEGEGEG")
     let query = "select * from production";
     let result = db.query(query, (err, results) => {
 
@@ -141,6 +140,49 @@ router.get('/getProductionDetails', (req, res) => {
 
     });
 });
+
+router.get('/getNatureOfBussiness', (req, res) => {
+ 
+    let query = "SELECT SUBSTRING(COLUMN_TYPE,5) AS natureOfBussiness FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'customerorderdetails' AND COLUMN_NAME = 'isDelivered'";
+    let result = db.query(query, (err, results) => {
+  
+      if (err) res.send(err);
+      res.send(JSON.stringify(results));
+  
+  
+    });
+  });
+
+router.get('/getVehicleDetails', (req, res) => {
+    let query = "select * from vehicleDetails";
+    let result = db.query(query, (err, results) => {
+
+        if (err) res.send(err);
+
+        res.send(JSON.stringify(results));
+
+
+    });
+});
+
+router.post('/addVehicleDetails', (req, res) => {
+    let CreateQuery = "insert into VehicleDetails (vehicleNo,vehicleType) values(?,?)";
+
+    console.log(req.body);
+
+    let input = req.body;
+
+    let insertQueryValues = [input.vehicleNo, input.vehicleType]
+    db.query(CreateQuery, insertQueryValues, (err, results) => {
+
+        console.log(insertQueryValues);
+
+        if (err) res.send(err);
+        else
+            res.send("Record Inserted");
+
+    });
+})
 router.post('/addProductionDetails', (req, res) => {
     let CreateQuery = "insert into production (productionDate,batchNo,phLevel,TDS,ozonelevel,qtyproduced,itemproduced) values(?,?,?,?,?,?,?)";
 

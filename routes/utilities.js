@@ -15,7 +15,7 @@ router.use(function timeLog(req, res, next) {
 cron.schedule('0 0 2 * * *', function(){
     var day=days[new Date().getDay()];
 
-    let customerDeliveryDaysQuery="SELECT c.customerId,d.shortName FROM customerdetails c INNER JOIN  customerdeliverydays cd ON cd.deliveryDaysId=c.deliveryDaysId INNER JOIN departmentmaster d ON c.departmentId=d.departmentId WHERE "+day+"=1 AND c.isActive=1";
+    let customerDeliveryDaysQuery="SELECT c.customer_Id FROM DeliveryDetails c INNER JOIN  customerdeliverydays cd ON cd.deliveryDaysId=c.deliverydaysid  WHERE "+day+"=1";
 
     db.query(customerDeliveryDaysQuery,(err,results)=>{
   
@@ -24,23 +24,25 @@ cron.schedule('0 0 2 * * *', function(){
         if(results.length>0){
         results.forEach(result => {
            var customerId=result.customerId;
-           var warehouseName=result.shortName+"-";
-           console.log(warehouseName);
-           console.log(customerId);
+          // var warehouseName=result.shortName+"-";
+          var seqNo="";
+          let seqNoQuery="SELECT AUTO_INCREMENT AS orderId FROM information_schema.TABLES WHERE TABLE_NAME='customerorderdetails'"
+          db.query(seqNoQuery,(err,results)=>{
+            seqNo=results[0].orderId;
+          });
 
-           let orderDetailsInsertQuery="insert into orderdetails(ordertype,itemsCount,customerId) values(?,?,?)";
-           db.query(orderDetailsInsertQuery,['test','5',customerId],(err,results)=>{
+           let orderDetailsInsertQuery="insert into customerOrderDetails(existingCustomerId,dcNo) values(?,?)";
+           db.query(orderDetailsInsertQuery,[customerId,"DC-"+seqNo],(err,results)=>{
 
-            console.log(orderDetailsInsertQuery);
       
               if(err) throw err;
               else{
-                  let updateQuery="update orderdetails set transactionid=? where orderid=?"
+                /*   let updateQuery="update orderdetails set transactionid=? where orderid=?"
                 db.query(updateQuery,[warehouseName+results.insertId,results.insertId],(err,results)=>{
                     if(err) throw err;
-                    else
-                        console.log('record inserted');
-                });
+                    else 
+                });*/
+                console.log('record inserted');
               }
       
           });

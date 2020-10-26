@@ -23,8 +23,7 @@ router.get('/getOrderDetails/:date', (req, res) => {
     var date = req.params.date;
     console.log(date);
 
-    // let query = "select * from orderdetails  WHERE DATE(`deliveryDate`) ='" + date + "'";
-    let query = "SELECT orderdetails.orderid,orderdetails.ordertype,orderdetails.itemsCount,orderdetails.damagedCount,orderdetails.isDelivered,orderdetails.transactionid,orderdetails.returnEmptyCans,orderdetails.deliveryDate,customerdetails.customerName,customerdetails.Address1,customerdetails.Address2,customerdetails.latitude,customerdetails.longitude,customerdetails.mobileNumber FROM orderdetails INNER JOIN customerdetails  ON orderdetails.customerId = customerdetails.customerId WHERE DATE(`deliveryDate`) ='" + date + "'"
+    let query = "SELECT c.customerOrderId,c.damagedCount,c.isDelivered,c.dcNo,c.returnEmptyCans,c.deliveryDate,cd.customerName,cd.Address1,cd.Address2,cd.latitude,cd.longitude,cd.mobileNumber FROM customerorderdetails c INNER JOIN customerdetails cd ON c.existingCustomerId = cd.customerId WHERE DATE(`deliveryDate`) ='" + date + "'"
     let result = db.query(query, (err, results) => {
 
         if (err) res.send(err);
@@ -38,7 +37,7 @@ router.get('/getOrderDetails/:date', (req, res) => {
 router.post('/addDamagedStock', (req, res) => {
     var orderId = req.body.orderId;
     var damagedStockCount = req.body.damagedStockCount;
-    let updateQuery = "update orderdetails set damagedCount=? where orderid=?"
+    let updateQuery = "update customerorderdetails set damagedCount=? where customerOrderId=?"
     db.query(updateQuery, [damagedStockCount, orderId], (err, results) => {
 
         if (err) res.send(err);
@@ -51,7 +50,7 @@ router.post('/addDamagedStock', (req, res) => {
 router.post('/addReturnEmptyCans', (req, res) => {
     var orderId = req.body.orderId;
     var returnEmptyCans = req.body.returnEmptyCans;
-    let updateQuery = "update orderdetails set returnEmptyCans=? where orderid=?"
+    let updateQuery = "update customerorderdetails set returnEmptyCans=? where customerOrderId=?"
     db.query(updateQuery, [returnEmptyCans, orderId], (err, results) => {
         if (err) res.send(err);
         else
@@ -60,7 +59,7 @@ router.post('/addReturnEmptyCans', (req, res) => {
 });
 router.post('/updateDeliveryStatus/:orderId', (req, res) => {
     var orderId = req.params.orderId;
-    let updateQuery = "update orderdetails set isDelivered=? where orderid=?"
+    let updateQuery = "update customerorderdetails set isDelivered=? where customerOrderId=?"
     db.query(updateQuery, [req.body.status, orderId], (err, results) => {
 
         if (err) res.send(err);
@@ -72,9 +71,9 @@ router.post('/updateDeliveryStatus/:orderId', (req, res) => {
 router.get("/customerOrderDetails/:orderId", (req, res) => {
     var orderId = req.params.orderId;
 
-    let customerOrderDetailsQuery = "SELECT cd.*,o.orderId,o.*,GROUP_CONCAT(p.productName,':',cp.noOfJarsTobePlaced SEPARATOR ';') AS customerproducts " +
+    let customerOrderDetailsQuery = "SELECT cd.*,c.customerOrderId,c.*,GROUP_CONCAT(cp.productName,':',cp.noOfJarsTobePlaced SEPARATOR ';') AS customerproducts " +
         " FROM customerdetails  cd INNER JOIN customerproductdetails cp ON cd.customerId=cp.customerId INNER JOIN" +
-        " productdetails p ON p.productId=cp.productId INNER JOIN orderdetails o ON o.customerId=cp.customerId WHERE o.orderid=?";
+        "  customerorderdetails c ON c.existingCustomerId=cp.customerId WHERE c.customerOrderId=?";
 
     let result = db.query(customerOrderDetailsQuery, [orderId], (err, results) => {
         if (err) res.send(err);
