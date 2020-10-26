@@ -1,15 +1,15 @@
 // config.js
 const config = {
    
-    db: {
-       host: 'localhost',
+     db: {
+     /*   host: 'localhost',
       dbName: 'trackingsystem',
       user:'vagga',
-      password:'Vagga@123!'
-  /*     host: '100.25.207.145',
+      password:'Vagga@123!' */
+     host: '100.25.207.145',
       dbName: 'trackingsystem',
       user:'root',
-      password:'Google@19' */
+      password:'Google@19'
     }
    };
    
