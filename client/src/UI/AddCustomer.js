@@ -19,16 +19,33 @@ const AddCustomer = (props) => {
     const [otherCustomer, setOtherCustomer] = useState(false)
     const [errors, setErrors] = useState({})
     const [disabled, setDisabled] = useState(false)
-    const [inputData, setInputData] = useState({})
+    const [inputData, setInputData] = useState({ registeredDate: TODAYDATE, referredBy: USERNAME })
     const [routesInfo, setRoutesInfo] = useState([]);
     // const [deliveryData, setDeliveryData] = useState([]);
     const [frontImage, setFrontImage] = useState('')
     const [backImage, setBackImage] = useState('')
     const idProofs = ["Aadhar", 'Pan']
-    const invoiceTypes = ["General", 'Complementary'];
-    const natureOfBussiness = ['Hospital', 'College', 'Office']
-    const [deliveryDetails, setDeliveryDetails] = useState([{}])
-    const [deliveryInputData, setDeliveryInputData] = useState({})
+    const invoiceTypes = ["Non-Complementary", 'Complementary'];
+    const natureOfBussiness = ['Residential', 'Software', 'Corporate', 'Traders']
+    const products = [{
+        productName: '20L',
+        productPrice: 0,
+        noOfJarsTobePlaced: 0
+    }, {
+        productName: '1L',
+        productPrice: 0,
+        noOfJarsTobePlaced: 0
+    }, {
+        productName: '500ML',
+        productPrice: 0,
+        noOfJarsTobePlaced: 0
+    }, {
+        productName: '250ML',
+        productPrice: 0,
+        noOfJarsTobePlaced: 0
+    }]
+    const [deliveryDetails, setDeliveryDetails] = useState([{ products }])
+    const [deliveryInputData, setDeliveryInputData] = useState({ products })
     const [deliveryDays, setDeliveryDays] = useState({
         "SUN": 0,
         "MON": 0,
@@ -96,14 +113,41 @@ const AddCustomer = (props) => {
         }
         else setDeliveryInputData({ ...deliveryInputData, [name]: e })
     }
-    const deliveryInputChange = (e) => {
+    const deliveryInputChange = (e, productName, index) => {
+        // console.log('eee', e)
+        // if (productName) {
+        //     let deliveryProducts = deliveryInputData.products
+        //     if (deliveryProducts[index].productName == productName) {
+        //         deliveryProducts[index][e.target.name] = e.target.value
+        //         setDeliveryInputData({ ...deliveryInputData, products: deliveryProducts })
+        //     }
+        // }
+        // else 
         setDeliveryInputData({ ...deliveryInputData, [e.target.name]: e.target.value })
     }
     const saveDeliveryDetails = (index) => {
         let arr = deliveryDetails;
         arr[index] = deliveryInputData
         arr[index].deliveryDays = deliveryDays
-        localStorage.setItem('deliveryDetails', JSON.stringify(deliveryDetails))
+        arr[index].products = [{
+            productName: '20L',
+            productPrice: parseInt(deliveryInputData.price20L),
+            noOfJarsTobePlaced: parseInt(deliveryInputData.quantity20L)
+        }, {
+            productName: '1L',
+            productPrice: parseInt(deliveryInputData.price1L),
+            noOfJarsTobePlaced: parseInt(deliveryInputData.quantity1L)
+        }, {
+            productName: '500ML',
+            productPrice: parseInt(deliveryInputData.price500ML),
+            noOfJarsTobePlaced: parseInt(deliveryInputData.quantity500ML)
+        }, {
+            productName: '250ML',
+            productPrice: parseInt(deliveryInputData.price250ML),
+            noOfJarsTobePlaced: parseInt(deliveryInputData.quantity250ML)
+        }]
+        // localStorage.setItem('deliveryDetails', JSON.stringify(deliveryDetails))
+        // console.log("gdgdgdgdgdg", arr)
         message.success('Delivery details Saved successfully')
         setDeliveryDetails(arr)
     }
@@ -111,28 +155,30 @@ const AddCustomer = (props) => {
         let obj = {
             customertype: corpCustomer ? "Corporate" : 'Others',
             organizationName: inputData.organizationName,
+            customerName: inputData.customerName,
             idProofs: [frontImage, backImage],
             idProofType: inputData.idProofType,
             gstNo: inputData.gstNo,
             Address1: inputData.address,
             EmailId: inputData.email,
             mobileNumber: inputData.phoneNumber,
-            contactperson: inputData.contactPerson,
+            panNo: inputData.panNo,
+            adharNo: inputData.adharNo,
+            // contactperson: inputData.contactPerson,
             creditPeriodInDays: inputData.creditPeriodInDays,
             invoicetype: inputData.invoicetype,
             referredBy: inputData.referredBy,
             natureOfBussiness: inputData.natureOfBussiness,
             isActive: 0,
             departmentId: WAREHOUSEID,
-            referredBy: USERNAME,
-            registeredDate: TODAYDATE,
+            registeredDate: inputData.registeredDate,
             createdBy: USERID,
             deliveryDetails,
-            deliveryDaysId: 1,
-            depositamount: 10,
-            shippingAddress: '',
-            shippingContactPerson: '',
-            shippingContactNo: 222
+            // deliveryDaysId: 1,
+            // depositamount: 10,
+            // shippingAddress: '',
+            // shippingContactPerson: '',
+            // shippingContactNo: 222
         }
         console.log('Obj', obj)
         createOrUpdateAPI('customer/createCustomer', obj, 'POST').then(res => {
@@ -140,7 +186,6 @@ const AddCustomer = (props) => {
             message.success(res.message)
         })
     }
-    const fileList = [];
     const idProofsList = idProofs.length && idProofs.map(item => <Option key={item} value={item}>{item}</Option>)
     const natureOfBussinessList = natureOfBussiness.length && natureOfBussiness.map(item => <Option key={item} value={item}>{item}</Option>)
     const invoiceTypeList = invoiceTypes.length && invoiceTypes.map(item => <Option key={item} value={item}>{item}</Option>)
@@ -207,6 +252,11 @@ const AddCustomer = (props) => {
                                     </Col>
                                 </Row>
                                 <Row>
+                                    {inputData.idProofType == 'Aadhar' ? <InputField colSpan={21} error={errors.adharNo} label="Aadhar NUMBER" disabled={disabled} placeholder="Add Aadhar No" name="adharNo" value={inputData.adharNo} onChange={inputChange} />
+                                        : inputData.idProofType !== '' ? <InputField colSpan={21} error={errors.panNo} label="PAN NUMBER" disabled={disabled} placeholder="Add PAN No" name="panNo" value={inputData.panNo} onChange={inputChange} /> : null
+                                    }
+                                </Row>
+                                <Row>
                                     <Col span={10}>
                                         <Row>
                                             <InputField colSpan={21} error={errors.gstNo} label="GST NUMBER" disabled={disabled} placeholder="Add GST No" name="gstNo" value={inputData.gstNo} onChange={inputChange} />
@@ -223,7 +273,7 @@ const AddCustomer = (props) => {
                                     <InputField colSpan={10} offset={1} label="EMAIL" disabled={disabled} error={errors.email} placeholder="Add Email" name="email" value={inputData.email} onChange={inputChange} />
                                 </Row>
                                 <Row>
-                                    <InputField colSpan={10} label='CONTACT PERSON' disabled={disabled} error={errors.contactPerson} placeholder="Add Contact Person" name="contactPerson" value={inputData.contactPerson} onChange={inputChange} />
+                                    <InputField colSpan={10} label='Account Owner' disabled={disabled} error={errors.customerName} placeholder="Add Owner Name" name="customerName" value={inputData.customerName} onChange={inputChange} />
                                     <CustomSelectComponent
                                         onChange={(e) => dropDownChange(e, 'natureOfBussiness', 'customerData')}
                                         label="NATURE OF BUSINESS"
@@ -294,8 +344,14 @@ const AddCustomer = (props) => {
                                                     <InputField colSpan={10} offset={1} label='CONTACT PERSON' disabled={disabled} placeholder="Contact Person Name" name="contactPerson" value={delivery.contactPerson} onChange={deliveryInputChange} />
                                                 </Row>
                                                 <Row>
+                                                    {/* {delivery.products.length && delivery.products.map((product, productIndex) =>
+                                                        <Col span={2}>
+                                                            <InputField colSpan={12} label={product.productName} disabled={disabled} placeholder="Add" name={product.noOfJarsTobePlaced} value={product.noOfJarsTobePlaced} onChange={(e) => deliveryInputChange(e, product.productName, productIndex)} />
+                                                            <InputField colSpan={12} className='priceInput' label='PRICE' disabled={disabled} placeholder="Rs" name={product.productPrice} value={product.productPrice} onChange={(e) => deliveryInputChange(e, product.productName, productIndex)} />
+                                                        </Col>
+                                                    )} */}
                                                     <InputField colSpan={2} label='20LTRS' disabled={disabled} placeholder="Add" name="quantity20L" value={delivery.quantity20L} onChange={deliveryInputChange} />
-                                                    <InputField colSpan={2} className='priceInput' label='PRICE' disabled={disabled} placeholder="Rs" name="price20L" value={delivery.price20ML} onChange={deliveryInputChange} />
+                                                    <InputField colSpan={2} className='priceInput' label='PRICE' disabled={disabled} placeholder="Rs" name="price20L" value={delivery.price20L} onChange={deliveryInputChange} />
                                                     <InputField colSpan={2} offset={1} label='1LTR' disabled={disabled} placeholder="Add" name="quantity1L" value={delivery.quantity1L} onChange={deliveryInputChange} />
                                                     <InputField colSpan={2} className='priceInput' label='PRICE' disabled={disabled} placeholder="Rs" name="price1L" value={delivery.price1ML} onChange={deliveryInputChange} />
                                                     <InputField colSpan={2} offset={1} label='500ML' disabled={disabled} placeholder="Add" name="quantity500ML" value={delivery.quantity500ML} onChange={deliveryInputChange} />

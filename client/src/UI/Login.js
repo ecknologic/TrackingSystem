@@ -23,9 +23,15 @@ const Login = (props) => {
             createOrUpdateAPI('bibo/login', userData, "POST")
                 .then(response => {
                     if (response.token) {
-                        let token = response.token, isLogged = response.isLogged;
+                        let token = response.token, { isLogged, warehouseId, userName, id } = response;
                         sessionStorage.setItem("token", token)
                         sessionStorage.setItem("isLogged", isLogged)
+                        let user = {
+                            id,
+                            name: userName,
+                            wareHouse: warehouseId
+                        }
+                        sessionStorage.setItem("user", JSON.stringify(user))
                         message.success("Login Success")
                         props.history.push('/bibowarehouse');
                     } else {
