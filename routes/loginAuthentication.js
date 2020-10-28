@@ -59,7 +59,7 @@ router.post('/login', (req, res) => {
                                 status: 200,
                                 role: results[0].RoleName,
                                 userName: results[0].userName,
-                                id: results[0].id,
+                                id: results[0].userId,
                                 warehouseId: results[0].departmentId,
                                 isLogged: true,
                                 token: token

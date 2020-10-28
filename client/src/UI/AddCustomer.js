@@ -99,6 +99,7 @@ const AddCustomer = (props) => {
         console.log(date, dateString);
     }
     const inputChange = (e) => {
+        console.log('eee', e.target.name, e.target.value)
         setInputData({ ...inputData, [e.target.name]: e.target.value })
     }
     const dropDownChange = (e, name, state) => {
@@ -129,6 +130,7 @@ const AddCustomer = (props) => {
         let arr = deliveryDetails;
         arr[index] = deliveryInputData
         arr[index].deliveryDays = deliveryDays
+        if (!corpCustomer) arr[index].address = inputData.address
         arr[index].products = [{
             productName: '20L',
             productPrice: parseInt(deliveryInputData.price20L),
@@ -148,8 +150,9 @@ const AddCustomer = (props) => {
         }]
         // localStorage.setItem('deliveryDetails', JSON.stringify(deliveryDetails))
         // console.log("gdgdgdgdgdg", arr)
-        message.success('Delivery details Saved successfully')
         setDeliveryDetails(arr)
+        if (!corpCustomer) saveOrUpdate()
+        else message.success('Delivery details Saved successfully')
     }
     const saveOrUpdate = () => {
         let obj = {
@@ -410,13 +413,25 @@ const AddCustomer = (props) => {
                                 </Row>
                                 <Row>
                                     <Col span={24}>
-                                        <h4>Please help us verify your identity</h4>
+                                        <div>
+                                            <h4>Please help us verify your identity</h4>
+                                        </div>
                                         <p>(kindly upload the documents either in JPEG,PNG,PDF format. The file should be lessthan 5MB) Need to be upload front and back.</p>
                                     </Col>
                                 </Row>
                                 <Row>
-                                    <InputField colSpan={10} error={errors.gstNo} label="GST NUMBER" disabled={disabled} placeholder="Add GST No" name="gstNo" value={inputData.gstNo} onChange={inputChange} /><Button type="default">Verify</Button>
-                                    <InputField offset={1} colSpan={10} error={errors.organizationName} label="NAME" disabled={disabled} placeholder="Add organization Name" name="organizationName" value={inputData.organizationName} onChange={inputChange} />
+                                    {inputData.idProofType == 'Aadhar' ? <InputField colSpan={21} error={errors.adharNo} label="Aadhar NUMBER" disabled={disabled} placeholder="Add Aadhar No" name="adharNo" value={inputData.adharNo} onChange={inputChange} />
+                                        : inputData.idProofType !== '' ? <InputField colSpan={21} error={errors.panNo} label="PAN NUMBER" disabled={disabled} placeholder="Add PAN No" name="panNo" value={inputData.panNo} onChange={inputChange} /> : null
+                                    }
+                                </Row>
+                                <Row>
+                                    <Col span={10}>
+                                        <Row>
+                                            <InputField colSpan={21} error={errors.gstNo} label="GST NUMBER" disabled={disabled} placeholder="Add GST No" name="gstNo" value={inputData.gstNo} onChange={inputChange} />
+                                            <Col span={2}><Button type="default" style={{ marginTop: "2em" }}>Verify</Button></Col>
+                                        </Row>
+                                    </Col>
+                                    <InputField offset={1} colSpan={10} error={errors.customerName} label="NAME" disabled={disabled} placeholder="Add Name" name="customerName" value={inputData.customerName} onChange={inputChange} />
                                 </Row>
                                 <Row>
                                     <InputField colSpan={21} label="ADDRESS" disabled={disabled} error={errors.address} placeholder="Add Address" name="address" value={inputData.address} onChange={inputChange} />
@@ -426,90 +441,70 @@ const AddCustomer = (props) => {
                                     <InputField colSpan={10} offset={1} label="EMAIL" disabled={disabled} error={errors.email} placeholder="Add Email" name="email" value={inputData.email} onChange={inputChange} />
                                 </Row>
                                 <Row>
-                                    <Col span={10}>
-                                        <FormItem>
-                                            <h5 className="form_modal_label">DELIVERY DAYS</h5>
-                                            <Select
-                                                mode="multiple"
-                                                allowClear
-                                                style={{ width: '100%' }}
-                                                placeholder="Please select"
-                                                defaultValue={['a10', 'c12']}
-                                                onChange={handleChange}
-                                            >
-                                                {children}
-                                            </Select>
-                                        </FormItem>
-                                    </Col>
-                                    <Col span={10} offset={1}>
-                                        <FormItem>
-                                            <h5 className="form_modal_label">REGISTERED DATE</h5>
-                                            <DatePicker onChange={onChange} />
-                                        </FormItem>
-
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col span={10}>
-                                        <FormItem>
-                                            <h5 className="form_modal_label">ADD PRODUCTS</h5>
-                                            <Select defaultValue="lucy" style={{ width: '100%' }}>
-                                                <Option value="jack">Jack</Option>
-                                                <Option value="lucy">Lucy</Option>
-                                                <Option value="disabled" disabled>
-                                                    Disabled
-                                        </Option>
-                                                <Option value="Yiminghe">yiminghe</Option>
-                                            </Select>
-                                        </FormItem>
-                                    </Col>
-
-                                    <Col span={10} offset={1}>
-                                        <FormItem>
-                                            <h5 className="form_modal_label">DEPOSIT AMOUNT</h5>
-                                            <Select defaultValue="lucy" style={{ width: '100%' }}>
-                                                <Option value="jack">Jack</Option>
-                                                <Option value="lucy">Lucy</Option>
-                                                <Option value="disabled" disabled>
-                                                    Disabled
-                                        </Option>
-                                                <Option value="Yiminghe">yiminghe</Option>
-                                            </Select>
-                                        </FormItem>
-                                    </Col>
-
-                                </Row>
-                                <Row>
-                                    <Col span={10}>
-                                        <FormItem>
-                                            <h5 className="form_modal_label">PHONE NUMBER</h5>
-                                            <Input disabled={disabled} placeholder="Add organization Name" name="organizationName" value={inputData.organizationName} onChange={inputChange} />
-                                        </FormItem>
-                                    </Col>
-                                    <Col span={10} offset={1}>
-                                        <FormItem>
-                                            <h5 className="form_modal_label">EMAIL</h5>
-                                            <Input disabled={disabled} placeholder="Add organization Name" name="organizationName" value={inputData.organizationName} onChange={inputChange} />
-                                        </FormItem>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col span={10}>
-                                        <FormItem>
-                                            <h5 className="form_modal_label">INVOICE TYPE</h5>
-                                            <Select defaultValue="lucy" style={{ width: '100%' }}>
-                                                <Option value="jack">Jack</Option>
-                                                <Option value="lucy">Lucy</Option>
-                                                <Option value="disabled" disabled>
-                                                    Disabled
-                                        </Option>
-                                                <Option value="Yiminghe">yiminghe</Option>
-                                            </Select>
-                                        </FormItem>
-                                    </Col>
+                                    <InputField colSpan={10} label='REGISTERED DATE' error={errors.registeredDate} disabled={disabled} placeholder="YYYY-MM-DD" name="registeredDate" value={inputData.registeredDate} onChange={inputChange} />
+                                    <CustomSelectComponent
+                                        onChange={(e) => dropDownChange(e, 'invoicetype', 'customerData')}
+                                        label="Select Invoice Type"
+                                        value={inputData.invoicetype}
+                                        colSpan={10}
+                                        offset={1}
+                                        options={invoiceTypeList}
+                                        error={errors.invoicetype}
+                                    // disabled={disabled}
+                                    />
                                 </Row>
 
-                            </div>}
+                                <div>
+                                    {deliveryDetails.length ? deliveryDetails.map((delivery, i) =>
+                                        <div>
+                                            <Row>
+                                                <InputField colSpan={10} error={errors.referredBy} disabled={disabled} label='REFERED BY' placeholder="Name" name="referredBy" value={inputData.referredBy} onChange={inputChange} />
+                                                <CustomSelectComponent
+                                                    onChange={(e) => dropDownChange(e, 'routingId')}
+                                                    label="Select Route"
+                                                    offset={1}
+                                                    value={delivery.routingId}
+                                                    colSpan={10}
+                                                    options={routesOptions}
+                                                    error={errors.routingId}
+                                                    disabled={disabled}
+                                                />
+                                            </Row>
+                                            <Row>
+                                                {/* <InputField colSpan={21} label='ADDRESS' disabled={disabled} placeholder="Add Address" name="address" value={delivery.address} onChange={deliveryInputChange} /> */}
+                                            </Row>
+                                            <Row>
+                                                <InputField colSpan={10} label='PHONE NUMBER' disabled={disabled} placeholder="Add Phone Number" name="phoneNumber" value={delivery.phoneNumber} onChange={deliveryInputChange} />
+                                                <InputField colSpan={10} offset={1} label='CONTACT PERSON' disabled={disabled} placeholder="Contact Person Name" name="contactPerson" value={delivery.contactPerson} onChange={deliveryInputChange} />
+                                            </Row>
+                                            <Row>
+                                                <InputField colSpan={2} label='20LTRS' disabled={disabled} placeholder="Add" name="quantity20L" value={delivery.quantity20L} onChange={deliveryInputChange} />
+                                                <InputField colSpan={2} className='priceInput' label='PRICE' disabled={disabled} placeholder="Rs" name="price20L" value={delivery.price20L} onChange={deliveryInputChange} />
+                                                <InputField colSpan={2} offset={1} label='1LTR' disabled={disabled} placeholder="Add" name="quantity1L" value={delivery.quantity1L} onChange={deliveryInputChange} />
+                                                <InputField colSpan={2} className='priceInput' label='PRICE' disabled={disabled} placeholder="Rs" name="price1L" value={delivery.price1ML} onChange={deliveryInputChange} />
+                                                <InputField colSpan={2} offset={1} label='500ML' disabled={disabled} placeholder="Add" name="quantity500ML" value={delivery.quantity500ML} onChange={deliveryInputChange} />
+                                                <InputField colSpan={2} className='priceInput' label='PRICE' disabled={disabled} placeholder="Rs" name="price500ML" value={delivery.price500ML} onChange={deliveryInputChange} />
+                                                <InputField colSpan={2} offset={1} label='250ML' disabled={disabled} placeholder="Add" name="quantity250ML" value={delivery.quantity250ML} onChange={deliveryInputChange} />
+                                                <InputField colSpan={2} className='priceInput' label='PRICE' disabled={disabled} placeholder="Rs" name="price250ML" value={delivery.price250ML} onChange={deliveryInputChange} />
+                                            </Row>
+                                            <Row>
+                                                <CustomSelectComponent
+                                                    onChange={(e) => dropDownChange(e, 'deliveryDays')}
+                                                    label="DELIVERY DAYS"
+                                                    mode="multiple"
+                                                    value={delivery.deliveryDays}
+                                                    colSpan={10}
+                                                    options={deliveryDaysList}
+                                                    error={errors.deliveryDays}
+                                                    disabled={disabled}
+                                                />
+                                                <InputField colSpan={10} offset={1} label='DEPOSIT AMOUNT' disabled={disabled} placeholder="Amount" name="depositAmount" value={delivery.depositAmount} onChange={deliveryInputChange} />
+                                            </Row>
+                                        </div>
+                                    ) : null}
+                                </div>
+                            </div>
+                        }
                     </Form>
                 </div>
                 <div className="addcustomerfooter">
@@ -518,7 +513,7 @@ const AddCustomer = (props) => {
                             <Button type="default">CANCEL</Button>
                         </Col>
                         <Col span={10} offset={1}>
-                            <Button type="primary" onClick={() => saveOrUpdate()}>CREATE ACCOUNT</Button>
+                            <Button type="primary" onClick={() => !corpCustomer ? saveDeliveryDetails(0) : saveOrUpdate()}>CREATE ACCOUNT</Button>
                         </Col>
                     </Row>
 

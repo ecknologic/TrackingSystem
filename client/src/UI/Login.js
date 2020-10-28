@@ -84,7 +84,7 @@ const Login = (props) => {
                                     </Form.Item>
                                     <Form.Item>
                                         <h5>Password</h5>
-                                        <Input type="password" placeholder="Password" value={password} onChange={(e) => onInputChange(e.target.value, "password")} />
+                                        <Input type="password" onPressEnter={() => loginBtn()} placeholder="Password" value={password} onChange={(e) => onInputChange(e.target.value, "password")} />
                                         <p className="errors">{errors.password}</p>
                                     </Form.Item>
                                     <p className="forgotpasswordLink">
