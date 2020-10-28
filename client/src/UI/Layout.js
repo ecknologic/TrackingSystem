@@ -36,8 +36,8 @@ const LayoutPage = (props) => {
                             <Menu.Item key="2" key="sub2"><span><img src={dashboardIcon12} alt="contest-cover"/></span> <span>Manage Stock</span></Menu.Item>
                             <Menu.Item key="3" key="sub3"><span><img src={dashboardIcon} alt="contest-cover"/></span> <span>Manage Routes</span></Menu.Item>
                             <Menu.Item key="4" key="sub4"><Link to="/addcustomer"><span><img src={dashboardIcon} alt="contest-cover"/></span> <span>Add Customer</span></Link></Menu.Item>
-                            
-                            <Menu.Item key="5" key="sub5"><span></span> <span>Reports</span></Menu.Item>
+                            <Menu.Item key="5" key="sub5"><Link to="/manageaccount"><span><img src={dashboardIcon12} alt="contest-cover"/></span> <span>Manage Stock</span></Link></Menu.Item>
+                            <Menu.Item key="6" key="sub6"><span></span> <span>Reports</span></Menu.Item>
                             {/* <SubMenu key="sub1" icon={<UserOutlined />} title="Dashboard">
                                 <Menu.Item key="1">option1</Menu.Item>
                                 <Menu.Item key="2">option2</Menu.Item>
