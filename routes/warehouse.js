@@ -148,13 +148,11 @@ router.get('/deliveryDetails/:date', (req, res) => {
 
 router.get('/currentActiveStockDetails', (req, res) => {
 
-  let currentActiveStockQuery = "    SELECT * FROM customerActiveStock warehouseId=?";
   let { warehouseId } = req.query;
-  let result = db.query(currentActiveStockQuery, [warehouseId], (err, results) => {
-
-    if (err) res.send(err);
-
-    res.send(JSON.stringify(results));
+  let currentActiveStockQuery = "SELECT * FROM customerActiveStock WHERE warehouseId=" + warehouseId;
+  db.query(currentActiveStockQuery, (err, results) => {
+    if (err) res.json({ status: 500, message: err.sqlMessage });
+    else res.json({ status: 200, message: 'Success', data: results });
   });
 });
 
@@ -165,10 +163,8 @@ router.get('/outForDeliveryDetails/:date', (req, res) => {
   let outForDeliveryDetailsQuery = "SELECT SUM(c.20LCans) AS total20LCans,SUM(c.1LBoxes) AS total1LBoxes,SUM(c.500MLBoxes) total500MLBoxes,SUM(c.250MLBoxes) total250MLBoxes FROM customerorderdetails c WHERE warehouseId=? and DATE(`deliveryDate`)='" + date + "'";
 
   let result = db.query(outForDeliveryDetailsQuery, [warehouseId], (err, results) => {
-
-    if (err) res.send(err);
-
-    res.send(JSON.stringify(results));
+    if (err) res.json({ status: 500, message: err.sqlMessage });
+    else res.json({ status: 200, message: 'Success', data: results });
   });
 });
 
