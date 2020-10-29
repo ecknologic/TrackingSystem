@@ -23,9 +23,15 @@ const Login = (props) => {
             createOrUpdateAPI('bibo/login', userData, "POST")
                 .then(response => {
                     if (response.token) {
-                        let token = response.token, isLogged = response.isLogged;
+                        let token = response.token, { isLogged, warehouseId, userName, id } = response;
                         sessionStorage.setItem("token", token)
                         sessionStorage.setItem("isLogged", isLogged)
+                        let user = {
+                            id,
+                            name: userName,
+                            wareHouse: warehouseId
+                        }
+                        sessionStorage.setItem("user", JSON.stringify(user))
                         message.success("Login Success")
                         props.history.push('/bibowarehouse');
                     } else {
@@ -78,7 +84,7 @@ const Login = (props) => {
                                     </Form.Item>
                                     <Form.Item>
                                         <h5>Password</h5>
-                                        <Input type="password" placeholder="Password" value={password} onChange={(e) => onInputChange(e.target.value, "password")} />
+                                        <Input type="password" onPressEnter={() => loginBtn()} placeholder="Password" value={password} onChange={(e) => onInputChange(e.target.value, "password")} />
                                         <p className="errors">{errors.password}</p>
                                     </Form.Item>
                                     <p className="forgotpasswordLink">

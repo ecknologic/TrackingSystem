@@ -6,6 +6,7 @@ import { checkValidation } from '../utils/validations';
 import CreateDCModal from './Delivery/modalComponent'
 import { editData } from '../utils/Functions'
 import { columns } from './Delivery/tableData';
+import { TODAYDATE } from '../utils/constants'
 const { Search } = Input;
 const { Option } = Select;
 
@@ -27,7 +28,7 @@ const Delivery = () => {
   const [disabled, setDisabled] = useState(false)
   const [customerOrderId, setCustomerOrderId] = useState('')
   const warehouseId = sessionStorage.getItem('warehouseId') || 1;
-  const date = '2020-10-23'
+  const date = TODAYDATE
   useEffect(() => {
     getAllDeliverys();
     getRoutes();

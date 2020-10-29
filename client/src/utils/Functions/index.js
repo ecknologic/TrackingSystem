@@ -14,4 +14,9 @@ const editData = (updatedItem, data, idField) => {
         } else resolve([])
     })
 }
-module.exports = { editData }
+const getBase64 = (img, callback) => {
+    const reader = new FileReader();
+    reader.addEventListener('load', () => callback(reader.result));
+    reader.readAsDataURL(img);
+}
+module.exports = { editData, getBase64 }

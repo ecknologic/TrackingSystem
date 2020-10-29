@@ -4,6 +4,7 @@ import Login from './UI/Login';
 import LayoutPage from './UI/Layout';
 import BiboWarehouse from './UI/Bibo_Warehouse_Stock Inventory';
 import AddCustomer from './UI/AddCustomer';
+import ManageAccounts from './UI/ManageAccounts';
 import './App.css';
 const requireAuth = (Component) => {
   const authenticated = JSON.parse(sessionStorage.getItem('isLogged'))
@@ -20,6 +21,7 @@ function App() {
           {/* <Route exact path='/bibowarehouses' component={BiboWarehouse} /> */}
           <Route exact path='/addcustomer' render={(props) => requireAuth(<AddCustomer {...props} />)} />
           <Route exact path='/*' render={(props) => redirectAuth(props)} />
+          <Route exact path='/manageaccount' component={ManageAccounts} />
         </Switch>
       </Router>
     </div>
