@@ -20,4 +20,14 @@ router.get('/getPrivileges', (req, res) => {
   });
 });
 
+router.get('/getDepartments/:deptType',(req,res)=>{
+  var deptType = req.params.deptType;
+  let query="select * from departmentmaster where DepartmentType=?"
+  let result = db.query(query,[deptType], (err, results) => {
+    if (err) res.send(err);
+    res.send(JSON.stringify(results));
+  });
+
+})
+
 module.exports = router;
