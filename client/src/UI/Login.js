@@ -4,8 +4,11 @@ import image from '../assets/images/login_img.png'
 import { QuestionCircleFilled } from '@ant-design/icons';
 import './login.css'
 import { createOrUpdateAPI } from '../utils/apis';
+import { useHistory } from 'react-router-dom';
+import { MARKETINGADMIN, WAREHOUSEADMIN } from '../utils/constants';
 
 const Login = (props) => {
+    const history = useHistory()
     const [username, setUserName] = useState('');
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState({});
@@ -23,17 +26,20 @@ const Login = (props) => {
             createOrUpdateAPI('bibo/login', userData, "POST")
                 .then(response => {
                     if (response.token) {
-                        let token = response.token, { isLogged, warehouseId, userName, id } = response;
+                        let token = response.token, { isLogged, warehouseId, userName, id, role } = response;
                         sessionStorage.setItem("token", token)
                         sessionStorage.setItem("isLogged", isLogged)
                         let user = {
                             id,
                             name: userName,
-                            wareHouse: warehouseId
+                            wareHouse: warehouseId,
+                            role
                         }
                         sessionStorage.setItem("user", JSON.stringify(user))
                         message.success("Login Success")
-                        props.history.push('/bibowarehouse');
+                        if (role == MARKETINGADMIN) history.push('/addcustomer');
+                        else if (role == WAREHOUSEADMIN) history.push('/bibowarehouse');
+                        else message.error('Screen Not designed for your role')
                     } else {
                         message.error(response.message)
                     }

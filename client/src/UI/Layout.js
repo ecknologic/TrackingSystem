@@ -1,11 +1,12 @@
 import React from 'react'
 import { Scrollbars } from 'react-custom-scrollbars';
-import { BrowserRouter as Router, Route, Switch,Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom';
 import { Layout, Menu, Breadcrumb } from 'antd';
 import dashboardIcon from '../assets/images/ic-manage-users.svg';
 import dashboardIcon12 from '../assets/images/ic-manage-accounts.svg';
 import dashboardIcon13 from '../assets/images/ic-chat.svg';
 import dashboardIcon14 from '../assets/images/ic-cettings.svg';
+import { MARKETINGADMIN, ROLE, WAREHOUSEADMIN } from '../utils/constants';
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
 
@@ -19,9 +20,9 @@ const LayoutPage = (props) => {
                         <h2><span className="bibotext">Bibo</span> <span>Water</span></h2>
                     </div>
                     <Menu className="TopNavbar" theme="dark" mode="horizontal" defaultSelectedKeys={['2']}>
-                        <Menu.Item key="1"><img src={dashboardIcon14} alt="contest-cover"/></Menu.Item>
-                        <Menu.Item key="2"><img src={dashboardIcon13} alt="contest-cover"/></Menu.Item>
-                        <Menu.Item key="3"><img src={dashboardIcon13} alt="contest-cover"/></Menu.Item>
+                        <Menu.Item key="1"><img src={dashboardIcon14} alt="contest-cover" /></Menu.Item>
+                        <Menu.Item key="2"><img src={dashboardIcon13} alt="contest-cover" /></Menu.Item>
+                        <Menu.Item key="3"><img src={dashboardIcon13} alt="contest-cover" /></Menu.Item>
                     </Menu>
                 </Header>
                 <Layout>
@@ -33,10 +34,10 @@ const LayoutPage = (props) => {
                             style={{ height: '100%', borderRight: 0 }}
                         >
                             <Menu.Item key="1" key="sub1"><Link to="/bibowarehouse"><span></span> <span>Dashboard</span></Link></Menu.Item>
-                            <Menu.Item key="2" key="sub2"><span><img src={dashboardIcon12} alt="contest-cover"/></span> <span>Manage Stock</span></Menu.Item>
-                            <Menu.Item key="3" key="sub3"><span><img src={dashboardIcon} alt="contest-cover"/></span> <span>Manage Routes</span></Menu.Item>
-                            <Menu.Item key="4" key="sub4"><Link to="/addcustomer"><span><img src={dashboardIcon} alt="contest-cover"/></span> <span>Add Customer</span></Link></Menu.Item>
-                            <Menu.Item key="5" key="sub5"><Link to="/manageaccount"><span><img src={dashboardIcon12} alt="contest-cover"/></span> <span>Manage Stock</span></Link></Menu.Item>
+                            {ROLE == WAREHOUSEADMIN ? <Menu.Item key="2" key="sub2"><span><img src={dashboardIcon12} alt="contest-cover" /></span> <span>Manage Stock</span></Menu.Item> : null}
+                            <Menu.Item key="3" key="sub3"><span><img src={dashboardIcon} alt="contest-cover" /></span> <span>Manage Routes</span></Menu.Item>
+                            {ROLE == MARKETINGADMIN ? <Menu.Item key="4" key="sub4"><Link to="/addcustomer"><span><img src={dashboardIcon} alt="contest-cover" /></span><span>Add Customer</span></Link></Menu.Item> : null}
+                            <Menu.Item key="5" key="sub5"><Link to="/manageaccount"><span><img src={dashboardIcon12} alt="contest-cover" /></span> <span>Manage Stock</span></Link></Menu.Item>
                             <Menu.Item key="6" key="sub6"><span></span> <span>Reports</span></Menu.Item>
                             {/* <SubMenu key="sub1" icon={<UserOutlined />} title="Dashboard">
                                 <Menu.Item key="1">option1</Menu.Item>
