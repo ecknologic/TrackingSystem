@@ -46,7 +46,6 @@ const uploadImage = (req) => {
     let idproofdetailsquery = "insert  into customerDocStore(idProof_frontside,idProof_backside) values(?,?)";
     var idProof_frontside = Buffer.from(req.body.idProofs[0].replace(/^data:image\/\w+;base64,/, ""), 'base64')
     var idProof_backside = Buffer.from(req.body.idProofs[1].replace(/^data:image\/\w+;base64,/, ""), 'base64')
-
     let insertQueryValues = [idProof_frontside, idProof_backside]
     db.query(idproofdetailsquery, insertQueryValues, (err, results) => {
       // console.log("fdf", insertQueryValues);
@@ -97,13 +96,13 @@ router.post('/createCustomer', async (req, res) => {
   let customerDetailsQuery = "insert  into customerdetails (customerName,mobileNumber,AlternatePhNo,EmailId,Address1,Address2,gstNo,contactperson,panNo,adharNo,registeredDate,invoicetype,natureOfBussiness,creditPeriodInDays,referredBy,departmentId,deliveryDaysId,depositamount,isActive,qrcodeId,latitude,longitude,shippingAddress,shippingContactPerson,shippingContactNo,customerType,organizationName,createdBy,customer_id_proof) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
   // let customerDetailsQuery = "insert  into customerdetails (customerName,mobileNumber,EmailId,Address1,gstNo,registeredDate,invoicetype,natureOfBussiness,creditPeriodInDays,referredBy,isActive,qrcodeId,latitude,longitude,customerType,organizationName,createdBy) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
   let customerdetails = req.body;
-  Promise.all([createQrCode(customerdetails.adharNo + customerdetails.mobileNumber), getLatLongDetails(customerdetails), uploadImage(req)])
+  Promise.all([createQrCode('idProof' + customerdetails.mobileNumber), getLatLongDetails(customerdetails), uploadImage(req)])
     .then(response => {
-      let insertQueryValues = [customerdetails.customerName, customerdetails.mobileNumber, customerdetails.AlternatePhNo, customerdetails.EmailId, customerdetails.Address1, customerdetails.Address2, customerdetails.gstNo, customerdetails.contactperson, customerdetails.panNo, customerdetails.adharNo, customerdetails.registeredDate, customerdetails.invoicetype, customerdetails.natureOfBussiness, customerdetails.creditPeriodInDays, customerdetails.referredBy, customerdetails.departmentId, customerdetails.deliveryDaysId, customerdetails.depositamount, customerdetails.isActive, response[0], response[1].latitude, response[1].longitude, customerdetails.shippingAddress, customerdetails.shippingContactPerson, customerdetails.shippingContactNo, customerdetails.customerType, customerdetails.organizationName, customerdetails.createdBy, response[2]]
+      let insertQueryValues = [customerdetails.customerName, customerdetails.mobileNumber, customerdetails.AlternatePhNo, customerdetails.EmailId, customerdetails.Address1, customerdetails.Address2, customerdetails.gstNo, customerdetails.contactperson, customerdetails.panNo, customerdetails.adharNo, customerdetails.registeredDate, customerdetails.invoicetype, customerdetails.natureOfBussiness, customerdetails.creditPeriodInDays, customerdetails.referredBy, customerdetails.departmentId, customerdetails.deliveryDaysId, customerdetails.depositamount, customerdetails.isActive, response[0], response[1].latitude, response[1].longitude, customerdetails.shippingAddress, customerdetails.shippingContactPerson, customerdetails.shippingContactNo, customerdetails.customertype, customerdetails.organizationName, customerdetails.createdBy, response[2]]
       // let insertQueryValues = [customerdetails.customerName, customerdetails.mobileNumber, customerdetails.EmailId, customerdetails.Address1, customerdetails.gstNo, customerdetails.registeredDate, customerdetails.invoicetype, customerdetails.natureOfBussiness, customerdetails.creditPeriodInDays, customerdetails.referredBy, customerdetails.isActive, response[0], response[1].latitude, response[1].longitude, customerdetails.customerType, customerdetails.organizationName, customerdetails.createdBy]
       db.query(customerDetailsQuery, insertQueryValues, (err, results) => {
         console.log(insertQueryValues);
-        if (err) res.send(err);
+        if (err) res.json({ status: 500, message: err.sqlMessage });
         else {
           saveDeliveryDetails(results.insertId, customerdetails, res)
         }
@@ -120,12 +119,12 @@ const saveDeliveryDetails = (customerId, customerdetails, res) => {
           let deliveryDetailsQuery = "insert  into DeliveryDetails (gstNo,address,phoneNumber,contactPerson,deliverydaysid,depositAmount,customer_Id,routingId) values(?,?,?,?,?,?,?,?)";
           let insertQueryValues = [i.gstNo, i.address, i.phoneNumber, i.contactPerson, deliveryDays.insertId, i.depositAmount, customerId, i.routingId]
           db.query(deliveryDetailsQuery, insertQueryValues, (err, results) => {
-            if (err) res.send(err);
+            if (err) res.json({ status: 500, message: err.sqlMessage });
             else {
               count++
               saveProductDetails(i.products, results.insertId, customerId).then(productDetails => {
                 console.log(count, customerdetails.deliveryDetails.length)
-                if (count == customerdetails.deliveryDetails.length) res.send("Records Inserted");
+                if (count == customerdetails.deliveryDetails.length) res.json({ status: 200, message: "Customer Created Successfully" });
               })
             }
           });
@@ -149,7 +148,7 @@ const saveProductDetails = (products, deliveryDetailsId, customerId) => {
     if (products.length) {
       for (let i of products) {
         let deliveryProductsQuery = "insert  into customerproductdetails (deliverydetailsId,customerId,noOfJarsTobePlaced,productPrice,productName) values(?,?,?,?,?)";
-        let insertQueryValues = [deliveryDetailsId, customerId, i.quantity, i.price, i.name]
+        let insertQueryValues = [deliveryDetailsId, customerId, i.noOfJarsTobePlaced, i.productPrice, i.productName]
         db.query(deliveryProductsQuery, insertQueryValues, (err, results) => {
           if (err) res.send(err);
           else resolve(results)
@@ -186,7 +185,8 @@ const createQrCode = (qrcodeText) => {
 
 const getLatLongDetails = (req) => {
   return new Promise((resolve, reject) => {
-    geocoder.geocode(req.Address1 + "," + req.Address2, function (err, res) {
+    // geocoder.geocode(req.Address1 + "," + req.Address2, function (err, res) {
+    geocoder.geocode(req.Address1, function (err, res) {
       if (err) reject(err)
       else resolve({
         latitude: res.length ? res[0].latitude : "",
