@@ -148,7 +148,7 @@ router.get('/deliveryDetails/:date', (req, res) => {
 
 router.get('/currentActiveStockDetails', (req, res) => {
 
-  let currentActiveStockQuery = "SELECT SUM(c.20LCans) AS total20LCans,SUM(c.1LBoxes) AS total1LBoxes,SUM(c.500MLBoxes) total500MLBoxes,SUM(c.250MLBoxes) total250MLBoxes FROM customerorderdetails c WHERE isDelivered=0 AND warehouseId=?";
+  let currentActiveStockQuery = "    SELECT * FROM customerActiveStock warehouseId=?";
   let { warehouseId } = req.query;
   let result = db.query(currentActiveStockQuery, [warehouseId], (err, results) => {
 
