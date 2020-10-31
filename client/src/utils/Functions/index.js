@@ -19,4 +19,13 @@ const getBase64 = (img, callback) => {
     reader.addEventListener('load', () => callback(reader.result));
     reader.readAsDataURL(img);
 }
-module.exports = { editData, getBase64 }
+const stringToHslColor = (str) => {
+    var hash = 0;
+    for (var i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+
+    var h = hash % 360;
+    return 'hsl(' + h + ', 45%, 45%)';
+}
+module.exports = { editData, getBase64, stringToHslColor }

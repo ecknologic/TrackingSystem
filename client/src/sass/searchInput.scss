@@ -1,0 +1,40 @@
+.search-input-container {
+    position: relative;
+    
+    .anticon {
+        cursor: pointer;
+        position: absolute; 
+        top: 0;
+        right: 0;
+        display: flex;
+        width: 3em;
+        height: 2.5em;
+        justify-content: center;
+        align-items: center;
+        border-left: 1px solid #E2E2EA;
+        background-color: #FAFCFF;
+        border-radius: .6em;
+        height: 100%;
+
+        svg {
+            height: 50%;
+            width: 50%;
+        }
+    }
+
+    input {
+        border: none;
+        outline: none;
+        border-radius: .6em;
+        height: 2.5em;
+        padding-left: 1em;
+        padding-right: 3.3em;
+        width: 100%;
+        background-color: #FAFCFF;
+
+    }
+
+    input::placeholder {
+        color: #92929D;
+      }
+}

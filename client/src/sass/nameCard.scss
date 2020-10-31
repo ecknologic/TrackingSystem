@@ -1,0 +1,13 @@
+.name-card-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: fit-content;
+
+    .name {
+        margin-left: .5em;
+        color: #535353;
+        font-family: 'PoppinsMedium500';
+        font-size: 1.6ch;
+    }
+}

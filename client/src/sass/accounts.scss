@@ -1,0 +1,111 @@
+$primary-color: #0062FF;
+
+.manage-accounts-header {
+    display: flex;
+    flex-direction: column;
+    height: 10em;
+    
+    .heading-container {
+        flex: 1.2;
+        background-color: rgba(72,92,186,0.05);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 3em;
+
+        .title {
+            font-size: 2.9ch;
+            font-weight: 700;
+            color: $primary-color;
+        }
+
+        .btn {
+            font-size: 1.9ch;
+            font-weight: 650;
+            color: #696974;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #FAFAFB;
+            padding: .5em;
+            padding-right: 1em;
+            border-radius: .6em;
+            cursor: pointer;
+            font-family: 'PoppinsSemiBold600';
+
+            .anticon {
+                cursor: pointer;
+                display: flex !important;
+                width: 2em;
+                justify-content: center;
+                align-items: center;
+                border-radius: .6em;
+                height: 100%;
+        
+                svg {
+                    height: 60%;
+                    width: 60%;
+                }
+            }
+        }
+    }
+    
+    .menu-container {
+        background-color: #EAECF4;
+        flex: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 3em;
+
+        .search-container {
+            flex: 1;
+            max-width: 60em;
+        }
+
+        .rest-container {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .op-container {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-left: 2em;
+
+            .fiter-container {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 2.8em;
+                height: 2.5em;
+                background-color: #fff;
+                border-radius: .6em;
+                margin-left: 1em;
+
+                .anticon {
+                    cursor: pointer;
+                    display: flex !important;
+                    width: 3em;
+                    justify-content: center;
+                    align-items: center;
+                    border-left: 1px solid #ddd;
+                    border-radius: .6em;
+                    height: 100%;
+            
+                    svg {
+                        height: 60%;
+                        width: 60%;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.account-manager-content {
+    padding: 2em;
+}
