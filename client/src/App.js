@@ -3,11 +3,11 @@ import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-d
 import Login from './UI/Login';
 import BiboWarehouse from './UI/Bibo_Warehouse_Stock Inventory';
 import AddCustomer from './UI/customer/AddCustomer';
-import ManageAccounts from './UI/ManageAccounts';
 import AccountsDashboard from './UI/accounts/dashboard';
 import ViewAccount from './UI/accounts/view';
-import './App.css';
+import NoContent from './components/NoContent';
 import PageLayout from './UI/page-layout';
+import './App.css';
 
 const requireAuth = (Component) => {
   const authenticated = JSON.parse(sessionStorage.getItem('isLogged'))
@@ -26,6 +26,7 @@ function App() {
             <Route exact path='/bibowarehouse' render={(props) => requireAuth(<BiboWarehouse {...props} />)} />
             {/* <Route exact path='/bibowarehouses' component={BiboWarehouse} /> */}
             <Route exact path='/addcustomer' render={(props) => requireAuth(<AddCustomer {...props} />)} />
+            <Route exact path='/customerDashboard' render={(props) => requireAuth(<Layout><NoContent content='Designing is in progress' /></Layout>)} />
             <Route exact path='/manageaccount' component={ManageAccounts} />
           </Switch>
         </PageLayout>
