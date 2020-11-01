@@ -1,9 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
 import Login from './UI/Login';
-import LayoutPage from './UI/Layout';
 import BiboWarehouse from './UI/Bibo_Warehouse_Stock Inventory';
-import AddCustomer from './UI/AddCustomer';
+import AddCustomer from './UI/customer/AddCustomer';
 import ManageAccounts from './UI/ManageAccounts';
 import './App.css';
 const requireAuth = (Component) => {
@@ -20,8 +19,8 @@ function App() {
           <Route exact path='/bibowarehouse' render={(props) => requireAuth(<BiboWarehouse {...props} />)} />
           {/* <Route exact path='/bibowarehouses' component={BiboWarehouse} /> */}
           <Route exact path='/addcustomer' render={(props) => requireAuth(<AddCustomer {...props} />)} />
-          <Route exact path='/*' render={(props) => redirectAuth(props)} />
           <Route exact path='/manageaccount' component={ManageAccounts} />
+          <Route exact path='/*' render={(props) => redirectAuth(props)} />
         </Switch>
       </Router>
     </div>
