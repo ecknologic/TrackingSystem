@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { FilterOutlined, PlusOutlined } from '@ant-design/icons'
+import { useHistory } from 'react-router-dom';
 import SortBy from '../../../components/SortByDropdown';
 import SearchInput from '../../../components/SearchInput';
 import ViewsComponent from '../../../components/ViewsComponent';
 import '../../../sass/accounts.scss'
 
 const Header = () => {
+    const history = useHistory()
     const [view, setView] = useState('card')
 
     const handleSearch = (text) => {
@@ -19,7 +21,7 @@ const Header = () => {
         <div className='manage-accounts-header'>
             <div className='heading-container'>
                 <span className='title'>Manage Accounts</span>
-                <div className='btn'>
+                <div className='btn' onClick={() => history.push('/addcustomer')}>
                     <PlusOutlined />
                     <span>Create Account</span>
                 </div>

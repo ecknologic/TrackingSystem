@@ -4,19 +4,19 @@ import '../sass/accountCard.scss'
 import NameCard from './NameCard';
 import PrimaryButton from './PrimaryButton';
 
-const AccountCard = ({ onClick }) => {
-    const isActive = true
-    const name = ['Ajay Babu', 'Jahan Jasper', 'Imran Khan', 'Christopher George', 'Sukesh']
+const AccountCard = ({ customerDetails, onClick }) => {
+    const isActive = customerDetails.isActive
+    const name = JSON.parse(customerDetails.contactpersons)
 
     return (
         <div className='account-card-container'>
-            <div className={isActive ? 'badge active' : 'badge'}>ACTIVE</div>
+            <div className={isActive ? 'badge active' : 'badge'}>{isActive ? "ACTIVE" : "DRAFT"}</div>
             <div className='header'>
                 <div className={isActive ? 'inner green' : 'inner'}>
                     <img src={branch} alt='' />
                     <div className='address-container'>
-                        <span className='title'>Apollo Hospitals</span>
-                        <span className='address'>MLA Colony, Road 13, Banjara Hills Hyderabad</span>
+                        <span className='title'>{customerDetails.organizationName || customerDetails.customerName}</span>
+                        <span className='address'>{customerDetails.address}</span>
                     </div>
                 </div>
             </div>
@@ -32,7 +32,7 @@ const AccountCard = ({ onClick }) => {
                 </div>
                 <div className='business'>
                     <span className='type1'>Business Type</span>
-                    <span className='value'>Home/Residence</span>
+                    <span className='value'>{customerDetails.natureOfBussiness}</span>
                 </div>
             </div>
             <div className='footer'>

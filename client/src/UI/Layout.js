@@ -34,7 +34,7 @@ const LayoutPage = (props) => {
                             style={{ height: '100%', borderRight: 0 }}
                         >
                             <Menu.Item key="1" key="sub1">
-                                <Link to={ROLE == WAREHOUSEADMIN ? "/bibowarehouse" : "/addcustomer"}>
+                                <Link to={ROLE == WAREHOUSEADMIN ? "/bibowarehouse" : "/customerDashboard"}>
                                     <span></span>
                                     <span>Dashboard</span>
                                 </Link>
@@ -49,14 +49,15 @@ const LayoutPage = (props) => {
                                     </Menu.Item>
                                     : null
                             }
-                            <Menu.Item key="3" key="sub3">
-                                <Link to="/accounts">
-                                    <span>
-                                        <img src={dashboardIcon} alt="" />
-                                    </span>
-                                    <span>Manage Accounts</span>
-                                </Link>
-                            </Menu.Item>
+                            {
+                                ROLE == MARKETINGADMIN ? <Menu.Item key="3" key="sub3">
+                                    <Link to="/accounts">
+                                        <span>
+                                            <img src={dashboardIcon} alt="" />
+                                        </span>
+                                        <span>Manage Accounts</span>
+                                    </Link>
+                                </Menu.Item> : null}
                             {
                                 ROLE == MARKETINGADMIN ?
                                     <Menu.Item key="4" key="sub4">
@@ -70,10 +71,16 @@ const LayoutPage = (props) => {
                                     : null
                             }
                             {/* <Menu.Item key="5" key="sub5"><Link to="/manageaccount"><span><img src={dashboardIcon12} alt="" /></span> <span>Manage Stock</span></Link></Menu.Item> */}
-                            <Menu.Item key="6" key="sub6">
-                                <span></span>
-                                <span>Reports</span>
-                            </Menu.Item>
+                            {
+                                ROLE == MARKETINGADMIN ? <Menu.Item key="6" key="sub6">
+                                    <Link to="/customerDashboard">
+                                        <span></span>
+                                        <span>Settings</span>
+                                    </Link>
+                                </Menu.Item> : <Menu.Item key="6" key="sub6">
+                                        <span></span>
+                                        <span>Reports</span>
+                                    </Menu.Item>}
                             {/* <SubMenu key="sub1" icon={<UserOutlined />} title="Dashboard">
                                 <Menu.Item key="1">option1</Menu.Item>
                                 <Menu.Item key="2">option2</Menu.Item>
