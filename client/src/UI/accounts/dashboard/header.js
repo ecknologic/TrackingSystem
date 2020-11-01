@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { FilterOutlined, PlusOutlined } from '@ant-design/icons'
-import SortBy from '../../components/SortByDropdown';
-import SearchInput from '../../components/SearchInput';
-import ViewsComponent from '../../components/ViewsComponent';
-import '../../sass/accounts.scss'
+import SortBy from '../../../components/SortByDropdown';
+import SearchInput from '../../../components/SearchInput';
+import ViewsComponent from '../../../components/ViewsComponent';
+import '../../../sass/accounts.scss'
 
 const Header = () => {
     const [view, setView] = useState('card')

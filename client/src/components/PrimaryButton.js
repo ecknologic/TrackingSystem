@@ -4,7 +4,7 @@ import '../sass/primaryButton.scss'
 const PrimaryButton = ({ text, onClick, disabled }) => {
 
     return (
-        <button className='primary-button-container' onClick={onClick} disabled>
+        <button className='primary-button-container' onClick={onClick} disabled={disabled}>
             <span>{text}</span>
         </button>
     )

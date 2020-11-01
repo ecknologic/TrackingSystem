@@ -1,6 +1,5 @@
 import React from 'react';
 import branch from '../assets/images/ic-manage-users.svg';
-import AvatarText from './AvatarText';
 import '../sass/accountCard.scss'
 import NameCard from './NameCard';
 import PrimaryButton from './PrimaryButton';

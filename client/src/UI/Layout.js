@@ -20,9 +20,9 @@ const LayoutPage = (props) => {
                         <h2><span className="bibotext">Bibo</span> <span>Water</span></h2>
                     </div>
                     <Menu className="TopNavbar" theme="dark" mode="horizontal" defaultSelectedKeys={['2']}>
-                        <Menu.Item key="1"><img src={dashboardIcon14} alt="contest-cover" /></Menu.Item>
-                        <Menu.Item key="2"><img src={dashboardIcon13} alt="contest-cover" /></Menu.Item>
-                        <Menu.Item key="3"><img src={dashboardIcon13} alt="contest-cover" /></Menu.Item>
+                        <Menu.Item key="1"><img src={dashboardIcon14} alt="" /></Menu.Item>
+                        <Menu.Item key="2"><img src={dashboardIcon13} alt="" /></Menu.Item>
+                        <Menu.Item key="3"><img src={dashboardIcon13} alt="" /></Menu.Item>
                     </Menu>
                 </Header>
                 <Layout>
@@ -43,7 +43,7 @@ const LayoutPage = (props) => {
                                 ROLE == WAREHOUSEADMIN ?
                                     <Menu.Item key="2" key="sub2">
                                         <span>
-                                            <img src={dashboardIcon12} alt="contest-cover" />
+                                            <img src={dashboardIcon12} alt="" />
                                         </span>
                                         <span>Manage Stock</span>
                                     </Menu.Item>
@@ -62,14 +62,14 @@ const LayoutPage = (props) => {
                                     <Menu.Item key="4" key="sub4">
                                         <Link to="/addcustomer">
                                             <span>
-                                                <img src={dashboardIcon} alt="contest-cover" />
+                                                <img src={dashboardIcon} alt="" />
                                             </span>
                                             <span>Add Customer</span>
                                         </Link>
                                     </Menu.Item>
                                     : null
                             }
-                            {/* <Menu.Item key="5" key="sub5"><Link to="/manageaccount"><span><img src={dashboardIcon12} alt="contest-cover" /></span> <span>Manage Stock</span></Link></Menu.Item> */}
+                            {/* <Menu.Item key="5" key="sub5"><Link to="/manageaccount"><span><img src={dashboardIcon12} alt="" /></span> <span>Manage Stock</span></Link></Menu.Item> */}
                             <Menu.Item key="6" key="sub6">
                                 <span></span>
                                 <span>Reports</span>

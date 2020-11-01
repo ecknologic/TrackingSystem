@@ -108,4 +108,106 @@ $primary-color: #0062FF;
 
 .account-manager-content {
     padding: 2em;
+    padding-top: 3em;
+
+    #no-content-container {
+        min-height: calc(100vh - 19.5em);
+    }
+}
+
+.account-view-header {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 6em;
+    background-color: rgba(72,92,186,0.05);
+
+    .heading-container {
+        display: flex;
+        align-items: center;
+        padding: 0 3em;
+
+        .titles-container {
+            display: flex;
+            flex-direction: column;
+            margin-left: 2em;
+
+            .title {
+                color: #171725;
+                font-family: 'PoppinsSemiBold600';
+                font-size: 2.9ch;
+            }
+
+            .address {
+                color: #696974;
+                font-family: 'PoppinsMedium500';
+            }
+        }
+    }
+
+}
+.account-view-content {
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(72,92,186,0.05);
+    
+    .tabs-container {
+        flex: 1;
+        display: flex;
+        background-color: #FAFAFB;
+        justify-content: space-between;
+        align-items: flex-end;
+
+        .ant-tabs-ink-bar {
+            background-color: #0062FF;
+            height: 3px;
+            border-top-right-radius: 2em;
+            border-top-left-radius: 2em;
+        }
+        
+        .ant-tabs {
+            flex: 1;
+        }
+        
+        .ant-tabs-bar {
+            display: flex;
+            margin-bottom: 0;
+            padding: 0 3em;
+            background-color: rgba(72,92,186,0.05);
+            border-bottom: none;
+        }
+
+        .ant-tabs-nav-container {
+            flex: 1;
+            order: -1;
+        }
+
+        .ant-tabs-tab {
+            margin-right: 2em;
+            color: #171725;
+            font-family: 'PoppinsMedium500';
+            padding: 1em 1em 1.4em 1em;
+        }
+
+        .ant-tabs-tab-active,.ant-tabs-tab:hover {
+            color: #0062FF;
+        }
+
+        .ant-tabs-extra-content {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .ant-tabs-tabpane {
+            min-height: calc(100vh - 14em);
+
+            padding: 2em;
+            padding-top: 3em;
+
+            #no-content-container {
+                min-height: calc(100vh - 19.5em);
+            }
+        }
+    }
 }

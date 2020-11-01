@@ -1,0 +1,20 @@
+.back-button-container {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #0062FF;
+    
+    .back {
+        font-family: "Lato-Medium";
+        font-size: 20px;
+        margin-right: .3em;
+        cursor: pointer;
+    }
+    
+    .text {
+        font-family: 'PoppinsSemiBold600';
+        font-size: 2ch;
+        cursor: pointer;
+    }
+}
