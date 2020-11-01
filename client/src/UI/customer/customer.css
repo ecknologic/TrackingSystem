@@ -1,0 +1,68 @@
+button.ant-btn.addBtn.ant-btn-default {
+    border: none;
+    padding: 0;
+    background: none;
+    color: #007aff;
+}
+.create-account {
+    height: 28px;
+    width: 167px;
+    color: #1b2125;
+    font-family: Roboto;
+    font-size: 24px;
+    font-weight: bold;
+    letter-spacing: 0;
+    line-height: 28px;
+}
+.backBtn {
+    height: 26px;
+    width: 41px;
+    color: #0062ff;
+    font-family: Poppins;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: 25px;
+}
+
+.left-align {
+    display: flex;
+    flex: 1;
+    justify-content: flex-start;
+}
+
+.right-align {
+    display: flex;
+    flex: 1;
+    justify-content: flex-end;
+}
+button.ant-btn.cancelBtn {
+    height: 20px;
+    width: 52px;
+    color: #171725;
+    /* font-family: Poppins; */
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.09px;
+    line-height: 21px;
+    border: none;
+}
+
+button.ant-btn.confirmBtn {
+    height: 38px;
+    width: 93px;
+    border-radius: 10px;
+    background-color: #007aff;
+    color: #fff;
+}
+.successmodal {
+    height: 63px;
+    width: 476px;
+    color: #171725;
+    /* font-family: Poppins; */
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 0.15px;
+    line-height: 22px;
+    text-align: center;
+}

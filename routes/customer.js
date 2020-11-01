@@ -43,12 +43,13 @@ router.use(function timeLog(req, res, next) {
 //   })
 const uploadImage = (req) => {
   return new Promise((resolve, reject) => {
-    let idproofdetailsquery = "insert  into customerDocStore(idProof_frontside,idProof_backside) values(?,?)";
+    let idproofdetailsquery = "insert  into customerDocStore(idProof_frontside,idProof_backside,gstProof) values(?,?,?)";
     var idProof_frontside = Buffer.from(req.body.idProofs[0].replace(/^data:image\/\w+;base64,/, ""), 'base64')
     var idProof_backside = Buffer.from(req.body.idProofs[1].replace(/^data:image\/\w+;base64,/, ""), 'base64')
-    let insertQueryValues = [idProof_frontside, idProof_backside]
+    var gstProof = Buffer.from(req.body.gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+    let insertQueryValues = [idProof_frontside, idProof_backside, gstProof]
     db.query(idproofdetailsquery, insertQueryValues, (err, results) => {
-      // console.log("fdf", insertQueryValues);
+      console.log("fdf", insertQueryValues);
       if (err) reject(err);
       else {
         resolve(results.insertId);
@@ -116,8 +117,8 @@ const saveDeliveryDetails = (customerId, customerdetails, res) => {
       let count = 0
       for (let i of customerdetails.deliveryDetails) {
         saveDeliveryDays(i.deliveryDays).then(deliveryDays => {
-          let deliveryDetailsQuery = "insert  into DeliveryDetails (gstNo,address,phoneNumber,contactPerson,deliverydaysid,depositAmount,customer_Id,routingId) values(?,?,?,?,?,?,?,?)";
-          let insertQueryValues = [i.gstNo, i.address, i.phoneNumber, i.contactPerson, deliveryDays.insertId, i.depositAmount, customerId, i.routingId]
+          let deliveryDetailsQuery = "insert  into DeliveryDetails (gstNo,location,address,phoneNumber,contactPerson,deliverydaysid,depositAmount,customer_Id,routingId) values(?,?,?,?,?,?,?,?,?)";
+          let insertQueryValues = [i.gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, deliveryDays.insertId, i.depositAmount, customerId, i.routingId]
           db.query(deliveryDetailsQuery, insertQueryValues, (err, results) => {
             if (err) res.json({ status: 500, message: err.sqlMessage });
             else {

@@ -3,9 +3,7 @@ const editData = (updatedItem, data, idField) => {
         if (data.length) {
             const updatedData = []
             data.map(item => {
-                console.log("editData", idField, updatedItem, item)
                 if (item[idField] === updatedItem[idField]) {
-                    console.log("editData------->")
                     item = updatedItem
                 }
                 updatedData.push(item)
