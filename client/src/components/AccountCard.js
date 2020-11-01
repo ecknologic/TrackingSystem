@@ -25,7 +25,7 @@ const AccountCard = ({ onClick }) => {
                     <span className='type1'>Contact Persons</span>
                     <div className='contacts'>
                         {
-                            name.map((item, index) => index <= 2 ? <NameCard name={item} /> : null)
+                            name.map((item, index) => index <= 2 ? <NameCard key={item} name={item} /> : null)
                         }
                         {name.length > 3 ? <div className='extra'>{`+${name.length - 3}`}</div> : null}
                     </div>

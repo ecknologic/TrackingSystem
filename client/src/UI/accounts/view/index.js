@@ -1,6 +1,5 @@
 import { Tabs } from 'antd';
-import React from 'react';
-import LayoutPage from '../../Layout';
+import React, { Fragment } from 'react';
 import SecondaryButton from '../../../components/SecondaryButton';
 import Header from './header';
 import DeliveryDetails from './tabs/DeliveryDetails';
@@ -13,14 +12,13 @@ const ViewAccount = () => {
     const handleAdd = () => { }
 
     return (
-        <LayoutPage>
+        <Fragment>
             <Header />
             <div className='account-view-content'>
                 <div className='tabs-container'>
                     <Tabs
                         tabBarGutter={40}
                         tabBarExtraContent={<SecondaryButton onClick={handleAdd} text='Add new Delivery address' />}
-                        tabBarStyle={{ width: '100%' }}
                     >
                         <TabPane tab="Account Overview" key="1">
                             Content of tab 1
@@ -37,7 +35,7 @@ const ViewAccount = () => {
                     </Tabs>
                 </div>
             </div>
-        </LayoutPage>
+        </Fragment>
     )
 }
 export default ViewAccount

@@ -4,17 +4,16 @@
     .anticon {
         cursor: pointer;
         position: absolute; 
-        top: 0;
-        right: 0;
+        top: 1px;
+        right: 1px;
         display: flex;
         width: 3em;
-        height: 2.5em;
         justify-content: center;
         align-items: center;
         border-left: 1px solid #E2E2EA;
         background-color: #FAFCFF;
         border-radius: .6em;
-        height: 100%;
+        height: 95%;
 
         svg {
             height: 50%;
@@ -23,7 +22,6 @@
     }
 
     input {
-        border: none;
         outline: none;
         border-radius: .6em;
         height: 2.5em;
@@ -31,10 +29,21 @@
         padding-right: 3.3em;
         width: 100%;
         background-color: #FAFCFF;
+        border: .5px solid #FAFCFF;
+        transition: all 600ms ease;
+    }
 
+    input:focus {
+        border: .5px solid #0062FF;
     }
 
     input::placeholder {
         color: #92929D;
-      }
+    }
+
+    &:hover {
+        input {
+            border: .5px solid #0062FF;
+        }
+    }
 }

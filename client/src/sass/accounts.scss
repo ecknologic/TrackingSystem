@@ -111,7 +111,8 @@ $primary-color: #0062FF;
     padding-top: 3em;
 
     #no-content-container {
-        min-height: calc(100vh - 19.5em);
+        height: calc(100vh - 20em);
+        width: 100%;
     }
 }
 
@@ -119,7 +120,7 @@ $primary-color: #0062FF;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    height: 6em;
+    height: 6.1em;
     background-color: rgba(72,92,186,0.05);
 
     .heading-container {
@@ -175,6 +176,7 @@ $primary-color: #0062FF;
             padding: 0 3em;
             background-color: rgba(72,92,186,0.05);
             border-bottom: none;
+            height: 3.9em;
         }
 
         .ant-tabs-nav-container {
@@ -200,13 +202,14 @@ $primary-color: #0062FF;
         }
 
         .ant-tabs-tabpane {
-            min-height: calc(100vh - 14em);
+            min-height: calc(100vh - 14.5em);
 
             padding: 2em;
             padding-top: 3em;
 
             #no-content-container {
-                min-height: calc(100vh - 19.5em);
+                min-height: calc(100vh - 20em);
+                width: 100%;
             }
         }
     }

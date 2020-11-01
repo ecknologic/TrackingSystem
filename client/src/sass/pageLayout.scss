@@ -1,0 +1,78 @@
+#app-container {
+    #app-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #fff;
+        height: 4.6em;
+        border-bottom: 1px solid  #E2E2EA;
+        padding: 0 2em;
+
+        #logo-container {
+            display: flex;
+            height: 100%;
+            width: 8em;
+            font-family: "Lato-Medium";
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 .3em;
+            font-size: 2ch;
+
+            h1 {
+                margin: 0;
+            }
+
+            #bibo {
+                color: #0062FF;
+            }
+            #water {
+                color: #4C4E4E;;
+            }
+        }
+
+        #nav-container {
+            height: 100%;
+            width: 10em;
+            border-left: 1px solid  #E2E2EA;
+            padding: 0 1em;
+    
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    }
+
+    #app-content {
+        height: calc(100vh - 4.6em);
+
+        .app-sider {
+            z-index: 1;
+            
+            #app-side-menu {
+                height: 100%;
+                box-shadow: 0 2px 4px 0 rgba(0,0,0,0.05);
+                border: none;
+
+                .ant-menu-item {
+                    width: 100%;
+                    margin: 0;
+                    margin-top: 1.5em;
+                    padding: 0 1em !important;
+                    font-family: "PoppinsMedium500";
+                    background-color: #fff;
+
+                   &:hover {
+                        color: #0062FF;
+                    }
+
+                    img {
+                        margin-right: 1em;
+                    }
+                }
+                .ant-menu-item-selected {
+                    color: #0062FF;
+                }
+            }
+        }
+    }
+}

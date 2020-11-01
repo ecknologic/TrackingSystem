@@ -7,6 +7,7 @@ import ManageAccounts from './UI/ManageAccounts';
 import AccountsDashboard from './UI/accounts/dashboard';
 import ViewAccount from './UI/accounts/view';
 import './App.css';
+import PageLayout from './UI/page-layout';
 
 const requireAuth = (Component) => {
   const authenticated = JSON.parse(sessionStorage.getItem('isLogged'))
@@ -18,16 +19,18 @@ function App() {
   return (
     <div className="App">
       <Router>
-        <Switch>
-          <Route path='/accounts/:accountId' component={ViewAccount} />
-          <Route path='/accounts' component={AccountsDashboard} />
-          <Route exact path='/bibowarehouse' render={(props) => requireAuth(<BiboWarehouse {...props} />)} />
-          {/* <Route exact path='/bibowarehouses' component={BiboWarehouse} /> */}
-          <Route exact path='/addcustomer' render={(props) => requireAuth(<AddCustomer {...props} />)} />
-          <Route exact path='/manageaccount' component={ManageAccounts} />
-          <Route exact path='/' component={Login} />
-          <Route exact path='/*' render={(props) => redirectAuth(props)} />
-        </Switch>
+        <PageLayout>
+          <Switch>
+            <Route path='/manage-accounts/:accountId' component={ViewAccount} />
+            <Route path='/manage-accounts' component={AccountsDashboard} />
+            <Route exact path='/bibowarehouse' render={(props) => requireAuth(<BiboWarehouse {...props} />)} />
+            {/* <Route exact path='/bibowarehouses' component={BiboWarehouse} /> */}
+            <Route exact path='/addcustomer' render={(props) => requireAuth(<AddCustomer {...props} />)} />
+            <Route exact path='/manageaccount' component={ManageAccounts} />
+          </Switch>
+        </PageLayout>
+        <Route exact path='/' component={Login} />
+        <Route exact path='/*' render={(props) => redirectAuth(props)} />
       </Router>
     </div>
   );

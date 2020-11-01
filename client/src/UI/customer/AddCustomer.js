@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col, Button, Select, Form, Input, Checkbox, DatePicker, Collapse, message, Modal } from 'antd';
 import '../../css/styles.css'
-import LayoutPage from '../Layout';
 import { createOrUpdateAPI, getAPI } from "../../utils/apis";
 import { getBase64 } from '../../utils/Functions'
 import { WAREHOUSEID, USERID, USERNAME, TODAYDATE } from '../../utils/constants'
@@ -195,80 +194,78 @@ const AddCustomer = (props) => {
     ))
     return (
         <div>
-            <LayoutPage>
-                <div className="addcustomerheader">
-                    <Row>
-                        <Col span={2}>
-                            <span className='backBtn'>Back</span>
-                        </Col>
-                        <Col span={15}>
-                            <span className='create-account'>Create Account</span>
-                        </Col>
-                        <Col span={4}>
-                            <h5>help</h5>
-                        </Col>
-                    </Row>
-                </div>
-                <div className="addCustomerBody">
-                    <Row>
-                        <Col span={24}>
-                            <Button type="primary" className={corpCustomer ? 'ActivenumTab' : 'normalnumTab'} onClick={() => onTabChange("corpCustomer")}>Create Account for Business Users</Button>
-                            <Button type="primary" className={otherCustomer ? 'ActivenumTab' : 'normalnumTab'} onClick={() => onTabChange("otherCustomer")}>Account for Other Users</Button>
-                        </Col>
-                    </Row>
-                    <Form>
-                        {corpCustomer ?
-                            <CorporateCustomerForm
-                                dropDownChange={dropDownChange}
-                                inputData={inputData} idProofsList={idProofsList} customImageUpload={customImageUpload}
-                                errors={errors} frontImage={frontImage} backImage={backImage} gstProof={gstProof}
-                                natureOfBussinessList={natureOfBussinessList} invoiceTypeList={invoiceTypeList} deliveryDetails={deliveryDetails}
-                                saveDeliveryDetails={saveDeliveryDetails} setDeliveryDetails={setDeliveryDetails} callback={callback} deliveryInputChange={deliveryInputChange}
-                                currentDelIndex={currentDelIndex} disabled={disabled} inputChange={inputChange} collapseActiveKey={collapseActiveKey} routesOptions={routesOptions} deliveryDaysList={deliveryDaysList} /> :
-                            <OtherCustomerForm
-                                dropDownChange={dropDownChange}
-                                inputData={inputData} idProofsList={idProofsList} customImageUpload={customImageUpload}
-                                errors={errors} frontImage={frontImage} backImage={backImage} gstProof={gstProof}
-                                invoiceTypeList={invoiceTypeList} deliveryDetails={deliveryDetails}
-                                saveDeliveryDetails={saveDeliveryDetails} setDeliveryDetails={setDeliveryDetails} deliveryInputChange={deliveryInputChange}
-                                disabled={disabled} inputChange={inputChange} routesOptions={routesOptions} deliveryDaysList={deliveryDaysList}
-                            />}
-                    </Form>
-                </div>
-                <div className="addcustomerfooter">
-                    <Row>
-                        <Col className="left-align">
-                            <Button type="default">CANCEL</Button>
-                        </Col>
-                        <Col span={4} className="right-align">
-                            <Button type="primary" onClick={() => saveDeliveryDetails(currentDelIndex, 'create')}>CREATE ACCOUNT</Button>
-                        </Col>
-                    </Row>
+            <div className="addcustomerheader">
+                <Row>
+                    <Col span={2}>
+                        <span className='backBtn'>Back</span>
+                    </Col>
+                    <Col span={15}>
+                        <span className='create-account'>Create Account</span>
+                    </Col>
+                    <Col span={4}>
+                        <h5>help</h5>
+                    </Col>
+                </Row>
+            </div>
+            <div className="addCustomerBody">
+                <Row>
+                    <Col span={24}>
+                        <Button type="primary" className={corpCustomer ? 'ActivenumTab' : 'normalnumTab'} onClick={() => onTabChange("corpCustomer")}>Create Account for Business Users</Button>
+                        <Button type="primary" className={otherCustomer ? 'ActivenumTab' : 'normalnumTab'} onClick={() => onTabChange("otherCustomer")}>Account for Other Users</Button>
+                    </Col>
+                </Row>
+                <Form>
+                    {corpCustomer ?
+                        <CorporateCustomerForm
+                            dropDownChange={dropDownChange}
+                            inputData={inputData} idProofsList={idProofsList} customImageUpload={customImageUpload}
+                            errors={errors} frontImage={frontImage} backImage={backImage} gstProof={gstProof}
+                            natureOfBussinessList={natureOfBussinessList} invoiceTypeList={invoiceTypeList} deliveryDetails={deliveryDetails}
+                            saveDeliveryDetails={saveDeliveryDetails} setDeliveryDetails={setDeliveryDetails} callback={callback} deliveryInputChange={deliveryInputChange}
+                            currentDelIndex={currentDelIndex} disabled={disabled} inputChange={inputChange} collapseActiveKey={collapseActiveKey} routesOptions={routesOptions} deliveryDaysList={deliveryDaysList} /> :
+                        <OtherCustomerForm
+                            dropDownChange={dropDownChange}
+                            inputData={inputData} idProofsList={idProofsList} customImageUpload={customImageUpload}
+                            errors={errors} frontImage={frontImage} backImage={backImage} gstProof={gstProof}
+                            invoiceTypeList={invoiceTypeList} deliveryDetails={deliveryDetails}
+                            saveDeliveryDetails={saveDeliveryDetails} setDeliveryDetails={setDeliveryDetails} deliveryInputChange={deliveryInputChange}
+                            disabled={disabled} inputChange={inputChange} routesOptions={routesOptions} deliveryDaysList={deliveryDaysList}
+                        />}
+                </Form>
+            </div>
+            <div className="addcustomerfooter">
+                <Row>
+                    <Col className="left-align">
+                        <Button type="default">CANCEL</Button>
+                    </Col>
+                    <Col span={4} className="right-align">
+                        <Button type="primary" onClick={() => saveDeliveryDetails(currentDelIndex, 'create')}>CREATE ACCOUNT</Button>
+                    </Col>
+                </Row>
 
-                </div>
-                <div>
-                    <Modal
-                        title="Account Confirmation"
-                        visible={visible}
-                        onOk={() => { setVisible(false) }}
-                        onCancel={() => { setVisible(false) }}
-                        footer={<Row>
-                            <Col className="left-align">
-                                <Button className='cancelBtn' onClick={() => setVisible(false)}>Cancel</Button>
-                            </Col>
-                            <Col className="right-align">
-                                <Button className='confirmBtn'>Continue</Button>
-                            </Col>
-                        </Row>}
-                    >
-                        <div className='successmodal' style={{ textAlign: 'center' }}>
-                            <h1>Done!</h1>
-                            <p>You have successfully added a Business customer account for</p>
-                            <h1>{inputData.customerName}</h1>
-                        </div>
-                    </Modal>
-                </div>
-            </LayoutPage >
+            </div>
+            <div>
+                <Modal
+                    title="Account Confirmation"
+                    visible={visible}
+                    onOk={() => { setVisible(false) }}
+                    onCancel={() => { setVisible(false) }}
+                    footer={<Row>
+                        <Col className="left-align">
+                            <Button className='cancelBtn' onClick={() => setVisible(false)}>Cancel</Button>
+                        </Col>
+                        <Col className="right-align">
+                            <Button className='confirmBtn'>Continue</Button>
+                        </Col>
+                    </Row>}
+                >
+                    <div className='successmodal' style={{ textAlign: 'center' }}>
+                        <h1>Done!</h1>
+                        <p>You have successfully added a Business customer account for</p>
+                        <h1>{inputData.customerName}</h1>
+                    </div>
+                </Modal>
+            </div>
         </div >
     )
 }

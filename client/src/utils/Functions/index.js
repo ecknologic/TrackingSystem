@@ -26,4 +26,12 @@ const stringToHslColor = (str) => {
     var h = hash % 360;
     return 'hsl(' + h + ', 45%, 45%)';
 }
-module.exports = { editData, getBase64, stringToHslColor }
+
+const getSideMenu = (path) => {
+    if (path.includes('/bibowarehouse') || path.includes('/addcustomer'))
+        return 'dashboard'
+    if (path.includes('/manage-accounts'))
+        return '/manage-accounts'
+
+}
+module.exports = { editData, getBase64, stringToHslColor, getSideMenu }
