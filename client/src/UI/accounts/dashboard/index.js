@@ -14,20 +14,14 @@ const Accounts = () => {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        // const customers = ['1', '2', '3', '4', '5', '6', '7', '8'];
         let url = '/customer/getCustomerDetails/' + USERID
         getAPI(url).then(res => {
             setCustomers(res.data)
             setLoading(false)
         })
-        // setTimeout(() => {
-        //     setCustomers(customers)
-        // }, 2000)
     }, [])
 
-    const accountId = '5e23c23ls942ea23456'
-
-    const goToViewAccount = (id) => history.push(`/accounts/${id}`)
+    const goToViewAccount = (id) => history.push(`/manage-accounts/${id}`)
 
     return (
         <Fragment>

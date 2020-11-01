@@ -26,8 +26,7 @@ function App() {
             <Route exact path='/bibowarehouse' render={(props) => requireAuth(<BiboWarehouse {...props} />)} />
             {/* <Route exact path='/bibowarehouses' component={BiboWarehouse} /> */}
             <Route exact path='/addcustomer' render={(props) => requireAuth(<AddCustomer {...props} />)} />
-            <Route exact path='/customerDashboard' render={(props) => requireAuth(<Layout><NoContent content='Designing is in progress' /></Layout>)} />
-            <Route exact path='/manageaccount' component={ManageAccounts} />
+            <Route exact path='/customerDashboard' render={(props) => requireAuth(<NoContent content='Designing is in progress' />)} />
           </Switch>
         </PageLayout>
         <Route exact path='/' component={Login} />
