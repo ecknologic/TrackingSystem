@@ -1,32 +1,29 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Menu } from 'antd';
-import { Link, useHistory, useLocation } from 'react-router-dom';
-import dashboardIcon from '../../assets/images/ic-manage-users.svg';
+import { useHistory, useLocation } from 'react-router-dom';
 import dashboardIcon12 from '../../assets/images/ic-manage-accounts.svg';
 import { MARKETINGADMIN, ROLE, WAREHOUSEADMIN } from '../../utils/constants';
-import { getSideMenu } from '../../utils/Functions'
-
+import { getSideMenuKey } from '../../utils/Functions'
 const { Item } = Menu
 
 const SideMenu = () => {
     const { pathname } = useLocation()
     const history = useHistory()
-    const [menu, setMenu] = useState('dashboard')
+    const [selected, setSelected] = useState('/dashboard')
+
+    const pattern = /[^\/]*\/[^\/]*/; // regex to match upto second forward slash in url pathname
+    const mainPathname = pathname.match(pattern)[0]
+
+    const menu = useMemo(() => getSideMenuKey(pathname), [mainPathname])
 
     useEffect(() => {
-        const menu = getSideMenu(pathname)
-        setMenu(menu)
-    }, [])
+        setSelected(menu)
+    }, [menu])
 
-    const handleMenuSelect = (event) => {
-        const { key } = event
-        setMenu(key)
-        history.push(key)
-    }
+    const handleMenuSelect = ({ key }) => history.push(key)
 
-    const handleMenuSelectByAuth = ({ key }) => {
-        setMenu(key)
-        if (key === 'dashboard') {
+    const handleMenuSelectByRole = ({ key }) => {
+        if (key === '/dashboard') {
             if (ROLE == WAREHOUSEADMIN) history.push('/bibowarehouse')
             else history.push('/addcustomer')
         }
@@ -36,9 +33,9 @@ const SideMenu = () => {
         <Menu
             id='app-side-menu'
             mode="inline"
-            selectedKeys={menu}
+            selectedKeys={selected}
         >
-            <Item key='dashboard' onClick={handleMenuSelectByAuth}>
+            <Item key='/dashboard' onClick={handleMenuSelectByRole}>
                 <img src={dashboardIcon12} alt="" />
                 <span>Dashboard</span>
             </Item>

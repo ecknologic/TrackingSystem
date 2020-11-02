@@ -27,11 +27,14 @@ const stringToHslColor = (str) => {
     return 'hsl(' + h + ', 45%, 45%)';
 }
 
-const getSideMenu = (path) => {
-    if (path.includes('/bibowarehouse') || path.includes('/addcustomer'))
-        return 'dashboard'
-    if (path.includes('/manage-accounts'))
-        return '/manage-accounts'
-
+const getSideMenuKey = (path) => {
+    switch (path) {
+        case '/bibowarehouse':
+            return '/dashboard'
+        case '/addcustomer':
+            return '/dashboard'
+        default:
+            return path
+    }
 }
-module.exports = { editData, getBase64, stringToHslColor, getSideMenu }
+module.exports = { editData, getBase64, stringToHslColor, getSideMenuKey }

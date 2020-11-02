@@ -9,37 +9,34 @@ import NoContent from './components/NoContent';
 import PageLayout from './UI/page-layout';
 import './App.css';
 
-const requireAuth = (Component) => {
-  const authenticated = JSON.parse(sessionStorage.getItem('isLogged'))
-  if (authenticated) return Component
-  else return <Redirect to="/" />
-};
-
-function App() {
-  return (
-    <div className="App">
+const App = () => {
+   return (
       <Router>
-        <PageLayout>
-          <Switch>
-            <Route path='/manage-accounts/:accountId' component={ViewAccount} />
-            <Route path='/manage-accounts' component={AccountsDashboard} />
-            <Route exact path='/bibowarehouse' render={(props) => requireAuth(<BiboWarehouse {...props} />)} />
-            {/* <Route exact path='/bibowarehouses' component={BiboWarehouse} /> */}
-            <Route exact path='/addcustomer' render={(props) => requireAuth(<AddCustomer {...props} />)} />
-            <Route exact path='/customerDashboard' render={(props) => requireAuth(<NoContent content='Designing is in progress' />)} />
-          </Switch>
-        </PageLayout>
-        <Route exact path='/' component={Login} />
-        <Route exact path='/*' render={(props) => redirectAuth(props)} />
+         <Route exact path='/' component={Login} />
+         <PageLayout>
+            <Switch>
+               <Route path='/manage-accounts/:accountId' render={() => requireAuth(<ViewAccount />)} />
+               <Route path='/manage-accounts' render={() => requireAuth(<AccountsDashboard />)} />
+               <Route path='/bibowarehouse' render={(props) => requireAuth(<BiboWarehouse {...props} />)} />
+               <Route path='/addcustomer' render={(props) => requireAuth(<AddCustomer {...props} />)} />
+               <Route path='/customerDashboard' render={() => requireAuth(<NoContent content='Design is in progress' />)} />
+               <Route path='/*' render={() => redirectAuth()} />
+            </Switch>
+         </PageLayout>
       </Router>
-    </div>
-  );
+   );
 }
 
-function redirectAuth(props) {
-  const authenticated = JSON.parse(sessionStorage.getItem('isLogged'))
-  if (authenticated) return <Redirect to="/bibowarehouse" />
-  else return <Redirect to="/" />
+const requireAuth = (Component) => {
+   const authenticated = JSON.parse(sessionStorage.getItem('isLogged'))
+   if (authenticated) return Component
+   else return <Redirect to="/" />
+};
+
+const redirectAuth = () => {
+   const authenticated = JSON.parse(sessionStorage.getItem('isLogged'))
+   if (authenticated) return <Redirect to="/bibowarehouse" />
+   else return <Redirect to="/" />
 }
 
 export default App;
