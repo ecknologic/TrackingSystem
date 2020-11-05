@@ -264,10 +264,32 @@ const getDeliverDetails=(customerId)=>{
   db.query(deliveryDetailsQuery, [customerId], (err, results) => {
     if (err) reject(err)
     else {
-      resolve(results )
+       results.forEach((result)=>{
+        customerProductDetails(result.deliveryDetailsId).then(response=>{
+          if (err) res.send(err);
+       else {
+        results[0]["customerproducts"]=response;
+
+        resolve(results );
+      }
+       });
+
+       });
     }
   });
   });
+}
+
+const customerProductDetails=(deliveryDetailsId)=>{
+  return new Promise((resolve,reject)=>{
+    let customerProductDetailsQuery="SELECT cp.productName,cp.noOfJarsTobePlaced FROM customerproductdetails cp WHERE deliveryDetailsId=?";
+    db.query(customerProductDetailsQuery, [deliveryDetailsId], (err, results) => {
+      if (err) reject(err)
+      else {    
+        resolve(results)
+      }
+    });
+    });
 }
 
 module.exports = router;
