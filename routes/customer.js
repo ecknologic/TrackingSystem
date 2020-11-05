@@ -8,6 +8,7 @@ var NodeGeocoder = require('node-geocoder');
 const opencage = require("../config/opencage.config.js");
 const { Buffer } = require('buffer');
 const multer = require('multer');
+const { resolve } = require('path');
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'assests/idproofs')
@@ -196,6 +197,9 @@ const getLatLongDetails = (req) => {
     });
   })
 }
+
+
+
 router.get("/getCustomerDetails/:creatorId", (req, res) => {
   let customerDetailsQuery = "SELECT c.organizationName,c.isActive,c.customerId,c.natureOfBussiness,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.createdBy=?  GROUP BY c.organizationName,c.natureOfBussiness,c.address1,c.isActive,c.customerId"
   db.query(customerDetailsQuery, [req.params.creatorId], (err, results) => {
@@ -214,6 +218,24 @@ router.get("/getCustomerDetailsById/:customerId", (req, res) => {
     }
   })
 });
+router.get("/getCustomerDeliveryDetails/:customerId", (req, res) => {
+  let customerDetailsQuery = "SELECT * from customerdetails c  WHERE c.customerId=?";
+  db.query(customerDetailsQuery,[req.params.customerId],(err, results) => {
+    getDeliverDetails(req.params.customerId).then(response=>{
+       if (err) res.send(err);
+    else {
+      const  customerDeliveryDetails=JSON.parse(JSON.stringify(results));
+      customerDeliveryDetails[0]["deliveryDetails"]=response;
+
+      //var customerDeliveryDetails = results.concat(JSON.stringify(response));
+  
+      res.json({ status: 200, statusMessage: "Success", data: customerDeliveryDetails })
+    }
+    });
+
+   
+  })
+});
 router.get("/getProductsDetails", (req, res) => {
   let productDetailsQuery = "SELECT * from productdetails"
   db.query(productDetailsQuery, (err, results) => {
@@ -229,6 +251,46 @@ router.get("/getProductsDetails", (req, res) => {
 //   });
 // });
 
+const getDeliverDetails=(customerId)=>{
+  return new Promise((resolve,reject)=>{
+    let deliveryDetailsQuery = "SELECT d.*,r.routeName,"+
+    "concat(CASE WHEN cd.sun=1 THEN 'Sunday,' ELSE '' END,"+
+    "CASE WHEN cd.mon=1 THEN 'Monday,' ELSE '' END,"+
+    "CASE WHEN cd.tue=1 THEN 'Tuesday,' ELSE '' END,"+
+    "CASE WHEN cd.wed=1 THEN 'Wednesday,' ELSE '' END,"+
+    "CASE WHEN cd.thu=1 THEN 'Thursday,' ELSE '' END,"+
+    "CASE WHEN cd.fri=1 THEN 'Friday,' ELSE '' END,"+
+    "CASE WHEN cd.sat=1 THEN 'Saturday,' ELSE '' END) AS 'Delivery Days'"+
+     "FROM DeliveryDetails d INNER JOIN customerdeliverydays cd ON cd.deliveryDaysId=d.deliverydaysid INNER JOIN routes r ON r.RouteId=d.routingId WHERE d.customer_Id=?";
+  db.query(deliveryDetailsQuery, [customerId], (err, results) => {
+    if (err) reject(err)
+    else {
+       results.forEach((result)=>{
+        customerProductDetails(result.deliveryDetailsId).then(response=>{
+          if (err) res.send(err);
+       else {
+        results[0]["customerproducts"]=response;
 
+        resolve(results );
+      }
+       });
+
+       });
+    }
+  });
+  });
+}
+
+const customerProductDetails=(deliveryDetailsId)=>{
+  return new Promise((resolve,reject)=>{
+    let customerProductDetailsQuery="SELECT cp.productName,cp.noOfJarsTobePlaced FROM customerproductdetails cp WHERE deliveryDetailsId=?";
+    db.query(customerProductDetailsQuery, [deliveryDetailsId], (err, results) => {
+      if (err) reject(err)
+      else {    
+        resolve(results)
+      }
+    });
+    });
+}
 
 module.exports = router;
