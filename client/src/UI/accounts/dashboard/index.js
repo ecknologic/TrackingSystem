@@ -21,11 +21,16 @@ const Accounts = () => {
         })
     }, [])
 
+    const handleSearch = () => { }
+    const handleSort = () => { }
+    const handleFilter = () => { }
+
+    const goToAddAccount = () => history.push('/add-account')
     const goToViewAccount = (id) => history.push(`/manage-accounts/${id}`)
 
     return (
         <Fragment>
-            <Header />
+            <Header onSearch={handleSearch} onSort={handleSort} onFilter={handleFilter} onClick={goToAddAccount} />
             <div className='account-manager-content'>
                 <Row gutter={[{ lg: 32, xl: 16 }, { lg: 32, xl: 32 }]}>
                     {

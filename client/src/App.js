@@ -5,6 +5,7 @@ import BiboWarehouse from './UI/Bibo_Warehouse_Stock Inventory';
 import AddCustomer from './UI/customer/AddCustomer';
 import AccountsDashboard from './UI/accounts/dashboard';
 import ViewAccount from './UI/accounts/view';
+import AddAccount from './UI/accounts/add';
 import NoContent from './components/NoContent';
 import PageLayout from './UI/page-layout';
 import './App.css';
@@ -17,6 +18,7 @@ const App = () => {
             <Switch>
                <Route path='/manage-accounts/:accountId' render={() => requireAuth(<ViewAccount />)} />
                <Route path='/manage-accounts' render={() => requireAuth(<AccountsDashboard />)} />
+               <Route path='/add-account' render={() => requireAuth(<AddAccount />)} />
                <Route path='/bibowarehouse' render={(props) => requireAuth(<BiboWarehouse {...props} />)} />
                <Route path='/addcustomer' render={(props) => requireAuth(<AddCustomer {...props} />)} />
                <Route path='/customerDashboard' render={() => requireAuth(<NoContent content='Design is in progress' />)} />

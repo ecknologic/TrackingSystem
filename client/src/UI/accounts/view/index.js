@@ -1,8 +1,10 @@
 import { Tabs } from 'antd';
 import React, { Fragment } from 'react';
-import SecondaryButton from '../../../components/SecondaryButton';
-import Header from './header';
+import { FileTextOutlined } from '@ant-design/icons'
+import CustomButton from '../../../components/CustomButton';
 import DeliveryDetails from './tabs/DeliveryDetails';
+import CorporateAccount from '../add/forms/CorporateAccount';
+import Header from './header';
 
 const { TabPane } = Tabs;
 
@@ -18,10 +20,16 @@ const ViewAccount = () => {
                 <div className='tabs-container'>
                     <Tabs
                         tabBarGutter={40}
-                        tabBarExtraContent={<SecondaryButton onClick={handleAdd} text='Add new Delivery address' />}
+                        tabBarExtraContent={
+                            <CustomButton
+                                className='extra-btn'
+                                onClick={handleAdd}
+                                icon={<FileTextOutlined />}
+                                text='Add new Delivery address' />
+                        }
                     >
                         <TabPane tab="Account Overview" key="1">
-                            Content of tab 1
+                            <CorporateAccount />
                         </TabPane>
                         <TabPane tab="Delivery Details" key="2">
                             <DeliveryDetails />

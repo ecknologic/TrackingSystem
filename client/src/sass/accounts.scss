@@ -116,7 +116,7 @@ $primary-color: #0062FF;
     }
 }
 
-.account-view-header {
+.account-view-header, .account-add-header {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -147,6 +147,7 @@ $primary-color: #0062FF;
     }
 
 }
+
 .account-view-content {
     display: flex;
     flex-direction: column;
@@ -199,6 +200,19 @@ $primary-color: #0062FF;
             display: flex;
             justify-content: flex-end;
             align-items: center;
+
+            .extra-btn {
+                background-color: #5C63AB;
+                color: #fff;
+                cursor: pointer;
+                font-family: 'PoppinsMedium500';
+                height: 2.6em;
+                border-radius: .6em;
+
+                .text {
+                    margin-left: .5em;
+                }
+            }
         }
 
         .ant-tabs-tabpane {
@@ -212,5 +226,154 @@ $primary-color: #0062FF;
                 width: 100%;
             }
         }
+    }
+}
+
+.account-add-content {
+    display: flex;
+    flex-direction: column;
+    padding: 3em 1em 2em 3em;
+    background-color: #FAFAFB;
+
+    .header-buttons-container {
+        display: flex;
+        align-items: center;
+        padding: 1em 0;
+        
+        .big {
+            height: 5.5em;
+            width: 45%;
+            border: 1px solid #E3E3E3;
+            font-family: 'PoppinsRegular400';
+            background-color: #5C63AB;
+            border-radius: .6em;
+            color: #fff;
+            transition: all 0.3s;
+
+            .text {
+                margin-left: .5em;
+                font-size: 2.4ch;
+            }
+        }
+
+        .second {
+            margin-left: 1em;
+            color: #1B2125;
+            background-color: #EBEBEB;            
+        }
+    }
+
+    .identity-proof-container {
+        padding: 1em 0;
+    }
+
+    .form-container {
+        display: flex;
+        flex-direction: column;
+        width: 80%;
+    }
+
+    .row {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        padding: .5em 0;
+
+        .input-container {
+            width: 48%;
+        }
+
+        .stretch {
+            width: 100%;
+        }
+
+        .add-new-btn {
+            background-color: #F1F1F5;
+            border: 1px solid #E9E9E9;
+            color: #005FFF;
+            font-family: 'PoppinsSemiBold600';
+        }
+    }
+
+    .add-new-btn-container {
+        align-items: center;
+        height: 8em;
+    }
+
+    .columns {
+        display: flex;
+        flex-direction: column;
+        padding: .5em 0;
+
+        .columns-container {
+            display: flex;
+            justify-content: center;
+            width: 80%;
+        }
+
+        .column {
+            display: flex;
+            flex: 1;
+            margin-right: 1em;
+        }
+
+        .input-container {
+            margin-right: .5em;
+        }
+
+    }
+
+    .checkbox-container {
+        display: flex;
+        align-items: center;
+        height: 8em;
+
+        .text {
+            color: rgba(0,0,0,0.85);
+            margin-left: 1em;
+            font-family: 'PoppinsRegular400';
+        }
+    }
+
+    .ant-divider {
+        background-color: #E9E9E9;
+    }
+
+    .title-container {
+        height: 5em;
+        display: flex;
+        align-items: center;
+
+        span {
+            color: #1B2125;
+            font-family: 'PoppinsRegular400';
+            font-size: 2.6ch;
+        }
+    }
+
+    .footer-buttons-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 10em;
+        width: 80%;
+
+        .footer-btn {
+            text-transform: uppercase;
+            font-family: 'PoppinsSemiBold600';
+        }
+
+        .cancel-btn {
+            background-color: transparent;
+            color: #005FFF;
+        }
+
+        .create-btn {
+            background-color: #0091FF;
+            height: 3.5em;
+            width: 15em;
+            border-radius: .8em;
+        }
+
     }
 }

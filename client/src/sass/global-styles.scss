@@ -1,0 +1,114 @@
+$primaryColor: #0062FF;
+
+// ant-d select input styles
+.ant-select {
+    width: 100%;
+    margin-top: .5em;
+}
+
+.ant-select-selector {
+    height: 2.7em !important;
+    background-color: #FCFDFE !important;
+    border-radius: .5em !important;
+    border: 1px solid #E2E2EA !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    &:hover, &:focus {
+        border: 1px solid $primaryColor !important;
+    }
+
+    .ant-select-selection-item {
+        font-size: 1.8ch;
+        color: rgba(0,0,0,0.85);
+        font-family: 'PoppinsRegular400';
+    }
+
+    .ant-select-selection-search-input {
+        height: 100% !important;
+    }
+}
+
+.ant-select-focused.ant-select-single:not(.ant-select-customize-input) .ant-select-selector {
+    border-color: $primaryColor !important;
+    box-shadow: none !important;
+}
+
+// ant-d input styles
+.ant-input {
+    height: 2.7em !important;
+    background-color: #FCFDFE !important;
+    border-radius: .6em !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: .5em;
+    border: 1px solid #E2E2EA;
+    
+    &:hover, &:focus {
+        border-color: $primaryColor;
+        box-shadow: none !important;
+    }
+}
+
+.ant-input-group-wrapper {
+    margin-top: .5em ;
+
+    .ant-input {
+        margin-top: 0;
+    }
+}
+
+// ant-d input add-on styles
+.ant-input-group-addon {
+    background-color: #FCFDFE !important;
+    border-top-right-radius: .5em !important;
+    border-bottom-right-radius: .5em !important;
+    cursor: pointer;
+}
+
+.input-has-addon .ant-input {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+
+.app-input-label-name {
+    color: #4D5775;
+    text-transform: uppercase;
+    font-family: 'PoppinsSemiBold600';
+    padding: 0 0 0 .25em;
+    font-size: 1.6ch;
+}
+
+.app-input-addon-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    color: #0062FF;
+    font-family: 'PoppinsSemiBold600';
+    font-size: 1.6ch;
+    background-color: #FCFDFE !important;
+}
+
+.app-form-container { // remove this if not needed
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+
+    .row {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        padding: .5em 0;
+
+        .input-container {
+            width: 48%;
+        }
+
+        .stretch {
+            width: 100%;
+        }
+    }
+}
