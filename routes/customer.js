@@ -223,7 +223,11 @@ router.get("/getCustomerDeliveryDetails/:customerId", (req, res) => {
     getDeliverDetails(req.params.customerId).then(response=>{
        if (err) res.send(err);
     else {
-      var customerDeliveryDetails = results.concat(response);
+      const  customerDeliveryDetails=JSON.parse(JSON.stringify(results));
+      customerDeliveryDetails[0]["deliveryDetails"]=response;
+
+      //var customerDeliveryDetails = results.concat(JSON.stringify(response));
+  
       res.json({ status: 200, statusMessage: "Success", data: customerDeliveryDetails })
     }
     });
