@@ -355,20 +355,37 @@ router.post('/updateDeliveryDetails', (req, res) => {
   if (deliveryDetails.length) {
     let count = 0
     for (let i of deliveryDetails) {
-      updateDeliveryDays(i.deliveryDays, i.deliverydaysid).then(deliveryDays => {
-        let deliveryDetailsQuery = "UPDATE DeliveryDetails SET gstNo=?,location=?,address=?,phoneNumber=?,contactPerson=?,depositAmount=?,routingId=? WHERE deliveryDetailsId=" + i.deliveryDetailsId;
-        let updateQueryValues = [i.gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, i.depositAmount, i.routingId]
-        db.query(deliveryDetailsQuery, updateQueryValues, (err, results) => {
-          if (err) res.json({ status: 500, message: err.sqlMessage });
-          else {
-            count++
-            updateProductDetails(i.products).then(productDetails => {
-              console.log(count, deliveryDetails.length)
-              if (count == deliveryDetails.length) res.json({ status: 200, message: "Delivery Details Updated Successfully" });
-            })
-          }
-        });
-      })
+      if (deliveryDetails.isNew == true) {
+        saveDeliveryDays(i.deliveryDays).then(deliveryDays => {
+          let deliveryDetailsQuery = "insert  into DeliveryDetails (gstNo,location,address,phoneNumber,contactPerson,deliverydaysid,depositAmount,customer_Id,routingId) values(?,?,?,?,?,?,?,?,?)";
+          let insertQueryValues = [i.gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, deliveryDays.insertId, i.depositAmount, deliveryDetails.customerId, i.routingId]
+          db.query(deliveryDetailsQuery, insertQueryValues, (err, results) => {
+            if (err) res.json({ status: 500, message: err.sqlMessage });
+            else {
+              count++
+              saveProductDetails(i.products, results.insertId, deliveryDetails.customerId).then(productDetails => {
+                console.log(count, deliveryDetails.length)
+                if (count == customerdetails.deliveryDetails.length) res.json({ status: 200, message: "Delivery Details Updated Successfully" });
+              })
+            }
+          });
+        })
+      } else {
+        updateDeliveryDays(i.deliveryDays, i.deliverydaysid).then(deliveryDays => {
+          let deliveryDetailsQuery = "UPDATE DeliveryDetails SET gstNo=?,location=?,address=?,phoneNumber=?,contactPerson=?,depositAmount=?,routingId=? WHERE deliveryDetailsId=" + i.deliveryDetailsId;
+          let updateQueryValues = [i.gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, i.depositAmount, i.routingId]
+          db.query(deliveryDetailsQuery, updateQueryValues, (err, results) => {
+            if (err) res.json({ status: 500, message: err.sqlMessage });
+            else {
+              count++
+              updateProductDetails(i.products).then(productDetails => {
+                console.log(count, deliveryDetails.length)
+                if (count == deliveryDetails.length) res.json({ status: 200, message: "Delivery Details Updated Successfully" });
+              })
+            }
+          });
+        })
+      }
     }
   }
 })
