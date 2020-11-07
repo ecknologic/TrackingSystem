@@ -26,13 +26,13 @@ export const numOptions = [
     <Option value="7">07</Option>
 ]
 export const dayOptions = [
-    <Option value="mon">Monday</Option>,
-    <Option value="tue">Tuesday</Option>,
-    <Option value="wed">Wednesday</Option>,
-    <Option value="thu">Thursday</Option>,
-    <Option value="fri">Friday</Option>,
-    <Option value="sat">Saturday</Option>,
-    <Option value="sun">Sunday</Option>
+    <Option value="MON">Monday</Option>,
+    <Option value="TUE">Tuesday</Option>,
+    <Option value="WED">Wednesday</Option>,
+    <Option value="THU">Thursday</Option>,
+    <Option value="FRI">Friday</Option>,
+    <Option value="SAT">Saturday</Option>,
+    <Option value="SUN">Sunday</Option>
 ]
 export const routeOptions = [
     <Option value="mon">Begumpet - Kukatpally</Option>,
