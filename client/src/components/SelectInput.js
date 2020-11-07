@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Select } from 'antd';
 
-const SelectInput = ({ options, mode }) => {
+const SelectInput = ({ options, mode, onSelect, onDeselect }) => {
 
     const [selected, setSelected] = useState()
 
@@ -16,6 +16,8 @@ const SelectInput = ({ options, mode }) => {
             value={selected}
             placeholder='Select'
             mode={mode}
+            onSelect={onSelect}
+            onDeselect={onDeselect}
         >
             {options}
         </Select>

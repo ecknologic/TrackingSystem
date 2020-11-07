@@ -3,13 +3,17 @@ import '../sass/identityProof.scss'
 import SelectInput from './SelectInput';
 import { idOptions } from '../assets/fixtures'
 
-const IdentityProof = () => {
+const IdentityProof = ({ idProofs }) => {
+
+    const handleSelect = () => {
+
+    }
 
     return (
         <div className='identity-proof-container'>
             <div className='input-container'>
                 <label className='app-input-label-name'>Select Id Proof</label>
-                <SelectInput options={idOptions} />
+                <SelectInput options={idOptions} onSelect={handleSelect} />
             </div>
             <div className='upload-instructions'>
                 <span className='title'>Please help us verify your identity</span>

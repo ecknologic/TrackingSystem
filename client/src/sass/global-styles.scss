@@ -130,3 +130,41 @@ $primaryColor: #0062FF;
         }
     }
 }
+
+// -------------- Various Button styles ------------------- //
+
+.app-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #5C63AB;
+    color: #fff;
+    cursor: pointer;
+    font-family: 'PoppinsMedium500';
+    padding: 0 1em;
+    height: 2.6em;
+    border-radius: .6em;
+
+    .anticon {
+        margin-right: .5em;
+    }
+}
+
+.app-add-new-btn {
+    background-color: #F1F1F5;
+    border: 1px solid #E9E9E9;
+    color: #005FFF;
+    font-family: 'PoppinsSemiBold600';
+    
+}
+
+.app-cancel-btn {
+    font-family: 'PoppinsSemiBold600';
+    background-color: transparent;
+    color: #005FFF;
+}
+
+.app-create-btn {
+    font-family: 'PoppinsSemiBold600';
+    background-color: #0091FF;
+}

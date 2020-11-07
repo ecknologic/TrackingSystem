@@ -37,4 +37,9 @@ const getSideMenuKey = (path) => {
             return path
     }
 }
-module.exports = { editData, getBase64, stringToHslColor, getSideMenuKey }
+
+const deepClone = (data) => {
+    return JSON.parse(JSON.stringify(data))
+}
+
+module.exports = { editData, getBase64, stringToHslColor, getSideMenuKey, deepClone }

@@ -9,6 +9,9 @@ import GeneralAccount from './forms/GeneralAccount';
 const AddAccount = () => {
     const [corporate, setCorporate] = useState(true)
 
+    const handleChange = (value, key) => {
+        console.log(value, key)
+    }
     const highlight = { backgroundColor: '#5C63AB', color: '#fff' }
     const fade = { backgroundColor: '#EBEBEB', color: '#1B2125' }
 
@@ -29,8 +32,8 @@ const AddAccount = () => {
                     />
                 </div>
                 {
-                    corporate ? <CorporateAccount />
-                        : <GeneralAccount />
+                    corporate ? <CorporateAccount onChange={handleChange} />
+                        : <GeneralAccount onChange={handleChange} />
                 }
                 {
                     corporate ? (
@@ -39,13 +42,13 @@ const AddAccount = () => {
                                 <Checkbox /> <span className='text'>Delivery to the same address?</span>
                             </div>
                             <Divider />
-                            <Delivery />
+                            <Delivery onChange={handleChange} />
                         </>
                     ) : null
                 }
                 <div className='footer-buttons-container'>
-                    <CustomButton className='big' className='cancel-btn footer-btn' text='Cancel' />
-                    <CustomButton className='create-btn footer-btn' text='Create Account' />
+                    <CustomButton className='big' className='app-cancel-btn footer-btn' text='Cancel' />
+                    <CustomButton className='app-create-btn footer-btn' text='Create Account' />
                 </div>
             </div>
         </Fragment>

@@ -5,7 +5,8 @@ import InputWithAddon from '../../../../components/InputWithAddon';
 import SelectInput from '../../../../components/SelectInput';
 import { dayOptions, invoiceOptions, productOptions } from '../../../../assets/fixtures'
 
-const GeneralAccountForm = () => {
+const GeneralAccountForm = (props) => {
+    const { onChange } = props
 
     return (
         <>
@@ -14,34 +15,34 @@ const GeneralAccountForm = () => {
                 <div className='row'>
                     <div className='input-container'>
                         <label className='app-input-label-name'>GST Number</label>
-                        <InputWithAddon label='VERIFY' placeholder='GST Number' />
+                        <InputWithAddon label='VERIFY' placeholder='GST Number' onChange={({ target: { value } }) => onChange(value, 'gstProof')} />
                     </div>
                     <div className='input-container'>
                         <label className='app-input-label-name'>Name</label>
-                        <Input size='large' placeholder='Name' />
+                        <Input size='large' placeholder='Name' onChange={({ target: { value } }) => onChange(value, 'customerName')} />
                     </div>
 
                 </div>
                 <div className='row'>
                     <div className='input-container stretch'>
                         <label className='app-input-label-name'>Address</label>
-                        <Input size='large' placeholder='Address' />
+                        <Input size='large' placeholder='Add Address' onChange={({ target: { value } }) => onChange(value, 'shippingAddress')} />
                     </div>
                 </div>
                 <div className='row'>
                     <div className='input-container'>
                         <label className='app-input-label-name'>Phone Number</label>
-                        <Input size='large' type='number' placeholder='Phone Number' />
+                        <Input size='large' type='number' placeholder='Phone Number' onChange={({ target: { value } }) => onChange(value, 'mobileNumber')} />
                     </div>
                     <div className='input-container'>
                         <label className='app-input-label-name'>Email</label>
-                        <Input size='large' type='email' placeholder='Email' />
+                        <Input size='large' type='email' placeholder='Email' onChange={({ target: { value } }) => onChange(value, 'EmailId')} />
                     </div>
                 </div>
                 <div className='row'>
                     <div className='input-container'>
                         <label className='app-input-label-name'>Delivery Days</label>
-                        <SelectInput options={dayOptions} mode='multiple' />
+                        <SelectInput options={dayOptions} mode='multiple' onSelect={(value) => onChange(value, 'deliveryDays')} />
                     </div>
                     <div className='input-container'>
                         <label className='app-input-label-name'>Registered Date</label>
@@ -51,28 +52,22 @@ const GeneralAccountForm = () => {
                 <div className='row'>
                     <div className='input-container'>
                         <label className='app-input-label-name'>Add Products</label>
-                        <SelectInput options={productOptions} mode='multiple' />
+                        <SelectInput options={productOptions} mode='multiple' onSelect={(value) => onChange(value, 'products')} />
                     </div>
                     <div className='input-container'>
                         <label className='app-input-label-name'>Deposit Amount</label>
-                        <Input size='large' placeholder='Deposit Amount' />
+                        <Input size='large' placeholder='Deposit Amount' onChange={({ target: { value } }) => onChange(value, 'depositAmount')} />
                     </div>
 
                 </div>
                 <div className='row'>
                     <div className='input-container'>
                         <label className='app-input-label-name'>Contact Person</label>
-                        <Input size='large' placeholder='Contact Person' />
+                        <Input size='large' placeholder='Add Name' onChange={({ target: { value } }) => onChange(value, 'contactPerson')} />
                     </div>
-                    <div className='input-container'>
-                        <label className='app-input-label-name'>Phone Number</label>
-                        <Input size='large' type='number' placeholder='Phone Number' />
-                    </div>
-                </div>
-                <div className='row'>
                     <div className='input-container'>
                         <label className='app-input-label-name'>Invoice Type</label>
-                        <SelectInput options={invoiceOptions} />
+                        <SelectInput options={invoiceOptions} onSelect={(value) => onChange(value, 'invoiceType')} />
                     </div>
                 </div>
             </div>

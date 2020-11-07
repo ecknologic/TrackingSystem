@@ -36,7 +36,7 @@ const Accounts = () => {
                     {
                         loading ? <NoContent content={<Spinner />} />
                             : customers.length ? customers.map((account) => (
-                                <Col lg={{ span: 12 }} xl={{ span: 8 }} xxl={{ span: 6 }} >
+                                <Col lg={{ span: 12 }} xl={{ span: 8 }} xxl={{ span: 6 }}>
                                     <AccountCard customerDetails={account} onClick={() => goToViewAccount(account.customerId)} />
                                 </Col>
                             )) : <NoContent content='No Accounts To display' />
