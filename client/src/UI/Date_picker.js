@@ -1,77 +1,74 @@
-import React from 'react'
-import { Row, Col, Card,Button } from 'antd'
+import React, { useEffect, useState } from 'react'
+import { Row, Col, DatePicker, Card, Button } from 'antd'
 import {
-    LeftOutlined,RightOutlined,CalendarOutlined
-  } from '@ant-design/icons';
+    LeftOutlined, RightOutlined, CalendarOutlined
+} from '@ant-design/icons';
+import moment from 'moment';
+const dateFormat = 'YYYY-MM-DD';
 
 
 const CustomDatePicker = () => {
+    const [noOfDays, setNoOfDays] = useState(0);
+    const [currentYear, setCurrentYear] = useState(0)
+    const [currentMonth, setCurrentMonth] = useState(0)
+    const [currentDay, setCurrentDay] = useState(0)
+    const [currentDate, setCurrentDate] = useState(0)
+    var days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    useEffect(() => {
+        let todayDate = moment(new Date(), dateFormat)
+        setDate(todayDate)
+    }, [])
+    const setDate = (date) => {
+        setCurrentDate(moment(date).format(dateFormat))
+        setNoOfDays(moment(date).daysInMonth());
+        setCurrentMonth(date.format('M'))
+        setCurrentYear(date.format('Y'))
+        setCurrentDay(date.format('D'))
+    }
+    const onCardClick = (i) => {
+        setCurrentDay(i)
+        let date = `${currentYear}-${currentMonth}-${i}`
+        setCurrentDate(date)
+    }
+    const onDateChange = (e) => {
+        let date = moment(new Date(e), dateFormat)
+        console.log(moment(date).format(dateFormat))
+        setDate(date)
+    }
+    const getCurrentMonthDetails = () => {
+        let arr = [];
+        [...Array(noOfDays)].map((e, i) => {
+            arr.push(<Card onClick={() => onCardClick(i + 1)} style={{ color: (i + 1) == currentDay ? '#fff' : '#000', backgroundColor: (i + 1) == currentDay ? '#3E72FF' : '#fff' }}>
+                <p>{i + 1}</p>
+                <p>{days[moment(`${currentYear}-${currentMonth}-${(i + 1)}`).day()]}</p>
+            </Card>)
+        })
+        return arr
+    }
     return (
         <div className="date_picker_maincomp">
             <Row>
                 <Col span={4}>
-                    <p className="dateMonthtext">April - 19 to 25</p>
+                    <p className="dateMonthtext">{months[currentMonth - 1]} - 19 to 25</p>
                 </Col>
                 <Col span={16} className="date_picker_date_col">
                     <div className="swiper_prevbtns">
-                    <span className="slider-btn btn-l" onClick={() => this.handleClick('prev')}><LeftOutlined /></span>
+                        <span className="slider-btn btn-l" onClick={() => this.handleClick('prev')}><LeftOutlined /></span>
                     </div>
                     <div className="swiper_cardslist">
-                <div className="DatePicker_comp_card">
-                        <Card>
-                            <p>2</p>
-                            <p>Sat</p>
-                        </Card>
-                        <Card>
-                            <p>3</p>
-                            <p>Sun</p>
-                        </Card>
-                        <Card>
-                            <p>4</p>
-                            <p>Mon</p>
-                        </Card>
-                        <Card>
-                            <p>5</p>
-                            <p>Tue</p>
-                        </Card>
-                        <Card>
-                            <p>6</p>
-                            <p>Wed</p>
-                        </Card>
-                        <Card>
-                            <p>7</p>
-                            <p>Thur</p>
-                        </Card>
-                        <Card>
-                            <p>8</p>
-                            <p>Fri</p>
-                        </Card>
-                        <Card>
-                            <p>9</p>
-                            <p>Sat</p>
-                        </Card>
-                        <Card>
-                            <p>10</p>
-                            <p>Sun</p>
-                        </Card>
-                        <Card>
-                            <p>11</p>
-                            <p>Mon</p>
-                        </Card>
-                        <Card>
-                            <p>12</p>
-                            <p>Tue</p>
-                        </Card>
-                    </div>
+                        <div className="DatePicker_comp_card">
+                            {
+                                getCurrentMonthDetails()
+                            }
+                        </div>
                     </div>
                     <div className="swiper_nextbtns">
-                    <span className="slider-btn btn-r" onClick={() => this.handleClick('next')}><RightOutlined /></span>
+                        <span className="slider-btn btn-r" onClick={() => this.handleClick('next')}><RightOutlined /></span>
                     </div>
-
-                    
                 </Col>
                 <Col span={4}>
-                    <Button type="primary" ghost className="selectDateBtn"><span><CalendarOutlined /></span> <span> Select Date</span></Button>
+                    <DatePicker value={moment(currentDate) || undefined} onChange={(e) => onDateChange(e)} placeholder="Select Date" style={{ backgroundColor: 'transparent', marginTop: '50px', border: 'none' }} format={dateFormat} />
                 </Col>
             </Row>
         </div>
