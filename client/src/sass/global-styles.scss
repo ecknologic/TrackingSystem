@@ -1,6 +1,22 @@
 $primaryColor: #0062FF;
 
-// ant-d select input styles
+// -------------- Checkbox styles ------------------- //
+ 
+.ant-checkbox-wrapper:hover .ant-checkbox-inner,
+.ant-checkbox-input:focus + .ant-checkbox-inner {
+    border-color:$primaryColor;
+}
+ 
+.ant-checkbox-checked .ant-checkbox-inner {
+    background-color:$primaryColor;
+    border-color:$primaryColor;
+}
+.ant-checkbox-checked::after {
+    border: none;
+}
+
+// -------------- antd Select Input styles ------------------- //
+
 .ant-select {
     width: 100%;
     margin-top: .5em;
@@ -35,7 +51,8 @@ $primaryColor: #0062FF;
     box-shadow: none !important;
 }
 
-// ant-d input styles
+// -------------- antd Input styles ------------------- //
+
 .ant-input {
     height: 2.7em !important;
     background-color: #FCFDFE !important;
@@ -60,7 +77,8 @@ $primaryColor: #0062FF;
     }
 }
 
-// ant-d input add-on styles
+// -------------- antd Input Addon styles ------------------- //
+
 .ant-input-group-addon {
     background-color: #FCFDFE !important;
     border-top-right-radius: .5em !important;

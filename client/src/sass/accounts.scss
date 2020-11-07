@@ -170,19 +170,10 @@ $primary-color: #0062FF;
         .ant-tabs {
             flex: 1;
         }
-        
-        .ant-tabs-bar {
-            display: flex;
-            margin-bottom: 0;
-            padding: 0 3em;
-            background-color: rgba(72,92,186,0.05);
-            border-bottom: none;
-            height: 3.9em;
-        }
 
-        .ant-tabs-nav-container {
-            flex: 1;
-            order: -1;
+        .ant-tabs-nav {
+            padding: 0 3em;
+            margin: 0;
         }
 
         .ant-tabs-tab {
@@ -192,7 +183,10 @@ $primary-color: #0062FF;
             padding: 1em 1em 1.4em 1em;
         }
 
-        .ant-tabs-tab-active,.ant-tabs-tab:hover {
+        .ant-tabs-tab:hover .ant-tabs-tab-btn {
+            color: #0062FF;
+        }
+        .ant-tabs-tab-active .ant-tabs-tab-btn {
             color: #0062FF;
         }
 

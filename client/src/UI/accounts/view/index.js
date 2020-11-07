@@ -8,7 +8,6 @@ import Header from './header';
 
 const { TabPane } = Tabs;
 
-
 const ViewAccount = () => {
 
     const handleAdd = () => { }
