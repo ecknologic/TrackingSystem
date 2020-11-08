@@ -7,7 +7,7 @@ import moment from 'moment';
 const dateFormat = 'YYYY-MM-DD';
 
 
-const CustomDatePicker = () => {
+const CustomDatePicker = (props) => {
     const [noOfDays, setNoOfDays] = useState(0);
     const [currentYear, setCurrentYear] = useState(0)
     const [currentMonth, setCurrentMonth] = useState(0)
@@ -20,7 +20,9 @@ const CustomDatePicker = () => {
         setDate(todayDate)
     }, [])
     const setDate = (date) => {
-        setCurrentDate(moment(date).format(dateFormat))
+        let formatedDate = moment(date).format(dateFormat)
+        props.onDateChange(formatedDate)
+        setCurrentDate(formatedDate)
         setNoOfDays(moment(date).daysInMonth());
         setCurrentMonth(date.format('M'))
         setCurrentYear(date.format('Y'))
@@ -30,16 +32,16 @@ const CustomDatePicker = () => {
         setCurrentDay(i)
         let date = `${currentYear}-${currentMonth}-${i}`
         setCurrentDate(date)
+        props.onDateChange(date)
     }
     const onDateChange = (e) => {
         let date = moment(new Date(e), dateFormat)
-        console.log(moment(date).format(dateFormat))
         setDate(date)
     }
     const getCurrentMonthDetails = () => {
         let arr = [];
         [...Array(noOfDays)].map((e, i) => {
-            arr.push(<Card onClick={() => onCardClick(i + 1)} style={{ color: (i + 1) == currentDay ? '#fff' : '#000', backgroundColor: (i + 1) == currentDay ? '#3E72FF' : '#fff' }}>
+            arr.push(<Card onClick={() => onCardClick(String(i + 1).padStart(2, '0'))} style={{ color: (i + 1) == currentDay ? '#fff' : '#000', backgroundColor: (i + 1) == currentDay ? '#3E72FF' : '#fff' }}>
                 <p>{i + 1}</p>
                 <p>{days[moment(`${currentYear}-${currentMonth}-${(i + 1)}`).day()]}</p>
             </Card>)

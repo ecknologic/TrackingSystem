@@ -6,12 +6,13 @@ import { checkValidation } from '../utils/validations';
 import CreateDCModal from './Delivery/modalComponent'
 import { editData } from '../utils/Functions'
 import { columns } from './Delivery/tableData';
-import { TODAYDATE } from '../utils/constants'
+import Spinner from '../components/Spinner';
+import NoContent from '../components/NoContent';
 const { Search } = Input;
 const { Option } = Select;
 
 
-const Delivery = () => {
+const Delivery = (props) => {
   const [visible, setVisible] = useState(false);
   const [loading, setLoad] = useState(true);
   const [allDeliverys, setAllDeliverys] = useState([]);
@@ -28,21 +29,22 @@ const Delivery = () => {
   const [disabled, setDisabled] = useState(false)
   const [customerOrderId, setCustomerOrderId] = useState('')
   const warehouseId = sessionStorage.getItem('warehouseId') || 1;
-  const date = TODAYDATE
+  const date = props.currentDate
+
   useEffect(() => {
-    getAllDeliverys();
     getRoutes();
   }, []);
+  useEffect(() => {
+    getAllDeliverys();
+  }, [props.currentDate])
 
   const getAllDeliverys = () => {
+    setLoad(true);
     getAPI('/warehouse/deliveryDetails/' + date)
       .then(res => {
         setAllDeliverys(res);
         setDeliveryDetails(res)
         setLoad(false);
-      })
-      .catch(err => {
-        setLoad(false)
       })
   }
 
@@ -51,20 +53,12 @@ const Delivery = () => {
       .then(response => {
         setRoutesInfo(response);
       })
-      .catch(error => {
-        message.error("Error in getting routes", error)
-        console.log(error)
-      });
   }
   const getDriversList = () => {
     getAPI('/warehouse/getdriverDetails/' + warehouseId)
       .then(response => {
         setDriversData(response);
       })
-      .catch(error => {
-        message.error("Error in getting drivers data", error)
-        console.log(error)
-      });
   }
   const createOrUpdateDc = () => {
     let { personShopName, phoneNumber, shopAddress, twentyLiters, oneLiterBoxes, fiveMlBoxes, twoFiveMLBoxes } = inputData
@@ -147,7 +141,6 @@ const Delivery = () => {
   }
 
   const onMenuSelect = (e, dcItem) => {
-    console.log("E", e, dcItem)
     if (e.key == 'view' || e.key == 'edit') {
       getDriversList()
       // if (e.key == 'view') setDisabled(true)
@@ -204,10 +197,7 @@ const Delivery = () => {
     }
   })
   if (loading) {
-    return (
-      <div >
-        <Spin size="large" />
-      </div>)
+    return <NoContent content={<Spinner />} />
   } else {
     return (
       <div>
