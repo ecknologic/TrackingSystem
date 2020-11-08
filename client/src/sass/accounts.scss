@@ -7,7 +7,7 @@ $primary-color: #0062FF;
     
     .heading-container {
         flex: 1.2;
-        background-color: rgba(72,92,186,0.05);
+        background-color: #f1f2f7;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -109,6 +109,7 @@ $primary-color: #0062FF;
 .account-manager-content {
     padding: 2em;
     padding-top: 3em;
+    background-color: #FAFAFB;
 
     #no-content-container {
         height: calc(100vh - 20em);
@@ -121,7 +122,6 @@ $primary-color: #0062FF;
     flex-direction: column;
     justify-content: center;
     height: 6.1em;
-    background-color: rgba(72,92,186,0.05);
 
     .heading-container {
         display: flex;
@@ -145,13 +145,15 @@ $primary-color: #0062FF;
             }
         }
     }
-
+}
+.account-add-header {
+    background-color: #f1f2f7;
 }
 
 .account-view-content {
     display: flex;
     flex-direction: column;
-    background-color: rgba(72,92,186,0.05);
+    // background-color: rgba(72,92,186,0.05);
     
     .tabs-container {
         flex: 1;
@@ -174,6 +176,7 @@ $primary-color: #0062FF;
         .ant-tabs-nav {
             padding: 0 3em;
             margin: 0;
+            background-color: #F1F2F7;
         }
 
         .ant-tabs-tab {
@@ -259,51 +262,7 @@ $primary-color: #0062FF;
 
     .identity-proof-container {
         padding: 1em 0;
-
-        display: flex;
-    flex-direction: column;
-    width: 100%;
-
-    .input-container {
-        display: flex;
-        flex-direction: column;
-        width: 48%;
-    }
-
-    .second {
-        margin-top: 1em;
-    }
-
-    .upload-container {
-        display: flex;
-        align-items: center;
-        padding: 1em 0;
-        // height: 8em;
-
-        .upload-dragger-container {
-            width: 50%;
-        }
-
-        .upload-preview-container {
-            width: 50%;
-            margin-left: 2em;
-        }
-    }
-
-    .upload-instructions {
-        display: flex;
-        flex-direction: column;
-        padding-top: 1em;
-        color: rgba(0,0,0,0.85);
-
-        .title {
-            font-family: 'PoppinsSemiBold600';
-        }
-        .msg {
-            font-family: 'PoppinsRegular400';
-            font-size: 1.6ch;
-        }
-    }
+        
     }
 
     .form-container {

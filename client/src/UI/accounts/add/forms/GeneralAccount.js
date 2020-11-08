@@ -21,7 +21,7 @@ const GeneralAccountForm = (props) => {
     return (
         <>
             <div className='form-container'>
-                <div className='identity-proof-container'>
+                <div className='app-identity-proof-container identity-proof-container'>
                     <div className='input-container'>
                         <label className='app-input-label-name'>Select Id Proof</label>
                         <SelectInput value={proofSelect} options={idOptions} onSelect={onIdProofSelect} />
