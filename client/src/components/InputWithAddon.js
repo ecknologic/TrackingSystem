@@ -1,7 +1,7 @@
 import { Input } from 'antd';
 import React from 'react';
 
-const InputWithAddon = ({ label, placeholder, onChange }) => {
+const InputWithAddon = ({ label, placeholder, onChange, value }) => {
     return (
         <Input
             className='input-has-addon'
@@ -9,6 +9,7 @@ const InputWithAddon = ({ label, placeholder, onChange }) => {
             placeholder={placeholder}
             addonAfter={<AddOnBtn label={label} />}
             onChange={onChange}
+            value={value}
         />
     )
 }

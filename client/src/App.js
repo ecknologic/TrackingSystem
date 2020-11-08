@@ -16,12 +16,14 @@ const App = () => {
          <Route exact path='/' component={Login} />
          <PageLayout>
             <Switch>
-               <Route path='/manage-accounts/:accountId' render={() => requireAuth(<ViewAccount />)} />
-               <Route path='/manage-accounts' render={() => requireAuth(<AccountsDashboard />)} />
+               <Route path='/addcustomer' render={(props) => requireAuth(<AddCustomer {...props} />)} />
                <Route path='/add-account' render={() => requireAuth(<AddAccount />)} />
                <Route path='/bibowarehouse' render={(props) => requireAuth(<BiboWarehouse {...props} />)} />
-               <Route path='/addcustomer' render={(props) => requireAuth(<AddCustomer {...props} />)} />
                <Route path='/customerDashboard' render={() => requireAuth(<NoContent content='Design is in progress' />)} />
+               <Route path='/dashboard' render={() => requireAuth(<NoContent content='Design is in progress' />)} />
+               <Route path='/manage-accounts/add-account' render={() => requireAuth(<AddAccount />)} />
+               <Route path='/manage-accounts/:accountId' render={() => requireAuth(<ViewAccount />)} />
+               <Route path='/manage-accounts' render={() => requireAuth(<AccountsDashboard />)} />
                <Route path='/*' render={() => redirectAuth()} />
             </Switch>
          </PageLayout>

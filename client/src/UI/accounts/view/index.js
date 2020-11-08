@@ -11,6 +11,7 @@ const { TabPane } = Tabs;
 const ViewAccount = () => {
 
     const handleAdd = () => { }
+    const handleChange = () => { }
 
     return (
         <Fragment>
@@ -28,7 +29,7 @@ const ViewAccount = () => {
                         }
                     >
                         <TabPane tab="Account Overview" key="1">
-                            <CorporateAccount />
+                            <CorporateAccount onChange={handleChange} />
                         </TabPane>
                         <TabPane tab="Delivery Details" key="2">
                             <DeliveryDetails />

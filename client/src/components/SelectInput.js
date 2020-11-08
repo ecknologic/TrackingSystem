@@ -1,19 +1,13 @@
 import React, { useState } from 'react';
 import { Select } from 'antd';
 
-const SelectInput = ({ options, mode, onSelect, onDeselect }) => {
-
-    const [selected, setSelected] = useState()
-
-    const handleChange = (value) => {
-        setSelected(value)
-    }
+const SelectInput = ({ options, mode, onSelect, onDeselect, value }) => {
 
     return (
         <Select
-            onChange={handleChange}
+            getPopupContainer={triggerNode => triggerNode.parentNode}
             size='large'
-            value={selected}
+            value={value}
             placeholder='Select'
             mode={mode}
             onSelect={onSelect}

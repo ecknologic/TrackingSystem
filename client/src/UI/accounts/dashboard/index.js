@@ -25,7 +25,7 @@ const Accounts = () => {
     const handleSort = () => { }
     const handleFilter = () => { }
 
-    const goToAddAccount = () => history.push('/add-account')
+    const goToAddAccount = () => history.push('/manage-accounts/add-account')
     const goToViewAccount = (id) => history.push(`/manage-accounts/${id}`)
 
     return (
