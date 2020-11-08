@@ -167,5 +167,14 @@ router.get('/outForDeliveryDetails/:date', (req, res) => {
     else res.json({ status: 200, message: 'Success', data: results });
   });
 });
+router.get('/getWarehouseDetails/:warehouseId', (req, res) => {
+
+  let { warehouseId } = req.params;
+  let warehouseQuery = "SELECT * FROM departmentmaster WHERE DepartmentId=" + warehouseId;
+  db.query(warehouseQuery, (err, results) => {
+    if (err) res.json({ status: 500, message: err.sqlMessage });
+    else res.json({ status: 200, message: 'Success', data: results.length ? results[0] : results });
+  });
+});
 
 module.exports = router;

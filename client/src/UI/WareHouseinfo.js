@@ -1,11 +1,19 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { getAPI } from '../utils/apis'
+import { WAREHOUSEID } from '../utils/constants'
 
 
 const WareHouseinfo = () => {
+    const [warehouseDetails, setWarehouseDetails] = useState({})
+    useEffect(() => {
+        getAPI('/warehouse/getWarehouseDetails/' + WAREHOUSEID).then(res => {
+            if (res.data) setWarehouseDetails(res.data)
+        })
+    }, [])
     return (
         <div className="warehouuseinfo_comp">
-            <h3>Kukatpally WareHouse</h3>
-            <p>Kukatpally, Hyderabad, Telangana.</p>
+            <h3>{warehouseDetails.DepartmentName}</h3>
+            <p>{warehouseDetails.Address}</p>
         </div>
     )
 }

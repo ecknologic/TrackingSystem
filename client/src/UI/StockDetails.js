@@ -3,13 +3,14 @@ import axios from 'axios';
 import { Row, Col, Button, Divider, Modal, Form, Checkbox, Input } from 'antd'
 import { baseUrl } from '../config'
 import { getAPI } from '../utils/apis';
-import { TODAYDATE, WAREHOUSEID } from '../utils/constants';
+import { WAREHOUSEID } from '../utils/constants';
 
-const StockDetails = () => {
+const StockDetails = (props) => {
   const [visible1, setVisible1] = useState(false);
   const [newStocks, setNewStocks] = useState([])
   const [outForDelivery, setoutForDelivery] = useState([])
   const [currentStocks, setCurrentStocks] = useState({})
+  const currentDate = props.currentDate
   useEffect(() => {
     getActiveStocks();
     getOutForDelivery()
@@ -22,7 +23,7 @@ const StockDetails = () => {
     })
   }
   const getOutForDelivery = () => {
-    let url = `warehouse/outForDeliveryDetails/${TODAYDATE}?warehouseId=` + WAREHOUSEID
+    let url = `warehouse/outForDeliveryDetails/${currentDate}?warehouseId=` + WAREHOUSEID
     getAPI(url).then(response => {
       if (response.data.length)
         setoutForDelivery(response.data[0])
