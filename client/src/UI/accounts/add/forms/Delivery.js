@@ -13,7 +13,7 @@ const DeliveryForm = (props) => {
 
     const {
         dGstNo, depositAmount, products = [], routingId, deliveryDays,
-        dMobileNumber, contactPerson, address, deliveryLocation
+        phoneNumber, contactPerson, shippingAddress, deliveryLocation
     } = data
 
     const [product1, setProduct1] = useState('')
@@ -78,13 +78,13 @@ const DeliveryForm = (props) => {
                 <div className='row'>
                     <div className='input-container stretch'>
                         <label className='app-input-label-name'>Address</label>
-                        <Input size='large' value={address} placeholder='Add Address' onChange={({ target: { value } }) => onChange(value, 'address')} />
+                        <Input size='large' value={shippingAddress} placeholder='Add Address' onChange={({ target: { value } }) => onChange(value, 'shippingAddress')} />
                     </div>
                 </div>
                 <div className='row'>
                     <div className='input-container'>
                         <label className='app-input-label-name'>Phone Number</label>
-                        <Input size='large' value={dMobileNumber} type='number' placeholder='Phone Number' onChange={({ target: { value } }) => onChange(value, 'dMobileNumber')} />
+                        <Input size='large' value={phoneNumber} type='number' placeholder='Phone Number' onChange={({ target: { value } }) => onChange(value, 'phoneNumber')} />
                     </div>
                     <div className='input-container'>
                         <label className='app-input-label-name'>Contact Person</label>

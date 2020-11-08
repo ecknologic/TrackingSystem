@@ -4,13 +4,13 @@ import DraggerInput from '../../../../components/DraggerInput';
 import SelectInput from '../../../../components/SelectInput';
 import InputWithAddon from '../../../../components/InputWithAddon';
 import UploadPreviewer from '../../../../components/UploadPreviewer';
-import { dayOptions, invoiceOptions, productOptions, idOptions } from '../../../../assets/fixtures'
+import { dayOptions, invoiceOptions, idOptions } from '../../../../assets/fixtures'
 
 const GeneralAccountForm = (props) => {
     const { data, onChange, onUpload, onSelect, onDeselect, onIdProofSelect } = props
 
     const {
-        gstNo, shippingAddress, depositAmount,
+        gstNo, address, depositAmount,
         deliveryDays, customerName, mobileNumber,
         invoiceType, EmailId, contactPerson, proofName, proofSelect,
         proofInput, idProofs = []
@@ -57,7 +57,7 @@ const GeneralAccountForm = (props) => {
                 <div className='row'>
                     <div className='input-container stretch'>
                         <label className='app-input-label-name'>Address</label>
-                        <Input value={shippingAddress} size='large' placeholder='Add Address' onChange={({ target: { value } }) => oncancel(value, 'shippingAddress')} />
+                        <Input value={address} size='large' placeholder='Add Address' onChange={({ target: { value } }) => onChange(value, 'address')} />
                     </div>
                 </div>
                 <div className='row'>

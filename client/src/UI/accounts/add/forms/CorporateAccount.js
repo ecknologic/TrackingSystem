@@ -10,7 +10,7 @@ const CorporateAccountForm = ({ data, onChange, onUpload, onIdProofSelect }) => 
 
     const {
         gstNo, natureOfBussiness, organizationName,
-        shippingAddress, customerName, mobileNumber, invoicetype,
+        address, customerName, mobileNumber, invoicetype,
         creditPeriodInDays, EmailId, referredBy, proofName, proofSelect,
         proofInput, idProofs = []
     } = data
@@ -55,7 +55,7 @@ const CorporateAccountForm = ({ data, onChange, onUpload, onIdProofSelect }) => 
             <div className='row'>
                 <div className='input-container stretch'>
                     <label className='app-input-label-name'>Address</label>
-                    <Input size='large' value={shippingAddress} placeholder='Add Address' onChange={({ target: { value } }) => onChange(value, 'shippingAddress')} />
+                    <Input size='large' value={address} placeholder='Add Address' onChange={({ target: { value } }) => onChange(value, 'address')} />
                 </div>
             </div>
             <div className='row'>

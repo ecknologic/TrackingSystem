@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import { Divider, Checkbox, Collapse } from 'antd';
+import { Divider, Checkbox, Collapse, message } from 'antd';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons'
 import Header from './header';
@@ -11,6 +11,7 @@ import { getIdProofName, getBase64, deepClone } from '../../../utils/Functions';
 import CollapseForm from './forms/CollapseForm';
 import { getRouteOptions } from '../../../assets/fixtures';
 import { http } from '../../../modules/http'
+import { TODAYDATE, USERID, WAREHOUSEID } from '../../../utils/constants';
 
 const AddAccount = () => {
     const [importId, setImportId] = useState('')
@@ -33,6 +34,11 @@ const AddAccount = () => {
         sessionStorage.removeItem('address4')
         sessionStorage.removeItem('address5')
     }, [])
+
+    useEffect(() => {
+        resetAccountFormValues()
+        resetDeliveryFormValues()
+    }, [corporate])
 
     const getRoutes = async () => {
         try {
@@ -74,42 +80,59 @@ const AddAccount = () => {
     const extractDeliveryFormValues = (products) => {
         const {
             dGstNo, depositAmount, routingId, deliveryDays,
-            dMobileNumber, contactPerson, address, deliveryLocation
+            phoneNumber, contactPerson, shippingAddress: address, deliveryLocation
         } = formValues
 
         return {
             gstNo: dGstNo, depositAmount, products, routingId, deliveryDays,
-            mobileNumber: dMobileNumber, contactPerson, address, deliveryLocation
+            mobileNumber: phoneNumber, contactPerson, address, deliveryLocation
         }
     }
 
     const extractAccountFormValues = () => {
         const {
             gstNo, natureOfBussiness, organizationName,
-            shippingAddress, customerName, mobileNumber, invoicetype,
-            creditPeriodInDays, EmailId, referredBy, proofName, proofSelect,
-            proofInput, idProofs, depositAmount, deliveryDays, invoiceType, contactPerson
+            address, customerName, mobileNumber, invoicetype,
+            creditPeriodInDays, EmailId, referredBy, panNo, adharNo, proofSelect: idProofType,
+            idProofs, depositAmount, deliveryDays, invoiceType, contactPerson
         } = formValues
 
         if (corporate) return {
-            gstNo, natureOfBussiness, organizationName,
-            shippingAddress, customerName, mobileNumber, invoicetype,
-            creditPeriodInDays, EmailId, referredBy, proofName, proofSelect,
-            proofInput, idProofs
+            gstNo, natureOfBussiness, organizationName, panNo, adharNo,
+            address1: address, customerName, mobileNumber, invoicetype,
+            creditPeriodInDays, EmailId, referredBy, gstProof: idProofs[0],
+            idProofType, idProofs, customerType: 'corporate', createdBy: USERID,
+            departmentId: WAREHOUSEID, registeredDate: TODAYDATE,
         }
 
         return {
-            gstNo, shippingAddress, depositAmount,
-            deliveryDays, customerName, mobileNumber,
-            invoiceType, EmailId, contactPerson, proofName, proofSelect,
-            proofInput, idProofs
+            createdBy: USERID, departmentId: WAREHOUSEID, registeredDate: TODAYDATE,
+            gstNo, address1: address, customerName, mobileNumber,
+            invoiceType, EmailId, contactPerson, gstProof: idProofs[0],
+            idProofType, idProofs, customerType: 'general', panNo, adharNo,
+            deliveryDetails: [{
+                deliveryDays, contactPerson, gstNo,
+                address, phoneNumber: mobileNumber, depositAmount
+            }]
         }
     }
 
-    const resetDeliveryFromValues = () => {
+    const resetAccountFormValues = () => {
+        const resetValues = {
+            dGstNo: '', organizationName: '', address: '', invoicetype: undefined,
+            mobileNumber: '', natureOfBussiness: undefined, address: '',
+            customerName: '', routingId: undefined, deliveryDays: undefined, creditPeriodInDays: undefined,
+            phoneNumber: '', contactPerson: '', address: '', deliveryLocation: '',
+            products: undefined, EmailId: '', referredBy: '', proofName: '', proofSelect: undefined,
+            proofInput: '', idProofs: [], depositAmount: ''
+        }
+
+        setFormValues(data => ({ ...data, ...resetValues }))
+    }
+    const resetDeliveryFormValues = () => {
         const resetValues = {
             dGstNo: '', depositAmount: '', routingId: undefined, deliveryDays: undefined,
-            dMobileNumber: '', contactPerson: '', address: '', deliveryLocation: '',
+            phoneNumber: '', contactPerson: '', shippingAddress: '', deliveryLocation: '',
             products: undefined
         }
         setResetId(nanoid(5))
@@ -126,12 +149,12 @@ const AddAccount = () => {
         else if (addresses.length < limit) {
             const devFormValues = extractDeliveryFormValues(products)
 
-            // Validate dev form values (except products)
+            // Validate delivery form values (except products)
 
             const clone = deepClone(addresses)
             clone.push(devFormValues)
             setAddresses(clone)
-            resetDeliveryFromValues()
+            resetDeliveryFormValues()
         }
     }
 
@@ -150,25 +173,36 @@ const AddAccount = () => {
     }
 
     const handleCreateAccount = async (currentAddress) => {
+        let body
         const accountFormValues = extractAccountFormValues()
-        const sessonAddresses = getSessionAddresses()
-        const deliveryDetails = [...sessonAddresses, currentAddress]
-        const finalData = { ...accountFormValues, deliveryDetails }
+
+        if (!corporate) {
+            body = accountFormValues
+        }
+        else {
+            const sessonAddresses = getSessionAddresses()
+            const deliveryDetails = [...sessonAddresses, currentAddress]
+
+            body = { ...accountFormValues, deliveryDetails }
+        }
 
         //validate data here
         // console.log(finalData)
 
         const url = '/customer/createCustomer'
         try {
-            await http.POST(url, finalData)
-            alert('success')
+            await http.POST(url, body)
+            message.success('Create Customer successfully!')
         } catch (error) {
 
         }
 
     }
 
-    const onCreate = () => { setImportId(`create${nanoid(5)}`) }
+    const onCreate = () => {
+        if (!corporate) handleCreateAccount()
+        else setImportId(`create${nanoid(5)}`)
+    }
     const onAdd = () => setImportId(nanoid(5))
 
     return (
