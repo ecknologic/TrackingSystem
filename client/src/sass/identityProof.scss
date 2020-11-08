@@ -9,6 +9,26 @@
         width: 48%;
     }
 
+    .second {
+        margin-top: 1em;
+    }
+
+    .upload-container {
+        display: flex;
+        align-items: center;
+        padding: 1em 0;
+        // height: 8em;
+
+        .upload-dragger-container {
+            width: 50%;
+        }
+
+        .upload-preview-container {
+            width: 50%;
+            margin-left: 2em;
+        }
+    }
+
     .upload-instructions {
         display: flex;
         flex-direction: column;
@@ -22,7 +42,5 @@
             font-family: 'PoppinsRegular400';
             font-size: 1.6ch;
         }
-
     }
-
 }

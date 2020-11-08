@@ -259,6 +259,51 @@ $primary-color: #0062FF;
 
     .identity-proof-container {
         padding: 1em 0;
+
+        display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    .input-container {
+        display: flex;
+        flex-direction: column;
+        width: 48%;
+    }
+
+    .second {
+        margin-top: 1em;
+    }
+
+    .upload-container {
+        display: flex;
+        align-items: center;
+        padding: 1em 0;
+        // height: 8em;
+
+        .upload-dragger-container {
+            width: 50%;
+        }
+
+        .upload-preview-container {
+            width: 50%;
+            margin-left: 2em;
+        }
+    }
+
+    .upload-instructions {
+        display: flex;
+        flex-direction: column;
+        padding-top: 1em;
+        color: rgba(0,0,0,0.85);
+
+        .title {
+            font-family: 'PoppinsSemiBold600';
+        }
+        .msg {
+            font-family: 'PoppinsRegular400';
+            font-size: 1.6ch;
+        }
+    }
     }
 
     .form-container {
@@ -279,13 +324,6 @@ $primary-color: #0062FF;
 
         .stretch {
             width: 100%;
-        }
-
-        .add-new-btn {
-            background-color: #F1F1F5;
-            border: 1px solid #E9E9E9;
-            color: #005FFF;
-            font-family: 'PoppinsSemiBold600';
         }
     }
 
@@ -338,11 +376,16 @@ $primary-color: #0062FF;
         display: flex;
         align-items: center;
 
-        span {
+        .title {
             color: #1B2125;
             font-family: 'PoppinsRegular400';
             font-size: 2.6ch;
+            margin-right: 1em;
         }
+    }
+
+    .app-add-new-btn {
+        height: 2.2em;
     }
 
     .footer-buttons-container {
@@ -354,20 +397,12 @@ $primary-color: #0062FF;
 
         .footer-btn {
             text-transform: uppercase;
-            font-family: 'PoppinsSemiBold600';
         }
 
-        .cancel-btn {
-            background-color: transparent;
-            color: #005FFF;
-        }
-
-        .create-btn {
-            background-color: #0091FF;
+        .app-create-btn {
             height: 3.5em;
             width: 15em;
             border-radius: .8em;
         }
-
     }
 }

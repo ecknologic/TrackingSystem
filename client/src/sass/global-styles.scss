@@ -1,6 +1,6 @@
 $primaryColor: #0062FF;
 
-// -------------- Checkbox styles ------------------- //
+// -------------- antd Checkbox styles ------------------- //
  
 .ant-checkbox-wrapper:hover .ant-checkbox-inner,
 .ant-checkbox-input:focus + .ant-checkbox-inner {
@@ -13,6 +13,29 @@ $primaryColor: #0062FF;
 }
 .ant-checkbox-checked::after {
     border: none;
+}
+
+// -------------- antd Dragger Input styles ------------------- //
+ 
+
+.ant-upload.ant-upload-drag:not(.ant-upload-disabled):hover {
+    border-color: $primaryColor;
+}
+
+.ant-upload-drag-container {
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+
+    .msg {
+        color: rgba(0,0,0,0.85);
+        font-family: 'PoppinsRegular400';
+    }
+
+    .click {
+        color: $primaryColor;
+        font-family: 'PoppinsSemiBold600';
+    }
 }
 
 // -------------- antd Select Input styles ------------------- //
@@ -129,4 +152,42 @@ $primaryColor: #0062FF;
             width: 100%;
         }
     }
+}
+
+// -------------- Various Button styles ------------------- //
+
+.app-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #5C63AB;
+    color: #fff;
+    cursor: pointer;
+    font-family: 'PoppinsMedium500';
+    padding: 0 1em;
+    height: 2.6em;
+    border-radius: .6em;
+
+    .anticon {
+        margin-right: .5em;
+    }
+}
+
+.app-add-new-btn {
+    background-color: #F1F1F5;
+    border: 1px solid #E9E9E9;
+    color: #005FFF;
+    font-family: 'PoppinsSemiBold600';
+    
+}
+
+.app-cancel-btn {
+    font-family: 'PoppinsSemiBold600';
+    background-color: transparent;
+    color: #005FFF;
+}
+
+.app-create-btn {
+    font-family: 'PoppinsSemiBold600';
+    background-color: #0091FF;
 }

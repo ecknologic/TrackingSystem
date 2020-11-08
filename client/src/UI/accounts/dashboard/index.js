@@ -25,7 +25,7 @@ const Accounts = () => {
     const handleSort = () => { }
     const handleFilter = () => { }
 
-    const goToAddAccount = () => history.push('/add-account')
+    const goToAddAccount = () => history.push('/manage-accounts/add-account')
     const goToViewAccount = (id) => history.push(`/manage-accounts/${id}`)
 
     return (
@@ -36,7 +36,7 @@ const Accounts = () => {
                     {
                         loading ? <NoContent content={<Spinner />} />
                             : customers.length ? customers.map((account) => (
-                                <Col lg={{ span: 12 }} xl={{ span: 8 }} xxl={{ span: 6 }} >
+                                <Col lg={{ span: 12 }} xl={{ span: 8 }} xxl={{ span: 6 }}>
                                     <AccountCard customerDetails={account} onClick={() => goToViewAccount(account.customerId)} />
                                 </Col>
                             )) : <NoContent content='No Accounts To display' />

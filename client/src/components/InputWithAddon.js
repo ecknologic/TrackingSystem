@@ -1,13 +1,15 @@
 import { Input } from 'antd';
 import React from 'react';
 
-const InputWithAddon = ({ label, placeholder }) => {
+const InputWithAddon = ({ label, placeholder, onChange, value }) => {
     return (
         <Input
             className='input-has-addon'
             size='large'
             placeholder={placeholder}
             addonAfter={<AddOnBtn label={label} />}
+            onChange={onChange}
+            value={value}
         />
     )
 }
