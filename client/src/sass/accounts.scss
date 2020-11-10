@@ -224,6 +224,7 @@ $primary-color: #0062FF;
             }
         }
     }
+
 }
 
 .account-add-content {
@@ -347,21 +348,22 @@ $primary-color: #0062FF;
         height: 2.2em;
     }
 
-    .footer-buttons-container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        height: 10em;
-        width: 80%;
+    
+}
+.app-footer-buttons-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 10em;
+    width: 80%;
 
-        .footer-btn {
-            text-transform: uppercase;
-        }
+    .footer-btn {
+        text-transform: uppercase;
+    }
 
-        .app-create-btn {
-            height: 3.5em;
-            width: 15em;
-            border-radius: .8em;
-        }
+    .app-create-btn {
+        height: 3.5em;
+        width: 15em;
+        border-radius: .8em;
     }
 }

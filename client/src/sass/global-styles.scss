@@ -22,6 +22,10 @@ $primaryColor: #0062FF;
     border-color: $primaryColor;
 }
 
+.ant-upload-drag {
+    padding: 0 8px;
+}
+
 .ant-upload-drag-container {
     display: flex !important;
     justify-content: center;
@@ -36,6 +40,12 @@ $primaryColor: #0062FF;
         color: $primaryColor;
         font-family: 'PoppinsSemiBold600';
     }
+}
+
+.app-upload-file-container {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
 }
 
 // -------------- antd Select Input styles ------------------- //
@@ -148,6 +158,8 @@ $primaryColor: #0062FF;
             width: 48%;
         }
 
+        
+
         .stretch {
             width: 100%;
         }
@@ -171,14 +183,13 @@ $primaryColor: #0062FF;
 
         .upload-container {
             display: flex;
-            align-items: center;
+            align-items: flex-end;
             padding: 1em 0;
-            // height: 8em;
-
+        
             .upload-dragger-container {
                 width: 50%;
             }
-
+        
             .upload-preview-container {
                 width: 50%;
                 margin-left: 2em;
@@ -200,6 +211,8 @@ $primaryColor: #0062FF;
             }
         }
 }
+
+
 
 // -------------- Various Button styles ------------------- //
 

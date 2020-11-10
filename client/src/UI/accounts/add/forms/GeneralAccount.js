@@ -1,22 +1,30 @@
 import { Input } from 'antd';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import DraggerInput from '../../../../components/DraggerInput';
 import SelectInput from '../../../../components/SelectInput';
 import InputWithAddon from '../../../../components/InputWithAddon';
 import UploadPreviewer from '../../../../components/UploadPreviewer';
 import { dayOptions, invoiceOptions, idOptions } from '../../../../assets/fixtures'
+import { getIdProofName } from '../../../../utils/Functions';
 
 const GeneralAccountForm = (props) => {
-    const { data, onChange, onUpload, onSelect, onDeselect, onIdProofSelect } = props
+    const { data, devDays, IDProofs, onChange, onUpload, onSelect, onDeselect } = props
+    const { Front, Back } = IDProofs
 
     const {
-        gstNo, address, depositAmount,
-        deliveryDays, customerName, mobileNumber,
-        invoiceType, EmailId, contactPerson, proofName, proofSelect,
-        proofInput, idProofs = []
+        gstNo, address, depositAmount, customerName, mobileNumber, registeredDate,
+        invoicetype, EmailId, contactPerson, idProofType, gstProof, referredBy,
+        product20L, price20L, product1L, price1L, product500ML, price500ML
     } = data
 
-    const draggerDisable = idProofs.length >= 2
+    const [proofName, setProofName] = useState('')
+
+    useEffect(() => {
+        setProofName(getIdProofName(idProofType))
+    }, [idProofType])
+
+    const idUploadDisable = Front && Back
+    const gstUploadDisable = gstProof
 
     return (
         <>
@@ -24,19 +32,22 @@ const GeneralAccountForm = (props) => {
                 <div className='app-identity-proof-container identity-proof-container'>
                     <div className='input-container'>
                         <label className='app-input-label-name'>Select Id Proof</label>
-                        <SelectInput value={proofSelect} options={idOptions} onSelect={onIdProofSelect} />
+                        <SelectInput value={idProofType} options={idOptions} onSelect={(value) => onChange(value, 'idProofType')} />
                     </div>
                     {
-                        proofSelect && (
+                        idProofType && (
                             <div className='input-container second'>
                                 <label className='app-input-label-name'>{proofName}</label>
-                                <Input size='large' value={proofInput} placeholder={`Add ${proofName}`} onChange={({ target: { value } }) => onChange(value, 'proofInput')} />
+                                <Input size='large' value={data[idProofType]} placeholder={`Add ${proofName}`} onChange={({ target: { value } }) => onChange(value, idProofType)} />
                             </div>
                         )
                     }
                     <div className='upload-container'>
-                        <DraggerInput onUpload={onUpload} disabled={draggerDisable} />
-                        <UploadPreviewer data={idProofs} />
+                        <DraggerInput onUpload={(file) => onUpload(file, 'idProofs')} disabled={idUploadDisable} />
+                        <div className='upload-preview-container'>
+                            <UploadPreviewer value={Front} title='Front' />
+                            <UploadPreviewer value={Back} title='Back' />
+                        </div>
                     </div>
                     <div className='upload-instructions'>
                         <span className='title'>Please help us verify your identity</span>
@@ -48,11 +59,19 @@ const GeneralAccountForm = (props) => {
                         <label className='app-input-label-name'>GST Number</label>
                         <InputWithAddon value={gstNo} label='VERIFY' placeholder='GST Number' onChange={({ target: { value } }) => onChange(value, 'gstNo')} />
                     </div>
+                    <div className='input-container app-upload-file-container'>
+                        <DraggerInput onUpload={(file) => onUpload(file, 'gstProof')} disabled={gstUploadDisable} />
+                        <div className='upload-preview-container'>
+                            <UploadPreviewer value={gstProof} title='GST Proof' />
+                        </div>
+                    </div>
+
+                </div>
+                <div className='row'>
                     <div className='input-container'>
                         <label className='app-input-label-name'>Name</label>
                         <Input value={customerName} size='large' placeholder='Add Name' onChange={({ target: { value } }) => onChange(value, 'customerName')} />
                     </div>
-
                 </div>
                 <div className='row'>
                     <div className='input-container stretch'>
@@ -73,19 +92,57 @@ const GeneralAccountForm = (props) => {
                 <div className='row'>
                     <div className='input-container'>
                         <label className='app-input-label-name'>Delivery Days</label>
-                        <SelectInput value={deliveryDays} options={dayOptions} mode='multiple' onSelect={(value) => onSelect(value, 'deliveryDays')} onDeselect={(value) => onDeselect(value, 'deliveryDays')} />
+                        <SelectInput value={devDays} options={dayOptions} mode='multiple' onSelect={onSelect} onDeselect={onDeselect} />
                     </div>
                     <div className='input-container'>
                         <label className='app-input-label-name'>Registered Date</label>
-                        <Input size='large' type='date' placeholder='Registered Date' />
+                        <Input size='large' value={registeredDate} type='date' placeholder='Registered Date' disabled />
                     </div>
                 </div>
                 <div className='row'>
                     <div className='input-container'>
                         <label className='app-input-label-name'>Deposit Amount</label>
-                        <Input size='large' value={depositAmount} placeholder='Deposit Amount' onChange={({ target: { value } }) => onChange(value, 'depositAmount')} />
+                        <Input size='large' value={depositAmount} type='number' placeholder='Deposit Amount' onChange={({ target: { value } }) => onChange(value, 'depositAmount')} />
                     </div>
-
+                    <div className='input-container'>
+                        <label className='app-input-label-name'>Referred By</label>
+                        <Input size='large' value={referredBy} placeholder='Referral Name' onChange={({ target: { value } }) => onChange(value, 'referredBy')} />
+                    </div>
+                </div>
+                <div className='columns'>
+                    <label className='app-input-label-name'>Products and Price</label>
+                    <div className='columns-container'>
+                        <div className='column'>
+                            <div className='input-container'>
+                                <label className='app-input-label-name'>20 Ltrs</label>
+                                <Input size='large' value={product20L} placeholder='Add' onChange={({ target: { value } }) => onChange(value, 'product20L')} />
+                            </div>
+                            <div className='input-container'>
+                                <label className='app-input-label-name'>Price</label>
+                                <Input size='large' value={price20L} placeholder='Rs' onChange={({ target: { value } }) => onChange(value, 'price20L')} />
+                            </div>
+                        </div>
+                        <div className='column'>
+                            <div className='input-container'>
+                                <label className='app-input-label-name'>1 Ltrs</label>
+                                <Input size='large' value={product1L} placeholder='Add' onChange={({ target: { value } }) => onChange(value, 'product1L')} />
+                            </div>
+                            <div className='input-container'>
+                                <label className='app-input-label-name'>Price</label>
+                                <Input size='large' value={price1L} placeholder='Rs' onChange={({ target: { value } }) => onChange(value, 'price1L')} />
+                            </div>
+                        </div>
+                        <div className='column'>
+                            <div className='input-container'>
+                                <label className='app-input-label-name'>500 Ml</label>
+                                <Input size='large' value={product500ML} placeholder='Add' onChange={({ target: { value } }) => onChange(value, 'product500ML')} />
+                            </div>
+                            <div className='input-container'>
+                                <label className='app-input-label-name'>Price</label>
+                                <Input size='large' value={price500ML} placeholder='Rs' onChange={({ target: { value } }) => onChange(value, 'price500ML')} />
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div className='row'>
                     <div className='input-container'>
@@ -94,7 +151,7 @@ const GeneralAccountForm = (props) => {
                     </div>
                     <div className='input-container'>
                         <label className='app-input-label-name'>Invoice Type</label>
-                        <SelectInput value={invoiceType} options={invoiceOptions} onSelect={(value) => onChange(value, 'invoiceType')} />
+                        <SelectInput value={invoicetype} options={invoiceOptions} onSelect={(value) => onChange(value, 'invoicetype')} />
                     </div>
                 </div>
             </div>

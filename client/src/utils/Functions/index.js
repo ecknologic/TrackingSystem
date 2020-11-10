@@ -1,4 +1,4 @@
-const editData = (updatedItem, data, idField) => {
+export const editData = (updatedItem, data, idField) => {
     return new Promise(resolve => {
         if (data.length) {
             const updatedData = []
@@ -12,12 +12,12 @@ const editData = (updatedItem, data, idField) => {
         } else resolve([])
     })
 }
-const getBase64 = (img, callback) => {
+export const getBase64 = (img, callback) => {
     const reader = new FileReader();
     reader.addEventListener('load', () => callback(reader.result));
     reader.readAsDataURL(img);
 }
-const stringToHslColor = (str) => {
+export const stringToHslColor = (str) => {
     var hash = 0;
     for (var i = 0; i < str.length; i++) {
         hash = str.charCodeAt(i) + ((hash << 5) - hash);
@@ -27,7 +27,7 @@ const stringToHslColor = (str) => {
     return 'hsl(' + h + ', 45%, 45%)';
 }
 
-const getSideMenuKey = (path) => {
+export const getSideMenuKey = (path) => {
     switch (path) {
         case '/bibowarehouse':
             return '/dashboard'
@@ -36,11 +36,11 @@ const getSideMenuKey = (path) => {
     }
 }
 
-const deepClone = (data) => {
+export const deepClone = (data) => {
     return JSON.parse(JSON.stringify(data))
 }
 
-const getIdProofName = (type) => {
+export const getIdProofName = (type) => {
     switch (type) {
         case 'adharNo':
             return 'Aadhar Number'
@@ -50,12 +50,10 @@ const getIdProofName = (type) => {
             return 'Driving License Number'
         case 'passportNo':
             return 'Passport Number'
-        default:
-            return ''
     }
 }
 
-const getIdProofKey = (data) => {
+export const getIdProofKey = (data) => {
     const { panNo, adharNo, dlNo, passportNo } = data
 
     if (panNo) return 'panNo'
@@ -64,4 +62,75 @@ const getIdProofKey = (data) => {
     if (passportNo) return 'passportNo'
 }
 
-module.exports = { editData, getBase64, stringToHslColor, getSideMenuKey, deepClone, getIdProofName, getIdProofKey }
+export const getDeliveryDays = (data = []) => {
+    const days = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
+    const daysObj = {}
+    days.map((day) => {
+        if (data.includes(day)) {
+            daysObj[day] = 1
+        } else daysObj[day] = 0
+    })
+    return daysObj
+}
+export const getDevDays = (data = {}) => {
+    const days = []
+    const { SUN, MON, TUE, WED, THU, FRI, SAT } = data
+    if (Number(SUN)) days.push('SUN')
+    if (Number(MON)) days.push('MON')
+    if (Number(TUE)) days.push('TUE')
+    if (Number(WED)) days.push('WED')
+    if (Number(THU)) days.push('THU')
+    if (Number(FRI)) days.push('FRI')
+    if (Number(SAT)) days.push('SAT')
+
+    return days
+}
+export const getProductsForDB = ({ product20L, price20L, product1L, price1L, product500ML, price500ML }) => {
+    const products = []
+    const item1 = { productName: '20L', productPrice: price20L, noOfJarsTobePlaced: product20L }
+    const item2 = { productName: '1L', productPrice: price1L, noOfJarsTobePlaced: product1L }
+    const item3 = { productName: '500ML', productPrice: price500ML, noOfJarsTobePlaced: product500ML }
+    if (price20L && product20L) products.push(item1)
+    if (price1L && product1L) products.push(item2)
+    if (price500ML && product500ML) products.push(item3)
+
+    return products
+}
+
+export const getIdProofsForDB = (data) => {
+    const { Front, Back } = data
+    const idProofs = [Front, Back]
+
+    return idProofs
+}
+export const getDevDaysForDB = (data = []) => {
+    const days = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
+    const daysObj = {}
+    days.map((day) => {
+        if (data.includes(day)) {
+            daysObj[day] = 1
+        } else daysObj[day] = 0
+    })
+    return daysObj
+}
+
+export const extractGADeliveryDetails = ({ address, depositAmount, mobileNumber, contactPerson }) => {
+    return { address, depositAmount, phoneNumber: mobileNumber, contactPerson }
+}
+
+export const extractGADetails = ({ gstNo, customerName, registeredDate,
+    invoicetype, EmailId, idProofType, gstProof, referredBy, address }) => {
+    return {
+        gstNo, customerName, registeredDate, invoicetype, EmailId,
+        idProofType, gstProof, referredBy, Address1: address
+    }
+}
+
+export const getAddressesForDB = (data) => {
+    return data.map((address) => {
+        const { devDays, product20L, price20L, product1L, price1L, product500ML, price500ML, ...rest } = address
+        const products = getProductsForDB({ product20L, price20L, product1L, price1L, product500ML, price500ML })
+        const deliveryDays = getDevDaysForDB(devDays)
+        return { products, deliveryDays, ...rest }
+    })
+}

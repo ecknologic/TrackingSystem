@@ -1,4 +1,4 @@
-import { nanoid } from 'nanoid';
+import { useHistory } from 'react-router-dom';
 import { Divider, Checkbox, Collapse, message } from 'antd';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons'
@@ -7,17 +7,27 @@ import Delivery from './forms/Delivery';
 import CustomButton from '../../../components/CustomButton';
 import CorporateAccount from './forms/CorporateAccount';
 import GeneralAccount from './forms/GeneralAccount';
-import { getIdProofName, getBase64, deepClone } from '../../../utils/Functions';
 import CollapseForm from './forms/CollapseForm';
-import { getRouteOptions } from '../../../assets/fixtures';
 import { http } from '../../../modules/http'
-import { TODAYDATE, USERID, WAREHOUSEID } from '../../../utils/constants';
+import { getRouteOptions } from '../../../assets/fixtures';
+import {
+    getBase64, deepClone, getIdProofsForDB, getDevDaysForDB, getAddressesForDB,
+    getProductsForDB, extractGADeliveryDetails, extractGADetails
+} from '../../../utils/Functions';
+import { TODAYDATE, USERID, USERNAME, WAREHOUSEID } from '../../../utils/constants';
+import {
+    validateAccountValues, validateDeliveryValues, validateDevDays,
+    validateIDProofs, validateAddresses
+} from '../../../utils/validations';
 
 const AddAccount = () => {
-    const [importId, setImportId] = useState('')
-    const [resetId, setResetId] = useState('')
+    const history = useHistory()
     const [corporate, setCorporate] = useState(true)
-    const [formValues, setFormValues] = useState({})
+    const [corporateValues, setCorporateValues] = useState({ referredBy: USERNAME, registeredDate: TODAYDATE })
+    const [generalValues, setGeneralValues] = useState({ referredBy: USERNAME, registeredDate: TODAYDATE })
+    const [deliveryValues, setDeliveryValues] = useState({})
+    const [IDProofs, setIDProofs] = useState({})
+    const [devDays, setDevDays] = useState([])
     const [addresses, setAddresses] = useState([])
     const hasExtraAddress = !!addresses.length
     const [routes, setRoutes] = useState([])
@@ -28,16 +38,17 @@ const AddAccount = () => {
 
     useEffect(() => {
         getRoutes()
+        sessionStorage.removeItem('address0')
         sessionStorage.removeItem('address1')
         sessionStorage.removeItem('address2')
         sessionStorage.removeItem('address3')
         sessionStorage.removeItem('address4')
-        sessionStorage.removeItem('address5')
     }, [])
 
     useEffect(() => {
-        resetAccountFormValues()
-        resetDeliveryFormValues()
+        resetCorporateValues()
+        resetGeneralValues()
+        resetDeliveryValues()
     }, [corporate])
 
     const getRoutes = async () => {
@@ -47,115 +58,86 @@ const AddAccount = () => {
         } catch (ex) { }
     }
 
-    const handleIdProofUpload = (file) => {
+    const handleDeliveryValues = (value, key) => {
+        setDeliveryValues(data => ({ ...data, [key]: value }))
+    }
+    const handleGeneralValues = (value, key) => {
+        setGeneralValues(data => ({ ...data, [key]: value }))
+    }
+    const handleCorporateChange = (value, key) => {
+        setCorporateValues(data => ({ ...data, [key]: value }))
+    }
+
+    const handleDevDaysSelect = (value) => {
+        const clone = [...devDays]
+        clone.push(value)
+        setDevDays(clone)
+    }
+
+    const handleDevDaysDeselect = (value) => {
+        const filtered = devDays.filter(day => day !== value)
+        setDevDays(filtered)
+    }
+
+    const handleProofUpload = (file, name) => {
         getBase64(file, async (buffer) => {
-            const { idProofs = [] } = formValues
-            idProofs.push(buffer)
-            setFormValues(data => ({ ...data, idProofs }))
+            if (name === 'gstProof') {
+                if (corporate) setCorporateValues(data => ({ ...data, [name]: buffer }))
+                else setGeneralValues(data => ({ ...data, [name]: buffer }))
+            }
+            else if (name === 'idProofs') {
+                const clone = { ...IDProofs }
+                const { Front } = clone
+                if (Front) clone.Back = buffer
+                else clone.Front = buffer
+                setIDProofs(clone)
+            }
         })
     }
 
-    const handleIdProofSelect = (value) => {
-        const proofName = getIdProofName(value)
-        const proofData = { proofSelect: value, proofValue: '', proofName, idProofs: [] }
-        setFormValues(data => ({ ...data, ...proofData }))
-    }
-
-    const handleChange = (value, key) => {
-        setFormValues(data => ({ ...data, [key]: value }))
-    }
-
-    const handleMultiSelect = (value, key) => {
-        const clone = deepClone(formValues[key] || [])
-        clone.push(value)
-        setFormValues(data => ({ ...data, deliveryDays: clone }))
-    }
-
-    const handleMultiDeselect = (value, key) => {
-        const clone = deepClone(formValues[key] || [])
-        const filtered = clone.filter(day => day !== value)
-        setFormValues(data => ({ ...data, [key]: filtered }))
-    }
-
-    const extractDeliveryFormValues = (products) => {
-        const {
-            dGstNo, depositAmount, routingId, deliveryDays,
-            phoneNumber, contactPerson, shippingAddress: address, deliveryLocation
-        } = formValues
-
-        return {
-            gstNo: dGstNo, depositAmount, products, routingId, deliveryDays,
-            mobileNumber: phoneNumber, contactPerson, address, deliveryLocation
-        }
-    }
-
-    const extractAccountFormValues = () => {
-        const {
-            gstNo, natureOfBussiness, organizationName,
-            address, customerName, mobileNumber, invoicetype,
-            creditPeriodInDays, EmailId, referredBy, panNo, adharNo, proofSelect: idProofType,
-            idProofs, depositAmount, deliveryDays, invoiceType, contactPerson
-        } = formValues
-
-        if (corporate) return {
-            gstNo, natureOfBussiness, organizationName, panNo, adharNo,
-            address1: address, customerName, mobileNumber, invoicetype,
-            creditPeriodInDays, EmailId, referredBy, gstProof: idProofs[0],
-            idProofType, idProofs, customerType: 'corporate', createdBy: USERID,
-            departmentId: WAREHOUSEID, registeredDate: TODAYDATE,
-        }
-
-        return {
-            createdBy: USERID, departmentId: WAREHOUSEID, registeredDate: TODAYDATE,
-            gstNo, address1: address, customerName, mobileNumber,
-            invoiceType, EmailId, contactPerson, gstProof: idProofs[0],
-            idProofType, idProofs, customerType: 'general', panNo, adharNo,
-            deliveryDetails: [{
-                deliveryDays, contactPerson, gstNo,
-                address, phoneNumber: mobileNumber, depositAmount
-            }]
-        }
-    }
-
-    const resetAccountFormValues = () => {
-        const resetValues = {
-            dGstNo: '', organizationName: '', address: '', invoicetype: undefined,
-            mobileNumber: '', natureOfBussiness: undefined, address: '',
-            customerName: '', routingId: undefined, deliveryDays: undefined, creditPeriodInDays: undefined,
-            phoneNumber: '', contactPerson: '', address: '', deliveryLocation: '',
-            products: undefined, EmailId: '', referredBy: '', proofName: '', proofSelect: undefined,
-            proofInput: '', idProofs: [], depositAmount: ''
-        }
-
-        setFormValues(data => ({ ...data, ...resetValues }))
-    }
-    const resetDeliveryFormValues = () => {
-        const resetValues = {
-            dGstNo: '', depositAmount: '', routingId: undefined, deliveryDays: undefined,
-            phoneNumber: '', contactPerson: '', shippingAddress: '', deliveryLocation: '',
-            products: undefined
-        }
-        setResetId(nanoid(5))
-        setFormValues(data => ({ ...data, ...resetValues }))
-    }
-
-    const _Delivery = (products) => {
+    const handleAddDelivery = () => {
         const limit = 5
 
-        if (importId.includes('create')) {
-            const devFormValues = extractDeliveryFormValues(products)
-            handleCreateAccount(devFormValues)
-        }
-        else if (addresses.length < limit) {
-            const devFormValues = extractDeliveryFormValues(products)
-
-            // Validate delivery form values (except products)
+        if (addresses.length < limit) {
+            const address = { ...deliveryValues, devDays, isNew: true }
+            // Validate delivery form values
 
             const clone = deepClone(addresses)
-            clone.push(devFormValues)
+            clone.push(address)
             setAddresses(clone)
-            resetDeliveryFormValues()
+            resetDeliveryValues()
         }
+    }
+
+    const resetCorporateValues = () => {
+        const defaultValues = {
+            gstNo: '', natureOfBussiness: undefined, organizationName: '', address: '', customerName: '',
+            mobileNumber: '', invoicetype: undefined, creditPeriodInDays: undefined, EmailId: '',
+            referredBy: USERNAME, idProofType: undefined, registeredDate: TODAYDATE, gstProof: ''
+        }
+        setCorporateValues(defaultValues)
+        setIDProofs({})
+    }
+
+    const resetGeneralValues = () => {
+        const defaultValues = {
+            depositAmount: '', gstNo: '', address: '', customerName: '', mobileNumber: '',
+            invoicetype: undefined, EmailId: '', referredBy: USERNAME, idProofType: undefined,
+            registeredDate: TODAYDATE, gstProof: ''
+        }
+        setGeneralValues(defaultValues)
+        setIDProofs({})
+        setDevDays([])
+    }
+
+    const resetDeliveryValues = () => {
+        const defaultValues = {
+            gstNo: '', depositAmount: '', routingId: undefined,
+            phoneNumber: '', contactPerson: '', address: '', deliveryLocation: '',
+            product20L: '', price20L: '', product1L: '', price1L: '', product500ML: '', price500ML: ''
+        }
+        setDeliveryValues(defaultValues)
+        setDevDays([])
     }
 
     const getSessionAddresses = () => {
@@ -172,38 +154,58 @@ const AddAccount = () => {
         return filtered
     }
 
-    const handleCreateAccount = async (currentAddress) => {
-        let body
-        const accountFormValues = extractAccountFormValues()
+    const handleCreateAccount = async () => {
+        let body;
 
-        if (!corporate) {
-            body = accountFormValues
+        const IDProofError = validateIDProofs(IDProofs)
+        const devDaysError = validateDevDays(devDays)
+        if (IDProofError || devDaysError) return
+
+        const idProofs = getIdProofsForDB(IDProofs)
+        const deliveryDays = getDevDaysForDB(devDays)
+
+        const extra = {
+            customertype: corporate ? 'Corporate' : 'General',
+            createdBy: USERID, departmentId: WAREHOUSEID
+        }
+
+        if (corporate) {
+            const sessionAddresses = getSessionAddresses()
+
+            const accountErrors = validateAccountValues(corporateValues, 'corporate')
+            const deliveryErrors = validateDeliveryValues(deliveryValues)
+            const extraDeliveryErrors = validateAddresses(sessionAddresses)
+
+            const currentDelivery = { ...deliveryValues, devDays, isNew: true }
+            const allDeliveries = [...sessionAddresses, currentDelivery]
+
+            if (accountErrors || deliveryErrors || extraDeliveryErrors) return
+            const Address1 = corporateValues.address
+            delete corporateValues.address
+            const delivery = getAddressesForDB(allDeliveries)
+            const account = { ...corporateValues, Address1, idProofs, ...extra }
+            body = { ...account, deliveryDetails: delivery }
         }
         else {
-            const sessonAddresses = getSessionAddresses()
-            const deliveryDetails = [...sessonAddresses, currentAddress]
+            const accountErrors = validateAccountValues(generalValues, 'general')
 
-            body = { ...accountFormValues, deliveryDetails }
+            if (accountErrors) return
+            const products = getProductsForDB(generalValues)
+            const delivery = { ...extractGADeliveryDetails(generalValues), deliveryDays, products }
+            const account = extractGADetails(generalValues)
+            body = { ...account, idProofs, deliveryDetails: [delivery], ...extra }
         }
-
-        //validate data here
-        // console.log(finalData)
 
         const url = '/customer/createCustomer'
         try {
-            await http.POST(url, body)
-            message.success('Create Customer successfully!')
+            message.loading('Adding customer...', 0)
+            await http.POST(url, { ...body, isActive: 0 })
+            message.success('Customer added successfully!')
+            history.push('/manage-accounts')
         } catch (error) {
 
         }
-
     }
-
-    const onCreate = () => {
-        if (!corporate) handleCreateAccount()
-        else setImportId(`create${nanoid(5)}`)
-    }
-    const onAdd = () => setImportId(nanoid(5))
 
     return (
         <Fragment>
@@ -224,19 +226,20 @@ const AddAccount = () => {
                 {
                     corporate ? (
                         <CorporateAccount
-                            data={formValues}
-                            onUpload={handleIdProofUpload}
-                            onChange={handleChange}
-                            onIdProofSelect={handleIdProofSelect}
+                            data={corporateValues}
+                            IDProofs={IDProofs}
+                            onUpload={handleProofUpload}
+                            onChange={handleCorporateChange}
                         />
                     ) : (
                             <GeneralAccount
-                                data={formValues}
-                                onUpload={handleIdProofUpload}
-                                onChange={handleChange}
-                                onIdProofSelect={handleIdProofSelect}
-                                onSelect={handleMultiSelect}
-                                onDeselect={handleMultiDeselect}
+                                data={generalValues}
+                                devDays={devDays}
+                                IDProofs={IDProofs}
+                                onUpload={handleProofUpload}
+                                onChange={handleGeneralValues}
+                                onSelect={handleDevDaysSelect}
+                                onDeselect={handleDevDaysDeselect}
                             />
                         )
                 }
@@ -249,7 +252,7 @@ const AddAccount = () => {
                             <Divider />
                             <div className='title-container'>
                                 <span className='title'>Delivery Details</span>
-                                {hasExtraAddress && <CustomButton onClick={onAdd} text='Add New' className='app-add-new-btn' icon={<PlusOutlined />} />}
+                                {hasExtraAddress && <CustomButton onClick={handleAddDelivery} text='Add New' className='app-add-new-btn' icon={<PlusOutlined />} />}
                             </div>
                             {
                                 hasExtraAddress && addresses.map((item, index) => {
@@ -262,6 +265,7 @@ const AddAccount = () => {
                                         >
                                             <Panel header={deliveryLocation} forceRender>
                                                 <CollapseForm
+                                                    uniqueId={index}
                                                     data={item}
                                                     routeOptions={routeOptions}
                                                 />
@@ -271,27 +275,25 @@ const AddAccount = () => {
                                 })
                             }
                             <Delivery
-                                data={formValues}
-                                onChange={handleChange}
-                                onAdd={onAdd}
-                                hasExtraAddress={hasExtraAddress}
-                                getId={importId}
-                                resetId={resetId}
-                                onGet={_Delivery}
-                                onSelect={handleMultiSelect}
-                                onDeselect={handleMultiDeselect}
+                                devDays={devDays}
+                                data={deliveryValues}
                                 routeOptions={routeOptions}
+                                hasExtraAddress={hasExtraAddress}
+                                onAdd={handleAddDelivery}
+                                onChange={handleDeliveryValues}
+                                onSelect={handleDevDaysSelect}
+                                onDeselect={handleDevDaysDeselect}
                             />
                         </>
                     ) : null
                 }
-                <div className='footer-buttons-container'>
+                <div className='app-footer-buttons-container'>
                     <CustomButton
                         className='app-cancel-btn footer-btn'
                         text='Cancel'
                     />
                     <CustomButton
-                        onClick={onCreate}
+                        onClick={handleCreateAccount}
                         className='app-create-btn footer-btn'
                         text='Create Account'
                     />

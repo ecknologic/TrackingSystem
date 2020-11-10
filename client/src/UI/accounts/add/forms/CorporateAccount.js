@@ -1,40 +1,51 @@
-import React from 'react';
 import { Input } from 'antd';
+import React, { useEffect, useState } from 'react';
 import InputWithAddon from '../../../../components/InputWithAddon';
 import SelectInput from '../../../../components/SelectInput';
 import DraggerInput from '../../../../components/DraggerInput';
 import UploadPreviewer from '../../../../components/UploadPreviewer';
-import { invoiceOptions, numOptions, idOptions, businessOptions } from '../../../../assets/fixtures'
+import { invoiceOptions, idOptions, businessOptions } from '../../../../assets/fixtures'
+import { getIdProofName } from '../../../../utils/Functions';
 
-const CorporateAccountForm = ({ data, onChange, onUpload, onIdProofSelect }) => {
+const CorporateAccountForm = ({ data, IDProofs, onChange, onUpload }) => {
 
     const {
-        gstNo, natureOfBussiness, organizationName,
-        address, customerName, mobileNumber, invoicetype,
-        creditPeriodInDays, EmailId, referredBy, proofName, proofSelect,
-        proofInput, idProofs = []
+        gstNo, natureOfBussiness, organizationName, address, customerName,
+        mobileNumber, invoicetype, creditPeriodInDays, EmailId, referredBy, idProofType,
+        registeredDate, gstProof
     } = data
 
-    const draggerDisable = idProofs.length >= 2
+    const [proofName, setProofName] = useState('')
+    const { Front, Back } = IDProofs
+
+    useEffect(() => {
+        setProofName(getIdProofName(idProofType))
+    }, [idProofType])
+
+    const idUploadDisable = Front && Back
+    const gstUploadDisable = gstProof
 
     return (
         <div className='app-form-container form-container'>
             <div className='app-identity-proof-container identity-proof-container'>
                 <div className='input-container'>
                     <label className='app-input-label-name'>Select Id Proof</label>
-                    <SelectInput value={proofSelect} options={idOptions} onSelect={onIdProofSelect} />
+                    <SelectInput value={idProofType} options={idOptions} onSelect={(value) => onChange(value, 'idProofType')} />
                 </div>
                 {
-                    proofSelect && (
+                    idProofType && (
                         <div className='input-container second'>
                             <label className='app-input-label-name'>{proofName}</label>
-                            <Input size='large' value={proofInput} placeholder={`Add ${proofName}`} onChange={({ target: { value } }) => onChange(value, 'proofInput')} />
+                            <Input size='large' value={data[idProofType]} placeholder={`Add ${proofName}`} onChange={({ target: { value } }) => onChange(value, idProofType)} />
                         </div>
                     )
                 }
                 <div className='upload-container'>
-                    <DraggerInput onUpload={(file) => onUpload(file, 'idProofs')} disabled={draggerDisable} />
-                    <UploadPreviewer data={idProofs} />
+                    <DraggerInput onUpload={(file) => onUpload(file, 'idProofs')} disabled={idUploadDisable} />
+                    <div className='upload-preview-container'>
+                        <UploadPreviewer value={Front} title='Front' />
+                        <UploadPreviewer value={Back} title='Back' />
+                    </div>
                 </div>
                 <div className='upload-instructions'>
                     <span className='title'>Please help us verify your identity</span>
@@ -46,6 +57,14 @@ const CorporateAccountForm = ({ data, onChange, onUpload, onIdProofSelect }) => 
                     <label className='app-input-label-name'>GST Number</label>
                     <InputWithAddon value={gstNo} label='VERIFY' placeholder='GST Number' onChange={({ target: { value } }) => onChange(value, 'gstNo')} />
                 </div>
+                <div className='input-container app-upload-file-container'>
+                    <DraggerInput onUpload={(file) => onUpload(file, 'gstProof')} disabled={gstUploadDisable} />
+                    <div className='upload-preview-container'>
+                        <UploadPreviewer value={gstProof} title='GST Proof' />
+                    </div>
+                </div>
+            </div>
+            <div className='row'>
                 <div className='input-container'>
                     <label className='app-input-label-name'>Organization Name</label>
                     <Input size='large' value={organizationName} placeholder='Organization Name' onChange={({ target: { value } }) => onChange(value, 'organizationName')} />
@@ -81,7 +100,7 @@ const CorporateAccountForm = ({ data, onChange, onUpload, onIdProofSelect }) => 
             <div className='row'>
                 <div className='input-container'>
                     <label className='app-input-label-name'>Registered Date</label>
-                    <Input size='large' type='date' placeholder='Registered Date' />
+                    <Input size='large' value={registeredDate} placeholder='Registered Date' disabled />
                 </div>
                 <div className='input-container'>
                     <label className='app-input-label-name'>Invoice Type</label>
@@ -91,7 +110,7 @@ const CorporateAccountForm = ({ data, onChange, onUpload, onIdProofSelect }) => 
             <div className='row'>
                 <div className='input-container'>
                     <label className='app-input-label-name'>Credit Period in Days</label>
-                    <SelectInput value={creditPeriodInDays} options={numOptions} onSelect={(value) => onChange(value, 'creditPeriodInDays')} />
+                    <Input size='large' value={creditPeriodInDays} type='number' placeholder='Credit Period' onChange={({ target: { value } }) => onChange(value, 'creditPeriodInDays')} />
                 </div>
                 <div className='input-container'>
                     <label className='app-input-label-name'>Referred By</label>

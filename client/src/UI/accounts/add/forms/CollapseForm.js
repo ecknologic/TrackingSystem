@@ -9,17 +9,17 @@ const CollapseForm = ({ data, routeOptions, uniqueId }) => {
     const [gstNo, setGstNo] = useState('')
     const [address, setAddress] = useState('')
     const [devDays, setDevDays] = useState()
-    const [mobileNumber, setMobileNumber] = useState('')
+    const [phoneNumber, setPhoneNumber] = useState('')
     const [contactPerson, setContactPerson] = useState('')
     const [depositAmount, setDepositAmount] = useState('')
     const [deliveryLocation, setDeliveryLocation] = useState('')
     const [routingId, setRoutingId] = useState()
-    const [product1, setProduct1] = useState('')
-    const [product2, setProduct2] = useState('')
-    const [product3, setProduct3] = useState('')
-    const [price1, setPrice1] = useState('')
-    const [price2, setPrice2] = useState('')
-    const [price3, setPrice3] = useState('')
+    const [product20L, setProduct20L] = useState('')
+    const [product1L, setProduct1L] = useState('')
+    const [product500ML, setProduct500ML] = useState('')
+    const [price20L, setPrice20L] = useState('')
+    const [price1L, setPrice1L] = useState('')
+    const [price500ML, setPrice500ML] = useState('')
 
     useEffect(() => { // To pre-fill the form
         populateForm(data)
@@ -27,66 +27,47 @@ const CollapseForm = ({ data, routeOptions, uniqueId }) => {
 
     useEffect(() => { // To set form data to session storage
         setSession()
-    }, [gstNo, depositAmount, routingId, devDays, product1, product2, product3,
-        price1, price2, price3, mobileNumber, contactPerson, address, deliveryLocation])
-
-    const setSession = () => {
-        const products = []
-        const item1 = { productName: '20L', productPrice: price1, noOfJarsTobePlaced: product1 }
-        const item2 = { productName: '1L', productPrice: price2, noOfJarsTobePlaced: product2 }
-        const item3 = { productName: '500ML', productPrice: price3, noOfJarsTobePlaced: product3 }
-        if (price1 && product1) products.push(item1)
-        if (price2 && product2) products.push(item2)
-        if (price3 && product3) products.push(item3)
-
-        const data = {
-            uniqueId, gstNo, depositAmount, routingId, deliveryDays: devDays, products,
-            mobileNumber, contactPerson, address, deliveryLocation
-        }
-
-        sessionStorage.setItem(`address${uniqueId}`, JSON.stringify(data))
-    }
+    }, [gstNo, depositAmount, routingId, devDays, product20L, price20L, product1L, price1L,
+        product500ML, price500ML, phoneNumber, contactPerson, address, deliveryLocation])
 
     const populateForm = (data) => {
         const {
-            products, gstNo, depositAmount, routingId, deliveryDays,
-            mobileNumber, contactPerson, address, deliveryLocation
+            gstNo, depositAmount, routingId, devDays, phoneNumber, contactPerson, address,
+            deliveryLocation, product20L, price20L, product1L, price1L, product500ML, price500ML
         } = data
 
-        products.map((item) => {
-            const { productName, noOfJarsTobePlaced, productPrice } = item
-            if (productName === '20L') { setProduct1(noOfJarsTobePlaced); setPrice1(productPrice) }
-            else if (productName === '1L') { setProduct2(noOfJarsTobePlaced); setPrice2(productPrice) }
-            else if (productName === '500ML') { setProduct3(noOfJarsTobePlaced); setPrice3(productPrice) }
-        })
-
+        setProduct20L(product20L)
+        setProduct1L(product1L)
+        setProduct500ML(product500ML)
+        setPrice20L(price20L)
+        setPrice1L(price1L)
+        setPrice500ML(price500ML)
         setGstNo(gstNo)
         setAddress(address)
-        setDevDays(deliveryDays)
-        setMobileNumber(mobileNumber)
+        setDevDays(devDays)
+        setPhoneNumber(phoneNumber)
         setContactPerson(contactPerson)
         setDepositAmount(depositAmount)
         setDeliveryLocation(deliveryLocation)
         setRoutingId(routingId)
     }
 
+    const setSession = () => {
+        const data = {
+            gstNo, depositAmount, routingId, devDays, product20L, price20L, product1L, price1L, product500ML, price500ML,
+            phoneNumber, contactPerson, address, deliveryLocation
+        }
+        sessionStorage.setItem(`address${uniqueId}`, JSON.stringify(data))
+    }
 
     const handleSelect = (value) => {
-        if (devDays) {
-            const clone = [...devDays]
-            clone.push(value)
-            setDevDays(clone)
-        }
-        else setDevDays([value])
+        devDays.push(value)
+        setDevDays(devDays)
     }
 
     const handleDeselect = (value) => {
-        if (devDays) {
-            const clone = [...devDays]
-            const filtered = clone.filter(day => day !== value)
-            setDevDays(filtered)
-        }
-        else setDevDays([value])
+        const filtered = devDays.filter(day => day !== value)
+        setDevDays(filtered)
     }
 
     return (
@@ -120,7 +101,7 @@ const CollapseForm = ({ data, routeOptions, uniqueId }) => {
                 <div className='row'>
                     <div className='input-container'>
                         <label className='app-input-label-name'>Phone Number</label>
-                        <Input size='large' value={mobileNumber} type='number' placeholder='Phone Number' onChange={({ target: { value } }) => setMobileNumber(value)} />
+                        <Input size='large' value={phoneNumber} type='number' placeholder='Phone Number' onChange={({ target: { value } }) => setPhoneNumber(value)} />
                     </div>
                     <div className='input-container'>
                         <label className='app-input-label-name'>Contact Person</label>
@@ -132,32 +113,32 @@ const CollapseForm = ({ data, routeOptions, uniqueId }) => {
                     <div className='columns-container'>
                         <div className='column'>
                             <div className='input-container'>
-                                <label className='app-input-label-name'>20 Ltrs</label>
-                                <Input size='large' value={product1} placeholder='Add' onChange={({ target: { value } }) => setProduct1(value)} />
+                                <label className='app-input-label-name'>1s</label>
+                                <Input size='large' value={product20L} placeholder='Add' onChange={({ target: { value } }) => setProduct20L(value)} />
                             </div>
                             <div className='input-container'>
                                 <label className='app-input-label-name'>Price</label>
-                                <Input size='large' value={price1} placeholder='Rs' onChange={({ target: { value } }) => setPrice1(value)} />
+                                <Input size='large' value={price20L} placeholder='Rs' onChange={({ target: { value } }) => setPrice20L(value)} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <label className='app-input-label-name'>1 Ltrs</label>
-                                <Input size='large' value={product2} placeholder='Add' onChange={({ target: { value } }) => setProduct2(value)} />
+                                <Input size='large' value={product1L} placeholder='Add' onChange={({ target: { value } }) => setProduct1L(value)} />
                             </div>
                             <div className='input-container'>
                                 <label className='app-input-label-name'>Price</label>
-                                <Input size='large' value={price2} placeholder='Rs' onChange={({ target: { value } }) => setPrice2(value)} />
+                                <Input size='large' value={price1L} placeholder='Rs' onChange={({ target: { value } }) => setPrice1L(value)} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <label className='app-input-label-name'>500 Ml</label>
-                                <Input size='large' value={product3} placeholder='Add' onChange={({ target: { value } }) => setProduct3(value)} />
+                                <Input size='large' value={product500ML} placeholder='Add' onChange={({ target: { value } }) => setProduct500ML(value)} />
                             </div>
                             <div className='input-container'>
                                 <label className='app-input-label-name'>Price</label>
-                                <Input size='large' value={price3} placeholder='Rs' onChange={({ target: { value } }) => setPrice3(value)} />
+                                <Input size='large' value={price500ML} placeholder='Rs' onChange={({ target: { value } }) => setPrice500ML(value)} />
                             </div>
                         </div>
                     </div>

@@ -9,32 +9,32 @@ export const idOptions = [
     <Option key='4' value="passportNo">Passport</Option>
 ]
 export const businessOptions = [
-    <Option key='1' value="residential">Residential</Option>,
-    <Option key='2' value="software">Software</Option>,
-    <Option key='3' value="corporate">Corporate</Option>,
-    <Option key='4' value="traders">Traders</Option>
+    <Option key='1' value="Residential">Residential</Option>,
+    <Option key='2' value="Software">Software</Option>,
+    <Option key='3' value="Corporate">Corporate</Option>,
+    <Option key='4' value="Traders">Traders</Option>
 ]
 export const invoiceOptions = [
     <Option key="1" value="complimentary">Complimentary</Option>,
-    <Option key="2" value="non-complimentary">Non Complimentaru</Option>
+    <Option key="2" value="nonComplimentary">Non Complimentary</Option>
 ]
 export const numOptions = [
-    <Option key="1" value="1">01</Option>,
-    <Option key="2" value="2">02</Option>,
-    <Option key="3" value="3">03</Option>,
-    <Option key="4" value="4">04</Option>,
-    <Option key="5" value="5">05</Option>,
-    <Option key="6" value="6">06</Option>,
-    <Option key="7" value="7">07</Option>
+    <Option key="1" value={1}>01</Option>,
+    <Option key="2" value={2}>02</Option>,
+    <Option key="3" value={3}>03</Option>,
+    <Option key="4" value={4}>04</Option>,
+    <Option key="5" value={5}>05</Option>,
+    <Option key="6" value={6}>06</Option>,
+    <Option key="7" value={7}>07</Option>
 ]
 export const dayOptions = [
-    <Option key="1" value="MON">Monday</Option>,
-    <Option key="2" value="TUE">Tuesday</Option>,
-    <Option key="3" value="WED">Wednesday</Option>,
-    <Option key="4" value="THU">Thursday</Option>,
-    <Option key="5" value="FRI">Friday</Option>,
-    <Option key="6" value="SAT">Saturday</Option>,
-    <Option key="7" value="SUN">Sunday</Option>
+    <Option key="1" value="MON">MON</Option>,
+    <Option key="2" value="TUE">TUE</Option>,
+    <Option key="3" value="WED">WED</Option>,
+    <Option key="4" value="THU">THU</Option>,
+    <Option key="5" value="FRI">FRI</Option>,
+    <Option key="6" value="SAT">SAT</Option>,
+    <Option key="7" value="SUN">SUN</Option>
 ]
 export const productOptions = [
     <Option key="1" value="p1">Product 1</Option>,
@@ -48,27 +48,4 @@ export const productOptions = [
 
 export const getRouteOptions = (routes) => {
     return routes.map((item) => <Option key={item.RouteId} value={item.RouteId}>{item.RouteName}</Option>)
-}
-export const getDeliveryDays = (data = []) => {
-    const days = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
-    const daysObj = {}
-    days.map((day) => {
-        if (data.includes(day)) {
-            daysObj[day] = 1
-        } else daysObj[day] = 0
-    })
-    return daysObj
-}
-export const getDevDays = (data = {}) => {
-    const days = []
-    const { SUN, MON, TUE, WED, THU, FRI, SAT } = data
-    if (Number(SUN)) days.push('SUN')
-    if (Number(MON)) days.push('MON')
-    if (Number(TUE)) days.push('TUE')
-    if (Number(WED)) days.push('WED')
-    if (Number(THU)) days.push('THU')
-    if (Number(FRI)) days.push('FRI')
-    if (Number(SAT)) days.push('SAT')
-
-    return days
 }
