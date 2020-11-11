@@ -170,16 +170,6 @@ const updateDeliveryDays = (deliveryDays, deliverydaysid) => {
     });
   })
 }
-const updateDeliveryDays = (deliveryDays, deliverydaysid) => {
-  return new Promise((resolve, reject) => {
-    let deliveryDayQuery = "update customerdeliverydays SET SUN=?,MON=?,TUE=?,WED=?,THU=?,FRI=?,SAT=? WHERE deliveryDaysId=" + deliverydaysid;
-    let insertQueryValues = [deliveryDays.SUN, deliveryDays.MON, deliveryDays.TUE, deliveryDays.WED, deliveryDays.THU, deliveryDays.FRI, deliveryDays.SAT]
-    db.query(deliveryDayQuery, insertQueryValues, (err, results) => {
-      if (err) console.log(err.sqlMessage);
-      else resolve(results)
-    });
-  })
-}
 const saveProductDetails = (products, deliveryDetailsId, customerId) => {
   return new Promise((resolve, reject) => {
     if (products.length) {
