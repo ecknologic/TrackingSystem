@@ -111,7 +111,7 @@ router.get('/getCustomers', (req, res) => {
 
 
 router.post('/createCustomer', async (req, res) => {
-  let customerDetailsQuery = "insert  into customerdetails (customerName,mobileNumber,AlternatePhNo,EmailId,Address1,Address2,gstNo,contactperson,panNo,adharNo,registeredDate,invoicetype,natureOfBussiness,creditPeriodInDays,referredBy,departmentId,deliveryDaysId,depositamount,qrcodeId,latitude,longitude,shippingAddress,shippingContactPerson,shippingContactNo,customerType,organizationName,createdBy,customer_id_proof) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+  let customerDetailsQuery = "insert  into customerdetails (customerName,mobileNumber,AlternatePhNo,EmailId,Address1,Address2,gstNo,contactperson,panNo,adharNo,registeredDate,invoicetype,natureOfBussiness,creditPeriodInDays,referredBy,departmentId,deliveryDaysId,depositamount,isActive,qrcodeId,latitude,longitude,shippingAddress,shippingContactPerson,shippingContactNo,customerType,organizationName,createdBy,customer_id_proof,idProofType) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
   // let customerDetailsQuery = "insert  into customerdetails (customerName,mobileNumber,EmailId,Address1,gstNo,registeredDate,invoicetype,natureOfBussiness,creditPeriodInDays,referredBy,isActive,qrcodeId,latitude,longitude,customerType,organizationName,createdBy) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
   let customerdetails = req.body;
   Promise.all([createQrCode('idProof' + customerdetails.mobileNumber), getLatLongDetails(customerdetails), uploadImage(req)])
@@ -119,7 +119,7 @@ router.post('/createCustomer', async (req, res) => {
       let insertQueryValues = [customerdetails.customerName, customerdetails.mobileNumber, customerdetails.AlternatePhNo, customerdetails.EmailId, customerdetails.Address1, customerdetails.Address2, customerdetails.gstNo, customerdetails.contactperson, customerdetails.panNo, customerdetails.adharNo, customerdetails.registeredDate, customerdetails.invoicetype, customerdetails.natureOfBussiness, customerdetails.creditPeriodInDays, customerdetails.referredBy, customerdetails.departmentId, customerdetails.deliveryDaysId, customerdetails.depositamount, customerdetails.isActive, response[0], response[1].latitude, response[1].longitude, customerdetails.shippingAddress, customerdetails.shippingContactPerson, customerdetails.shippingContactNo, customerdetails.customertype, customerdetails.organizationName, customerdetails.createdBy, response[2], customerdetails.idProofType]
       // let insertQueryValues = [customerdetails.customerName, customerdetails.mobileNumber, customerdetails.EmailId, customerdetails.Address1, customerdetails.gstNo, customerdetails.registeredDate, customerdetails.invoicetype, customerdetails.natureOfBussiness, customerdetails.creditPeriodInDays, customerdetails.referredBy, customerdetails.isActive, response[0], response[1].latitude, response[1].longitude, customerdetails.customerType, customerdetails.organizationName, customerdetails.createdBy]
       db.query(customerDetailsQuery, insertQueryValues, (err, results) => {
-        if (err) res.json({ status: 500, message: err.sqlMessage });
+        if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
         else {
           saveDeliveryDetails(results.insertId, customerdetails, res)
         }
@@ -133,8 +133,8 @@ const saveDeliveryDetails = (customerId, customerdetails, res) => {
       let count = 0
       for (let i of customerdetails.deliveryDetails) {
         saveDeliveryDays(i.deliveryDays).then(deliveryDays => {
-          let deliveryDetailsQuery = "insert  into DeliveryDetails (gstNo,location,address,phoneNumber,contactPerson,deliverydaysid,depositAmount,customer_Id,routingId) values(?,?,?,?,?,?,?,?,?)";
-          let insertQueryValues = [i.gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, deliveryDays.insertId, i.depositAmount, customerId, i.routingId]
+          let deliveryDetailsQuery = "insert  into DeliveryDetails (gstNo,location,address,phoneNumber,contactPerson,deliverydaysid,depositAmount,customer_Id,routingId,isActive) values(?,?,?,?,?,?,?,?,?,?)";
+          let insertQueryValues = [i.gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, deliveryDays.insertId, i.depositAmount, customerId, i.routingId, i.isActive]
           db.query(deliveryDetailsQuery, insertQueryValues, (err, results) => {
             if (err) res.json({ status: 500, message: err.sqlMessage });
             else {
@@ -333,16 +333,16 @@ const customerProductDetails = (deliveryDetailsId) => {
 }
 
 router.post('/updateCustomer', async (req, res) => {
-  let customerDetailsQuery = "UPDATE customerdetails SET customerName=?,mobileNumber=?,AlternatePhNo=?,EmailId=?,Address1=?,Address2=?,gstNo=?,contactperson=?,panNo=?,adharNo=?,invoicetype=?,natureOfBussiness=?,creditPeriodInDays=?,referredBy=?,departmentId=?,depositamount=?,isActive=?,latitude=?,longitude=?,shippingAddress=?,shippingContactPerson=?,shippingContactNo=?,customerType=?,organizationName=?,createdBy=?,idProofType=? WHERE customerId=" + customerdetails.customerId;
-  // let customerDetailsQuery = "insert  into customerdetails (customerName,mobileNumber,EmailId,Address1,gstNo,registeredDate,invoicetype,natureOfBussiness,creditPeriodInDays,referredBy,isActive,qrcodeId,latitude,longitude,customerType,organizationName,createdBy) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
   let customerdetails = req.body;
+  let customerDetailsQuery = "UPDATE customerdetails SET customerName=?,mobileNumber=?,AlternatePhNo=?,EmailId=?,Address1=?,Address2=?,gstNo=?,contactperson=?,panNo=?,adharNo=?,invoicetype=?,natureOfBussiness=?,creditPeriodInDays=?,referredBy=?,departmentId=?,deliveryDaysId=?,depositamount=?,isActive=?,latitude=?,longitude=?,shippingAddress=?,shippingContactPerson=?,shippingContactNo=?,customerType=?,organizationName=?,createdBy=?,idProofType=? WHERE customerId=" + customerdetails.customerId;
+  // let customerDetailsQuery = "insert  into customerdetails (customerName,mobileNumber,EmailId,Address1,gstNo,registeredDate,invoicetype,natureOfBussiness,creditPeriodInDays,referredBy,isActive,qrcodeId,latitude,longitude,customerType,organizationName,createdBy) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
   Promise.all([getLatLongDetails(customerdetails), updateProofs(req)])
     .then(response => {
       let updateQueryValues = [customerdetails.customerName, customerdetails.mobileNumber, customerdetails.AlternatePhNo, customerdetails.EmailId, customerdetails.Address1, customerdetails.Address2, customerdetails.gstNo, customerdetails.contactperson, customerdetails.panNo, customerdetails.adharNo, customerdetails.invoicetype, customerdetails.natureOfBussiness, customerdetails.creditPeriodInDays, customerdetails.referredBy, customerdetails.departmentId, customerdetails.deliveryDaysId, customerdetails.depositamount, customerdetails.isActive, response[0].latitude, response[0].longitude, customerdetails.shippingAddress, customerdetails.shippingContactPerson, customerdetails.shippingContactNo, customerdetails.customertype, customerdetails.organizationName, customerdetails.createdBy, customerdetails.idProofType]
       // let insertQueryValues = [customerdetails.customerName, customerdetails.mobileNumber, customerdetails.EmailId, customerdetails.Address1, customerdetails.gstNo, customerdetails.registeredDate, customerdetails.invoicetype, customerdetails.natureOfBussiness, customerdetails.creditPeriodInDays, customerdetails.referredBy, customerdetails.isActive, response[0], response[1].latitude, response[1].longitude, customerdetails.customerType, customerdetails.organizationName, customerdetails.createdBy]
       db.query(customerDetailsQuery, updateQueryValues, (err, results) => {
         console.log(updateQueryValues);
-        if (err) res.json({ status: 500, message: err.sqlMessage });
+        if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
         else {
           res.json({ status: 200, message: 'Customer Updated successfully' })
         }
@@ -356,8 +356,8 @@ router.post('/updateDeliveryDetails', (req, res) => {
     for (let i of deliveryDetails) {
       if (deliveryDetails.isNew == true) {
         saveDeliveryDays(i.deliveryDays).then(deliveryDays => {
-          let deliveryDetailsQuery = "insert  into DeliveryDetails (gstNo,location,address,phoneNumber,contactPerson,deliverydaysid,depositAmount,customer_Id,routingId) values(?,?,?,?,?,?,?,?,?)";
-          let insertQueryValues = [i.gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, deliveryDays.insertId, i.depositAmount, deliveryDetails.customerId, i.routingId]
+          let deliveryDetailsQuery = "insert  into DeliveryDetails (gstNo,location,address,phoneNumber,contactPerson,deliverydaysid,depositAmount,customer_Id,routingId,isActive) values(?,?,?,?,?,?,?,?,?,?)";
+          let insertQueryValues = [i.gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, deliveryDays.insertId, i.depositAmount, deliveryDetails.customerId, i.routingId, i.isActive]
           db.query(deliveryDetailsQuery, insertQueryValues, (err, results) => {
             if (err) res.json({ status: 500, message: err.sqlMessage });
             else {
@@ -371,8 +371,8 @@ router.post('/updateDeliveryDetails', (req, res) => {
         })
       } else {
         updateDeliveryDays(i.deliveryDays, i.deliverydaysid).then(deliveryDays => {
-          let deliveryDetailsQuery = "UPDATE DeliveryDetails SET gstNo=?,location=?,address=?,phoneNumber=?,contactPerson=?,depositAmount=?,routingId=? WHERE deliveryDetailsId=" + i.deliveryDetailsId;
-          let updateQueryValues = [i.gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, i.depositAmount, i.routingId]
+          let deliveryDetailsQuery = "UPDATE DeliveryDetails SET gstNo=?,location=?,address=?,phoneNumber=?,contactPerson=?,depositAmount=?,routingId=?,isActive=? WHERE deliveryDetailsId=" + i.deliveryDetailsId;
+          let updateQueryValues = [i.gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, i.depositAmount, i.routingId, i.isActive]
           db.query(deliveryDetailsQuery, updateQueryValues, (err, results) => {
             if (err) res.json({ status: 500, message: err.sqlMessage });
             else {

@@ -5,8 +5,8 @@ import PrimaryButton from './PrimaryButton';
 import '../sass/accountCard.scss'
 import '../sass/addressCard.scss'
 
-const AddressCard = ({ onClick }) => {
-    const isActive = false
+const AddressCard = ({ data, onClick }) => {
+    const { isActive, routeName, phoneNumber, location, contactPerson } = data
 
     return (
         <div className='account-card-container address-card-container'>
@@ -15,7 +15,7 @@ const AddressCard = ({ onClick }) => {
                 <div className={isActive ? 'inner green' : 'inner'}>
                     <img src={branch} alt='' />
                     <div className='address-container'>
-                        <span className='title'>Banjara Hills</span>
+                        <span className='title'>{location}</span>
                     </div>
                 </div>
             </div>
@@ -23,13 +23,13 @@ const AddressCard = ({ onClick }) => {
                 <div className='contact-container'>
                     <span className='type1'>Contact Details</span>
                     <div className='contacts'>
-                        <NameCard name='Ajay Babu' />
-                        <span className='mobile'>918223344556</span>
+                        <NameCard name={contactPerson} />
+                        <span className='mobile'>{phoneNumber}</span>
                     </div>
                 </div>
                 <div className='business'>
                     <span className='type1'>Assigned Route</span>
-                    <span className='value'>Madhapur - Kondapur</span>
+                    <span className='value'>{routeName}</span>
                 </div>
             </div>
             <div className='footer'>

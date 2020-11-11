@@ -6,6 +6,7 @@
         align-items: center;
         
         .img-container {
+            position: relative;
             border: 1px solid #E7E7E7;
             width: 6em;
             height: 4em;
@@ -15,10 +16,20 @@
                 height: 100%;
             }
 
-            &:hover {
-                border: 1px dotted #0062FF;
+            .cross {
+                position: absolute;
+                right: -5px;
+                top: -5px;
+                width: 1em;
+                height: 1em;
+                cursor: pointer;
+                transition: all .3s;
+            }
 
-                
+            &:hover {
+                .cross {
+                    transform: scale(1.2);
+                }
             }
 
         }

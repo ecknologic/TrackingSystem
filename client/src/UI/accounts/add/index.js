@@ -19,10 +19,12 @@ import {
     validateAccountValues, validateDeliveryValues, validateDevDays,
     validateIDProofs, validateAddresses
 } from '../../../utils/validations';
+import DownIcon from '../../../components/SVG_Down_Icon';
 
 const AddAccount = () => {
     const history = useHistory()
     const [corporate, setCorporate] = useState(true)
+    const [btnDisabled, setBtnDisabled] = useState(false)
     const [corporateValues, setCorporateValues] = useState({ referredBy: USERNAME, registeredDate: TODAYDATE })
     const [generalValues, setGeneralValues] = useState({ referredBy: USERNAME, registeredDate: TODAYDATE })
     const [deliveryValues, setDeliveryValues] = useState({})
@@ -95,6 +97,15 @@ const AddAccount = () => {
         })
     }
 
+    const handleProofRemove = (name) => {
+        if (name === 'gstProof') {
+            if (corporate) setCorporateValues(data => ({ ...data, [name]: '' }))
+            else setGeneralValues(data => ({ ...data, [name]: '' }))
+        }
+        else if (name === 'Front') setIDProofs(data => ({ ...data, Front: '' }))
+        else if (name === 'Back') setIDProofs(data => ({ ...data, Back: '' }))
+    }
+
     const handleAddDelivery = () => {
         const limit = 5
 
@@ -159,7 +170,12 @@ const AddAccount = () => {
 
         const IDProofError = validateIDProofs(IDProofs)
         const devDaysError = validateDevDays(devDays)
-        if (IDProofError || devDaysError) return
+        if (Object.keys(IDProofError || devDaysError).length) {
+            console.log('IDProofError', IDProofError)
+            console.log('devDaysError', devDaysError)
+            message.error('Validation Error')
+            return
+        }
 
         const idProofs = getIdProofsForDB(IDProofs)
         const deliveryDays = getDevDaysForDB(devDays)
@@ -172,24 +188,33 @@ const AddAccount = () => {
         if (corporate) {
             const sessionAddresses = getSessionAddresses()
 
-            const accountErrors = validateAccountValues(corporateValues, 'corporate')
+            const accountErrors = validateAccountValues(corporateValues, 'Corporate')
             const deliveryErrors = validateDeliveryValues(deliveryValues)
             const extraDeliveryErrors = validateAddresses(sessionAddresses)
 
             const currentDelivery = { ...deliveryValues, devDays, isNew: true }
             const allDeliveries = [...sessionAddresses, currentDelivery]
 
-            if (accountErrors || deliveryErrors || extraDeliveryErrors) return
+            if (Object.keys(accountErrors || deliveryErrors || extraDeliveryErrors).length) {
+                console.log('extraDeliveryErrors', extraDeliveryErrors)
+                console.log('deliveryErrors', deliveryErrors)
+                console.log('accountErrors', accountErrors)
+                message.error('Validation Error')
+                return
+            }
             const Address1 = corporateValues.address
-            delete corporateValues.address
             const delivery = getAddressesForDB(allDeliveries)
             const account = { ...corporateValues, Address1, idProofs, ...extra }
             body = { ...account, deliveryDetails: delivery }
         }
         else {
-            const accountErrors = validateAccountValues(generalValues, 'general')
+            const accountErrors = validateAccountValues(generalValues)
 
-            if (accountErrors) return
+            if (Object.keys(accountErrors).length) {
+                console.log('accountErrors', accountErrors)
+                message.error('Validation Error')
+                return
+            }
             const products = getProductsForDB(generalValues)
             const delivery = { ...extractGADeliveryDetails(generalValues), deliveryDays, products }
             const account = extractGADetails(generalValues)
@@ -198,12 +223,13 @@ const AddAccount = () => {
 
         const url = '/customer/createCustomer'
         try {
+            setBtnDisabled(true)
             message.loading('Adding customer...', 0)
             await http.POST(url, { ...body, isActive: 0 })
             message.success('Customer added successfully!')
             history.push('/manage-accounts')
         } catch (error) {
-
+            setBtnDisabled(false)
         }
     }
 
@@ -229,6 +255,7 @@ const AddAccount = () => {
                             data={corporateValues}
                             IDProofs={IDProofs}
                             onUpload={handleProofUpload}
+                            onRemove={handleProofRemove}
                             onChange={handleCorporateChange}
                         />
                     ) : (
@@ -237,6 +264,7 @@ const AddAccount = () => {
                                 devDays={devDays}
                                 IDProofs={IDProofs}
                                 onUpload={handleProofUpload}
+                                onRemove={handleProofRemove}
                                 onChange={handleGeneralValues}
                                 onSelect={handleDevDaysSelect}
                                 onDeselect={handleDevDaysDeselect}
@@ -260,8 +288,10 @@ const AddAccount = () => {
                                     return (
                                         <Collapse
                                             accordion
-                                            expandIconPosition='right'
                                             key={index}
+                                            className='accordion-container'
+                                            expandIcon={({ isActive }) => <DownIcon isActive={isActive} />}
+                                            expandIconPosition='right'
                                         >
                                             <Panel header={deliveryLocation} forceRender>
                                                 <CollapseForm
@@ -294,7 +324,7 @@ const AddAccount = () => {
                     />
                     <CustomButton
                         onClick={handleCreateAccount}
-                        className='app-create-btn footer-btn'
+                        className={`app-create-btn footer-btn ${btnDisabled && 'disabled'}`}
                         text='Create Account'
                     />
                 </div>

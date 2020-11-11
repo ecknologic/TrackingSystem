@@ -3,28 +3,36 @@ import React, { useEffect, useState } from 'react';
 import Spinner from '../../../../components/Spinner';
 import NoContent from '../../../../components/NoContent';
 import AddressCard from '../../../../components/AddressCard';
+import { useParams } from 'react-router-dom';
+import { http } from '../../../../modules/http';
 
 const DeliveryDetails = () => {
-
-    const [cards, setCards] = useState([])
+    const { accountId } = useParams()
+    const [delivery, setDelivery] = useState([])
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        const cards = ['1', '2', '3', '4', '5', '6', '7', '8']
-        setTimeout(() => {
-            setCards(cards)
-            setLoading(false)
-        }, 2000)
+        getDeliveryDetails()
     }, [])
+
+    const getDeliveryDetails = async () => {
+        const url = `/customer/getCustomerDeliveryDetails/${accountId}`
+        try {
+            const { data: [data] } = await http.GET(url)
+            const { deliveryDetails } = data
+            setDelivery(deliveryDetails)
+            setLoading(false)
+        } catch (error) { }
+    }
 
     return (
         <div className='account-view-delivery-details'>
             <Row gutter={[{ lg: 32, xl: 16 }, { lg: 32, xl: 32 }]}>
                 {
                     loading ? <NoContent content={<Spinner />} />
-                        : cards.length ? cards.map(() => (
-                            <Col lg={{ span: 12 }} xl={{ span: 8 }} xxl={{ span: 6 }} >
-                                <AddressCard onClick={() => { }} />
+                        : delivery.length ? delivery.map((item) => (
+                            <Col lg={{ span: 12 }} xl={{ span: 8 }} xxl={{ span: 6 }}>
+                                <AddressCard data={item} onClick={() => { }} />
                             </Col>
                         )) : <NoContent content='No Accounts To display' />
                 }

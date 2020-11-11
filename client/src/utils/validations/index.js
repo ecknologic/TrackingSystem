@@ -15,7 +15,7 @@ export const checkValidation = (stateValues) => {
 }
 
 export const validateIDProofs = (proofs) => {
-    let errors;
+    let errors = {};
     const text = 'Required'
     if (Object.keys(proofs).length) {
         const { Front, Back } = proofs;
@@ -27,7 +27,7 @@ export const validateIDProofs = (proofs) => {
 }
 
 export const validateDevDays = (days) => {
-    let errors;
+    let errors = {};
     const text = 'Required'
     if (!days.length) errors = { devDays: text }
 
@@ -35,7 +35,7 @@ export const validateDevDays = (days) => {
 }
 
 export const validateAccountValues = (data, customerType) => {
-    let errors;
+    let errors = {};
     const text = 'Required'
     const {
         gstNo, natureOfBussiness, organizationName, address, customerName,
@@ -43,7 +43,7 @@ export const validateAccountValues = (data, customerType) => {
         registeredDate, gstProof, depositAmount, contactPerson
     } = data
 
-    if (customerType === 'corporate') {
+    if (customerType === 'Corporate') {
         if (!organizationName) errors.organizationName = text
         if (!natureOfBussiness) errors.natureOfBussiness = text
         if (!creditPeriodInDays) errors.creditPeriodInDays = text
@@ -67,7 +67,7 @@ export const validateAccountValues = (data, customerType) => {
     return errors
 }
 export const validateDeliveryValues = (data) => {
-    let errors;
+    let errors = {};
     const text = 'Required'
     const {
         gstNo, depositAmount, routingId, phoneNumber, contactPerson, address,
@@ -92,7 +92,7 @@ export const validateDeliveryValues = (data) => {
 }
 
 export const validateAddresses = (data) => {
-    let errors;
+    let errors = {};
     for (let index = 0; index < data.length; index++) {
         const error = validateDeliveryValues(data[index])
         if (error) {

@@ -1,68 +1,38 @@
 import { Tabs } from 'antd';
+import { useParams } from 'react-router-dom';
 import React, { Fragment, useEffect, useState } from 'react';
 import { FileTextOutlined } from '@ant-design/icons'
-import Header from './header';
 import CustomButton from '../../../components/CustomButton';
 import DeliveryDetails from './tabs/DeliveryDetails';
-import CorporateAccount from '../add/forms/CorporateAccount';
-import { useParams } from 'react-router-dom';
+import AccountOverview from './tabs/AccountOverview';
 import { http } from '../../../modules/http';
-import { deepClone } from '../../../utils/Functions';
-
-const { TabPane } = Tabs;
+import Header from './header';
 
 const ViewAccount = () => {
-
     const { accountId } = useParams()
-    const [corporateValues, setCorporateValues] = useState({})
-    const [IDProofs, setIDProofs] = useState({})
-    const [isActive, setIsActive] = useState(false)
+    const [account, setAccount] = useState({ loading: true })
+    const [headerContent, setHeaderContent] = useState({ loading: true })
 
     useEffect(() => {
-        getAccountDetails()
+        getAccount()
     }, [])
 
-
-    const getAccountDetails = async () => {
+    const getAccount = async () => {
         const url = `/customer/getCustomerDetailsById/${accountId}`
         try {
             const { data: [data] } = await http.GET(url)
-            const { gstProof, idProof_backside, idProof_frontside, isActive } = data
-
-            const newData = { ...data, gstProof: gstProof?.data }
-
-            setIsActive(!!isActive)
-            setIDProofs({ Front: idProof_frontside?.data, Back: idProof_backside?.data })
-            setCorporateValues(newData)
-            const blob = idProof_frontside?.data
-
-            blobToBase64(blob).then((res) => console.log("res", res))
-        } catch (error) {
-
-        }
+            const { customerName, organizationName, Address1 } = data
+            setAccount({ ...data, loading: false })
+            setHeaderContent({
+                title: organizationName || customerName,
+                address: Address1, loading: false
+            })
+        } catch (error) { }
     }
-
-    const blobToBase64 = blob => {
-        const reader = new FileReader();
-        console.log("hello")
-        reader.readAsDataURL(blob);
-        return new Promise(resolve => {
-            reader.onloadend = () => {
-                resolve(reader.result);
-            };
-        });
-    };
-
-
-    const handleAccountUpdate = () => {
-
-    }
-    const handleCorporateChange = () => { }
-    const handleProofUpload = () => { }
 
     return (
         <Fragment>
-            <Header />
+            <Header data={headerContent} />
             <div className='account-view-content'>
                 <div className='tabs-container'>
                     <Tabs
@@ -76,35 +46,16 @@ const ViewAccount = () => {
                         }
                     >
                         <TabPane tab="Account Overview" key="1">
-                            <CorporateAccount
-                                data={corporateValues}
-                                IDProofs={IDProofs}
-                                onUpload={handleProofUpload}
-                                onChange={handleCorporateChange}
-                            />
-                            {
-                                isActive ? null
-                                    : <div className='app-footer-buttons-container'>
-                                        <CustomButton
-                                            className='app-cancel-btn footer-btn'
-                                            text='Cancel'
-                                        />
-                                        <CustomButton
-                                            onClick={handleAccountUpdate}
-                                            className='app-create-btn footer-btn'
-                                            text='Update Account'
-                                        />
-                                    </div>
-                            }
+                            <AccountOverview data={account} />
                         </TabPane>
                         <TabPane tab="Delivery Details" key="2">
                             <DeliveryDetails />
                         </TabPane>
                         <TabPane tab="Invoice" key="3">
-                            Content of tab 3
+                            Design in progress...
                         </TabPane>
                         <TabPane tab="Report Log" key="4">
-                            Content of tab 3
+                            Design in progress...
                         </TabPane>
                     </Tabs>
                 </div>
@@ -112,4 +63,5 @@ const ViewAccount = () => {
         </Fragment>
     )
 }
+const { TabPane } = Tabs;
 export default ViewAccount

@@ -18,7 +18,7 @@ axios.interceptors.response.use(null, error => {
     if (!expectedError) {
         if (error.message === 'Network Error')
             message.info('Please check your network connection')
-        else message.error('Oops! Something went wrong!')
+        else message.error('Oops! Something went wrong, try again!')
     }
 
     return Promise.reject(error)

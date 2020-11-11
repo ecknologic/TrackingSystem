@@ -1,5 +1,49 @@
 $primaryColor: #0062FF;
 
+// -------------- antd Collapse styles ------------------- //
+
+.ant-collapse {
+    border: none;
+}
+.ant-collapse > .ant-collapse-item:last-child, 
+.ant-collapse > .ant-collapse-item:last-child > 
+.ant-collapse-header {
+    border-bottom-left-radius: .6em !important;
+    border-bottom-right-radius: .6em !important;
+}
+.ant-collapse .ant-collapse-header {
+    height: 5em;
+    border: 1px solid #E2E2EA !important;
+    background-color: #FFFFFF;
+    border-top-left-radius: .6em !important;
+    border-top-right-radius: .6em !important;
+}
+
+.ant-collapse-item-active .ant-collapse-header {
+    border-bottom-left-radius: none !important;
+    border-bottom-right-radius: none !important;
+}
+.ant-collapse-item {
+    border: none !important;
+}
+
+.ant-collapse-content {
+    border: 1px solid #E2E2EA !important;
+    border-top:none !important;
+    border-bottom-left-radius: .6em !important;
+    border-bottom-right-radius: .6em !important;
+}
+
+// -------------- antd Row Col styles ------------------- //
+
+.ant-row {
+    margin: 0 !important;
+}
+
+.ant-col {
+    padding: 0 !important;
+}
+
 // -------------- antd Checkbox styles ------------------- //
  
 .ant-checkbox-wrapper:hover .ant-checkbox-inner,
@@ -212,8 +256,25 @@ $primaryColor: #0062FF;
         }
 }
 
+// -------------- Various Icons styles ------------------- //
 
+.app-svg-dropdown {
+    float: right;
+    transform: rotate(-90deg);
+    transition: all .3s;
+}
 
+// -------------- Various Transform styles ------------------- //
+
+.rotate-left {
+    transform: rotate(-90deg);
+}
+.rotate-right {
+    transform: rotate(90deg);
+}
+.rotate-zero {
+    transform: rotate(0deg);
+}
 // -------------- Various Button styles ------------------- //
 
 .app-btn {
@@ -231,6 +292,11 @@ $primaryColor: #0062FF;
     .anticon {
         margin-right: .5em;
     }
+}
+
+.disabled {
+    opacity: .5;
+    pointer-events: none;
 }
 
 .app-add-new-btn {
