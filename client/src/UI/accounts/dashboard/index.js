@@ -6,9 +6,10 @@ import Spinner from '../../../components/Spinner';
 import NoContent from '../../../components/NoContent';
 import Header from './header';
 import { getAPI } from '../../../utils/apis';
-import { USERID } from '../../../utils/constants';
+import { getUserId } from '../../../utils/constants';
 
 const Accounts = () => {
+    const USERID = getUserId()
     const history = useHistory()
     const [customers, setCustomers] = useState([])
     const [loading, setLoading] = useState(true)

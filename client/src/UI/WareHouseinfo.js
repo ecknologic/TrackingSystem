@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { getAPI } from '../utils/apis'
-import { WAREHOUSEID } from '../utils/constants'
+import { getWarehoseId } from '../utils/constants'
 
 
 const WareHouseinfo = () => {
+    const WAREHOUSEID = getWarehoseId()
     const [warehouseDetails, setWarehouseDetails] = useState({})
     useEffect(() => {
         getAPI('/warehouse/getWarehouseDetails/' + WAREHOUSEID).then(res => {

@@ -3,12 +3,15 @@ import { Row, Col, Button, Select, Form, Input, Checkbox, DatePicker, Collapse, 
 import '../../css/styles.css'
 import { createOrUpdateAPI, getAPI } from "../../utils/apis";
 import { getBase64 } from '../../utils/Functions'
-import { WAREHOUSEID, USERID, USERNAME, TODAYDATE } from '../../utils/constants'
+import { TODAYDATE, getUserId, getUsername, getWarehoseId } from '../../utils/constants'
 import CorporateCustomerForm from './CorporateCustomerForm'
 import OtherCustomerForm from "./OtherCustomerForm";
 const { Option } = Select;
 
 const AddCustomer = (props) => {
+    const USERID = getUserId()
+    const USERNAME = getUsername()
+    const WAREHOUSEID = getWarehoseId()
     const [visible, setVisible] = useState(false)
     const [corpCustomer, setCorpCustomer] = useState(true)
     const [otherCustomer, setOtherCustomer] = useState(false)

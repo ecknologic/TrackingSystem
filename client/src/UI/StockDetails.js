@@ -3,9 +3,10 @@ import axios from 'axios';
 import { Row, Col, Button, Divider, Modal, Form, Checkbox, Input } from 'antd'
 import { baseUrl } from '../config'
 import { getAPI } from '../utils/apis';
-import { WAREHOUSEID } from '../utils/constants';
+import { getWarehoseId } from '../utils/constants';
 
 const StockDetails = (props) => {
+  const WAREHOUSEID = getWarehoseId()
   const [visible1, setVisible1] = useState(false);
   const [newStocks, setNewStocks] = useState([])
   const [outForDelivery, setoutForDelivery] = useState([])
