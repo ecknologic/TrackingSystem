@@ -2,11 +2,12 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { Menu } from 'antd';
 import { useHistory, useLocation } from 'react-router-dom';
 import dashboardIcon12 from '../../assets/images/ic-manage-accounts.svg';
-import { MARKETINGADMIN, ROLE, WAREHOUSEADMIN } from '../../utils/constants';
+import { getRole, MARKETINGADMIN, WAREHOUSEADMIN } from '../../utils/constants';
 import { getSideMenuKey } from '../../utils/Functions'
 const { Item } = Menu
 
 const SideMenu = () => {
+    const ROLE = getRole()
     const { pathname } = useLocation()
     const history = useHistory()
     const [selected, setSelected] = useState('/dashboard')

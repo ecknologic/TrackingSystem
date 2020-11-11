@@ -37,7 +37,7 @@ const Login = (props) => {
                         }
                         sessionStorage.setItem("user", JSON.stringify(user))
                         message.success("Login Success")
-                        if (role == MARKETINGADMIN) history.push('/add-account');
+                        if (role == MARKETINGADMIN) history.push('/dashboard');
                         else if (role == WAREHOUSEADMIN) history.push('/bibowarehouse');
                         else message.error('Screen Not designed for your role')
                     } else {

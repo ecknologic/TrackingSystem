@@ -14,7 +14,7 @@ import {
     getBase64, deepClone, getIdProofsForDB, getDevDaysForDB, getAddressesForDB,
     getProductsForDB, extractGADeliveryDetails, extractGADetails
 } from '../../../utils/Functions';
-import { TODAYDATE, USERID, USERNAME, WAREHOUSEID } from '../../../utils/constants';
+import { getUserId, getUsername, getWarehoseId, TODAYDATE } from '../../../utils/constants';
 import {
     validateAccountValues, validateDeliveryValues, validateDevDays,
     validateIDProofs, validateAddresses
@@ -22,6 +22,10 @@ import {
 import DownIcon from '../../../components/SVG_Down_Icon';
 
 const AddAccount = () => {
+    const USERID = getUserId()
+    const USERNAME = getUsername()
+    const WAREHOUSEID = getWarehoseId()
+
     const history = useHistory()
     const [corporate, setCorporate] = useState(true)
     const [btnDisabled, setBtnDisabled] = useState(false)
