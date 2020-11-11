@@ -140,7 +140,7 @@ const saveDeliveryDetails = (customerId, customerdetails, res) => {
             else {
               count++
               saveProductDetails(i.products, results.insertId, customerId).then(productDetails => {
-                console.log(count, customerdetails.deliveryDetails.length)
+                // console.log(count, customerdetails.deliveryDetails.length)
                 if (count == customerdetails.deliveryDetails.length) res.json({ status: 200, message: "Customer Created Successfully" });
               })
             }
@@ -156,6 +156,16 @@ const saveDeliveryDays = (deliveryDays) => {
     let insertQueryValues = [deliveryDays.SUN, deliveryDays.MON, deliveryDays.TUE, deliveryDays.WED, deliveryDays.THU, deliveryDays.FRI, deliveryDays.SAT]
     db.query(deliveryDayQuery, insertQueryValues, (err, results) => {
       if (err) res.status(400).json({ status: 400, message: err.sqlMessage });
+      else resolve(results)
+    });
+  })
+}
+const updateDeliveryDays = (deliveryDays, deliverydaysid) => {
+  return new Promise((resolve, reject) => {
+    let deliveryDayQuery = "update customerdeliverydays SET SUN=?,MON=?,TUE=?,WED=?,THU=?,FRI=?,SAT=? WHERE deliveryDaysId=" + deliverydaysid;
+    let insertQueryValues = [deliveryDays.SUN, deliveryDays.MON, deliveryDays.TUE, deliveryDays.WED, deliveryDays.THU, deliveryDays.FRI, deliveryDays.SAT]
+    db.query(deliveryDayQuery, insertQueryValues, (err, results) => {
+      if (err) console.log(err.sqlMessage);
       else resolve(results)
     });
   })
@@ -211,10 +221,10 @@ const createQrCode = (qrcodeText) => {
         let customerDetailsQuery = "insert  into QRDetails (QRImage) values(?)";
         let insertQueryValues = [fs.readFileSync(filePath)]
         db.query(customerDetailsQuery, insertQueryValues, (err, results) => {
-          console.log("fdf", insertQueryValues);
+          // console.log("fdf", insertQueryValues);
           if (err) res.send(err);
           else {
-            console.log("JSJS", JSON.stringify(results))
+            // console.log("JSJS", JSON.stringify(results))
             resolve(results.insertId);
           }
         })
@@ -292,14 +302,14 @@ router.get("/getProductsDetails", (req, res) => {
 
 const getDeliverDetails = (customerId) => {
   return new Promise((resolve, reject) => {
-    let deliveryDetailsQuery = "SELECT d.*,r.routeName," +
-      "concat(CASE WHEN cd.sun=1 THEN 'SUN,' ELSE '' END," +
-      "CASE WHEN cd.mon=1 THEN 'MON,' ELSE '' END," +
-      "CASE WHEN cd.tue=1 THEN 'TUE,' ELSE '' END," +
-      "CASE WHEN cd.wed=1 THEN 'WED,' ELSE '' END," +
-      "CASE WHEN cd.thu=1 THEN 'THU,' ELSE '' END," +
-      "CASE WHEN cd.fri=1 THEN 'FRI,' ELSE '' END," +
-      "CASE WHEN cd.sat=1 THEN 'SAT,' ELSE '' END) AS 'Delivery Days'" +
+    let deliveryDetailsQuery = "SELECT d.*,r.routeName,json_object('SUN',cd.SUN,'MON',cd.MON,'TUE',cd.TUE,'WED',cd.WED,'THU',cd.THU,'FRI',cd.FRI,'SAT',cd.SAT) as 'Delivery Days' "+
+    /*  "concat(CASE WHEN cd.sun=1 THEN 'Sunday,' ELSE '' END,"+
+     "CASE WHEN cd.mon=1 THEN 'Monday,' ELSE '' END,"+
+     "CASE WHEN cd.tue=1 THEN 'Tuesday,' ELSE '' END,"+
+     "CASE WHEN cd.wed=1 THEN 'Wednesday,' ELSE '' END,"+
+     "CASE WHEN cd.thu=1 THEN 'Thursday,' ELSE '' END,"+
+     "CASE WHEN cd.fri=1 THEN 'Friday,' ELSE '' END,"+
+     "CASE WHEN cd.sat=1 THEN 'Saturday,' ELSE '' END) AS 'Delivery Days'"+ */
       "FROM DeliveryDetails d INNER JOIN customerdeliverydays cd ON cd.deliveryDaysId=d.deliverydaysid INNER JOIN routes r ON r.RouteId=d.routingId WHERE d.customer_Id=?";
     db.query(deliveryDetailsQuery, [customerId], (err, results) => {
       if (err) reject(err)
