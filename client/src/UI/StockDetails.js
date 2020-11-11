@@ -4,6 +4,7 @@ import { Row, Col, Button, Divider, Modal, Form, Checkbox, Input } from 'antd'
 import { baseUrl } from '../config'
 import { getAPI } from '../utils/apis';
 import { getWarehoseId } from '../utils/constants';
+import { http } from '../modules/http';
 
 const StockDetails = (props) => {
   const WAREHOUSEID = getWarehoseId()
@@ -11,11 +12,21 @@ const StockDetails = (props) => {
   const [newStocks, setNewStocks] = useState([])
   const [outForDelivery, setoutForDelivery] = useState([])
   const [currentStocks, setCurrentStocks] = useState({})
+  const [emptyCans, setEmptyCans] = useState(0)
   const currentDate = props.currentDate
   useEffect(() => {
     getActiveStocks();
-    getOutForDelivery()
+    getOutForDelivery();
+    getEmptyCansDetails();
   }, [])
+  const getEmptyCansDetails = async () => {
+    const url = `/warehouse/getEmptyCans/${WAREHOUSEID}`
+    try {
+      const { data } = await http.GET(url)
+      console.log('Data', data)
+      setEmptyCans(data.emptycans)
+    } catch (error) { }
+  }
   const getActiveStocks = () => {
     let url = 'warehouse/currentActiveStockDetails?warehouseId=' + WAREHOUSEID
     getAPI(url).then(response => {
@@ -173,7 +184,7 @@ const StockDetails = (props) => {
               <Divider type="vertical" />
               <Col span={4} className="divider_left">
                 <p className="stockDetailsp">Total Cans (20 ltr)</p>
-                <h3 className="StockDetailsCounth3">0</h3>
+                <h3 className="StockDetailsCounth3">{emptyCans}</h3>
               </Col>
               <Divider type="vertical" />
               <Col span={8} className="divider_left">
