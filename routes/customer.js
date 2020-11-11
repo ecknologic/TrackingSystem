@@ -170,16 +170,6 @@ const updateDeliveryDays = (deliveryDays, deliverydaysid) => {
     });
   })
 }
-const updateDeliveryDays = (deliveryDays, deliverydaysid) => {
-  return new Promise((resolve, reject) => {
-    let deliveryDayQuery = "update customerdeliverydays SET SUN=?,MON=?,TUE=?,WED=?,THU=?,FRI=?,SAT=? WHERE deliveryDaysId=" + deliverydaysid;
-    let insertQueryValues = [deliveryDays.SUN, deliveryDays.MON, deliveryDays.TUE, deliveryDays.WED, deliveryDays.THU, deliveryDays.FRI, deliveryDays.SAT]
-    db.query(deliveryDayQuery, insertQueryValues, (err, results) => {
-      if (err) console.log(err.sqlMessage);
-      else resolve(results)
-    });
-  })
-}
 const saveProductDetails = (products, deliveryDetailsId, customerId) => {
   return new Promise((resolve, reject) => {
     if (products.length) {
@@ -302,14 +292,14 @@ router.get("/getProductsDetails", (req, res) => {
 
 const getDeliverDetails = (customerId) => {
   return new Promise((resolve, reject) => {
-    let deliveryDetailsQuery = "SELECT d.*,r.routeName,json_object('SUN',cd.SUN,'MON',cd.MON,'TUE',cd.TUE,'WED',cd.WED,'THU',cd.THU,'FRI',cd.FRI,'SAT',cd.SAT) as 'Delivery Days' "+
-    /*  "concat(CASE WHEN cd.sun=1 THEN 'Sunday,' ELSE '' END,"+
-     "CASE WHEN cd.mon=1 THEN 'Monday,' ELSE '' END,"+
-     "CASE WHEN cd.tue=1 THEN 'Tuesday,' ELSE '' END,"+
-     "CASE WHEN cd.wed=1 THEN 'Wednesday,' ELSE '' END,"+
-     "CASE WHEN cd.thu=1 THEN 'Thursday,' ELSE '' END,"+
-     "CASE WHEN cd.fri=1 THEN 'Friday,' ELSE '' END,"+
-     "CASE WHEN cd.sat=1 THEN 'Saturday,' ELSE '' END) AS 'Delivery Days'"+ */
+    let deliveryDetailsQuery = "SELECT d.*,r.routeName,json_object('SUN',cd.SUN,'MON',cd.MON,'TUE',cd.TUE,'WED',cd.WED,'THU',cd.THU,'FRI',cd.FRI,'SAT',cd.SAT) as 'Delivery Days' " +
+      /*  "concat(CASE WHEN cd.sun=1 THEN 'Sunday,' ELSE '' END,"+
+       "CASE WHEN cd.mon=1 THEN 'Monday,' ELSE '' END,"+
+       "CASE WHEN cd.tue=1 THEN 'Tuesday,' ELSE '' END,"+
+       "CASE WHEN cd.wed=1 THEN 'Wednesday,' ELSE '' END,"+
+       "CASE WHEN cd.thu=1 THEN 'Thursday,' ELSE '' END,"+
+       "CASE WHEN cd.fri=1 THEN 'Friday,' ELSE '' END,"+
+       "CASE WHEN cd.sat=1 THEN 'Saturday,' ELSE '' END) AS 'Delivery Days'"+ */
       "FROM DeliveryDetails d INNER JOIN customerdeliverydays cd ON cd.deliveryDaysId=d.deliverydaysid INNER JOIN routes r ON r.RouteId=d.routingId WHERE d.customer_Id=?";
     db.query(deliveryDetailsQuery, [customerId], (err, results) => {
       if (err) reject(err)
