@@ -1,0 +1,30 @@
+$primary-color: #0062FF;
+
+.views-container {
+    flex: 1;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    font-size: 1.9ch;
+    font-weight: 650;
+    height: 2.5em;
+    color: #696974;
+    margin-right: 1em;
+
+    .ant-divider {
+        background-color: #000 !important;
+        opacity: 10%;
+        height: 1.5em;
+    }
+
+    div {
+        cursor: pointer;
+        .anticon {
+            margin-right: .4em;
+        }
+    }
+
+    .selected {
+        color: $primary-color;
+    }
+}

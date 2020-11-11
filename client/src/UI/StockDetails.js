@@ -3,42 +3,42 @@ import axios from 'axios';
 import { Row, Col, Button, Divider, Modal, Form, Checkbox, Input } from 'antd'
 import { baseUrl } from '../config'
 import { getAPI } from '../utils/apis';
+import { WAREHOUSEID } from '../utils/constants';
 
-const StockDetails = () => {
+const StockDetails = (props) => {
   const [visible1, setVisible1] = useState(false);
   const [newStocks, setNewStocks] = useState([])
   const [outForDelivery, setoutForDelivery] = useState([])
   const [currentStocks, setCurrentStocks] = useState({})
-  const warehouseId = sessionStorage.getItem("warehouseId") || 1
-  const date = '2020-10-20'
+  const currentDate = props.currentDate
   useEffect(() => {
     getActiveStocks();
     getOutForDelivery()
   }, [])
   const getActiveStocks = () => {
-    let url = 'warehouse/currentActiveStockDetails?warehouseId=' + warehouseId
+    let url = 'warehouse/currentActiveStockDetails?warehouseId=' + WAREHOUSEID
     getAPI(url).then(response => {
-      if (response.length)
-        setCurrentStocks(response[0])
+      if (response.data.length)
+        setCurrentStocks(response.data[0])
     })
   }
   const getOutForDelivery = () => {
-    let url = `warehouse/outForDeliveryDetails/${date}?warehouseId=` + warehouseId
+    let url = `warehouse/outForDeliveryDetails/${currentDate}?warehouseId=` + WAREHOUSEID
     getAPI(url).then(response => {
-      if (response.length)
-        setoutForDelivery(response[0])
+      if (response.data.length)
+        setoutForDelivery(response.data[0])
     })
   }
   const confirmedBtn = (visible1) => {
     setVisible1({ visible1: true });
-    getAPI('warehouse/getNewStockDetails/' + warehouseId).then(res => {
+    getAPI('warehouse/getNewStockDetails/' + WAREHOUSEID).then(res => {
       setNewStocks()
     })
       .catch(error => {
         console.log(error)
       });
   }
-
+  console.log("ccc", currentStocks)
   return (
     <div className="StockdetailsComponents">
       <div className="stockdetailstopdiv">
@@ -135,17 +135,17 @@ const StockDetails = () => {
               <Divider type="vertical" />
               <Col span={4} className="divider_left">
                 <p className="stockDetailsp">Total Cans (20 ltr)</p>
-                <h3 className="StockDetailsCounth3">28</h3>
+                <h3 className="StockDetailsCounth3">0</h3>
               </Col>
               <Divider type="vertical" />
               <Col span={4} className="divider_left">
                 <p className="stockDetailsp">Total 1 Ltr Boxes (1x12) </p>
-                <h3 className="StockDetailsCounth3">123</h3>
+                <h3 className="StockDetailsCounth3">0</h3>
               </Col>
               <Divider type="vertical" />
               <Col span={4} className="divider_left">
                 <p className="stockDetailsp">Total 500 ml Boxes (1x12) </p>
-                <h3 className="StockDetailsCounth3">256</h3>
+                <h3 className="StockDetailsCounth3">0</h3>
               </Col>
               <Divider type="vertical" />
               <Col span={6} className="divider_left">
@@ -172,12 +172,12 @@ const StockDetails = () => {
               <Divider type="vertical" />
               <Col span={4} className="divider_left">
                 <p className="stockDetailsp">Total Cans (20 ltr)</p>
-                <h3 className="StockDetailsCounth3">1289</h3>
+                <h3 className="StockDetailsCounth3">0</h3>
               </Col>
               <Divider type="vertical" />
               <Col span={8} className="divider_left">
                 <p className="stockDetailsp">Return to Mother Plant</p>
-                <h3 className="StockDetailsCounth3">300</h3>
+                <h3 className="StockDetailsCounth3">0</h3>
               </Col>
               <Divider type="vertical" className="expandable_dividers" />
               <Col span={4} className="divider_left">
@@ -191,7 +191,7 @@ const StockDetails = () => {
               <Divider type="vertical" />
               <Col span={4} className="divider_left">
                 <p className="stockDetailsp">Total Cans (20 ltr)</p>
-                <h3 className="StockDetailsCounth3">287</h3>
+                <h3 className="StockDetailsCounth3">0</h3>
               </Col>
               <Divider type="vertical" />
               <Col span={4} className="divider_left">

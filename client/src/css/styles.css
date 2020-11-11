@@ -1,25 +1,3 @@
-/*--- Header ----- */
-.header .logo h2 {
-    font-size: 24px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: normal;
-    letter-spacing: -0.09px;
-    text-align: center;
-    color: #4c4e4e;
-    font-family: "Lato-Regular";
-    margin-bottom: 0px;
-}
-.header .bibotext {
-    color: #0062ff;
-}
-.TopNavbar {
-    border-left: 1px solid #e2e2ea !important;
-}
-.TopNavbar .ant-menu-item {
-    margin: 0px 0px !important;
-}
 /*----- ware House Info ------ */
 .warehouuseinfo_comp {
     background-color: var(--thirdColor);
@@ -38,6 +16,7 @@
 /*---- Date Picker ----- */
 .DatePicker_comp_card {
     padding-top: 15px;
+    /* display: "inline"; */
 }
 .DatePicker_comp_card p:first-child {
     font-size: 18.2px;
@@ -132,6 +111,7 @@
 .list-inline li {
     display: inline-block;
     vertical-align: middle;
+    cursor: pointer;
 }
 .tabs_coponents_tabs li {
     margin: 5px 25px 0px 5px;
@@ -207,13 +187,15 @@
 .padding-right_comp {
     padding-right: 25px;
 }
-.createNewDCModal .ant-input,.addCustomerBody .ant-input{
+.createNewDCModal .ant-input,
+.addCustomerBody .ant-input {
     height: 42px;
     border-radius: 10px;
     border: solid 1px #e2e2ea;
     background-color: #fafcff;
 }
-.createNewDCModal .ant-select-selector,.addCustomerBody .ant-select-selector{
+.createNewDCModal .ant-select-selector,
+.addCustomerBody .ant-select-selector {
     height: 42px !important;
     border-radius: 10px !important;
     border: solid 1px #e2e2ea !important;
@@ -317,8 +299,8 @@
     letter-spacing: 0.5px;
     color: #92929d;
 }
-.addCustomerBody .form_modal_label{
-    color: #4D5775;
+.addCustomerBody .form_modal_label {
+    color: #4d5775;
 }
 /* .deliveryCompSearchinput{
     border-radius: 10px;
@@ -427,33 +409,34 @@
     display: flex;
     justify-content: center;
 }
-.errors{
-    color:red;
+.errors {
+    color: red;
 }
 
 .addcustomerheader {
-    background-color: rgba(72,92,186,0.05);
+    background-color: rgba(72, 92, 186, 0.05);
     padding: 15px;
 }
 .addCustomerBody {
     padding: 50px;
 }
-.addcustomerfooter{
-    padding:0px 50px;
+.addcustomerfooter {
+    padding: 0px 50px;
 }
-.normalnumTab{
+.normalnumTab {
     height: 87px !important;
     width: 451px;
-    border: 1px solid #E3E3E3;
+    border: 1px solid #e3e3e3;
     border-radius: 8px;
-    margin:5px;
-    background-color: #EBEBEB !important;
+    color: #000 !important;
+    margin: 5px;
+    background-color: #ebebeb !important;
 }
-.ActivenumTab{
+.ActivenumTab {
     height: 87px !important;
     width: 451px;
-    border: 1px solid #E3E3E3;
+    border: 1px solid #e3e3e3;
     border-radius: 8px;
-    margin:5px;
-    background-color: #5C63AB !important;
+    margin: 5px;
+    background-color: #5c63ab !important;
 }

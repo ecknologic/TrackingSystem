@@ -1,0 +1,25 @@
+.address-card-container {
+    height: 22em;
+    margin-bottom: 2em;
+    margin-right: 1em;
+
+    .header {
+        height: 6em;
+    }
+
+    .body {
+        height: 11em;
+
+        .contacts {
+            flex-direction: column;
+            flex-wrap: nowrap;
+        }
+
+        .mobile {
+            color: #535353;
+            font-family: 'PoppinsMedium500';
+            font-size: 1.6ch;
+            margin-left: 2.8em;
+        }
+    }
+}

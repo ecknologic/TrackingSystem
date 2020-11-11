@@ -4,10 +4,10 @@ import { PlusOutlined } from '@ant-design/icons';
 
 const FormItem = Form.Item;
 const UploadImage = (props) => {
-    const { colSpan, onUpload, className, accept, showUploadList, name, imageValue } = props;
+    const { colSpan, onUpload, className, accept, showUploadList, name, imageValue, label } = props;
     return (
         <Col span={colSpan}>
-            <FormItem>
+            <FormItem label={label || ''}>
                 <Upload
                     customRequest={(e) => onUpload(e.file, name)}
                     className={className ? className : "image-uploader"}

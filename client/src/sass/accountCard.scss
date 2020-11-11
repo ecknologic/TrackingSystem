@@ -1,0 +1,140 @@
+.account-card-container {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    height: 27em;
+    border: 1px solid #F1F1F5;
+    background-color: #FFFFFF;
+    box-shadow: 0 5px 15px 0 rgba(0,0,0,0.05);
+    border-radius: .6em;
+    margin-bottom: 2em;
+    margin-right: 1em;
+
+    .badge {
+        position: absolute;
+        border-radius: .6em;
+        top: -1em;
+        right: 1em;
+        height: 2em;
+        
+        background-color: #fff;
+        font-family: 'PoppinsSemiBold600';
+        color: #9D9D9D;
+        border: 1.5px solid #9D9D9D;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0 1em;
+    }
+
+    .active {
+        color: #70AA32;
+        border: 1.5px solid #70AA32;
+    }
+
+    .header {
+        display: flex;
+        padding: 1em;
+        padding-right: 1.5em;
+        padding-left: 0;
+        height: 10em;
+
+        .inner {
+            display: flex;
+            border-left: 2px solid #9D9D9D;
+            flex-direction: column;
+            justify-content: space-between;
+            padding-left: 1.5em;
+            height: 100%;
+        }
+
+        .green {
+            border-left: 2px solid #70AA32;
+        }
+
+        img {
+            width: 1em;
+            height: 1em;
+            align-self: flex-start;
+        }
+
+        .address-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 1em 0 0 0;
+            
+            .title {
+                font-family: 'PoppinsBold700';
+                color: #1D1F24;
+                font-size: 2.2ch;
+                margin-bottom: .4em;
+            }
+            
+            .address {
+                font-family: 'PoppinsRegular400';
+                color: #535353
+            }
+        }
+    }
+
+    .body {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 1.5em;
+        padding-top: 0;
+        height: 12em;
+
+        .contact-container {
+            flex: 1;
+
+            .type1 {
+                color: #1D1F24;
+                font-family: 'PoppinsSemiBold600';
+            }
+
+            .contacts {
+                display: flex;
+                flex-wrap: wrap;
+
+                .name-card-container {
+                    margin: .4em 1em 0 0;
+                }
+
+                .extra {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    color: #535353;
+                    font-family: 'PoppinsMedium500';
+                    font-size: 2ch;
+                    margin: .4em 1em 0 0;
+                }
+            }
+        }
+
+        .business {
+            display: flex;
+            flex-direction: column;
+            
+            span {
+                color: #1D1F24;
+                font-family: 'PoppinsSemiBold600';
+            }
+
+            .value {
+                font-family: 'PoppinsMedium500';
+                color: #535353;
+                font-size: 1.6ch;
+            }
+        }
+
+    }
+
+    .footer {
+        border-top: 1px solid #E9E9E9;
+        padding: 1em;
+    }
+}
