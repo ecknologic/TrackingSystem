@@ -33,7 +33,7 @@ const AddressCard = ({ data, onClick }) => {
                 </div>
             </div>
             <div className='footer'>
-                <PrimaryButton text='View Details' onClick={onClick} />
+                <PrimaryButton text='View Details' onClick={() => onClick(data)} />
             </div>
         </div>
     )

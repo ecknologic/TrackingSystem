@@ -28,6 +28,7 @@ $primaryColor: #0062FF;
 }
 
 .ant-collapse-content {
+    background-color: #FDFDFD;
     border: 1px solid #E2E2EA !important;
     border-top:none !important;
     border-bottom-left-radius: .6em !important;
@@ -288,7 +289,7 @@ $primaryColor: #0062FF;
     padding: 0 1em;
     height: 2.6em;
     border-radius: .6em;
-
+    
     .anticon {
         margin-right: .5em;
     }
@@ -316,4 +317,56 @@ $primaryColor: #0062FF;
 .app-create-btn {
     font-family: 'PoppinsSemiBold600';
     background-color: #0091FF;
+}
+
+// -------------- Various Modal styles ------------------- //
+
+.ant-modal {
+
+    .ant-modal-content {
+        border-radius: 1em;
+    }
+    .ant-modal-header {
+        border-top-right-radius: 1em;
+        border-top-left-radius: 1em;
+    }
+
+    .ant-modal-footer {
+        border-bottom-right-radius: 1em;
+        border-bottom-left-radius: 1em;
+        height: 5em;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-transform: uppercase;
+
+        .footer-btn {
+            text-transform: uppercase;
+        }
+    
+        .right-btn {
+            height: 3em;
+            width: 14em;
+            border-radius: .8em;
+            background-color: #007AFF;
+        }
+    }
+
+    .ant-modal-title {
+        color: #171725;
+        font-family: 'PoppinsSemiBold600';
+    }
+}
+
+.app-form-modal {
+    width: 60vw !important;
+    margin-top: 1.8em;
+
+    .ant-modal-body {
+        background-color: #FAFAFB;
+    }
+}
+
+.app-preview-modal {
+    margin-top: 1.8em;
 }
