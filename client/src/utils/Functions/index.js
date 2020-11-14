@@ -139,6 +139,27 @@ export const getProductsForDB = ({ product20L, price20L, product1L, price1L, pro
 
     return products
 }
+export const getProductsForUI = (data) => {
+    let product20L, price20L, product1L, price1L, product500ML, price500ML
+
+    data.map((item) => {
+        const { productName, productPrice, noOfJarsTobePlaced } = item
+        if (productName === '20L') {
+            product20L = noOfJarsTobePlaced
+            price20L = productPrice
+        }
+        if (productName === '1L') {
+            product1L = noOfJarsTobePlaced
+            price1L = productPrice
+        }
+        if (productName === '500ML') {
+            product500ML = noOfJarsTobePlaced
+            price500ML = productPrice
+        }
+    })
+    const products = { product20L, price20L, product1L, price1L, product500ML, price500ML }
+    return products
+}
 
 export const getIdProofsForDB = (data) => {
     const { Front, Back } = data

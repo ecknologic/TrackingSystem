@@ -369,3 +369,44 @@ $primary-color: #0062FF;
         border-radius: .8em;
     }
 }
+
+.delivery-form-modal {
+    
+    .row {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        padding: .5em 0;
+
+        .input-container {
+            width: 48%;
+        }
+
+        .stretch {
+            width: 100%;
+        }
+    }
+
+    .columns {
+        display: flex;
+        flex-direction: column;
+        padding: .5em 0;
+
+        .columns-container {
+            display: flex;
+            justify-content: center;
+            width: 80%;
+        }
+
+        .column {
+            display: flex;
+            flex: 1;
+            margin-right: 1em;
+        }
+
+        .input-container {
+            margin-right: .5em;
+        }
+
+    }
+}
