@@ -292,7 +292,7 @@ router.get("/getProductsDetails", (req, res) => {
 
 const getDeliverDetails = (customerId) => {
   return new Promise((resolve, reject) => {
-    let deliveryDetailsQuery = "SELECT d.*,r.routeName,json_object('SUN',cd.SUN,'MON',cd.MON,'TUE',cd.TUE,'WED',cd.WED,'THU',cd.THU,'FRI',cd.FRI,'SAT',cd.SAT) as 'Delivery Days' " +
+    let deliveryDetailsQuery = "SELECT d.*,r.routeName,json_object('SUN',cd.SUN,'MON',cd.MON,'TUE',cd.TUE,'WED',cd.WED,'THU',cd.THU,'FRI',cd.FRI,'SAT',cd.SAT) as 'deliveryDays' " +
       /*  "concat(CASE WHEN cd.sun=1 THEN 'Sunday,' ELSE '' END,"+
        "CASE WHEN cd.mon=1 THEN 'Monday,' ELSE '' END,"+
        "CASE WHEN cd.tue=1 THEN 'Tuesday,' ELSE '' END,"+
@@ -304,17 +304,20 @@ const getDeliverDetails = (customerId) => {
     db.query(deliveryDetailsQuery, [customerId], (err, results) => {
       if (err) reject(err)
       else {
-        results.forEach((result) => {
-          customerProductDetails(result.deliveryDetailsId).then(response => {
-            if (err) res.send(err);
-            else {
-              results[0]["customerproducts"] = response;
+        if (results.length) {
+          results.forEach((result) => {
+            customerProductDetails(result.deliveryDetailsId).then(response => {
+              if (err) res.send(err);
+              else {
+                results[0]['deliveryDays'] = JSON.parse(results[0].deliveryDays)
+                results[0]["customerproducts"] = response;
 
-              resolve(results);
-            }
+                resolve(results);
+              }
+            });
+
           });
-
-        });
+        } else resolve([])
       }
     });
   });
@@ -322,7 +325,7 @@ const getDeliverDetails = (customerId) => {
 
 const customerProductDetails = (deliveryDetailsId) => {
   return new Promise((resolve, reject) => {
-    let customerProductDetailsQuery = "SELECT cp.productName,cp.noOfJarsTobePlaced,cp.id AS productId FROM customerproductdetails cp WHERE deliveryDetailsId=?";
+    let customerProductDetailsQuery = "SELECT cp.productName,cp.productPrice,cp.noOfJarsTobePlaced,cp.id AS productId FROM customerproductdetails cp WHERE deliveryDetailsId=?";
     db.query(customerProductDetailsQuery, [deliveryDetailsId], (err, results) => {
       if (err) reject(err)
       else {
