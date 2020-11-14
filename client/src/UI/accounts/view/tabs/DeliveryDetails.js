@@ -5,12 +5,12 @@ import NoContent from '../../../../components/NoContent';
 import AddressCard from '../../../../components/AddressCard';
 import { useParams } from 'react-router-dom';
 import { http } from '../../../../modules/http';
-import { getDevDays, getProductsWithIdForDB, getProductsForUI, isEmpty, getDeliveryDays, extractDeliveryDetails, extractProductsFromForm } from '../../../../utils/Functions';
+import { getDevDays, getProductsWithIdForDB, getProductsForUI, isEmpty, getDeliveryDays, extractDeliveryDetails, extractProductsFromForm, deepClone } from '../../../../utils/Functions';
 import { validateDeliveryValues, validateDevDays } from '../../../../utils/validations';
 import DeliveryForm from '../../add/forms/Delivery';
 import CustomModal from '../../../../components/CustomModal';
 
-const DeliveryDetails = ({ routeOptions }) => {
+const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
     const { accountId } = useParams()
     const [delivery, setDelivery] = useState([])
     const [loading, setLoading] = useState(true)
@@ -22,6 +22,12 @@ const DeliveryDetails = ({ routeOptions }) => {
     useEffect(() => {
         getDeliveryDetails()
     }, [])
+    useEffect(() => {
+        if (!isEmpty(recentDelivery)) {
+            const clone = [recentDelivery, ...delivery]
+            setDelivery(clone)
+        }
+    }, [recentDelivery])
 
     const getDeliveryDetails = async () => {
         const url = `/customer/getCustomerDeliveryDetails/${accountId}`
@@ -32,7 +38,13 @@ const DeliveryDetails = ({ routeOptions }) => {
             setLoading(false)
         } catch (error) { }
     }
-
+    const updateDeliveryDetails = (data) => {
+        let clone = deepClone(delivery);
+        const item = clone.find(item => item.deliveryDetailsId == data.deliveryDetailsId)
+        const index = clone.indexOf(item)
+        clone[index] = data;
+        setDelivery(clone)
+    }
     const handleUpdate = async () => {
         const deliveryErrors = validateDeliveryValues(formData)
         const devDaysError = validateDevDays(devDays)
@@ -48,15 +60,17 @@ const DeliveryDetails = ({ routeOptions }) => {
         const products = getProductsWithIdForDB(productsUI)
         const deliveryDays = getDeliveryDays(devDays)
         const formValues = extractDeliveryDetails(formData)
-        const body = { ...formValues, isNew: false, delete: 0, isActive: 0, products, deliveryDays }
+        const body = [{ ...formValues, isNew: false, delete: 0, isActive: 0, products, deliveryDays }]
 
         const url = '/customer/updateDeliveryDetails'
         try {
             setBtnDisabled(true)
             message.loading('Updating details...', 0)
-            await http.POST(url, body)
+            let { data: [data] } = await http.POST(url, body)
+            updateDeliveryDetails(data)
             message.success('Details updated successfully!')
             setViewModal(false)
+            setBtnDisabled(false)
         } catch (error) {
             setBtnDisabled(false)
         }

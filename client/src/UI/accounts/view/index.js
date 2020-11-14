@@ -21,9 +21,9 @@ const ViewAccount = () => {
     const [viewModal, setViewModal] = useState(false)
     const [devDays, setDevDays] = useState([])
     const [routes, setRoutes] = useState([])
+    const [recentDelivery, setRecentDelivery] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const routeOptions = useMemo(() => getRouteOptions(routes), [routes])
-
     useEffect(() => {
         getAccount()
         getRoutes()
@@ -64,13 +64,14 @@ const ViewAccount = () => {
         const products = getProductsForDB(productsUI)
         const deliveryDays = getDeliveryDays(devDays)
         const formValues = extractDeliveryDetails(formData)
-        const body = { ...formValues, isNew: true, delete: 0, isActive: 0, products, deliveryDays, customer_Id: accountId }
+        const body = [{ ...formValues, isNew: true, delete: 0, isActive: 0, products, deliveryDays, customer_Id: accountId }]
 
         const url = '/customer/updateDeliveryDetails'
         try {
             setBtnDisabled(true)
             message.loading('Adding details...', 0)
-            await http.POST(url, body)
+            let { data: [data] } = await http.POST(url, body)
+            setRecentDelivery(data)
             message.success('Details added successfully!')
             onModalClose()
         } catch (error) {
@@ -125,7 +126,7 @@ const ViewAccount = () => {
                             <AccountOverview data={account} />
                         </TabPane>
                         <TabPane tab="Delivery Details" key="2">
-                            <DeliveryDetails routeOptions={routeOptions} />
+                            <DeliveryDetails recentDelivery={recentDelivery} routeOptions={routeOptions} />
                         </TabPane>
                         <TabPane tab="Invoice" key="3">
                             Design in progress...

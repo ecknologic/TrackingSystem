@@ -88,8 +88,8 @@ export const validateDeliveryValues = (data) => {
     if (!price1L) errors.price1L = text
     if (!product500ML) errors.product500ML = text
     if (!price500ML) errors.price500ML = text
-    if (!product250ML) errors.product250ML = text
-    if (!price250ML) errors.price250ML = text
+    // if (!product250ML) errors.product250ML = text
+    // if (!price250ML) errors.price250ML = text
 
     return errors
 }

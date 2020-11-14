@@ -50,7 +50,6 @@ const uploadImage = (req) => {
     var gstProof = Buffer.from(req.body.gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
     let insertQueryValues = [idProof_frontside, idProof_backside, gstProof]
     db.query(idproofdetailsquery, insertQueryValues, (err, results) => {
-      console.log("fdf", insertQueryValues);
       if (err) reject(err);
       else {
         resolve(results.insertId);
@@ -211,7 +210,6 @@ const createQrCode = (qrcodeText) => {
         let customerDetailsQuery = "insert  into QRDetails (QRImage) values(?)";
         let insertQueryValues = [fs.readFileSync(filePath)]
         db.query(customerDetailsQuery, insertQueryValues, (err, results) => {
-          // console.log("fdf", insertQueryValues);
           if (err) res.send(err);
           else {
             // console.log("JSJS", JSON.stringify(results))
@@ -260,7 +258,7 @@ router.get("/getCustomerDetailsById/:customerId", (req, res) => {
 router.get("/getCustomerDeliveryDetails/:customerId", (req, res) => {
   let customerDetailsQuery = "SELECT * from customerdetails c  WHERE c.customerId=?";
   db.query(customerDetailsQuery, [req.params.customerId], (err, results) => {
-    getDeliverDetails(req.params.customerId).then(response => {
+    getDeliveryDetails(req.params.customerId).then(response => {
       if (err) res.send(err);
       else {
         const customerDeliveryDetails = JSON.parse(JSON.stringify(results));
@@ -289,8 +287,12 @@ router.get("/getProductsDetails", (req, res) => {
 //     response.send("lattitue:::" + res[0].latitude + "longitude:::" + res[0].longitude);
 //   });
 // });
-
-const getDeliverDetails = (customerId) => {
+// router.get('/test', (req, res) => {
+const getAddedDeliveryDetails = (deliveryDetailsId) => {
+  return getDeliveryDetails(null, deliveryDetailsId)
+}
+// })
+const getDeliveryDetails = (customerId, deliveryDetailsId) => {
   return new Promise((resolve, reject) => {
     let deliveryDetailsQuery = "SELECT d.*,d.location AS deliveryLocation,r.routeName,json_object('SUN',cd.SUN,'MON',cd.MON,'TUE',cd.TUE,'WED',cd.WED,'THU',cd.THU,'FRI',cd.FRI,'SAT',cd.SAT) as 'deliveryDays' " +
       /*  "concat(CASE WHEN cd.sun=1 THEN 'Sunday,' ELSE '' END,"+
@@ -300,23 +302,24 @@ const getDeliverDetails = (customerId) => {
        "CASE WHEN cd.thu=1 THEN 'Thursday,' ELSE '' END,"+
        "CASE WHEN cd.fri=1 THEN 'Friday,' ELSE '' END,"+
        "CASE WHEN cd.sat=1 THEN 'Saturday,' ELSE '' END) AS 'Delivery Days'"+ */
-      "FROM DeliveryDetails d INNER JOIN customerdeliverydays cd ON cd.deliveryDaysId=d.deliverydaysid INNER JOIN routes r ON r.RouteId=d.routingId WHERE d.customer_Id=?";
-    db.query(deliveryDetailsQuery, [customerId], (err, results) => {
+      "FROM DeliveryDetails d INNER JOIN customerdeliverydays cd ON cd.deliveryDaysId=d.deliverydaysid INNER JOIN routes r ON r.RouteId=d.routingId WHERE d.customer_Id=? OR d.deliveryDetailsId=?";
+    db.query(deliveryDetailsQuery, [customerId, deliveryDetailsId], (err, results) => {
       if (err) reject(err)
       else {
         if (results.length) {
-          results.forEach((result) => {
+          let arr = [], count = 0;
+          for (let result of results) {
             customerProductDetails(result.deliveryDetailsId).then(response => {
+              count++
               if (err) res.send(err);
               else {
-                results[0]['deliveryDays'] = JSON.parse(results[0].deliveryDays)
-                results[0]["products"] = response;
-
-                resolve(results);
+                result['deliveryDays'] = JSON.parse(result.deliveryDays)
+                result["products"] = response;
+                arr.push(result)
               }
+              if (count == results.length) resolve(arr);
             });
-
-          });
+          }
         } else resolve([])
       }
     });
@@ -344,7 +347,6 @@ router.post('/updateCustomer', async (req, res) => {
       let updateQueryValues = [customerdetails.customerName, customerdetails.mobileNumber, customerdetails.AlternatePhNo, customerdetails.EmailId, customerdetails.Address1, customerdetails.Address2, customerdetails.gstNo, customerdetails.contactperson, customerdetails.panNo, customerdetails.adharNo, customerdetails.invoicetype, customerdetails.natureOfBussiness, customerdetails.creditPeriodInDays, customerdetails.referredBy, customerdetails.departmentId, customerdetails.deliveryDaysId, customerdetails.depositamount, customerdetails.isActive, response[0].latitude, response[0].longitude, customerdetails.shippingAddress, customerdetails.shippingContactPerson, customerdetails.shippingContactNo, customerdetails.customertype, customerdetails.organizationName, customerdetails.createdBy, customerdetails.idProofType]
       // let insertQueryValues = [customerdetails.customerName, customerdetails.mobileNumber, customerdetails.EmailId, customerdetails.Address1, customerdetails.gstNo, customerdetails.registeredDate, customerdetails.invoicetype, customerdetails.natureOfBussiness, customerdetails.creditPeriodInDays, customerdetails.referredBy, customerdetails.isActive, response[0], response[1].latitude, response[1].longitude, customerdetails.customerType, customerdetails.organizationName, customerdetails.createdBy]
       db.query(customerDetailsQuery, updateQueryValues, (err, results) => {
-        console.log(updateQueryValues);
         if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
         else {
           res.json({ status: 200, message: 'Customer Updated successfully' })
@@ -357,17 +359,19 @@ router.post('/updateDeliveryDetails', (req, res) => {
   if (deliveryDetails.length) {
     let count = 0
     for (let i of deliveryDetails) {
-      if (deliveryDetails.isNew == true) {
+      if (i.isNew == true) {
         saveDeliveryDays(i.deliveryDays).then(deliveryDays => {
           let deliveryDetailsQuery = "insert  into DeliveryDetails (gstNo,location,address,phoneNumber,contactPerson,deliverydaysid,depositAmount,customer_Id,routingId,isActive) values(?,?,?,?,?,?,?,?,?,?)";
-          let insertQueryValues = [i.gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, deliveryDays.insertId, i.depositAmount, deliveryDetails.customer_Id, i.routingId, i.isActive]
+          let insertQueryValues = [i.gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, deliveryDays.insertId, i.depositAmount, i.customer_Id, i.routingId, i.isActive]
           db.query(deliveryDetailsQuery, insertQueryValues, (err, results) => {
             if (err) res.json({ status: 500, message: err.sqlMessage });
             else {
               count++
-              saveProductDetails(i.products, results.insertId, deliveryDetails.customer_Id).then(productDetails => {
-                console.log(count, deliveryDetails.length)
-                if (count == customerdetails.deliveryDetails.length) res.json({ status: 200, message: "Delivery Details Updated Successfully" });
+              saveProductDetails(i.products, results.insertId, i.customer_Id).then(async (productDetails) => {
+                if (count == deliveryDetails.length) {
+                  let data = await getAddedDeliveryDetails(results.insertId)
+                  res.json({ status: 200, message: "Delivery Details Updated Successfully", data });
+                }
               })
             }
           });
@@ -380,9 +384,12 @@ router.post('/updateDeliveryDetails', (req, res) => {
             if (err) res.json({ status: 500, message: err.sqlMessage });
             else {
               count++
-              updateProductDetails(i.products).then(productDetails => {
-                console.log(count, deliveryDetails.length)
-                if (count == deliveryDetails.length) res.json({ status: 200, message: "Delivery Details Updated Successfully" });
+              updateProductDetails(i.products).then(async (productDetails) => {
+                if (count == deliveryDetails.length) {
+                  let data = await getAddedDeliveryDetails(i.deliveryDetailsId)
+                  res.json({ status: 200, message: "Delivery Details Updated Successfully", data });
+                }
+                // res.json({ status: 200, message: "Delivery Details Updated Successfully", data: getAddedDeliveryDetails(i.deliveryDetailsId) });
               })
             }
           });

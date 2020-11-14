@@ -84,7 +84,7 @@ const DeliveryForm = (props) => {
                                 <Input size='large' value={price500ML} disabled={isActive} placeholder='Rs' onChange={({ target: { value } }) => onChange(value, 'price500ML')} />
                             </div>
                         </div>
-                        <div className='column'>
+                        {/* <div className='column'>
                             <div className='input-container'>
                                 <label className='app-input-label-name'>250 Ml</label>
                                 <Input size='large' value={product250ML} disabled={isActive} placeholder='Add' onChange={({ target: { value } }) => onChange(value, 'product250ML')} />
@@ -93,7 +93,7 @@ const DeliveryForm = (props) => {
                                 <label className='app-input-label-name'>Price</label>
                                 <Input size='large' value={price250ML} disabled={isActive} placeholder='Rs' onChange={({ target: { value } }) => onChange(value, 'price250ML')} />
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
                 <div className='row'>
