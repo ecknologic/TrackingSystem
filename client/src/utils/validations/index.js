@@ -71,7 +71,8 @@ export const validateDeliveryValues = (data) => {
     const text = 'Required'
     const {
         gstNo, depositAmount, routingId, phoneNumber, contactPerson, address,
-        deliveryLocation, product20L, price20L, product1L, price1L, product500ML, price500ML
+        deliveryLocation, product20L, price20L, product1L, price1L, product500ML, price500ML,
+        product250ML, price250ML
     } = data
 
     if (!gstNo) errors.gstNo = text
@@ -87,6 +88,8 @@ export const validateDeliveryValues = (data) => {
     if (!price1L) errors.price1L = text
     if (!product500ML) errors.product500ML = text
     if (!price500ML) errors.price500ML = text
+    if (!product250ML) errors.product250ML = text
+    if (!price250ML) errors.price250ML = text
 
     return errors
 }

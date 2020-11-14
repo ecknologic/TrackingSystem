@@ -292,7 +292,7 @@ router.get("/getProductsDetails", (req, res) => {
 
 const getDeliverDetails = (customerId) => {
   return new Promise((resolve, reject) => {
-    let deliveryDetailsQuery = "SELECT d.*,r.routeName,json_object('SUN',cd.SUN,'MON',cd.MON,'TUE',cd.TUE,'WED',cd.WED,'THU',cd.THU,'FRI',cd.FRI,'SAT',cd.SAT) as 'deliveryDays' " +
+    let deliveryDetailsQuery = "SELECT d.*,d.location AS deliveryLocation,r.routeName,json_object('SUN',cd.SUN,'MON',cd.MON,'TUE',cd.TUE,'WED',cd.WED,'THU',cd.THU,'FRI',cd.FRI,'SAT',cd.SAT) as 'deliveryDays' " +
       /*  "concat(CASE WHEN cd.sun=1 THEN 'Sunday,' ELSE '' END,"+
        "CASE WHEN cd.mon=1 THEN 'Monday,' ELSE '' END,"+
        "CASE WHEN cd.tue=1 THEN 'Tuesday,' ELSE '' END,"+
@@ -310,7 +310,7 @@ const getDeliverDetails = (customerId) => {
               if (err) res.send(err);
               else {
                 results[0]['deliveryDays'] = JSON.parse(results[0].deliveryDays)
-                results[0]["customerproducts"] = response;
+                results[0]["products"] = response;
 
                 resolve(results);
               }
@@ -360,12 +360,12 @@ router.post('/updateDeliveryDetails', (req, res) => {
       if (deliveryDetails.isNew == true) {
         saveDeliveryDays(i.deliveryDays).then(deliveryDays => {
           let deliveryDetailsQuery = "insert  into DeliveryDetails (gstNo,location,address,phoneNumber,contactPerson,deliverydaysid,depositAmount,customer_Id,routingId,isActive) values(?,?,?,?,?,?,?,?,?,?)";
-          let insertQueryValues = [i.gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, deliveryDays.insertId, i.depositAmount, deliveryDetails.customerId, i.routingId, i.isActive]
+          let insertQueryValues = [i.gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, deliveryDays.insertId, i.depositAmount, deliveryDetails.customer_Id, i.routingId, i.isActive]
           db.query(deliveryDetailsQuery, insertQueryValues, (err, results) => {
             if (err) res.json({ status: 500, message: err.sqlMessage });
             else {
               count++
-              saveProductDetails(i.products, results.insertId, deliveryDetails.customerId).then(productDetails => {
+              saveProductDetails(i.products, results.insertId, deliveryDetails.customer_Id).then(productDetails => {
                 console.log(count, deliveryDetails.length)
                 if (count == customerdetails.deliveryDetails.length) res.json({ status: 200, message: "Delivery Details Updated Successfully" });
               })

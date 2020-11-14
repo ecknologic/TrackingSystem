@@ -12,7 +12,7 @@ import { http } from '../../../modules/http'
 import { getRouteOptions } from '../../../assets/fixtures';
 import {
     getBase64, deepClone, getIdProofsForDB, getDevDaysForDB, getAddressesForDB,
-    getProductsForDB, extractGADeliveryDetails, extractGADetails
+    getProductsForDB, extractGADeliveryDetails, extractGADetails, isEmpty
 } from '../../../utils/Functions';
 import { getUserId, getUsername, getWarehoseId, TODAYDATE } from '../../../utils/constants';
 import {
@@ -115,13 +115,22 @@ const AddAccount = () => {
 
         if (addresses.length < limit) {
             const address = { ...deliveryValues, devDays, isNew: true }
-            // Validate delivery form values
+
+            const deliveryErrors = validateDeliveryValues(deliveryValues)
+            const devDaysError = validateDevDays(devDays)
+
+            if (!isEmpty(deliveryErrors) || !isEmpty(devDaysError)) {
+                console.log('deliveryErrors', deliveryErrors)
+                console.log('devDaysError', devDaysError)
+                message.error('Validation Error')
+                return
+            }
 
             const clone = deepClone(addresses)
             clone.push(address)
             setAddresses(clone)
             resetDeliveryValues()
-        }
+        } else message.info('Draft Limit Reached')
     }
 
     const resetCorporateValues = () => {
@@ -174,7 +183,8 @@ const AddAccount = () => {
 
         const IDProofError = validateIDProofs(IDProofs)
         const devDaysError = validateDevDays(devDays)
-        if (Object.keys(IDProofError || devDaysError).length) {
+
+        if (!isEmpty(IDProofError) || !isEmpty(devDaysError)) {
             console.log('IDProofError', IDProofError)
             console.log('devDaysError', devDaysError)
             message.error('Validation Error')
@@ -199,7 +209,7 @@ const AddAccount = () => {
             const currentDelivery = { ...deliveryValues, devDays, isNew: true }
             const allDeliveries = [...sessionAddresses, currentDelivery]
 
-            if (Object.keys(accountErrors || deliveryErrors || extraDeliveryErrors).length) {
+            if (!isEmpty(accountErrors) || !isEmpty(deliveryErrors) || !isEmpty(extraDeliveryErrors)) {
                 console.log('extraDeliveryErrors', extraDeliveryErrors)
                 console.log('deliveryErrors', deliveryErrors)
                 console.log('accountErrors', accountErrors)
@@ -214,7 +224,7 @@ const AddAccount = () => {
         else {
             const accountErrors = validateAccountValues(generalValues)
 
-            if (Object.keys(accountErrors).length) {
+            if (!isEmpty(accountErrors)) {
                 console.log('accountErrors', accountErrors)
                 message.error('Validation Error')
                 return

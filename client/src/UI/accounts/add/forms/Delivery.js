@@ -12,7 +12,8 @@ const DeliveryForm = (props) => {
 
     const {
         gstNo, depositAmount, routingId, phoneNumber, contactPerson, address, isActive,
-        deliveryLocation, product20L, price20L, product1L, price1L, product500ML, price500ML
+        deliveryLocation, product20L, price20L, product1L, price1L, product500ML, price500ML,
+        product250ML, price250ML
     } = data
 
     return (
@@ -81,6 +82,16 @@ const DeliveryForm = (props) => {
                             <div className='input-container'>
                                 <label className='app-input-label-name'>Price</label>
                                 <Input size='large' value={price500ML} disabled={isActive} placeholder='Rs' onChange={({ target: { value } }) => onChange(value, 'price500ML')} />
+                            </div>
+                        </div>
+                        <div className='column'>
+                            <div className='input-container'>
+                                <label className='app-input-label-name'>250 Ml</label>
+                                <Input size='large' value={product250ML} disabled={isActive} placeholder='Add' onChange={({ target: { value } }) => onChange(value, 'product250ML')} />
+                            </div>
+                            <div className='input-container'>
+                                <label className='app-input-label-name'>Price</label>
+                                <Input size='large' value={price250ML} disabled={isActive} placeholder='Rs' onChange={({ target: { value } }) => onChange(value, 'price250ML')} />
                             </div>
                         </div>
                     </div>

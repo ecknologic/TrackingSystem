@@ -35,6 +35,18 @@ $primaryColor: #0062FF;
     border-bottom-right-radius: .6em !important;
 }
 
+// -------------- antd Message styles ------------------- //
+
+.ant-message-notice-content {
+    border-radius: .6em;
+
+    color: rgba(0,0,0,0.85);
+    font-family: 'PoppinsLight300';
+
+    .anticon-loading {
+        color: #0062FF;
+    }
+}
 // -------------- antd Row Col styles ------------------- //
 
 .ant-row {

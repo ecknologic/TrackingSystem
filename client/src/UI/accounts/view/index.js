@@ -1,4 +1,4 @@
-import { Tabs } from 'antd';
+import { message, Tabs } from 'antd';
 import { useParams } from 'react-router-dom';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { FileTextOutlined } from '@ant-design/icons'
@@ -9,6 +9,8 @@ import { http } from '../../../modules/http';
 import Header from './header';
 import FormModal from '../view/form-modal';
 import { getRouteOptions } from '../../../assets/fixtures';
+import { validateDeliveryValues, validateDevDays } from '../../../utils/validations';
+import { extractDeliveryDetails, getDeliveryDays, getProductsForDB, extractProductsFromForm, isEmpty } from '../../../utils/Functions';
 
 const ViewAccount = () => {
     const { accountId } = useParams()
@@ -18,6 +20,7 @@ const ViewAccount = () => {
     const [viewModal, setViewModal] = useState(false)
     const [devDays, setDevDays] = useState([])
     const [routes, setRoutes] = useState([])
+    const [btnDisabled, setBtnDisabled] = useState(false)
     const routeOptions = useMemo(() => getRouteOptions(routes), [routes])
 
     useEffect(() => {
@@ -45,6 +48,35 @@ const ViewAccount = () => {
         } catch (ex) { }
     }
 
+    const handleCreate = async () => {
+        const deliveryErrors = validateDeliveryValues(formData)
+        const devDaysError = validateDevDays(devDays)
+
+        if (!isEmpty(deliveryErrors) || !isEmpty(devDaysError)) {
+            console.log('deliveryErrors', deliveryErrors)
+            console.log('devDaysError', devDaysError)
+            message.error('Validation Error')
+            return
+        }
+
+        const productsUI = extractProductsFromForm(formData)
+        const products = getProductsForDB(productsUI)
+        const deliveryDays = getDeliveryDays(devDays)
+        const formValues = extractDeliveryDetails(formData)
+        const body = { ...formValues, isNew: true, delete: 0, isActive: 0, products, deliveryDays, customer_Id: accountId }
+
+        const url = '/customer/updateDeliveryDetails'
+        try {
+            setBtnDisabled(true)
+            message.loading('Adding details...', 0)
+            await http.POST(url, body)
+            message.success('Details added successfully!')
+            onModalClose()
+        } catch (error) {
+            setBtnDisabled(false)
+        }
+    }
+
     const handleDevDaysSelect = (value) => {
         const clone = [...devDays]
         clone.push(value)
@@ -64,7 +96,14 @@ const ViewAccount = () => {
         setViewModal(true)
     }, [])
 
-    const handleModalCancel = useCallback(() => setViewModal(false), [])
+    const onModalClose = () => {
+        setViewModal(false)
+        setBtnDisabled(false)
+        setFormData({})
+        setDevDays([])
+    }
+
+    const handleModalCancel = useCallback(() => onModalClose(), [])
 
     return (
         <Fragment>
@@ -100,8 +139,9 @@ const ViewAccount = () => {
                 data={formData}
                 devDays={devDays}
                 visible={viewModal}
+                btnDisabled={btnDisabled}
                 routeOptions={routeOptions}
-                onOk={handleModalCancel}
+                onOk={handleCreate}
                 onCancel={handleModalCancel}
                 onSelect={handleDevDaysSelect}
                 onChange={handleChange}

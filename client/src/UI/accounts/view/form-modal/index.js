@@ -4,13 +4,13 @@ import Delivery from '../../add/forms/Delivery';
 import CustomButton from '../../../../components/CustomButton';
 
 const FormModal = (props) => {
-    const { visible, title, btnTxt, onCancel, onOk, data, routeOptions, devDays, onChange, onSelect, onDeselect } = props
+    const { visible, title, btnTxt, onCancel, onOk, data, btnDisabled, routeOptions, devDays,
+        onChange, onSelect, onDeselect } = props
     return (
         <Modal
             centered
             title={title}
             visible={visible}
-            onOk={onOk}
             onCancel={onCancel}
             className='app-form-modal delivery-form-modal'
             footer={(
@@ -23,7 +23,7 @@ const FormModal = (props) => {
 
                     <CustomButton
                         onClick={onOk}
-                        className={`app-create-btn right-btn`}
+                        className={`app-create-btn right-btn ${btnDisabled && 'disabled'}`}
                         text={btnTxt}
                     />
                 </>
