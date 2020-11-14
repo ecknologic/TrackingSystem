@@ -371,7 +371,13 @@ $primary-color: #0062FF;
 }
 
 .delivery-form-modal {
+    width: 55vw !important;
+    margin-top: 1.8em !important;
     
+    .ant-modal-body {
+        background-color: #FAFAFB;
+    }
+
     .row {
         width: 100%;
         display: flex;

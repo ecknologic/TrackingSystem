@@ -20,6 +20,7 @@ import {
     validateIDProofs, validateAddresses
 } from '../../../utils/validations';
 import DownIcon from '../../../components/SVG_Down_Icon';
+import CustomModal from '../../../components/CustomModal';
 
 const AddAccount = () => {
     const USERID = getUserId()
@@ -27,6 +28,7 @@ const AddAccount = () => {
     const WAREHOUSEID = getWarehoseId()
 
     const history = useHistory()
+    const [modal, setModal] = useState(false)
     const [corporate, setCorporate] = useState(true)
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [corporateValues, setCorporateValues] = useState({ referredBy: USERNAME, registeredDate: TODAYDATE })
@@ -240,12 +242,14 @@ const AddAccount = () => {
             setBtnDisabled(true)
             message.loading('Adding customer...', 0)
             await http.POST(url, { ...body, isActive: 0 })
-            message.success('Customer added successfully!')
-            history.push('/manage-accounts')
+            setModal(true)
         } catch (error) {
             setBtnDisabled(false)
         }
     }
+
+    const handleModalCancel = useCallback(() => setModal(false), [])
+    const handleContinue = useCallback(() => setModal(false), [])
 
     return (
         <Fragment>
@@ -343,6 +347,16 @@ const AddAccount = () => {
                     />
                 </div>
             </div>
+            <CustomModal
+                className='account-confirm-modal'
+                visible={modal}
+                onOk={handleContinue}
+                onCancel={handleModalCancel}
+                title='Account Confirmation'
+                btnTxt='Continue'
+            >
+
+            </CustomModal>
         </Fragment>
     )
 }

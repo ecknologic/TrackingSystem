@@ -1,12 +1,10 @@
 import React from 'react';
 import { Modal } from 'antd';
-import Delivery from '../../add/forms/Delivery';
-import CustomButton from '../../../../components/CustomButton';
-import CrossIcon from '../../../../components/SVG_Cross_Icons';
+import CustomButton from './CustomButton';
+import CrossIcon from './SVG_Cross_Icons';
 
-const FormModal = (props) => {
-    const { visible, title, btnTxt, onCancel, onOk, data, btnDisabled, routeOptions, devDays,
-        onChange, onSelect, onDeselect } = props
+const CustomModal = (props) => {
+    const { visible, title, btnTxt, onCancel, onOk, btnDisabled, className, children } = props
     return (
         <Modal
             centered
@@ -14,7 +12,7 @@ const FormModal = (props) => {
             visible={visible}
             onCancel={onCancel}
             closeIcon={<CrossIcon />}
-            className='app-form-modal delivery-form-modal'
+            className={className}
             footer={(
                 <>
                     <CustomButton
@@ -31,17 +29,9 @@ const FormModal = (props) => {
                 </>
             )}
         >
-            <Delivery
-                data={data}
-                routeOptions={routeOptions}
-                hasExtraAddress
-                devDays={devDays}
-                onChange={onChange}
-                onSelect={onSelect}
-                onDeselect={onDeselect}
-            />
+            {children}
         </Modal>
     )
 }
 
-export default FormModal
+export default CustomModal

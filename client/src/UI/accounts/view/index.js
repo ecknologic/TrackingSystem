@@ -1,16 +1,17 @@
 import { message, Tabs } from 'antd';
 import { useParams } from 'react-router-dom';
+import { FileTextOutlined } from '@ant-design/icons';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
-import { FileTextOutlined } from '@ant-design/icons'
+import { getRouteOptions } from '../../../assets/fixtures';
 import CustomButton from '../../../components/CustomButton';
 import DeliveryDetails from './tabs/DeliveryDetails';
 import AccountOverview from './tabs/AccountOverview';
+import DeliveryForm from '../add/forms/Delivery';
 import { http } from '../../../modules/http';
 import Header from './header';
-import FormModal from '../view/form-modal';
-import { getRouteOptions } from '../../../assets/fixtures';
 import { validateDeliveryValues, validateDevDays } from '../../../utils/validations';
 import { extractDeliveryDetails, getDeliveryDays, getProductsForDB, extractProductsFromForm, isEmpty } from '../../../utils/Functions';
+import CustomModal from '../../../components/CustomModal';
 
 const ViewAccount = () => {
     const { accountId } = useParams()
@@ -135,20 +136,25 @@ const ViewAccount = () => {
                     </Tabs>
                 </div>
             </div>
-            <FormModal
-                data={formData}
-                devDays={devDays}
+            <CustomModal
+                className='delivery-form-modal'
                 visible={viewModal}
                 btnDisabled={btnDisabled}
-                routeOptions={routeOptions}
                 onOk={handleCreate}
                 onCancel={handleModalCancel}
-                onSelect={handleDevDaysSelect}
-                onChange={handleChange}
-                onDeselect={handleDevDaysDeselect}
                 title='Add New Delivery Address'
                 btnTxt='Add New'
-            />
+            >
+                <DeliveryForm
+                    data={formData}
+                    routeOptions={routeOptions}
+                    hasExtraAddress
+                    devDays={devDays}
+                    onChange={handleChange}
+                    onSelect={handleDevDaysSelect}
+                    onDeselect={handleDevDaysDeselect}
+                />
+            </CustomModal>
         </Fragment>
     )
 }

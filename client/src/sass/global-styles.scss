@@ -361,8 +361,8 @@ $primaryColor: #0062FF;
     
         .right-btn {
             height: 3em;
-            width: 14em;
-            border-radius: .8em;
+            min-width: 12em;
+            border-radius: 1em;
             background-color: #007AFF;
         }
     }
@@ -386,15 +386,6 @@ $primaryColor: #0062FF;
 }
 
 // -------------- Various Modal styles ------------------- //
-.app-form-modal {
-    width: 55vw !important;
-    margin-top: 1.8em;
-    
-    .ant-modal-body {
-        background-color: #FAFAFB;
-    }
-}
-
 .app-preview-modal {
     margin-top: 1.8em;
 }

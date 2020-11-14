@@ -1,10 +1,12 @@
 import React from 'react';
 import { Modal } from 'antd';
 import CustomButton from './CustomButton';
+import CrossIcon from './SVG_Cross_Icons';
 
 const PreviewModal = ({ visible, data, onCancel }) => {
     return <Modal
         centered
+        closeIcon={<CrossIcon />}
         className='app-preview-modal'
         title="Preview"
         visible={visible}

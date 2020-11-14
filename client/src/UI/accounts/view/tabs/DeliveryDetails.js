@@ -5,9 +5,10 @@ import NoContent from '../../../../components/NoContent';
 import AddressCard from '../../../../components/AddressCard';
 import { useParams } from 'react-router-dom';
 import { http } from '../../../../modules/http';
-import FormModal from '../form-modal';
 import { getDevDays, getProductsWithIdForDB, getProductsForUI, isEmpty, getDeliveryDays, extractDeliveryDetails, extractProductsFromForm } from '../../../../utils/Functions';
 import { validateDeliveryValues, validateDevDays } from '../../../../utils/validations';
+import DeliveryForm from '../../add/forms/Delivery';
+import CustomModal from '../../../../components/CustomModal';
 
 const DeliveryDetails = ({ routeOptions }) => {
     const { accountId } = useParams()
@@ -99,20 +100,25 @@ const DeliveryDetails = ({ routeOptions }) => {
                         )) : <NoContent content='No Delivery Details To display' />
                 }
             </Row>
-            <FormModal
-                data={formData}
-                devDays={devDays}
+            <CustomModal
+                className='delivery-form-modal'
                 visible={viewModal}
                 btnDisabled={btnDisabled}
-                routeOptions={routeOptions}
-                onCancel={handleModalCancel}
-                onSelect={handleDevDaysSelect}
-                onChange={handleChange}
-                onDeselect={handleDevDaysDeselect}
                 onOk={handleUpdate}
+                onCancel={handleModalCancel}
                 title={`Delivery Details - ${formData.location}`}
                 btnTxt={formData.isActive ? 'Close' : 'Update'}
-            />
+            >
+                <DeliveryForm
+                    data={formData}
+                    routeOptions={routeOptions}
+                    hasExtraAddress
+                    devDays={devDays}
+                    onChange={handleChange}
+                    onSelect={handleDevDaysSelect}
+                    onDeselect={handleDevDaysDeselect}
+                />
+            </CustomModal>
         </div>
     )
 }
