@@ -1,7 +1,8 @@
 import React from 'react';
-import { Button, Col, Row, Modal } from 'antd';
+import { Modal } from 'antd';
 import Delivery from '../../add/forms/Delivery';
 import CustomButton from '../../../../components/CustomButton';
+import CrossIcon from '../../../../components/SVG_Cross_Icons';
 
 const FormModal = (props) => {
     const { visible, title, btnTxt, onCancel, onOk, data, btnDisabled, routeOptions, devDays,
@@ -12,6 +13,7 @@ const FormModal = (props) => {
             title={title}
             visible={visible}
             onCancel={onCancel}
+            closeIcon={<CrossIcon />}
             className='app-form-modal delivery-form-modal'
             footer={(
                 <>

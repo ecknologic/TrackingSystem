@@ -276,6 +276,9 @@ $primaryColor: #0062FF;
     transform: rotate(-90deg);
     transition: all .3s;
 }
+.app-svg-cross {
+    transition: all .3s;
+}
 
 // -------------- Various Transform styles ------------------- //
 
@@ -331,8 +334,7 @@ $primaryColor: #0062FF;
     background-color: #0091FF;
 }
 
-// -------------- Various Modal styles ------------------- //
-
+// -------------- Antd Modal styles ------------------- //
 .ant-modal {
 
     .ant-modal-content {
@@ -342,7 +344,7 @@ $primaryColor: #0062FF;
         border-top-right-radius: 1em;
         border-top-left-radius: 1em;
     }
-
+    
     .ant-modal-footer {
         border-bottom-right-radius: 1em;
         border-bottom-left-radius: 1em;
@@ -351,7 +353,8 @@ $primaryColor: #0062FF;
         justify-content: space-between;
         align-items: center;
         text-transform: uppercase;
-
+        padding: 10px 24px;
+        
         .footer-btn {
             text-transform: uppercase;
         }
@@ -368,12 +371,25 @@ $primaryColor: #0062FF;
         color: #171725;
         font-family: 'PoppinsSemiBold600';
     }
+
+    .ant-modal-close-x {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        &:hover {
+            .app-svg-cross {
+                transform: scale(1.2);
+            }
+        }
+    }
 }
 
+// -------------- Various Modal styles ------------------- //
 .app-form-modal {
-    width: 60vw !important;
+    width: 55vw !important;
     margin-top: 1.8em;
-
+    
     .ant-modal-body {
         background-color: #FAFAFB;
     }
