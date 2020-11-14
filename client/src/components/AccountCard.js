@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import branch from '../assets/images/ic-manage-users.svg';
 import '../sass/accountCard.scss'
 import NameCard from './NameCard';
 import PrimaryButton from './PrimaryButton';
 
-const AccountCard = ({ customerDetails, onClick }) => {
+const AccountCard = ({ customerDetails, sortBy, onClick }) => {
     const isActive = customerDetails.isActive
     const name = JSON.parse(customerDetails.contactpersons)
-
+    useEffect(() => {
+    }, [sortBy])
     return (
         <div className='account-card-container'>
             <div className={isActive ? 'badge active' : 'badge'}>{isActive ? "ACTIVE" : "DRAFT"}</div>
