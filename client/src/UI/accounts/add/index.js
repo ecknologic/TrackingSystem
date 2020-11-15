@@ -1,7 +1,7 @@
 import { useHistory } from 'react-router-dom';
 import { Divider, Checkbox, Collapse, message } from 'antd';
 import React, { Fragment, useEffect, useMemo, useState, useCallback } from 'react';
-import { PlusOutlined } from '@ant-design/icons'
+import { DDownIcon, PlusIcon } from '../../../components/SVG_Icons'
 import Header from './header';
 import Delivery from './forms/Delivery';
 import CustomButton from '../../../components/CustomButton';
@@ -19,8 +19,9 @@ import {
     validateAccountValues, validateDeliveryValues, validateDevDays,
     validateIDProofs, validateAddresses
 } from '../../../utils/validations';
-import DownIcon from '../../../components/SVG_Down_Icon';
 import CustomModal from '../../../components/CustomModal';
+import ConfirmMessage from '../../../components/ConfirmMessage';
+import CollapseHeader from '../../../components/CollapseHeader';
 
 const AddAccount = () => {
     const USERID = getUserId()
@@ -41,6 +42,9 @@ const AddAccount = () => {
     const [routes, setRoutes] = useState([])
     const routeOptions = useMemo(() => getRouteOptions(routes), [routes])
 
+    const customertype = corporate ? 'Corporate' : 'General'
+    const { organizationName } = corporateValues
+    const { customerName } = generalValues
     const highlight = { backgroundColor: '#5C63AB', color: '#fff' }
     const fade = { backgroundColor: '#EBEBEB', color: '#1B2125' }
 
@@ -197,8 +201,7 @@ const AddAccount = () => {
         const deliveryDays = getDevDaysForDB(devDays)
 
         const extra = {
-            customertype: corporate ? 'Corporate' : 'General',
-            createdBy: USERID, departmentId: WAREHOUSEID
+            customertype, createdBy: USERID, departmentId: WAREHOUSEID
         }
 
         if (corporate) {
@@ -234,16 +237,18 @@ const AddAccount = () => {
             const products = getProductsForDB(generalValues)
             const delivery = { ...extractGADeliveryDetails(generalValues), deliveryDays, products }
             const account = extractGADetails(generalValues)
-            body = { ...account, idProofs, deliveryDetails: [delivery], ...extra }
+            body = { ...account, idProofs, deliveryDetails: [delivery], isActive: 0, ...extra }
         }
 
         const url = '/customer/createCustomer'
         try {
             setBtnDisabled(true)
             message.loading('Adding customer...', 0)
-            await http.POST(url, { ...body, isActive: 0 })
+            await http.POST(url, body)
+            message.destroy()
             setModal(true)
         } catch (error) {
+            message.destroy()
             setBtnDisabled(false)
         }
     }
@@ -298,7 +303,7 @@ const AddAccount = () => {
                             <Divider />
                             <div className='title-container'>
                                 <span className='title'>Delivery Details</span>
-                                {hasExtraAddress && <CustomButton onClick={handleAddDelivery} text='Add New' className='app-add-new-btn' icon={<PlusOutlined />} />}
+                                {hasExtraAddress && <CustomButton onClick={handleAddDelivery} text='Add New' className='app-add-new-btn' icon={<PlusIcon />} />}
                             </div>
                             {
                                 hasExtraAddress && addresses.map((item, index) => {
@@ -308,10 +313,13 @@ const AddAccount = () => {
                                             accordion
                                             key={index}
                                             className='accordion-container'
-                                            expandIcon={({ isActive }) => <DownIcon isActive={isActive} />}
+                                            expandIcon={({ isActive }) => <DDownIcon />}
                                             expandIconPosition='right'
                                         >
-                                            <Panel header={deliveryLocation} forceRender>
+                                            <Panel
+                                                header={<CollapseHeader title={deliveryLocation} msg={address} />}
+                                                forceRender
+                                            >
                                                 <CollapseForm
                                                     uniqueId={index}
                                                     data={item}
@@ -355,7 +363,10 @@ const AddAccount = () => {
                 title='Account Confirmation'
                 btnTxt='Continue'
             >
-
+                <ConfirmMessage
+                    type={customertype}
+                    name={organizationName || customerName}
+                />
             </CustomModal>
         </Fragment>
     )

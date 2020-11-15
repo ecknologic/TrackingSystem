@@ -58,6 +58,10 @@ code {
   src: local('FuturaPTHeavy'), url(../src/assets/fonts/FuturaPTHeavy.otf) format('opentype');
 }
 @font-face {
+  font-family: 'PoppinsExtraLight275';
+  src: local('PoppinsExtraLight275'), url(../src/assets/fonts/PoppinsExtraLight275.ttf) format('truetype');
+}
+@font-face {
   font-family: 'PoppinsThin250';
   src: local('PoppinsThin250'), url(../src/assets/fonts/PoppinsThin250.ttf) format('truetype');
 }

@@ -1,4 +1,4 @@
-import { Input } from 'antd';
+import { Input, InputNumber } from 'antd';
 import React, { useEffect, useState } from 'react';
 import DraggerInput from '../../../../components/DraggerInput';
 import SelectInput from '../../../../components/SelectInput';
@@ -8,6 +8,7 @@ import { dayOptions, invoiceOptions, idOptions } from '../../../../assets/fixtur
 import { getIdProofName } from '../../../../utils/Functions';
 
 const GeneralAccountForm = (props) => {
+
     const { data, devDays, IDProofs, onChange, onUpload, onSelect,
         onDeselect, accountOnly, disabled, onRemove } = props
     const { Front, Back } = IDProofs
@@ -15,7 +16,8 @@ const GeneralAccountForm = (props) => {
     const {
         gstNo, address, depositAmount, customerName, mobileNumber, registeredDate,
         invoicetype, EmailId, contactPerson, idProofType, gstProof, referredBy,
-        product20L, price20L, product1L, price1L, product500ML, price500ML
+        product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML,
+        price250ML
     } = data
 
     const [proofName, setProofName] = useState('')
@@ -83,7 +85,7 @@ const GeneralAccountForm = (props) => {
                 <div className='row'>
                     <div className='input-container'>
                         <label className='app-input-label-name'>Phone Number</label>
-                        <Input size='large' value={mobileNumber} type='number' disabled={disabled} placeholder='Phone Number' onChange={({ target: { value } }) => onChange(value, 'mobileNumber')} />
+                        <InputNumber size="large" value={mobileNumber} disabled={disabled} type='number' placeholder='Phone Number' onChange={(value) => onChange(value, 'mobileNumber')} />
                     </div>
                     <div className='input-container'>
                         <label className='app-input-label-name'>Email</label>
@@ -106,11 +108,11 @@ const GeneralAccountForm = (props) => {
                             <div className='row'>
                                 <div className='input-container'>
                                     <label className='app-input-label-name'>Deposit Amount</label>
-                                    <Input size='large' value={depositAmount} type='number' placeholder='Deposit Amount' onChange={({ target: { value } }) => onChange(value, 'depositAmount')} />
+                                    <InputNumber size="large" value={depositAmount} disabled={disabled} type='number' placeholder='Deposit Amount' onChange={(value) => onChange(value, 'depositAmount')} />
                                 </div>
                                 <div className='input-container'>
                                     <label className='app-input-label-name'>Delivery Days</label>
-                                    <SelectInput value={devDays} options={dayOptions} mode='multiple' onSelect={onSelect} onDeselect={onDeselect} />
+                                    <SelectInput value={devDays} options={dayOptions} disabled={disabled} mode='multiple' onSelect={onSelect} onDeselect={onDeselect} />
                                 </div>
                             </div>
                             <div className='columns'>
@@ -119,33 +121,43 @@ const GeneralAccountForm = (props) => {
                                     <div className='column'>
                                         <div className='input-container'>
                                             <label className='app-input-label-name'>20 Ltrs</label>
-                                            <Input size='large' value={product20L} placeholder='Add' onChange={({ target: { value } }) => onChange(value, 'product20L')} />
+                                            <InputNumber size="large" value={product20L} disabled={disabled} type='number' placeholder='Add' onChange={(value) => onChange(value, 'product20L')} />
                                         </div>
                                         <div className='input-container'>
                                             <label className='app-input-label-name'>Price</label>
-                                            <Input size='large' value={price20L} placeholder='Rs' onChange={({ target: { value } }) => onChange(value, 'price20L')} />
+                                            <InputNumber size="large" value={price20L} disabled={disabled} type='number' placeholder='Rs' onChange={(value) => onChange(value, 'price20L')} />
                                         </div>
                                     </div>
                                     <div className='column'>
                                         <div className='input-container'>
                                             <label className='app-input-label-name'>1 Ltrs</label>
-                                            <Input size='large' value={product1L} placeholder='Add' onChange={({ target: { value } }) => onChange(value, 'product1L')} />
+                                            <InputNumber size="large" value={product1L} disabled={disabled} type='number' placeholder='Add' onChange={(value) => onChange(value, 'product1L')} />
                                         </div>
                                         <div className='input-container'>
                                             <label className='app-input-label-name'>Price</label>
-                                            <Input size='large' value={price1L} placeholder='Rs' onChange={({ target: { value } }) => onChange(value, 'price1L')} />
+                                            <InputNumber size="large" value={price1L} disabled={disabled} type='number' placeholder='Rs' onChange={(value) => onChange(value, 'price1L')} />
                                         </div>
                                     </div>
                                     <div className='column'>
                                         <div className='input-container'>
                                             <label className='app-input-label-name'>500 Ml</label>
-                                            <Input size='large' value={product500ML} placeholder='Add' onChange={({ target: { value } }) => onChange(value, 'product500ML')} />
+                                            <InputNumber size="large" value={product500ML} disabled={disabled} type='number' placeholder='Add' onChange={(value) => onChange(value, 'product500ML')} />
                                         </div>
                                         <div className='input-container'>
                                             <label className='app-input-label-name'>Price</label>
-                                            <Input size='large' value={price500ML} placeholder='Rs' onChange={({ target: { value } }) => onChange(value, 'price500ML')} />
+                                            <InputNumber size="large" value={price500ML} disabled={disabled} type='number' placeholder='Rs' onChange={(value) => onChange(value, 'price500ML')} />
                                         </div>
                                     </div>
+                                    {/* <div className='column'>
+                                        <div className='input-container'>
+                                            <label className='app-input-label-name'>250 Ml</label>
+                                            <InputNumber size="large" value={product250ML} disabled={disabled} type='number' placeholder='Add' onChange={(value) => onChange(value, 'product250ML')}   />
+                                        </div>
+                                        <div className='input-container'>
+                                            <label className='app-input-label-name'>Price</label>
+                                            <InputNumber size="large" value={price250ML} disabled={disabled} type='number' placeholder='Rs' onChange={(value) => onChange(value, 'price250ML')}   />
+                                        </div>
+                                    </div> */}
                                 </div>
                             </div>
                         </>

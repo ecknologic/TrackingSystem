@@ -4,12 +4,14 @@
     justify-content: center;
     align-items: center;
     color: #0062FF;
+    cursor: pointer;
     
-    .back {
-        font-family: "Lato-Medium";
-        font-size: 20px;
-        margin-right: .3em;
-        cursor: pointer;
+    .arrow {
+        margin-right: .5em;
+
+        svg {
+            transform: rotate(-90deg) scale(.865);
+        }
     }
     
     .text {

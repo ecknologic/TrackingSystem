@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal } from 'antd';
 import CustomButton from './CustomButton';
-import CrossIcon from './SVG_Cross_Icons';
+import { CrossIcon } from './SVG_Icons';
 
 const PreviewModal = ({ visible, data, onCancel }) => {
     return <Modal

@@ -221,12 +221,15 @@ export const extractDeliveryDetails = (data) => {
     delete clone.price1L
     delete clone.price20L
     delete clone.price500ML
+    // delete clone.price250ML
     delete clone.product1L
-    delete clone.product1LId
     delete clone.product20L
-    delete clone.product20LId
     delete clone.product500ML
+    // delete clone.product250ML
+    delete clone.product20LId
+    delete clone.product1LId
     delete clone.product500MLId
+    // delete clone.product250MLId
     return clone
 }
 
@@ -240,8 +243,8 @@ export const extractGADetails = ({ gstNo, customerName, registeredDate,
 
 export const getAddressesForDB = (data) => {
     return data.map((address) => {
-        const { devDays, product20L, price20L, product1L, price1L, product500ML, price500ML, ...rest } = address
-        const products = getProductsForDB({ product20L, price20L, product1L, price1L, product500ML, price500ML })
+        const { devDays, product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML, ...rest } = address
+        const products = getProductsForDB({ product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML })
         const deliveryDays = getDevDaysForDB(devDays)
         return { products, deliveryDays, ...rest }
     })

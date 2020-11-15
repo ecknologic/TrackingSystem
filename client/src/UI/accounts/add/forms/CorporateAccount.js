@@ -1,4 +1,4 @@
-import { Input } from 'antd';
+import { Input, InputNumber } from 'antd';
 import React, { useEffect, useState } from 'react';
 import InputWithAddon from '../../../../components/InputWithAddon';
 import SelectInput from '../../../../components/SelectInput';
@@ -80,7 +80,7 @@ const CorporateAccountForm = ({ data, IDProofs, onChange, onUpload, disabled, on
             <div className='row'>
                 <div className='input-container'>
                     <label className='app-input-label-name'>Phone Number</label>
-                    <Input size='large' value={mobileNumber} type='number' disabled={disabled} placeholder='Phone Number' onChange={({ target: { value } }) => onChange(value, 'mobileNumber')} />
+                    <InputNumber size="large" value={mobileNumber} disabled={disabled} type='number' placeholder='Phone Number' onChange={(value) => onChange(value, 'mobileNumber')} />
                 </div>
                 <div className='input-container'>
                     <label className='app-input-label-name'>Email</label>
@@ -110,7 +110,7 @@ const CorporateAccountForm = ({ data, IDProofs, onChange, onUpload, disabled, on
             <div className='row'>
                 <div className='input-container'>
                     <label className='app-input-label-name'>Credit Period in Days</label>
-                    <Input size='large' value={creditPeriodInDays} disabled={disabled} type='number' placeholder='Credit Period' onChange={({ target: { value } }) => onChange(value, 'creditPeriodInDays')} />
+                    <InputNumber size="large" value={creditPeriodInDays} disabled={disabled} type='number' placeholder='Credit Period' onChange={(value) => onChange(value, 'creditPeriodInDays')} />
                 </div>
                 <div className='input-container'>
                     <label className='app-input-label-name'>Referred By</label>

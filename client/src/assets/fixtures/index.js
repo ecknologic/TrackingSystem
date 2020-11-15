@@ -46,6 +46,6 @@ export const productOptions = [
     <Option key="7" value="p7">Product 7</Option>
 ]
 
-export const getRouteOptions = (routes) => {
+export const getRouteOptions = (routes = []) => {
     return routes.map((item) => <Option key={item.RouteId} value={item.RouteId}>{item.RouteName}</Option>)
 }

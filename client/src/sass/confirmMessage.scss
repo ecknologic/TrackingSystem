@@ -1,0 +1,18 @@
+.confirm-msg-container {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    color: #171725;
+    
+
+    .done {
+        font-family: 'PoppinsSemiBold600';
+        font-size: 3ch;
+    }
+    .msg {
+        font-family: 'PoppinsRegular400';
+    }
+    .name {
+        font-family: 'PoppinsBold700';
+    }
+}
