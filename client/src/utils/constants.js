@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 
+export const TRACKFORM = 'trackForm'
 export const MANDATORY = "Mandatory Field";
 export const MARKETINGADMIN = 'SalesAndMarketing'
 export const WAREHOUSEADMIN = 'WarehouseAdmin'

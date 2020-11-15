@@ -1,3 +1,5 @@
+import { TRACKFORM } from "../constants"
+
 export const editData = (updatedItem, data, idField) => {
     return new Promise(resolve => {
         if (data.length) {
@@ -260,4 +262,11 @@ export const getAddressesForDB = (data) => {
         const deliveryDays = getDevDaysForDB(devDays)
         return { products, deliveryDays, ...rest }
     })
+}
+
+export const onTrackForm = () => {
+    sessionStorage.setItem(TRACKFORM, true)
+}
+export const resetTrackForm = () => {
+    sessionStorage.removeItem(TRACKFORM)
 }

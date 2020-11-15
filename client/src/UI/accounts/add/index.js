@@ -11,16 +11,17 @@ import CollapseForm from './forms/CollapseForm';
 import { http } from '../../../modules/http'
 import { getRouteOptions } from '../../../assets/fixtures';
 import {
-    getBase64, deepClone, getIdProofsForDB, getDevDaysForDB, getAddressesForDB,
-    getProductsForDB, extractGADeliveryDetails, extractGADetails, isEmpty
+    getBase64, deepClone, getIdProofsForDB, getDevDaysForDB, getAddressesForDB, resetTrackForm,
+    getProductsForDB, extractGADeliveryDetails, extractGADetails, isEmpty, onTrackForm
 } from '../../../utils/Functions';
-import { getUserId, getUsername, getWarehoseId, TODAYDATE } from '../../../utils/constants';
+import { TRACKFORM, getUserId, getUsername, getWarehoseId, TODAYDATE } from '../../../utils/constants';
 import {
     validateAccountValues, validateDeliveryValues, validateDevDays,
     validateIDProofs, validateAddresses
 } from '../../../utils/validations';
 import SuccessModal from '../../../components/CustomModal';
-import ConfirmModal from '../../../components/CustomModal';
+import QuitModal from '../../../components/CustomModal';
+import SwitchModal from '../../../components/CustomModal';
 import SuccessMessage from '../../../components/SuccessMessage';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import CollapseHeader from '../../../components/CollapseHeader';
@@ -29,12 +30,11 @@ const AddAccount = () => {
     const USERID = getUserId()
     const USERNAME = getUsername()
     const WAREHOUSEID = getWarehoseId()
+    const history = useHistory()
     const defaultValues = useMemo(() => ({ referredBy: USERNAME, registeredDate: TODAYDATE }), [])
 
-    const history = useHistory()
-    const [switchPrompt, setSwitchPrompt] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
-    const [confirmModalTitle, setConfirmModalTitle] = useState('')
+    const [switchModal, setSwitchModal] = useState(false)
     const [successModal, setSucessModal] = useState(false)
     const [corporate, setCorporate] = useState(true)
     const [btnDisabled, setBtnDisabled] = useState(false)
@@ -61,6 +61,15 @@ const AddAccount = () => {
         sessionStorage.removeItem('address2')
         sessionStorage.removeItem('address3')
         sessionStorage.removeItem('address4')
+    }, [])
+
+    useEffect(() => {
+        window.addEventListener('input', onTrackForm)
+
+        return () => {
+            window.removeEventListener('input', onTrackForm)
+            resetTrackForm()
+        }
     }, [])
 
     const getRoutes = async () => {
@@ -239,17 +248,16 @@ const AddAccount = () => {
         }
     }
 
-    const handleSwitchAccount = () => {
-        // Check form values to determine changes
-        if (switchPrompt) {
-            setConfirmModalTitle('Are you sure to switch?')
-            setConfirmModal(true)
-        } else setCorporate(!corporate)
+    const onCorporateBtnClick = () => {
+        if (!corporate) handleSwitchAccount()
     }
-
-    const onCancelAccount = () => {
-        setConfirmModalTitle('Are you sure to quit?')
-        setConfirmModal(true)
+    const onGeneralBtnClick = () => {
+        if (corporate) handleSwitchAccount()
+    }
+    const handleSwitchAccount = () => {
+        const formHasChanged = sessionStorage.getItem(TRACKFORM)
+        if (formHasChanged) setSwitchModal(true)
+        else setCorporate(!corporate)
     }
 
     const handleAddNewAccount = () => {
@@ -261,20 +269,20 @@ const AddAccount = () => {
         setIDProofs({})
     }
 
+    const onAccountCancel = useCallback(() => setConfirmModal(true), [])
     const handleSucessModalCancel = useCallback(() => { setSucessModal(false); goToManageAccounts() }, [])
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
+    const handleSwitchModalCancel = useCallback(() => setSwitchModal(false), [])
     const handleSuccessModalOk = useCallback(() => { setSucessModal(false); goToManageAccounts() }, [])
-    const handleConfirmModalOk = useCallback(() => {
-        setConfirmModal(false);
-        if (switchPrompt) {
-            setCorporate(!corporate)
-            setSwitchPrompt(false)
-            resetCorporateValues()
-            resetGeneralValues()
-            resetDeliveryValues()
-        }
-        else goToManageAccounts()
-    }, [switchPrompt, corporate])
+    const handleConfirmModalOk = useCallback(() => { setConfirmModal(false); goToManageAccounts() }, [])
+    const handleSwitchModalOk = useCallback(() => {
+        setCorporate(!corporate)
+        setSwitchModal(false)
+        resetCorporateValues()
+        resetGeneralValues()
+        resetDeliveryValues()
+        resetTrackForm()
+    }, [corporate])
 
 
     const goToManageAccounts = () => history.push('/manage-accounts')
@@ -287,12 +295,12 @@ const AddAccount = () => {
                     <CustomButton
                         className='big'
                         style={corporate ? highlight : fade}
-                        text='Corporate Customers' onClick={handleSwitchAccount}
+                        text='Corporate Customers' onClick={onCorporateBtnClick}
                     />
                     <CustomButton
                         className='big second'
                         style={corporate ? fade : highlight}
-                        text='Other Customers' onClick={handleSwitchAccount}
+                        text='Other Customers' onClick={onGeneralBtnClick}
                     />
                 </div>
                 {
@@ -369,7 +377,7 @@ const AddAccount = () => {
                 }
                 <div className='app-footer-buttons-container'>
                     <CustomButton
-                        onClick={onCancelAccount}
+                        onClick={onAccountCancel}
                         className='app-cancel-btn footer-btn'
                         text='Cancel'
                     />
@@ -394,17 +402,28 @@ const AddAccount = () => {
                     name={organizationName || customerName}
                 />
             </SuccessModal>
-            <ConfirmModal
+            <QuitModal
                 visible={confirmModal}
                 onOk={handleConfirmModalOk}
                 onCancel={handleConfirmModalCancel}
-                title={confirmModalTitle}
+                title='Are you sure to leave?'
                 okTxt='Yes'
             >
                 <ConfirmMessage
                     msg=' Changes you made may not be saved.'
                 />
-            </ConfirmModal>
+            </QuitModal>
+            <SwitchModal
+                visible={switchModal}
+                onOk={handleSwitchModalOk}
+                onCancel={handleSwitchModalCancel}
+                title='Are you sure to switch account?'
+                okTxt='Yes'
+            >
+                <ConfirmMessage
+                    msg=' Changes you made may not be saved.'
+                />
+            </SwitchModal>
         </Fragment>
     )
 }

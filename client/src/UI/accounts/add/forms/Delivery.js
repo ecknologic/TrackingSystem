@@ -13,7 +13,7 @@ const DeliveryForm = (props) => {
     const {
         gstNo, depositAmount, routingId, phoneNumber, contactPerson, address, isActive,
         deliveryLocation, product20L, price20L, product1L, price1L, product500ML, price500ML,
-        product250ML, price250ML
+        // product250ML, price250ML
     } = data
 
     return (
