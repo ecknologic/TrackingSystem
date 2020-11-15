@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import { message } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { http } from '../../../../modules/http';
-import { blobToBase64, getBase64, getIdProofsForDB } from '../../../../utils/Functions';
+import { base64String, blobToBase64, getBase64, getIdProofsForDB } from '../../../../utils/Functions';
 import CustomButton from '../../../../components/CustomButton';
 import CorporateAccountForm from '../../add/forms/CorporateAccount';
 import NoContent from '../../../../components/NoContent';
@@ -19,9 +19,9 @@ const AccountOverview = ({ data }) => {
 
     useEffect(() => {
         if (!loading) {
-            const gst = blobToBase64(gstProof?.data)
-            const Front = blobToBase64(idProof_frontside?.data)
-            const Back = blobToBase64(idProof_backside?.data)
+            const gst = base64String(gstProof?.data)
+            const Front = base64String(idProof_frontside?.data)
+            const Back = base64String(idProof_backside?.data)
 
             const newData = {
                 ...data, gstProof: gst, address: Address1,
@@ -31,23 +31,6 @@ const AccountOverview = ({ data }) => {
             setAccountValues(newData)
         }
     }, [loading])
-
-    // const fetchAsBlob = url => fetch(url)
-    //     .then(response => response.blob());
-
-
-    // const convertBlobToBase64 = blob => new Promise((resolve, reject) => {
-    //     const reader = new FileReader;
-    //     reader.onerror = reject;
-    //     reader.onload = () => {
-    //         resolve(reader.result);
-    //     };
-    //     reader.readAsDataURL(blob);
-    // });
-    // fetchAsBlob("http://localhost:3000/30f26c96-7b7f-40f1-8eac-4260bc902863")
-    //     .then(convertBlobToBase64)
-
-
     const handleChange = (value, key) => {
         setAccountValues(data => ({ ...data, [key]: value }))
     }
