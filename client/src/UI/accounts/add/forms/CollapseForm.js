@@ -1,4 +1,4 @@
-import { Input } from 'antd';
+import { Input, InputNumber } from 'antd';
 import React, { useEffect, useState } from 'react';
 import SelectInput from '../../../../components/SelectInput';
 import InputWithAddon from '../../../../components/InputWithAddon';
@@ -101,7 +101,7 @@ const CollapseForm = ({ data, routeOptions, uniqueId }) => {
                 <div className='row'>
                     <div className='input-container'>
                         <label className='app-input-label-name'>Phone Number</label>
-                        <Input size='large' value={phoneNumber} type='number' placeholder='Phone Number' onChange={({ target: { value } }) => setPhoneNumber(value)} />
+                        <InputNumber size="large" value={phoneNumber} placeholder='Phone Number' onChange={(value) => setPhoneNumber(value)} />
                     </div>
                     <div className='input-container'>
                         <label className='app-input-label-name'>Contact Person</label>
@@ -113,34 +113,44 @@ const CollapseForm = ({ data, routeOptions, uniqueId }) => {
                     <div className='columns-container'>
                         <div className='column'>
                             <div className='input-container'>
-                                <label className='app-input-label-name'>1s</label>
-                                <Input size='large' value={product20L} placeholder='Add' onChange={({ target: { value } }) => setProduct20L(value)} />
+                                <label className='app-input-label-name'>20 Ltrs</label>
+                                <InputNumber size="large" value={product20L} placeholder='Add' onChange={setProduct20L} />
                             </div>
                             <div className='input-container'>
                                 <label className='app-input-label-name'>Price</label>
-                                <Input size='large' value={price20L} placeholder='Rs' onChange={({ target: { value } }) => setPrice20L(value)} />
+                                <InputNumber size="large" value={price20L} placeholder='Rs' onChange={setPrice20L} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <label className='app-input-label-name'>1 Ltrs</label>
-                                <Input size='large' value={product1L} placeholder='Add' onChange={({ target: { value } }) => setProduct1L(value)} />
+                                <InputNumber size="large" value={product1L} placeholder='Add' onChange={setProduct1L} />
                             </div>
                             <div className='input-container'>
                                 <label className='app-input-label-name'>Price</label>
-                                <Input size='large' value={price1L} placeholder='Rs' onChange={({ target: { value } }) => setPrice1L(value)} />
+                                <InputNumber size="large" value={price1L} placeholder='Rs' onChange={setPrice1L} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <label className='app-input-label-name'>500 Ml</label>
-                                <Input size='large' value={product500ML} placeholder='Add' onChange={({ target: { value } }) => setProduct500ML(value)} />
+                                <InputNumber size="large" value={product500ML} placeholder='Add' onChange={setProduct500ML} />
                             </div>
                             <div className='input-container'>
                                 <label className='app-input-label-name'>Price</label>
-                                <Input size='large' value={price500ML} placeholder='Rs' onChange={({ target: { value } }) => setPrice500ML(value)} />
+                                <InputNumber size="large" value={price500ML} placeholder='Rs' onChange={setPrice500ML} />
                             </div>
                         </div>
+                        {/* <div className='column'>
+                            <div className='input-container'>
+                                <label className='app-input-label-name'>250 Ml</label>
+                                <InputNumber size="large" value={product250ML} placeholder='Add' onChange={setProduct250ML} />
+                            </div>
+                            <div className='input-container'>
+                                <label className='app-input-label-name'>Price</label>
+                                <InputNumber size="large" value={price250ML} placeholder='Rs' onChange={setPrice250ML} />
+                            </div>
+                        </div> */}
                     </div>
                 </div>
                 <div className='row'>

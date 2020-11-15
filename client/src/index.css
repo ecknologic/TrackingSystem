@@ -58,14 +58,33 @@ code {
   src: local('FuturaPTHeavy'), url(../src/assets/fonts/FuturaPTHeavy.otf) format('opentype');
 }
 @font-face {
-  font-family: 'PoppinsSemiBold600';
-  src: local('PoppinsSemiBold600'), url(../src/assets/fonts/PoppinsSemiBold600.ttf) format('truetype');
+  font-family: 'PoppinsExtraLight275';
+  src: local('PoppinsExtraLight275'), url(../src/assets/fonts/PoppinsExtraLight275.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'PoppinsThin250';
+  src: local('PoppinsThin250'), url(../src/assets/fonts/PoppinsThin250.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'PoppinsLight300';
+  src: local('PoppinsLight300'), url(../src/assets/fonts/PoppinsLight300.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'PoppinsRegular400';
+  src: local('PoppinsRegular400'), url(../src/assets/fonts/PoppinsRegular400.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'PoppinsItalic400';
+  src: local('PoppinsItalic400'), url(../src/assets/fonts/PoppinsItalic400.ttf) format('truetype');
 }
 @font-face {
   font-family: 'PoppinsMedium500';
   src: local('PoppinsMedium500'), url(../src/assets/fonts/PoppinsMedium500.ttf) format('truetype');
 }
-
+@font-face {
+  font-family: 'PoppinsSemiBold600';
+  src: local('PoppinsSemiBold600'), url(../src/assets/fonts/PoppinsSemiBold600.ttf) format('truetype');
+}
 @font-face {
   font-family: 'PoppinsSemiBold600';
   src: local('PoppinsSemiBold600'), url(../src/assets/fonts/PoppinsSemiBold600.ttf) format('truetype');
@@ -82,10 +101,7 @@ code {
   font-family: 'PoppinsExtraBold800';
   src: local('PoppinsExtraBold800'), url(../src/assets/fonts/PoppinsExtraBold800.ttf) format('truetype');
 }
-@font-face {
-  font-family: 'PoppinsRegular400';
-  src: local('PoppinsRegular400'), url(../src/assets/fonts/PoppinsRegular400.ttf) format('truetype');
-}
+
 
 
 .login_component p{

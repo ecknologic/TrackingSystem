@@ -8,15 +8,21 @@ $primaryColor: #0062FF;
 .ant-collapse > .ant-collapse-item:last-child, 
 .ant-collapse > .ant-collapse-item:last-child > 
 .ant-collapse-header {
-    border-bottom-left-radius: .6em !important;
-    border-bottom-right-radius: .6em !important;
+    border-radius: .6em !important;
+    // border-bottom-right-radius: .6em !important;
+    // border-top-left-radius: .6em !important;
+    // border-top-right-radius: .6em !important;
 }
 .ant-collapse .ant-collapse-header {
     height: 5em;
     border: 1px solid #E2E2EA !important;
     background-color: #FFFFFF;
-    border-top-left-radius: .6em !important;
-    border-top-right-radius: .6em !important;
+
+    .anticon {
+        top: 2.5em !important;
+        right: 2em !important;
+    }
+
 }
 
 .ant-collapse-item-active .ant-collapse-header {
@@ -28,12 +34,25 @@ $primaryColor: #0062FF;
 }
 
 .ant-collapse-content {
+    background-color: #FDFDFD;
     border: 1px solid #E2E2EA !important;
     border-top:none !important;
     border-bottom-left-radius: .6em !important;
     border-bottom-right-radius: .6em !important;
 }
 
+// -------------- antd Message styles ------------------- //
+
+.ant-message-notice-content {
+    border-radius: .6em;
+
+    color: rgba(0,0,0,0.85);
+    font-family: 'PoppinsLight300';
+
+    .anticon-loading {
+        color: #0062FF;
+    }
+}
 // -------------- antd Row Col styles ------------------- //
 
 .ant-row {
@@ -123,15 +142,30 @@ $primaryColor: #0062FF;
     }
 }
 
+.ant-select-arrow {
+    right: 1.5em;
+    cursor: default;
+    
+    svg {
+        transform: scale(.8);
+    }
+}
+
 .ant-select-focused.ant-select-single:not(.ant-select-customize-input) .ant-select-selector {
     border-color: $primaryColor !important;
     box-shadow: none !important;
 }
 
+.ant-select-focused:not(.ant-select-disabled).ant-select-multiple .ant-select-selector {
+    border-color: $primaryColor !important;
+    box-shadow: none;
+}
+
 // -------------- antd Input styles ------------------- //
 
-.ant-input {
+.ant-input, .ant-input-number {
     height: 2.7em !important;
+    width: 100%;
     background-color: #FCFDFE !important;
     border-radius: .6em !important;
     display: flex;
@@ -144,6 +178,19 @@ $primaryColor: #0062FF;
         border-color: $primaryColor;
         box-shadow: none !important;
     }
+}
+
+.ant-input-number-focused {
+    border-color: $primaryColor;
+    box-shadow: none !important;
+}
+
+.ant-input-number-handler-wrap {
+    display: none;
+}
+
+.ant-input-number-input-wrap {
+    width: 100%;
 }
 
 .ant-input-group-wrapper {
@@ -263,9 +310,11 @@ $primaryColor: #0062FF;
     transform: rotate(-90deg);
     transition: all .3s;
 }
+.app-svg-cross {
+    transition: all .3s;
+}
 
 // -------------- Various Transform styles ------------------- //
-
 .rotate-left {
     transform: rotate(-90deg);
 }
@@ -288,7 +337,7 @@ $primaryColor: #0062FF;
     padding: 0 1em;
     height: 2.6em;
     border-radius: .6em;
-
+    
     .anticon {
         margin-right: .5em;
     }
@@ -305,6 +354,9 @@ $primaryColor: #0062FF;
     color: #005FFF;
     font-family: 'PoppinsSemiBold600';
     
+    svg {
+        transform: scale(.9);
+    }
 }
 
 .app-cancel-btn {
@@ -316,4 +368,61 @@ $primaryColor: #0062FF;
 .app-create-btn {
     font-family: 'PoppinsSemiBold600';
     background-color: #0091FF;
+}
+
+// -------------- Antd Modal styles ------------------- //
+.ant-modal {
+
+    .ant-modal-content {
+        border-radius: 1em;
+    }
+    .ant-modal-header {
+        border-top-right-radius: 1em;
+        border-top-left-radius: 1em;
+    }
+    
+    .ant-modal-footer {
+        border-bottom-right-radius: 1em;
+        border-bottom-left-radius: 1em;
+        height: 5em;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 24px;
+        
+        .right-btn {
+            height: 2.5em;
+            min-width: 8em;
+            border-radius: .7em;
+            background-color: #007AFF;
+            // text-transform: uppercase;
+        }
+    }
+
+    .ant-modal-title {
+        color: #171725;
+        font-family: 'PoppinsSemiBold600';
+    }
+
+
+    .ant-modal-close-x {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        svg {
+            transition: all .3s;
+        }
+
+        &:hover {
+            svg {
+                transform: scale(1.2);
+            }
+        }
+    }
+}
+
+// -------------- Various Modal styles ------------------- //
+.app-preview-modal {
+    margin-top: 1.8em;
 }

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Select } from 'antd';
+import { DDownIcon } from './SVG_Icons';
 
 const SelectInput = ({ options, mode, onSelect, onDeselect, value, disabled }) => {
 
@@ -13,6 +14,8 @@ const SelectInput = ({ options, mode, onSelect, onDeselect, value, disabled }) =
             onSelect={onSelect}
             onDeselect={onDeselect}
             disabled={disabled}
+            showArrow
+            suffixIcon={<DDownIcon />}
         >
             {options}
         </Select>

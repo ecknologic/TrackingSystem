@@ -40,17 +40,12 @@ export const validateAccountValues = (data, customerType) => {
     const {
         gstNo, natureOfBussiness, organizationName, address, customerName,
         mobileNumber, invoicetype, creditPeriodInDays, EmailId, referredBy, idProofType,
-        registeredDate, gstProof, depositAmount, contactPerson
+        registeredDate, gstProof
     } = data
 
     if (customerType === 'Corporate') {
         if (!organizationName) errors.organizationName = text
-        if (!natureOfBussiness) errors.natureOfBussiness = text
         if (!creditPeriodInDays) errors.creditPeriodInDays = text
-    }
-    else {
-        if (!depositAmount) errors.depositAmount = text
-        if (!contactPerson) errors.contactPerson = text
     }
 
     if (!gstNo) errors.gstNo = text
@@ -63,6 +58,7 @@ export const validateAccountValues = (data, customerType) => {
     if (!mobileNumber) errors.mobileNumber = text
     if (!customerName) errors.customerName = text
     if (!registeredDate) errors.registeredDate = text
+    if (!natureOfBussiness) errors.natureOfBussiness = text
 
     return errors
 }
@@ -71,7 +67,8 @@ export const validateDeliveryValues = (data) => {
     const text = 'Required'
     const {
         gstNo, depositAmount, routingId, phoneNumber, contactPerson, address,
-        deliveryLocation, product20L, price20L, product1L, price1L, product500ML, price500ML
+        deliveryLocation, product20L, price20L, product1L, price1L, product500ML, price500ML,
+        // product250ML, price250ML
     } = data
 
     if (!gstNo) errors.gstNo = text
@@ -87,6 +84,8 @@ export const validateDeliveryValues = (data) => {
     if (!price1L) errors.price1L = text
     if (!product500ML) errors.product500ML = text
     if (!price500ML) errors.price500ML = text
+    // if (!product250ML) errors.product250ML = text
+    // if (!price250ML) errors.price250ML = text
 
     return errors
 }

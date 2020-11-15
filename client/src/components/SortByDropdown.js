@@ -4,7 +4,7 @@ import { DownOutlined, SortAscendingOutlined, SortDescendingOutlined } from '@an
 import '../sass/sortByDropdown.scss'
 
 const DropdownSelect = ({ width = '200px', onSelect }) => {
-    const [value, setValue] = useState('A - Z')
+    const [value, setValue] = useState('')
 
     const handleSelect = ({ key }) => {
         setValue(key)

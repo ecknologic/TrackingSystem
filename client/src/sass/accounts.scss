@@ -296,7 +296,7 @@ $primary-color: #0062FF;
         .columns-container {
             display: flex;
             justify-content: center;
-            width: 80%;
+            width: 100%;
         }
 
         .column {
@@ -367,5 +367,52 @@ $primary-color: #0062FF;
         height: 3.5em;
         width: 15em;
         border-radius: .8em;
+    }
+}
+
+.delivery-form-modal {
+    width: 55vw !important;
+    margin-top: 1.8em !important;
+    
+    .ant-modal-body {
+        background-color: #FAFAFB;
+    }
+
+    .row {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        padding: .5em 0;
+
+        .input-container {
+            width: 48%;
+        }
+
+        .stretch {
+            width: 100%;
+        }
+    }
+
+    .columns {
+        display: flex;
+        flex-direction: column;
+        padding: .5em 0;
+
+        .columns-container {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .column {
+            display: flex;
+            flex: 1;
+            margin-right: 1em;
+        }
+
+        .input-container {
+            margin-right: .5em;
+        }
+
     }
 }

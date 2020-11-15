@@ -1,7 +1,7 @@
 import { useHistory } from 'react-router-dom';
 import { Divider, Checkbox, Collapse, message } from 'antd';
-import React, { Fragment, useEffect, useMemo, useState } from 'react';
-import { PlusOutlined } from '@ant-design/icons'
+import React, { Fragment, useEffect, useMemo, useState, useCallback } from 'react';
+import { DDownIcon, PlusIcon } from '../../../components/SVG_Icons'
 import Header from './header';
 import Delivery from './forms/Delivery';
 import CustomButton from '../../../components/CustomButton';
@@ -12,25 +12,34 @@ import { http } from '../../../modules/http'
 import { getRouteOptions } from '../../../assets/fixtures';
 import {
     getBase64, deepClone, getIdProofsForDB, getDevDaysForDB, getAddressesForDB,
-    getProductsForDB, extractGADeliveryDetails, extractGADetails
+    getProductsForDB, extractGADeliveryDetails, extractGADetails, isEmpty
 } from '../../../utils/Functions';
 import { getUserId, getUsername, getWarehoseId, TODAYDATE } from '../../../utils/constants';
 import {
     validateAccountValues, validateDeliveryValues, validateDevDays,
     validateIDProofs, validateAddresses
 } from '../../../utils/validations';
-import DownIcon from '../../../components/SVG_Down_Icon';
+import SuccessModal from '../../../components/CustomModal';
+import ConfirmModal from '../../../components/CustomModal';
+import SuccessMessage from '../../../components/SuccessMessage';
+import ConfirmMessage from '../../../components/ConfirmMessage';
+import CollapseHeader from '../../../components/CollapseHeader';
 
 const AddAccount = () => {
     const USERID = getUserId()
     const USERNAME = getUsername()
     const WAREHOUSEID = getWarehoseId()
+    const defaultValues = useMemo(() => ({ referredBy: USERNAME, registeredDate: TODAYDATE }), [])
 
     const history = useHistory()
+    const [switchPrompt, setSwitchPrompt] = useState(false)
+    const [confirmModal, setConfirmModal] = useState(false)
+    const [confirmModalTitle, setConfirmModalTitle] = useState('')
+    const [successModal, setSucessModal] = useState(false)
     const [corporate, setCorporate] = useState(true)
     const [btnDisabled, setBtnDisabled] = useState(false)
-    const [corporateValues, setCorporateValues] = useState({ referredBy: USERNAME, registeredDate: TODAYDATE })
-    const [generalValues, setGeneralValues] = useState({ referredBy: USERNAME, registeredDate: TODAYDATE })
+    const [corporateValues, setCorporateValues] = useState(defaultValues)
+    const [generalValues, setGeneralValues] = useState(defaultValues)
     const [deliveryValues, setDeliveryValues] = useState({})
     const [IDProofs, setIDProofs] = useState({})
     const [devDays, setDevDays] = useState([])
@@ -39,6 +48,9 @@ const AddAccount = () => {
     const [routes, setRoutes] = useState([])
     const routeOptions = useMemo(() => getRouteOptions(routes), [routes])
 
+    const customertype = corporate ? 'Corporate' : 'General'
+    const { organizationName } = corporateValues
+    const { customerName } = generalValues
     const highlight = { backgroundColor: '#5C63AB', color: '#fff' }
     const fade = { backgroundColor: '#EBEBEB', color: '#1B2125' }
 
@@ -50,12 +62,6 @@ const AddAccount = () => {
         sessionStorage.removeItem('address3')
         sessionStorage.removeItem('address4')
     }, [])
-
-    useEffect(() => {
-        resetCorporateValues()
-        resetGeneralValues()
-        resetDeliveryValues()
-    }, [corporate])
 
     const getRoutes = async () => {
         try {
@@ -115,43 +121,38 @@ const AddAccount = () => {
 
         if (addresses.length < limit) {
             const address = { ...deliveryValues, devDays, isNew: true }
-            // Validate delivery form values
+
+            const deliveryErrors = validateDeliveryValues(deliveryValues)
+            const devDaysError = validateDevDays(devDays)
+
+            if (!isEmpty(deliveryErrors) || !isEmpty(devDaysError)) {
+                console.log('deliveryErrors', deliveryErrors)
+                console.log('devDaysError', devDaysError)
+                message.error('Validation Error')
+                return
+            }
 
             const clone = deepClone(addresses)
             clone.push(address)
             setAddresses(clone)
             resetDeliveryValues()
-        }
+        } else message.info('Draft Limit Reached')
     }
 
     const resetCorporateValues = () => {
-        const defaultValues = {
-            gstNo: '', natureOfBussiness: undefined, organizationName: '', address: '', customerName: '',
-            mobileNumber: '', invoicetype: undefined, creditPeriodInDays: undefined, EmailId: '',
-            referredBy: USERNAME, idProofType: undefined, registeredDate: TODAYDATE, gstProof: ''
-        }
+        const defaultValues = { referredBy: USERNAME, registeredDate: TODAYDATE }
         setCorporateValues(defaultValues)
         setIDProofs({})
     }
 
     const resetGeneralValues = () => {
-        const defaultValues = {
-            depositAmount: '', gstNo: '', address: '', customerName: '', mobileNumber: '',
-            invoicetype: undefined, EmailId: '', referredBy: USERNAME, idProofType: undefined,
-            registeredDate: TODAYDATE, gstProof: ''
-        }
         setGeneralValues(defaultValues)
         setIDProofs({})
         setDevDays([])
     }
 
     const resetDeliveryValues = () => {
-        const defaultValues = {
-            gstNo: '', depositAmount: '', routingId: undefined,
-            phoneNumber: '', contactPerson: '', address: '', deliveryLocation: '',
-            product20L: '', price20L: '', product1L: '', price1L: '', product500ML: '', price500ML: ''
-        }
-        setDeliveryValues(defaultValues)
+        setDeliveryValues({})
         setDevDays([])
     }
 
@@ -174,7 +175,8 @@ const AddAccount = () => {
 
         const IDProofError = validateIDProofs(IDProofs)
         const devDaysError = validateDevDays(devDays)
-        if (Object.keys(IDProofError || devDaysError).length) {
+
+        if (!isEmpty(IDProofError) || !isEmpty(devDaysError)) {
             console.log('IDProofError', IDProofError)
             console.log('devDaysError', devDaysError)
             message.error('Validation Error')
@@ -185,8 +187,7 @@ const AddAccount = () => {
         const deliveryDays = getDevDaysForDB(devDays)
 
         const extra = {
-            customertype: corporate ? 'Corporate' : 'General',
-            createdBy: USERID, departmentId: WAREHOUSEID
+            customertype, createdBy: USERID, departmentId: WAREHOUSEID
         }
 
         if (corporate) {
@@ -199,7 +200,7 @@ const AddAccount = () => {
             const currentDelivery = { ...deliveryValues, devDays, isNew: true }
             const allDeliveries = [...sessionAddresses, currentDelivery]
 
-            if (Object.keys(accountErrors || deliveryErrors || extraDeliveryErrors).length) {
+            if (!isEmpty(accountErrors) || !isEmpty(deliveryErrors) || !isEmpty(extraDeliveryErrors)) {
                 console.log('extraDeliveryErrors', extraDeliveryErrors)
                 console.log('deliveryErrors', deliveryErrors)
                 console.log('accountErrors', accountErrors)
@@ -214,7 +215,7 @@ const AddAccount = () => {
         else {
             const accountErrors = validateAccountValues(generalValues)
 
-            if (Object.keys(accountErrors).length) {
+            if (!isEmpty(accountErrors)) {
                 console.log('accountErrors', accountErrors)
                 message.error('Validation Error')
                 return
@@ -222,20 +223,61 @@ const AddAccount = () => {
             const products = getProductsForDB(generalValues)
             const delivery = { ...extractGADeliveryDetails(generalValues), deliveryDays, products }
             const account = extractGADetails(generalValues)
-            body = { ...account, idProofs, deliveryDetails: [delivery], ...extra }
+            body = { ...account, idProofs, deliveryDetails: [delivery], isActive: 0, ...extra }
         }
 
         const url = '/customer/createCustomer'
         try {
             setBtnDisabled(true)
             message.loading('Adding customer...', 0)
-            await http.POST(url, { ...body, isActive: 0 })
-            message.success('Customer added successfully!')
-            history.push('/manage-accounts')
+            await http.POST(url, body)
+            message.destroy()
+            setSucessModal(true)
         } catch (error) {
+            message.destroy()
             setBtnDisabled(false)
         }
     }
+
+    const handleSwitchAccount = () => {
+        // Check form values to determine changes
+        if (switchPrompt) {
+            setConfirmModalTitle('Are you sure to switch?')
+            setConfirmModal(true)
+        } else setCorporate(!corporate)
+    }
+
+    const onCancelAccount = () => {
+        setConfirmModalTitle('Are you sure to quit?')
+        setConfirmModal(true)
+    }
+
+    const handleAddNewAccount = () => {
+        setSucessModal(false)
+        setBtnDisabled(false)
+        setCorporateValues(defaultValues)
+        setGeneralValues(defaultValues)
+        setDeliveryValues({})
+        setIDProofs({})
+    }
+
+    const handleSucessModalCancel = useCallback(() => { setSucessModal(false); goToManageAccounts() }, [])
+    const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
+    const handleSuccessModalOk = useCallback(() => { setSucessModal(false); goToManageAccounts() }, [])
+    const handleConfirmModalOk = useCallback(() => {
+        setConfirmModal(false);
+        if (switchPrompt) {
+            setCorporate(!corporate)
+            setSwitchPrompt(false)
+            resetCorporateValues()
+            resetGeneralValues()
+            resetDeliveryValues()
+        }
+        else goToManageAccounts()
+    }, [switchPrompt, corporate])
+
+
+    const goToManageAccounts = () => history.push('/manage-accounts')
 
     return (
         <Fragment>
@@ -245,12 +287,12 @@ const AddAccount = () => {
                     <CustomButton
                         className='big'
                         style={corporate ? highlight : fade}
-                        text='Corporate Customers' onClick={() => setCorporate(true)}
+                        text='Corporate Customers' onClick={handleSwitchAccount}
                     />
                     <CustomButton
                         className='big second'
                         style={corporate ? fade : highlight}
-                        text='Other Customers' onClick={() => setCorporate(false)}
+                        text='Other Customers' onClick={handleSwitchAccount}
                     />
                 </div>
                 {
@@ -267,6 +309,7 @@ const AddAccount = () => {
                                 data={generalValues}
                                 devDays={devDays}
                                 IDProofs={IDProofs}
+                                routeOptions={routeOptions}
                                 onUpload={handleProofUpload}
                                 onRemove={handleProofRemove}
                                 onChange={handleGeneralValues}
@@ -284,7 +327,7 @@ const AddAccount = () => {
                             <Divider />
                             <div className='title-container'>
                                 <span className='title'>Delivery Details</span>
-                                {hasExtraAddress && <CustomButton onClick={handleAddDelivery} text='Add New' className='app-add-new-btn' icon={<PlusOutlined />} />}
+                                {hasExtraAddress && <CustomButton onClick={handleAddDelivery} text='Add New' className='app-add-new-btn' icon={<PlusIcon />} />}
                             </div>
                             {
                                 hasExtraAddress && addresses.map((item, index) => {
@@ -294,10 +337,13 @@ const AddAccount = () => {
                                             accordion
                                             key={index}
                                             className='accordion-container'
-                                            expandIcon={({ isActive }) => <DownIcon isActive={isActive} />}
+                                            expandIcon={({ isActive }) => <DDownIcon />}
                                             expandIconPosition='right'
                                         >
-                                            <Panel header={deliveryLocation} forceRender>
+                                            <Panel
+                                                header={<CollapseHeader title={deliveryLocation} msg={address} />}
+                                                forceRender
+                                            >
                                                 <CollapseForm
                                                     uniqueId={index}
                                                     data={item}
@@ -323,6 +369,7 @@ const AddAccount = () => {
                 }
                 <div className='app-footer-buttons-container'>
                     <CustomButton
+                        onClick={onCancelAccount}
                         className='app-cancel-btn footer-btn'
                         text='Cancel'
                     />
@@ -333,6 +380,31 @@ const AddAccount = () => {
                     />
                 </div>
             </div>
+            <SuccessModal
+                visible={successModal}
+                onOk={handleSuccessModalOk}
+                onOther={handleAddNewAccount}
+                onCancel={handleSucessModalCancel}
+                title='Account Confirmation'
+                okTxt='Continue'
+                cancelTxt='Add New'
+            >
+                <SuccessMessage
+                    type={customertype}
+                    name={organizationName || customerName}
+                />
+            </SuccessModal>
+            <ConfirmModal
+                visible={confirmModal}
+                onOk={handleConfirmModalOk}
+                onCancel={handleConfirmModalCancel}
+                title={confirmModalTitle}
+                okTxt='Yes'
+            >
+                <ConfirmMessage
+                    msg=' Changes you made may not be saved.'
+                />
+            </ConfirmModal>
         </Fragment>
     )
 }

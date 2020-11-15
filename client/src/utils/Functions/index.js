@@ -57,6 +57,11 @@ export const getBase64 = (img, callback) => {
     reader.addEventListener('load', () => callback(reader.result));
     reader.readAsDataURL(img);
 }
+export const base64String = (arrayBuffer) => {
+    let base64 = btoa(String.fromCharCode.apply(null, new Uint8Array(arrayBuffer)));
+    return "data:image/png;base64," + base64
+}
+
 export const stringToHslColor = (str) => {
     var hash = 0;
     for (var i = 0; i < str.length; i++) {
@@ -81,6 +86,10 @@ export const getSideMenuKey = (path) => {
 
 export const deepClone = (data) => {
     return JSON.parse(JSON.stringify(data))
+}
+export const isEmpty = (data) => {
+    if (typeof data === 'object' && data !== null) return !Object.keys(data).length
+    else if (Array.isArray(data)) return !data.length
 }
 
 export const getIdProofName = (type) => {
@@ -128,15 +137,64 @@ export const getDevDays = (data = {}) => {
 
     return days
 }
-export const getProductsForDB = ({ product20L, price20L, product1L, price1L, product500ML, price500ML }) => {
+export const extractProductsFromForm = (data) => {
+    const { product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML, product20LId, product1LId, product500MLId } = data //product250MLId
+
+    return { product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML, product20LId, product1LId, product500MLId }//product250MLId
+}
+export const getProductsForDB = ({ product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML }) => {
     const products = []
     const item1 = { productName: '20L', productPrice: price20L, noOfJarsTobePlaced: product20L }
     const item2 = { productName: '1L', productPrice: price1L, noOfJarsTobePlaced: product1L }
     const item3 = { productName: '500ML', productPrice: price500ML, noOfJarsTobePlaced: product500ML }
+    // const item4 = { productName: '250ML', productPrice: price250ML, noOfJarsTobePlaced: product250ML }
     if (price20L && product20L) products.push(item1)
     if (price1L && product1L) products.push(item2)
     if (price500ML && product500ML) products.push(item3)
+    // if (price250ML && product250ML) products.push(item4)
 
+    return products
+}
+export const getProductsWithIdForDB = ({ product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML, product20LId, product1LId, product500MLId }) => {  //, product250MLId
+    const products = []
+    const item1 = { productName: '20L', productPrice: price20L, noOfJarsTobePlaced: product20L, productId: product20LId }
+    const item2 = { productName: '1L', productPrice: price1L, noOfJarsTobePlaced: product1L, productId: product1LId }
+    const item3 = { productName: '500ML', productPrice: price500ML, noOfJarsTobePlaced: product500ML, productId: product500MLId }
+    // const item4 = { productName: '250ML', productPrice: price250ML, noOfJarsTobePlaced: product250ML, productId: product250MLId }
+    if (price20L && product20L) products.push(item1)
+    if (price1L && product1L) products.push(item2)
+    if (price500ML && product500ML) products.push(item3)
+    // if (price250ML && product250ML) products.push(item4)
+
+    return products
+}
+export const getProductsForUI = (data) => {
+    let product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML, product20LId, product1LId, product500MLId, product250MLId
+
+    data.map((item) => {
+        const { productName, productPrice, noOfJarsTobePlaced, productId } = item
+        if (productName === '20L') {
+            product20L = noOfJarsTobePlaced
+            price20L = productPrice
+            product20LId = productId
+        }
+        if (productName === '1L') {
+            product1L = noOfJarsTobePlaced
+            price1L = productPrice
+            product1LId = productId
+        }
+        if (productName === '500ML') {
+            product500ML = noOfJarsTobePlaced
+            price500ML = productPrice
+            product500MLId = productId
+        }
+        // if (productName === '250ML') {
+        //     product250ML = noOfJarsTobePlaced
+        //     price250ML = productPrice
+        //     product250MLId = productId
+        // }
+    })
+    const products = { product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML, product20LId, product1LId, product500MLId }//product250MLId
     return products
 }
 
@@ -157,22 +215,48 @@ export const getDevDaysForDB = (data = []) => {
     return daysObj
 }
 
-export const extractGADeliveryDetails = ({ address, depositAmount, mobileNumber, contactPerson }) => {
-    return { address, depositAmount, phoneNumber: mobileNumber, contactPerson }
+export const extractDeliveryDetails = (data) => {
+    const clone = deepClone(data)
+    delete clone.products
+    delete clone.deliveryDays
+    delete clone.price1L
+    delete clone.price20L
+    delete clone.price500ML
+    // delete clone.price250ML
+    delete clone.product1L
+    delete clone.product20L
+    delete clone.product500ML
+    // delete clone.product250ML
+    delete clone.product20LId
+    delete clone.product1LId
+    delete clone.product500MLId
+    // delete clone.product250MLId
+    return clone
 }
 
-export const extractGADetails = ({ gstNo, customerName, registeredDate,
-    invoicetype, EmailId, idProofType, gstProof, referredBy, address }) => {
-    return {
-        gstNo, customerName, registeredDate, invoicetype, EmailId,
-        idProofType, gstProof, referredBy, Address1: address
-    }
+export const extractGADeliveryDetails = ({ gstNo, address, depositAmount, mobileNumber, customerName: contactPerson }) => {
+    return { gstNo, address, depositAmount, phoneNumber: mobileNumber, contactPerson }
+}
+
+export const extractGADetails = (data) => {
+    const { customerName: organizationName, address: Address1 } = data
+    const clone = deepClone(data)
+    delete clone.address
+    delete clone.price1L
+    delete clone.price20L
+    delete clone.price500ML
+    // delete clone.price250ML
+    delete clone.product1L
+    delete clone.product20L
+    delete clone.product500ML
+    // delete clone.product250ML
+    return { ...clone, Address1, organizationName }
 }
 
 export const getAddressesForDB = (data) => {
     return data.map((address) => {
-        const { devDays, product20L, price20L, product1L, price1L, product500ML, price500ML, ...rest } = address
-        const products = getProductsForDB({ product20L, price20L, product1L, price1L, product500ML, price500ML })
+        const { devDays, product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML, ...rest } = address
+        const products = getProductsForDB({ product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML })
         const deliveryDays = getDevDaysForDB(devDays)
         return { products, deliveryDays, ...rest }
     })

@@ -4,6 +4,7 @@ import CustomDatePicker from './Date_picker'
 import Delivery from './Delivery'
 import StockDetails from './StockDetails'
 import RoutesComp from './RoutesComp'
+import { TODAYDATE } from '../utils/constants';
 const { Option } = Select;
 
 
@@ -12,7 +13,7 @@ const Tabs = () => {
     const [deliveryDetailsTab, setDeliveryDetailsTab] = useState(false)
     const [ordersTab, setOrdersTab] = useState(false)
     const [routesTab, setRoutesTab] = useState(false)
-    const [currentDate, setCurrentDate] = useState('')
+    const [currentDate, setCurrentDate] = useState(TODAYDATE)
     const [tab5, setTab5] = useState(false)
 
     const onTabChange = (type) => {
