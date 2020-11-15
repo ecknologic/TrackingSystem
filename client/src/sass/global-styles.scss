@@ -144,6 +144,7 @@ $primaryColor: #0062FF;
 
 .ant-select-arrow {
     right: 1.5em;
+    cursor: default;
     
     svg {
         transform: scale(.8);
@@ -387,18 +388,14 @@ $primaryColor: #0062FF;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        text-transform: uppercase;
         padding: 10px 24px;
         
-        .footer-btn {
-            text-transform: uppercase;
-        }
-    
         .right-btn {
-            height: 3em;
-            min-width: 12em;
-            border-radius: 1em;
+            height: 2.5em;
+            min-width: 8em;
+            border-radius: .7em;
             background-color: #007AFF;
+            // text-transform: uppercase;
         }
     }
 

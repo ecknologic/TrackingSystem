@@ -80,7 +80,7 @@ const CorporateAccountForm = ({ data, IDProofs, onChange, onUpload, disabled, on
             <div className='row'>
                 <div className='input-container'>
                     <label className='app-input-label-name'>Phone Number</label>
-                    <InputNumber size="large" value={mobileNumber} disabled={disabled} type='number' placeholder='Phone Number' onChange={(value) => onChange(value, 'mobileNumber')} />
+                    <InputNumber size="large" value={mobileNumber} disabled={disabled} placeholder='Phone Number' onChange={(value) => onChange(value, 'mobileNumber')} />
                 </div>
                 <div className='input-container'>
                     <label className='app-input-label-name'>Email</label>
@@ -110,7 +110,7 @@ const CorporateAccountForm = ({ data, IDProofs, onChange, onUpload, disabled, on
             <div className='row'>
                 <div className='input-container'>
                     <label className='app-input-label-name'>Credit Period in Days</label>
-                    <InputNumber size="large" value={creditPeriodInDays} disabled={disabled} type='number' placeholder='Credit Period' onChange={(value) => onChange(value, 'creditPeriodInDays')} />
+                    <InputNumber size="large" value={creditPeriodInDays} disabled={disabled} placeholder='Credit Period' onChange={(value) => onChange(value, 'creditPeriodInDays')} />
                 </div>
                 <div className='input-container'>
                     <label className='app-input-label-name'>Referred By</label>

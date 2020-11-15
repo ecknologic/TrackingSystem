@@ -19,7 +19,9 @@ import {
     validateAccountValues, validateDeliveryValues, validateDevDays,
     validateIDProofs, validateAddresses
 } from '../../../utils/validations';
-import CustomModal from '../../../components/CustomModal';
+import SuccessModal from '../../../components/CustomModal';
+import ConfirmModal from '../../../components/CustomModal';
+import SuccessMessage from '../../../components/SuccessMessage';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import CollapseHeader from '../../../components/CollapseHeader';
 
@@ -27,13 +29,17 @@ const AddAccount = () => {
     const USERID = getUserId()
     const USERNAME = getUsername()
     const WAREHOUSEID = getWarehoseId()
+    const defaultValues = useMemo(() => ({ referredBy: USERNAME, registeredDate: TODAYDATE }), [])
 
     const history = useHistory()
-    const [modal, setModal] = useState(false)
+    const [switchPrompt, setSwitchPrompt] = useState(false)
+    const [confirmModal, setConfirmModal] = useState(false)
+    const [confirmModalTitle, setConfirmModalTitle] = useState('')
+    const [successModal, setSucessModal] = useState(false)
     const [corporate, setCorporate] = useState(true)
     const [btnDisabled, setBtnDisabled] = useState(false)
-    const [corporateValues, setCorporateValues] = useState({ referredBy: USERNAME, registeredDate: TODAYDATE })
-    const [generalValues, setGeneralValues] = useState({ referredBy: USERNAME, registeredDate: TODAYDATE })
+    const [corporateValues, setCorporateValues] = useState(defaultValues)
+    const [generalValues, setGeneralValues] = useState(defaultValues)
     const [deliveryValues, setDeliveryValues] = useState({})
     const [IDProofs, setIDProofs] = useState({})
     const [devDays, setDevDays] = useState([])
@@ -56,12 +62,6 @@ const AddAccount = () => {
         sessionStorage.removeItem('address3')
         sessionStorage.removeItem('address4')
     }, [])
-
-    useEffect(() => {
-        resetCorporateValues()
-        resetGeneralValues()
-        resetDeliveryValues()
-    }, [corporate])
 
     const getRoutes = async () => {
         try {
@@ -140,33 +140,19 @@ const AddAccount = () => {
     }
 
     const resetCorporateValues = () => {
-        const defaultValues = {
-            gstNo: '', natureOfBussiness: undefined, organizationName: '', address: '', customerName: '',
-            mobileNumber: '', invoicetype: undefined, creditPeriodInDays: undefined, EmailId: '',
-            referredBy: USERNAME, idProofType: undefined, registeredDate: TODAYDATE, gstProof: ''
-        }
+        const defaultValues = { referredBy: USERNAME, registeredDate: TODAYDATE }
         setCorporateValues(defaultValues)
         setIDProofs({})
     }
 
     const resetGeneralValues = () => {
-        const defaultValues = {
-            depositAmount: '', gstNo: '', address: '', customerName: '', mobileNumber: '',
-            invoicetype: undefined, EmailId: '', referredBy: USERNAME, idProofType: undefined,
-            registeredDate: TODAYDATE, gstProof: ''
-        }
         setGeneralValues(defaultValues)
         setIDProofs({})
         setDevDays([])
     }
 
     const resetDeliveryValues = () => {
-        const defaultValues = {
-            gstNo: '', depositAmount: '', routingId: undefined,
-            phoneNumber: '', contactPerson: '', address: '', deliveryLocation: '',
-            product20L: '', price20L: '', product1L: '', price1L: '', product500ML: '', price500ML: ''
-        }
-        setDeliveryValues(defaultValues)
+        setDeliveryValues({})
         setDevDays([])
     }
 
@@ -246,15 +232,52 @@ const AddAccount = () => {
             message.loading('Adding customer...', 0)
             await http.POST(url, body)
             message.destroy()
-            setModal(true)
+            setSucessModal(true)
         } catch (error) {
             message.destroy()
             setBtnDisabled(false)
         }
     }
 
-    const handleModalCancel = useCallback(() => setModal(false), [])
-    const handleContinue = useCallback(() => setModal(false), [])
+    const handleSwitchAccount = () => {
+        // Check form values to determine changes
+        if (switchPrompt) {
+            setConfirmModalTitle('Are you sure to switch?')
+            setConfirmModal(true)
+        } else setCorporate(!corporate)
+    }
+
+    const onCancelAccount = () => {
+        setConfirmModalTitle('Are you sure to quit?')
+        setConfirmModal(true)
+    }
+
+    const handleAddNewAccount = () => {
+        setSucessModal(false)
+        setBtnDisabled(false)
+        setCorporateValues(defaultValues)
+        setGeneralValues(defaultValues)
+        setDeliveryValues({})
+        setIDProofs({})
+    }
+
+    const handleSucessModalCancel = useCallback(() => { setSucessModal(false); goToManageAccounts() }, [])
+    const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
+    const handleSuccessModalOk = useCallback(() => { setSucessModal(false); goToManageAccounts() }, [])
+    const handleConfirmModalOk = useCallback(() => {
+        setConfirmModal(false);
+        if (switchPrompt) {
+            setCorporate(!corporate)
+            setSwitchPrompt(false)
+            resetCorporateValues()
+            resetGeneralValues()
+            resetDeliveryValues()
+        }
+        else goToManageAccounts()
+    }, [switchPrompt, corporate])
+
+
+    const goToManageAccounts = () => history.push('/manage-accounts')
 
     return (
         <Fragment>
@@ -264,12 +287,12 @@ const AddAccount = () => {
                     <CustomButton
                         className='big'
                         style={corporate ? highlight : fade}
-                        text='Corporate Customers' onClick={() => setCorporate(true)}
+                        text='Corporate Customers' onClick={handleSwitchAccount}
                     />
                     <CustomButton
                         className='big second'
                         style={corporate ? fade : highlight}
-                        text='Other Customers' onClick={() => setCorporate(false)}
+                        text='Other Customers' onClick={handleSwitchAccount}
                     />
                 </div>
                 {
@@ -286,6 +309,7 @@ const AddAccount = () => {
                                 data={generalValues}
                                 devDays={devDays}
                                 IDProofs={IDProofs}
+                                routeOptions={routeOptions}
                                 onUpload={handleProofUpload}
                                 onRemove={handleProofRemove}
                                 onChange={handleGeneralValues}
@@ -345,6 +369,7 @@ const AddAccount = () => {
                 }
                 <div className='app-footer-buttons-container'>
                     <CustomButton
+                        onClick={onCancelAccount}
                         className='app-cancel-btn footer-btn'
                         text='Cancel'
                     />
@@ -355,19 +380,31 @@ const AddAccount = () => {
                     />
                 </div>
             </div>
-            <CustomModal
-                className='account-confirm-modal'
-                visible={modal}
-                onOk={handleContinue}
-                onCancel={handleModalCancel}
+            <SuccessModal
+                visible={successModal}
+                onOk={handleSuccessModalOk}
+                onOther={handleAddNewAccount}
+                onCancel={handleSucessModalCancel}
                 title='Account Confirmation'
-                btnTxt='Continue'
+                okTxt='Continue'
+                cancelTxt='Add New'
             >
-                <ConfirmMessage
+                <SuccessMessage
                     type={customertype}
                     name={organizationName || customerName}
                 />
-            </CustomModal>
+            </SuccessModal>
+            <ConfirmModal
+                visible={confirmModal}
+                onOk={handleConfirmModalOk}
+                onCancel={handleConfirmModalCancel}
+                title={confirmModalTitle}
+                okTxt='Yes'
+            >
+                <ConfirmMessage
+                    msg=' Changes you made may not be saved.'
+                />
+            </ConfirmModal>
         </Fragment>
     )
 }

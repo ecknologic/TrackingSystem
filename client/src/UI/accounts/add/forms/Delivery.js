@@ -44,7 +44,7 @@ const DeliveryForm = (props) => {
                 <div className='row'>
                     <div className='input-container'>
                         <label className='app-input-label-name'>Phone Number</label>
-                        <InputNumber size="large" value={phoneNumber} disabled={isActive} type='number' placeholder='Phone Number' onChange={(value) => onChange(value, 'phoneNumber')} />
+                        <InputNumber size="large" value={phoneNumber} disabled={isActive} placeholder='Phone Number' onChange={(value) => onChange(value, 'phoneNumber')} />
                     </div>
                     <div className='input-container'>
                         <label className='app-input-label-name'>Contact Person</label>
@@ -57,41 +57,41 @@ const DeliveryForm = (props) => {
                         <div className='column'>
                             <div className='input-container'>
                                 <label className='app-input-label-name'>20 Ltrs</label>
-                                <InputNumber size="large" value={product20L} disabled={isActive} type='number' placeholder='Add' onChange={(value) => onChange(value, 'product20L')} />
+                                <InputNumber size="large" value={product20L} disabled={isActive} placeholder='Add' onChange={(value) => onChange(value, 'product20L')} />
                             </div>
                             <div className='input-container'>
                                 <label className='app-input-label-name'>Price</label>
-                                <InputNumber size="large" value={price20L} disabled={isActive} type='number' placeholder='Rs' onChange={(value) => onChange(value, 'price20L')} />
+                                <InputNumber size="large" value={price20L} disabled={isActive} placeholder='Rs' onChange={(value) => onChange(value, 'price20L')} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <label className='app-input-label-name'>1 Ltrs</label>
-                                <InputNumber size="large" value={product1L} disabled={isActive} type='number' placeholder='Add' onChange={(value) => onChange(value, 'product1L')} />
+                                <InputNumber size="large" value={product1L} disabled={isActive} placeholder='Add' onChange={(value) => onChange(value, 'product1L')} />
                             </div>
                             <div className='input-container'>
                                 <label className='app-input-label-name'>Price</label>
-                                <InputNumber size="large" value={price1L} disabled={isActive} type='number' placeholder='Rs' onChange={(value) => onChange(value, 'price1L')} />
+                                <InputNumber size="large" value={price1L} disabled={isActive} placeholder='Rs' onChange={(value) => onChange(value, 'price1L')} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <label className='app-input-label-name'>500 Ml</label>
-                                <InputNumber size="large" value={product500ML} disabled={isActive} type='number' placeholder='Add' onChange={(value) => onChange(value, 'product500ML')} />
+                                <InputNumber size="large" value={product500ML} disabled={isActive} placeholder='Add' onChange={(value) => onChange(value, 'product500ML')} />
                             </div>
                             <div className='input-container'>
                                 <label className='app-input-label-name'>Price</label>
-                                <InputNumber size="large" value={price500ML} disabled={isActive} type='number' placeholder='Rs' onChange={(value) => onChange(value, 'price500ML')} />
+                                <InputNumber size="large" value={price500ML} disabled={isActive} placeholder='Rs' onChange={(value) => onChange(value, 'price500ML')} />
                             </div>
                         </div>
                         {/* <div className='column'>
                                         <div className='input-container'>
                                             <label className='app-input-label-name'>250 Ml</label>
-                                            <InputNumber size="large" value={product250ML} disabled={isActive} type='number' placeholder='Add' onChange={(value) => onChange(value, 'product250ML')}  />
+                                            <InputNumber size="large" value={product250ML} disabled={isActive}  placeholder='Add' onChange={(value) => onChange(value, 'product250ML')}  />
                                         </div>
                                         <div className='input-container'>
                                             <label className='app-input-label-name'>Price</label>
-                                            <InputNumber size="large" value={price250ML} disabled={isActive} type='number' placeholder='Rs' onChange={(value) => onChange(value, 'price250ML')}  />
+                                            <InputNumber size="large" value={price250ML} disabled={isActive}  placeholder='Rs' onChange={(value) => onChange(value, 'price250ML')}  />
                                         </div>
                                     </div> */}
                     </div>
@@ -103,7 +103,7 @@ const DeliveryForm = (props) => {
                     </div>
                     <div className='input-container'>
                         <label className='app-input-label-name'>Deposit Amount</label>
-                        <InputNumber size="large" value={depositAmount} disabled={isActive} type='number' placeholder='Deposit Amount' onChange={(value) => onChange(value, 'depositAmount')} />
+                        <InputNumber size="large" value={depositAmount} disabled={isActive} placeholder='Deposit Amount' onChange={(value) => onChange(value, 'depositAmount')} />
                     </div>
                 </div>
                 {

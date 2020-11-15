@@ -111,7 +111,7 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
                             <Col lg={{ span: 12 }} xl={{ span: 8 }} xxl={{ span: 6 }} key={item.deliveryDetailsId}>
                                 <AddressCard data={item} onClick={handleClick} />
                             </Col>
-                        )) : <NoContent content='No Delivery Details To display' />
+                        )) : <NoContent content='No delivery details to show' />
                 }
             </Row>
             <CustomModal
@@ -121,7 +121,7 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
                 onOk={handleUpdate}
                 onCancel={handleModalCancel}
                 title={`Delivery Details - ${formData.location}`}
-                btnTxt={formData.isActive ? 'Close' : 'Update'}
+                okTxt={formData.isActive ? 'Close' : 'Update'}
             >
                 <DeliveryForm
                     data={formData}

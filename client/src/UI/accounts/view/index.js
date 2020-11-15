@@ -144,7 +144,7 @@ const ViewAccount = () => {
                 onOk={handleCreate}
                 onCancel={handleModalCancel}
                 title='Add New Delivery Address'
-                btnTxt='Add New'
+                okTxt='Save'
             >
                 <DeliveryForm
                     data={formData}

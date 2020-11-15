@@ -4,7 +4,7 @@ import CustomButton from './CustomButton';
 import { CrossIcon } from './SVG_Icons';
 
 const CustomModal = (props) => {
-    const { visible, title, btnTxt, onCancel, onOk, btnDisabled, className, children } = props
+    const { visible, title, okTxt, cancelTxt, onCancel, onOk, onOther, btnDisabled, className, children } = props
     return (
         <Modal
             centered
@@ -17,14 +17,14 @@ const CustomModal = (props) => {
                 <>
                     <CustomButton
                         className='app-cancel-btn footer-btn'
-                        text='Cancel'
-                        onClick={onCancel}
+                        text={cancelTxt || 'Cancel'}
+                        onClick={cancelTxt ? onOther : onCancel}
                     />
 
                     <CustomButton
                         onClick={onOk}
                         className={`app-create-btn right-btn ${btnDisabled && 'disabled'}`}
-                        text={btnTxt}
+                        text={okTxt}
                     />
                 </>
             )}

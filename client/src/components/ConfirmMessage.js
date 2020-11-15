@@ -1,12 +1,10 @@
 import React from 'react';
-import '../sass/confirmMessage.scss';
+// import '../sass/confirmMessage.scss';
 
-const ConfirmMessage = ({ type, name }) => {
+const ConfirmMessage = ({ msg }) => {
     return (
-        <div className='confirm-msg-container'>
-            <span className='done'>Done!</span>
-            <span className='msg'>You have successfully added a {type} customer account for</span>
-            <span className='name'>{name}.</span>
+        <div className='success-msg-container'>
+            <span className='msg'>{msg}</span>
         </div>
     )
 }

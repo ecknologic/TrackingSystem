@@ -63,7 +63,7 @@ const Accounts = () => {
                                 <Col lg={{ span: 12 }} xl={{ span: 8 }} xxl={{ span: 6 }}>
                                     <AccountCard customerDetails={account} sortBy={sortBy} onClick={() => goToViewAccount(account.customerId)} />
                                 </Col>
-                            )) : <NoContent content='No Accounts To display' />
+                            )) : <NoContent content='No accounts to show' />
                     }
                 </Row>
             </div>

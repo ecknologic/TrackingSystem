@@ -215,10 +215,6 @@ export const getDevDaysForDB = (data = []) => {
     return daysObj
 }
 
-export const extractGADeliveryDetails = ({ address, depositAmount, mobileNumber, contactPerson }) => {
-    return { address, depositAmount, phoneNumber: mobileNumber, contactPerson }
-}
-
 export const extractDeliveryDetails = (data) => {
     const clone = deepClone(data)
     delete clone.products
@@ -238,12 +234,23 @@ export const extractDeliveryDetails = (data) => {
     return clone
 }
 
-export const extractGADetails = ({ gstNo, customerName, registeredDate,
-    invoicetype, EmailId, idProofType, gstProof, referredBy, address }) => {
-    return {
-        gstNo, customerName, registeredDate, invoicetype, EmailId,
-        idProofType, gstProof, referredBy, Address1: address
-    }
+export const extractGADeliveryDetails = ({ gstNo, address, depositAmount, mobileNumber, customerName: contactPerson }) => {
+    return { gstNo, address, depositAmount, phoneNumber: mobileNumber, contactPerson }
+}
+
+export const extractGADetails = (data) => {
+    const { customerName: organizationName, address: Address1 } = data
+    const clone = deepClone(data)
+    delete clone.address
+    delete clone.price1L
+    delete clone.price20L
+    delete clone.price500ML
+    // delete clone.price250ML
+    delete clone.product1L
+    delete clone.product20L
+    delete clone.product500ML
+    // delete clone.product250ML
+    return { ...clone, Address1, organizationName }
 }
 
 export const getAddressesForDB = (data) => {

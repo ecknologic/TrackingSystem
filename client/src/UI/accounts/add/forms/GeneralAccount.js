@@ -1,23 +1,23 @@
 import { Input, InputNumber } from 'antd';
 import React, { useEffect, useState } from 'react';
-import DraggerInput from '../../../../components/DraggerInput';
+import { getIdProofName } from '../../../../utils/Functions';
 import SelectInput from '../../../../components/SelectInput';
+import DraggerInput from '../../../../components/DraggerInput';
 import InputWithAddon from '../../../../components/InputWithAddon';
 import UploadPreviewer from '../../../../components/UploadPreviewer';
-import { dayOptions, invoiceOptions, idOptions } from '../../../../assets/fixtures'
-import { getIdProofName } from '../../../../utils/Functions';
+import { dayOptions, invoiceOptions, idOptions, businessOptions } from '../../../../assets/fixtures'
 
 const GeneralAccountForm = (props) => {
 
     const { data, devDays, IDProofs, onChange, onUpload, onSelect,
-        onDeselect, accountOnly, disabled, onRemove } = props
+        onDeselect, accountOnly, disabled, onRemove, routeOptions } = props
     const { Front, Back } = IDProofs
 
     const {
-        gstNo, address, depositAmount, customerName, mobileNumber, registeredDate,
-        invoicetype, EmailId, contactPerson, idProofType, gstProof, referredBy,
-        product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML,
-        price250ML
+        gstNo, address, natureOfBussiness, depositAmount, customerName, mobileNumber, registeredDate,
+        invoicetype, EmailId, contactPerson, idProofType, gstProof, referredBy, routingId, deliveryLocation,
+        product20L, price20L, product1L, price1L, product500ML, price500ML,
+        // product250ML,price250ML
     } = data
 
     const [proofName, setProofName] = useState('')
@@ -85,7 +85,7 @@ const GeneralAccountForm = (props) => {
                 <div className='row'>
                     <div className='input-container'>
                         <label className='app-input-label-name'>Phone Number</label>
-                        <InputNumber size="large" value={mobileNumber} disabled={disabled} type='number' placeholder='Phone Number' onChange={(value) => onChange(value, 'mobileNumber')} />
+                        <InputNumber size="large" value={mobileNumber} disabled={disabled} placeholder='Phone Number' onChange={(value) => onChange(value, 'mobileNumber')} />
                     </div>
                     <div className='input-container'>
                         <label className='app-input-label-name'>Email</label>
@@ -98,8 +98,8 @@ const GeneralAccountForm = (props) => {
                         <Input size='large' value={registeredDate} type='date' placeholder='Registered Date' disabled />
                     </div>
                     <div className='input-container'>
-                        <label className='app-input-label-name'>Referred By</label>
-                        <Input size='large' value={referredBy} disabled={disabled} placeholder='Referral Name' onChange={({ target: { value } }) => onChange(value, 'referredBy')} />
+                        <label className='app-input-label-name'>Nature Of Business</label>
+                        <SelectInput value={natureOfBussiness} disabled={disabled} options={businessOptions} onSelect={(value) => onChange(value, 'natureOfBussiness')} />
                     </div>
                 </div>
                 {
@@ -108,11 +108,21 @@ const GeneralAccountForm = (props) => {
                             <div className='row'>
                                 <div className='input-container'>
                                     <label className='app-input-label-name'>Deposit Amount</label>
-                                    <InputNumber size="large" value={depositAmount} disabled={disabled} type='number' placeholder='Deposit Amount' onChange={(value) => onChange(value, 'depositAmount')} />
+                                    <InputNumber size="large" value={depositAmount} disabled={disabled} placeholder='Deposit Amount' onChange={(value) => onChange(value, 'depositAmount')} />
                                 </div>
                                 <div className='input-container'>
                                     <label className='app-input-label-name'>Delivery Days</label>
                                     <SelectInput value={devDays} options={dayOptions} disabled={disabled} mode='multiple' onSelect={onSelect} onDeselect={onDeselect} />
+                                </div>
+                            </div>
+                            <div className='row'>
+                                <div className='input-container'>
+                                    <label className='app-input-label-name'>Delivery Location</label>
+                                    <Input size='large' value={deliveryLocation} placeholder='Add Location' disabled={disabled} onChange={({ target: { value } }) => onChange(value, 'deliveryLocation')} />
+                                </div>
+                                <div className='input-container'>
+                                    <label className='app-input-label-name'>Route</label>
+                                    <SelectInput options={routeOptions} value={routingId} disabled={disabled} onSelect={(value) => onChange(value, 'routingId')} />
                                 </div>
                             </div>
                             <div className='columns'>
@@ -121,41 +131,41 @@ const GeneralAccountForm = (props) => {
                                     <div className='column'>
                                         <div className='input-container'>
                                             <label className='app-input-label-name'>20 Ltrs</label>
-                                            <InputNumber size="large" value={product20L} disabled={disabled} type='number' placeholder='Add' onChange={(value) => onChange(value, 'product20L')} />
+                                            <InputNumber size="large" value={product20L} disabled={disabled} placeholder='Add' onChange={(value) => onChange(value, 'product20L')} />
                                         </div>
                                         <div className='input-container'>
                                             <label className='app-input-label-name'>Price</label>
-                                            <InputNumber size="large" value={price20L} disabled={disabled} type='number' placeholder='Rs' onChange={(value) => onChange(value, 'price20L')} />
+                                            <InputNumber size="large" value={price20L} disabled={disabled} placeholder='Rs' onChange={(value) => onChange(value, 'price20L')} />
                                         </div>
                                     </div>
                                     <div className='column'>
                                         <div className='input-container'>
                                             <label className='app-input-label-name'>1 Ltrs</label>
-                                            <InputNumber size="large" value={product1L} disabled={disabled} type='number' placeholder='Add' onChange={(value) => onChange(value, 'product1L')} />
+                                            <InputNumber size="large" value={product1L} disabled={disabled} placeholder='Add' onChange={(value) => onChange(value, 'product1L')} />
                                         </div>
                                         <div className='input-container'>
                                             <label className='app-input-label-name'>Price</label>
-                                            <InputNumber size="large" value={price1L} disabled={disabled} type='number' placeholder='Rs' onChange={(value) => onChange(value, 'price1L')} />
+                                            <InputNumber size="large" value={price1L} disabled={disabled} placeholder='Rs' onChange={(value) => onChange(value, 'price1L')} />
                                         </div>
                                     </div>
                                     <div className='column'>
                                         <div className='input-container'>
                                             <label className='app-input-label-name'>500 Ml</label>
-                                            <InputNumber size="large" value={product500ML} disabled={disabled} type='number' placeholder='Add' onChange={(value) => onChange(value, 'product500ML')} />
+                                            <InputNumber size="large" value={product500ML} disabled={disabled} placeholder='Add' onChange={(value) => onChange(value, 'product500ML')} />
                                         </div>
                                         <div className='input-container'>
                                             <label className='app-input-label-name'>Price</label>
-                                            <InputNumber size="large" value={price500ML} disabled={disabled} type='number' placeholder='Rs' onChange={(value) => onChange(value, 'price500ML')} />
+                                            <InputNumber size="large" value={price500ML} disabled={disabled} placeholder='Rs' onChange={(value) => onChange(value, 'price500ML')} />
                                         </div>
                                     </div>
                                     {/* <div className='column'>
                                         <div className='input-container'>
                                             <label className='app-input-label-name'>250 Ml</label>
-                                            <InputNumber size="large" value={product250ML} disabled={disabled} type='number' placeholder='Add' onChange={(value) => onChange(value, 'product250ML')}   />
+                                            <InputNumber size="large" value={product250ML} disabled={disabled}  placeholder='Add' onChange={(value) => onChange(value, 'product250ML')}   />
                                         </div>
                                         <div className='input-container'>
                                             <label className='app-input-label-name'>Price</label>
-                                            <InputNumber size="large" value={price250ML} disabled={disabled} type='number' placeholder='Rs' onChange={(value) => onChange(value, 'price250ML')}   />
+                                            <InputNumber size="large" value={price250ML} disabled={disabled}  placeholder='Rs' onChange={(value) => onChange(value, 'price250ML')}   />
                                         </div>
                                     </div> */}
                                 </div>
@@ -164,17 +174,13 @@ const GeneralAccountForm = (props) => {
                     )
                 }
                 <div className='row'>
-                    {
-                        !accountOnly && (
-                            <div className='input-container'>
-                                <label className='app-input-label-name'>Contact Person</label>
-                                <Input size='large' value={contactPerson} placeholder='Add Name' onChange={({ target: { value } }) => onChange(value, 'contactPerson')} />
-                            </div>
-                        )
-                    }
                     <div className='input-container'>
                         <label className='app-input-label-name'>Invoice Type</label>
                         <SelectInput value={invoicetype} options={invoiceOptions} disabled={disabled} onSelect={(value) => onChange(value, 'invoicetype')} />
+                    </div>
+                    <div className='input-container'>
+                        <label className='app-input-label-name'>Referred By</label>
+                        <Input size='large' value={referredBy} disabled={disabled} placeholder='Referral Name' onChange={({ target: { value } }) => onChange(value, 'referredBy')} />
                     </div>
                 </div>
             </div>
