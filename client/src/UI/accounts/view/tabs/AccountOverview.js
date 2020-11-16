@@ -2,12 +2,12 @@ import dayjs from 'dayjs';
 import { message } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { http } from '../../../../modules/http';
-import { base64String, getBase64, getIdProofsForDB } from '../../../../utils/Functions';
+import { base64String, getBase64, getIdProofsForDB, isNumber, validateAadhar, validatePAN } from '../../../../utils/Functions';
 import CustomButton from '../../../../components/CustomButton';
 import CorporateAccountForm from '../../add/forms/CorporateAccount';
 import NoContent from '../../../../components/NoContent';
 import Spinner from '../../../../components/Spinner';
-import { validateIDProofs, validateAccountValues } from '../../../../utils/validations';
+import { validateIDProofs, validateAccountValues, validateIDNumbers } from '../../../../utils/validations';
 import GeneralAccountForm from '../../add/forms/GeneralAccount';
 
 const AccountOverview = ({ data }) => {
@@ -17,6 +17,7 @@ const AccountOverview = ({ data }) => {
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [accountValues, setAccountValues] = useState({})
     const [IDProofs, setIDProofs] = useState({})
+    const [IDErrors, setIDErrors] = useState({})
 
     useEffect(() => {
         if (!loading) {
@@ -35,6 +36,12 @@ const AccountOverview = ({ data }) => {
 
     const handleChange = (value, key) => {
         setAccountValues(data => ({ ...data, [key]: value }))
+
+        // Validations
+        if (key === 'adharNo' || key === 'panNo') {
+            const error = validateIDNumbers(key, value)
+            setIDErrors({ [key]: error })
+        }
     }
 
     const handleProofUpload = (file, name) => {
@@ -115,6 +122,7 @@ const AccountOverview = ({ data }) => {
                                 <CorporateAccountForm
                                     data={accountValues}
                                     IDProofs={IDProofs}
+                                    IDErrors={IDErrors}
                                     onUpload={handleProofUpload}
                                     onRemove={handleProofRemove}
                                     onChange={handleChange}

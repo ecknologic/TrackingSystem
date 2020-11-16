@@ -1,6 +1,6 @@
 import { Input, InputNumber } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { getIdProofName } from '../../../../utils/Functions';
+import { getIDInputValidationProps, getIdProofName } from '../../../../utils/Functions';
 import SelectInput from '../../../../components/SelectInput';
 import DraggerInput from '../../../../components/DraggerInput';
 import InputWithAddon from '../../../../components/InputWithAddon';
@@ -9,7 +9,7 @@ import { dayOptions, invoiceOptions, idOptions, businessOptions } from '../../..
 
 const GeneralAccountForm = (props) => {
 
-    const { data, devDays, IDProofs, onChange, onUpload, onSelect,
+    const { data, devDays, IDProofs, onChange, onUpload, onSelect, IDErrors,
         onDeselect, accountOnly, disabled, onRemove, routeOptions, track } = props
     const { Front, Back } = IDProofs
 
@@ -21,9 +21,13 @@ const GeneralAccountForm = (props) => {
     } = data
 
     const [proofName, setProofName] = useState('')
+    const [idProps, setIdProps] = useState({})
+    const { maxLength } = idProps
 
     useEffect(() => {
         setProofName(getIdProofName(idProofType))
+        const props = getIDInputValidationProps(idProofType)
+        setIdProps(props)
     }, [idProofType])
 
     const idUploadDisable = Front && Back
@@ -40,8 +44,11 @@ const GeneralAccountForm = (props) => {
                     {
                         idProofType && (
                             <div className='input-container second'>
-                                <label className='app-input-label-name'>{proofName}</label>
-                                <Input size='large' value={data[idProofType]} disabled={disabled} placeholder={`Add ${proofName}`} onChange={({ target: { value } }) => onChange(value, idProofType)} />
+                                <div>
+                                    <label className='app-input-label-name'>{proofName}</label>
+                                    {IDErrors[idProofType] && <span className='app-label-error'>{IDErrors[idProofType]}</span>}
+                                </div>
+                                <Input maxLength={maxLength} size='large' value={data[idProofType]} placeholder={`Add ${proofName}`} className={`app-id-input ${IDErrors[idProofType] ? 'app-input-error' : ''}`} disabled={disabled} onChange={({ target: { value } }) => onChange(value, idProofType)} />
                             </div>
                         )
                     }

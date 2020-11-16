@@ -1,5 +1,10 @@
 $primaryColor: #0062FF;
 
+#scroll-view {
+    :first-child {
+        scroll-behavior: smooth;
+    }
+}
 // -------------- antd Collapse styles ------------------- //
 
 .ant-collapse {

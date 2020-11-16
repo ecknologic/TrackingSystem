@@ -21,46 +21,16 @@ export const blobToBase64 = (blob) => {
         new Blob([content.buffer], { type: 'image/png' })
     );
 }
-// export const blobToBase64 = (blob, callback) => {
-// var reader = new FileReader();
-// const modified = new Blob(blob)
-// reader.readAsDataURL(modified);
-// reader.onloadend = function () {
-//     var base64data = reader.result;
-//     console.log("base64data", base64data)
-//     return base64data
-// }
-// const content = new Uint8Array(blob);
-// var newBlob = URL.createObjectURL(
-//     new Blob([content.buffer], { type: 'image/png' })
-// );
-// // var newBlob = new Blob([blob], { type: 'image/png' });
-
-// // Define the FileReader which is able to read the contents of Blob
-// var reader = new FileReader();
-// reader.readAsDataURL(newBlob)
-// // The magic always begins after the Blob is successfully loaded
-// reader.onload = function () {
-//     // Since it contains the Data URI, we should remove the prefix and keep only Base64 string
-//     var b64 = reader.result
-//     // .replace(/^data:.+;base64,/, '');
-//     // console.log(b64); //-> "V2VsY29tZSB0byA8Yj5iYXNlNjQuZ3VydTwvYj4h"
-//     callback(b64)
-//     // Decode the Base64 string and show result just to make sure that everything is OK
-//     // var html = atob(b64);
-//     // console.log(html); //-> "Welcome to <b>base64.guru</b>!"
-// };
-
-// Since everything is set up, let’s read the Blob and store the result as Data URI
-// reader.readAsDataURL(blob);
-// }
 export const getBase64 = (img, callback) => {
     const reader = new FileReader();
     reader.addEventListener('load', () => callback(reader.result));
     reader.readAsDataURL(img);
 }
 export const base64String = (arrayBuffer) => {
-    let base64 = btoa(String.fromCharCode.apply(null, new Uint8Array(arrayBuffer)));
+    // let base64 = btoa(String.fromCharCode.apply(null, new Uint8Array(arrayBuffer)));
+    let base64 = btoa(new Uint8Array(arrayBuffer).reduce(function (data, byte) {
+        return data + String.fromCharCode(byte);
+    }, ''));
     return "data:image/png;base64," + base64
 }
 
@@ -285,12 +255,12 @@ export const getIDInputValidationProps = (IDType) => {
     return props
 }
 
-export const validatePAN = (PANNumber) => {
+export const isPANValid = (PANNumber) => {
     return PANNumber.match(/^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/)
 }
 
 export const isNumber = (value) => {
-    return value.match(/^[0-9]+$/)
+    return value.match(/^(\s*|\d+)$/)
 }
 
 // multiplication table
@@ -320,7 +290,7 @@ const p = [
 ]
 
 // validates Aadhar number received as string
-export const validateAadhar = (aadharNumber) => {
+export const isAadharValid = (aadharNumber) => {
     let c = 0
     let invertedArray = aadharNumber.split('').map(Number).reverse()
 

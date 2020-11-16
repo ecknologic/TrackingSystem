@@ -54,7 +54,7 @@ const SideMenu = () => {
             </Item>
             {
                 ROLE === MARKETINGADMIN ?
-                    <Item key='/add-account' onClick={handleMenuSelect}>
+                    <Item key='/add-customer' onClick={handleMenuSelect}>
                         <img src={dashboardIcon12} alt="" />
                         <span>Add Customer</span>
                     </Item>

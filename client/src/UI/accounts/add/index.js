@@ -12,12 +12,12 @@ import { http } from '../../../modules/http'
 import { getRouteOptions } from '../../../assets/fixtures';
 import {
     getBase64, deepClone, getIdProofsForDB, getDevDaysForDB, getAddressesForDB, resetTrackForm,
-    getProductsForDB, extractGADeliveryDetails, extractGADetails, isEmpty, trackAccountFormOnce, getIDInputValidationProps, validateAadhar, validatePAN, isNumber
+    getProductsForDB, extractGADeliveryDetails, extractGADetails, isEmpty, trackAccountFormOnce,
 } from '../../../utils/Functions';
 import { TRACKFORM, getUserId, getUsername, getWarehoseId, TODAYDATE } from '../../../utils/constants';
 import {
     validateAccountValues, validateDeliveryValues, validateDevDays,
-    validateIDProofs, validateAddresses
+    validateIDProofs, validateAddresses, validateIDNumbers
 } from '../../../utils/validations';
 import SuccessModal from '../../../components/CustomModal';
 import QuitModal from '../../../components/CustomModal';
@@ -25,6 +25,7 @@ import SwitchModal from '../../../components/CustomModal';
 import SuccessMessage from '../../../components/SuccessMessage';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import CollapseHeader from '../../../components/CollapseHeader';
+import ScrollUp from '../../../components/ScrollUp';
 
 const AddAccount = () => {
     const USERID = getUserId()
@@ -40,7 +41,6 @@ const AddAccount = () => {
     const [corporate, setCorporate] = useState(true)
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [corporateValues, setCorporateValues] = useState(defaultValues)
-    const [corporateErrors, setCorporateErrors] = useState({})
     const [generalValues, setGeneralValues] = useState(defaultValues)
     const [deliveryValues, setDeliveryValues] = useState({})
     const [IDProofs, setIDProofs] = useState({})
@@ -50,6 +50,7 @@ const AddAccount = () => {
     const hasExtraAddress = !!addresses.length
     const [routes, setRoutes] = useState([])
     const routeOptions = useMemo(() => getRouteOptions(routes), [routes])
+    const [scrollDep, setScrollDep] = useState(false)
 
     const customertype = corporate ? 'Corporate' : 'General'
     const confirmMsg = 'Changes you made may not be saved.'
@@ -68,6 +69,7 @@ const AddAccount = () => {
     }, [])
 
     useEffect(() => {
+        resetTrackForm()
         trackAccountFormOnce()
         return () => resetTrackForm()
     }, [corporate])
@@ -89,6 +91,12 @@ const AddAccount = () => {
     }
     const handleGeneralValues = (value, key) => {
         setGeneralValues(data => ({ ...data, [key]: value }))
+
+        // Validations
+        if (key === 'adharNo' || key === 'panNo') {
+            const error = validateIDNumbers(key, value)
+            setIDErrors({ [key]: error })
+        }
     }
     const handleCorporateChange = (value, key) => {
 
@@ -96,28 +104,10 @@ const AddAccount = () => {
         if (sameAddress) preFillDDForm(value, key)
 
         // Validations
-        let error = ''
-        if (key === 'panNo') {
-            if (!value) error = 'Required'
-            else if (String(value).length === 10) {
-                const isValid = validatePAN(value)
-                !isValid && (error = 'Invalid')
-                isValid && (error = '')
-            }
+        if (key === 'adharNo' || key === 'panNo') {
+            const error = validateIDNumbers(key, value)
+            setIDErrors({ [key]: error })
         }
-        else if (key === 'adharNo') {
-            if (!value) error = 'Required'
-            else if (!isNumber(value)) {
-                error = 'Enter digits only'
-            }
-            else if (String(value).length === 12) {
-                const isValid = validateAadhar(value)
-                !isValid && (error = 'Invalid')
-                isValid && (error = '')
-            }
-        }
-        setIDErrors({ [key]: error })
-        // validateInput(value, key)
     }
 
     const handleDevDaysSelect = (value) => {
@@ -317,6 +307,9 @@ const AddAccount = () => {
         setGeneralValues(defaultValues)
         setDeliveryValues({})
         setIDProofs({})
+        setDevDays([])
+        resetTrackForm()
+        setScrollDep(!scrollDep)
     }
 
     const onAccountCancel = useCallback(() => setConfirmModal(true), [])
@@ -339,6 +332,7 @@ const AddAccount = () => {
 
     return (
         <Fragment>
+            <ScrollUp dep={scrollDep} />
             <Header />
             <div className='account-add-content'>
                 <div className='header-buttons-container'>
@@ -370,6 +364,7 @@ const AddAccount = () => {
                                 data={generalValues}
                                 devDays={devDays}
                                 IDProofs={IDProofs}
+                                IDErrors={IDErrors}
                                 routeOptions={routeOptions}
                                 onUpload={handleProofUpload}
                                 onRemove={handleProofRemove}
@@ -422,7 +417,7 @@ const AddAccount = () => {
                                 data={deliveryValues}
                                 routeOptions={routeOptions}
                                 hasExtraAddress={hasExtraAddress}
-                                sameAddress={sameAddress}
+                                sameAddress={sameAddress && !hasExtraAddress}
                                 onAdd={handleAddDelivery}
                                 onChange={handleDeliveryValues}
                                 onSelect={handleDevDaysSelect}
