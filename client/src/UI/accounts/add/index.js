@@ -12,7 +12,7 @@ import { http } from '../../../modules/http'
 import { getRouteOptions } from '../../../assets/fixtures';
 import {
     getBase64, deepClone, getIdProofsForDB, getDevDaysForDB, getAddressesForDB, resetTrackForm,
-    getProductsForDB, extractGADeliveryDetails, extractGADetails, isEmpty, trackAccountFormOnce
+    getProductsForDB, extractGADeliveryDetails, extractGADetails, isEmpty, trackAccountFormOnce, getIDInputValidationProps, validateAadhar, validatePAN, isNumber
 } from '../../../utils/Functions';
 import { TRACKFORM, getUserId, getUsername, getWarehoseId, TODAYDATE } from '../../../utils/constants';
 import {
@@ -40,9 +40,11 @@ const AddAccount = () => {
     const [corporate, setCorporate] = useState(true)
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [corporateValues, setCorporateValues] = useState(defaultValues)
+    const [corporateErrors, setCorporateErrors] = useState({})
     const [generalValues, setGeneralValues] = useState(defaultValues)
     const [deliveryValues, setDeliveryValues] = useState({})
     const [IDProofs, setIDProofs] = useState({})
+    const [IDErrors, setIDErrors] = useState({})
     const [devDays, setDevDays] = useState([])
     const [addresses, setAddresses] = useState([])
     const hasExtraAddress = !!addresses.length
@@ -89,8 +91,33 @@ const AddAccount = () => {
         setGeneralValues(data => ({ ...data, [key]: value }))
     }
     const handleCorporateChange = (value, key) => {
+
         setCorporateValues(data => ({ ...data, [key]: value }))
         if (sameAddress) preFillDDForm(value, key)
+
+        // Validations
+        let error = ''
+        if (key === 'panNo') {
+            if (!value) error = 'Required'
+            else if (String(value).length === 10) {
+                const isValid = validatePAN(value)
+                !isValid && (error = 'Invalid')
+                isValid && (error = '')
+            }
+        }
+        else if (key === 'adharNo') {
+            if (!value) error = 'Required'
+            else if (!isNumber(value)) {
+                error = 'Enter digits only'
+            }
+            else if (String(value).length === 12) {
+                const isValid = validateAadhar(value)
+                !isValid && (error = 'Invalid')
+                isValid && (error = '')
+            }
+        }
+        setIDErrors({ [key]: error })
+        // validateInput(value, key)
     }
 
     const handleDevDaysSelect = (value) => {
@@ -331,6 +358,7 @@ const AddAccount = () => {
                         <CorporateAccount
                             track
                             data={corporateValues}
+                            IDErrors={IDErrors}
                             IDProofs={IDProofs}
                             onUpload={handleProofUpload}
                             onRemove={handleProofRemove}

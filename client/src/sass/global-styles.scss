@@ -215,6 +215,36 @@ $primaryColor: #0062FF;
     }
 }
 
+.ant-input:placeholder-shown {
+    text-transform: initial;
+}
+
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    // margin: 0;
+}
+
+.app-input-error {
+    border: 1px solid #E90614;
+        
+        &:hover, &:focus {
+            border-color: #E90614;
+            box-shadow: none !important;
+        }
+    
+    .ant-input-number-focused {
+        border-color: #E90614;
+        box-shadow: none !important;
+    }
+}
+
+.app-label-error {
+    color: #E90614;
+    float: right;
+    font-family: 'PoppinsItalic400';
+}
+
 // -------------- antd Input Addon styles ------------------- //
 
 .ant-input-group-addon {
@@ -229,6 +259,60 @@ $primaryColor: #0062FF;
     border-bottom-right-radius: 0 !important;
 }
 
+// -------------- Antd Modal styles ------------------- //
+.ant-modal {
+
+    .ant-modal-content {
+        border-radius: 1em;
+    }
+    .ant-modal-header {
+        border-top-right-radius: 1em;
+        border-top-left-radius: 1em;
+    }
+    
+    .ant-modal-footer {
+        border-bottom-right-radius: 1em;
+        border-bottom-left-radius: 1em;
+        height: 5em;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 24px;
+        
+        .right-btn {
+            height: 2.5em;
+            min-width: 8em;
+            border-radius: .7em;
+            background-color: #007AFF;
+            // text-transform: uppercase;
+        }
+    }
+
+    .ant-modal-title {
+        color: #171725;
+        font-family: 'PoppinsSemiBold600';
+    }
+
+
+    .ant-modal-close-x {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        svg {
+            transition: all .3s;
+        }
+
+        &:hover {
+            svg {
+                transform: scale(1.2);
+            }
+        }
+    }
+}
+
+// -------------- Various Input styles ------------------- //
+
 .app-input-label-name {
     color: #4D5775;
     text-transform: uppercase;
@@ -236,7 +320,6 @@ $primaryColor: #0062FF;
     padding: 0 0 0 .25em;
     font-size: 1.6ch;
 }
-
 .app-input-addon-button {
     display: flex;
     justify-content: center;
@@ -248,73 +331,8 @@ $primaryColor: #0062FF;
     background-color: #FCFDFE !important;
 }
 
-.app-form-container { // remove this if not needed
-    display: flex;
-    flex-direction: column;
-    width: 80%;
-
-    .row {
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-        padding: .5em 0;
-
-        .input-container {
-            width: 48%;
-        }
-
-        
-
-        .stretch {
-            width: 100%;
-        }
-    }
-}
-
-.app-identity-proof-container {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-       
-        .input-container {
-            display: flex;
-            flex-direction: column;
-            width: 48%;
-        }
-
-        .second {
-            margin-top: 1em;
-        }
-
-        .upload-container {
-            display: flex;
-            align-items: flex-end;
-            padding: 1em 0;
-        
-            .upload-dragger-container {
-                width: 50%;
-            }
-        
-            .upload-preview-container {
-                width: 50%;
-                margin-left: 2em;
-            }
-        }
-
-        .upload-instructions {
-            display: flex;
-            flex-direction: column;
-            padding-top: 1em;
-            color: rgba(0,0,0,0.85);
-
-            .title {
-                font-family: 'PoppinsSemiBold600';
-            }
-            .msg {
-                font-family: 'PoppinsRegular400';
-                font-size: 1.6ch;
-            }
-        }
+.app-id-input {
+    text-transform: uppercase;
 }
 
 // -------------- Various Icons styles ------------------- //
@@ -384,59 +402,77 @@ $primaryColor: #0062FF;
     background-color: #0091FF;
 }
 
-// -------------- Antd Modal styles ------------------- //
-.ant-modal {
+// -------------- Various Modal styles ------------------- //
+.app-preview-modal {
+    margin-top: 1.8em;
+}
 
-    .ant-modal-content {
-        border-radius: 1em;
-    }
-    .ant-modal-header {
-        border-top-right-radius: 1em;
-        border-top-left-radius: 1em;
-    }
-    
-    .ant-modal-footer {
-        border-bottom-right-radius: 1em;
-        border-bottom-left-radius: 1em;
-        height: 5em;
+
+.app-form-container { // remove this if not needed
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+
+    .row {
+        width: 100%;
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        padding: 10px 24px;
+        padding: .5em 0;
+
+        .input-container {
+            width: 48%;
+        }
+
         
-        .right-btn {
-            height: 2.5em;
-            min-width: 8em;
-            border-radius: .7em;
-            background-color: #007AFF;
-            // text-transform: uppercase;
-        }
-    }
 
-    .ant-modal-title {
-        color: #171725;
-        font-family: 'PoppinsSemiBold600';
-    }
-
-
-    .ant-modal-close-x {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        svg {
-            transition: all .3s;
-        }
-
-        &:hover {
-            svg {
-                transform: scale(1.2);
-            }
+        .stretch {
+            width: 100%;
         }
     }
 }
 
-// -------------- Various Modal styles ------------------- //
-.app-preview-modal {
-    margin-top: 1.8em;
+.app-identity-proof-container {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+       
+        .input-container {
+            display: flex;
+            flex-direction: column;
+            width: 48%;
+        }
+
+        .second {
+            margin-top: 1em;
+        }
+
+        .upload-container {
+            display: flex;
+            align-items: flex-end;
+            padding: 1em 0;
+        
+            .upload-dragger-container {
+                width: 50%;
+            }
+        
+            .upload-preview-container {
+                width: 50%;
+                margin-left: 2em;
+            }
+        }
+
+        .upload-instructions {
+            display: flex;
+            flex-direction: column;
+            padding-top: 1em;
+            color: rgba(0,0,0,0.85);
+
+            .title {
+                font-family: 'PoppinsSemiBold600';
+            }
+            .msg {
+                font-family: 'PoppinsRegular400';
+                font-size: 1.6ch;
+            }
+        }
 }
