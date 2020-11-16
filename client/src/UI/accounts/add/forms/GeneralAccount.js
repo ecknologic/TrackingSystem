@@ -10,12 +10,12 @@ import { dayOptions, invoiceOptions, idOptions, businessOptions } from '../../..
 const GeneralAccountForm = (props) => {
 
     const { data, devDays, IDProofs, onChange, onUpload, onSelect,
-        onDeselect, accountOnly, disabled, onRemove, routeOptions } = props
+        onDeselect, accountOnly, disabled, onRemove, routeOptions, track } = props
     const { Front, Back } = IDProofs
 
     const {
         gstNo, address, natureOfBussiness, depositAmount, customerName, mobileNumber, registeredDate,
-        invoicetype, EmailId, contactPerson, idProofType, gstProof, referredBy, routingId, deliveryLocation,
+        invoicetype, EmailId, idProofType, gstProof, referredBy, routingId, deliveryLocation,
         product20L, price20L, product1L, price1L, product500ML, price500ML,
         // product250ML,price250ML
     } = data
@@ -35,7 +35,7 @@ const GeneralAccountForm = (props) => {
                 <div className='app-identity-proof-container identity-proof-container'>
                     <div className='input-container'>
                         <label className='app-input-label-name'>Select Id Proof</label>
-                        <SelectInput value={idProofType} options={idOptions} disabled={disabled} onSelect={(value) => onChange(value, 'idProofType')} />
+                        <SelectInput track={track} value={idProofType} options={idOptions} disabled={disabled} onSelect={(value) => onChange(value, 'idProofType')} />
                     </div>
                     {
                         idProofType && (
@@ -99,7 +99,7 @@ const GeneralAccountForm = (props) => {
                     </div>
                     <div className='input-container'>
                         <label className='app-input-label-name'>Nature Of Business</label>
-                        <SelectInput value={natureOfBussiness} disabled={disabled} options={businessOptions} onSelect={(value) => onChange(value, 'natureOfBussiness')} />
+                        <SelectInput track={track} value={natureOfBussiness} disabled={disabled} options={businessOptions} onSelect={(value) => onChange(value, 'natureOfBussiness')} />
                     </div>
                 </div>
                 {
@@ -112,7 +112,7 @@ const GeneralAccountForm = (props) => {
                                 </div>
                                 <div className='input-container'>
                                     <label className='app-input-label-name'>Delivery Days</label>
-                                    <SelectInput value={devDays} options={dayOptions} disabled={disabled} mode='multiple' onSelect={onSelect} onDeselect={onDeselect} />
+                                    <SelectInput track={track} value={devDays} options={dayOptions} disabled={disabled} mode='multiple' onSelect={onSelect} onDeselect={onDeselect} />
                                 </div>
                             </div>
                             <div className='row'>
@@ -122,7 +122,7 @@ const GeneralAccountForm = (props) => {
                                 </div>
                                 <div className='input-container'>
                                     <label className='app-input-label-name'>Route</label>
-                                    <SelectInput options={routeOptions} value={routingId} disabled={disabled} onSelect={(value) => onChange(value, 'routingId')} />
+                                    <SelectInput track={track} options={routeOptions} value={routingId} disabled={disabled} onSelect={(value) => onChange(value, 'routingId')} />
                                 </div>
                             </div>
                             <div className='columns'>
@@ -176,7 +176,7 @@ const GeneralAccountForm = (props) => {
                 <div className='row'>
                     <div className='input-container'>
                         <label className='app-input-label-name'>Invoice Type</label>
-                        <SelectInput value={invoicetype} options={invoiceOptions} disabled={disabled} onSelect={(value) => onChange(value, 'invoicetype')} />
+                        <SelectInput track={track} value={invoicetype} options={invoiceOptions} disabled={disabled} onSelect={(value) => onChange(value, 'invoicetype')} />
                     </div>
                     <div className='input-container'>
                         <label className='app-input-label-name'>Referred By</label>

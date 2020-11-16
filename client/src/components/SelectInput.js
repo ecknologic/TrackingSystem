@@ -1,27 +1,44 @@
-import React from 'react';
-import { Select } from 'antd';
+import React, { useState } from 'react';
+import { Select, Tag } from 'antd';
 import { DDownIcon } from './SVG_Icons';
-import { onTrackForm } from '../utils/Functions';
+import { setTrackForm } from '../utils/Functions';
 
-const SelectInput = ({ options, mode, onSelect, onDeselect, value, disabled }) => {
+const SelectInput = ({ options, mode, onSelect, onDeselect, value, disabled, track }) => {
+    const [hasTracked, setHasTracked] = useState(false)
 
     const handleSelect = (value) => {
         onSelect(value)
-        onTrackForm()
+
+        if (track && !hasTracked) {
+            setTrackForm()
+            setHasTracked(true)
+        }
+    }
+
+    const tagRender = (props) => {
+        const { label, closable, onClose } = props;
+
+        return (
+            <Tag color='#0091FF' closable={closable} onClose={onClose} style={{ marginRight: 3 }}>
+                {label}
+            </Tag>
+        );
     }
 
     return (
         <Select
-            getPopupContainer={triggerNode => triggerNode.parentNode}
-            size='large'
             value={value}
-            placeholder='Select'
             mode={mode}
+            size='large'
+            placeholder='Select'
+            tagRender={tagRender}
             onSelect={handleSelect}
             onDeselect={onDeselect}
             disabled={disabled}
+            maxTagCount={4}
             showArrow
             suffixIcon={<DDownIcon />}
+            getPopupContainer={triggerNode => triggerNode.parentNode}
         >
             {options}
         </Select>

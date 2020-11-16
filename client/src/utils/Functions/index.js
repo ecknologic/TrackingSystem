@@ -264,9 +264,12 @@ export const getAddressesForDB = (data) => {
     })
 }
 
-export const onTrackForm = () => {
+export const setTrackForm = () => {
     sessionStorage.setItem(TRACKFORM, true)
 }
 export const resetTrackForm = () => {
     sessionStorage.removeItem(TRACKFORM)
+}
+export const trackAccountFormOnce = () => {
+    window.addEventListener('input', setTrackForm, { once: true })
 }

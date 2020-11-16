@@ -9,9 +9,6 @@ $primaryColor: #0062FF;
 .ant-collapse > .ant-collapse-item:last-child > 
 .ant-collapse-header {
     border-radius: .6em !important;
-    // border-bottom-right-radius: .6em !important;
-    // border-top-left-radius: .6em !important;
-    // border-top-right-radius: .6em !important;
 }
 .ant-collapse .ant-collapse-header {
     height: 5em;
@@ -22,9 +19,7 @@ $primaryColor: #0062FF;
         top: 2.5em !important;
         right: 2em !important;
     }
-
 }
-
 .ant-collapse-item-active .ant-collapse-header {
     border-bottom-left-radius: none !important;
     border-bottom-right-radius: none !important;
@@ -73,6 +68,9 @@ $primaryColor: #0062FF;
 .ant-checkbox-checked .ant-checkbox-inner {
     background-color:$primaryColor;
     border-color:$primaryColor;
+}
+.ant-checkbox-disabled .ant-checkbox-inner {
+    background-color: #f5f5f5;
 }
 .ant-checkbox-checked::after {
     border: none;
@@ -141,7 +139,6 @@ $primaryColor: #0062FF;
         height: 100% !important;
     }
 }
-
 .ant-select-arrow {
     right: 1.5em;
     cursor: default;
@@ -156,11 +153,28 @@ $primaryColor: #0062FF;
     box-shadow: none !important;
 }
 
+.ant-select-multiple {
+    .ant-tag {
+        border-radius: .4em;
+        font-family: 'PoppinsRegular400';
+        background-color: $primaryColor;
+        color: #fff;
+    }
+}
+
+.ant-select-item-option-content {
+    font-family: 'PoppinsRegular400';
+}
 .ant-select-focused:not(.ant-select-disabled).ant-select-multiple .ant-select-selector {
     border-color: $primaryColor !important;
     box-shadow: none;
 }
 
+// .ant-select-item-option-state {
+//     .anticon-check {
+//         display: none;
+//     }
+// }
 // -------------- antd Input styles ------------------- //
 
 .ant-input, .ant-input-number {

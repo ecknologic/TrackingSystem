@@ -12,7 +12,7 @@ import { http } from '../../../modules/http'
 import { getRouteOptions } from '../../../assets/fixtures';
 import {
     getBase64, deepClone, getIdProofsForDB, getDevDaysForDB, getAddressesForDB, resetTrackForm,
-    getProductsForDB, extractGADeliveryDetails, extractGADetails, isEmpty, onTrackForm
+    getProductsForDB, extractGADeliveryDetails, extractGADetails, isEmpty, trackAccountFormOnce
 } from '../../../utils/Functions';
 import { TRACKFORM, getUserId, getUsername, getWarehoseId, TODAYDATE } from '../../../utils/constants';
 import {
@@ -36,6 +36,7 @@ const AddAccount = () => {
     const [confirmModal, setConfirmModal] = useState(false)
     const [switchModal, setSwitchModal] = useState(false)
     const [successModal, setSucessModal] = useState(false)
+    const [sameAddress, setSameAddress] = useState(false)
     const [corporate, setCorporate] = useState(true)
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [corporateValues, setCorporateValues] = useState(defaultValues)
@@ -49,6 +50,7 @@ const AddAccount = () => {
     const routeOptions = useMemo(() => getRouteOptions(routes), [routes])
 
     const customertype = corporate ? 'Corporate' : 'General'
+    const confirmMsg = 'Changes you made may not be saved.'
     const { organizationName } = corporateValues
     const { customerName } = generalValues
     const highlight = { backgroundColor: '#5C63AB', color: '#fff' }
@@ -64,13 +66,14 @@ const AddAccount = () => {
     }, [])
 
     useEffect(() => {
-        window.addEventListener('input', onTrackForm)
+        trackAccountFormOnce()
+        return () => resetTrackForm()
+    }, [corporate])
 
-        return () => {
-            window.removeEventListener('input', onTrackForm)
-            resetTrackForm()
-        }
-    }, [])
+    useEffect(() => {
+        if (sameAddress) setDDForSameAddress()
+        else resetDDForSameAddress()
+    }, [sameAddress])
 
     const getRoutes = async () => {
         try {
@@ -87,6 +90,7 @@ const AddAccount = () => {
     }
     const handleCorporateChange = (value, key) => {
         setCorporateValues(data => ({ ...data, [key]: value }))
+        if (sameAddress) preFillDDForm(value, key)
     }
 
     const handleDevDaysSelect = (value) => {
@@ -248,6 +252,25 @@ const AddAccount = () => {
         }
     }
 
+    const setDDForSameAddress = () => {
+        const { gstNo, customerName: contactPerson,
+            address, mobileNumber: phoneNumber } = corporateValues
+        const prefill = { gstNo, address, contactPerson, phoneNumber }
+
+        setDeliveryValues(data => ({ ...data, ...prefill }))
+    }
+
+    const resetDDForSameAddress = () => {
+        const prefill = { gstNo: '', address: '', contactPerson: '', phoneNumber: '' }
+        setDeliveryValues(data => ({ ...data, ...prefill }))
+    }
+
+    const preFillDDForm = (value, key) => {
+        let newKey = key
+        if (key === 'customerName') newKey = 'contactPerson'
+        else if (key === 'mobileNumber') newKey = 'phoneNumber'
+        setDeliveryValues(data => ({ ...data, [newKey]: value }))
+    }
     const onCorporateBtnClick = () => {
         if (!corporate) handleSwitchAccount()
     }
@@ -306,6 +329,7 @@ const AddAccount = () => {
                 {
                     corporate ? (
                         <CorporateAccount
+                            track
                             data={corporateValues}
                             IDProofs={IDProofs}
                             onUpload={handleProofUpload}
@@ -314,6 +338,7 @@ const AddAccount = () => {
                         />
                     ) : (
                             <GeneralAccount
+                                track
                                 data={generalValues}
                                 devDays={devDays}
                                 IDProofs={IDProofs}
@@ -330,7 +355,8 @@ const AddAccount = () => {
                     corporate ? (
                         <>
                             <div className='checkbox-container'>
-                                <Checkbox /> <span className='text'>Delivery to the same address?</span>
+                                <Checkbox disabled={sameAddress && hasExtraAddress} checked={sameAddress} onChange={() => setSameAddress(!sameAddress)} />
+                                <span className='text'>Delivery to the same address?</span>
                             </div>
                             <Divider />
                             <div className='title-container'>
@@ -345,7 +371,7 @@ const AddAccount = () => {
                                             accordion
                                             key={index}
                                             className='accordion-container'
-                                            expandIcon={({ isActive }) => <DDownIcon />}
+                                            expandIcon={() => <DDownIcon />}
                                             expandIconPosition='right'
                                         >
                                             <Panel
@@ -363,10 +389,12 @@ const AddAccount = () => {
                                 })
                             }
                             <Delivery
+                                track
                                 devDays={devDays}
                                 data={deliveryValues}
                                 routeOptions={routeOptions}
                                 hasExtraAddress={hasExtraAddress}
+                                sameAddress={sameAddress}
                                 onAdd={handleAddDelivery}
                                 onChange={handleDeliveryValues}
                                 onSelect={handleDevDaysSelect}
@@ -409,20 +437,16 @@ const AddAccount = () => {
                 title='Are you sure to leave?'
                 okTxt='Yes'
             >
-                <ConfirmMessage
-                    msg=' Changes you made may not be saved.'
-                />
+                <ConfirmMessage msg={confirmMsg} />
             </QuitModal>
             <SwitchModal
                 visible={switchModal}
                 onOk={handleSwitchModalOk}
                 onCancel={handleSwitchModalCancel}
-                title='Are you sure to switch account?'
+                title='Are you sure to change customer type?'
                 okTxt='Yes'
             >
-                <ConfirmMessage
-                    msg=' Changes you made may not be saved.'
-                />
+                <ConfirmMessage msg={confirmMsg} />
             </SwitchModal>
         </Fragment>
     )

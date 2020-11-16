@@ -7,7 +7,7 @@ import UploadPreviewer from '../../../../components/UploadPreviewer';
 import { invoiceOptions, idOptions, businessOptions } from '../../../../assets/fixtures'
 import { getIdProofName } from '../../../../utils/Functions';
 
-const CorporateAccountForm = ({ data, IDProofs, onChange, onUpload, disabled, onRemove }) => {
+const CorporateAccountForm = ({ data, IDProofs, onChange, onUpload, disabled, onRemove, track }) => {
 
     const {
         gstNo, natureOfBussiness, organizationName, address, customerName,
@@ -30,7 +30,7 @@ const CorporateAccountForm = ({ data, IDProofs, onChange, onUpload, disabled, on
             <div className='app-identity-proof-container identity-proof-container'>
                 <div className='input-container'>
                     <label className='app-input-label-name'>Select Id Proof</label>
-                    <SelectInput value={idProofType} options={idOptions} disabled={disabled} onSelect={(value) => onChange(value, 'idProofType')} />
+                    <SelectInput track={track} value={idProofType} options={idOptions} disabled={disabled} onSelect={(value) => onChange(value, 'idProofType')} />
                 </div>
                 {
                     idProofType && (
@@ -94,7 +94,7 @@ const CorporateAccountForm = ({ data, IDProofs, onChange, onUpload, disabled, on
                 </div>
                 <div className='input-container'>
                     <label className='app-input-label-name'>Nature Of Business</label>
-                    <SelectInput value={natureOfBussiness} disabled={disabled} options={businessOptions} onSelect={(value) => onChange(value, 'natureOfBussiness')} />
+                    <SelectInput track={track} value={natureOfBussiness} disabled={disabled} options={businessOptions} onSelect={(value) => onChange(value, 'natureOfBussiness')} />
                 </div>
             </div>
             <div className='row'>
@@ -104,7 +104,7 @@ const CorporateAccountForm = ({ data, IDProofs, onChange, onUpload, disabled, on
                 </div>
                 <div className='input-container'>
                     <label className='app-input-label-name'>Invoice Type</label>
-                    <SelectInput value={invoicetype} options={invoiceOptions} disabled={disabled} onSelect={(value) => onChange(value, 'invoicetype')} />
+                    <SelectInput track={track} value={invoicetype} options={invoiceOptions} disabled={disabled} onSelect={(value) => onChange(value, 'invoicetype')} />
                 </div>
             </div>
             <div className='row'>
