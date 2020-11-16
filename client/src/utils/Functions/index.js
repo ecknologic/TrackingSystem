@@ -57,9 +57,18 @@ export const getBase64 = (img, callback) => {
     reader.addEventListener('load', () => callback(reader.result));
     reader.readAsDataURL(img);
 }
-export const base64String = (arrayBuffer) => {
-    let base64 = btoa(String.fromCharCode.apply(null, new Uint8Array(arrayBuffer)));
-    return "data:image/png;base64," + base64
+export const base64String = (buffer) => {
+    // var binary = '';
+    // var bytes = new Uint8Array(buffer);
+    // var len = bytes.byteLength;
+    // for (var i = 0; i < len; i++) {
+    //     binary += String.fromCharCode(bytes[i]);
+    // }
+    // console.lo
+    return "data:image/png;base64," + btoa(
+        new Uint8Array(buffer)
+          .reduce((data, byte) => data + String.fromCharCode(byte), '')
+      );
 }
 
 export const stringToHslColor = (str) => {
