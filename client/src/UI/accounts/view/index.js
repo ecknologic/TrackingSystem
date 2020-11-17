@@ -2,7 +2,7 @@ import { message, Tabs } from 'antd';
 import { useParams } from 'react-router-dom';
 import { FileTextOutlined } from '@ant-design/icons';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
-import { getRouteOptions } from '../../../assets/fixtures';
+import { getRouteOptions, WEEKDAYS } from '../../../assets/fixtures';
 import CustomButton from '../../../components/CustomButton';
 import DeliveryDetails from './tabs/DeliveryDetails';
 import AccountOverview from './tabs/AccountOverview';
@@ -62,7 +62,7 @@ const ViewAccount = () => {
 
         const productsUI = extractProductsFromForm(formData)
         const products = getProductsForDB(productsUI)
-        const deliveryDays = getDeliveryDays(devDays)
+        const deliveryDays = getDeliveryDays(devDays.shift())
         const formValues = extractDeliveryDetails(formData)
         const body = [{ ...formValues, isNew: true, delete: 0, isActive: 0, products, deliveryDays, customer_Id: accountId }]
 
@@ -80,13 +80,16 @@ const ViewAccount = () => {
     }
 
     const handleDevDaysSelect = (value) => {
-        const clone = [...devDays]
-        clone.push(value)
-        setDevDays(clone)
+        if (value == 'ALL') setDevDays(WEEKDAYS)
+        else {
+            const clone = [...devDays]
+            clone.push(value)
+            setDevDays(clone)
+        }
     }
 
     const handleDevDaysDeselect = (value) => {
-        const filtered = devDays.filter(day => day !== value)
+        const filtered = devDays.filter(day => day !== value && day !== "ALL")
         setDevDays(filtered)
     }
 

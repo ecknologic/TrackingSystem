@@ -9,7 +9,7 @@ import CorporateAccount from './forms/CorporateAccount';
 import GeneralAccount from './forms/GeneralAccount';
 import CollapseForm from './forms/CollapseForm';
 import { http } from '../../../modules/http'
-import { getRouteOptions } from '../../../assets/fixtures';
+import { getRouteOptions, WEEKDAYS } from '../../../assets/fixtures';
 import {
     getBase64, deepClone, getIdProofsForDB, getDevDaysForDB, getAddressesForDB, resetTrackForm,
     getProductsForDB, extractGADeliveryDetails, extractGADetails, isEmpty, trackAccountFormOnce,
@@ -111,13 +111,16 @@ const AddAccount = () => {
     }
 
     const handleDevDaysSelect = (value) => {
-        const clone = [...devDays]
-        clone.push(value)
-        setDevDays(clone)
+        if (value == 'ALL') setDevDays(WEEKDAYS)
+        else {
+            const clone = [...devDays]
+            clone.push(value)
+            setDevDays(clone)
+        }
     }
 
     const handleDevDaysDeselect = (value) => {
-        const filtered = devDays.filter(day => day !== value)
+        const filtered = devDays.filter(day => day !== value && day !== "ALL")
         setDevDays(filtered)
     }
 

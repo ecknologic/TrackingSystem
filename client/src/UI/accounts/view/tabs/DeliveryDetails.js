@@ -9,6 +9,7 @@ import { getDevDays, getProductsWithIdForDB, getProductsForUI, isEmpty, getDeliv
 import { validateDeliveryValues, validateDevDays } from '../../../../utils/validations';
 import DeliveryForm from '../../add/forms/Delivery';
 import CustomModal from '../../../../components/CustomModal';
+import { WEEKDAYS } from '../../../../assets/fixtures';
 
 const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
     const { accountId } = useParams()
@@ -78,13 +79,16 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
     }
 
     const handleDevDaysSelect = (value) => {
-        const clone = [...devDays]
-        clone.push(value)
-        setDevDays(clone)
+        if (value == 'ALL') setDevDays(WEEKDAYS)
+        else {
+            const clone = [...devDays]
+            clone.push(value)
+            setDevDays(clone)
+        }
     }
 
     const handleDevDaysDeselect = (value) => {
-        const filtered = devDays.filter(day => day !== value)
+        const filtered = devDays.filter(day => day !== value && day !== "ALL")
         setDevDays(filtered)
     }
 
