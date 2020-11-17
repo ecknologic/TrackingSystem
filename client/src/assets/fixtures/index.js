@@ -1,7 +1,7 @@
 import { Select } from 'antd';
 import React from 'react';
 const { Option } = Select;
-
+export const WEEKDAYS = ["ALL", "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
 export const idOptions = [
     <Option key='1' value="adharNo">Aadhar</Option>,
     <Option key='2' value="panNo">PAN</Option>,
@@ -28,6 +28,7 @@ export const numOptions = [
     <Option key="7" value={7}>07</Option>
 ]
 export const dayOptions = [
+    <Option key="0" value="ALL">ALL</Option>,
     <Option key="1" value="MON">MON</Option>,
     <Option key="2" value="TUE">TUE</Option>,
     <Option key="3" value="WED">WED</Option>,
