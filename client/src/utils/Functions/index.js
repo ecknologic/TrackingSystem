@@ -111,33 +111,27 @@ export const extractProductsFromForm = (data) => {
 }
 export const getProductsForDB = ({ product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML }) => {
     const products = []
-    const item1 = { productName: '20L', productPrice: price20L, noOfJarsTobePlaced: product20L }
-    const item2 = { productName: '1L', productPrice: price1L, noOfJarsTobePlaced: product1L }
-    const item3 = { productName: '500ML', productPrice: price500ML, noOfJarsTobePlaced: product500ML }
+    const item1 = { productName: '20L', productPrice: price20L || 0, noOfJarsTobePlaced: product20L || 0 }
+    const item2 = { productName: '1L', productPrice: price1L || 0, noOfJarsTobePlaced: product1L || 0 }
+    const item3 = { productName: '500ML', productPrice: price500ML || 0, noOfJarsTobePlaced: product500ML || 0 }
     // const item4 = { productName: '250ML', productPrice: price250ML, noOfJarsTobePlaced: product250ML }
-    // if (price20L && product20L) 
-    // if (price1L && product1L) 
-    // if (price500ML && product500ML) 
     products.push(item1)
     products.push(item2)
     products.push(item3)
-    // if (price250ML && product250ML) products.push(item4)
+    //products.push(item4)
 
     return products
 }
 export const getProductsWithIdForDB = ({ product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML, product20LId, product1LId, product500MLId }) => {  //, product250MLId
     const products = []
-    const item1 = { productName: '20L', productPrice: price20L, noOfJarsTobePlaced: product20L, productId: product20LId }
-    const item2 = { productName: '1L', productPrice: price1L, noOfJarsTobePlaced: product1L, productId: product1LId }
-    const item3 = { productName: '500ML', productPrice: price500ML, noOfJarsTobePlaced: product500ML, productId: product500MLId }
+    const item1 = { productName: '20L', productPrice: price20L || 0, noOfJarsTobePlaced: product20L || 0, productId: product20LId }
+    const item2 = { productName: '1L', productPrice: price1L || 0, noOfJarsTobePlaced: product1L || 0, productId: product1LId }
+    const item3 = { productName: '500ML', productPrice: price500ML || 0, noOfJarsTobePlaced: product500ML || 0, productId: product500MLId }
     // const item4 = { productName: '250ML', productPrice: price250ML, noOfJarsTobePlaced: product250ML, productId: product250MLId }
-    // if (price20L && product20L) 
-    // if (price1L && product1L) 
-    // if (price500ML && product500ML) 
     products.push(item1)
     products.push(item2)
     products.push(item3)
-    // if (price250ML && product250ML) products.push(item4)
+    //products.push(item4)
 
     return products
 }

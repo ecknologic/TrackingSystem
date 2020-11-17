@@ -67,29 +67,35 @@ export const validateDeliveryValues = (data) => {
     let errors = {};
     const text = 'Required'
     const {
-        gstNo, depositAmount, routingId, phoneNumber, contactPerson, address,
-        deliveryLocation, product20L = 0, price20L = 0, product1L = 0, price1L = 0,
-        product500ML = 0, price500ML = 0,
+        gstNo, gstProof, depositAmount, routingId, phoneNumber, contactPerson, address,
+        deliveryLocation, product20L, price20L, product1L, price1L,
+        product500ML, price500ML,
         // product250ML, price250ML
     } = data
-    console.log(product20L, price20L, product1L, price1L,
-        product500ML, price500ML)
+
     if (!gstNo) errors.gstNo = text
+    if (!gstProof) errors.gstNo = text
     if (!depositAmount) errors.depositAmount = text
     if (!routingId) errors.routingId = text
     if (!phoneNumber) errors.phoneNumber = text
     if (!contactPerson) errors.contactPerson = text
     if (!address) errors.address = text
     if (!deliveryLocation) errors.deliveryLocation = text
-    // if (product20L) errors.product20L = text
-    // if (price20L) errors.price20L = text
-    // if (product1L) errors.product1L = text
-    // if (price1L) errors.price1L = text
-    // if (product500ML) errors.product500ML = text
-    // if (price500ML) errors.price500ML = text
-    // if (product250ML === null) errors.product250ML = text
-    // if (price250ML === null) errors.price250ML = text
-
+    if (product20L || price20L) {
+        if (!product20L) errors.product20L = text
+        if (!price20L) errors.price20L = text
+    }
+    if (product1L || price1L) {
+        if (!product1L) errors.product1L = text
+        if (!price1L) errors.price1L = text
+    }
+    if (product500ML || price500ML) {
+        if (!product500ML) errors.product500ML = text
+        if (!price500ML) errors.price500ML = text
+    }
+    if (!(product20L || price20L) && !(product1L || price1L) && !(product500ML || price500ML)) {
+        errors.productNPrice = text
+    }
     return errors
 }
 
