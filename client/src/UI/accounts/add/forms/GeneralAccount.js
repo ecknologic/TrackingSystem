@@ -75,7 +75,6 @@ const GeneralAccountForm = (props) => {
                             <UploadPreviewer value={gstProof} title='GST Proof' disabled={disabled} onRemove={() => onRemove('gstProof')} />
                         </div>
                     </div>
-
                 </div>
                 <div className='row'>
                     <div className='input-container'>

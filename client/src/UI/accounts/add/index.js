@@ -121,10 +121,14 @@ const AddAccount = () => {
         setDevDays(filtered)
     }
 
-    const handleProofUpload = (file, name) => {
+    const handleProofUpload = (file, name, formType) => {
         getBase64(file, async (buffer) => {
             if (name === 'gstProof') {
-                if (corporate) setCorporateValues(data => ({ ...data, [name]: buffer }))
+                if (formType === 'delivery') setDeliveryValues(data => ({ ...data, [name]: buffer }))
+                else if (corporate) {
+                    setCorporateValues(data => ({ ...data, [name]: buffer }))
+                    if (sameAddress) preFillDDForm(buffer, name)
+                }
                 else setGeneralValues(data => ({ ...data, [name]: buffer }))
             }
             else if (name === 'idProofs') {
@@ -137,9 +141,10 @@ const AddAccount = () => {
         })
     }
 
-    const handleProofRemove = (name) => {
+    const handleProofRemove = (name, formType) => {
         if (name === 'gstProof') {
-            if (corporate) setCorporateValues(data => ({ ...data, [name]: '' }))
+            if (formType === 'delivery') setDeliveryValues(data => ({ ...data, [name]: '' }))
+            else if (corporate) setCorporateValues(data => ({ ...data, [name]: '' }))
             else setGeneralValues(data => ({ ...data, [name]: '' }))
         }
         else if (name === 'Front') setIDProofs(data => ({ ...data, Front: '' }))
@@ -271,14 +276,14 @@ const AddAccount = () => {
 
     const setDDForSameAddress = () => {
         const { gstNo, customerName: contactPerson,
-            address, mobileNumber: phoneNumber } = corporateValues
-        const prefill = { gstNo, address, contactPerson, phoneNumber }
+            address, mobileNumber: phoneNumber, gstProof } = corporateValues
+        const prefill = { gstNo, address, contactPerson, phoneNumber, gstProof }
 
         setDeliveryValues(data => ({ ...data, ...prefill }))
     }
 
     const resetDDForSameAddress = () => {
-        const prefill = { gstNo: '', address: '', contactPerson: '', phoneNumber: '' }
+        const prefill = { gstNo: '', address: '', contactPerson: '', phoneNumber: '', gstProof: '' }
         setDeliveryValues(data => ({ ...data, ...prefill }))
     }
 
@@ -308,6 +313,8 @@ const AddAccount = () => {
         setDeliveryValues({})
         setIDProofs({})
         setDevDays([])
+        setAddresses([])
+        setSameAddress(false)
         resetTrackForm()
         setScrollDep(!scrollDep)
     }
@@ -418,7 +425,9 @@ const AddAccount = () => {
                                 routeOptions={routeOptions}
                                 hasExtraAddress={hasExtraAddress}
                                 sameAddress={sameAddress && !hasExtraAddress}
+                                onRemove={handleProofRemove}
                                 onAdd={handleAddDelivery}
+                                onUpload={handleProofUpload}
                                 onChange={handleDeliveryValues}
                                 onSelect={handleDevDaysSelect}
                                 onDeselect={handleDevDaysDeselect}

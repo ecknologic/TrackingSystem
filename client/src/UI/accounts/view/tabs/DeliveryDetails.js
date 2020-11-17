@@ -5,7 +5,7 @@ import NoContent from '../../../../components/NoContent';
 import AddressCard from '../../../../components/AddressCard';
 import { useParams } from 'react-router-dom';
 import { http } from '../../../../modules/http';
-import { getDevDays, getProductsWithIdForDB, getProductsForUI, isEmpty, getDeliveryDays, extractDeliveryDetails, extractProductsFromForm, deepClone } from '../../../../utils/Functions';
+import { getDevDays, getProductsWithIdForDB, getProductsForUI, isEmpty, getDeliveryDays, extractDeliveryDetails, extractProductsFromForm, deepClone, getBase64 } from '../../../../utils/Functions';
 import { validateDeliveryValues, validateDevDays } from '../../../../utils/validations';
 import DeliveryForm from '../../add/forms/Delivery';
 import CustomModal from '../../../../components/CustomModal';
@@ -92,6 +92,15 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
         setFormData(data => ({ ...data, [key]: value }))
     }
 
+    const handleProofUpload = (file, name) => {
+        getBase64(file, async (buffer) => {
+            setFormData(data => ({ ...data, [name]: buffer }))
+        })
+    }
+    const handleProofRemove = (name) => {
+        setFormData(data => ({ ...data, [name]: '' }))
+    }
+
     const handleClick = useCallback((data) => {
         const { location, products, deliveryDays } = data
         const devDays = getDevDays(deliveryDays)
@@ -130,6 +139,8 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
                     hasExtraAddress
                     devDays={devDays}
                     onChange={handleChange}
+                    onUpload={handleProofUpload}
+                    onRemove={handleProofRemove}
                     onSelect={handleDevDaysSelect}
                     onDeselect={handleDevDaysDeselect}
                 />

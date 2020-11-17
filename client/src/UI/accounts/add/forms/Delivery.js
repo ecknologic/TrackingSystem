@@ -5,17 +5,21 @@ import InputWithAddon from '../../../../components/InputWithAddon';
 import SelectInput from '../../../../components/SelectInput';
 import CustomButton from '../../../../components/CustomButton';
 import { dayOptions } from '../../../../assets/fixtures'
+import UploadPreviewer from '../../../../components/UploadPreviewer';
+import DraggerInput from '../../../../components/DraggerInput';
 
 const DeliveryForm = (props) => {
 
     const { data, devDays, onChange, hasExtraAddress, onSelect, onDeselect,
-        onAdd, routeOptions, track, sameAddress } = props
+        onAdd, routeOptions, track, sameAddress, onUpload, onRemove } = props
 
     const {
-        gstNo, depositAmount, routingId, phoneNumber, contactPerson, address, isActive,
+        gstNo, gstProof, depositAmount, routingId, phoneNumber, contactPerson, address, isActive,
         deliveryLocation, product20L, price20L, product1L, price1L, product500ML, price500ML,
         // product250ML, price250ML
     } = data
+
+    const gstUploadDisable = gstProof
 
     return (
         <>
@@ -24,6 +28,12 @@ const DeliveryForm = (props) => {
                     <div className='input-container'>
                         <label className='app-input-label-name'>GST Number</label>
                         <InputWithAddon label='VERIFY' value={gstNo} placeholder='GST Number' disabled={sameAddress || isActive} onChange={({ target: { value } }) => onChange(value, 'gstNo')} />
+                    </div>
+                    <div className='input-container app-upload-file-container'>
+                        <DraggerInput onUpload={(file) => onUpload(file, 'gstProof', 'delivery')} disabled={sameAddress || gstUploadDisable || isActive} />
+                        <div className='upload-preview-container'>
+                            <UploadPreviewer value={gstProof} title='GST Proof' disabled={sameAddress || isActive} onRemove={() => onRemove('gstProof', 'delivery')} />
+                        </div>
                     </div>
                 </div>
                 <div className='row'>
