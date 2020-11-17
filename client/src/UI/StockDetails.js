@@ -123,17 +123,17 @@ const StockDetails = (props) => {
                 <Divider type="vertical" />
                 <Col span={4} className="divider_left">
                   <p className="stockDetailsp">Total Cans (20 ltr)</p>
-                  <h3 className="StockDetailsCounth3">{outForDelivery.total20LCans}</h3>
+                  <h3 className="StockDetailsCounth3">{outForDelivery.total20LCans || 0}</h3>
                 </Col>
                 <Divider type="vertical" />
                 <Col span={4} className="divider_left">
                   <p className="stockDetailsp">Total 1 Ltr Boxes (1x12) </p>
-                  <h3 className="StockDetailsCounth3">{outForDelivery.total1LBoxes}</h3>
+                  <h3 className="StockDetailsCounth3">{outForDelivery.total1LBoxes || 0}</h3>
                 </Col>
                 <Divider type="vertical" />
                 <Col span={4} className="divider_left">
                   <p className="stockDetailsp">Total 500 ml Boxes (1x12) </p>
-                  <h3 className="StockDetailsCounth3">{outForDelivery.total500MLBoxes}</h3>
+                  <h3 className="StockDetailsCounth3">{outForDelivery.total500MLBoxes || 0}</h3>
                 </Col>
                 {/* <Divider type="vertical" />
               <Col span={4} className="divider_left">
