@@ -5,9 +5,9 @@ import SelectInput from '../../../../components/SelectInput';
 import DraggerInput from '../../../../components/DraggerInput';
 import UploadPreviewer from '../../../../components/UploadPreviewer';
 import { invoiceOptions, idOptions, businessOptions } from '../../../../assets/fixtures'
-import { getIdProofName } from '../../../../utils/Functions';
+import { getIdProofName, getIDInputValidationProps } from '../../../../utils/Functions';
 
-const CorporateAccountForm = ({ data, IDProofs, onChange, onUpload, disabled, onRemove }) => {
+const CorporateAccountForm = ({ data, IDErrors, IDProofs, onChange, onUpload, disabled, onRemove, track }) => {
 
     const {
         gstNo, natureOfBussiness, organizationName, address, customerName,
@@ -16,10 +16,14 @@ const CorporateAccountForm = ({ data, IDProofs, onChange, onUpload, disabled, on
     } = data
 
     const [proofName, setProofName] = useState('')
+    const [idProps, setIdProps] = useState({})
     const { Front, Back } = IDProofs
+    const { maxLength } = idProps
 
     useEffect(() => {
         setProofName(getIdProofName(idProofType))
+        const props = getIDInputValidationProps(idProofType)
+        setIdProps(props)
     }, [idProofType])
 
     const idUploadDisable = Front && Back
@@ -30,13 +34,16 @@ const CorporateAccountForm = ({ data, IDProofs, onChange, onUpload, disabled, on
             <div className='app-identity-proof-container identity-proof-container'>
                 <div className='input-container'>
                     <label className='app-input-label-name'>Select Id Proof</label>
-                    <SelectInput value={idProofType} options={idOptions} disabled={disabled} onSelect={(value) => onChange(value, 'idProofType')} />
+                    <SelectInput track={track} value={idProofType} options={idOptions} disabled={disabled} onSelect={(value) => onChange(value, 'idProofType')} />
                 </div>
                 {
                     idProofType && (
                         <div className='input-container second'>
-                            <label className='app-input-label-name'>{proofName}</label>
-                            <Input size='large' value={data[idProofType]} placeholder={`Add ${proofName}`} disabled={disabled} onChange={({ target: { value } }) => onChange(value, idProofType)} />
+                            <div>
+                                <label className='app-input-label-name'>{proofName}</label>
+                                {IDErrors[idProofType] && <span className='app-label-error'>{IDErrors[idProofType]}</span>}
+                            </div>
+                            <Input maxLength={maxLength} size='large' value={data[idProofType]} placeholder={`Add ${proofName}`} className={`app-id-input ${IDErrors[idProofType] ? 'app-input-error' : ''}`} disabled={disabled} onChange={({ target: { value } }) => onChange(value, idProofType)} />
                         </div>
                     )
                 }
@@ -94,7 +101,7 @@ const CorporateAccountForm = ({ data, IDProofs, onChange, onUpload, disabled, on
                 </div>
                 <div className='input-container'>
                     <label className='app-input-label-name'>Nature Of Business</label>
-                    <SelectInput value={natureOfBussiness} disabled={disabled} options={businessOptions} onSelect={(value) => onChange(value, 'natureOfBussiness')} />
+                    <SelectInput track={track} value={natureOfBussiness} disabled={disabled} options={businessOptions} onSelect={(value) => onChange(value, 'natureOfBussiness')} />
                 </div>
             </div>
             <div className='row'>
@@ -104,7 +111,7 @@ const CorporateAccountForm = ({ data, IDProofs, onChange, onUpload, disabled, on
                 </div>
                 <div className='input-container'>
                     <label className='app-input-label-name'>Invoice Type</label>
-                    <SelectInput value={invoicetype} options={invoiceOptions} disabled={disabled} onSelect={(value) => onChange(value, 'invoicetype')} />
+                    <SelectInput track={track} value={invoicetype} options={invoiceOptions} disabled={disabled} onSelect={(value) => onChange(value, 'invoicetype')} />
                 </div>
             </div>
             <div className='row'>

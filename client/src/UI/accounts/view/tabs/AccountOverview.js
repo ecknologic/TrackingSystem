@@ -2,20 +2,22 @@ import dayjs from 'dayjs';
 import { message } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { http } from '../../../../modules/http';
-import { base64String, blobToBase64, getBase64, getIdProofsForDB } from '../../../../utils/Functions';
+import { base64String, getBase64, getIdProofsForDB, isNumber, validateAadhar, validatePAN } from '../../../../utils/Functions';
 import CustomButton from '../../../../components/CustomButton';
 import CorporateAccountForm from '../../add/forms/CorporateAccount';
 import NoContent from '../../../../components/NoContent';
 import Spinner from '../../../../components/Spinner';
-import { validateIDProofs, validateAccountValues } from '../../../../utils/validations';
+import { validateIDProofs, validateAccountValues, validateIDNumbers } from '../../../../utils/validations';
 import GeneralAccountForm from '../../add/forms/GeneralAccount';
 
 const AccountOverview = ({ data }) => {
     const { gstProof, idProof_backside, idProof_frontside, isActive, registeredDate,
         customertype, Address1, loading } = data
 
+    const [btnDisabled, setBtnDisabled] = useState(false)
     const [accountValues, setAccountValues] = useState({})
     const [IDProofs, setIDProofs] = useState({})
+    const [IDErrors, setIDErrors] = useState({})
 
     useEffect(() => {
         if (!loading) {
@@ -31,8 +33,15 @@ const AccountOverview = ({ data }) => {
             setAccountValues(newData)
         }
     }, [loading])
+
     const handleChange = (value, key) => {
         setAccountValues(data => ({ ...data, [key]: value }))
+
+        // Validations
+        if (key === 'adharNo' || key === 'panNo') {
+            const error = validateIDNumbers(key, value)
+            setIDErrors({ [key]: error })
+        }
     }
 
     const handleProofUpload = (file, name) => {
@@ -56,14 +65,14 @@ const AccountOverview = ({ data }) => {
     }
 
     const renderFooter = () => {
-        return (<div className='app-footer-buttons-container'>
-            <CustomButton
+        return (<div className='app-footer-buttons-container footer'>
+            {/* <CustomButton
                 className='app-cancel-btn footer-btn'
                 text='Cancel'
-            />
+            /> */}
             <CustomButton
                 onClick={handleAccountUpdate}
-                className='app-create-btn footer-btn'
+                className={`app-create-btn footer-btn ${btnDisabled && 'disabled'}`}
                 text='Update Account'
             />
         </div>)
@@ -86,18 +95,20 @@ const AccountOverview = ({ data }) => {
 
         const Address1 = accountValues.address
         const idProofs = getIdProofsForDB(IDProofs)
-        const extra = {
 
-        }
-
-        const body = { ...accountValues, Address1, idProofs, ...extra }
-
+        const body = { ...accountValues, Address1, idProofs }
         const url = '/customer/updateCustomer'
+
         try {
+            setBtnDisabled(true)
             message.loading('Updating customer...', 0)
             await http.POST(url, body)
+            setBtnDisabled(false)
             message.success('Customer updated successfully!')
-        } catch (error) { }
+        } catch (error) {
+            setBtnDisabled(false)
+            message.destroy()
+        }
     }
 
     return (
@@ -111,6 +122,7 @@ const AccountOverview = ({ data }) => {
                                 <CorporateAccountForm
                                     data={accountValues}
                                     IDProofs={IDProofs}
+                                    IDErrors={IDErrors}
                                     onUpload={handleProofUpload}
                                     onRemove={handleProofRemove}
                                     onChange={handleChange}

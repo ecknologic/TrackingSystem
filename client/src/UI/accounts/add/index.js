@@ -11,44 +11,49 @@ import CollapseForm from './forms/CollapseForm';
 import { http } from '../../../modules/http'
 import { getRouteOptions } from '../../../assets/fixtures';
 import {
-    getBase64, deepClone, getIdProofsForDB, getDevDaysForDB, getAddressesForDB,
-    getProductsForDB, extractGADeliveryDetails, extractGADetails, isEmpty
+    getBase64, deepClone, getIdProofsForDB, getDevDaysForDB, getAddressesForDB, resetTrackForm,
+    getProductsForDB, extractGADeliveryDetails, extractGADetails, isEmpty, trackAccountFormOnce,
 } from '../../../utils/Functions';
-import { getUserId, getUsername, getWarehoseId, TODAYDATE } from '../../../utils/constants';
+import { TRACKFORM, getUserId, getUsername, getWarehoseId, TODAYDATE } from '../../../utils/constants';
 import {
     validateAccountValues, validateDeliveryValues, validateDevDays,
-    validateIDProofs, validateAddresses
+    validateIDProofs, validateAddresses, validateIDNumbers
 } from '../../../utils/validations';
 import SuccessModal from '../../../components/CustomModal';
-import ConfirmModal from '../../../components/CustomModal';
+import QuitModal from '../../../components/CustomModal';
+import SwitchModal from '../../../components/CustomModal';
 import SuccessMessage from '../../../components/SuccessMessage';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import CollapseHeader from '../../../components/CollapseHeader';
+import ScrollUp from '../../../components/ScrollUp';
 
 const AddAccount = () => {
     const USERID = getUserId()
     const USERNAME = getUsername()
     const WAREHOUSEID = getWarehoseId()
+    const history = useHistory()
     const defaultValues = useMemo(() => ({ referredBy: USERNAME, registeredDate: TODAYDATE }), [])
 
-    const history = useHistory()
-    const [switchPrompt, setSwitchPrompt] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
-    const [confirmModalTitle, setConfirmModalTitle] = useState('')
+    const [switchModal, setSwitchModal] = useState(false)
     const [successModal, setSucessModal] = useState(false)
+    const [sameAddress, setSameAddress] = useState(false)
     const [corporate, setCorporate] = useState(true)
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [corporateValues, setCorporateValues] = useState(defaultValues)
     const [generalValues, setGeneralValues] = useState(defaultValues)
     const [deliveryValues, setDeliveryValues] = useState({})
     const [IDProofs, setIDProofs] = useState({})
+    const [IDErrors, setIDErrors] = useState({})
     const [devDays, setDevDays] = useState([])
     const [addresses, setAddresses] = useState([])
     const hasExtraAddress = !!addresses.length
     const [routes, setRoutes] = useState([])
     const routeOptions = useMemo(() => getRouteOptions(routes), [routes])
+    const [scrollDep, setScrollDep] = useState(false)
 
     const customertype = corporate ? 'Corporate' : 'General'
+    const confirmMsg = 'Changes you made may not be saved.'
     const { organizationName } = corporateValues
     const { customerName } = generalValues
     const highlight = { backgroundColor: '#5C63AB', color: '#fff' }
@@ -63,6 +68,17 @@ const AddAccount = () => {
         sessionStorage.removeItem('address4')
     }, [])
 
+    useEffect(() => {
+        resetTrackForm()
+        trackAccountFormOnce()
+        return () => resetTrackForm()
+    }, [corporate])
+
+    useEffect(() => {
+        if (sameAddress) setDDForSameAddress()
+        else resetDDForSameAddress()
+    }, [sameAddress])
+
     const getRoutes = async () => {
         try {
             const data = await http.GET('/warehouse/getroutes')
@@ -75,9 +91,23 @@ const AddAccount = () => {
     }
     const handleGeneralValues = (value, key) => {
         setGeneralValues(data => ({ ...data, [key]: value }))
+
+        // Validations
+        if (key === 'adharNo' || key === 'panNo') {
+            const error = validateIDNumbers(key, value)
+            setIDErrors({ [key]: error })
+        }
     }
     const handleCorporateChange = (value, key) => {
+
         setCorporateValues(data => ({ ...data, [key]: value }))
+        if (sameAddress) preFillDDForm(value, key)
+
+        // Validations
+        if (key === 'adharNo' || key === 'panNo') {
+            const error = validateIDNumbers(key, value)
+            setIDErrors({ [key]: error })
+        }
     }
 
     const handleDevDaysSelect = (value) => {
@@ -239,17 +269,35 @@ const AddAccount = () => {
         }
     }
 
-    const handleSwitchAccount = () => {
-        // Check form values to determine changes
-        if (switchPrompt) {
-            setConfirmModalTitle('Are you sure to switch?')
-            setConfirmModal(true)
-        } else setCorporate(!corporate)
+    const setDDForSameAddress = () => {
+        const { gstNo, customerName: contactPerson,
+            address, mobileNumber: phoneNumber } = corporateValues
+        const prefill = { gstNo, address, contactPerson, phoneNumber }
+
+        setDeliveryValues(data => ({ ...data, ...prefill }))
     }
 
-    const onCancelAccount = () => {
-        setConfirmModalTitle('Are you sure to quit?')
-        setConfirmModal(true)
+    const resetDDForSameAddress = () => {
+        const prefill = { gstNo: '', address: '', contactPerson: '', phoneNumber: '' }
+        setDeliveryValues(data => ({ ...data, ...prefill }))
+    }
+
+    const preFillDDForm = (value, key) => {
+        let newKey = key
+        if (key === 'customerName') newKey = 'contactPerson'
+        else if (key === 'mobileNumber') newKey = 'phoneNumber'
+        setDeliveryValues(data => ({ ...data, [newKey]: value }))
+    }
+    const onCorporateBtnClick = () => {
+        if (!corporate) handleSwitchAccount()
+    }
+    const onGeneralBtnClick = () => {
+        if (corporate) handleSwitchAccount()
+    }
+    const handleSwitchAccount = () => {
+        const formHasChanged = sessionStorage.getItem(TRACKFORM)
+        if (formHasChanged) setSwitchModal(true)
+        else setCorporate(!corporate)
     }
 
     const handleAddNewAccount = () => {
@@ -259,46 +307,52 @@ const AddAccount = () => {
         setGeneralValues(defaultValues)
         setDeliveryValues({})
         setIDProofs({})
+        setDevDays([])
+        resetTrackForm()
+        setScrollDep(!scrollDep)
     }
 
+    const onAccountCancel = useCallback(() => setConfirmModal(true), [])
     const handleSucessModalCancel = useCallback(() => { setSucessModal(false); goToManageAccounts() }, [])
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
+    const handleSwitchModalCancel = useCallback(() => setSwitchModal(false), [])
     const handleSuccessModalOk = useCallback(() => { setSucessModal(false); goToManageAccounts() }, [])
-    const handleConfirmModalOk = useCallback(() => {
-        setConfirmModal(false);
-        if (switchPrompt) {
-            setCorporate(!corporate)
-            setSwitchPrompt(false)
-            resetCorporateValues()
-            resetGeneralValues()
-            resetDeliveryValues()
-        }
-        else goToManageAccounts()
-    }, [switchPrompt, corporate])
+    const handleConfirmModalOk = useCallback(() => { setConfirmModal(false); goToManageAccounts() }, [])
+    const handleSwitchModalOk = useCallback(() => {
+        setCorporate(!corporate)
+        setSwitchModal(false)
+        resetCorporateValues()
+        resetGeneralValues()
+        resetDeliveryValues()
+        resetTrackForm()
+    }, [corporate])
 
 
     const goToManageAccounts = () => history.push('/manage-accounts')
 
     return (
         <Fragment>
+            <ScrollUp dep={scrollDep} />
             <Header />
             <div className='account-add-content'>
                 <div className='header-buttons-container'>
                     <CustomButton
                         className='big'
                         style={corporate ? highlight : fade}
-                        text='Corporate Customers' onClick={handleSwitchAccount}
+                        text='Corporate Customers' onClick={onCorporateBtnClick}
                     />
                     <CustomButton
                         className='big second'
                         style={corporate ? fade : highlight}
-                        text='Other Customers' onClick={handleSwitchAccount}
+                        text='Other Customers' onClick={onGeneralBtnClick}
                     />
                 </div>
                 {
                     corporate ? (
                         <CorporateAccount
+                            track
                             data={corporateValues}
+                            IDErrors={IDErrors}
                             IDProofs={IDProofs}
                             onUpload={handleProofUpload}
                             onRemove={handleProofRemove}
@@ -306,9 +360,11 @@ const AddAccount = () => {
                         />
                     ) : (
                             <GeneralAccount
+                                track
                                 data={generalValues}
                                 devDays={devDays}
                                 IDProofs={IDProofs}
+                                IDErrors={IDErrors}
                                 routeOptions={routeOptions}
                                 onUpload={handleProofUpload}
                                 onRemove={handleProofRemove}
@@ -322,7 +378,8 @@ const AddAccount = () => {
                     corporate ? (
                         <>
                             <div className='checkbox-container'>
-                                <Checkbox /> <span className='text'>Delivery to the same address?</span>
+                                <Checkbox disabled={sameAddress && hasExtraAddress} checked={sameAddress} onChange={() => setSameAddress(!sameAddress)} />
+                                <span className='text'>Delivery to the same address?</span>
                             </div>
                             <Divider />
                             <div className='title-container'>
@@ -337,7 +394,7 @@ const AddAccount = () => {
                                             accordion
                                             key={index}
                                             className='accordion-container'
-                                            expandIcon={({ isActive }) => <DDownIcon />}
+                                            expandIcon={() => <DDownIcon />}
                                             expandIconPosition='right'
                                         >
                                             <Panel
@@ -355,10 +412,12 @@ const AddAccount = () => {
                                 })
                             }
                             <Delivery
+                                track
                                 devDays={devDays}
                                 data={deliveryValues}
                                 routeOptions={routeOptions}
                                 hasExtraAddress={hasExtraAddress}
+                                sameAddress={sameAddress && !hasExtraAddress}
                                 onAdd={handleAddDelivery}
                                 onChange={handleDeliveryValues}
                                 onSelect={handleDevDaysSelect}
@@ -369,7 +428,7 @@ const AddAccount = () => {
                 }
                 <div className='app-footer-buttons-container'>
                     <CustomButton
-                        onClick={onCancelAccount}
+                        onClick={onAccountCancel}
                         className='app-cancel-btn footer-btn'
                         text='Cancel'
                     />
@@ -394,17 +453,24 @@ const AddAccount = () => {
                     name={organizationName || customerName}
                 />
             </SuccessModal>
-            <ConfirmModal
+            <QuitModal
                 visible={confirmModal}
                 onOk={handleConfirmModalOk}
                 onCancel={handleConfirmModalCancel}
-                title={confirmModalTitle}
+                title='Are you sure to leave?'
                 okTxt='Yes'
             >
-                <ConfirmMessage
-                    msg=' Changes you made may not be saved.'
-                />
-            </ConfirmModal>
+                <ConfirmMessage msg={confirmMsg} />
+            </QuitModal>
+            <SwitchModal
+                visible={switchModal}
+                onOk={handleSwitchModalOk}
+                onCancel={handleSwitchModalCancel}
+                title='Are you sure to change customer type?'
+                okTxt='Yes'
+            >
+                <ConfirmMessage msg={confirmMsg} />
+            </SwitchModal>
         </Fragment>
     )
 }

@@ -17,7 +17,7 @@ const App = () => {
          <PageLayout>
             <Switch>
                <Route path='/addcustomer' render={(props) => requireAuth(<AddCustomer {...props} />)} />
-               <Route path='/add-account' render={() => requireAuth(<AddAccount />)} />
+               <Route path='/add-customer' render={() => requireAuth(<AddAccount />)} />
                <Route path='/bibowarehouse' render={(props) => requireAuth(<BiboWarehouse {...props} />)} />
                <Route path='/customerDashboard' render={() => requireAuth(<NoContent content='Design is in progress' />)} />
                <Route path='/dashboard' render={() => requireAuth(<NoContent content='Design is in progress' />)} />

@@ -5,8 +5,8 @@ const { Option } = Select;
 export const idOptions = [
     <Option key='1' value="adharNo">Aadhar</Option>,
     <Option key='2' value="panNo">PAN</Option>,
-    <Option key='3' value="dlNo">Driving License</Option>,
-    <Option key='4' value="passportNo">Passport</Option>
+    // <Option key='3' value="dlNo">Driving License</Option>,
+    // <Option key='4' value="passportNo">Passport</Option>
 ]
 export const businessOptions = [
     <Option key='1' value="Residential">Residential</Option>,

@@ -8,12 +8,13 @@ import { dayOptions } from '../../../../assets/fixtures'
 
 const DeliveryForm = (props) => {
 
-    const { data, devDays, onChange, hasExtraAddress, onSelect, onDeselect, onAdd, routeOptions } = props
+    const { data, devDays, onChange, hasExtraAddress, onSelect, onDeselect,
+        onAdd, routeOptions, track, sameAddress } = props
 
     const {
         gstNo, depositAmount, routingId, phoneNumber, contactPerson, address, isActive,
         deliveryLocation, product20L, price20L, product1L, price1L, product500ML, price500ML,
-        product250ML, price250ML
+        // product250ML, price250ML
     } = data
 
     return (
@@ -22,7 +23,7 @@ const DeliveryForm = (props) => {
                 <div className='row'>
                     <div className='input-container'>
                         <label className='app-input-label-name'>GST Number</label>
-                        <InputWithAddon label='VERIFY' value={gstNo} placeholder='GST Number' disabled={isActive} onChange={({ target: { value } }) => onChange(value, 'gstNo')} />
+                        <InputWithAddon label='VERIFY' value={gstNo} placeholder='GST Number' disabled={sameAddress || isActive} onChange={({ target: { value } }) => onChange(value, 'gstNo')} />
                     </div>
                 </div>
                 <div className='row'>
@@ -32,13 +33,13 @@ const DeliveryForm = (props) => {
                     </div>
                     <div className='input-container'>
                         <label className='app-input-label-name'>Route</label>
-                        <SelectInput options={routeOptions} value={routingId} disabled={isActive} onSelect={(value) => onChange(value, 'routingId')} />
+                        <SelectInput track={track} options={routeOptions} value={routingId} disabled={isActive} onSelect={(value) => onChange(value, 'routingId')} />
                     </div>
                 </div>
                 <div className='row'>
                     <div className='input-container stretch'>
                         <label className='app-input-label-name'>Address</label>
-                        <Input size='large' value={address} placeholder='Add Address' disabled={isActive} onChange={({ target: { value } }) => onChange(value, 'address')} />
+                        <Input size='large' value={address} placeholder='Add Address' disabled={sameAddress || isActive} onChange={({ target: { value } }) => onChange(value, 'address')} />
                     </div>
                 </div>
                 <div className='row'>
@@ -99,7 +100,7 @@ const DeliveryForm = (props) => {
                 <div className='row'>
                     <div className='input-container'>
                         <label className='app-input-label-name'>Delivery Days</label>
-                        <SelectInput value={devDays} options={dayOptions} disabled={isActive} mode='multiple' onSelect={onSelect} onDeselect={onDeselect} />
+                        <SelectInput track={track} value={devDays} options={dayOptions} disabled={isActive} mode='multiple' onSelect={onSelect} onDeselect={onDeselect} />
                     </div>
                     <div className='input-container'>
                         <label className='app-input-label-name'>Deposit Amount</label>

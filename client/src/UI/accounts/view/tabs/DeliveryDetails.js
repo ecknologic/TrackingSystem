@@ -22,6 +22,7 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
     useEffect(() => {
         getDeliveryDetails()
     }, [])
+
     useEffect(() => {
         if (!isEmpty(recentDelivery)) {
             const clone = [recentDelivery, ...delivery]
@@ -66,7 +67,7 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
         try {
             setBtnDisabled(true)
             message.loading('Updating details...', 0)
-            let { data: [data] } = await http.POST(url, body)
+            const { data: [data] } = await http.POST(url, body)
             updateDeliveryDetails(data)
             message.success('Details updated successfully!')
             setViewModal(false)

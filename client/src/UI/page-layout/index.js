@@ -29,7 +29,7 @@ const PageLayout = ({ children }) => {
                     <SideMenu />
                 </Sider>
                 <Content key={pathname}>
-                    <Scrollbars autoHide>
+                    <Scrollbars autoHide id='scroll-view'>
                         {children}
                     </Scrollbars>
                 </Content>

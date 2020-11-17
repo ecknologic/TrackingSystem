@@ -1,3 +1,4 @@
+import { isNumber, isAadharValid, isPANValid, isEmpty } from "../Functions"
 
 export const checkValidation = (stateValues) => {
     return new Promise((resolve) => {
@@ -94,11 +95,32 @@ export const validateAddresses = (data) => {
     let errors = {};
     for (let index = 0; index < data.length; index++) {
         const error = validateDeliveryValues(data[index])
-        if (error) {
+        if (!isEmpty(error)) {
             errors[`address${index}`] = error
             break;
         }
     }
 
     return errors
+}
+
+export const validateIDNumbers = (key, value) => {
+    // if (!value) return 'Required'
+    if (key === 'panNo') {
+        if (String(value).length === 10) {
+            const isValid = isPANValid(value)
+            if (!isValid) return 'Invalid'
+        }
+    }
+    else if (key === 'adharNo') {
+        if (!isNumber(value)) {
+            return 'Enter digits only'
+        }
+        else if (String(value).length === 12) {
+            const isValid = isAadharValid(value)
+            if (!isValid) return 'Invalid'
+        }
+    }
+
+    return ''
 }

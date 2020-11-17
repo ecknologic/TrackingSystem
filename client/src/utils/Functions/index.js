@@ -1,3 +1,5 @@
+import { TRACKFORM } from "../constants"
+
 export const editData = (updatedItem, data, idField) => {
     return new Promise(resolve => {
         if (data.length) {
@@ -19,39 +21,6 @@ export const blobToBase64 = (blob) => {
         new Blob([content.buffer], { type: 'image/png' })
     );
 }
-// export const blobToBase64 = (blob, callback) => {
-// var reader = new FileReader();
-// const modified = new Blob(blob)
-// reader.readAsDataURL(modified);
-// reader.onloadend = function () {
-//     var base64data = reader.result;
-//     console.log("base64data", base64data)
-//     return base64data
-// }
-// const content = new Uint8Array(blob);
-// var newBlob = URL.createObjectURL(
-//     new Blob([content.buffer], { type: 'image/png' })
-// );
-// // var newBlob = new Blob([blob], { type: 'image/png' });
-
-// // Define the FileReader which is able to read the contents of Blob
-// var reader = new FileReader();
-// reader.readAsDataURL(newBlob)
-// // The magic always begins after the Blob is successfully loaded
-// reader.onload = function () {
-//     // Since it contains the Data URI, we should remove the prefix and keep only Base64 string
-//     var b64 = reader.result
-//     // .replace(/^data:.+;base64,/, '');
-//     // console.log(b64); //-> "V2VsY29tZSB0byA8Yj5iYXNlNjQuZ3VydTwvYj4h"
-//     callback(b64)
-//     // Decode the Base64 string and show result just to make sure that everything is OK
-//     // var html = atob(b64);
-//     // console.log(html); //-> "Welcome to <b>base64.guru</b>!"
-// };
-
-// Since everything is set up, let’s read the Blob and store the result as Data URI
-// reader.readAsDataURL(blob);
-// }
 export const getBase64 = (img, callback) => {
     const reader = new FileReader();
     reader.addEventListener('load', () => callback(reader.result));
@@ -67,8 +36,8 @@ export const base64String = (buffer) => {
     // console.lo
     return "data:image/png;base64," + btoa(
         new Uint8Array(buffer)
-          .reduce((data, byte) => data + String.fromCharCode(byte), '')
-      );
+            .reduce((data, byte) => data + String.fromCharCode(byte), '')
+    );
 }
 
 export const stringToHslColor = (str) => {
@@ -269,4 +238,71 @@ export const getAddressesForDB = (data) => {
         const deliveryDays = getDevDaysForDB(devDays)
         return { products, deliveryDays, ...rest }
     })
+}
+
+export const setTrackForm = () => {
+    sessionStorage.setItem(TRACKFORM, true)
+}
+export const resetTrackForm = () => {
+    sessionStorage.removeItem(TRACKFORM)
+}
+export const trackAccountFormOnce = () => {
+    window.addEventListener('input', setTrackForm, { once: true })
+}
+export const getIDInputValidationProps = (IDType) => {
+    const props = {}
+    if (IDType === 'panNo') {
+        props.maxLength = 10
+    }
+    else if (IDType === 'adharNo') {
+        props.maxLength = 12
+    }
+
+    return props
+}
+
+export const isPANValid = (PANNumber) => {
+    return PANNumber.match(/^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/)
+}
+
+export const isNumber = (value) => {
+    return value.match(/^(\s*|\d+)$/)
+}
+
+// multiplication table
+const d = [
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+    [1, 2, 3, 4, 0, 6, 7, 8, 9, 5],
+    [2, 3, 4, 0, 1, 7, 8, 9, 5, 6],
+    [3, 4, 0, 1, 2, 8, 9, 5, 6, 7],
+    [4, 0, 1, 2, 3, 9, 5, 6, 7, 8],
+    [5, 9, 8, 7, 6, 0, 4, 3, 2, 1],
+    [6, 5, 9, 8, 7, 1, 0, 4, 3, 2],
+    [7, 6, 5, 9, 8, 2, 1, 0, 4, 3],
+    [8, 7, 6, 5, 9, 3, 2, 1, 0, 4],
+    [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+]
+
+// permutation table
+const p = [
+    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+    [1, 5, 7, 6, 2, 8, 3, 0, 9, 4],
+    [5, 8, 0, 3, 7, 9, 6, 1, 4, 2],
+    [8, 9, 1, 6, 0, 4, 3, 5, 2, 7],
+    [9, 4, 5, 3, 1, 2, 6, 8, 7, 0],
+    [4, 2, 8, 6, 5, 7, 3, 9, 0, 1],
+    [2, 7, 9, 3, 8, 0, 6, 4, 1, 5],
+    [7, 0, 4, 6, 9, 1, 3, 2, 5, 8]
+]
+
+// validates Aadhar number received as string
+export const isAadharValid = (aadharNumber) => {
+    let c = 0
+    let invertedArray = aadharNumber.split('').map(Number).reverse()
+
+    invertedArray.forEach((val, i) => {
+        c = d[c][p[(i % 8)][val]]
+    })
+
+    return (c === 0)
 }
