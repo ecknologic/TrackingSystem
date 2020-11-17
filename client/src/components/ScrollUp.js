@@ -6,7 +6,6 @@ export default function ScrollUp({ dep }) {
         let divElem, chElem, topPos;
         divElem = document.getElementById('scroll-view').firstChild;
 
-        console.log(divElem)
         if (divElem) chElem = divElem.firstChild;
         if (chElem) {
             topPos = divElem.offsetTop;

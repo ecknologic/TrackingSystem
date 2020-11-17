@@ -68,10 +68,12 @@ export const validateDeliveryValues = (data) => {
     const text = 'Required'
     const {
         gstNo, depositAmount, routingId, phoneNumber, contactPerson, address,
-        deliveryLocation, product20L, price20L, product1L, price1L, product500ML, price500ML,
+        deliveryLocation, product20L = 0, price20L = 0, product1L = 0, price1L = 0,
+        product500ML = 0, price500ML = 0,
         // product250ML, price250ML
     } = data
-
+    console.log(product20L, price20L, product1L, price1L,
+        product500ML, price500ML)
     if (!gstNo) errors.gstNo = text
     if (!depositAmount) errors.depositAmount = text
     if (!routingId) errors.routingId = text
@@ -79,14 +81,14 @@ export const validateDeliveryValues = (data) => {
     if (!contactPerson) errors.contactPerson = text
     if (!address) errors.address = text
     if (!deliveryLocation) errors.deliveryLocation = text
-    if (!product20L) errors.product20L = text
-    if (!price20L) errors.price20L = text
-    if (!product1L) errors.product1L = text
-    if (!price1L) errors.price1L = text
-    if (!product500ML) errors.product500ML = text
-    if (!price500ML) errors.price500ML = text
-    // if (!product250ML) errors.product250ML = text
-    // if (!price250ML) errors.price250ML = text
+    if (product20L === null) errors.product20L = text
+    if (price20L === null) errors.price20L = text
+    if (product1L === null) errors.product1L = text
+    if (price1L === null) errors.price1L = text
+    if (product500ML === null) errors.product500ML = text
+    if (price500ML === null) errors.price500ML = text
+    // if (product250ML === null) errors.product250ML = text
+    // if (price250ML === null) errors.price250ML = text
 
     return errors
 }

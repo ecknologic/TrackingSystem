@@ -3,10 +3,14 @@ import React, { useEffect, useState } from 'react';
 import SelectInput from '../../../../components/SelectInput';
 import InputWithAddon from '../../../../components/InputWithAddon';
 import { dayOptions } from '../../../../assets/fixtures'
+import { getBase64 } from '../../../../utils/Functions';
+import UploadPreviewer from '../../../../components/UploadPreviewer';
+import DraggerInput from '../../../../components/DraggerInput';
 
 const CollapseForm = ({ data, routeOptions, uniqueId }) => {
 
     const [gstNo, setGstNo] = useState('')
+    const [gstProof, setGstProof] = useState('')
     const [address, setAddress] = useState('')
     const [devDays, setDevDays] = useState()
     const [phoneNumber, setPhoneNumber] = useState('')
@@ -27,12 +31,12 @@ const CollapseForm = ({ data, routeOptions, uniqueId }) => {
 
     useEffect(() => { // To set form data to session storage
         setSession()
-    }, [gstNo, depositAmount, routingId, devDays, product20L, price20L, product1L, price1L,
+    }, [gstNo, gstProof, depositAmount, routingId, devDays, product20L, price20L, product1L, price1L,
         product500ML, price500ML, phoneNumber, contactPerson, address, deliveryLocation])
 
     const populateForm = (data) => {
         const {
-            gstNo, depositAmount, routingId, devDays, phoneNumber, contactPerson, address,
+            gstNo, gstProof, depositAmount, routingId, devDays, phoneNumber, contactPerson, address,
             deliveryLocation, product20L, price20L, product1L, price1L, product500ML, price500ML
         } = data
 
@@ -43,6 +47,7 @@ const CollapseForm = ({ data, routeOptions, uniqueId }) => {
         setPrice1L(price1L)
         setPrice500ML(price500ML)
         setGstNo(gstNo)
+        setGstProof(gstProof)
         setAddress(address)
         setDevDays(devDays)
         setPhoneNumber(phoneNumber)
@@ -70,6 +75,9 @@ const CollapseForm = ({ data, routeOptions, uniqueId }) => {
         setDevDays(filtered)
     }
 
+    const handleUpload = (file) => getBase64(file, async (buffer) => setGstProof(buffer))
+    const gstUploadDisable = gstProof
+
     return (
         <>
             <div className='title-container'>
@@ -80,6 +88,12 @@ const CollapseForm = ({ data, routeOptions, uniqueId }) => {
                     <div className='input-container'>
                         <label className='app-input-label-name'>GST Number</label>
                         <InputWithAddon label='VERIFY' value={gstNo} placeholder='GST Number' onChange={({ target: { value } }) => setGstNo(value)} />
+                    </div>
+                    <div className='input-container app-upload-file-container'>
+                        <DraggerInput onUpload={handleUpload} disabled={gstUploadDisable} />
+                        <div className='upload-preview-container'>
+                            <UploadPreviewer value={gstProof} title='GST Proof' onRemove={() => setGstProof('')} />
+                        </div>
                     </div>
                 </div>
                 <div className='row'>
@@ -114,31 +128,31 @@ const CollapseForm = ({ data, routeOptions, uniqueId }) => {
                         <div className='column'>
                             <div className='input-container'>
                                 <label className='app-input-label-name'>20 Ltrs</label>
-                                <InputNumber size="large" value={product20L} placeholder='Add' onChange={setProduct20L} />
+                                <InputNumber size="large" value={product20L || 0} placeholder='Add' onChange={setProduct20L} />
                             </div>
                             <div className='input-container'>
                                 <label className='app-input-label-name'>Price</label>
-                                <InputNumber size="large" value={price20L} placeholder='Rs' onChange={setPrice20L} />
+                                <InputNumber size="large" value={price20L || 0} placeholder='Rs' onChange={setPrice20L} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <label className='app-input-label-name'>1 Ltrs</label>
-                                <InputNumber size="large" value={product1L} placeholder='Add' onChange={setProduct1L} />
+                                <InputNumber size="large" value={product1L || 0} placeholder='Add' onChange={setProduct1L} />
                             </div>
                             <div className='input-container'>
                                 <label className='app-input-label-name'>Price</label>
-                                <InputNumber size="large" value={price1L} placeholder='Rs' onChange={setPrice1L} />
+                                <InputNumber size="large" value={price1L || 0} placeholder='Rs' onChange={setPrice1L} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <label className='app-input-label-name'>500 Ml</label>
-                                <InputNumber size="large" value={product500ML} placeholder='Add' onChange={setProduct500ML} />
+                                <InputNumber size="large" value={product500ML || 0} placeholder='Add' onChange={setProduct500ML} />
                             </div>
                             <div className='input-container'>
                                 <label className='app-input-label-name'>Price</label>
-                                <InputNumber size="large" value={price500ML} placeholder='Rs' onChange={setPrice500ML} />
+                                <InputNumber size="large" value={price500ML || 0} placeholder='Rs' onChange={setPrice500ML} />
                             </div>
                         </div>
                         {/* <div className='column'>
