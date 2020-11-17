@@ -222,7 +222,7 @@ const AddAccount = () => {
         }
 
         const idProofs = getIdProofsForDB(IDProofs)
-        const deliveryDays = getDevDaysForDB(devDays)
+        const deliveryDays = getDevDaysForDB(devDays.shift())
 
         const extra = {
             customertype, createdBy: USERID, departmentId: WAREHOUSEID

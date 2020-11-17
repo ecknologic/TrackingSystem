@@ -10,7 +10,7 @@ import DeliveryForm from '../add/forms/Delivery';
 import { http } from '../../../modules/http';
 import Header from './header';
 import { validateDeliveryValues, validateDevDays } from '../../../utils/validations';
-import { extractDeliveryDetails, getDeliveryDays, getProductsForDB, extractProductsFromForm, isEmpty } from '../../../utils/Functions';
+import { extractDeliveryDetails, getProductsForDB, extractProductsFromForm, isEmpty, getDevDaysForDB, getBase64 } from '../../../utils/Functions';
 import CustomModal from '../../../components/CustomModal';
 
 const ViewAccount = () => {
@@ -62,7 +62,7 @@ const ViewAccount = () => {
 
         const productsUI = extractProductsFromForm(formData)
         const products = getProductsForDB(productsUI)
-        const deliveryDays = getDeliveryDays(devDays.shift())
+        const deliveryDays = getDevDaysForDB(devDays.shift())
         const formValues = extractDeliveryDetails(formData)
         const body = [{ ...formValues, isNew: true, delete: 0, isActive: 0, products, deliveryDays, customer_Id: accountId }]
 
@@ -91,6 +91,16 @@ const ViewAccount = () => {
     const handleDevDaysDeselect = (value) => {
         const filtered = devDays.filter(day => day !== value && day !== "ALL")
         setDevDays(filtered)
+    }
+
+    const handleProofUpload = (file, name) => {
+        getBase64(file, async (buffer) => {
+            setFormData(data => ({ ...data, [name]: buffer }))
+        })
+    }
+
+    const handleProofRemove = (name) => {
+        setFormData(data => ({ ...data, [name]: '' }))
     }
 
     const handleChange = (value, key) => {
@@ -126,7 +136,7 @@ const ViewAccount = () => {
                         }
                     >
                         <TabPane tab="Account Overview" key="1">
-                            <AccountOverview data={account} />
+                            <AccountOverview data={account} routeOptions={routeOptions} />
                         </TabPane>
                         <TabPane tab="Delivery Details" key="2">
                             <DeliveryDetails recentDelivery={recentDelivery} routeOptions={routeOptions} />
@@ -155,6 +165,8 @@ const ViewAccount = () => {
                     hasExtraAddress
                     devDays={devDays}
                     onChange={handleChange}
+                    onUpload={handleProofUpload}
+                    onRemove={handleProofRemove}
                     onSelect={handleDevDaysSelect}
                     onDeselect={handleDevDaysDeselect}
                 />

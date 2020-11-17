@@ -81,12 +81,12 @@ export const validateDeliveryValues = (data) => {
     if (!contactPerson) errors.contactPerson = text
     if (!address) errors.address = text
     if (!deliveryLocation) errors.deliveryLocation = text
-    if (product20L === null) errors.product20L = text
-    if (price20L === null) errors.price20L = text
-    if (product1L === null) errors.product1L = text
-    if (price1L === null) errors.price1L = text
-    if (product500ML === null) errors.product500ML = text
-    if (price500ML === null) errors.price500ML = text
+    // if (product20L) errors.product20L = text
+    // if (price20L) errors.price20L = text
+    // if (product1L) errors.product1L = text
+    // if (price1L) errors.price1L = text
+    // if (product500ML) errors.product500ML = text
+    // if (price500ML) errors.price500ML = text
     // if (product250ML === null) errors.product250ML = text
     // if (price250ML === null) errors.price250ML = text
 

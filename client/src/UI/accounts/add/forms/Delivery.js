@@ -29,10 +29,10 @@ const DeliveryForm = (props) => {
                         <label className='app-input-label-name'>GST Number</label>
                         <InputWithAddon label='VERIFY' value={gstNo} placeholder='GST Number' disabled={sameAddress || isActive} onChange={({ target: { value } }) => onChange(value, 'gstNo')} />
                     </div>
-                    <div className='input-container app-upload-file-container'>
+                    <div className='input-container app-upload-file-container app-gst-upload-container'>
                         <DraggerInput onUpload={(file) => onUpload(file, 'gstProof', 'delivery')} disabled={sameAddress || gstUploadDisable || isActive} />
                         <div className='upload-preview-container'>
-                            <UploadPreviewer value={gstProof} title='GST Proof' disabled={sameAddress || isActive} onRemove={() => onRemove('gstProof', 'delivery')} />
+                            <UploadPreviewer value={gstProof} title='GST Proof' disabled={sameAddress || isActive} onRemove={() => onRemove('gstProof', 'delivery')} className='last' />
                         </div>
                     </div>
                 </div>

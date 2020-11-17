@@ -2,15 +2,16 @@ import dayjs from 'dayjs';
 import { message } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { http } from '../../../../modules/http';
-import { base64String, getBase64, getIdProofsForDB, isNumber, validateAadhar, validatePAN } from '../../../../utils/Functions';
+import { base64String, getBase64, getIdProofsForDB } from '../../../../utils/Functions';
 import CustomButton from '../../../../components/CustomButton';
 import CorporateAccountForm from '../../add/forms/CorporateAccount';
 import NoContent from '../../../../components/NoContent';
 import Spinner from '../../../../components/Spinner';
 import { validateIDProofs, validateAccountValues, validateIDNumbers } from '../../../../utils/validations';
 import GeneralAccountForm from '../../add/forms/GeneralAccount';
+import { WEEKDAYS } from '../../../../assets/fixtures';
 
-const AccountOverview = ({ data }) => {
+const AccountOverview = ({ data, routeOptions }) => {
     const { gstProof, idProof_backside, idProof_frontside, isActive, registeredDate,
         customertype, Address1, loading } = data
 
@@ -18,6 +19,7 @@ const AccountOverview = ({ data }) => {
     const [accountValues, setAccountValues] = useState({})
     const [IDProofs, setIDProofs] = useState({})
     const [IDErrors, setIDErrors] = useState({})
+    const [devDays, setDevDays] = useState([])
 
     useEffect(() => {
         if (!loading) {
@@ -58,6 +60,21 @@ const AccountOverview = ({ data }) => {
             }
         })
     }
+
+    const handleDevDaysSelect = (value) => {
+        if (value == 'ALL') setDevDays(WEEKDAYS)
+        else {
+            const clone = [...devDays]
+            clone.push(value)
+            setDevDays(clone)
+        }
+    }
+
+    const handleDevDaysDeselect = (value) => {
+        const filtered = devDays.filter(day => day !== value && day !== "ALL")
+        setDevDays(filtered)
+    }
+
     const handleProofRemove = (name) => {
         if (name === 'gstProof') setAccountValues(data => ({ ...data, [name]: '' }))
         else if (name === 'Front') setIDProofs(data => ({ ...data, Front: '' }))
@@ -131,8 +148,13 @@ const AccountOverview = ({ data }) => {
                                 : <GeneralAccountForm
                                     data={accountValues}
                                     IDProofs={IDProofs}
+                                    IDErrors={IDErrors}
+                                    devDays={devDays}
+                                    routeOptions={routeOptions}
                                     onUpload={handleProofUpload}
                                     onRemove={handleProofRemove}
+                                    onSelect={handleDevDaysSelect}
+                                    onDeselect={handleDevDaysDeselect}
                                     onChange={handleChange}
                                     disabled={isActive}
                                     accountOnly

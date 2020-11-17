@@ -56,7 +56,7 @@ const GeneralAccountForm = (props) => {
                         <DraggerInput onUpload={(file) => onUpload(file, 'idProofs')} disabled={idUploadDisable || disabled} />
                         <div className='upload-preview-container'>
                             <UploadPreviewer value={Front} title='Front' disabled={disabled} onRemove={() => onRemove('Front')} />
-                            <UploadPreviewer value={Back} title='Back' disabled={disabled} onRemove={() => onRemove('Back')} />
+                            <UploadPreviewer value={Back} title='Back' disabled={disabled} onRemove={() => onRemove('Back')} className='last' />
                         </div>
                     </div>
                     <div className='upload-instructions'>
@@ -69,10 +69,10 @@ const GeneralAccountForm = (props) => {
                         <label className='app-input-label-name'>GST Number</label>
                         <InputWithAddon value={gstNo} label='VERIFY' disabled={disabled} placeholder='GST Number' onChange={({ target: { value } }) => onChange(value, 'gstNo')} />
                     </div>
-                    <div className='input-container app-upload-file-container'>
+                    <div className='input-container app-upload-file-container app-gst-upload-container'>
                         <DraggerInput onUpload={(file) => onUpload(file, 'gstProof')} disabled={gstUploadDisable || disabled} />
                         <div className='upload-preview-container'>
-                            <UploadPreviewer value={gstProof} title='GST Proof' disabled={disabled} onRemove={() => onRemove('gstProof')} />
+                            <UploadPreviewer value={gstProof} title='GST Proof' disabled={disabled} onRemove={() => onRemove('gstProof')} className='last' />
                         </div>
                     </div>
                 </div>

@@ -5,7 +5,7 @@ import NoContent from '../../../../components/NoContent';
 import AddressCard from '../../../../components/AddressCard';
 import { useParams } from 'react-router-dom';
 import { http } from '../../../../modules/http';
-import { getDevDays, getProductsWithIdForDB, getProductsForUI, isEmpty, getDeliveryDays, extractDeliveryDetails, extractProductsFromForm, deepClone, getBase64 } from '../../../../utils/Functions';
+import { getDevDays, getProductsWithIdForDB, getProductsForUI, isEmpty, extractDeliveryDetails, extractProductsFromForm, deepClone, getBase64, getDevDaysForDB } from '../../../../utils/Functions';
 import { validateDeliveryValues, validateDevDays } from '../../../../utils/validations';
 import DeliveryForm from '../../add/forms/Delivery';
 import CustomModal from '../../../../components/CustomModal';
@@ -60,7 +60,7 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
 
         const productsUI = extractProductsFromForm(formData)
         const products = getProductsWithIdForDB(productsUI)
-        const deliveryDays = getDeliveryDays(devDays)
+        const deliveryDays = getDevDaysForDB(devDays.shift())
         const formValues = extractDeliveryDetails(formData)
         const body = [{ ...formValues, isNew: false, delete: 0, isActive: 0, products, deliveryDays }]
 

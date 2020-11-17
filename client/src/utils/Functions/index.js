@@ -91,17 +91,6 @@ export const getIdProofKey = (data) => {
     if (dlNo) return 'dlNo'
     if (passportNo) return 'passportNo'
 }
-
-export const getDeliveryDays = (data = []) => {
-    const days = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
-    const daysObj = {}
-    days.map((day) => {
-        if (data.includes(day)) {
-            daysObj[day] = 1
-        } else daysObj[day] = 0
-    })
-    return daysObj
-}
 export const getDevDays = (data = {}) => {
     const days = []
     const { SUN, MON, TUE, WED, THU, FRI, SAT } = data

@@ -89,10 +89,10 @@ const CollapseForm = ({ data, routeOptions, uniqueId }) => {
                         <label className='app-input-label-name'>GST Number</label>
                         <InputWithAddon label='VERIFY' value={gstNo} placeholder='GST Number' onChange={({ target: { value } }) => setGstNo(value)} />
                     </div>
-                    <div className='input-container app-upload-file-container'>
+                    <div className='input-container app-upload-file-container app-gst-upload-container'>
                         <DraggerInput onUpload={handleUpload} disabled={gstUploadDisable} />
                         <div className='upload-preview-container'>
-                            <UploadPreviewer value={gstProof} title='GST Proof' onRemove={() => setGstProof('')} />
+                            <UploadPreviewer value={gstProof} title='GST Proof' onRemove={() => setGstProof('')} className='last' />
                         </div>
                     </div>
                 </div>

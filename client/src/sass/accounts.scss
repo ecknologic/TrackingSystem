@@ -378,6 +378,10 @@ $primary-color: #0062FF;
         background-color: #FAFAFB;
     }
 
+    .ant-upload.ant-upload-drag .ant-upload {
+        padding: 10px 0;
+    }
+
     .row {
         width: 100%;
         display: flex;
