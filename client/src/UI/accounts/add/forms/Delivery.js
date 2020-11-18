@@ -5,17 +5,21 @@ import InputWithAddon from '../../../../components/InputWithAddon';
 import SelectInput from '../../../../components/SelectInput';
 import CustomButton from '../../../../components/CustomButton';
 import { dayOptions } from '../../../../assets/fixtures'
+import UploadPreviewer from '../../../../components/UploadPreviewer';
+import DraggerInput from '../../../../components/DraggerInput';
 
 const DeliveryForm = (props) => {
 
     const { data, devDays, onChange, hasExtraAddress, onSelect, onDeselect,
-        onAdd, routeOptions, track, sameAddress } = props
+        onAdd, routeOptions, track, sameAddress, onUpload, onRemove } = props
 
     const {
-        gstNo, depositAmount, routingId, phoneNumber, contactPerson, address, isActive,
+        gstNo, gstProof, depositAmount, routingId, phoneNumber, contactPerson, address, isActive,
         deliveryLocation, product20L, price20L, product1L, price1L, product500ML, price500ML,
         // product250ML, price250ML
     } = data
+
+    const gstUploadDisable = gstProof
 
     return (
         <>
@@ -24,6 +28,12 @@ const DeliveryForm = (props) => {
                     <div className='input-container'>
                         <label className='app-input-label-name'>GST Number</label>
                         <InputWithAddon label='VERIFY' value={gstNo} placeholder='GST Number' disabled={sameAddress || isActive} onChange={({ target: { value } }) => onChange(value, 'gstNo')} />
+                    </div>
+                    <div className='input-container app-upload-file-container app-gst-upload-container'>
+                        <DraggerInput onUpload={(file) => onUpload(file, 'gstProof', 'delivery')} disabled={sameAddress || gstUploadDisable || isActive} />
+                        <div className='upload-preview-container'>
+                            <UploadPreviewer value={gstProof} title='GST Proof' disabled={sameAddress || isActive} onRemove={() => onRemove('gstProof', 'delivery')} className='last' />
+                        </div>
                     </div>
                 </div>
                 <div className='row'>
@@ -58,31 +68,31 @@ const DeliveryForm = (props) => {
                         <div className='column'>
                             <div className='input-container'>
                                 <label className='app-input-label-name'>20 Ltrs</label>
-                                <InputNumber size="large" value={product20L} disabled={isActive} placeholder='Add' onChange={(value) => onChange(value, 'product20L')} />
+                                <InputNumber size="large" value={product20L || 0} disabled={isActive} placeholder='Add' onChange={(value) => onChange(value, 'product20L')} />
                             </div>
                             <div className='input-container'>
                                 <label className='app-input-label-name'>Price</label>
-                                <InputNumber size="large" value={price20L} disabled={isActive} placeholder='Rs' onChange={(value) => onChange(value, 'price20L')} />
+                                <InputNumber size="large" value={price20L || 0} disabled={isActive} placeholder='Rs' onChange={(value) => onChange(value, 'price20L')} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <label className='app-input-label-name'>1 Ltrs</label>
-                                <InputNumber size="large" value={product1L} disabled={isActive} placeholder='Add' onChange={(value) => onChange(value, 'product1L')} />
+                                <InputNumber size="large" value={product1L || 0} disabled={isActive} placeholder='Add' onChange={(value) => onChange(value, 'product1L')} />
                             </div>
                             <div className='input-container'>
                                 <label className='app-input-label-name'>Price</label>
-                                <InputNumber size="large" value={price1L} disabled={isActive} placeholder='Rs' onChange={(value) => onChange(value, 'price1L')} />
+                                <InputNumber size="large" value={price1L || 0} disabled={isActive} placeholder='Rs' onChange={(value) => onChange(value, 'price1L')} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <label className='app-input-label-name'>500 Ml</label>
-                                <InputNumber size="large" value={product500ML} disabled={isActive} placeholder='Add' onChange={(value) => onChange(value, 'product500ML')} />
+                                <InputNumber size="large" value={product500ML || 0} disabled={isActive} placeholder='Add' onChange={(value) => onChange(value, 'product500ML')} />
                             </div>
                             <div className='input-container'>
                                 <label className='app-input-label-name'>Price</label>
-                                <InputNumber size="large" value={price500ML} disabled={isActive} placeholder='Rs' onChange={(value) => onChange(value, 'price500ML')} />
+                                <InputNumber size="large" value={price500ML || 0} disabled={isActive} placeholder='Rs' onChange={(value) => onChange(value, 'price500ML')} />
                             </div>
                         </div>
                         {/* <div className='column'>

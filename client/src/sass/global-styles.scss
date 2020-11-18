@@ -1,4 +1,7 @@
 $primaryColor: #0062FF;
+$primaryColorDisabled: #4C91FF;
+$textColor:rgba(0,0,0,0.85);
+$textColorDisabled:rgba(0,0,0,0.55);
 
 #scroll-view {
     :first-child {
@@ -46,7 +49,7 @@ $primaryColor: #0062FF;
 .ant-message-notice-content {
     border-radius: .6em;
 
-    color: rgba(0,0,0,0.85);
+    color: $textColor;
     font-family: 'PoppinsLight300';
 
     .anticon-loading {
@@ -98,7 +101,7 @@ $primaryColor: #0062FF;
     align-items: center;
 
     .msg {
-        color: rgba(0,0,0,0.85);
+        color: $textColor;
         font-family: 'PoppinsRegular400';
     }
 
@@ -108,6 +111,14 @@ $primaryColor: #0062FF;
     }
 }
 
+.ant-upload-disabled {
+    .click {
+        color: $primaryColorDisabled
+    }
+    .msg {
+        color: $textColorDisabled;
+    }
+}
 .app-upload-file-container {
     display: flex;
     align-items: flex-end;
@@ -136,7 +147,7 @@ $primaryColor: #0062FF;
 
     .ant-select-selection-item {
         font-size: 1.8ch;
-        color: rgba(0,0,0,0.85);
+        color: $textColor;
         font-family: 'PoppinsRegular400';
     }
 
@@ -175,11 +186,6 @@ $primaryColor: #0062FF;
     box-shadow: none;
 }
 
-// .ant-select-item-option-state {
-//     .anticon-check {
-//         display: none;
-//     }
-// }
 // -------------- antd Input styles ------------------- //
 
 .ant-input, .ant-input-number {
@@ -224,10 +230,16 @@ $primaryColor: #0062FF;
     text-transform: initial;
 }
 
-input[type=number]::-webkit-outer-spin-button,
-input[type=number]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    // margin: 0;
+.ant-input-disabled {
+    color: $textColorDisabled !important;
+    background-color:#f4f4f4 !important;
+}
+.ant-input-disabled + .ant-input-group-addon{
+    cursor: not-allowed;
+
+    .app-input-addon-button {
+        color: $primaryColorDisabled;
+    }
 }
 
 .app-input-error {
@@ -428,8 +440,6 @@ input[type=number]::-webkit-inner-spin-button {
             width: 48%;
         }
 
-        
-
         .stretch {
             width: 100%;
         }
@@ -470,7 +480,7 @@ input[type=number]::-webkit-inner-spin-button {
             display: flex;
             flex-direction: column;
             padding-top: 1em;
-            color: rgba(0,0,0,0.85);
+            color: $textColor;
 
             .title {
                 font-family: 'PoppinsSemiBold600';
@@ -480,4 +490,8 @@ input[type=number]::-webkit-inner-spin-button {
                 font-size: 1.6ch;
             }
         }
+}
+
+.app-gst-upload-container {
+    justify-content: flex-start;
 }

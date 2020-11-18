@@ -9,7 +9,7 @@ import CorporateAccount from './forms/CorporateAccount';
 import GeneralAccount from './forms/GeneralAccount';
 import CollapseForm from './forms/CollapseForm';
 import { http } from '../../../modules/http'
-import { getRouteOptions } from '../../../assets/fixtures';
+import { getRouteOptions, WEEKDAYS } from '../../../assets/fixtures';
 import {
     getBase64, deepClone, getIdProofsForDB, getDevDaysForDB, getAddressesForDB, resetTrackForm,
     getProductsForDB, extractGADeliveryDetails, extractGADetails, isEmpty, trackAccountFormOnce,
@@ -111,20 +111,27 @@ const AddAccount = () => {
     }
 
     const handleDevDaysSelect = (value) => {
-        const clone = [...devDays]
-        clone.push(value)
-        setDevDays(clone)
+        if (value == 'ALL') setDevDays(WEEKDAYS)
+        else {
+            const clone = [...devDays]
+            clone.push(value)
+            setDevDays(clone)
+        }
     }
 
     const handleDevDaysDeselect = (value) => {
-        const filtered = devDays.filter(day => day !== value)
+        const filtered = devDays.filter(day => day !== value && day !== "ALL")
         setDevDays(filtered)
     }
 
-    const handleProofUpload = (file, name) => {
+    const handleProofUpload = (file, name, formType) => {
         getBase64(file, async (buffer) => {
             if (name === 'gstProof') {
-                if (corporate) setCorporateValues(data => ({ ...data, [name]: buffer }))
+                if (formType === 'delivery') setDeliveryValues(data => ({ ...data, [name]: buffer }))
+                else if (corporate) {
+                    setCorporateValues(data => ({ ...data, [name]: buffer }))
+                    if (sameAddress) preFillDDForm(buffer, name)
+                }
                 else setGeneralValues(data => ({ ...data, [name]: buffer }))
             }
             else if (name === 'idProofs') {
@@ -137,9 +144,10 @@ const AddAccount = () => {
         })
     }
 
-    const handleProofRemove = (name) => {
+    const handleProofRemove = (name, formType) => {
         if (name === 'gstProof') {
-            if (corporate) setCorporateValues(data => ({ ...data, [name]: '' }))
+            if (formType === 'delivery') setDeliveryValues(data => ({ ...data, [name]: '' }))
+            else if (corporate) setCorporateValues(data => ({ ...data, [name]: '' }))
             else setGeneralValues(data => ({ ...data, [name]: '' }))
         }
         else if (name === 'Front') setIDProofs(data => ({ ...data, Front: '' }))
@@ -214,7 +222,7 @@ const AddAccount = () => {
         }
 
         const idProofs = getIdProofsForDB(IDProofs)
-        const deliveryDays = getDevDaysForDB(devDays)
+        const deliveryDays = getDevDaysForDB(devDays.shift())
 
         const extra = {
             customertype, createdBy: USERID, departmentId: WAREHOUSEID
@@ -271,14 +279,14 @@ const AddAccount = () => {
 
     const setDDForSameAddress = () => {
         const { gstNo, customerName: contactPerson,
-            address, mobileNumber: phoneNumber } = corporateValues
-        const prefill = { gstNo, address, contactPerson, phoneNumber }
+            address, mobileNumber: phoneNumber, gstProof } = corporateValues
+        const prefill = { gstNo, address, contactPerson, phoneNumber, gstProof }
 
         setDeliveryValues(data => ({ ...data, ...prefill }))
     }
 
     const resetDDForSameAddress = () => {
-        const prefill = { gstNo: '', address: '', contactPerson: '', phoneNumber: '' }
+        const prefill = { gstNo: '', address: '', contactPerson: '', phoneNumber: '', gstProof: '' }
         setDeliveryValues(data => ({ ...data, ...prefill }))
     }
 
@@ -308,6 +316,8 @@ const AddAccount = () => {
         setDeliveryValues({})
         setIDProofs({})
         setDevDays([])
+        setAddresses([])
+        setSameAddress(false)
         resetTrackForm()
         setScrollDep(!scrollDep)
     }
@@ -418,7 +428,9 @@ const AddAccount = () => {
                                 routeOptions={routeOptions}
                                 hasExtraAddress={hasExtraAddress}
                                 sameAddress={sameAddress && !hasExtraAddress}
+                                onRemove={handleProofRemove}
                                 onAdd={handleAddDelivery}
+                                onUpload={handleProofUpload}
                                 onChange={handleDeliveryValues}
                                 onSelect={handleDevDaysSelect}
                                 onDeselect={handleDevDaysDeselect}

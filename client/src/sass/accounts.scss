@@ -341,6 +341,7 @@ $primary-color: #0062FF;
     }
     .accordion-container {
         width: 80%;
+        margin-bottom: .6em;
 
         .form-container {
             width: 100%;
@@ -376,6 +377,10 @@ $primary-color: #0062FF;
     
     .ant-modal-body {
         background-color: #FAFAFB;
+    }
+
+    .ant-upload.ant-upload-drag .ant-upload {
+        padding: 10px 0;
     }
 
     .row {
@@ -420,5 +425,17 @@ $primary-color: #0062FF;
 .account-view-account-overview {
     .footer {
         justify-content: flex-end;
+    }
+}
+
+.app-accounts-filter-body {
+
+    .row {
+        display: flex;
+        justify-content: space-between;
+        
+        .input-container {
+            width: 48%;
+        }
     }
 }

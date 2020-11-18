@@ -5,10 +5,11 @@ import NoContent from '../../../../components/NoContent';
 import AddressCard from '../../../../components/AddressCard';
 import { useParams } from 'react-router-dom';
 import { http } from '../../../../modules/http';
-import { getDevDays, getProductsWithIdForDB, getProductsForUI, isEmpty, getDeliveryDays, extractDeliveryDetails, extractProductsFromForm, deepClone } from '../../../../utils/Functions';
+import { getDevDays, getProductsWithIdForDB, getProductsForUI, isEmpty, extractDeliveryDetails, extractProductsFromForm, deepClone, getBase64, getDevDaysForDB, base64String } from '../../../../utils/Functions';
 import { validateDeliveryValues, validateDevDays } from '../../../../utils/validations';
 import DeliveryForm from '../../add/forms/Delivery';
 import CustomModal from '../../../../components/CustomModal';
+import { WEEKDAYS } from '../../../../assets/fixtures';
 
 const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
     const { accountId } = useParams()
@@ -59,7 +60,7 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
 
         const productsUI = extractProductsFromForm(formData)
         const products = getProductsWithIdForDB(productsUI)
-        const deliveryDays = getDeliveryDays(devDays)
+        const deliveryDays = getDevDaysForDB(devDays.shift())
         const formValues = extractDeliveryDetails(formData)
         const body = [{ ...formValues, isNew: false, delete: 0, isActive: 0, products, deliveryDays }]
 
@@ -78,13 +79,16 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
     }
 
     const handleDevDaysSelect = (value) => {
-        const clone = [...devDays]
-        clone.push(value)
-        setDevDays(clone)
+        if (value == 'ALL') setDevDays(WEEKDAYS)
+        else {
+            const clone = [...devDays]
+            clone.push(value)
+            setDevDays(clone)
+        }
     }
 
     const handleDevDaysDeselect = (value) => {
-        const filtered = devDays.filter(day => day !== value)
+        const filtered = devDays.filter(day => day !== value && day !== "ALL")
         setDevDays(filtered)
     }
 
@@ -92,12 +96,22 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
         setFormData(data => ({ ...data, [key]: value }))
     }
 
+    const handleProofUpload = (file, name) => {
+        getBase64(file, async (buffer) => {
+            setFormData(data => ({ ...data, [name]: buffer }))
+        })
+    }
+    const handleProofRemove = (name) => {
+        setFormData(data => ({ ...data, [name]: '' }))
+    }
+
     const handleClick = useCallback((data) => {
-        const { location, products, deliveryDays } = data
+        const { location, products, deliveryDays, gstProof } = data
+        const gst = base64String(gstProof?.data)
         const devDays = getDevDays(deliveryDays)
         const productsUI = getProductsForUI(products)
         setDevDays(devDays)
-        setFormData({ ...data, deliveryLocation: location, ...productsUI })
+        setFormData({ ...data, gstProof: gst, deliveryLocation: location, ...productsUI })
         setViewModal(true)
     }, [])
 
@@ -130,6 +144,8 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
                     hasExtraAddress
                     devDays={devDays}
                     onChange={handleChange}
+                    onUpload={handleProofUpload}
+                    onRemove={handleProofRemove}
                     onSelect={handleDevDaysSelect}
                     onDeselect={handleDevDaysDeselect}
                 />
