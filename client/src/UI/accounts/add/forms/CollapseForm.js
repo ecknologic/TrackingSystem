@@ -6,6 +6,7 @@ import { dayOptions } from '../../../../assets/fixtures'
 import { getBase64 } from '../../../../utils/Functions';
 import UploadPreviewer from '../../../../components/UploadPreviewer';
 import DraggerInput from '../../../../components/DraggerInput';
+import InputLabel from '../../../../components/InputLabel';
 
 const CollapseForm = ({ data, routeOptions, uniqueId }) => {
 
@@ -86,7 +87,7 @@ const CollapseForm = ({ data, routeOptions, uniqueId }) => {
             <div className='form-container'>
                 <div className='row'>
                     <div className='input-container'>
-                        <label className='app-input-label-name'>GST Number</label>
+                        <InputLabel name='GST Number' />
                         <InputWithAddon label='VERIFY' value={gstNo} placeholder='GST Number' onChange={({ target: { value } }) => setGstNo(value)} />
                     </div>
                     <div className='input-container app-upload-file-container app-gst-upload-container'>
@@ -98,82 +99,82 @@ const CollapseForm = ({ data, routeOptions, uniqueId }) => {
                 </div>
                 <div className='row'>
                     <div className='input-container'>
-                        <label className='app-input-label-name'>Delivery Location</label>
+                        <InputLabel name='Delivery Location' />
                         <Input size='large' value={deliveryLocation} placeholder='Add Location' onChange={({ target: { value } }) => setDeliveryLocation(value)} />
                     </div>
                     <div className='input-container'>
-                        <label className='app-input-label-name'>Route</label>
+                        <InputLabel name='Route' />
                         <SelectInput options={routeOptions} value={routingId} onSelect={setRoutingId} />
                     </div>
                 </div>
                 <div className='row'>
                     <div className='input-container stretch'>
-                        <label className='app-input-label-name'>Address</label>
+                        <InputLabel name='Address' />
                         <Input size='large' value={address} placeholder='Add Address' onChange={({ target: { value } }) => setAddress(value)} />
                     </div>
                 </div>
                 <div className='row'>
                     <div className='input-container'>
-                        <label className='app-input-label-name'>Phone Number</label>
+                        <InputLabel name='Phone Number' />
                         <InputNumber size="large" value={phoneNumber} placeholder='Phone Number' onChange={(value) => setPhoneNumber(value)} />
                     </div>
                     <div className='input-container'>
-                        <label className='app-input-label-name'>Contact Person</label>
+                        <InputLabel name='Contact Person' />
                         <Input size='large' value={contactPerson} placeholder='Add Name' onChange={({ target: { value } }) => setContactPerson(value)} />
                     </div>
                 </div>
                 <div className='columns'>
-                    <label className='app-input-label-name'>Products and Price</label>
+                    <InputLabel name='Products and Price' />
                     <div className='columns-container'>
                         <div className='column'>
                             <div className='input-container'>
-                                <label className='app-input-label-name'>20 Ltrs</label>
+                                <InputLabel name='20 Ltrs' />
                                 <InputNumber size="large" value={product20L || 0} placeholder='Add' onChange={setProduct20L} />
                             </div>
                             <div className='input-container'>
-                                <label className='app-input-label-name'>Price</label>
+                                <InputLabel name='Price' />
                                 <InputNumber size="large" value={price20L || 0} placeholder='Rs' onChange={setPrice20L} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
-                                <label className='app-input-label-name'>1 Ltrs</label>
+                                <InputLabel name='1 Ltrs' />
                                 <InputNumber size="large" value={product1L || 0} placeholder='Add' onChange={setProduct1L} />
                             </div>
                             <div className='input-container'>
-                                <label className='app-input-label-name'>Price</label>
+                                <InputLabel name='Price' />
                                 <InputNumber size="large" value={price1L || 0} placeholder='Rs' onChange={setPrice1L} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
-                                <label className='app-input-label-name'>500 Ml</label>
+                                <InputLabel name='500 Ml' />
                                 <InputNumber size="large" value={product500ML || 0} placeholder='Add' onChange={setProduct500ML} />
                             </div>
                             <div className='input-container'>
-                                <label className='app-input-label-name'>Price</label>
+                                <InputLabel name='Price' />
                                 <InputNumber size="large" value={price500ML || 0} placeholder='Rs' onChange={setPrice500ML} />
                             </div>
                         </div>
                         {/* <div className='column'>
                             <div className='input-container'>
-                                <label className='app-input-label-name'>250 Ml</label>
-                                <InputNumber size="large" value={product250ML} placeholder='Add' onChange={setProduct250ML} />
+                                <InputLabel name='250 Ml' />
+                                <InputNumber size="large" value={product250ML || 0} placeholder='Add' onChange={setProduct250ML} />
                             </div>
                             <div className='input-container'>
-                                <label className='app-input-label-name'>Price</label>
-                                <InputNumber size="large" value={price250ML} placeholder='Rs' onChange={setPrice250ML} />
+                                <InputLabel name='Price' />
+                                <InputNumber size="large" value={price250ML || 0} placeholder='Rs' onChange={setPrice250ML} />
                             </div>
                         </div> */}
                     </div>
                 </div>
                 <div className='row'>
                     <div className='input-container'>
-                        <label className='app-input-label-name'>Delivery Days</label>
+                        <InputLabel name='Delivery Days' />
                         <SelectInput value={devDays} options={dayOptions} mode='multiple' onSelect={handleSelect} onDeselect={handleDeselect} />
                     </div>
                     <div className='input-container'>
-                        <label className='app-input-label-name'>Deposit Amount</label>
+                        <InputLabel name='Deposit Amount' />
                         <Input size='large' value={depositAmount} placeholder='Deposit Amount' onChange={({ target: { value } }) => setDepositAmount(value)} />
                     </div>
                 </div>

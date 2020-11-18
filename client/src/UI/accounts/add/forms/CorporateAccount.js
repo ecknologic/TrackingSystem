@@ -6,6 +6,7 @@ import DraggerInput from '../../../../components/DraggerInput';
 import UploadPreviewer from '../../../../components/UploadPreviewer';
 import { invoiceOptions, idOptions, businessOptions } from '../../../../assets/fixtures'
 import { getIdProofName, getIDInputValidationProps } from '../../../../utils/Functions';
+import InputLabel from '../../../../components/InputLabel';
 
 const CorporateAccountForm = ({ data, IDErrors, IDProofs, onChange, onUpload, disabled, onRemove, track }) => {
 
@@ -39,10 +40,7 @@ const CorporateAccountForm = ({ data, IDErrors, IDProofs, onChange, onUpload, di
                 {
                     idProofType && (
                         <div className='input-container second'>
-                            <div>
-                                <label className='app-input-label-name'>{proofName}</label>
-                                {IDErrors[idProofType] && <span className='app-label-error'>{IDErrors[idProofType]}</span>}
-                            </div>
+                            <InputLabel name={proofName} error={IDErrors[idProofType]} />
                             <Input maxLength={maxLength} size='large' value={data[idProofType]} placeholder={`Add ${proofName}`} className={`app-id-input ${IDErrors[idProofType] ? 'app-input-error' : ''}`} disabled={disabled} onChange={({ target: { value } }) => onChange(value, idProofType)} />
                         </div>
                     )
@@ -61,7 +59,7 @@ const CorporateAccountForm = ({ data, IDErrors, IDProofs, onChange, onUpload, di
             </div>
             <div className='row'>
                 <div className='input-container'>
-                    <label className='app-input-label-name'>GST Number</label>
+                    <InputLabel name='GST Number' />
                     <InputWithAddon value={gstNo} label='VERIFY' disabled={disabled} placeholder='GST Number' onChange={({ target: { value } }) => onChange(value, 'gstNo')} />
                 </div>
                 <div className='input-container app-upload-file-container app-gst-upload-container'>
@@ -73,54 +71,54 @@ const CorporateAccountForm = ({ data, IDErrors, IDProofs, onChange, onUpload, di
             </div>
             <div className='row'>
                 <div className='input-container'>
-                    <label className='app-input-label-name'>Organization Name</label>
+                    <InputLabel name='Organization Name' />
                     <Input size='large' value={organizationName} placeholder='Organization Name' disabled={disabled} onChange={({ target: { value } }) => onChange(value, 'organizationName')} />
                 </div>
 
             </div>
             <div className='row'>
                 <div className='input-container stretch'>
-                    <label className='app-input-label-name'>Address</label>
+                    <InputLabel name='Address' />
                     <Input size='large' value={address} placeholder='Add Address' disabled={disabled} onChange={({ target: { value } }) => onChange(value, 'address')} />
                 </div>
             </div>
             <div className='row'>
                 <div className='input-container'>
-                    <label className='app-input-label-name'>Phone Number</label>
+                    <InputLabel name='Phone Number' />
                     <InputNumber size="large" value={mobileNumber} disabled={disabled} placeholder='Phone Number' onChange={(value) => onChange(value, 'mobileNumber')} />
                 </div>
                 <div className='input-container'>
-                    <label className='app-input-label-name'>Email</label>
+                    <InputLabel name='Email' />
                     <Input size='large' value={EmailId} type='email' disabled={disabled} placeholder='Email' onChange={({ target: { value } }) => onChange(value, 'EmailId')} />
                 </div>
             </div>
             <div className='row'>
                 <div className='input-container'>
-                    <label className='app-input-label-name'>Account Owner</label>
+                    <InputLabel name='Account Owner' />
                     <Input size='large' value={customerName} disabled={disabled} placeholder='Account Owner' onChange={({ target: { value } }) => onChange(value, 'customerName')} />
                 </div>
                 <div className='input-container'>
-                    <label className='app-input-label-name'>Nature Of Business</label>
+                    <InputLabel name='Nature Of Business' />
                     <SelectInput track={track} value={natureOfBussiness} disabled={disabled} options={businessOptions} onSelect={(value) => onChange(value, 'natureOfBussiness')} />
                 </div>
             </div>
             <div className='row'>
                 <div className='input-container'>
-                    <label className='app-input-label-name'>Registered Date</label>
+                    <InputLabel name='Registered Date' />
                     <Input size='large' value={registeredDate} placeholder='Registered Date' disabled />
                 </div>
                 <div className='input-container'>
-                    <label className='app-input-label-name'>Invoice Type</label>
+                    <InputLabel name='Invoice Type' />
                     <SelectInput track={track} value={invoicetype} options={invoiceOptions} disabled={disabled} onSelect={(value) => onChange(value, 'invoicetype')} />
                 </div>
             </div>
             <div className='row'>
                 <div className='input-container'>
-                    <label className='app-input-label-name'>Credit Period in Days</label>
+                    <InputLabel name='Credit Period in Days' />
                     <InputNumber size="large" value={creditPeriodInDays} disabled={disabled} placeholder='Credit Period' onChange={(value) => onChange(value, 'creditPeriodInDays')} />
                 </div>
                 <div className='input-container'>
-                    <label className='app-input-label-name'>Referred By</label>
+                    <InputLabel name='Referred By' />
                     <Input size='large' value={referredBy} disabled={disabled} placeholder='Referral Name' onChange={({ target: { value } }) => onChange(value, 'referredBy')} />
                 </div>
             </div>
