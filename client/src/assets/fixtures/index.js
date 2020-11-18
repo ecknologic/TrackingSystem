@@ -14,6 +14,10 @@ export const businessOptions = [
     <Option key='3' value="Corporate">Corporate</Option>,
     <Option key='4' value="Traders">Traders</Option>
 ]
+export const statusOptions = [
+    <Option key='1' value="active">Active</Option>,
+    <Option key='2' value="draft">Draft</Option>,
+]
 export const invoiceOptions = [
     <Option key="1" value="complimentary">Complimentary</Option>,
     <Option key="2" value="nonComplimentary">Non Complimentary</Option>

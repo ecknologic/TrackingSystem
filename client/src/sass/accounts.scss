@@ -427,3 +427,15 @@ $primary-color: #0062FF;
         justify-content: flex-end;
     }
 }
+
+.app-accounts-filter-body {
+
+    .row {
+        display: flex;
+        justify-content: space-between;
+        
+        .input-container {
+            width: 48%;
+        }
+    }
+}

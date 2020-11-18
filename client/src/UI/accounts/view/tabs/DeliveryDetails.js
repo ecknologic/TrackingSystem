@@ -5,7 +5,7 @@ import NoContent from '../../../../components/NoContent';
 import AddressCard from '../../../../components/AddressCard';
 import { useParams } from 'react-router-dom';
 import { http } from '../../../../modules/http';
-import { getDevDays, getProductsWithIdForDB, getProductsForUI, isEmpty, extractDeliveryDetails, extractProductsFromForm, deepClone, getBase64, getDevDaysForDB } from '../../../../utils/Functions';
+import { getDevDays, getProductsWithIdForDB, getProductsForUI, isEmpty, extractDeliveryDetails, extractProductsFromForm, deepClone, getBase64, getDevDaysForDB, base64String } from '../../../../utils/Functions';
 import { validateDeliveryValues, validateDevDays } from '../../../../utils/validations';
 import DeliveryForm from '../../add/forms/Delivery';
 import CustomModal from '../../../../components/CustomModal';
@@ -106,11 +106,12 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
     }
 
     const handleClick = useCallback((data) => {
-        const { location, products, deliveryDays } = data
+        const { location, products, deliveryDays, gstProof } = data
+        const gst = base64String(gstProof?.data)
         const devDays = getDevDays(deliveryDays)
         const productsUI = getProductsForUI(products)
         setDevDays(devDays)
-        setFormData({ ...data, deliveryLocation: location, ...productsUI })
+        setFormData({ ...data, gstProof: gst, deliveryLocation: location, ...productsUI })
         setViewModal(true)
     }, [])
 
