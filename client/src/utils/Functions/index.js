@@ -69,6 +69,21 @@ export const isEmpty = (data) => {
     if (typeof data === 'object' && data !== null) return !Object.keys(data).length
     else if (Array.isArray(data)) return !data.length
 }
+export const complexSort = (data, key, type) => {
+    if (type === 'desc') data.sort((a, b) => a[key] && a[key] !== b[key] ? a[key] > b[key] ? -1 : 1 : 0)
+    else data.sort((a, b) => a[key] && a[key] !== b[key] ? a[key] < b[key] ? -1 : 1 : 0)
+}
+export const complexDateSort = (data, key, type) => {
+    if (type === 'desc') data.sort((a, b) => a[key] && a[key] !== b[key] ? new Date(a[key]) > new Date(b[key]) ? -1 : 1 : 0)
+    else data.sort((a, b) => a[key] && a[key] !== b[key] ? new Date(a[key]) < new Date(b[key]) ? -1 : 1 : 0)
+}
+export const doubleKeyComplexSearch = (data, matcher, key1, key2) => {
+    return data.filter((item) => {
+        const match1 = item[key1] && item[key1].toLowerCase().includes(matcher.toLowerCase())
+        const match2 = item[key2] && item[key2].toLowerCase().includes(matcher.toLowerCase())
+        return (match1 || match2)
+    })
+}
 
 export const getIdProofName = (type) => {
     switch (type) {
@@ -172,10 +187,11 @@ export const getIdProofsForDB = (data) => {
     return idProofs
 }
 export const getDevDaysForDB = (data = []) => {
+    const selected = data.filter((day) => day !== 'ALL')
     const days = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
     const daysObj = {}
     days.map((day) => {
-        if (data.includes(day)) {
+        if (selected.includes(day)) {
             daysObj[day] = 1
         } else daysObj[day] = 0
     })
@@ -250,10 +266,27 @@ export const getIDInputValidationProps = (IDType) => {
     return props
 }
 
+export const isEmail = (string) => {
+    return string.match(/^(\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3})*$/)
+}
+export const isIndMobileNum = (number) => {
+    return String(number).match(/^[6-9]\d{9}$/)
+}
+export const isAlphaNumOnly = (string) => {
+    return string.match(/^[a-z0-9]*$/i)
+}
+export const isAlphaOnly = (string) => {
+    return string.match(/^[a-zA-Z\-]*$/)
+}
+export const hasLowerCase = (string) => {
+    return string.match(/[a-z]/)
+}
 export const isPANValid = (PANNumber) => {
     return PANNumber.match(/^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/)
 }
-
+export const isGSTValid = (gstNumber) => {
+    return gstNumber.match(/(0[0-9]|1[1-9]|2[0-9]|3[0-7])[A-Z]{3}[CPHFATBLJG]{1}[A-Z]{1}\d{4}[A-Z]{1}\d{1}[A-Z0-9]{2}/g)
+}
 export const isNumber = (value) => {
     return value.match(/^(\s*|\d+)$/)
 }
@@ -284,7 +317,7 @@ const p = [
     [7, 0, 4, 6, 9, 1, 3, 2, 5, 8]
 ]
 
-// validates Aadhar number received as string
+// validates Aadhar number
 export const isAadharValid = (aadharNumber) => {
     let c = 0
     let invertedArray = aadharNumber.split('').map(Number).reverse()

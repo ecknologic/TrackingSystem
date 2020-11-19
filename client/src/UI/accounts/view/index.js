@@ -62,7 +62,7 @@ const ViewAccount = () => {
 
         const productsUI = extractProductsFromForm(formData)
         const products = getProductsForDB(productsUI)
-        const deliveryDays = getDevDaysForDB(devDays.shift())
+        const deliveryDays = getDevDaysForDB(devDays)
         const formValues = extractDeliveryDetails(formData)
         const body = [{ ...formValues, isNew: true, delete: 0, isActive: 0, products, deliveryDays, customer_Id: accountId }]
 
@@ -89,8 +89,11 @@ const ViewAccount = () => {
     }
 
     const handleDevDaysDeselect = (value) => {
-        const filtered = devDays.filter(day => day !== value && day !== "ALL")
-        setDevDays(filtered)
+        if (value == 'ALL') setDevDays([])
+        else {
+            const filtered = devDays.filter(day => day !== value && day !== "ALL")
+            setDevDays(filtered)
+        }
     }
 
     const handleProofUpload = (file, name) => {

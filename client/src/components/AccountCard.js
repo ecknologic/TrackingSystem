@@ -1,14 +1,13 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import branch from '../assets/images/ic-manage-users.svg';
 import '../sass/accountCard.scss'
 import NameCard from './NameCard';
 import PrimaryButton from './PrimaryButton';
 
-const AccountCard = ({ customerDetails, sortBy, onClick }) => {
+const AccountCard = ({ customerDetails, onClick }) => {
     const isActive = customerDetails.isActive
     const name = JSON.parse(customerDetails.contactpersons)
-    useEffect(() => {
-    }, [sortBy])
+
     return (
         <div className='account-card-container'>
             <div className={isActive ? 'badge active' : 'badge'}>{isActive ? "ACTIVE" : "DRAFT"}</div>
@@ -26,7 +25,7 @@ const AccountCard = ({ customerDetails, sortBy, onClick }) => {
                     <span className='type1'>Contact Persons</span>
                     <div className='contacts'>
                         {
-                            name.map((item, index) => index <= 2 ? <NameCard key={item} name={item} /> : null)
+                            name.map((item, index) => index <= 2 ? <NameCard key={index} name={item} /> : null)
                         }
                         {name.length > 3 ? <div className='extra'>{`+${name.length - 3}`}</div> : null}
                     </div>

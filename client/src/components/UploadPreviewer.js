@@ -12,7 +12,7 @@ const UploadPreviewer = ({ title, value, onRemove, disabled, className = '' }) =
         <div className={`item-container ${className}`}>
             <span>{title}</span>
             <div className='img-container'>
-                {value ? <img src={value} alt='' /> : null}
+                {value && <img src={value} alt='' />}
                 {!disabled && value && <img className='cross' src={Remove} onClick={onRemove} alt='' />}
                 {value && <EyeOutlined onClick={() => setModal(true)} />}
             </div>

@@ -8,7 +8,7 @@ import { invoiceOptions, idOptions, businessOptions } from '../../../../assets/f
 import { getIdProofName, getIDInputValidationProps } from '../../../../utils/Functions';
 import InputLabel from '../../../../components/InputLabel';
 
-const CorporateAccountForm = ({ data, IDErrors, IDProofs, onChange, onUpload, disabled, onRemove, track }) => {
+const CorporateAccountForm = ({ data, IDErrors, errors, IDProofs, onChange, onBlur, onUpload, disabled, onRemove, track }) => {
 
     const {
         gstNo, natureOfBussiness, organizationName, address, customerName,
@@ -34,14 +34,14 @@ const CorporateAccountForm = ({ data, IDErrors, IDProofs, onChange, onUpload, di
         <div className='app-form-container form-container'>
             <div className='app-identity-proof-container identity-proof-container'>
                 <div className='input-container'>
-                    <label className='app-input-label-name'>Select Id Proof</label>
+                    <InputLabel name='Select Id Proof' error={errors.idProofType} mandatory />
                     <SelectInput track={track} value={idProofType} options={idOptions} disabled={disabled} onSelect={(value) => onChange(value, 'idProofType')} />
                 </div>
                 {
                     idProofType && (
                         <div className='input-container second'>
-                            <InputLabel name={proofName} error={IDErrors[idProofType]} />
-                            <Input maxLength={maxLength} size='large' value={data[idProofType]} placeholder={`Add ${proofName}`} className={`app-id-input ${IDErrors[idProofType] ? 'app-input-error' : ''}`} disabled={disabled} onChange={({ target: { value } }) => onChange(value, idProofType)} />
+                            <InputLabel name={proofName} error={IDErrors[idProofType]} mandatory />
+                            <Input maxLength={maxLength} size='large' value={data[idProofType]} placeholder={`Add ${proofName}`} className={`app-id-input ${IDErrors[idProofType] ? 'app-input-error' : ''}`} disabled={disabled} onBlur={({ target: { value } }) => onBlur(value, idProofType)} onChange={({ target: { value } }) => onChange(value, idProofType)} />
                         </div>
                     )
                 }
@@ -59,8 +59,8 @@ const CorporateAccountForm = ({ data, IDErrors, IDProofs, onChange, onUpload, di
             </div>
             <div className='row'>
                 <div className='input-container'>
-                    <InputLabel name='GST Number' />
-                    <InputWithAddon value={gstNo} label='VERIFY' disabled={disabled} placeholder='GST Number' onChange={({ target: { value } }) => onChange(value, 'gstNo')} />
+                    <InputLabel name='GST Number' error={errors.gstNo} mandatory />
+                    <InputWithAddon maxLength={15} value={gstNo} label='VERIFY' disabled={disabled} placeholder='GST Number' error={errors.gstNo} onBlur={({ target: { value } }) => onBlur(value, 'gstNo')} onChange={({ target: { value } }) => onChange(value, 'gstNo')} />
                 </div>
                 <div className='input-container app-upload-file-container app-gst-upload-container'>
                     <DraggerInput onUpload={(file) => onUpload(file, 'gstProof')} disabled={gstUploadDisable || disabled} />
@@ -71,55 +71,55 @@ const CorporateAccountForm = ({ data, IDErrors, IDProofs, onChange, onUpload, di
             </div>
             <div className='row'>
                 <div className='input-container'>
-                    <InputLabel name='Organization Name' />
-                    <Input size='large' value={organizationName} placeholder='Organization Name' disabled={disabled} onChange={({ target: { value } }) => onChange(value, 'organizationName')} />
+                    <InputLabel name='Organization Name' error={errors.organizationName} mandatory />
+                    <Input size='large' autoComplete='none' value={organizationName} placeholder='Organization Name' disabled={disabled} className={`${errors.organizationName && 'app-input-error'}`} onChange={({ target: { value } }) => onChange(value, 'organizationName')} />
                 </div>
 
             </div>
             <div className='row'>
                 <div className='input-container stretch'>
-                    <InputLabel name='Address' />
-                    <Input size='large' value={address} placeholder='Add Address' disabled={disabled} onChange={({ target: { value } }) => onChange(value, 'address')} />
+                    <InputLabel name='Address' error={errors.address} mandatory />
+                    <Input size='large' autoComplete='none' value={address} placeholder='Add Address' disabled={disabled} className={`${errors.address && 'app-input-error'}`} onChange={({ target: { value } }) => onChange(value, 'address')} />
                 </div>
             </div>
             <div className='row'>
                 <div className='input-container'>
-                    <InputLabel name='Phone Number' />
-                    <InputNumber size="large" value={mobileNumber} disabled={disabled} placeholder='Phone Number' onChange={(value) => onChange(value, 'mobileNumber')} />
+                    <InputLabel name='Phone Number' error={errors.mobileNumber} mandatory />
+                    <InputNumber size="large" maxLength={10} value={mobileNumber} disabled={disabled} placeholder='Phone Number' className={`${errors.mobileNumber && 'app-input-error'}`} onBlur={({ target: { value } }) => onBlur(value, 'mobileNumber')} onChange={(value) => onChange(value, 'mobileNumber')} />
                 </div>
                 <div className='input-container'>
-                    <InputLabel name='Email' />
-                    <Input size='large' value={EmailId} type='email' disabled={disabled} placeholder='Email' onChange={({ target: { value } }) => onChange(value, 'EmailId')} />
+                    <InputLabel name='Email' error={errors.EmailId} mandatory />
+                    <Input size='large' value={EmailId} type='email' disabled={disabled} placeholder='Email' className={`${errors.EmailId && 'app-input-error'}`} onChange={({ target: { value } }) => onChange(value, 'EmailId')} />
                 </div>
             </div>
             <div className='row'>
                 <div className='input-container'>
-                    <InputLabel name='Account Owner' />
-                    <Input size='large' value={customerName} disabled={disabled} placeholder='Account Owner' onChange={({ target: { value } }) => onChange(value, 'customerName')} />
+                    <InputLabel name='Account Owner' error={errors.customerName} mandatory />
+                    <Input size='large' value={customerName} disabled={disabled} placeholder='Account Owner' className={`${errors.customerName && 'app-input-error'}`} onChange={({ target: { value } }) => onChange(value, 'customerName')} />
                 </div>
                 <div className='input-container'>
-                    <InputLabel name='Nature Of Business' />
+                    <InputLabel name='Nature Of Business' error={errors.natureOfBussiness} mandatory />
                     <SelectInput track={track} value={natureOfBussiness} disabled={disabled} options={businessOptions} onSelect={(value) => onChange(value, 'natureOfBussiness')} />
                 </div>
             </div>
             <div className='row'>
                 <div className='input-container'>
-                    <InputLabel name='Registered Date' />
+                    <InputLabel name='Registered Date' error={errors.registeredDate} mandatory />
                     <Input size='large' value={registeredDate} placeholder='Registered Date' disabled />
                 </div>
                 <div className='input-container'>
-                    <InputLabel name='Invoice Type' />
-                    <SelectInput track={track} value={invoicetype} options={invoiceOptions} disabled={disabled} onSelect={(value) => onChange(value, 'invoicetype')} />
+                    <InputLabel name='Invoice Type' error={errors.invoicetype} mandatory />
+                    <SelectInput track={track} value={invoicetype} options={invoiceOptions} disabled={disabled} className={`${errors.creditPeriodInDays && 'app-input-error'}`} onSelect={(value) => onChange(value, 'invoicetype')} />
                 </div>
             </div>
             <div className='row'>
-                <div className='input-container'>
-                    <InputLabel name='Credit Period in Days' />
-                    <InputNumber size="large" value={creditPeriodInDays} disabled={disabled} placeholder='Credit Period' onChange={(value) => onChange(value, 'creditPeriodInDays')} />
+                <div className='input-container' error={errors.creditPeriodInDays}>
+                    <InputLabel name='Credit Period in Days' mandatory />
+                    <InputNumber size="large" value={creditPeriodInDays} disabled={disabled} placeholder='Credit Period' className={`${errors.creditPeriodInDays && 'app-input-error'}`} onChange={(value) => onChange(value, 'creditPeriodInDays')} />
                 </div>
                 <div className='input-container'>
-                    <InputLabel name='Referred By' />
-                    <Input size='large' value={referredBy} disabled={disabled} placeholder='Referral Name' onChange={({ target: { value } }) => onChange(value, 'referredBy')} />
+                    <InputLabel name='Referred By' error={errors.referredBy} mandatory />
+                    <Input size='large' value={referredBy} disabled={disabled} placeholder='Referral Name' className={`${errors.referredBy && 'app-input-error'}`} onChange={({ target: { value } }) => onChange(value, 'referredBy')} />
                 </div>
             </div>
         </div>

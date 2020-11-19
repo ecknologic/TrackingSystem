@@ -12,12 +12,12 @@ import { http } from '../../../modules/http'
 import { getRouteOptions, WEEKDAYS } from '../../../assets/fixtures';
 import {
     getBase64, deepClone, getIdProofsForDB, getDevDaysForDB, getAddressesForDB, resetTrackForm,
-    getProductsForDB, extractGADeliveryDetails, extractGADetails, isEmpty, trackAccountFormOnce,
+    getProductsForDB, extractGADeliveryDetails, extractGADetails, isEmpty, trackAccountFormOnce
 } from '../../../utils/Functions';
 import { TRACKFORM, getUserId, getUsername, getWarehoseId, TODAYDATE } from '../../../utils/constants';
 import {
     validateAccountValues, validateDeliveryValues, validateDevDays,
-    validateIDProofs, validateAddresses, validateIDNumbers
+    validateIDProofs, validateAddresses, validateIDNumbers, validateNames, validateMobileNumber, validateEmailId
 } from '../../../utils/validations';
 import SuccessModal from '../../../components/CustomModal';
 import QuitModal from '../../../components/CustomModal';
@@ -39,14 +39,20 @@ const AddAccount = () => {
     const [successModal, setSucessModal] = useState(false)
     const [sameAddress, setSameAddress] = useState(false)
     const [corporate, setCorporate] = useState(true)
+    const [corporateErrors, setCorporateErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [corporateValues, setCorporateValues] = useState(defaultValues)
     const [generalValues, setGeneralValues] = useState(defaultValues)
+    const [generalErrors, setGeneralErrors] = useState({})
     const [deliveryValues, setDeliveryValues] = useState({})
+    const [deliveryErrors, setDeliveryErrors] = useState({})
     const [IDProofs, setIDProofs] = useState({})
+    const [IDProofErrors, setIDProofErrors] = useState({})
     const [IDErrors, setIDErrors] = useState({})
     const [devDays, setDevDays] = useState([])
+    const [devDaysError, setDevDaysError] = useState({})
     const [addresses, setAddresses] = useState([])
+    const [addressesErrors, setAddressesErrors] = useState({})
     const hasExtraAddress = !!addresses.length
     const [routes, setRoutes] = useState([])
     const routeOptions = useMemo(() => getRouteOptions(routes), [routes])
@@ -88,19 +94,90 @@ const AddAccount = () => {
 
     const handleDeliveryValues = (value, key) => {
         setDeliveryValues(data => ({ ...data, [key]: value }))
+        setDeliveryErrors(errors => ({ ...errors, [key]: '' }))
+
+        if (key.includes('price') || key.includes('product')) {
+            setDeliveryErrors(errors => ({ ...errors, productNPrice: '' }))
+        }
+
+        // Validations
+        if (key === 'deliveryLocation') {
+            const error = validateNames(value)
+            setDeliveryErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'phoneNumber') {
+            const error = validateMobileNumber(value)
+            setDeliveryErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'contactPerson') {
+            const error = validateNames(value)
+            setDeliveryErrors(errors => ({ ...errors, [key]: error }))
+        }
+    }
+    const handleDeliveryBlur = (value, key) => {
+
+        // Validations
+        if (key === 'gstNo') {
+            const error = validateIDNumbers(key, value, true)
+            setDeliveryErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'phoneNumber') {
+            const error = validateMobileNumber(value, true)
+            setDeliveryErrors(errors => ({ ...errors, [key]: error }))
+        }
     }
     const handleGeneralValues = (value, key) => {
         setGeneralValues(data => ({ ...data, [key]: value }))
+        setGeneralErrors(errors => ({ ...errors, [key]: '' }))
+
+        if (key.includes('price') || key.includes('product')) {
+            setGeneralErrors(errors => ({ ...errors, productNPrice: '' }))
+        }
 
         // Validations
         if (key === 'adharNo' || key === 'panNo') {
             const error = validateIDNumbers(key, value)
             setIDErrors({ [key]: error })
         }
+        else if (key === 'gstNo') {
+            const error = validateIDNumbers(key, value)
+            setGeneralErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'mobileNumber') {
+            const error = validateMobileNumber(value)
+            setGeneralErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'contactPerson' || key === 'deliveryLocation') {
+            const error = validateNames(value)
+            setGeneralErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'EmailId') {
+            const error = validateEmailId(value)
+            setGeneralErrors(errors => ({ ...errors, [key]: error }))
+        }
     }
+
+    const handleGeneralBlur = (value, key) => {
+
+        // Validations
+        if (key === 'adharNo' || key === 'panNo') {
+            const error = validateIDNumbers(key, value, true)
+            setIDErrors({ [key]: error })
+        }
+        else if (key === 'gstNo') {
+            const error = validateIDNumbers(key, value, true)
+            setGeneralErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'mobileNumber') {
+            const error = validateMobileNumber(value, true)
+            setGeneralErrors(errors => ({ ...errors, [key]: error }))
+        }
+    }
+
     const handleCorporateChange = (value, key) => {
 
         setCorporateValues(data => ({ ...data, [key]: value }))
+        setCorporateErrors(errors => ({ ...errors, [key]: '' }))
         if (sameAddress) preFillDDForm(value, key)
 
         // Validations
@@ -108,9 +185,43 @@ const AddAccount = () => {
             const error = validateIDNumbers(key, value)
             setIDErrors({ [key]: error })
         }
+        else if (key === 'gstNo') {
+            const error = validateIDNumbers(key, value)
+            setCorporateErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'organizationName' || key === 'customerName' || key === 'referredBy') {
+            const error = validateNames(value)
+            setCorporateErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'mobileNumber') {
+            const error = validateMobileNumber(value)
+            setCorporateErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'EmailId') {
+            const error = validateEmailId(value)
+            setCorporateErrors(errors => ({ ...errors, [key]: error }))
+        }
+    }
+
+    const handleCorporateBlur = (value, key) => {
+
+        // Validations
+        if (key === 'adharNo' || key === 'panNo') {
+            const error = validateIDNumbers(key, value, true)
+            setIDErrors({ [key]: error })
+        }
+        else if (key === 'gstNo') {
+            const error = validateIDNumbers(key, value, true)
+            setCorporateErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'mobileNumber') {
+            const error = validateMobileNumber(value, true)
+            setCorporateErrors(errors => ({ ...errors, [key]: error }))
+        }
     }
 
     const handleDevDaysSelect = (value) => {
+        setDevDaysError({ devDays: '' })
         if (value == 'ALL') setDevDays(WEEKDAYS)
         else {
             const clone = [...devDays]
@@ -120,26 +231,43 @@ const AddAccount = () => {
     }
 
     const handleDevDaysDeselect = (value) => {
-        const filtered = devDays.filter(day => day !== value && day !== "ALL")
-        setDevDays(filtered)
+        if (value == 'ALL') setDevDays([])
+        else {
+            const filtered = devDays.filter(day => day !== value && day !== "ALL")
+            setDevDays(filtered)
+        }
     }
 
     const handleProofUpload = (file, name, formType) => {
         getBase64(file, async (buffer) => {
             if (name === 'gstProof') {
-                if (formType === 'delivery') setDeliveryValues(data => ({ ...data, [name]: buffer }))
+                if (formType === 'delivery') {
+                    setDeliveryValues(data => ({ ...data, [name]: buffer }))
+                    setDeliveryErrors(errors => ({ ...errors, [name]: '' }))
+                }
                 else if (corporate) {
                     setCorporateValues(data => ({ ...data, [name]: buffer }))
+                    setCorporateErrors(errors => ({ ...errors, [name]: '' }))
                     if (sameAddress) preFillDDForm(buffer, name)
                 }
-                else setGeneralValues(data => ({ ...data, [name]: buffer }))
+                else {
+                    setGeneralValues(data => ({ ...data, [name]: buffer }))
+                    setGeneralErrors(errors => ({ ...errors, [name]: '' }))
+                }
             }
             else if (name === 'idProofs') {
                 const clone = { ...IDProofs }
                 const { Front } = clone
-                if (Front) clone.Back = buffer
-                else clone.Front = buffer
+                if (Front) {
+                    clone.Back = buffer
+                    setIDProofErrors(errors => ({ ...errors, Back: '' }))
+                }
+                else {
+                    clone.Front = buffer
+                    setIDProofErrors(errors => ({ ...errors, Front: '' }))
+                }
                 setIDProofs(clone)
+
             }
         })
     }
@@ -160,13 +288,12 @@ const AddAccount = () => {
         if (addresses.length < limit) {
             const address = { ...deliveryValues, devDays, isNew: true }
 
-            const deliveryErrors = validateDeliveryValues(deliveryValues)
+            const errors = validateDeliveryValues(deliveryValues)
             const devDaysError = validateDevDays(devDays)
 
-            if (!isEmpty(deliveryErrors) || !isEmpty(devDaysError)) {
-                console.log('deliveryErrors', deliveryErrors)
-                console.log('devDaysError', devDaysError)
-                message.error('Validation Error')
+            if (!isEmpty(errors) || !isEmpty(devDaysError)) {
+                setDeliveryErrors({ ...errors })
+                setDevDaysError({ ...devDaysError })
                 return
             }
 
@@ -212,18 +339,12 @@ const AddAccount = () => {
         let body;
 
         const IDProofError = validateIDProofs(IDProofs)
-        const devDaysError = validateDevDays(devDays)
 
-        if (!isEmpty(IDProofError) || !isEmpty(devDaysError)) {
-            console.log('IDProofError', IDProofError)
-            console.log('devDaysError', devDaysError)
-            message.error('Validation Error')
-            return
+        if (!isEmpty(IDProofError)) {
+            setIDProofErrors(IDProofError)
         }
 
         const idProofs = getIdProofsForDB(IDProofs)
-        const deliveryDays = getDevDaysForDB(devDays.shift())
-
         const extra = {
             customertype, createdBy: USERID, departmentId: WAREHOUSEID
         }
@@ -233,16 +354,17 @@ const AddAccount = () => {
 
             const accountErrors = validateAccountValues(corporateValues, 'Corporate')
             const deliveryErrors = validateDeliveryValues(deliveryValues)
+            const devDaysError = validateDevDays(devDays)
             const extraDeliveryErrors = validateAddresses(sessionAddresses)
 
             const currentDelivery = { ...deliveryValues, devDays, isNew: true }
             const allDeliveries = [...sessionAddresses, currentDelivery]
 
-            if (!isEmpty(accountErrors) || !isEmpty(deliveryErrors) || !isEmpty(extraDeliveryErrors)) {
-                console.log('extraDeliveryErrors', extraDeliveryErrors)
-                console.log('deliveryErrors', deliveryErrors)
-                console.log('accountErrors', accountErrors)
-                message.error('Validation Error')
+            if (!isEmpty(accountErrors) || !isEmpty(deliveryErrors) || !isEmpty(extraDeliveryErrors) || !isEmpty(devDaysError)) {
+                setDevDaysError(devDaysError)
+                setDeliveryErrors(deliveryErrors)
+                setAddressesErrors(extraDeliveryErrors)
+                setCorporateErrors(accountErrors)
                 return
             }
             const Address1 = corporateValues.address
@@ -251,13 +373,16 @@ const AddAccount = () => {
             body = { ...account, deliveryDetails: delivery }
         }
         else {
-            const accountErrors = validateAccountValues(generalValues)
 
-            if (!isEmpty(accountErrors)) {
-                console.log('accountErrors', accountErrors)
-                message.error('Validation Error')
+            const accountErrors = validateAccountValues(generalValues)
+            const devDaysError = validateDevDays(devDays)
+
+            if (!isEmpty(accountErrors) || !isEmpty(devDaysError)) {
+                setDevDaysError(devDaysError)
+                setGeneralErrors(accountErrors)
                 return
             }
+            const deliveryDays = getDevDaysForDB(devDays)
             const products = getProductsForDB(generalValues)
             const delivery = { ...extractGADeliveryDetails(generalValues), deliveryDays, products }
             const account = extractGADetails(generalValues)
@@ -332,8 +457,13 @@ const AddAccount = () => {
         setCorporate(!corporate)
         setSwitchModal(false)
         resetCorporateValues()
+        setCorporateErrors({})
         resetGeneralValues()
+        setGeneralErrors({})
         resetDeliveryValues()
+        setDeliveryErrors({})
+        setIDErrors({})
+        setDevDaysError({})
         resetTrackForm()
     }, [corporate])
 
@@ -362,22 +492,27 @@ const AddAccount = () => {
                         <CorporateAccount
                             track
                             data={corporateValues}
+                            errors={corporateErrors}
                             IDErrors={IDErrors}
                             IDProofs={IDProofs}
                             onUpload={handleProofUpload}
                             onRemove={handleProofRemove}
                             onChange={handleCorporateChange}
+                            onBlur={handleCorporateBlur}
                         />
                     ) : (
                             <GeneralAccount
                                 track
                                 data={generalValues}
+                                errors={generalErrors}
                                 devDays={devDays}
+                                devDaysError={devDaysError}
                                 IDProofs={IDProofs}
                                 IDErrors={IDErrors}
                                 routeOptions={routeOptions}
                                 onUpload={handleProofUpload}
                                 onRemove={handleProofRemove}
+                                onBlur={handleGeneralBlur}
                                 onChange={handleGeneralValues}
                                 onSelect={handleDevDaysSelect}
                                 onDeselect={handleDevDaysDeselect}
@@ -414,6 +549,7 @@ const AddAccount = () => {
                                                 <CollapseForm
                                                     uniqueId={index}
                                                     data={item}
+                                                    addressesErrors={addressesErrors}
                                                     routeOptions={routeOptions}
                                                 />
                                             </Panel>
@@ -424,7 +560,9 @@ const AddAccount = () => {
                             <Delivery
                                 track
                                 devDays={devDays}
+                                devDaysError={devDaysError}
                                 data={deliveryValues}
+                                errors={deliveryErrors}
                                 routeOptions={routeOptions}
                                 hasExtraAddress={hasExtraAddress}
                                 sameAddress={sameAddress && !hasExtraAddress}
@@ -432,6 +570,7 @@ const AddAccount = () => {
                                 onAdd={handleAddDelivery}
                                 onUpload={handleProofUpload}
                                 onChange={handleDeliveryValues}
+                                onBlur={handleDeliveryBlur}
                                 onSelect={handleDevDaysSelect}
                                 onDeselect={handleDevDaysDeselect}
                             />

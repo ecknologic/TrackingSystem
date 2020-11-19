@@ -18,6 +18,7 @@ const SelectInput = ({ options, mode, onSelect, onDeselect, value, disabled, tra
     const tagRender = (props) => {
         const { label, closable, onClose } = props;
 
+        if (label === 'ALL') return null
         return (
             <Tag color='#0091FF' closable={closable} onClose={onClose} style={{ marginRight: 3 }}>
                 {label}

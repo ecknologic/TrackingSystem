@@ -71,8 +71,11 @@ const AccountOverview = ({ data, routeOptions }) => {
     }
 
     const handleDevDaysDeselect = (value) => {
-        const filtered = devDays.filter(day => day !== value && day !== "ALL")
-        setDevDays(filtered)
+        if (value == 'ALL') setDevDays([])
+        else {
+            const filtered = devDays.filter(day => day !== value && day !== "ALL")
+            setDevDays(filtered)
+        }
     }
 
     const handleProofRemove = (name) => {

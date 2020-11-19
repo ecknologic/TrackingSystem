@@ -7,7 +7,7 @@ const SearchInput = ({ placeholder, onSearch, width = '300px', onChange }) => {
 
     const handleChange = ({ currentTarget: { value } }) => {
         setInput(value)
-        onChange(value)
+        onChange(value.trim())
     }
 
     const handleEnter = ({ keyCode }) => {
