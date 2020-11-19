@@ -59,25 +59,65 @@ export const validateAccountValues = (data, customerType) => {
         if (!depositAmount) errors.depositAmount = text
         if (!routingId) errors.routingId = text
         if (!deliveryLocation) errors.deliveryLocation = text
+        else {
+            const error = validateNames(deliveryLocation)
+            error && (errors.deliveryLocation = error)
+        }
         productErrors = validateProducts(rest)
     }
 
-
-    if (gstNo && String(gstNo).length < 15) errors.gstNo = text2
     if (gstNo && !gstProof) errors.gstProof = text
     if (!gstNo && gstProof) errors.gstNo = text
     if (!address) errors.address = text
-    if (!EmailId) errors.EmailId = text
-    if (!referredBy) errors.referredBy = text
     if (!idProofType) errors.idProofType = text
+    if (idProofType && !data[idProofType]) errors[idProofType] = text
     if (!invoicetype) errors.invoicetype = text
-    if (!mobileNumber) errors.mobileNumber = text
-    if (mobileNumber && String(mobileNumber) < 10) errors.mobileNumber = text2
-    if (!customerName) errors.customerName = text
     if (!registeredDate) errors.registeredDate = text
     if (!natureOfBussiness) errors.natureOfBussiness = text
-    if (panNo && String(panNo).length < 10) errors.panNo = text2
-    if (adharNo && String(adharNo).length < 12) errors.adharNo = text2
+    if (!customerName) errors.customerName = text
+    else {
+        const error = validateNames(customerName)
+        error && (errors.customerName = error)
+    }
+    if (!referredBy) errors.referredBy = text
+    else {
+        const error = validateNames(referredBy)
+        error && (errors.referredBy = error)
+    }
+    if (!EmailId) errors.EmailId = text
+    else {
+        const error = validateEmailId(EmailId)
+        error && (errors.EmailId = error)
+    }
+    if (!mobileNumber) errors.mobileNumber = text
+    else {
+        if (String(mobileNumber) < 10) errors.mobileNumber = text2
+        else {
+            const error = validateMobileNumber(mobileNumber)
+            error && (errors.mobileNumber = error)
+        }
+    }
+    if (panNo) {
+        if (String(panNo).length < 10) (errors.panNo = text2)
+        else {
+            const error = validateIDNumbers('panNo', panNo)
+            error && (errors.panNo = error)
+        }
+    }
+    if (adharNo) {
+        if (String(adharNo).length < 12) errors.adharNo = text2
+        else {
+            const error = validateIDNumbers('adharNo', adharNo)
+            error && (errors.adharNo = error)
+        }
+    }
+    if (gstNo) {
+        if (String(gstNo).length < 15) errors.gstNo = text2
+        else {
+            const error = validateIDNumbers('gstNo', gstNo)
+            error && (errors.gstNo = error)
+        }
+    }
 
     return { ...errors, ...productErrors }
 }
@@ -86,39 +126,61 @@ export const validateDeliveryValues = (data) => {
     const text = 'Required'
     const text2 = 'Incomplete'
     const {
-        gstNo, depositAmount, routingId, phoneNumber, contactPerson, address,
+        gstNo, gstProof, depositAmount, routingId, phoneNumber, contactPerson, address,
         deliveryLocation, ...rest
     } = data
 
-    if (gstNo && String(gstNo).length < 15) errors.gst = text2
     if (!depositAmount) errors.depositAmount = text
     if (!routingId) errors.routingId = text
-    if (!phoneNumber) errors.phoneNumber = text
-    if (phoneNumber && String(phoneNumber).length < 10) errors.phoneNumber = text2
-    if (!contactPerson) errors.contactPerson = text
     if (!address) errors.address = text
+    if (gstNo && !gstProof) errors.gstProof = text
+    if (!gstNo && gstProof) errors.gstNo = text
+    if (gstNo) {
+        if (String(gstNo).length < 15) errors.gstNo = text2
+        else {
+            const error = validateIDNumbers('gstNo', gstNo)
+            error && (errors.gstNo = error)
+        }
+    }
+    if (!phoneNumber) errors.phoneNumber = text
+    else {
+        if (String(phoneNumber).length < 10) errors.phoneNumber = text2
+        else {
+            const error = validateMobileNumber(phoneNumber)
+            error && (errors.phoneNumber = error)
+        }
+    }
+    if (!contactPerson) errors.contactPerson = text
+    else {
+        const error = validateNames(contactPerson)
+        error && (errors.contactPerson = error)
+    }
     if (!deliveryLocation) errors.deliveryLocation = text
+    else {
+        const error = validateNames(deliveryLocation)
+        error && (errors.deliveryLocation = error)
+    }
+
     const productErrors = validateProducts(rest)
     return { ...errors, ...productErrors }
 }
 
 const validateProducts = ({ product20L, price20L, product1L, price1L, product500ML, price500ML }) => {
     let errors = {};
-    const text = 'Required'
     if (product20L || price20L) {
-        if (!product20L) errors.product20L = text
-        if (!price20L) errors.price20L = text
+        if (!product20L) errors.productNPrice = 'Enter quantity for 20 Ltrs'
+        if (!price20L) errors.productNPrice = 'Enter price for 20 Ltrs'
     }
     if (product1L || price1L) {
-        if (!product1L) errors.product1L = text
-        if (!price1L) errors.price1L = text
+        if (!product1L) errors.productNPrice = 'Enter quantity for 1 Ltrs'
+        if (!price1L) errors.productNPrice = 'Enter price for 1 Ltrs'
     }
     if (product500ML || price500ML) {
-        if (!product500ML) errors.product500ML = text
-        if (!price500ML) errors.price500ML = text
+        if (!product500ML) errors.productNPrice = 'Enter quantity for 500 ml'
+        if (!price500ML) errors.productNPrice = 'Enter price for 500 ml'
     }
     if (!(product20L || price20L) && !(product1L || price1L) && !(product500ML || price500ML)) {
-        errors.productNPrice = text
+        errors.productNPrice = 'Atleast 1 product is required'
     }
     return errors
 }
@@ -138,7 +200,6 @@ export const validateAddresses = (data) => {
 }
 
 export const validateIDNumbers = (key, value, isBlur) => {
-    // if (!value) return 'Required'
     if (key === 'panNo') {
         if (isBlur && value && String(value).length < 10) {
             return 'Incomplete'

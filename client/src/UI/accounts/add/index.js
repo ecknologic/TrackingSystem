@@ -48,7 +48,6 @@ const AddAccount = () => {
     const [deliveryErrors, setDeliveryErrors] = useState({})
     const [IDProofs, setIDProofs] = useState({})
     const [IDProofErrors, setIDProofErrors] = useState({})
-    const [IDErrors, setIDErrors] = useState({})
     const [devDays, setDevDays] = useState([])
     const [devDaysError, setDevDaysError] = useState({})
     const [addresses, setAddresses] = useState([])
@@ -57,6 +56,8 @@ const AddAccount = () => {
     const [routes, setRoutes] = useState([])
     const routeOptions = useMemo(() => getRouteOptions(routes), [routes])
     const [scrollDep, setScrollDep] = useState(false)
+    const [createShake, setCreateShake] = useState(false)
+    const [addShake, setAddShake] = useState(false)
 
     const customertype = corporate ? 'Corporate' : 'General'
     const confirmMsg = 'Changes you made may not be saved.'
@@ -133,13 +134,13 @@ const AddAccount = () => {
         if (key.includes('price') || key.includes('product')) {
             setGeneralErrors(errors => ({ ...errors, productNPrice: '' }))
         }
+        else if (value === 'adharNo' || value === 'panNo') {
+            setGeneralValues(data => ({ ...data, [value]: '' }))
+            setGeneralErrors(errors => ({ ...errors, [value]: '' }))
+        }
 
         // Validations
-        if (key === 'adharNo' || key === 'panNo') {
-            const error = validateIDNumbers(key, value)
-            setIDErrors({ [key]: error })
-        }
-        else if (key === 'gstNo') {
+        if (key === 'adharNo' || key === 'panNo' || (key === 'gstNo')) {
             const error = validateIDNumbers(key, value)
             setGeneralErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -147,7 +148,7 @@ const AddAccount = () => {
             const error = validateMobileNumber(value)
             setGeneralErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key === 'contactPerson' || key === 'deliveryLocation') {
+        else if (key === 'deliveryLocation') {
             const error = validateNames(value)
             setGeneralErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -160,11 +161,7 @@ const AddAccount = () => {
     const handleGeneralBlur = (value, key) => {
 
         // Validations
-        if (key === 'adharNo' || key === 'panNo') {
-            const error = validateIDNumbers(key, value, true)
-            setIDErrors({ [key]: error })
-        }
-        else if (key === 'gstNo') {
+        if (key === 'adharNo' || key === 'panNo' || key === 'gstNo') {
             const error = validateIDNumbers(key, value, true)
             setGeneralErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -180,12 +177,13 @@ const AddAccount = () => {
         setCorporateErrors(errors => ({ ...errors, [key]: '' }))
         if (sameAddress) preFillDDForm(value, key)
 
-        // Validations
-        if (key === 'adharNo' || key === 'panNo') {
-            const error = validateIDNumbers(key, value)
-            setIDErrors({ [key]: error })
+        if (value === 'adharNo' || value === 'panNo') {
+            setCorporateValues(data => ({ ...data, [value]: '' }))
+            setCorporateErrors(errors => ({ ...errors, [value]: '' }))
         }
-        else if (key === 'gstNo') {
+
+        // Validations
+        if (key === 'adharNo' || key === 'panNo' || key === 'gstNo') {
             const error = validateIDNumbers(key, value)
             setCorporateErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -206,11 +204,7 @@ const AddAccount = () => {
     const handleCorporateBlur = (value, key) => {
 
         // Validations
-        if (key === 'adharNo' || key === 'panNo') {
-            const error = validateIDNumbers(key, value, true)
-            setIDErrors({ [key]: error })
-        }
-        else if (key === 'gstNo') {
+        if (key === 'adharNo' || key === 'panNo' || key === 'gstNo') {
             const error = validateIDNumbers(key, value, true)
             setCorporateErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -292,6 +286,8 @@ const AddAccount = () => {
             const devDaysError = validateDevDays(devDays)
 
             if (!isEmpty(errors) || !isEmpty(devDaysError)) {
+                setAddShake(true)
+                setTimeout(() => setAddShake(false), 820)
                 setDeliveryErrors({ ...errors })
                 setDevDaysError({ ...devDaysError })
                 return
@@ -339,12 +335,6 @@ const AddAccount = () => {
         let body;
 
         const IDProofError = validateIDProofs(IDProofs)
-
-        if (!isEmpty(IDProofError)) {
-            setIDProofErrors(IDProofError)
-        }
-
-        const idProofs = getIdProofsForDB(IDProofs)
         const extra = {
             customertype, createdBy: USERID, departmentId: WAREHOUSEID
         }
@@ -360,13 +350,18 @@ const AddAccount = () => {
             const currentDelivery = { ...deliveryValues, devDays, isNew: true }
             const allDeliveries = [...sessionAddresses, currentDelivery]
 
-            if (!isEmpty(accountErrors) || !isEmpty(deliveryErrors) || !isEmpty(extraDeliveryErrors) || !isEmpty(devDaysError)) {
+            if (!isEmpty(accountErrors) || !isEmpty(deliveryErrors)
+                || !isEmpty(IDProofError) || !isEmpty(extraDeliveryErrors) || !isEmpty(devDaysError)) {
+                setCreateShake(true)
+                setTimeout(() => setCreateShake(false), 820)
+                setIDProofErrors(IDProofError)
                 setDevDaysError(devDaysError)
                 setDeliveryErrors(deliveryErrors)
                 setAddressesErrors(extraDeliveryErrors)
                 setCorporateErrors(accountErrors)
                 return
             }
+            const idProofs = getIdProofsForDB(IDProofs)
             const Address1 = corporateValues.address
             const delivery = getAddressesForDB(allDeliveries)
             const account = { ...corporateValues, Address1, idProofs, ...extra }
@@ -377,11 +372,16 @@ const AddAccount = () => {
             const accountErrors = validateAccountValues(generalValues)
             const devDaysError = validateDevDays(devDays)
 
-            if (!isEmpty(accountErrors) || !isEmpty(devDaysError)) {
+            if (!isEmpty(accountErrors) || !isEmpty(devDaysError) || !isEmpty(IDProofError)) {
+                setCreateShake(true)
+                setTimeout(() => setCreateShake(false), 820)
+                setIDProofErrors(IDProofError)
                 setDevDaysError(devDaysError)
                 setGeneralErrors(accountErrors)
+                console.log(accountErrors, devDaysError, IDProofErrors)
                 return
             }
+            const idProofs = getIdProofsForDB(IDProofs)
             const deliveryDays = getDevDaysForDB(devDays)
             const products = getProductsForDB(generalValues)
             const delivery = { ...extractGADeliveryDetails(generalValues), deliveryDays, products }
@@ -458,11 +458,11 @@ const AddAccount = () => {
         setSwitchModal(false)
         resetCorporateValues()
         setCorporateErrors({})
+        setAddresses([])
         resetGeneralValues()
         setGeneralErrors({})
         resetDeliveryValues()
         setDeliveryErrors({})
-        setIDErrors({})
         setDevDaysError({})
         resetTrackForm()
     }, [corporate])
@@ -493,8 +493,8 @@ const AddAccount = () => {
                             track
                             data={corporateValues}
                             errors={corporateErrors}
-                            IDErrors={IDErrors}
                             IDProofs={IDProofs}
+                            IDProofErrors={IDProofErrors}
                             onUpload={handleProofUpload}
                             onRemove={handleProofRemove}
                             onChange={handleCorporateChange}
@@ -508,7 +508,7 @@ const AddAccount = () => {
                                 devDays={devDays}
                                 devDaysError={devDaysError}
                                 IDProofs={IDProofs}
-                                IDErrors={IDErrors}
+                                IDProofErrors={IDProofErrors}
                                 routeOptions={routeOptions}
                                 onUpload={handleProofUpload}
                                 onRemove={handleProofRemove}
@@ -529,7 +529,7 @@ const AddAccount = () => {
                             <Divider />
                             <div className='title-container'>
                                 <span className='title'>Delivery Details</span>
-                                {hasExtraAddress && <CustomButton onClick={handleAddDelivery} text='Add New' className='app-add-new-btn' icon={<PlusIcon />} />}
+                                {hasExtraAddress && <CustomButton onClick={handleAddDelivery} text='Add New' className={`app-add-new-btn ${addShake ? 'app-shake' : ''}`} icon={<PlusIcon />} />}
                             </div>
                             {
                                 hasExtraAddress && addresses.map((item, index) => {
@@ -564,16 +564,21 @@ const AddAccount = () => {
                                 data={deliveryValues}
                                 errors={deliveryErrors}
                                 routeOptions={routeOptions}
-                                hasExtraAddress={hasExtraAddress}
                                 sameAddress={sameAddress && !hasExtraAddress}
                                 onRemove={handleProofRemove}
-                                onAdd={handleAddDelivery}
                                 onUpload={handleProofUpload}
                                 onChange={handleDeliveryValues}
                                 onBlur={handleDeliveryBlur}
                                 onSelect={handleDevDaysSelect}
                                 onDeselect={handleDevDaysDeselect}
                             />
+                            {
+                                !hasExtraAddress && (
+                                    <div className='row add-new-btn-container'>
+                                        <CustomButton text='Add New' onClick={handleAddDelivery} className={`app-add-new-btn ${addShake ? 'app-shake' : ''}`} icon={<PlusIcon />} />
+                                    </div>
+                                )
+                            }
                         </>
                     ) : null
                 }
@@ -585,7 +590,10 @@ const AddAccount = () => {
                     />
                     <CustomButton
                         onClick={handleCreateAccount}
-                        className={`app-create-btn footer-btn ${btnDisabled && 'disabled'}`}
+                        className={`
+                        app-create-btn footer-btn ${btnDisabled && 'disabled'}
+                        ${createShake && 'app-shake'}
+                        `}
                         text='Create Account'
                     />
                 </div>

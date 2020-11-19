@@ -6,7 +6,7 @@ import AddressCard from '../../../../components/AddressCard';
 import { useParams } from 'react-router-dom';
 import { http } from '../../../../modules/http';
 import { getDevDays, getProductsWithIdForDB, getProductsForUI, isEmpty, extractDeliveryDetails, extractProductsFromForm, deepClone, getBase64, getDevDaysForDB, base64String } from '../../../../utils/Functions';
-import { validateDeliveryValues, validateDevDays, validateIDNumbers, validateMobileNumber } from '../../../../utils/validations';
+import { validateDeliveryValues, validateDevDays, validateIDNumbers, validateMobileNumber, validateNames } from '../../../../utils/validations';
 import DeliveryForm from '../../add/forms/Delivery';
 import CustomModal from '../../../../components/CustomModal';
 import { WEEKDAYS } from '../../../../assets/fixtures';
@@ -21,6 +21,7 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
     const [devDays, setDevDays] = useState([])
     const [devDaysError, setDevDaysError] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
+    const [shake, setShake] = useState(false)
 
     useEffect(() => {
         getDeliveryDetails()
@@ -42,6 +43,7 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
             setLoading(false)
         } catch (error) { }
     }
+
     const updateDeliveryDetails = (data) => {
         let clone = deepClone(delivery);
         const item = clone.find(item => item.deliveryDetailsId == data.deliveryDetailsId)
@@ -49,14 +51,16 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
         clone[index] = data;
         setDelivery(clone)
     }
+
     const handleUpdate = async () => {
         const deliveryErrors = validateDeliveryValues(formData)
         const devDaysError = validateDevDays(devDays)
 
         if (!isEmpty(deliveryErrors) || !isEmpty(devDaysError)) {
-            console.log('deliveryErrors', deliveryErrors)
-            console.log('devDaysError', devDaysError)
-            message.error('Validation Error')
+            setShake(true)
+            setTimeout(() => setShake(false), 820)
+            setFormErrors(deliveryErrors)
+            setDevDaysError(devDaysError)
             return
         }
 
@@ -81,6 +85,7 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
     }
 
     const handleDevDaysSelect = (value) => {
+        setDevDaysError({ devDays: '' })
         if (value == 'ALL') setDevDays(WEEKDAYS)
         else {
             const clone = [...devDays]
@@ -99,10 +104,28 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
 
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
+        setFormErrors(errors => ({ ...errors, [key]: '' }))
+
+        if (key.includes('price') || key.includes('product')) {
+            setFormErrors(errors => ({ ...errors, productNPrice: '' }))
+        }
+
+        // Validations
+        if (key === 'deliveryLocation') {
+            const error = validateNames(value)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'phoneNumber') {
+            const error = validateMobileNumber(value)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'contactPerson') {
+            const error = validateNames(value)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
     }
 
     const handleBlur = (value, key) => {
-
         // Validations
         if (key === 'gstNo') {
             const error = validateIDNumbers(key, value, true)
@@ -117,8 +140,10 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
     const handleProofUpload = (file, name) => {
         getBase64(file, async (buffer) => {
             setFormData(data => ({ ...data, [name]: buffer }))
+            setFormErrors(errors => ({ ...errors, [name]: '' }))
         })
     }
+
     const handleProofRemove = (name) => {
         setFormData(data => ({ ...data, [name]: '' }))
     }
@@ -133,7 +158,11 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
         setViewModal(true)
     }, [])
 
-    const handleModalCancel = useCallback(() => setViewModal(false), [])
+    const handleModalCancel = useCallback(() => {
+        setViewModal(false)
+        setDevDaysError({})
+        setFormErrors({})
+    }, [])
 
     return (
         <div className='account-view-delivery-details'>
@@ -148,7 +177,7 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
                 }
             </Row>
             <CustomModal
-                className='delivery-form-modal'
+                className={`delivery-form-modal ${shake ? 'app-shake' : ''}`}
                 visible={viewModal}
                 btnDisabled={btnDisabled}
                 onOk={handleUpdate}
@@ -159,10 +188,9 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
                 <DeliveryForm
                     data={formData}
                     errors={formErrors}
-                    routeOptions={routeOptions}
-                    hasExtraAddress
                     devDays={devDays}
                     devDaysError={devDaysError}
+                    routeOptions={routeOptions}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     onUpload={handleProofUpload}

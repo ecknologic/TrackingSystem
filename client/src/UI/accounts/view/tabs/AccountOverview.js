@@ -2,12 +2,12 @@ import dayjs from 'dayjs';
 import { message } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { http } from '../../../../modules/http';
-import { base64String, getBase64, getIdProofsForDB } from '../../../../utils/Functions';
+import { base64String, getBase64, getIdProofsForDB, isEmpty } from '../../../../utils/Functions';
 import CustomButton from '../../../../components/CustomButton';
 import CorporateAccountForm from '../../add/forms/CorporateAccount';
 import NoContent from '../../../../components/NoContent';
 import Spinner from '../../../../components/Spinner';
-import { validateIDProofs, validateAccountValues, validateIDNumbers, validateMobileNumber } from '../../../../utils/validations';
+import { validateIDProofs, validateAccountValues, validateIDNumbers, validateMobileNumber, validateNames, validateEmailId } from '../../../../utils/validations';
 import GeneralAccountForm from '../../add/forms/GeneralAccount';
 import { WEEKDAYS } from '../../../../assets/fixtures';
 
@@ -19,8 +19,10 @@ const AccountOverview = ({ data, routeOptions }) => {
     const [accountValues, setAccountValues] = useState({})
     const [accountErrors, setAccountErrors] = useState({})
     const [IDProofs, setIDProofs] = useState({})
-    const [IDErrors, setIDErrors] = useState({})
+    const [IDProofErrors, setIDProofErrors] = useState({})
     const [devDays, setDevDays] = useState([])
+    const [devDaysError, setDevDaysError] = useState({})
+    const [shake, setShake] = useState(false)
 
     useEffect(() => {
         if (!loading) {
@@ -39,21 +41,34 @@ const AccountOverview = ({ data, routeOptions }) => {
 
     const handleChange = (value, key) => {
         setAccountValues(data => ({ ...data, [key]: value }))
+        setAccountErrors(errors => ({ ...errors, [key]: '' }))
+
+        if (value === 'adharNo' || value === 'panNo') {
+            setAccountValues(data => ({ ...data, [value]: '' }))
+            setAccountErrors(errors => ({ ...errors, [value]: '' }))
+        }
 
         // Validations
-        if (key === 'adharNo' || key === 'panNo') {
+        if (key === 'adharNo' || key === 'panNo' || key === 'gstNo') {
             const error = validateIDNumbers(key, value)
-            setIDErrors({ [key]: error })
+            setAccountErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'organizationName' || key === 'customerName' || key === 'referredBy') {
+            const error = validateNames(value)
+            setAccountErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'mobileNumber') {
+            const error = validateMobileNumber(value)
+            setAccountErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'EmailId') {
+            const error = validateEmailId(value)
+            setAccountErrors(errors => ({ ...errors, [key]: error }))
         }
     }
     const handleBlur = (value, key) => {
-
         // Validations
-        if (key === 'adharNo' || key === 'panNo') {
-            const error = validateIDNumbers(key, value, true)
-            setIDErrors({ [key]: error })
-        }
-        else if (key === 'gstNo') {
+        if (key === 'adharNo' || key === 'panNo' || key === 'gstNo') {
             const error = validateIDNumbers(key, value, true)
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -67,18 +82,26 @@ const AccountOverview = ({ data, routeOptions }) => {
         getBase64(file, async (buffer) => {
             if (name === 'gstProof') {
                 setAccountValues(data => ({ ...data, [name]: buffer }))
+                setAccountErrors(errors => ({ ...errors, [name]: '' }))
             }
             else if (name === 'idProofs') {
                 const clone = { ...IDProofs }
                 const { Front } = clone
-                if (Front) clone.Back = buffer
-                else clone.Front = buffer
+                if (Front) {
+                    clone.Back = buffer
+                    setIDProofErrors(errors => ({ ...errors, Back: '' }))
+                }
+                else {
+                    clone.Front = buffer
+                    setIDProofErrors(errors => ({ ...errors, Front: '' }))
+                }
                 setIDProofs(clone)
             }
         })
     }
 
     const handleDevDaysSelect = (value) => {
+        setDevDaysError({ devDays: '' })
         if (value == 'ALL') setDevDays(WEEKDAYS)
         else {
             const clone = [...devDays]
@@ -109,7 +132,10 @@ const AccountOverview = ({ data, routeOptions }) => {
             /> */}
             <CustomButton
                 onClick={handleAccountUpdate}
-                className={`app-create-btn footer-btn ${btnDisabled && 'disabled'}`}
+                className={`
+                app-create-btn footer-btn ${btnDisabled ? 'disabled' : ''} 
+                ${shake ? 'app-shake' : ''}
+                `}
                 text='Update Account'
             />
         </div>)
@@ -117,16 +143,13 @@ const AccountOverview = ({ data, routeOptions }) => {
 
     const handleAccountUpdate = async () => {
         const IDProofError = validateIDProofs(IDProofs)
-        if (Object.keys(IDProofError).length) {
-            message.error('Validation error')// update errors object
-            console.log(IDProofError)
-            return
-        }
-
         const accountErrors = validateAccountValues(accountValues, customertype)
-        if (Object.keys(accountErrors).length) {
-            message.error('Validation error')// update errors object
-            console.log(accountErrors)
+
+        if (!isEmpty(accountErrors) || !isEmpty(IDProofError)) {
+            setShake(true)
+            setTimeout(() => setShake(false), 820)
+            setIDProofErrors(IDProofError)
+            setAccountErrors(accountErrors)
             return
         }
 
@@ -160,7 +183,7 @@ const AccountOverview = ({ data, routeOptions }) => {
                                     data={accountValues}
                                     errors={accountErrors}
                                     IDProofs={IDProofs}
-                                    IDErrors={IDErrors}
+                                    IDProofErrors={IDProofErrors}
                                     onUpload={handleProofUpload}
                                     onRemove={handleProofRemove}
                                     onChange={handleChange}
@@ -171,8 +194,9 @@ const AccountOverview = ({ data, routeOptions }) => {
                                     data={accountValues}
                                     errors={accountErrors}
                                     IDProofs={IDProofs}
-                                    IDErrors={IDErrors}
+                                    IDProofErrors={IDProofErrors}
                                     devDays={devDays}
+                                    devDaysError={devDaysError}
                                     routeOptions={routeOptions}
                                     onUpload={handleProofUpload}
                                     onRemove={handleProofRemove}

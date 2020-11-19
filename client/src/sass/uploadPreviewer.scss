@@ -46,6 +46,15 @@
                 transition: all .3s;
             }
 
+            .preview-error {
+                position: absolute;
+                top: 35%;
+                left: 23%;
+                color: #E90614;
+                font-size: 1.5ch;
+                font-family: 'PoppinsItalic400';
+            }
+
         }
 
         span {

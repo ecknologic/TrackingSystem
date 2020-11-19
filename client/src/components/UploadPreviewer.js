@@ -4,7 +4,7 @@ import Remove from '../assets/color/ic_Decline Fill.svg'
 import '../sass/uploadPreviewer.scss'
 import PreviewModal from './PreviewModal';
 
-const UploadPreviewer = ({ title, value, onRemove, disabled, className = '' }) => {
+const UploadPreviewer = ({ title, value, onRemove, disabled, className = '', error = '' }) => {
 
     const [modal, setModal] = useState(false)
 
@@ -15,6 +15,7 @@ const UploadPreviewer = ({ title, value, onRemove, disabled, className = '' }) =
                 {value && <img src={value} alt='' />}
                 {!disabled && value && <img className='cross' src={Remove} onClick={onRemove} alt='' />}
                 {value && <EyeOutlined onClick={() => setModal(true)} />}
+                {error && <span className='preview-error'>{error}</span>}
             </div>
             <PreviewModal data={value} visible={modal} onCancel={() => setModal(false)} />
         </div>

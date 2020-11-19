@@ -1,5 +1,6 @@
 $primaryColor: #0062FF;
 $primaryColorDisabled: #4C91FF;
+$errorColor:  #E90614;
 $textColor:rgba(0,0,0,0.85);
 $textColorDisabled:rgba(0,0,0,0.55);
 
@@ -203,6 +204,11 @@ $textColorDisabled:rgba(0,0,0,0.55);
         border-color: #d9d9d9 !important;
     }
 }
+.app-select-error {
+    .ant-select-selector {
+        border: 1px solid $errorColor !important;
+    }
+}
 // -------------- antd Input styles ------------------- //
 
 .ant-input, .ant-input-number {
@@ -267,26 +273,26 @@ $textColorDisabled:rgba(0,0,0,0.55);
     }
 }
 .app-input-error {
-    border: 1px solid #E90614;
+    border: 1px solid $errorColor;
         
         &:hover, &:focus {
-            border-color: #E90614;
+            border-color: $errorColor;
             box-shadow: none !important;
         }
     
     .ant-input-number-focused {
-        border-color: #E90614;
+        border-color: $errorColor;
         box-shadow: none !important;
     }
 
     .ant-input {
-        border-color: #E90614;
+        border-color: $errorColor;
         box-shadow: none !important;
     }
 }
 
 .app-label-error {
-    color: #E90614;
+    color: $errorColor;
     float: right;
     font-family: 'PoppinsItalic400';
 }
@@ -307,7 +313,7 @@ $textColorDisabled:rgba(0,0,0,0.55);
 
 .app-input-addon-error {
     .ant-input {
-        border-color: #E90614;
+        border-color: $errorColor;
         box-shadow: none !important;
     }
 }
@@ -374,7 +380,7 @@ $textColorDisabled:rgba(0,0,0,0.55);
 }
 .label-mandatory::before {
     content:'*';
-    color:  #E90614;
+    color:  $errorColor;
 }
 .app-input-addon-button {
     display: flex;
@@ -457,6 +463,33 @@ $textColorDisabled:rgba(0,0,0,0.55);
 // -------------- Various Modal styles ------------------- //
 .app-preview-modal {
     margin-top: 1.8em;
+}
+
+// -------------- Various Animation styles ------------------- //
+
+.app-shake {
+    animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+@keyframes shake {
+    10%, 90% {
+      transform: translate3d(-1px, 0, 0);
+    }
+    
+    20%, 80% {
+      transform: translate3d(2px, 0, 0);
+    }
+  
+    30%, 50%, 70% {
+      transform: translate3d(-4px, 0, 0);
+    }
+  
+    40%, 60% {
+      transform: translate3d(4px, 0, 0);
+    }
 }
 
 
