@@ -6,7 +6,7 @@ import AddressCard from '../../../../components/AddressCard';
 import { useParams } from 'react-router-dom';
 import { http } from '../../../../modules/http';
 import { getDevDays, getProductsWithIdForDB, getProductsForUI, isEmpty, extractDeliveryDetails, extractProductsFromForm, deepClone, getBase64, getDevDaysForDB, base64String } from '../../../../utils/Functions';
-import { validateDeliveryValues, validateDevDays } from '../../../../utils/validations';
+import { validateDeliveryValues, validateDevDays, validateIDNumbers, validateMobileNumber } from '../../../../utils/validations';
 import DeliveryForm from '../../add/forms/Delivery';
 import CustomModal from '../../../../components/CustomModal';
 import { WEEKDAYS } from '../../../../assets/fixtures';
@@ -16,8 +16,10 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
     const [delivery, setDelivery] = useState([])
     const [loading, setLoading] = useState(true)
     const [formData, setFormData] = useState({})
+    const [formErrors, setFormErrors] = useState({})
     const [viewModal, setViewModal] = useState(false)
     const [devDays, setDevDays] = useState([])
+    const [devDaysError, setDevDaysError] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
 
     useEffect(() => {
@@ -99,6 +101,19 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
         setFormData(data => ({ ...data, [key]: value }))
     }
 
+    const handleBlur = (value, key) => {
+
+        // Validations
+        if (key === 'gstNo') {
+            const error = validateIDNumbers(key, value, true)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'phoneNumber') {
+            const error = validateMobileNumber(value, true)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+    }
+
     const handleProofUpload = (file, name) => {
         getBase64(file, async (buffer) => {
             setFormData(data => ({ ...data, [name]: buffer }))
@@ -143,10 +158,13 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
             >
                 <DeliveryForm
                     data={formData}
+                    errors={formErrors}
                     routeOptions={routeOptions}
                     hasExtraAddress
                     devDays={devDays}
+                    devDaysError={devDaysError}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     onUpload={handleProofUpload}
                     onRemove={handleProofRemove}
                     onSelect={handleDevDaysSelect}

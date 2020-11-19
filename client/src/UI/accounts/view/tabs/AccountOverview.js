@@ -7,7 +7,7 @@ import CustomButton from '../../../../components/CustomButton';
 import CorporateAccountForm from '../../add/forms/CorporateAccount';
 import NoContent from '../../../../components/NoContent';
 import Spinner from '../../../../components/Spinner';
-import { validateIDProofs, validateAccountValues, validateIDNumbers } from '../../../../utils/validations';
+import { validateIDProofs, validateAccountValues, validateIDNumbers, validateMobileNumber } from '../../../../utils/validations';
 import GeneralAccountForm from '../../add/forms/GeneralAccount';
 import { WEEKDAYS } from '../../../../assets/fixtures';
 
@@ -17,6 +17,7 @@ const AccountOverview = ({ data, routeOptions }) => {
 
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [accountValues, setAccountValues] = useState({})
+    const [accountErrors, setAccountErrors] = useState({})
     const [IDProofs, setIDProofs] = useState({})
     const [IDErrors, setIDErrors] = useState({})
     const [devDays, setDevDays] = useState([])
@@ -43,6 +44,22 @@ const AccountOverview = ({ data, routeOptions }) => {
         if (key === 'adharNo' || key === 'panNo') {
             const error = validateIDNumbers(key, value)
             setIDErrors({ [key]: error })
+        }
+    }
+    const handleBlur = (value, key) => {
+
+        // Validations
+        if (key === 'adharNo' || key === 'panNo') {
+            const error = validateIDNumbers(key, value, true)
+            setIDErrors({ [key]: error })
+        }
+        else if (key === 'gstNo') {
+            const error = validateIDNumbers(key, value, true)
+            setAccountErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'mobileNumber') {
+            const error = validateMobileNumber(value, true)
+            setAccountErrors(errors => ({ ...errors, [key]: error }))
         }
     }
 
@@ -141,15 +158,18 @@ const AccountOverview = ({ data, routeOptions }) => {
                             customertype === 'Corporate' ?
                                 <CorporateAccountForm
                                     data={accountValues}
+                                    errors={accountErrors}
                                     IDProofs={IDProofs}
                                     IDErrors={IDErrors}
                                     onUpload={handleProofUpload}
                                     onRemove={handleProofRemove}
                                     onChange={handleChange}
+                                    onBlur={handleBlur}
                                     disabled={isActive}
                                 />
                                 : <GeneralAccountForm
                                     data={accountValues}
+                                    errors={accountErrors}
                                     IDProofs={IDProofs}
                                     IDErrors={IDErrors}
                                     devDays={devDays}
@@ -159,6 +179,7 @@ const AccountOverview = ({ data, routeOptions }) => {
                                     onSelect={handleDevDaysSelect}
                                     onDeselect={handleDevDaysDeselect}
                                     onChange={handleChange}
+                                    onBlur={handleBlur}
                                     disabled={isActive}
                                     accountOnly
                                 />
