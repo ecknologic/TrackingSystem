@@ -9,7 +9,7 @@ import AccountOverview from './tabs/AccountOverview';
 import DeliveryForm from '../add/forms/Delivery';
 import { http } from '../../../modules/http';
 import Header from './header';
-import { validateDeliveryValues, validateDevDays } from '../../../utils/validations';
+import { validateDeliveryValues, validateDevDays, validateIDNumbers, validateMobileNumber } from '../../../utils/validations';
 import { extractDeliveryDetails, getProductsForDB, extractProductsFromForm, isEmpty, getDevDaysForDB, getBase64 } from '../../../utils/Functions';
 import CustomModal from '../../../components/CustomModal';
 
@@ -18,8 +18,10 @@ const ViewAccount = () => {
     const [account, setAccount] = useState({ loading: true })
     const [headerContent, setHeaderContent] = useState({ loading: true })
     const [formData, setFormData] = useState({})
+    const [formErrors, setFormErrors] = useState({})
     const [viewModal, setViewModal] = useState(false)
     const [devDays, setDevDays] = useState([])
+    const [devDaysError, setDevDaysError] = useState({})
     const [routes, setRoutes] = useState([])
     const [recentDelivery, setRecentDelivery] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
@@ -110,6 +112,19 @@ const ViewAccount = () => {
         setFormData(data => ({ ...data, [key]: value }))
     }
 
+    const handleBlur = (value, key) => {
+
+        // Validations
+        if (key === 'gstNo') {
+            const error = validateIDNumbers(key, value, true)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'phoneNumber') {
+            const error = validateMobileNumber(value, true)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+    }
+
     const handleClick = useCallback(() => {
         setViewModal(true)
     }, [])
@@ -164,10 +179,13 @@ const ViewAccount = () => {
             >
                 <DeliveryForm
                     data={formData}
+                    errors={formErrors}
                     routeOptions={routeOptions}
                     hasExtraAddress
                     devDays={devDays}
+                    devDaysError={devDaysError}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                     onUpload={handleProofUpload}
                     onRemove={handleProofRemove}
                     onSelect={handleDevDaysSelect}
