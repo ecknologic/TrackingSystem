@@ -4,7 +4,7 @@ import { DownOutlined, SortAscendingOutlined, SortDescendingOutlined } from '@an
 import '../sass/sortByDropdown.scss'
 
 const DropdownSelect = ({ width = '200px', onSelect }) => {
-    const [value, setValue] = useState('')
+    const [value, setValue] = useState('NEW')
 
     const handleSelect = ({ key }) => {
         setValue(key)
@@ -18,6 +18,12 @@ const DropdownSelect = ({ width = '200px', onSelect }) => {
           </Menu.Item>
             <Menu.Item key="Z - A" icon={<SortDescendingOutlined />}>
                 Z - A
+          </Menu.Item>
+            <Menu.Item key="NEW" >
+                NEW
+          </Menu.Item>
+            <Menu.Item key="OLD" >
+                OLD
           </Menu.Item>
         </Menu>
     );

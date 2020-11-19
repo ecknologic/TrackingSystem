@@ -2,80 +2,111 @@ import { Input, InputNumber } from 'antd';
 import React, { useEffect, useState } from 'react';
 import SelectInput from '../../../../components/SelectInput';
 import InputWithAddon from '../../../../components/InputWithAddon';
-import { dayOptions } from '../../../../assets/fixtures'
-import { getBase64 } from '../../../../utils/Functions';
+import { dayOptions, WEEKDAYS } from '../../../../assets/fixtures'
+import { getBase64, isEmpty } from '../../../../utils/Functions';
 import UploadPreviewer from '../../../../components/UploadPreviewer';
 import DraggerInput from '../../../../components/DraggerInput';
+import InputLabel from '../../../../components/InputLabel';
+import { validateIDNumbers, validateMobileNumber, validateNames } from '../../../../utils/validations';
 
-const CollapseForm = ({ data, routeOptions, uniqueId }) => {
+const CollapseForm = ({ data, routeOptions, uniqueId, addressesErrors }) => {
 
-    const [gstNo, setGstNo] = useState('')
-    const [gstProof, setGstProof] = useState('')
-    const [address, setAddress] = useState('')
-    const [devDays, setDevDays] = useState()
-    const [phoneNumber, setPhoneNumber] = useState('')
-    const [contactPerson, setContactPerson] = useState('')
-    const [depositAmount, setDepositAmount] = useState('')
-    const [deliveryLocation, setDeliveryLocation] = useState('')
-    const [routingId, setRoutingId] = useState()
-    const [product20L, setProduct20L] = useState('')
-    const [product1L, setProduct1L] = useState('')
-    const [product500ML, setProduct500ML] = useState('')
-    const [price20L, setPrice20L] = useState('')
-    const [price1L, setPrice1L] = useState('')
-    const [price500ML, setPrice500ML] = useState('')
+    const [deliveryValues, setDeliveryValues] = useState({})
+    const [errors, setErrors] = useState({})
 
     useEffect(() => { // To pre-fill the form
-        populateForm(data)
+        setDeliveryValues(data)
     }, [])
 
-    useEffect(() => { // To set form data to session storage
-        setSession()
-    }, [gstNo, gstProof, depositAmount, routingId, devDays, product20L, price20L, product1L, price1L,
-        product500ML, price500ML, phoneNumber, contactPerson, address, deliveryLocation])
-
-    const populateForm = (data) => {
-        const {
-            gstNo, gstProof, depositAmount, routingId, devDays, phoneNumber, contactPerson, address,
-            deliveryLocation, product20L, price20L, product1L, price1L, product500ML, price500ML
-        } = data
-
-        setProduct20L(product20L)
-        setProduct1L(product1L)
-        setProduct500ML(product500ML)
-        setPrice20L(price20L)
-        setPrice1L(price1L)
-        setPrice500ML(price500ML)
-        setGstNo(gstNo)
-        setGstProof(gstProof)
-        setAddress(address)
-        setDevDays(devDays)
-        setPhoneNumber(phoneNumber)
-        setContactPerson(contactPerson)
-        setDepositAmount(depositAmount)
-        setDeliveryLocation(deliveryLocation)
-        setRoutingId(routingId)
-    }
-
-    const setSession = () => {
-        const data = {
-            gstNo, depositAmount, routingId, devDays, product20L, price20L, product1L, price1L, product500ML, price500ML,
-            phoneNumber, contactPerson, address, deliveryLocation
+    useEffect(() => { // To pre-fill errors
+        const error = addressesErrors[`address${uniqueId}`]
+        if (error) {
+            setErrors(error)
         }
+    }, [addressesErrors])
+
+    useEffect(() => {
+        if (!isEmpty(errors)) {
+            setSession({ ...deliveryValues, errors })
+        }
+    }, [errors])
+
+    const setSession = (data) => {
         sessionStorage.setItem(`address${uniqueId}`, JSON.stringify(data))
     }
 
+    const onChange = (value, key) => {
+        setSession({ ...deliveryValues, [key]: value })
+        setDeliveryValues(data => ({ ...data, [key]: value }))
+        setErrors(errors => ({ ...errors, [key]: '' }))
+
+        if (key.includes('price') || key.includes('product')) {
+            setErrors(errors => ({ ...errors, productNPrice: '' }))
+        }
+
+        // Validations
+        if (key === 'gstNo') {
+            const error = validateIDNumbers(key, value)
+            setErrors(errors => ({ ...errors, [key]: error }))
+        }
+        if (key === 'deliveryLocation') {
+            const error = validateNames(value)
+            setErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'phoneNumber') {
+            const error = validateMobileNumber(value)
+            setErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'contactPerson') {
+            const error = validateNames(value)
+            setErrors(errors => ({ ...errors, [key]: error }))
+        }
+    }
+
+    const onBlur = (value, key) => {
+
+        // Validations
+        if (key === 'gstNo') {
+            const error = validateIDNumbers(key, value, true)
+            setErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'phoneNumber') {
+            const error = validateMobileNumber(value, true)
+            setErrors(errors => ({ ...errors, [key]: error }))
+        }
+    }
+
     const handleSelect = (value) => {
-        devDays.push(value)
-        setDevDays(devDays)
+        setErrors(errors => ({ ...errors, devDays: '' }))
+        if (value == 'ALL') setDeliveryValues(data => ({ ...data, devDays: WEEKDAYS }))
+        else {
+            const clone = [...devDays]
+            clone.push(value)
+            setDeliveryValues(data => ({ ...data, devDays: clone }))
+        }
     }
 
     const handleDeselect = (value) => {
-        const filtered = devDays.filter(day => day !== value)
-        setDevDays(filtered)
+        if (value == 'ALL') setDeliveryValues(data => ({ ...data, devDays: [] }))
+        else {
+            const filtered = devDays.filter(day => day !== value && day !== "ALL")
+            setDeliveryValues(data => ({ ...data, devDays: filtered }))
+        }
     }
 
-    const handleUpload = (file) => getBase64(file, async (buffer) => setGstProof(buffer))
+    const handleUpload = (file) => getBase64(file, async (buffer) => {
+        setDeliveryValues(data => ({ ...data, gstProof: buffer }))
+    })
+
+    const onRemove = () => {
+        setDeliveryValues(data => ({ ...data, gstProof: '' }))
+    }
+
+    const {
+        gstNo, gstProof, depositAmount, routingId, devDays, phoneNumber, contactPerson, address,
+        deliveryLocation, product20L, price20L, product1L, price1L, product500ML, price500ML
+    } = deliveryValues
+
     const gstUploadDisable = gstProof
 
     return (
@@ -86,95 +117,95 @@ const CollapseForm = ({ data, routeOptions, uniqueId }) => {
             <div className='form-container'>
                 <div className='row'>
                     <div className='input-container'>
-                        <label className='app-input-label-name'>GST Number</label>
-                        <InputWithAddon label='VERIFY' value={gstNo} placeholder='GST Number' onChange={({ target: { value } }) => setGstNo(value)} />
+                        <InputLabel name='GST Number' error={errors.gstNo} />
+                        <InputWithAddon maxLength={15} label='VERIFY' value={gstNo} placeholder='GST Number' error={errors.gstNo} onBlur={({ target: { value } }) => onBlur(value, 'gstNo')} onChange={({ target: { value } }) => onChange(value, 'gstNo')} />
                     </div>
                     <div className='input-container app-upload-file-container app-gst-upload-container'>
                         <DraggerInput onUpload={handleUpload} disabled={gstUploadDisable} />
                         <div className='upload-preview-container'>
-                            <UploadPreviewer value={gstProof} title='GST Proof' onRemove={() => setGstProof('')} className='last' />
+                            <UploadPreviewer value={gstProof} title='GST Proof' onRemove={onRemove} className='last' />
                         </div>
                     </div>
                 </div>
                 <div className='row'>
                     <div className='input-container'>
-                        <label className='app-input-label-name'>Delivery Location</label>
-                        <Input size='large' value={deliveryLocation} placeholder='Add Location' onChange={({ target: { value } }) => setDeliveryLocation(value)} />
+                        <InputLabel name='Delivery Location' error={errors.deliveryLocation} mandatory />
+                        <Input size='large' value={deliveryLocation} placeholder='Add Location' className={`${errors.deliveryLocation && 'app-input-error'}`} onChange={({ target: { value } }) => onChange(value, 'deliveryLocation')} />
                     </div>
                     <div className='input-container'>
-                        <label className='app-input-label-name'>Route</label>
-                        <SelectInput options={routeOptions} value={routingId} onSelect={setRoutingId} />
+                        <InputLabel name='Route' error={errors.routingId} mandatory />
+                        <SelectInput options={routeOptions} value={routingId} onSelect={(value) => onChange(value, 'routingId')} />
                     </div>
                 </div>
                 <div className='row'>
                     <div className='input-container stretch'>
-                        <label className='app-input-label-name'>Address</label>
-                        <Input size='large' value={address} placeholder='Add Address' onChange={({ target: { value } }) => setAddress(value)} />
+                        <InputLabel name='Address' error={errors.address} mandatory />
+                        <Input size='large' autoComplete='none' value={address} placeholder='Add Address' className={`${errors.address && 'app-input-error'}`} onChange={({ target: { value } }) => onChange(value, 'address')} />
                     </div>
                 </div>
                 <div className='row'>
                     <div className='input-container'>
-                        <label className='app-input-label-name'>Phone Number</label>
-                        <InputNumber size="large" value={phoneNumber} placeholder='Phone Number' onChange={(value) => setPhoneNumber(value)} />
+                        <InputLabel name='Phone Number' error={errors.phoneNumber} mandatory />
+                        <InputNumber size="large" value={phoneNumber} placeholder='Phone Number' className={`${errors.phoneNumber && 'app-input-error'}`} onBlur={({ target: { value } }) => onBlur(value, 'phoneNumber')} onChange={(value) => onChange(value, 'phoneNumber')} />
                     </div>
                     <div className='input-container'>
-                        <label className='app-input-label-name'>Contact Person</label>
-                        <Input size='large' value={contactPerson} placeholder='Add Name' onChange={({ target: { value } }) => setContactPerson(value)} />
+                        <InputLabel name='Contact Person' error={errors.contactPerson} mandatory />
+                        <Input size='large' value={contactPerson} placeholder='Add Name' className={`${errors.contactPerson && 'app-input-error'}`} onChange={({ target: { value } }) => onChange(value, 'contactPerson')} />
                     </div>
                 </div>
                 <div className='columns'>
-                    <label className='app-input-label-name'>Products and Price</label>
+                    <InputLabel name='Products and Price' error={errors.productNPrice} mandatory />
                     <div className='columns-container'>
                         <div className='column'>
                             <div className='input-container'>
-                                <label className='app-input-label-name'>20 Ltrs</label>
-                                <InputNumber size="large" value={product20L || 0} placeholder='Add' onChange={setProduct20L} />
+                                <InputLabel name='20 Ltrs' error={errors.product20L} />
+                                <InputNumber size="large" value={product20L || 0} placeholder='Add' onChange={(value) => onChange(value, 'product20L')} />
                             </div>
                             <div className='input-container'>
-                                <label className='app-input-label-name'>Price</label>
-                                <InputNumber size="large" value={price20L || 0} placeholder='Rs' onChange={setPrice20L} />
-                            </div>
-                        </div>
-                        <div className='column'>
-                            <div className='input-container'>
-                                <label className='app-input-label-name'>1 Ltrs</label>
-                                <InputNumber size="large" value={product1L || 0} placeholder='Add' onChange={setProduct1L} />
-                            </div>
-                            <div className='input-container'>
-                                <label className='app-input-label-name'>Price</label>
-                                <InputNumber size="large" value={price1L || 0} placeholder='Rs' onChange={setPrice1L} />
+                                <InputLabel name='Price' error={errors.price20L} />
+                                <InputNumber size="large" value={price20L || 0} placeholder='Rs' onChange={(value) => onChange(value, 'price20L')} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
-                                <label className='app-input-label-name'>500 Ml</label>
-                                <InputNumber size="large" value={product500ML || 0} placeholder='Add' onChange={setProduct500ML} />
+                                <InputLabel name='1 Ltrs' error={errors.product1L} />
+                                <InputNumber size="large" value={product1L || 0} placeholder='Add' onChange={(value) => onChange(value, 'product1L')} />
                             </div>
                             <div className='input-container'>
-                                <label className='app-input-label-name'>Price</label>
-                                <InputNumber size="large" value={price500ML || 0} placeholder='Rs' onChange={setPrice500ML} />
+                                <InputLabel name='Price' error={errors.price1L} />
+                                <InputNumber size="large" value={price1L || 0} placeholder='Rs' onChange={(value) => onChange(value, 'price1L')} />
+                            </div>
+                        </div>
+                        <div className='column'>
+                            <div className='input-container'>
+                                <InputLabel name='500 Ml' error={errors.product500ML} />
+                                <InputNumber size="large" value={product500ML || 0} placeholder='Add' onChange={(value) => onChange(value, 'product500ML')} />
+                            </div>
+                            <div className='input-container'>
+                                <InputLabel name='Price' error={errors.price500ML} />
+                                <InputNumber size="large" value={price500ML || 0} placeholder='Rs' onChange={(value) => onChange(value, 'price500ML')} />
                             </div>
                         </div>
                         {/* <div className='column'>
                             <div className='input-container'>
-                                <label className='app-input-label-name'>250 Ml</label>
-                                <InputNumber size="large" value={product250ML} placeholder='Add' onChange={setProduct250ML} />
+                                <InputLabel name='250 Ml' />
+                                <InputNumber size="large" value={product250ML || 0} placeholder='Add' onChange={setProduct250ML} />
                             </div>
                             <div className='input-container'>
-                                <label className='app-input-label-name'>Price</label>
-                                <InputNumber size="large" value={price250ML} placeholder='Rs' onChange={setPrice250ML} />
+                                <InputLabel name='Price' />
+                                <InputNumber size="large" value={price250ML || 0} placeholder='Rs' onChange={setPrice250ML} />
                             </div>
                         </div> */}
                     </div>
                 </div>
                 <div className='row'>
                     <div className='input-container'>
-                        <label className='app-input-label-name'>Delivery Days</label>
+                        <InputLabel name='Delivery Days' error={errors.devDays} mandatory />
                         <SelectInput value={devDays} options={dayOptions} mode='multiple' onSelect={handleSelect} onDeselect={handleDeselect} />
                     </div>
                     <div className='input-container'>
-                        <label className='app-input-label-name'>Deposit Amount</label>
-                        <Input size='large' value={depositAmount} placeholder='Deposit Amount' onChange={({ target: { value } }) => setDepositAmount(value)} />
+                        <InputLabel name='Deposit Amount' error={errors.depositAmount} mandatory />
+                        <InputNumber size='large' value={depositAmount} placeholder='Deposit Amount' onChange={(value) => onChange(value, 'depositAmount')} />
                     </div>
                 </div>
             </div>

@@ -60,7 +60,7 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
 
         const productsUI = extractProductsFromForm(formData)
         const products = getProductsWithIdForDB(productsUI)
-        const deliveryDays = getDevDaysForDB(devDays.shift())
+        const deliveryDays = getDevDaysForDB(devDays)
         const formValues = extractDeliveryDetails(formData)
         const body = [{ ...formValues, isNew: false, delete: 0, isActive: 0, products, deliveryDays }]
 
@@ -88,8 +88,11 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
     }
 
     const handleDevDaysDeselect = (value) => {
-        const filtered = devDays.filter(day => day !== value && day !== "ALL")
-        setDevDays(filtered)
+        if (value == 'ALL') setDevDays([])
+        else {
+            const filtered = devDays.filter(day => day !== value && day !== "ALL")
+            setDevDays(filtered)
+        }
     }
 
     const handleChange = (value, key) => {

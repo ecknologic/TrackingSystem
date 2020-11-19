@@ -177,6 +177,13 @@ $textColorDisabled:rgba(0,0,0,0.55);
         color: #fff;
     }
 }
+.ant-select-disabled.ant-select-multiple .ant-select-selector {
+    background-color:#f4f4f4 !important;
+
+    &:hover {
+        border-color: #d9d9d9 !important;
+    }
+}
 
 .ant-select-item-option-content {
     font-family: 'PoppinsRegular400';
@@ -185,7 +192,17 @@ $textColorDisabled:rgba(0,0,0,0.55);
     border-color: $primaryColor !important;
     box-shadow: none;
 }
+.ant-select-disabled.ant-select-single:not(.ant-select-customize-input) .ant-select-selector {
+    background-color:#f4f4f4 !important;
+    
+    .ant-select-selection-item {
+        color: $textColorDisabled !important;
+    }
 
+    &:hover {
+        border-color: #d9d9d9 !important;
+    }
+}
 // -------------- antd Input styles ------------------- //
 
 .ant-input, .ant-input-number {
@@ -241,7 +258,14 @@ $textColorDisabled:rgba(0,0,0,0.55);
         color: $primaryColorDisabled;
     }
 }
+.ant-input-number-disabled {
+    color: $textColorDisabled !important;
+    background-color:#f4f4f4 !important;
 
+    &:hover {
+        border-color: #d9d9d9 !important;
+    }
+}
 .app-input-error {
     border: 1px solid #E90614;
         
@@ -251,6 +275,11 @@ $textColorDisabled:rgba(0,0,0,0.55);
         }
     
     .ant-input-number-focused {
+        border-color: #E90614;
+        box-shadow: none !important;
+    }
+
+    .ant-input {
         border-color: #E90614;
         box-shadow: none !important;
     }
@@ -276,6 +305,12 @@ $textColorDisabled:rgba(0,0,0,0.55);
     border-bottom-right-radius: 0 !important;
 }
 
+.app-input-addon-error {
+    .ant-input {
+        border-color: #E90614;
+        box-shadow: none !important;
+    }
+}
 // -------------- Antd Modal styles ------------------- //
 .ant-modal {
 
@@ -337,6 +372,10 @@ $textColorDisabled:rgba(0,0,0,0.55);
     padding: 0 0 0 .25em;
     font-size: 1.6ch;
 }
+.label-mandatory::before {
+    content:'*';
+    color:  #E90614;
+}
 .app-input-addon-button {
     display: flex;
     justify-content: center;
@@ -346,10 +385,6 @@ $textColorDisabled:rgba(0,0,0,0.55);
     font-family: 'PoppinsSemiBold600';
     font-size: 1.6ch;
     background-color: #FCFDFE !important;
-}
-
-.app-id-input {
-    text-transform: uppercase;
 }
 
 // -------------- Various Icons styles ------------------- //

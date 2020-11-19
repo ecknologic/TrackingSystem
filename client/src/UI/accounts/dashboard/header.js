@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import { FilterOutlined, PlusOutlined } from '@ant-design/icons'
-import { useHistory } from 'react-router-dom';
 import SortBy from '../../../components/SortByDropdown';
 import SearchInput from '../../../components/SearchInput';
 import ViewsComponent from '../../../components/ViewsComponent';
 import '../../../sass/accounts.scss'
 
 const Header = ({ onClick, onSearch, onSort, onFilter }) => {
-    const history = useHistory()
     const [view, setView] = useState('card')
 
     return (
