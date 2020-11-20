@@ -36,7 +36,7 @@ const DeliveryForm = (props) => {
                     <div className='input-container app-upload-file-container app-gst-upload-container'>
                         <DraggerInput onUpload={(file) => onUpload(file, 'gstProof', 'delivery')} disabled={sameAddress || gstUploadDisable || isActive} />
                         <div className='upload-preview-container'>
-                            <UploadPreviewer value={gstProof}
+                            <UploadPreviewer value={gstProof} track={track}
                                 title='GST Proof' disabled={sameAddress || isActive} error={errors.gstProof}
                                 onRemove={() => onRemove('gstProof', 'delivery')} className='last' />
                         </div>

@@ -9,9 +9,12 @@ import DeliveryForm from '../add/forms/Delivery';
 import { http } from '../../../modules/http';
 import Header from './header';
 import { validateDeliveryValues, validateDevDays, validateIDNumbers, validateMobileNumber, validateNames } from '../../../utils/validations';
-import { extractDeliveryDetails, getProductsForDB, extractProductsFromForm, isEmpty, getDevDaysForDB, getBase64 } from '../../../utils/Functions';
+import { extractDeliveryDetails, getProductsForDB, extractProductsFromForm, isEmpty, getDevDaysForDB, getBase64, resetTrackForm } from '../../../utils/Functions';
 import CustomModal from '../../../components/CustomModal';
 import { FileIconWhie } from '../../../components/SVG_Icons';
+import { TRACKFORM } from '../../../utils/constants';
+import QuitModal from '../../../components/CustomModal';
+import ConfirmMessage from '../../../components/ConfirmMessage';
 
 const ViewAccount = () => {
     const { accountId } = useParams()
@@ -26,6 +29,7 @@ const ViewAccount = () => {
     const [recentDelivery, setRecentDelivery] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const routeOptions = useMemo(() => getRouteOptions(routes), [routes])
+    const [confirmModal, setConfirmModal] = useState(false)
     const [shake, setShake] = useState(false)
 
     useEffect(() => {
@@ -78,7 +82,7 @@ const ViewAccount = () => {
             let { data: [data] } = await http.POST(url, body)
             setRecentDelivery(data)
             message.success('Details added successfully!')
-            onModalClose()
+            onModalClose(true)
         } catch (error) {
             setBtnDisabled(false)
         }
@@ -152,7 +156,11 @@ const ViewAccount = () => {
         setViewModal(true)
     }, [])
 
-    const onModalClose = () => {
+    const onModalClose = (hasSaved) => {
+        const formHasChanged = sessionStorage.getItem(TRACKFORM)
+        if (formHasChanged && !hasSaved) {
+            return setConfirmModal(true)
+        }
         setViewModal(false)
         setBtnDisabled(false)
         setFormData({})
@@ -161,6 +169,12 @@ const ViewAccount = () => {
         setDevDaysError({})
     }
 
+    const handleConfirmModalOk = useCallback(() => {
+        setConfirmModal(false);
+        resetTrackForm()
+        onModalClose()
+    }, [])
+    const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
     const handleModalCancel = useCallback(() => onModalClose(), [])
 
     return (
@@ -201,8 +215,10 @@ const ViewAccount = () => {
                 onCancel={handleModalCancel}
                 title='Add New Delivery Address'
                 okTxt='Save'
+                track
             >
                 <DeliveryForm
+                    track
                     data={formData}
                     errors={formErrors}
                     devDays={devDays}
@@ -216,6 +232,15 @@ const ViewAccount = () => {
                     onDeselect={handleDevDaysDeselect}
                 />
             </CustomModal>
+            <QuitModal
+                visible={confirmModal}
+                onOk={handleConfirmModalOk}
+                onCancel={handleConfirmModalCancel}
+                title='Are you sure to leave?'
+                okTxt='Yes'
+            >
+                <ConfirmMessage msg='Changes you made may not be saved.' />
+            </QuitModal>
         </Fragment>
     )
 }

@@ -5,11 +5,14 @@ import NoContent from '../../../../components/NoContent';
 import AddressCard from '../../../../components/AddressCard';
 import { useParams } from 'react-router-dom';
 import { http } from '../../../../modules/http';
-import { getDevDays, getProductsWithIdForDB, getProductsForUI, isEmpty, extractDeliveryDetails, extractProductsFromForm, deepClone, getBase64, getDevDaysForDB, base64String } from '../../../../utils/Functions';
+import { getDevDays, getProductsWithIdForDB, getProductsForUI, isEmpty, extractDeliveryDetails, extractProductsFromForm, deepClone, getBase64, getDevDaysForDB, base64String, resetTrackForm } from '../../../../utils/Functions';
 import { validateDeliveryValues, validateDevDays, validateIDNumbers, validateMobileNumber, validateNames } from '../../../../utils/validations';
 import DeliveryForm from '../../add/forms/Delivery';
 import CustomModal from '../../../../components/CustomModal';
 import { WEEKDAYS } from '../../../../assets/fixtures';
+import { TRACKFORM } from '../../../../utils/constants';
+import QuitModal from '../../../../components/CustomModal';
+import ConfirmMessage from '../../../../components/ConfirmMessage';
 
 const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
     const { accountId } = useParams()
@@ -21,6 +24,7 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
     const [devDays, setDevDays] = useState([])
     const [devDaysError, setDevDaysError] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
+    const [confirmModal, setConfirmModal] = useState(false)
     const [shake, setShake] = useState(false)
 
     useEffect(() => {
@@ -77,7 +81,7 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
             const { data: [data] } = await http.POST(url, body)
             updateDeliveryDetails(data)
             message.success('Details updated successfully!')
-            setViewModal(false)
+            onModalClose(true)
             setBtnDisabled(false)
         } catch (error) {
             setBtnDisabled(false)
@@ -158,11 +162,23 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
         setViewModal(true)
     }, [])
 
-    const handleModalCancel = useCallback(() => {
+    const onModalClose = (hasUpdated) => {
+        const formHasChanged = sessionStorage.getItem(TRACKFORM)
+        if (formHasChanged && !hasUpdated) {
+            return setConfirmModal(true)
+        }
         setViewModal(false)
         setDevDaysError({})
         setFormErrors({})
+    }
+
+    const handleConfirmModalOk = useCallback(() => {
+        setConfirmModal(false);
+        resetTrackForm()
+        onModalClose()
     }, [])
+    const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
+    const handleModalCancel = useCallback(() => onModalClose(), [])
 
     return (
         <div className='account-view-delivery-details'>
@@ -184,8 +200,10 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
                 onCancel={handleModalCancel}
                 title={`Delivery Details - ${formData.location}`}
                 okTxt={formData.isActive ? 'Close' : 'Update'}
+                track
             >
                 <DeliveryForm
+                    track
                     data={formData}
                     errors={formErrors}
                     devDays={devDays}
@@ -199,6 +217,15 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
                     onDeselect={handleDevDaysDeselect}
                 />
             </CustomModal>
+            <QuitModal
+                visible={confirmModal}
+                onOk={handleConfirmModalOk}
+                onCancel={handleConfirmModalCancel}
+                title='Are you sure to leave?'
+                okTxt='Yes'
+            >
+                <ConfirmMessage msg='Changes you made may not be saved.' />
+            </QuitModal>
         </div>
     )
 }

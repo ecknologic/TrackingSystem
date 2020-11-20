@@ -55,8 +55,8 @@ const CorporateAccountForm = ({ data, errors, IDProofs, IDProofErrors, onChange,
                 <div className='upload-container'>
                     <DraggerInput onUpload={(file) => onUpload(file, 'idProofs')} disabled={idUploadDisable || disabled} />
                     <div className='upload-preview-container'>
-                        <UploadPreviewer value={Front} title='Front' disabled={disabled} onRemove={() => onRemove('Front')} error={IDProofErrors.Front} />
-                        <UploadPreviewer value={Back} title='Back' disabled={disabled} onRemove={() => onRemove('Back')} className='last' error={IDProofErrors.Back} />
+                        <UploadPreviewer track={track} value={Front} title='Front' disabled={disabled} onRemove={() => onRemove('Front')} error={IDProofErrors.Front} />
+                        <UploadPreviewer track={track} value={Back} title='Back' disabled={disabled} onRemove={() => onRemove('Back')} className='last' error={IDProofErrors.Back} />
                     </div>
                 </div>
                 <div className='upload-instructions'>
@@ -78,7 +78,7 @@ const CorporateAccountForm = ({ data, errors, IDProofs, IDProofErrors, onChange,
                 <div className='input-container app-upload-file-container app-gst-upload-container'>
                     <DraggerInput onUpload={(file) => onUpload(file, 'gstProof')} disabled={gstUploadDisable || disabled} />
                     <div className='upload-preview-container'>
-                        <UploadPreviewer value={gstProof} title='GST Proof' disabled={disabled} onRemove={() => onRemove('gstProof')} className='last' error={errors.gstProof} />
+                        <UploadPreviewer track={track} value={gstProof} title='GST Proof' disabled={disabled} onRemove={() => onRemove('gstProof')} className='last' error={errors.gstProof} />
                     </div>
                 </div>
             </div>
