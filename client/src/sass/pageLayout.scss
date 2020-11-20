@@ -54,6 +54,9 @@
                 border: none;
 
                 .ant-menu-item {
+                    display: flex;
+                    justify-content: flex-start;
+                    align-items: center;
                     width: 100%;
                     margin: 0;
                     margin-top: 1.5em;

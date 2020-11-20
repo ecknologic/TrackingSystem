@@ -53,6 +53,7 @@ const GeneralAccountForm = (props) => {
                             <div className='input-container second'>
                                 <InputLabel name={proofName} error={errors[idProofType]} mandatory />
                                 <CustomInput
+                                    placeholder={`Add ${proofName}`}
                                     maxLength={maxLength} value={data[idProofType]}
                                     error={errors[idProofType]} disabled={disabled}
                                     onBlur={({ target: { value } }) => onBlur(value, idProofType)}
