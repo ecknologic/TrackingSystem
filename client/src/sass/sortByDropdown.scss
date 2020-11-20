@@ -10,22 +10,21 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-    
-        .anticon {
-            cursor: pointer;
-            display: flex !important;
-            width: 3em;
+
+        .down {
+            height: 100%;
+            width: 2em;
+            display: flex;
             justify-content: center;
             align-items: center;
             border-left: 1px solid #ddd;
-            height: 100%;
-    
+            cursor: pointer;
+
             svg {
-                height: 50%;
-                width: 50%;
+                transform: scale(.9);
             }
         }
-
+    
         div > span {
             color: #696974;
         }

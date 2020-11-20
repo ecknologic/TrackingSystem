@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import { message } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { http } from '../../../../modules/http';
-import { base64String, getBase64, getIdProofsForDB, isEmpty } from '../../../../utils/Functions';
+import { base64String, getBase64, getIdProofsForDB, isEmpty, resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 import CustomButton from '../../../../components/CustomButton';
 import CorporateAccountForm from '../../add/forms/CorporateAccount';
 import NoContent from '../../../../components/NoContent';
@@ -38,6 +38,12 @@ const AccountOverview = ({ data, routeOptions }) => {
             setAccountValues(newData)
         }
     }, [loading])
+
+    useEffect(() => {
+        resetTrackForm()
+        trackAccountFormOnce()
+        return () => resetTrackForm()
+    }, [])
 
     const handleChange = (value, key) => {
         setAccountValues(data => ({ ...data, [key]: value }))
@@ -143,7 +149,7 @@ const AccountOverview = ({ data, routeOptions }) => {
 
     const handleAccountUpdate = async () => {
         const IDProofError = validateIDProofs(IDProofs)
-        const accountErrors = validateAccountValues(accountValues, customertype)
+        const accountErrors = validateAccountValues(accountValues, customertype, true)
 
         if (!isEmpty(accountErrors) || !isEmpty(IDProofError)) {
             setShake(true)
@@ -180,6 +186,7 @@ const AccountOverview = ({ data, routeOptions }) => {
                         {
                             customertype === 'Corporate' ?
                                 <CorporateAccountForm
+                                    track
                                     data={accountValues}
                                     errors={accountErrors}
                                     IDProofs={IDProofs}
@@ -191,6 +198,7 @@ const AccountOverview = ({ data, routeOptions }) => {
                                     disabled={isActive}
                                 />
                                 : <GeneralAccountForm
+                                    track
                                     data={accountValues}
                                     errors={accountErrors}
                                     IDProofs={IDProofs}

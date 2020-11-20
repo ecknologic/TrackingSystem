@@ -1,6 +1,5 @@
 import { message, Tabs } from 'antd';
 import { useParams } from 'react-router-dom';
-import { FileTextOutlined } from '@ant-design/icons';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { getRouteOptions, WEEKDAYS } from '../../../assets/fixtures';
 import CustomButton from '../../../components/CustomButton';
@@ -12,6 +11,7 @@ import Header from './header';
 import { validateDeliveryValues, validateDevDays, validateIDNumbers, validateMobileNumber, validateNames } from '../../../utils/validations';
 import { extractDeliveryDetails, getProductsForDB, extractProductsFromForm, isEmpty, getDevDaysForDB, getBase64 } from '../../../utils/Functions';
 import CustomModal from '../../../components/CustomModal';
+import { FileIconWhie } from '../../../components/SVG_Icons';
 
 const ViewAccount = () => {
     const { accountId } = useParams()
@@ -174,7 +174,7 @@ const ViewAccount = () => {
                             <CustomButton
                                 className='extra-btn'
                                 onClick={handleClick}
-                                icon={<FileTextOutlined />}
+                                icon={<FileIconWhie />}
                                 text='Add new Delivery address' />
                         }
                     >

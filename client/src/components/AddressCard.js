@@ -1,7 +1,7 @@
 import React from 'react';
-import branch from '../assets/images/ic-manage-users.svg';
 import NameCard from './NameCard';
 import PrimaryButton from './PrimaryButton';
+import { FriendIconGrey } from './SVG_Icons';
 import '../sass/accountCard.scss'
 import '../sass/addressCard.scss'
 
@@ -13,7 +13,7 @@ const AddressCard = ({ data, onClick }) => {
             <div className={isActive ? 'badge active' : 'badge'}>DRAFT</div>
             <div className='header'>
                 <div className={isActive ? 'inner green' : 'inner'}>
-                    <img src={branch} alt='' />
+                    <FriendIconGrey className='friend icon' />
                     <div className='address-container'>
                         <span className='title'>{location}</span>
                     </div>

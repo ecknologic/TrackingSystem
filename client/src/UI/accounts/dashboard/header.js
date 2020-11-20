@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { FilterOutlined, PlusOutlined } from '@ant-design/icons'
+import { FilterOutlined } from '@ant-design/icons'
 import SortBy from '../../../components/SortByDropdown';
 import SearchInput from '../../../components/SearchInput';
 import ViewsComponent from '../../../components/ViewsComponent';
+import { PlusIconGrey, FilterIconGrey } from '../../../components/SVG_Icons';
+import CustomButton from '../../../components/CustomButton';
 import '../../../sass/accounts.scss'
 
 const Header = ({ onClick, onSearch, onSort, onFilter }) => {
@@ -12,10 +14,11 @@ const Header = ({ onClick, onSearch, onSort, onFilter }) => {
         <div className='manage-accounts-header'>
             <div className='heading-container'>
                 <span className='title'>Manage Accounts</span>
-                <div className='btn' onClick={onClick}>
-                    <PlusOutlined />
-                    <span>Create Account</span>
-                </div>
+                <CustomButton text='Create Account'
+                    onClick={onClick}
+                    className='app-create-acc-btn'
+                    icon={<PlusIconGrey />}
+                />
             </div>
             <div className='menu-container'>
                 <div className='search-container'>
@@ -31,7 +34,7 @@ const Header = ({ onClick, onSearch, onSort, onFilter }) => {
                     <div className='op-container'>
                         <SortBy onSelect={onSort} />
                         <div className='fiter-container' onClick={onFilter}>
-                            <FilterOutlined />
+                            <FilterIconGrey />
                         </div>
                     </div>
                 </div>

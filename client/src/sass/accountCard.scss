@@ -53,10 +53,21 @@
             border-left: 2px solid #70AA32;
         }
 
-        img {
-            width: 1em;
-            height: 1em;
-            align-self: flex-start;
+        .icon {
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .friends {
+            svg {
+                transform: scale(.7);
+            }
+        }
+
+        .friend {
+            svg {
+                transform: scale(.8);
+            }
         }
 
         .address-container {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SearchOutlined } from '@ant-design/icons'
+import { SearchIconGrey } from './SVG_Icons';
 import '../sass/searchInput.scss'
 
 const SearchInput = ({ placeholder, onSearch, width = '300px', onChange }) => {
@@ -31,7 +31,7 @@ const SearchInput = ({ placeholder, onSearch, width = '300px', onChange }) => {
                 onChange={handleChange}
                 onKeyDown={handleEnter}
             />
-            <SearchOutlined onClick={handleSearch} />
+            <SearchIconGrey className='search' onClick={handleSearch} />
         </div>
     )
 }

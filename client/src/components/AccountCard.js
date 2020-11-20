@@ -1,19 +1,20 @@
 import React from 'react';
-import branch from '../assets/images/ic-manage-users.svg';
 import '../sass/accountCard.scss'
 import NameCard from './NameCard';
 import PrimaryButton from './PrimaryButton';
+import { FriendsIconGrey, FriendIconGrey } from './SVG_Icons';
 
 const AccountCard = ({ customerDetails, onClick }) => {
     const isActive = customerDetails.isActive
-    const name = JSON.parse(customerDetails.contactpersons)
+    const names = JSON.parse(customerDetails.contactpersons)
+    const contacts = names.length
 
     return (
         <div className='account-card-container'>
             <div className={isActive ? 'badge active' : 'badge'}>{isActive ? "ACTIVE" : "DRAFT"}</div>
             <div className='header'>
                 <div className={isActive ? 'inner green' : 'inner'}>
-                    <img src={branch} alt='' />
+                    {contacts > 1 ? <FriendsIconGrey className='friends icon' /> : <FriendIconGrey className='friend icon' />}
                     <div className='address-container'>
                         <span className='title'>{customerDetails.organizationName || customerDetails.customerName}</span>
                         <span className='address'>{customerDetails.address}</span>
@@ -25,9 +26,9 @@ const AccountCard = ({ customerDetails, onClick }) => {
                     <span className='type1'>Contact Persons</span>
                     <div className='contacts'>
                         {
-                            name.map((item, index) => index <= 2 ? <NameCard key={index} name={item} /> : null)
+                            names.map((item, index) => index <= 2 ? <NameCard key={index} name={item} /> : null)
                         }
-                        {name.length > 3 ? <div className='extra'>{`+${name.length - 3}`}</div> : null}
+                        {contacts > 3 ? <div className='extra'>{`+${contacts - 3}`}</div> : null}
                     </div>
                 </div>
                 <div className='business'>

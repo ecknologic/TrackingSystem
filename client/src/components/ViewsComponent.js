@@ -1,7 +1,7 @@
 import React from 'react';
 import { Divider } from 'antd';
-import { UnorderedListOutlined, AppstoreOutlined } from '@ant-design/icons'
 import '../sass/viewsComponent.scss'
+import { CardViewIcon, CardViewIconGrey, ListViewIconGrey, ListViewIcon } from './SVG_Icons';
 
 const ViewsComponent = ({ selected, onViewChange }) => {
 
@@ -11,16 +11,16 @@ const ViewsComponent = ({ selected, onViewChange }) => {
                 className={selected === 'card' ? 'selected menu-item' : 'menu-item'}
                 onClick={() => onViewChange('card')}
             >
-                <AppstoreOutlined />
-                <span>Card View</span>
+                {selected === 'card' ? <CardViewIcon className='icon' /> : <CardViewIconGrey className='icon' />}
+                <span className='name'>Card View</span>
             </div>
             <Divider type="vertical" />
             <div
                 className={selected === 'list' ? 'selected menu-item' : 'menu-item'}
                 onClick={() => onViewChange('list')}
             >
-                <UnorderedListOutlined />
-                <span>List View</span>
+                {selected === 'list' ? <ListViewIcon className='icon' /> : <ListViewIconGrey className='icon' />}
+                <span className='name'>List View</span>
             </div>
         </div>
     )

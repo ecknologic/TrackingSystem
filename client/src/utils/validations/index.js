@@ -38,7 +38,7 @@ export const validateDevDays = (days) => {
     return errors
 }
 
-export const validateAccountValues = (data, customerType) => {
+export const validateAccountValues = (data, customerType, isInView) => {
     let errors = {};
     let productErrors = {}
     const text = 'Required'
@@ -56,14 +56,16 @@ export const validateAccountValues = (data, customerType) => {
         if (!gstProof) errors.gstProof = text
     }
     else {
-        if (!depositAmount) errors.depositAmount = text
-        if (!routingId) errors.routingId = text
-        if (!deliveryLocation) errors.deliveryLocation = text
-        else {
-            const error = validateNames(deliveryLocation)
-            error && (errors.deliveryLocation = error)
+        if (!isInView) { // General account form in add account screen
+            if (!depositAmount) errors.depositAmount = text
+            if (!routingId) errors.routingId = text
+            if (!deliveryLocation) errors.deliveryLocation = text
+            else {
+                const error = validateNames(deliveryLocation)
+                error && (errors.deliveryLocation = error)
+            }
+            productErrors = validateProducts(rest)
         }
-        productErrors = validateProducts(rest)
     }
 
     if (gstNo && !gstProof) errors.gstProof = text

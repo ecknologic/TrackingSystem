@@ -1,9 +1,9 @@
 .search-input-container {
     position: relative;
     
-    .anticon {
+    .search {
         cursor: pointer;
-        position: absolute; 
+        position: absolute;
         top: 1px;
         right: 1px;
         display: flex;
@@ -16,8 +16,7 @@
         height: 95%;
 
         svg {
-            height: 50%;
-            width: 50%;
+           transform: scale(.8);
         }
     }
 

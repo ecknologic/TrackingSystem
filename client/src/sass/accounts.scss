@@ -18,36 +18,6 @@ $primary-color: #0062FF;
             font-weight: 700;
             color: $primary-color;
         }
-
-        .btn {
-            font-size: 1.9ch;
-            font-weight: 650;
-            color: #696974;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #FAFAFB;
-            padding: .5em;
-            padding-right: 1em;
-            border-radius: .6em;
-            cursor: pointer;
-            font-family: 'PoppinsSemiBold600';
-
-            .anticon {
-                cursor: pointer;
-                display: flex !important;
-                width: 2em;
-                justify-content: center;
-                align-items: center;
-                border-radius: .6em;
-                height: 100%;
-        
-                svg {
-                    height: 60%;
-                    width: 60%;
-                }
-            }
-        }
     }
     
     .menu-container {
@@ -60,7 +30,7 @@ $primary-color: #0062FF;
 
         .search-container {
             flex: 1;
-            max-width: 60em;
+            max-width: 35em;
         }
 
         .rest-container {
@@ -85,22 +55,7 @@ $primary-color: #0062FF;
                 background-color: #fff;
                 border-radius: .6em;
                 margin-left: 1em;
-
-                .anticon {
-                    cursor: pointer;
-                    display: flex !important;
-                    width: 3em;
-                    justify-content: center;
-                    align-items: center;
-                    border-left: 1px solid #ddd;
-                    border-radius: .6em;
-                    height: 100%;
-            
-                    svg {
-                        height: 60%;
-                        width: 60%;
-                    }
-                }
+                cursor: pointer;
             }
         }
     }
@@ -205,8 +160,8 @@ $primary-color: #0062FF;
                 height: 2.6em;
                 border-radius: .6em;
 
-                .text {
-                    margin-left: .5em;
+                svg {
+                    transform: scale(.7);
                 }
             }
         }
@@ -353,23 +308,6 @@ $primary-color: #0062FF;
 
     
 }
-.app-footer-buttons-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 10em;
-    width: 80%;
-
-    .footer-btn {
-        text-transform: uppercase;
-    }
-
-    .app-create-btn {
-        height: 3.5em;
-        width: 15em;
-        border-radius: .8em;
-    }
-}
 
 .delivery-form-modal {
     width: 55vw !important;
@@ -428,7 +366,7 @@ $primary-color: #0062FF;
     }
 }
 
-.app-accounts-filter-body {
+.accounts-filter-body {
 
     .row {
         display: flex;
