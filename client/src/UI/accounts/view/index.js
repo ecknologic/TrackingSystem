@@ -9,7 +9,7 @@ import AccountOverview from './tabs/AccountOverview';
 import DeliveryForm from '../add/forms/Delivery';
 import { http } from '../../../modules/http';
 import Header from './header';
-import { validateDeliveryValues, validateDevDays, validateIDNumbers, validateMobileNumber } from '../../../utils/validations';
+import { validateDeliveryValues, validateDevDays, validateIDNumbers, validateMobileNumber, validateNames } from '../../../utils/validations';
 import { extractDeliveryDetails, getProductsForDB, extractProductsFromForm, isEmpty, getDevDaysForDB, getBase64 } from '../../../utils/Functions';
 import CustomModal from '../../../components/CustomModal';
 
@@ -26,6 +26,8 @@ const ViewAccount = () => {
     const [recentDelivery, setRecentDelivery] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const routeOptions = useMemo(() => getRouteOptions(routes), [routes])
+    const [shake, setShake] = useState(false)
+
     useEffect(() => {
         getAccount()
         getRoutes()
@@ -56,9 +58,10 @@ const ViewAccount = () => {
         const devDaysError = validateDevDays(devDays)
 
         if (!isEmpty(deliveryErrors) || !isEmpty(devDaysError)) {
-            console.log('deliveryErrors', deliveryErrors)
-            console.log('devDaysError', devDaysError)
-            message.error('Validation Error')
+            setShake(true)
+            setTimeout(() => setShake(false), 820)
+            setFormErrors(deliveryErrors)
+            setDevDaysError(devDaysError)
             return
         }
 
@@ -82,6 +85,7 @@ const ViewAccount = () => {
     }
 
     const handleDevDaysSelect = (value) => {
+        setDevDaysError({ devDays: '' })
         if (value == 'ALL') setDevDays(WEEKDAYS)
         else {
             const clone = [...devDays]
@@ -101,6 +105,7 @@ const ViewAccount = () => {
     const handleProofUpload = (file, name) => {
         getBase64(file, async (buffer) => {
             setFormData(data => ({ ...data, [name]: buffer }))
+            setFormErrors(errors => ({ ...errors, [name]: '' }))
         })
     }
 
@@ -110,10 +115,28 @@ const ViewAccount = () => {
 
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
+        setFormErrors(errors => ({ ...errors, [key]: '' }))
+
+        if (key.includes('price') || key.includes('product')) {
+            setFormErrors(errors => ({ ...errors, productNPrice: '' }))
+        }
+
+        // Validations
+        if (key === 'deliveryLocation') {
+            const error = validateNames(value)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'phoneNumber') {
+            const error = validateMobileNumber(value)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'contactPerson') {
+            const error = validateNames(value)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
     }
 
     const handleBlur = (value, key) => {
-
         // Validations
         if (key === 'gstNo') {
             const error = validateIDNumbers(key, value, true)
@@ -134,6 +157,8 @@ const ViewAccount = () => {
         setBtnDisabled(false)
         setFormData({})
         setDevDays([])
+        setFormErrors({})
+        setDevDaysError({})
     }
 
     const handleModalCancel = useCallback(() => onModalClose(), [])
@@ -169,7 +194,7 @@ const ViewAccount = () => {
                 </div>
             </div>
             <CustomModal
-                className='delivery-form-modal'
+                className={`delivery-form-modal ${shake ? 'app-shake' : ''}`}
                 visible={viewModal}
                 btnDisabled={btnDisabled}
                 onOk={handleCreate}
@@ -180,10 +205,9 @@ const ViewAccount = () => {
                 <DeliveryForm
                     data={formData}
                     errors={formErrors}
-                    routeOptions={routeOptions}
-                    hasExtraAddress
                     devDays={devDays}
                     devDaysError={devDaysError}
+                    routeOptions={routeOptions}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     onUpload={handleProofUpload}

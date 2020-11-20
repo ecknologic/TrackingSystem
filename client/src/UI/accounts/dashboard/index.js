@@ -57,24 +57,28 @@ const Accounts = () => {
             const clone = [...accountsClone]
             complexSort(clone, 'organizationName', 'desc')
             setAccountsClone(clone)
+            setTotalCount(clone.length)
             setAccounts(clone.slice(0, pageCount))
         }
         else if (type === 'A - Z') {
             const clone = [...accountsClone]
             complexSort(clone, 'organizationName')
             setAccountsClone(clone)
+            setTotalCount(clone.length)
             setAccounts(clone.slice(0, pageCount))
         }
         else if (type === 'OLD') {
             const clone = [...accountsClone]
             complexDateSort(clone, 'registeredDate')
             setAccountsClone(clone)
+            setTotalCount(clone.length)
             setAccounts(clone.slice(0, pageCount))
         }
         else {
             const clone = [...accountsClone]
             complexDateSort(clone, 'registeredDate', 'desc')
             setAccountsClone(clone)
+            setTotalCount(clone.length)
             setAccounts(clone.slice(0, pageCount))
         }
     }
