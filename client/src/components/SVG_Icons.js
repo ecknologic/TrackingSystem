@@ -90,7 +90,17 @@ const FileComponent = ({ color }) => (
         <path fill={color} fill-rule="evenodd" d="M4 0h9.53a2 2 0 011.54.72l4.47 5.36A2 2 0 0120 7.36V18a4 4 0 01-4 4H4a4 4 0 01-4-4V4a4 4 0 014-4zm14 18V8h-3a2 2 0 01-2-2V2H4a2 2 0 00-2 2v14c0 1.1.9 2 2 2h12a2 2 0 002-2zM16.86 6L15 3.76V6h1.86zM6 13a1 1 0 010-2h8a1 1 0 010 2H6zm0 4a1 1 0 010-2h6a1 1 0 010 2H6zm0-8a1 1 0 110-2h3a1 1 0 010 2H6z" />
     </svg>
 );
+const EyeComponent = ({ color }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="16">
+        <g fill="none" fill-rule="evenodd">
+            <path d="M-2-4h24v24H-2z" />
+            <path d="M-2-4h24v24H-2z" />
+            <path fill={color} d="M.11 7.44C1.95 2.9 5.76 0 10 0s8.05 2.9 9.89 7.44c.15.36.15.76 0 1.12C18.05 13.1 14.24 16 10 16S1.95 13.1.11 8.56a1.5 1.5 0 010-1.12zM10 14.15c3.42 0 6.55-2.36 8.15-6.15-1.6-3.79-4.73-6.15-8.15-6.15S3.45 4.21 1.85 8c1.6 3.79 4.73 6.15 8.15 6.15zm0-2.5A3.61 3.61 0 016.42 8c0-2.01 1.6-3.65 3.58-3.65A3.61 3.61 0 0113.58 8c0 2.01-1.6 3.65-3.58 3.65zm0-1.85c.97 0 1.76-.8 1.76-1.8S10.97 6.2 10 6.2 8.24 7 8.24 8 9.03 9.8 10 9.8z" />
+        </g>
+    </svg>
+);
 
+const EyeSvgWhite = () => <EyeComponent color={whiteColor} />;
 const FileSvgWhite = () => <FileComponent color={whiteColor} />;
 const DashboardSvg = () => <DashboardComponent color={primaryColor} />;
 const DashboardSvgLight = () => <DashboardComponent color={secondaryColor} />;
@@ -111,7 +121,8 @@ const CardViewSvgGrey = () => <CardViewComponent color={greyColor} />;
 const ListViewSvg = () => <ListViewComponent color={primaryColor} />;
 const ListViewSvgGrey = () => <ListViewComponent color={greyColor} />;
 
-export const FileIconWhie = props => <Icon component={FileSvgWhite} {...props} />
+export const EyeIconWhite = props => <Icon component={EyeSvgWhite} {...props} />
+export const FileIconWhite = props => <Icon component={FileSvgWhite} {...props} />
 export const ListViewIcon = props => <Icon component={ListViewSvg} {...props} />
 export const ListViewIconGrey = props => <Icon component={ListViewSvgGrey} {...props} />
 export const CardViewIcon = props => <Icon component={CardViewSvg} {...props} />

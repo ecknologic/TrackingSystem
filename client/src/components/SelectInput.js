@@ -15,6 +15,15 @@ const SelectInput = ({ options, mode, onSelect, onDeselect, value, disabled, tra
         }
     }
 
+    const handleDeselect = (value) => {
+        onDeselect(value)
+
+        if (track && !hasTracked) {
+            setTrackForm()
+            setHasTracked(true)
+        }
+    }
+
     const tagRender = (props) => {
         const { label, closable, onClose } = props;
 
@@ -35,7 +44,7 @@ const SelectInput = ({ options, mode, onSelect, onDeselect, value, disabled, tra
             placeholder='Select'
             tagRender={tagRender}
             onSelect={handleSelect}
-            onDeselect={onDeselect}
+            onDeselect={handleDeselect}
             disabled={disabled}
             maxTagCount={4}
             showArrow
