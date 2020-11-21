@@ -1,4 +1,3 @@
-import { InputNumber } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { getIDInputValidationProps, getIdProofName } from '../../../../utils/Functions';
 import SelectInput from '../../../../components/SelectInput';
@@ -18,8 +17,7 @@ const GeneralAccountForm = (props) => {
     const {
         gstNo, address, natureOfBussiness, depositAmount, customerName, mobileNumber, registeredDate,
         invoicetype, EmailId, idProofType, gstProof, referredBy, routingId, deliveryLocation,
-        product20L, price20L, product1L, price1L, product500ML, price500ML,
-        // product250ML,price250ML
+        product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML
     } = data
 
     const [proofName, setProofName] = useState('')
@@ -53,11 +51,11 @@ const GeneralAccountForm = (props) => {
                             <div className='input-container second'>
                                 <InputLabel name={proofName} error={errors[idProofType]} mandatory />
                                 <CustomInput
-                                    placeholder={`Add ${proofName}`}
+                                    placeholder={`Add ${proofName}`} uppercase
                                     maxLength={maxLength} value={data[idProofType]}
                                     error={errors[idProofType]} disabled={disabled}
-                                    onBlur={({ target: { value } }) => onBlur(value, idProofType)}
-                                    onChange={({ target: { value } }) => onChange(value, idProofType)}
+                                    onBlur={(value) => onBlur(value, idProofType)}
+                                    onChange={(value) => onChange(value, idProofType)}
                                 />
                             </div>
                         )
@@ -78,10 +76,10 @@ const GeneralAccountForm = (props) => {
                     <div className='input-container'>
                         <InputLabel name='GST Number' error={errors.gstNo} />
                         <InputWithAddon
-                            maxLength={15} value={gstNo} label='VERIFY'
+                            maxLength={15} value={gstNo} label='VERIFY' uppercase
                             disabled={disabled} placeholder='GST Number' error={errors.gstNo}
-                            onBlur={({ target: { value } }) => onBlur(value, 'gstNo')}
-                            onChange={({ target: { value } }) => onChange(value, 'gstNo')}
+                            onBlur={(value) => onBlur(value, 'gstNo')}
+                            onChange={(value) => onChange(value, 'gstNo')}
                         />
                     </div>
                     <div className='input-container app-upload-file-container app-gst-upload-container'>
@@ -97,7 +95,7 @@ const GeneralAccountForm = (props) => {
                         <CustomInput
                             value={customerName} disabled={disabled}
                             placeholder='Add Name' error={errors.customerName}
-                            onChange={({ target: { value } }) => onChange(value, 'customerName')}
+                            onChange={(value) => onChange(value, 'customerName')}
                         />
                     </div>
                 </div>
@@ -106,18 +104,18 @@ const GeneralAccountForm = (props) => {
                         <InputLabel name='Address' error={errors.address} mandatory />
                         <CustomInput value={address} placeholder='Add Address'
                             disabled={disabled} error={errors.address}
-                            onChange={({ target: { value } }) => onChange(value, 'address')}
+                            onChange={(value) => onChange(value, 'address')}
                         />
                     </div>
                 </div>
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Phone Number' error={errors.mobileNumber} mandatory />
-                        <InputNumber
-                            size="large" maxLength={10}
+                        <CustomInput
+                            maxLength={10}
                             value={mobileNumber} placeholder='Phone Number'
-                            disabled={disabled} className={`${errors.mobileNumber && 'app-input-error'}`}
-                            onBlur={({ target: { value } }) => onBlur(value, 'mobileNumber')}
+                            disabled={disabled} error={errors.mobileNumber}
+                            onBlur={(value) => onBlur(value, 'mobileNumber')}
                             onChange={(value) => onChange(value, 'mobileNumber')}
                         />
                     </div>
@@ -125,7 +123,7 @@ const GeneralAccountForm = (props) => {
                         <InputLabel name='Email' error={errors.EmailId} mandatory />
                         <CustomInput value={EmailId} type='email'
                             disabled={disabled} placeholder='Email'
-                            error={errors.EmailId} onChange={({ target: { value } }) => onChange(value, 'EmailId')}
+                            error={errors.EmailId} onChange={(value) => onChange(value, 'EmailId')}
                         />
                     </div>
                 </div>
@@ -149,7 +147,8 @@ const GeneralAccountForm = (props) => {
                             <div className='row'>
                                 <div className='input-container'>
                                     <InputLabel name='Deposit Amount' error={errors.depositAmount} mandatory />
-                                    <InputNumber size="large" value={depositAmount} disabled={disabled}
+                                    <CustomInput
+                                        value={depositAmount} disabled={disabled}
                                         placeholder='Deposit Amount' onChange={(value) => onChange(value, 'depositAmount')}
                                     />
                                 </div>
@@ -166,7 +165,7 @@ const GeneralAccountForm = (props) => {
                                     <InputLabel name='Delivery Location' error={errors.deliveryLocation} mandatory />
                                     <CustomInput value={deliveryLocation} placeholder='Add Location'
                                         disabled={disabled} error={errors.deliveryLocation}
-                                        onChange={({ target: { value } }) => onChange(value, 'deliveryLocation')}
+                                        onChange={(value) => onChange(value, 'deliveryLocation')}
                                     />
                                 </div>
                                 <div className='input-container'>
@@ -183,13 +182,13 @@ const GeneralAccountForm = (props) => {
                                     <div className='column'>
                                         <div className='input-container'>
                                             <InputLabel name='20 Ltrs' />
-                                            <InputNumber size="large" value={product20L} disabled={disabled}
+                                            <CustomInput value={product20L} disabled={disabled}
                                                 placeholder='Add' onChange={(value) => onChange(value, 'product20L')}
                                             />
                                         </div>
                                         <div className='input-container'>
                                             <InputLabel name='Price' />
-                                            <InputNumber size="large" value={price20L} disabled={disabled}
+                                            <CustomInput value={price20L} disabled={disabled}
                                                 placeholder='Rs' onChange={(value) => onChange(value, 'price20L')}
                                             />
                                         </div>
@@ -197,13 +196,13 @@ const GeneralAccountForm = (props) => {
                                     <div className='column'>
                                         <div className='input-container'>
                                             <InputLabel name='1 Ltrs' />
-                                            <InputNumber size="large" value={product1L} disabled={disabled}
+                                            <CustomInput value={product1L} disabled={disabled}
                                                 placeholder='Add' onChange={(value) => onChange(value, 'product1L')}
                                             />
                                         </div>
                                         <div className='input-container'>
                                             <InputLabel name='Price' />
-                                            <InputNumber size="large" value={price1L} disabled={disabled}
+                                            <CustomInput value={price1L} disabled={disabled}
                                                 placeholder='Rs' onChange={(value) => onChange(value, 'price1L')}
                                             />
                                         </div>
@@ -211,31 +210,31 @@ const GeneralAccountForm = (props) => {
                                     <div className='column'>
                                         <div className='input-container'>
                                             <InputLabel name='500 Ml' />
-                                            <InputNumber size="large" value={product500ML} disabled={disabled}
+                                            <CustomInput value={product500ML} disabled={disabled}
                                                 placeholder='Add' onChange={(value) => onChange(value, 'product500ML')}
                                             />
                                         </div>
                                         <div className='input-container'>
                                             <InputLabel name='Price' />
-                                            <InputNumber size="large" value={price500ML} disabled={disabled}
+                                            <CustomInput value={price500ML} disabled={disabled}
                                                 placeholder='Rs' onChange={(value) => onChange(value, 'price500ML')}
                                             />
                                         </div>
                                     </div>
-                                    {/* <div className='column'>
+                                    <div className='column'>
                                         <div className='input-container'>
                                             <InputLabel name='250 Ml' />
-                                            <InputNumber size="large" value={product250ML} disabled={disabled}
+                                            <CustomInput value={product250ML} disabled={disabled}
                                                 placeholder='Add' onChange={(value) => onChange(value, 'product250ML')}
                                             />
                                         </div>
                                         <div className='input-container'>
                                             <InputLabel name='Price' />
-                                            <InputNumber size="large" value={price250ML} disabled={disabled}
+                                            <CustomInput value={price250ML} disabled={disabled}
                                                 placeholder='Rs' onChange={(value) => onChange(value, 'price250ML')}
                                             />
                                         </div>
-                                    </div> */}
+                                    </div>
                                 </div>
                             </div>
                         </>
@@ -253,7 +252,7 @@ const GeneralAccountForm = (props) => {
                         <InputLabel name='Referred By' error={errors.referredBy} mandatory />
                         <CustomInput value={referredBy} disabled={disabled}
                             placeholder='Referral Name' error={errors.referredBy}
-                            onChange={({ target: { value } }) => onChange(value, 'referredBy')}
+                            onChange={(value) => onChange(value, 'referredBy')}
                         />
                     </div>
                 </div>

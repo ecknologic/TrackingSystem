@@ -7,7 +7,7 @@ import CustomButton from '../../../../components/CustomButton';
 import CorporateAccountForm from '../../add/forms/CorporateAccount';
 import NoContent from '../../../../components/NoContent';
 import Spinner from '../../../../components/Spinner';
-import { validateIDProofs, validateAccountValues, validateIDNumbers, validateMobileNumber, validateNames, validateEmailId } from '../../../../utils/validations';
+import { validateIDProofs, validateAccountValues, validateIDNumbers, validateMobileNumber, validateNames, validateEmailId, validateNumber } from '../../../../utils/validations';
 import GeneralAccountForm from '../../add/forms/GeneralAccount';
 import { WEEKDAYS } from '../../../../assets/fixtures';
 
@@ -65,6 +65,10 @@ const AccountOverview = ({ data, routeOptions }) => {
         }
         else if (key === 'mobileNumber') {
             const error = validateMobileNumber(value)
+            setAccountErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'creditPeriodInDays') {
+            const error = validateNumber(value)
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }
         else if (key === 'EmailId') {

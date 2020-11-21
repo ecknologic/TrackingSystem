@@ -27,13 +27,6 @@ export const getBase64 = (img, callback) => {
     reader.readAsDataURL(img);
 }
 export const base64String = (buffer) => {
-    // var binary = '';
-    // var bytes = new Uint8Array(buffer);
-    // var len = bytes.byteLength;
-    // for (var i = 0; i < len; i++) {
-    //     binary += String.fromCharCode(bytes[i]);
-    // }
-    // console.lo
     return "data:image/png;base64," + btoa(
         new Uint8Array(buffer)
             .reduce((data, byte) => data + String.fromCharCode(byte), '')
@@ -128,24 +121,24 @@ export const getProductsForDB = ({ product20L, price20L, product1L, price1L, pro
     const item1 = { productName: '20L', productPrice: price20L || 0, noOfJarsTobePlaced: product20L || 0 }
     const item2 = { productName: '1L', productPrice: price1L || 0, noOfJarsTobePlaced: product1L || 0 }
     const item3 = { productName: '500ML', productPrice: price500ML || 0, noOfJarsTobePlaced: product500ML || 0 }
-    // const item4 = { productName: '250ML', productPrice: price250ML, noOfJarsTobePlaced: product250ML }
+    const item4 = { productName: '250ML', productPrice: price250ML || 0, noOfJarsTobePlaced: product250ML || 0 }
     products.push(item1)
     products.push(item2)
     products.push(item3)
-    //products.push(item4)
+    products.push(item4)
 
     return products
 }
-export const getProductsWithIdForDB = ({ product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML, product20LId, product1LId, product500MLId }) => {  //, product250MLId
+export const getProductsWithIdForDB = ({ product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML, product20LId, product1LId, product500MLId, product250MLId }) => {
     const products = []
     const item1 = { productName: '20L', productPrice: price20L || 0, noOfJarsTobePlaced: product20L || 0, productId: product20LId }
     const item2 = { productName: '1L', productPrice: price1L || 0, noOfJarsTobePlaced: product1L || 0, productId: product1LId }
     const item3 = { productName: '500ML', productPrice: price500ML || 0, noOfJarsTobePlaced: product500ML || 0, productId: product500MLId }
-    // const item4 = { productName: '250ML', productPrice: price250ML, noOfJarsTobePlaced: product250ML, productId: product250MLId }
+    const item4 = { productName: '250ML', productPrice: price250ML || 0, noOfJarsTobePlaced: product250ML || 0, productId: product250MLId }
     products.push(item1)
     products.push(item2)
     products.push(item3)
-    //products.push(item4)
+    products.push(item4)
 
     return products
 }
@@ -169,11 +162,11 @@ export const getProductsForUI = (data) => {
             price500ML = productPrice
             product500MLId = productId
         }
-        // if (productName === '250ML') {
-        //     product250ML = noOfJarsTobePlaced
-        //     price250ML = productPrice
-        //     product250MLId = productId
-        // }
+        if (productName === '250ML') {
+            product250ML = noOfJarsTobePlaced
+            price250ML = productPrice
+            product250MLId = productId
+        }
     })
     const products = { product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML, product20LId, product1LId, product500MLId }//product250MLId
     return products
@@ -204,15 +197,15 @@ export const extractDeliveryDetails = (data) => {
     delete clone.price1L
     delete clone.price20L
     delete clone.price500ML
-    // delete clone.price250ML
+    delete clone.price250ML
     delete clone.product1L
     delete clone.product20L
     delete clone.product500ML
-    // delete clone.product250ML
+    delete clone.product250ML
     delete clone.product20LId
     delete clone.product1LId
     delete clone.product500MLId
-    // delete clone.product250MLId
+    delete clone.product250MLId
     return clone
 }
 
@@ -227,11 +220,11 @@ export const extractGADetails = (data) => {
     delete clone.price1L
     delete clone.price20L
     delete clone.price500ML
-    // delete clone.price250ML
+    delete clone.price250ML
     delete clone.product1L
     delete clone.product20L
     delete clone.product500ML
-    // delete clone.product250ML
+    delete clone.product250ML
     return { ...clone, Address1, organizationName }
 }
 
@@ -275,7 +268,7 @@ export const isAlphaNumOnly = (string) => {
     return string.match(/^[a-z0-9]*$/i)
 }
 export const isAlphaOnly = (string) => {
-    return string.match(/^[a-zA-Z\-]*$/)
+    return string.match(/^[a-zA-Z\s]*$/)
 }
 export const hasLowerCase = (string) => {
     return string.match(/[a-z]/)
@@ -286,8 +279,8 @@ export const isPANValid = (PANNumber) => {
 export const isGSTValid = (gstNumber) => {
     return gstNumber.match(/(0[0-9]|1[1-9]|2[0-9]|3[0-7])[A-Z]{3}[CPHFATBLJG]{1}[A-Z]{1}\d{4}[A-Z]{1}\d{1}[A-Z0-9]{2}/g)
 }
-export const isNumber = (value) => {
-    return value.match(/^(\s*|\d+)$/)
+export const isNumber = (number) => {
+    return String(number).match(/^(\s*|\d+)$/)
 }
 
 // multiplication table

@@ -6,7 +6,7 @@ import AddressCard from '../../../../components/AddressCard';
 import { useParams } from 'react-router-dom';
 import { http } from '../../../../modules/http';
 import { getDevDays, getProductsWithIdForDB, getProductsForUI, isEmpty, extractDeliveryDetails, extractProductsFromForm, deepClone, getBase64, getDevDaysForDB, base64String, resetTrackForm } from '../../../../utils/Functions';
-import { validateDeliveryValues, validateDevDays, validateIDNumbers, validateMobileNumber, validateNames } from '../../../../utils/validations';
+import { validateDeliveryValues, validateDevDays, validateIDNumbers, validateMobileNumber, validateNames, validateNumber } from '../../../../utils/validations';
 import DeliveryForm from '../../add/forms/Delivery';
 import CustomModal from '../../../../components/CustomModal';
 import { WEEKDAYS } from '../../../../assets/fixtures';
@@ -110,11 +110,11 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
-        if (key.includes('price') || key.includes('product')) {
-            setFormErrors(errors => ({ ...errors, productNPrice: '' }))
-        }
-
         // Validations
+        if (key === 'gstNo') {
+            const error = validateIDNumbers(key, value)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
         if (key === 'deliveryLocation') {
             const error = validateNames(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
@@ -123,9 +123,17 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
             const error = validateMobileNumber(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
+        else if (key === 'depositAmount') {
+            const error = validateNumber(value)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
         else if (key === 'contactPerson') {
             const error = validateNames(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key.includes('price') || key.includes('product')) {
+            const error = validateNumber(value)
+            setFormErrors(errors => ({ ...errors, productNPrice: error }))
         }
     }
 

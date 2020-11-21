@@ -17,7 +17,7 @@ import {
 import { TRACKFORM, getUserId, getUsername, getWarehoseId, TODAYDATE } from '../../../utils/constants';
 import {
     validateAccountValues, validateDeliveryValues, validateDevDays,
-    validateIDProofs, validateAddresses, validateIDNumbers, validateNames, validateMobileNumber, validateEmailId
+    validateIDProofs, validateAddresses, validateIDNumbers, validateNames, validateNumber, validateMobileNumber, validateEmailId
 } from '../../../utils/validations';
 import SuccessModal from '../../../components/CustomModal';
 import QuitModal from '../../../components/CustomModal';
@@ -97,11 +97,11 @@ const AddAccount = () => {
         setDeliveryValues(data => ({ ...data, [key]: value }))
         setDeliveryErrors(errors => ({ ...errors, [key]: '' }))
 
-        if (key.includes('price') || key.includes('product')) {
-            setDeliveryErrors(errors => ({ ...errors, productNPrice: '' }))
-        }
-
         // Validations
+        if (key === 'gstNo') {
+            const error = validateIDNumbers(key, value)
+            setDeliveryErrors(errors => ({ ...errors, [key]: error }))
+        }
         if (key === 'deliveryLocation') {
             const error = validateNames(value)
             setDeliveryErrors(errors => ({ ...errors, [key]: error }))
@@ -110,9 +110,17 @@ const AddAccount = () => {
             const error = validateMobileNumber(value)
             setDeliveryErrors(errors => ({ ...errors, [key]: error }))
         }
+        else if (key === 'depositAmount') {
+            const error = validateNumber(value)
+            setDeliveryErrors(errors => ({ ...errors, [key]: error }))
+        }
         else if (key === 'contactPerson') {
             const error = validateNames(value)
             setDeliveryErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key.includes('price') || key.includes('product')) {
+            const error = validateNumber(value)
+            setDeliveryErrors(errors => ({ ...errors, productNPrice: error }))
         }
     }
     const handleDeliveryBlur = (value, key) => {
@@ -131,10 +139,7 @@ const AddAccount = () => {
         setGeneralValues(data => ({ ...data, [key]: value }))
         setGeneralErrors(errors => ({ ...errors, [key]: '' }))
 
-        if (key.includes('price') || key.includes('product')) {
-            setGeneralErrors(errors => ({ ...errors, productNPrice: '' }))
-        }
-        else if (value === 'adharNo' || value === 'panNo') {
+        if (value === 'adharNo' || value === 'panNo') {
             setGeneralValues(data => ({ ...data, [value]: '' }))
             setGeneralErrors(errors => ({ ...errors, [value]: '' }))
         }
@@ -148,6 +153,10 @@ const AddAccount = () => {
             const error = validateMobileNumber(value)
             setGeneralErrors(errors => ({ ...errors, [key]: error }))
         }
+        else if (key === 'depositAmount') {
+            const error = validateNumber(value)
+            setGeneralErrors(errors => ({ ...errors, [key]: error }))
+        }
         else if (key === 'deliveryLocation') {
             const error = validateNames(value)
             setGeneralErrors(errors => ({ ...errors, [key]: error }))
@@ -155,6 +164,10 @@ const AddAccount = () => {
         else if (key === 'EmailId') {
             const error = validateEmailId(value)
             setGeneralErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key.includes('price') || key.includes('product')) {
+            const error = validateNumber(value)
+            setGeneralErrors(errors => ({ ...errors, productNPrice: error }))
         }
     }
 
@@ -193,6 +206,10 @@ const AddAccount = () => {
         }
         else if (key === 'mobileNumber') {
             const error = validateMobileNumber(value)
+            setCorporateErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'creditPeriodInDays') {
+            const error = validateNumber(value)
             setCorporateErrors(errors => ({ ...errors, [key]: error }))
         }
         else if (key === 'EmailId') {

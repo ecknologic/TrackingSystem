@@ -34,7 +34,6 @@ const SideMenu = () => {
         }
     }
 
-    console.log("selected.d...", selected)
     return (
         <Menu
             id='app-side-menu'

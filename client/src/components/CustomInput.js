@@ -1,7 +1,20 @@
 import React from 'react';
 import { Input } from 'antd';
 
-const CustomInput = ({ disabled, maxLength, type, value, placeholder, error = '', onChange, onBlur }) => {
+const CustomInput = ({ disabled, maxLength, type, value, placeholder, uppercase, error = '', onChange, onBlur }) => {
+
+    const handleChange = (value) => {
+        if (uppercase) onChange(value.toUpperCase())
+        else onChange(value)
+
+    }
+    const handleBlur = (value) => {
+        if (onBlur) {
+            if (uppercase) onBlur(value.toUpperCase())
+            else onBlur(value)
+        }
+    }
+
     return (
         <Input
             size='large'
@@ -11,8 +24,8 @@ const CustomInput = ({ disabled, maxLength, type, value, placeholder, error = ''
             value={value}
             placeholder={placeholder}
             className={`app-id-input ${error && 'app-input-error'}`}
-            onBlur={onBlur}
-            onChange={onChange}
+            onBlur={({ target: { value } }) => handleBlur(value)}
+            onChange={({ target: { value } }) => handleChange(value)}
             autoComplete='none'
         />
     )
