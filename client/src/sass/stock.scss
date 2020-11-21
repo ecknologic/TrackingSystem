@@ -1,0 +1,200 @@
+.stock-header {
+    display: flex;
+    align-items: center;
+    height: 6.1em;
+    padding: 0 3em;
+    background-color: #F1F2F7;
+
+    .titles-container {
+        display: flex;
+        flex-direction: column;
+        padding-right: 1em;
+
+        .title {
+            color: #171725;
+            font-family: 'PoppinsSemiBold600';
+            font-size: 2.9ch;
+        }
+
+        .address {
+            color: #696974;
+            font-family: 'PoppinsMedium500';
+        }
+    }
+    
+    .three-dot-menu {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: .4em;
+        width: 2.4em;
+        height: 2.4em;
+        border-radius: .6em;
+        cursor: pointer;
+        background-color: #FAFAFB;
+
+    }
+}
+
+.stock-manager-content {
+    padding-bottom: 3em;
+    background-color: #FAFAFB;
+
+    .stock-manager-tabs {
+        .ant-tabs-tabpane {
+            display: none;
+        }
+    }
+
+    .date-picker-panel {
+        height: 6.5em;
+        width: 100%;
+        background-color: rgba(72,92,186,0.1);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #no-content-container {
+        min-height: calc(100vh - 22em);
+        width: 100%;
+    }
+}
+
+.stock-details-container {
+    display: flex;
+    flex-direction: column;
+
+}
+
+.stock-panel {
+    display: flex;
+    border-top: solid 1px #E4E6E5;
+    padding: 1.5em;
+    padding-left: 1em;
+
+    .titles {
+        width: 12.5em;
+    }
+
+    .box {
+        display: flex;
+        flex-direction: column;
+        padding: .3em 1em;
+        border-right: 1px solid #C6C6C6;
+
+        .title {
+            font-family: 'PoppinsSemiBold600';
+            font-size: 1.5ch;
+            color: #4F63BC;
+        }
+
+        .name {
+            color: rgba(0,0,0,0.85);
+            font-family: 'PoppinsRegular400';
+            font-size: 1.4ch;
+        }
+
+        .numbers-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            flex: 1;
+
+            .number {
+                color: #2A2D37;
+                font-family: 'PoppinsBold700';
+            }
+        }
+    }
+
+    .last {
+        border-right: none;
+    }
+
+    .buttons {
+        display: flex;
+        flex: 1;
+        align-items: center;
+        flex-wrap: wrap;
+        align-content: center;
+        padding: .3em 1em;
+
+        .app-stock-btn {
+            margin-bottom: .6em;
+            margin-right: 1em;
+        }
+    }
+}
+
+.cas-panel-container {
+    border-top: none;
+    background-color: #fff;
+    height: 9em;
+    
+
+    .titles {
+        align-items: flex-end;
+        justify-content: space-between;
+        font-family: 'PoppinsSemiBold600';
+
+        .new {
+            color: #333333;
+            font-family: 'PoppinsMedium500';
+        }
+    }
+
+    .items {
+        .numbers-container {
+            .number {
+                font-size: 2.2ch;
+            }
+            .new {
+                font-family: 'PoppinsRegular400';
+            }
+        }
+    }
+}
+.ofd-panel-container,.ds-panel-container,.ec-panel-container,
+.erc-panel-container,.dc-panel-container {
+    height: 6.5em;
+    
+
+    .titles {
+        justify-content: center;
+        font-family: 'PoppinsSemiBold600';
+    }
+
+    .items {
+        .numbers-container {
+            justify-content: flex-end;
+            .number {
+                font-size: 1.8ch;
+            }
+        }
+    }
+}
+
+.empty-cans-header {
+    background-color: #FAFAFB;
+    border-top: solid 1px #E4E6E5;
+    height: 8em;
+    padding: 1.5em;
+    padding-left: 2em;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    
+    .title {
+        font-family: 'PoppinsBold700';
+        font-size: 2ch;
+    }
+    
+    .msg {
+        font-family: 'PoppinsMedium500';
+        color: #6D7278;
+        font-size: 1.7ch;
+    }
+
+}

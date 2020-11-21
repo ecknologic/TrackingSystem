@@ -496,6 +496,19 @@ $textColorDisabled:rgba(0,0,0,0.55);
     }
 }
 
+.app-stock-btn {
+    border: 1px solid #9D9D9D;
+    border-radius: .6em;
+    background-color: #F0F0F1;
+    color: #252525;
+    height: 1.8em;
+    padding: 0 .6em;
+
+    .text {
+        font-family: 'PoppinsRegular400';
+        font-size: 1.2ch;
+    }
+}
 // -------------- Various Modal styles ------------------- //
 .app-preview-modal {
     margin-top: 1.8em;
