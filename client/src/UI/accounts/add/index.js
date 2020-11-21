@@ -395,7 +395,6 @@ const AddAccount = () => {
                 setIDProofErrors(IDProofError)
                 setDevDaysError(devDaysError)
                 setGeneralErrors(accountErrors)
-                console.log(accountErrors, devDaysError, IDProofErrors)
                 return
             }
             const idProofs = getIdProofsForDB(IDProofs)

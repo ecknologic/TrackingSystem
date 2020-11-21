@@ -14,7 +14,7 @@ const SideMenu = () => {
     const ROLE = getRole()
     const { pathname } = useLocation()
     const history = useHistory()
-    const [selected, setSelected] = useState('/dashboard')
+    const [selected, setSelected] = useState('/')
 
     const pattern = /[^\/]*\/[^\/]*/; // regex to match upto second forward slash in url pathname
     const mainPathname = pathname.match(pattern)[0]
