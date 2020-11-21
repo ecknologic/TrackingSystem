@@ -49,11 +49,11 @@ const uploadImage = (req) => {
     if (req.body.test) {
       idProof_frontside = Buffer.from(idProofs[0], 'base64')
       idProof_backside = Buffer.from(idProofs[1], 'base64')
-      gstProof = Buffer.from(req.body.gstProof, 'base64')
+      gstProof = req.body.gstProof ? Buffer.from(req.body.gstProof, 'base64') : null
     } else {
       idProof_frontside = Buffer.from(idProofs[0].replace(/^data:image\/\w+;base64,/, ""), 'base64')
       idProof_backside = Buffer.from(idProofs[1].replace(/^data:image\/\w+;base64,/, ""), 'base64')
-      gstProof = Buffer.from(req.body.gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+      gstProof = req.body.gstProof ? Buffer.from(req.body.gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64') : null
     }
     let insertQueryValues = [idProof_frontside, idProof_backside, gstProof]
     db.query(idproofdetailsquery, insertQueryValues, (err, results) => {
@@ -72,11 +72,11 @@ const updateProofs = (req) => {
     if (req.body.test) {
       idProof_frontside = Buffer.from(idProofs[0], 'base64')
       idProof_backside = Buffer.from(idProofs[1], 'base64')
-      gstProofData = Buffer.from(gstProof, 'base64')
+      gstProofData = gstProof ? Buffer.from(gstProof, 'base64') : null
     } else {
       idProof_frontside = Buffer.from(idProofs[0].replace(/^data:image\/\w+;base64,/, ""), 'base64')
       idProof_backside = Buffer.from(idProofs[1].replace(/^data:image\/\w+;base64,/, ""), 'base64')
-      gstProofData = Buffer.from(gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+      gstProofData = gstProof ? Buffer.from(gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64') : null
     }
     let insertQueryValues = [idProof_frontside, idProof_backside, gstProofData]
     db.query(idproofdetailsquery, insertQueryValues, (err, results) => {
@@ -377,7 +377,7 @@ router.post('/updateDeliveryDetails', (req, res) => {
       if (i.isNew == true) {
         saveDeliveryDays(i.deliveryDays).then(deliveryDays => {
           let deliveryDetailsQuery = "insert  into DeliveryDetails (gstNo,location,address,phoneNumber,contactPerson,deliverydaysid,depositAmount,customer_Id,routingId,isActive,gstProof) values(?,?,?,?,?,?,?,?,?,?,?)";
-          var gstProof = i.test ? Buffer.from(i.gstProof, 'base64') : Buffer.from(i.gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+          var gstProof = i.gstProof ? i.test ? Buffer.from(i.gstProof, 'base64') : Buffer.from(i.gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64') : null
           let insertQueryValues = [i.gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, deliveryDays.insertId, i.depositAmount, i.customer_Id, i.routingId, i.isActive, gstProof]
           db.query(deliveryDetailsQuery, insertQueryValues, (err, results) => {
             if (err) res.json({ status: 500, message: err.sqlMessage });
@@ -395,7 +395,7 @@ router.post('/updateDeliveryDetails', (req, res) => {
       } else {
         updateDeliveryDays(i.deliveryDays, i.deliverydaysid).then(deliveryDays => {
           let deliveryDetailsQuery = "UPDATE DeliveryDetails SET gstNo=?,location=?,address=?,phoneNumber=?,contactPerson=?,depositAmount=?,routingId=?,isActive=?,gstProof=? WHERE deliveryDetailsId=" + i.deliveryDetailsId;
-          var gstProof = i.test ? Buffer.from(i.gstProof, 'base64') : Buffer.from(i.gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+          var gstProof = i.gstProof ? i.test ? Buffer.from(i.gstProof, 'base64') : Buffer.from(i.gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64') : null
           let updateQueryValues = [i.gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, i.depositAmount, i.routingId, i.isActive, gstProof]
           db.query(deliveryDetailsQuery, updateQueryValues, (err, results) => {
             if (err) res.json({ status: 500, message: err.sqlMessage });
