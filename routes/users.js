@@ -33,6 +33,13 @@ router.post('/createUser', (req, res) => {
     }
   });
 });
+router.get('/getUsers', (req, res) => {
+  let query = "SELECT userId,userName,RoleId from usermaster";
+  db.query(query, (err, results) => {
+    if (err) res.json(err);
+    else res.json(results)
+  })
+})
 
 router.post('/updateUser', (req, res) => {
   let query = "UPDATE usermaster SET userName=?,roleId=?,emailid=? where userId=?";
