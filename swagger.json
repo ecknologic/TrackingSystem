@@ -115,6 +115,27 @@
                 }
             }
         },
+        "/customer/getCustomerDeliveryDetails/{customerId}": {
+            "parameters": [
+                {
+                    "name": "customerId",
+                    "in": "path",
+                    "required": true,
+                    "type": "integer"
+                }
+            ],
+            "get": {
+                "tags": [
+                    "Warehouse"
+                ],
+                "summary": " Getting Customers Delivery Details",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
         "/customer/getProductsDetails": {
             "get": {
                 "tags": [
@@ -474,6 +495,58 @@
                 }
             }
         },
+        "/customer/updateCustomer": {
+            "post": {
+                "tags": [
+                    "Warehouse"
+                ],
+                "description": "Update Customer",
+                "parameters": [
+                    {
+                        "name": "customerDetails",
+                        "in": "body",
+                        "description": "Customer Details",
+                        "schema": {
+                            "$ref": "#/definitions/updateCustomer"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "New Customer is created"
+                    }
+                }
+            }
+        },
+        "/customer/updateDeliveryDetails": {
+            "post": {
+                "tags": [
+                    "Warehouse"
+                ],
+                "description": "Update Delivery Details",
+                "parameters": [
+                    {
+                        "name": "customerDetails",
+                        "in": "body",
+                        "description": "Delivery Details",
+                        "schema": {
+                            "$ref": "#/definitions/updateDeliveryDetails"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "New Customer is created"
+                    }
+                }
+            }
+        },
         "/warehouse/confirmStockRecieved": {
             "post": {
                 "tags": [
@@ -662,6 +735,19 @@
                     "Motherplant"
                 ],
                 "summary": "Getting Dispatch Details",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/users/getUsers": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Getting Users Details",
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -879,9 +965,13 @@
                 "shippingAddress",
                 "shippingContactPerson",
                 "shippingContactNo",
+                "customertype",
                 "deliveryDetails",
                 "organizationName",
-                "createdBy"
+                "createdBy",
+                "idProofType",
+                "idProofs",
+                "gstProof"
             ],
             "properties": {
                 "customerName": {
@@ -955,6 +1045,13 @@
                         1
                     ]
                 },
+                "idProofType": {
+                    "type": "string",
+                    "enum": [
+                        "adharNo",
+                        "panNo"
+                    ]
+                },
                 "organizationName": {
                     "type": "string"
                 },
@@ -962,6 +1059,25 @@
                     "type": "integer"
                 },
                 "customertype": {
+                    "type": "string",
+                    "enum": [
+                        "Corporate",
+                        "General"
+                    ]
+                },
+                "test": {
+                    "type": "integer",
+                    "enum": [
+                        1
+                    ]
+                },
+                "idProofs": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "gstProof": {
                     "type": "string"
                 },
                 "deliveryDetails": {
@@ -992,17 +1108,300 @@
                                 "items": {
                                     "type": "object",
                                     "properties": {
-                                        "name": {
-                                            "type": "string"
+                                        "productName": {
+                                            "type": "string",
+                                            "enum": [
+                                                "20L",
+                                                "1L",
+                                                "500ML",
+                                                "250ML"
+                                            ]
                                         },
-                                        "quantity": {
+                                        "noOfJarsTobePlaced": {
                                             "type": "number"
                                         },
-                                        "price": {
+                                        "productPrice": {
                                             "type": "number"
                                         }
                                     }
                                 }
+                            },
+                            "deliveryDays": {
+                                "type": "object",
+                                "properties": {
+                                    "SUN": {
+                                        "type": "integer",
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    },
+                                    "MON": {
+                                        "type": "integer",
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    },
+                                    "TUE": {
+                                        "type": "integer",
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    },
+                                    "WED": {
+                                        "type": "integer",
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    },
+                                    "THU": {
+                                        "type": "integer",
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    },
+                                    "FRI": {
+                                        "type": "integer",
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    },
+                                    "SAT": {
+                                        "type": "integer",
+                                        "enum": [
+                                            0,
+                                            1
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "updateCustomer": {
+            "required": [
+                "customerName",
+                "mobileNumber",
+                "AlternatePhNo",
+                "EmailId",
+                "Address1",
+                "Address2",
+                "gstNo",
+                "contactperson",
+                "panNo",
+                "adharNo",
+                "registeredDate",
+                "invoicetype",
+                "natureOfBussiness",
+                "creditPeriodInDays",
+                "referredBy",
+                "departmentId",
+                "deliveryDaysId",
+                "depositamount",
+                "isActive",
+                "shippingAddress",
+                "shippingContactPerson",
+                "shippingContactNo",
+                "customertype",
+                "organizationName",
+                "createdBy",
+                "idProofType",
+                "idProofs",
+                "gstProof",
+                "customer_id_proof"
+            ],
+            "properties": {
+                "customerName": {
+                    "type": "string"
+                },
+                "mobileNumber": {
+                    "type": "number"
+                },
+                "AlternatePhNo": {
+                    "type": "number"
+                },
+                "EmailId": {
+                    "type": "string"
+                },
+                "Address1": {
+                    "type": "string"
+                },
+                "Address2": {
+                    "type": "string"
+                },
+                "gstNo": {
+                    "type": "string"
+                },
+                "contactperson": {
+                    "type": "string"
+                },
+                "panNo": {
+                    "type": "string"
+                },
+                "adharNo": {
+                    "type": "string"
+                },
+                "registeredDate": {
+                    "type": "string",
+                    "format": "date"
+                },
+                "invoicetype": {
+                    "type": "string"
+                },
+                "natureOfBussiness": {
+                    "type": "string"
+                },
+                "creditPeriodInDays": {
+                    "type": "integer"
+                },
+                "referredBy": {
+                    "type": "string"
+                },
+                "departmentId": {
+                    "type": "integer"
+                },
+                "deliveryDaysId": {
+                    "type": "integer"
+                },
+                "depositamount": {
+                    "type": "number"
+                },
+                "shippingAddress": {
+                    "type": "string"
+                },
+                "shippingContactPerson": {
+                    "type": "string"
+                },
+                "shippingContactNo": {
+                    "type": "number"
+                },
+                "isActive": {
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1
+                    ]
+                },
+                "idProofType": {
+                    "type": "string",
+                    "enum": [
+                        "adharNo",
+                        "panNo"
+                    ]
+                },
+                "organizationName": {
+                    "type": "string"
+                },
+                "createdBy": {
+                    "type": "integer"
+                },
+                "customertype": {
+                    "type": "string",
+                    "enum": [
+                        "Corporate",
+                        "General"
+                    ]
+                },
+                "test": {
+                    "type": "integer",
+                    "enum": [
+                        1
+                    ]
+                },
+                "idProofs": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "gstProof": {
+                    "type": "string"
+                },
+                "customer_id_proof": {
+                    "type": "integer"
+                },
+                "customerId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "updateDeliveryDetails": {
+            "required": [
+                "deliveryDetails"
+            ],
+            "properties": {
+                "deliveryDetails": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "isNew": {
+                                "type": "boolean",
+                                "required": true
+                            },
+                            "test": {
+                                "type": "boolean",
+                                "enum": [
+                                    true
+                                ]
+                            },
+                            "gstNo": {
+                                "type": "string"
+                            },
+                            "address": {
+                                "type": "string"
+                            },
+                            "phoneNumber": {
+                                "type": "number"
+                            },
+                            "contactPerson": {
+                                "type": "string"
+                            },
+                            "depositAmount": {
+                                "type": "number"
+                            },
+                            "routingId": {
+                                "type": "integer"
+                            },
+                            "products": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "productId": {
+                                            "type": "integer",
+                                            "required": true
+                                        },
+                                        "productName": {
+                                            "type": "string",
+                                            "enum": [
+                                                "20L",
+                                                "1L",
+                                                "500ML",
+                                                "250ML"
+                                            ]
+                                        },
+                                        "noOfJarsTobePlaced": {
+                                            "type": "number"
+                                        },
+                                        "productPrice": {
+                                            "type": "number"
+                                        }
+                                    }
+                                }
+                            },
+                            "deliverydaysid": {
+                                "type": "integer"
+                            },
+                            "deliveryDetailsId": {
+                                "type": "integer"
                             },
                             "deliveryDays": {
                                 "type": "object",

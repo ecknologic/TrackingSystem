@@ -38,7 +38,7 @@ export const validateDevDays = (days) => {
     return errors
 }
 
-export const validateAccountValues = (data, customerType) => {
+export const validateAccountValues = (data, customerType, isInView) => {
     let errors = {};
     let productErrors = {}
     const text = 'Required'
@@ -51,19 +51,33 @@ export const validateAccountValues = (data, customerType) => {
 
     if (customerType === 'Corporate') {
         if (!organizationName) errors.organizationName = text
+        else {
+            const error = validateNames(organizationName)
+            error && (errors.organizationName = error)
+        }
         if (!creditPeriodInDays) errors.creditPeriodInDays = text
+        else {
+            const error = validateNumber(creditPeriodInDays)
+            error && (errors.creditPeriodInDays = error)
+        }
         if (!gstNo) errors.gstNo = text
         if (!gstProof) errors.gstProof = text
     }
     else {
-        if (!depositAmount) errors.depositAmount = text
-        if (!routingId) errors.routingId = text
-        if (!deliveryLocation) errors.deliveryLocation = text
-        else {
-            const error = validateNames(deliveryLocation)
-            error && (errors.deliveryLocation = error)
+        if (!isInView) { // General account form in add account screen
+            if (!depositAmount) errors.depositAmount = text
+            else {
+                const error = validateNumber(depositAmount)
+                error && (errors.depositAmount = error)
+            }
+            if (!routingId) errors.routingId = text
+            if (!deliveryLocation) errors.deliveryLocation = text
+            else {
+                const error = validateNames(deliveryLocation)
+                error && (errors.deliveryLocation = error)
+            }
+            productErrors = validateProducts(rest)
         }
-        productErrors = validateProducts(rest)
     }
 
     if (gstNo && !gstProof) errors.gstProof = text
@@ -91,7 +105,7 @@ export const validateAccountValues = (data, customerType) => {
     }
     if (!mobileNumber) errors.mobileNumber = text
     else {
-        if (String(mobileNumber) < 10) errors.mobileNumber = text2
+        if (String(mobileNumber).length < 10) errors.mobileNumber = text2
         else {
             const error = validateMobileNumber(mobileNumber)
             error && (errors.mobileNumber = error)
@@ -131,6 +145,10 @@ export const validateDeliveryValues = (data) => {
     } = data
 
     if (!depositAmount) errors.depositAmount = text
+    else {
+        const error = validateNumber(depositAmount)
+        error && (errors.depositAmount = error)
+    }
     if (!routingId) errors.routingId = text
     if (!address) errors.address = text
     if (gstNo && !gstProof) errors.gstProof = text
@@ -165,21 +183,42 @@ export const validateDeliveryValues = (data) => {
     return { ...errors, ...productErrors }
 }
 
-const validateProducts = ({ product20L, price20L, product1L, price1L, product500ML, price500ML }) => {
+const validateProducts = ({ product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML }) => {
     let errors = {};
-    if (product20L || price20L) {
+
+    if (!((product20L == 0 || !product20L) && (price20L == 0 || !price20L))) {
         if (!product20L) errors.productNPrice = 'Enter quantity for 20 Ltrs'
         if (!price20L) errors.productNPrice = 'Enter price for 20 Ltrs'
     }
-    if (product1L || price1L) {
+    if (!((product1L == 0 || !product1L) && (price1L == 0 || !price1L))) {
         if (!product1L) errors.productNPrice = 'Enter quantity for 1 Ltrs'
         if (!price1L) errors.productNPrice = 'Enter price for 1 Ltrs'
     }
-    if (product500ML || price500ML) {
+    if (!((product500ML == 0 || !product500ML) && (price500ML == 0 || !price500ML))) {
         if (!product500ML) errors.productNPrice = 'Enter quantity for 500 ml'
         if (!price500ML) errors.productNPrice = 'Enter price for 500 ml'
     }
-    if (!(product20L || price20L) && !(product1L || price1L) && !(product500ML || price500ML)) {
+    if (!((product250ML == 0 || !product250ML) && (price250ML == 0 || !price250ML))) {
+        if (!product250ML) errors.productNPrice = 'Enter quantity for 250 ml'
+        if (!price250ML) errors.productNPrice = 'Enter price for 250 ml'
+    }
+
+    const error1 = validateNumber(product20L)
+    const error2 = validateNumber(price20L)
+    const error3 = validateNumber(product1L)
+    const error4 = validateNumber(price1L)
+    const error5 = validateNumber(product500ML)
+    const error6 = validateNumber(price500ML)
+    const error7 = validateNumber(product250ML)
+    const error8 = validateNumber(price250ML)
+
+    if (error1 || error2 || error3 || error4 || error5 || error6 || error7 || error8)
+        errors.productNPrice = error1 || error2 || error3 || error4 || error5 || error6 || error7 || error8
+
+    if ((product20L == 0 || !product20L) && (price20L == 0 || !price20L)
+        && (product1L == 0 || !product1L) && (price1L == 0 || !price1L)
+        && (product500ML == 0 || !product500ML) && (price500ML == 0 || !price500ML)
+        && (product250ML == 0 || !product250ML) && (price250ML == 0 || !price250ML)) {
         errors.productNPrice = 'Atleast 1 product is required'
     }
     return errors
@@ -204,8 +243,8 @@ export const validateIDNumbers = (key, value, isBlur) => {
         if (isBlur && value && String(value).length < 10) {
             return 'Incomplete'
         }
-        if (hasLowerCase(value)) {
-            return 'Enter uppercase only'
+        if (!isAlphaNumOnly(value)) {
+            return 'Enter aphanumeric only'
         }
         if (String(value).length === 10) {
             const isValid = isPANValid(value)
@@ -227,9 +266,6 @@ export const validateIDNumbers = (key, value, isBlur) => {
     else if (key === 'gstNo') {
         if (isBlur && value && String(value).length < 15) {
             return 'Incomplete'
-        }
-        if (hasLowerCase(value)) {
-            return 'Enter uppercase only'
         }
         if (!isAlphaNumOnly(value)) {
             return 'Enter aphanumeric only'
@@ -253,9 +289,18 @@ export const validateEmailId = (value) => {
     if (!isValid) return 'Invalid'
     return ''
 }
+export const validateNumber = (value) => {
+    if (value && !isNumber(value)) {
+        return 'Enter digits only'
+    }
+    return ''
+}
 export const validateMobileNumber = (value, isBlur) => {
     if (isBlur && value && String(value).length < 10) {
         return 'Incomplete'
+    }
+    if (!isNumber(value)) {
+        return 'Enter digits only'
     }
     if (String(value).length === 10) {
         const isValid = isIndMobileNum(value)

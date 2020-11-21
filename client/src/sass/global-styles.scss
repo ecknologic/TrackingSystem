@@ -9,6 +9,7 @@ $textColorDisabled:rgba(0,0,0,0.55);
         scroll-behavior: smooth;
     }
 }
+
 // -------------- antd Collapse styles ------------------- //
 
 .ant-collapse {
@@ -342,7 +343,6 @@ $textColorDisabled:rgba(0,0,0,0.55);
             min-width: 8em;
             border-radius: .7em;
             background-color: #007AFF;
-            // text-transform: uppercase;
         }
     }
 
@@ -460,9 +460,49 @@ $textColorDisabled:rgba(0,0,0,0.55);
     background-color: #0091FF;
 }
 
+.app-create-acc-btn {
+    font-size: 1.9ch;
+    font-weight: 650;
+    color: #696974;
+    background-color: #FAFAFB;
+    padding: .5em;
+    padding-right: 1em;
+    border-radius: .6em;
+    cursor: pointer;
+    font-family: 'PoppinsSemiBold600';
+
+    .anticon {
+        svg {
+            transform: rotate(-90deg) scale(.865) !important;
+        }
+    }
+}
+
+.app-footer-buttons-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 10em;
+    width: 80%;
+
+    .footer-btn {
+        text-transform: uppercase;
+    }
+
+    .app-create-btn {
+        height: 3.5em;
+        width: 15em;
+        border-radius: .8em;
+    }
+}
+
 // -------------- Various Modal styles ------------------- //
 .app-preview-modal {
     margin-top: 1.8em;
+
+    .ant-modal-footer {
+        justify-content: flex-end;
+    }
 }
 
 // -------------- Various Animation styles ------------------- //

@@ -1,4 +1,3 @@
-import { InputNumber } from 'antd';
 import React, { useEffect, useState } from 'react';
 import InputWithAddon from '../../../../components/InputWithAddon';
 import SelectInput from '../../../../components/SelectInput';
@@ -43,11 +42,11 @@ const CorporateAccountForm = ({ data, errors, IDProofs, IDProofErrors, onChange,
                         <div className='input-container second'>
                             <InputLabel name={proofName} error={errors[idProofType]} mandatory />
                             <CustomInput
-                                disabled={disabled} maxLength={maxLength}
+                                disabled={disabled} maxLength={maxLength} uppercase
                                 value={data[idProofType]} error={errors[idProofType]}
                                 placeholder={`Add ${proofName}`}
-                                onChange={({ target: { value } }) => onChange(value, idProofType)}
-                                onBlur={({ target: { value } }) => onBlur(value, idProofType)}
+                                onChange={(value) => onChange(value, idProofType)}
+                                onBlur={(value) => onBlur(value, idProofType)}
                             />
                         </div>
                     )
@@ -55,8 +54,8 @@ const CorporateAccountForm = ({ data, errors, IDProofs, IDProofErrors, onChange,
                 <div className='upload-container'>
                     <DraggerInput onUpload={(file) => onUpload(file, 'idProofs')} disabled={idUploadDisable || disabled} />
                     <div className='upload-preview-container'>
-                        <UploadPreviewer value={Front} title='Front' disabled={disabled} onRemove={() => onRemove('Front')} error={IDProofErrors.Front} />
-                        <UploadPreviewer value={Back} title='Back' disabled={disabled} onRemove={() => onRemove('Back')} className='last' error={IDProofErrors.Back} />
+                        <UploadPreviewer track={track} value={Front} title='Front' disabled={disabled} onRemove={() => onRemove('Front')} error={IDProofErrors.Front} />
+                        <UploadPreviewer track={track} value={Back} title='Back' disabled={disabled} onRemove={() => onRemove('Back')} className='last' error={IDProofErrors.Back} />
                     </div>
                 </div>
                 <div className='upload-instructions'>
@@ -69,16 +68,16 @@ const CorporateAccountForm = ({ data, errors, IDProofs, IDProofErrors, onChange,
                     <InputLabel name='GST Number' error={errors.gstNo} mandatory />
                     <InputWithAddon
                         maxLength={15} value={gstNo}
-                        label='VERIFY' disabled={disabled}
+                        label='VERIFY' disabled={disabled} uppercase
                         placeholder='GST Number' error={errors.gstNo}
-                        onBlur={({ target: { value } }) => onBlur(value, 'gstNo')}
-                        onChange={({ target: { value } }) => onChange(value, 'gstNo')}
+                        onBlur={(value) => onBlur(value, 'gstNo')}
+                        onChange={(value) => onChange(value, 'gstNo')}
                     />
                 </div>
                 <div className='input-container app-upload-file-container app-gst-upload-container'>
                     <DraggerInput onUpload={(file) => onUpload(file, 'gstProof')} disabled={gstUploadDisable || disabled} />
                     <div className='upload-preview-container'>
-                        <UploadPreviewer value={gstProof} title='GST Proof' disabled={disabled} onRemove={() => onRemove('gstProof')} className='last' error={errors.gstProof} />
+                        <UploadPreviewer track={track} value={gstProof} title='GST Proof' disabled={disabled} onRemove={() => onRemove('gstProof')} className='last' error={errors.gstProof} />
                     </div>
                 </div>
             </div>
@@ -90,7 +89,7 @@ const CorporateAccountForm = ({ data, errors, IDProofs, IDProofErrors, onChange,
                         placeholder='Organization Name'
                         disabled={disabled}
                         error={errors.organizationName}
-                        onChange={({ target: { value } }) => onChange(value, 'organizationName')}
+                        onChange={(value) => onChange(value, 'organizationName')}
                     />
                 </div>
 
@@ -101,19 +100,19 @@ const CorporateAccountForm = ({ data, errors, IDProofs, IDProofErrors, onChange,
                     <CustomInput
                         value={address} placeholder='Add Address'
                         disabled={disabled} error={errors.address}
-                        onChange={({ target: { value } }) => onChange(value, 'address')}
+                        onChange={(value) => onChange(value, 'address')}
                     />
                 </div>
             </div>
             <div className='row'>
                 <div className='input-container'>
                     <InputLabel name='Phone Number' error={errors.mobileNumber} mandatory />
-                    <InputNumber
-                        size="large" maxLength={10}
+                    <CustomInput
+                        maxLength={10}
                         value={mobileNumber} disabled={disabled}
                         placeholder='Phone Number'
-                        className={`${errors.mobileNumber && 'app-input-error'}`}
-                        onBlur={({ target: { value } }) => onBlur(value, 'mobileNumber')}
+                        error={errors.mobileNumber}
+                        onBlur={(value) => onBlur(value, 'mobileNumber')}
                         onChange={(value) => onChange(value, 'mobileNumber')}
                     />
                 </div>
@@ -122,7 +121,7 @@ const CorporateAccountForm = ({ data, errors, IDProofs, IDProofErrors, onChange,
                     <CustomInput
                         value={EmailId} type='email' disabled={disabled}
                         placeholder='Email' error={errors.EmailId}
-                        onChange={({ target: { value } }) => onChange(value, 'EmailId')}
+                        onChange={(value) => onChange(value, 'EmailId')}
                     />
                 </div>
             </div>
@@ -134,7 +133,7 @@ const CorporateAccountForm = ({ data, errors, IDProofs, IDProofErrors, onChange,
                         disabled={disabled}
                         placeholder='Account Owner'
                         error={errors.customerName}
-                        onChange={({ target: { value } }) => onChange(value, 'customerName')}
+                        onChange={(value) => onChange(value, 'customerName')}
                     />
                 </div>
                 <div className='input-container'>
@@ -164,12 +163,12 @@ const CorporateAccountForm = ({ data, errors, IDProofs, IDProofErrors, onChange,
                 </div>
             </div>
             <div className='row'>
-                <div className='input-container' error={errors.creditPeriodInDays}>
-                    <InputLabel name='Credit Period in Days' mandatory />
-                    <InputNumber
-                        size="large" value={creditPeriodInDays}
+                <div className='input-container'>
+                    <InputLabel name='Credit Period in Days' error={errors.creditPeriodInDays} mandatory />
+                    <CustomInput
+                        value={creditPeriodInDays}
                         disabled={disabled} placeholder='Credit Period'
-                        className={`${errors.creditPeriodInDays && 'app-input-error'}`}
+                        error={errors.creditPeriodInDays}
                         onChange={(value) => onChange(value, 'creditPeriodInDays')}
                     />
                 </div>
@@ -179,7 +178,7 @@ const CorporateAccountForm = ({ data, errors, IDProofs, IDProofErrors, onChange,
                         placeholder='Referral Name'
                         value={referredBy} disabled={disabled}
                         error={errors.referredBy}
-                        onChange={({ target: { value } }) => onChange(value, 'referredBy')}
+                        onChange={(value) => onChange(value, 'referredBy')}
                     />
                 </div>
             </div>

@@ -2,6 +2,8 @@ import React from 'react'
 import Icon from '@ant-design/icons';
 const primaryColor = '#0062FF';
 const secondaryColor = '#5C63AB';
+const greyColor = '#92929D';
+const whiteColor = '#FFFFFF';
 
 
 const ArrowSvg = () => (
@@ -14,9 +16,9 @@ const CrossSvg = () => (
         <path fill="#4A4A4A" fillRule="evenodd" d="M.3.3A1 1 0 011.7.3L7 5.58 12.27.32A1 1 0 0113.6.24l.1.08a1 1 0 010 1.41L8.4 7l5.28 5.28a1 1 0 01.08 1.32l-.08.1a1 1 0 01-1.42 0L7 8.4 1.7 13.7a1 1 0 01-1.31.08l-.1-.09a1 1 0 010-1.41L5.6 7 .28 1.7A1 1 0 01.22.4z" />
     </svg>
 );
-const PlusSvg = () => (
+const PlusComponent = ({ color }) => (
     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18">
-        <path fill={primaryColor} fillRule="evenodd" d="M10 8h7a1 1 0 010 2h-7v7a1 1 0 01-2 0v-7H1a1 1 0 010-2h7V1a1 1 0 012 0v7z" />
+        <path fill={color} fillRule="evenodd" d="M10 8h7a1 1 0 010 2h-7v7a1 1 0 01-2 0v-7H1a1 1 0 010-2h7V1a1 1 0 012 0v7z" />
     </svg>
 );
 const DDownSvg = () => (
@@ -47,6 +49,59 @@ const ProjectComponent = ({ color }) => (
         <path fill={color} fill-rule="evenodd" d="M15 0a7 7 0 017 7v8a7 7 0 01-7 7H7a7 7 0 01-7-7V7a7 7 0 017-7h8zm0 2H7a5 5 0 00-5 5v8a5 5 0 005 5h8a5 5 0 005-5V7a5 5 0 00-5-5zm-.78 5.36a1 1 0 111.54 1.28l-4.95 6a1 1 0 01-1.47.07l-3.05-3a1 1 0 111.4-1.43l2.27 2.24z" />
     </svg>
 );
+const FriendsComponent = ({ color }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22">
+        <path fill={color} fill-rule="evenodd" d="M11 6a3 3 0 110-6 3 3 0 010 6zm0-2a1 1 0 100-2 1 1 0 000 2zm-1 2h2a3 3 0 013 3v1a3 3 0 01-3 3h-2a3 3 0 01-3-3V9a3 3 0 013-3zm0 2a1 1 0 00-1 1v1a1 1 0 001 1h2a1 1 0 001-1V9a1 1 0 00-1-1h-2zm8 7a3 3 0 110-6 3 3 0 010 6zm0-2a1 1 0 100-2 1 1 0 000 2zm-1 2h2a3 3 0 013 3v1a3 3 0 01-3 3h-2a3 3 0 01-3-3v-1a3 3 0 013-3zm0 2a1 1 0 00-1 1v1a1 1 0 001 1h2a1 1 0 001-1v-1a1 1 0 00-1-1h-2zM4 15a3 3 0 110-6 3 3 0 010 6zm0-2a1 1 0 100-2 1 1 0 000 2zm-1 2h2a3 3 0 013 3v1a3 3 0 01-3 3H3a3 3 0 01-3-3v-1a3 3 0 013-3zm0 2a1 1 0 00-1 1v1a1 1 0 001 1h2a1 1 0 001-1v-1a1 1 0 00-1-1H3z" />
+    </svg>
+);
+const FriendComponent = ({ color }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="18">
+        <path fill={color} fill-rule="evenodd" d="M2.77 4.82A4.78 4.78 0 017.5 0a4.78 4.78 0 014.73 4.82c0 1.68-.83 3.15-2.1 4.02A7.65 7.65 0 0115 16v2H0v-2a7.65 7.65 0 014.87-7.16 4.84 4.84 0 01-2.1-4.02zm4.73 2.7a2.68 2.68 0 002.65-2.7c0-1.5-1.18-2.7-2.65-2.7a2.68 2.68 0 00-2.65 2.7c0 1.5 1.18 2.7 2.65 2.7zm0 2.95a5.47 5.47 0 00-5.42 5.41h10.84a5.47 5.47 0 00-5.42-5.4z" />
+    </svg>
+);
+const SearchComponent = ({ color }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="21" height="20">
+        <g fill="none" fill-rule="evenodd">
+            <path d="M-2-2h24v24H-2z" />
+            <path fill={color} d="M15.64 2.68a9.16 9.16 0 01.84 11.99l3.61 3.61c.95.95-.47 2.36-1.41 1.42l-3.57-3.57a9.16 9.16 0 11.53-13.45zM4.1 4.1a7.16 7.16 0 1010.12 10.12A7.16 7.16 0 004.1 4.1z" />
+        </g>
+    </svg>
+);
+const FilterComponent = ({ color }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="18">
+        <path fill={color} fill-rule="evenodd" d="M13 9.91V15a1 1 0 01-.55.9l-4 2A1 1 0 017 17V9.91L.23 1.63A1 1 0 011 0h18a1 1 0 01.77 1.63L13 9.91zm-2 4.47V9.56a1 1 0 01.23-.64L16.89 2H3.11l5.66 6.92a1 1 0 01.23.64v5.82l2-1z" />
+    </svg>
+);
+const CardViewComponent = ({ color }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+        <g fill="none" fill-rule="evenodd">
+            <path d="M-2-2h24v24H-2z" />
+            <path fill={color} d="M2.2 0h5.2c1.22 0 2.21.99 2.21 2.2v5.2a2.2 2.2 0 01-2.2 2.21H2.2A2.2 2.2 0 010 7.41V2.2C0 .99.99 0 2.2 0zm0 1.82a.39.39 0 00-.38.39v5.2c0 .2.17.38.39.38h5.2c.2 0 .38-.17.38-.39V2.2a.39.39 0 00-.39-.38H2.2zm10.4 8.57h5.2c1.21 0 2.2.99 2.2 2.2v5.2A2.2 2.2 0 0117.8 20h-5.2a2.2 2.2 0 01-2.21-2.2v-5.2c0-1.22.99-2.21 2.2-2.21zm0 1.82a.39.39 0 00-.4.39v5.2c0 .2.18.38.4.38h5.2c.2 0 .38-.17.38-.39v-5.2a.39.39 0 00-.39-.38h-5.2zM12.6 0h5.2C19 0 20 .99 20 2.2v5.2a2.2 2.2 0 01-2.2 2.21h-5.2a2.2 2.2 0 01-2.21-2.2V2.2c0-1.22.99-2.21 2.2-2.21zm0 1.82a.39.39 0 00-.4.39v5.2c0 .2.18.38.4.38h5.2c.2 0 .38-.17.38-.39V2.2a.39.39 0 00-.39-.38h-5.2zM2.2 10.39h5.2c1.22 0 2.21.99 2.21 2.2v5.2A2.2 2.2 0 017.41 20H2.2A2.2 2.2 0 010 17.8v-5.2c0-1.22.99-2.21 2.2-2.21zm0 1.82a.39.39 0 00-.38.39v5.2c0 .2.17.38.39.38h5.2c.2 0 .38-.17.38-.39v-5.2a.39.39 0 00-.39-.38H2.2z" />
+        </g>
+    </svg>
+);
+const ListViewComponent = ({ color }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+        <path fill={color} fill-rule="evenodd" d="M15 14a1 1 0 010 2H1a1 1 0 010-2zm0-7a1 1 0 010 2H1a1 1 0 010-2zm0-7a1 1 0 010 2H1a1 1 0 110-2z" />
+    </svg>
+);
+const FileComponent = ({ color }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="22">
+        <path fill={color} fill-rule="evenodd" d="M4 0h9.53a2 2 0 011.54.72l4.47 5.36A2 2 0 0120 7.36V18a4 4 0 01-4 4H4a4 4 0 01-4-4V4a4 4 0 014-4zm14 18V8h-3a2 2 0 01-2-2V2H4a2 2 0 00-2 2v14c0 1.1.9 2 2 2h12a2 2 0 002-2zM16.86 6L15 3.76V6h1.86zM6 13a1 1 0 010-2h8a1 1 0 010 2H6zm0 4a1 1 0 010-2h6a1 1 0 010 2H6zm0-8a1 1 0 110-2h3a1 1 0 010 2H6z" />
+    </svg>
+);
+const EyeComponent = ({ color }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="16">
+        <g fill="none" fill-rule="evenodd">
+            <path d="M-2-4h24v24H-2z" />
+            <path d="M-2-4h24v24H-2z" />
+            <path fill={color} d="M.11 7.44C1.95 2.9 5.76 0 10 0s8.05 2.9 9.89 7.44c.15.36.15.76 0 1.12C18.05 13.1 14.24 16 10 16S1.95 13.1.11 8.56a1.5 1.5 0 010-1.12zM10 14.15c3.42 0 6.55-2.36 8.15-6.15-1.6-3.79-4.73-6.15-8.15-6.15S3.45 4.21 1.85 8c1.6 3.79 4.73 6.15 8.15 6.15zm0-2.5A3.61 3.61 0 016.42 8c0-2.01 1.6-3.65 3.58-3.65A3.61 3.61 0 0113.58 8c0 2.01-1.6 3.65-3.58 3.65zm0-1.85c.97 0 1.76-.8 1.76-1.8S10.97 6.2 10 6.2 8.24 7 8.24 8 9.03 9.8 10 9.8z" />
+        </g>
+    </svg>
+);
+
+const EyeSvgWhite = () => <EyeComponent color={whiteColor} />;
+const FileSvgWhite = () => <FileComponent color={whiteColor} />;
 const DashboardSvg = () => <DashboardComponent color={primaryColor} />;
 const DashboardSvgLight = () => <DashboardComponent color={secondaryColor} />;
 const FriendReqSvg = () => <FriendReqComponent color={primaryColor} />;
@@ -55,10 +110,28 @@ const SettingSvg = () => <SettingComponent color={primaryColor} />;
 const SettingSvgLight = () => <SettingComponent color={secondaryColor} />;
 const ProjectSvg = () => <ProjectComponent color={primaryColor} />;
 const ProjectSvgLight = () => <ProjectComponent color={secondaryColor} />;
+const FriendsSvgGrey = () => <FriendsComponent color={greyColor} />;
+const FriendSvgGrey = () => <FriendComponent color={greyColor} />;
+const SearchSvgGrey = () => <SearchComponent color={greyColor} />;
+const PlusSvg = () => <PlusComponent color={primaryColor} />;
+const PlusSvgGrey = () => <PlusComponent color={greyColor} />;
+const FilterSvgGrey = () => <FilterComponent color={greyColor} />;
+const CardViewSvg = () => <CardViewComponent color={primaryColor} />;
+const CardViewSvgGrey = () => <CardViewComponent color={greyColor} />;
+const ListViewSvg = () => <ListViewComponent color={primaryColor} />;
+const ListViewSvgGrey = () => <ListViewComponent color={greyColor} />;
 
+export const EyeIconWhite = props => <Icon component={EyeSvgWhite} {...props} />
+export const FileIconWhite = props => <Icon component={FileSvgWhite} {...props} />
+export const ListViewIcon = props => <Icon component={ListViewSvg} {...props} />
+export const ListViewIconGrey = props => <Icon component={ListViewSvgGrey} {...props} />
+export const CardViewIcon = props => <Icon component={CardViewSvg} {...props} />
+export const CardViewIconGrey = props => <Icon component={CardViewSvgGrey} {...props} />
 export const ArrowIcon = props => <Icon component={ArrowSvg} {...props} />
 export const CrossIcon = props => <Icon component={CrossSvg} {...props} />
 export const PlusIcon = props => <Icon component={PlusSvg} {...props} />
+export const PlusIconGrey = props => <Icon component={PlusSvgGrey} {...props} />
+export const FilterIconGrey = props => <Icon component={FilterSvgGrey} {...props} />
 export const DDownIcon = props => <Icon component={DDownSvg} {...props} />
 export const DashboardIcon = props => <Icon component={DashboardSvg} {...props} />
 export const DashboardIconLight = props => <Icon component={DashboardSvgLight} {...props} />
@@ -68,3 +141,6 @@ export const FriendReqIcon = props => <Icon component={FriendReqSvg} {...props} 
 export const FriendReqIconLight = props => <Icon component={FriendReqSvgLight} {...props} />
 export const ProjectIcon = props => <Icon component={ProjectSvg} {...props} />
 export const ProjectIconLight = props => <Icon component={ProjectSvgLight} {...props} />
+export const FriendsIconGrey = props => <Icon component={FriendsSvgGrey} {...props} />
+export const FriendIconGrey = props => <Icon component={FriendSvgGrey} {...props} />
+export const SearchIconGrey = props => <Icon component={SearchSvgGrey} {...props} />

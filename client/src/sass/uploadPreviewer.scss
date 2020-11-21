@@ -16,6 +16,21 @@
                 height: 100%;
             }
 
+            .image-shadow {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                transition: all .3s;
+            }
+            
+            &:hover {
+                .image-shadow {
+                    background-color: rgba(0,0,0,.25);
+                }
+            }
+
             .cross {
                 position: absolute;
                 right: -5px;
@@ -24,27 +39,34 @@
                 height: 1em;
                 cursor: pointer;
                 transition: all .3s;
+                z-index: 1;
+                transform: scale(.8);
             }
 
             &:hover {
                 .cross {
                     transform: scale(1.2);
                 }
-                .anticon-eye {
-                    opacity: .7;
+                .eye {
+                    opacity: .9;
                 }
             }
 
-            .anticon-eye {
+            .eye {
                 position: absolute;
                 top: 35%;
                 left: 40%;
                 font-size: 20px;
-                cursor: pointer;
-                color: #171725;
                 opacity: 0;
+                cursor: pointer;
                 transition: all .3s;
+                z-index: 1;
             }
+            // .eye:hover {
+            //     .image-shadow {
+            //         background-color: rgba(0,0,0,.25);
+            //     }
+            // }
 
             .preview-error {
                 position: absolute;

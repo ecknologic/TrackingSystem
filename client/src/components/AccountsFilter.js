@@ -5,7 +5,7 @@ import SelectInput from './SelectInput';
 const AccountsFilter = ({ onChange, data }) => {
     const { natureOfBussiness, status } = data
     return (
-        <div className='app-accounts-filter-body'>
+        <div className='accounts-filter-body'>
             <div className='row'>
                 <div className='input-container'>
                     <label className='app-input-label-name'>Nature Of Business</label>

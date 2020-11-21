@@ -2,7 +2,6 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
 import Login from './UI/Login';
 import BiboWarehouse from './UI/Bibo_Warehouse_Stock Inventory';
-import AddCustomer from './UI/customer/AddCustomer';
 import AccountsDashboard from './UI/accounts/dashboard';
 import ViewAccount from './UI/accounts/view';
 import AddAccount from './UI/accounts/add';
@@ -16,7 +15,6 @@ const App = () => {
          <Route exact path='/' component={Login} />
          <PageLayout>
             <Switch>
-               <Route path='/addcustomer' render={(props) => requireAuth(<AddCustomer {...props} />)} />
                <Route path='/add-customer' render={() => requireAuth(<AddAccount />)} />
                <Route path='/bibowarehouse' render={(props) => requireAuth(<BiboWarehouse {...props} />)} />
                <Route path='/customerDashboard' render={() => requireAuth(<NoContent content='Design is in progress' />)} />

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Menu, Dropdown } from 'antd';
-import { DownOutlined, SortAscendingOutlined, SortDescendingOutlined } from '@ant-design/icons';
+import { SortAscendingOutlined, SortDescendingOutlined } from '@ant-design/icons';
 import '../sass/sortByDropdown.scss'
+import { DDownIcon } from './SVG_Icons';
 
 const DropdownSelect = ({ width = '200px', onSelect }) => {
     const [value, setValue] = useState('NEW')
@@ -40,7 +41,7 @@ const DropdownSelect = ({ width = '200px', onSelect }) => {
                         <span>Sort by:</span>
                         <span className='selected-item'>{` ${value}`}</span>
                     </div>
-                    <DownOutlined />
+                    <DDownIcon className='down' />
                 </div>
             </Dropdown>
         </div>

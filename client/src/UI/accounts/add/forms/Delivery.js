@@ -1,5 +1,4 @@
 import React from 'react';
-import { InputNumber } from 'antd';
 import InputWithAddon from '../../../../components/InputWithAddon';
 import SelectInput from '../../../../components/SelectInput';
 import { dayOptions } from '../../../../assets/fixtures'
@@ -16,7 +15,7 @@ const DeliveryForm = (props) => {
     const {
         gstNo, gstProof, depositAmount, routingId, phoneNumber, contactPerson, address, isActive,
         deliveryLocation, product20L, price20L, product1L, price1L, product500ML, price500ML,
-        // product250ML, price250ML
+        product250ML, price250ML
     } = data
 
     const gstUploadDisable = gstProof
@@ -27,16 +26,16 @@ const DeliveryForm = (props) => {
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='GST Number' error={errors.gstNo} />
-                        <InputWithAddon maxLength={15} label='VERIFY'
+                        <InputWithAddon maxLength={15} label='VERIFY' uppercase
                             value={gstNo} placeholder='GST Number' disabled={sameAddress || isActive}
-                            error={errors.gstNo} onBlur={({ target: { value } }) => onBlur(value, 'gstNo')}
-                            onChange={({ target: { value } }) => onChange(value, 'gstNo')}
+                            error={errors.gstNo} onBlur={(value) => onBlur(value, 'gstNo')}
+                            onChange={(value) => onChange(value, 'gstNo')}
                         />
                     </div>
                     <div className='input-container app-upload-file-container app-gst-upload-container'>
                         <DraggerInput onUpload={(file) => onUpload(file, 'gstProof', 'delivery')} disabled={sameAddress || gstUploadDisable || isActive} />
                         <div className='upload-preview-container'>
-                            <UploadPreviewer value={gstProof}
+                            <UploadPreviewer value={gstProof} track={track}
                                 title='GST Proof' disabled={sameAddress || isActive} error={errors.gstProof}
                                 onRemove={() => onRemove('gstProof', 'delivery')} className='last' />
                         </div>
@@ -47,7 +46,7 @@ const DeliveryForm = (props) => {
                         <InputLabel name='Delivery Location' error={errors.deliveryLocation} mandatory />
                         <CustomInput value={deliveryLocation} placeholder='Add Location'
                             disabled={isActive} error={errors.deliveryLocation}
-                            onChange={({ target: { value } }) => onChange(value, 'deliveryLocation')}
+                            onChange={(value) => onChange(value, 'deliveryLocation')}
                         />
                     </div>
                     <div className='input-container'>
@@ -63,16 +62,16 @@ const DeliveryForm = (props) => {
                         <InputLabel name='Address' error={errors.address} mandatory />
                         <CustomInput value={address} placeholder='Add Address'
                             disabled={sameAddress || isActive} error={errors.address}
-                            onChange={({ target: { value } }) => onChange(value, 'address')}
+                            onChange={(value) => onChange(value, 'address')}
                         />
                     </div>
                 </div>
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Phone Number' error={errors.phoneNumber} mandatory />
-                        <InputNumber size="large" maxLength={10} value={phoneNumber} disabled={isActive}
-                            placeholder='Phone Number' className={`${errors.phoneNumber && 'app-input-error'}`}
-                            onBlur={({ target: { value } }) => onBlur(value, 'phoneNumber')}
+                        <CustomInput maxLength={10} value={phoneNumber} disabled={isActive}
+                            placeholder='Phone Number' error={errors.phoneNumber}
+                            onBlur={(value) => onBlur(value, 'phoneNumber')}
                             onChange={(value) => onChange(value, 'phoneNumber')}
                         />
                     </div>
@@ -80,7 +79,7 @@ const DeliveryForm = (props) => {
                         <InputLabel name='Contact Person' error={errors.contactPerson} mandatory />
                         <CustomInput value={contactPerson} placeholder='Add Name'
                             disabled={isActive} error={errors.contactPerson}
-                            onChange={({ target: { value } }) => onChange(value, 'contactPerson')}
+                            onChange={(value) => onChange(value, 'contactPerson')}
                         />
                     </div>
                 </div>
@@ -90,51 +89,51 @@ const DeliveryForm = (props) => {
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='20 Ltrs' />
-                                <InputNumber size="large" value={product20L || 0} disabled={isActive}
+                                <CustomInput value={product20L} disabled={isActive}
                                     placeholder='Add' onChange={(value) => onChange(value, 'product20L')} />
                             </div>
                             <div className='input-container'>
                                 <InputLabel name='Price' />
-                                <InputNumber size="large" value={price20L || 0} disabled={isActive}
+                                <CustomInput value={price20L} disabled={isActive}
                                     placeholder='Rs' onChange={(value) => onChange(value, 'price20L')} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='1 Ltrs' />
-                                <InputNumber size="large" value={product1L || 0} disabled={isActive}
+                                <CustomInput value={product1L} disabled={isActive}
                                     placeholder='Add' onChange={(value) => onChange(value, 'product1L')} />
                             </div>
                             <div className='input-container'>
                                 <InputLabel name='Price' />
-                                <InputNumber size="large" value={price1L || 0} disabled={isActive}
+                                <CustomInput value={price1L} disabled={isActive}
                                     placeholder='Rs' onChange={(value) => onChange(value, 'price1L')} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='500 Ml' />
-                                <InputNumber size="large" value={product500ML || 0} disabled={isActive}
+                                <CustomInput value={product500ML} disabled={isActive}
                                     placeholder='Add' onChange={(value) => onChange(value, 'product500ML')} />
                             </div>
                             <div className='input-container'>
                                 <InputLabel name='Price' />
-                                <InputNumber size="large" value={price500ML || 0} disabled={isActive}
+                                <CustomInput value={price500ML} disabled={isActive}
                                     placeholder='Rs' onChange={(value) => onChange(value, 'price500ML')} />
                             </div>
                         </div>
-                        {/* <div className='column'>
+                        <div className='column'>
                             <div className='input-container'>
-                                <InputLabel name='250 Ml'/>
-                                <InputNumber size="large" value={product250ML || 0} disabled={isActive} 
-                                placeholder='Add' onChange={(value) => onChange(value, 'product250ML')} />
+                                <InputLabel name='250 Ml' />
+                                <CustomInput value={product250ML} disabled={isActive}
+                                    placeholder='Add' onChange={(value) => onChange(value, 'product250ML')} />
                             </div>
                             <div className='input-container'>
-                                <InputLabel name='Price'/>
-                                <InputNumber size="large" value={price250ML || 0} disabled={isActive} 
-                                placeholder='Rs' onChange={(value) => onChange(value, 'price250ML')} />
+                                <InputLabel name='Price' />
+                                <CustomInput value={price250ML} disabled={isActive}
+                                    placeholder='Rs' onChange={(value) => onChange(value, 'price250ML')} />
                             </div>
-                        </div> */}
+                        </div>
                     </div>
                 </div>
                 <div className='row'>
@@ -149,9 +148,9 @@ const DeliveryForm = (props) => {
                     </div>
                     <div className='input-container'>
                         <InputLabel name='Deposit Amount' error={errors.depositAmount} mandatory />
-                        <InputNumber size="large" value={depositAmount}
+                        <CustomInput value={depositAmount}
                             disabled={isActive} placeholder='Deposit Amount'
-                            className={`${errors.depositAmount && 'app-input-error'}`}
+                            error={errors.depositAmount}
                             onChange={(value) => onChange(value, 'depositAmount')}
                         />
                     </div>

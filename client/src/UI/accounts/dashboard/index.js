@@ -1,10 +1,10 @@
 import { Col, Pagination, Row } from 'antd';
-import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react';
+import Header from './header';
 import AccountCard from '../../../components/AccountCard';
 import Spinner from '../../../components/Spinner';
 import NoContent from '../../../components/NoContent';
-import Header from './header';
 import { getUserId } from '../../../utils/constants';
 import CustomModal from '../../../components/CustomModal';
 import AccountsFilter from '../../../components/AccountsFilter';
