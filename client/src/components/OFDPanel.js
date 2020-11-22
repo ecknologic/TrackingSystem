@@ -6,7 +6,7 @@ const OFDPanel = () => {
     return (
         <div className='stock-panel ofd-panel-container'>
             <div className='box titles'>
-                <span className='title'>Out for Delivery</span>
+                <span className='title'>Out For Delivery</span>
             </div>
             <div className='box items'>
                 <span className='name'>Total Cans (20 ltr)</span>

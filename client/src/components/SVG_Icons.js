@@ -122,7 +122,13 @@ const NotificationComponent = ({ color }) => (
         <path fill={color} fill-rule="evenodd" d="M9 0a3 3 0 012.98 2.64 7.22 7.22 0 014.24 6.58v5.02l1.67 3.3A1 1 0 0117 19h-5.17a3 3 0 01-5.66 0H1a1 1 0 01-.9-1.45l1.68-3.31V9.22a7.22 7.22 0 014.24-6.58A3 3 0 019 0zm0 4a5.22 5.22 0 00-5.22 5.22v5.26a1 1 0 01-.1.45L2.62 17h12.75l-1.05-2.07a1 1 0 01-.1-.45V9.22A5.22 5.22 0 009 4z" />
     </svg>
 )
+const LinesComponent = ({ color }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="14">
+        <path fill={color} fill-rule="evenodd" d="M12 12a1 1 0 010 2H6a1 1 0 010-2zm2-6a1 1 0 010 2H4a1 1 0 010-2zm3-6a1 1 0 010 2H1a1 1 0 110-2z" />
+    </svg>
+)
 
+const LinesSvgGrey = () => <LinesComponent color={greyColor} />
 const NotificationSvgGrey = () => <NotificationComponent color={greyColor} />
 const ChatSvgGrey = () => <ChatComponent color={greyColor} />
 const DocSvgWhite = () => <DocComponent color={whiteColor} />
@@ -149,6 +155,7 @@ const CardViewSvgGrey = () => <CardViewComponent color={greyColor} />
 const ListViewSvg = () => <ListViewComponent color={primaryColor} />
 const ListViewSvgGrey = () => <ListViewComponent color={greyColor} />
 
+export const LinesIconGrey = props => <Icon component={LinesSvgGrey} {...props} />
 export const NotificationIconGrey = props => <Icon component={NotificationSvgGrey} {...props} />
 export const ChatIconGrey = props => <Icon component={ChatSvgGrey} {...props} />
 export const DocIconWhite = props => <Icon component={DocSvgWhite} {...props} />

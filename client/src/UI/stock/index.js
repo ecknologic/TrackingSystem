@@ -5,10 +5,12 @@ import Spinner from '../../components/Spinner';
 import StockDetails from './tabs/StockDetails';
 import NoContent from '../../components/NoContent';
 import ReportsDropdown from '../../components/ReportsDropdown';
+import Delivery from './tabs/Delivery';
 
 const Stock = () => {
 
     const [loading, setLoading] = useState(true)
+    const [activeTab, setActiveTab] = useState('1')
 
     useEffect(() => {
         setTimeout(() => {
@@ -24,6 +26,7 @@ const Stock = () => {
                     <Tabs
                         tabBarGutter={40}
                         tabBarExtraContent={<ReportsDropdown />}
+                        onTabClick={(key) => setActiveTab(key)}
                     >
                         <TabPane tab="Stock Details" key="1" />
                         <TabPane tab="Delivery" key="2" />
@@ -37,7 +40,9 @@ const Stock = () => {
                 </div>
                 {
                     loading ? <NoContent content={<Spinner />} />
-                        : <StockDetails />
+                        : activeTab === '1' ? <StockDetails />
+                            : activeTab === '2' ? <Delivery />
+                                : null
                 }
 
             </div>

@@ -87,10 +87,8 @@ const AddAccount = () => {
     }, [sameAddress])
 
     const getRoutes = async () => {
-        try {
-            const data = await http.GET('/warehouse/getroutes')
-            setRoutes(data)
-        } catch (ex) { }
+        const data = await http.GET('/warehouse/getroutes')
+        setRoutes(data)
     }
 
     const handleDeliveryValues = (value, key) => {

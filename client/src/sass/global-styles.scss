@@ -431,6 +431,10 @@ $textColorDisabled:rgba(0,0,0,0.55);
     .anticon {
         margin-right: .5em;
     }
+
+    .text {
+        white-space: nowrap;
+    }
 }
 
 .disabled {
