@@ -1,10 +1,9 @@
-import { Menu } from 'antd';
+import { Dropdown, Menu } from 'antd';
 import React from 'react';
-import ButtonDropdown from './ButtonDropdown';
 import CustomButton from './CustomButton';
 import { DocIconWhite } from './SVG_Icons';
 
-const ReportsDropdown = () => {
+const ReportsDropdown = ({ onSelect }) => {
 
     const reportsMenu = (
         <Menu onClick={() => { }}>
@@ -24,15 +23,17 @@ const ReportsDropdown = () => {
     );
 
     return (
-        <ButtonDropdown
-            menu={reportsMenu}
-            button={<CustomButton
+        <Dropdown
+            overlay={reportsMenu}
+            trigger={['click']}
+            getPopupContainer={triggerNode => triggerNode.parentNode.parentNode.parentNode}
+        >
+            <CustomButton
                 text='Get Reports'
                 onClick={() => { }}
                 icon={<DocIconWhite />}
                 className='extra-btn' />
-            }
-        />
+        </Dropdown>
     )
 }
 

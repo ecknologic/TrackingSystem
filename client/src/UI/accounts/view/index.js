@@ -216,7 +216,7 @@ const ViewAccount = () => {
                 </div>
             </div>
             <CustomModal
-                className={`delivery-form-modal ${shake ? 'app-shake' : ''}`}
+                className={`app-form-modal ${shake ? 'app-shake' : ''}`}
                 visible={viewModal}
                 btnDisabled={btnDisabled}
                 onOk={handleCreate}

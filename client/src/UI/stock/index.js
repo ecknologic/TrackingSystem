@@ -6,11 +6,13 @@ import StockDetails from './tabs/StockDetails';
 import NoContent from '../../components/NoContent';
 import ReportsDropdown from '../../components/ReportsDropdown';
 import Delivery from './tabs/Delivery';
+import { TODAYDATE } from '../../utils/constants';
 
 const Stock = () => {
 
     const [loading, setLoading] = useState(true)
     const [activeTab, setActiveTab] = useState('1')
+    const [selectedDate, setSelectedDate] = useState(TODAYDATE)
 
     useEffect(() => {
         setTimeout(() => {
@@ -41,7 +43,7 @@ const Stock = () => {
                 {
                     loading ? <NoContent content={<Spinner />} />
                         : activeTab === '1' ? <StockDetails />
-                            : activeTab === '2' ? <Delivery />
+                            : activeTab === '2' ? <Delivery date={selectedDate} />
                                 : null
                 }
 

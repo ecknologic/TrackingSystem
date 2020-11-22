@@ -136,7 +136,7 @@ $primary-color: #0062FF;
         .ant-tabs-tab {
             margin-right: 2em;
             color: #171725;
-            font-family: 'PoppinsMedium500';
+            font-family: 'PoppinsSemiBold600';
             padding: 1em 1em 1.4em 1em;
         }
 
@@ -217,7 +217,7 @@ $primary-color: #0062FF;
         
     }
 
-    .form-container {
+    .app-form-container {
         display: flex;
         flex-direction: column;
         width: 80%;
@@ -298,7 +298,7 @@ $primary-color: #0062FF;
         width: 80%;
         margin-bottom: .6em;
 
-        .form-container {
+        .app-form-container {
             width: 100%;
         }
     }
@@ -307,57 +307,6 @@ $primary-color: #0062FF;
     }
 
     
-}
-
-.delivery-form-modal {
-    width: 55vw !important;
-    margin-top: 1.8em !important;
-    
-    .ant-modal-body {
-        background-color: #FAFAFB;
-    }
-
-    .ant-upload.ant-upload-drag .ant-upload {
-        padding: 10px 0;
-    }
-
-    .row {
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-        padding: .5em 0;
-
-        .input-container {
-            width: 48%;
-        }
-
-        .stretch {
-            width: 100%;
-        }
-    }
-
-    .columns {
-        display: flex;
-        flex-direction: column;
-        padding: .5em 0;
-
-        .columns-container {
-            display: flex;
-            justify-content: center;
-            width: 100%;
-        }
-
-        .column {
-            display: flex;
-            flex: 1;
-            margin-right: 1em;
-        }
-
-        .input-container {
-            margin-right: .5em;
-        }
-
-    }
 }
 
 .account-view-account-overview {

@@ -6,9 +6,9 @@ const greyColor = '#92929D'
 const whiteColor = '#FFFFFF'
 
 
-const ArrowSvg = () => (
+const ArrowComponent = ({ color }) => (
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="18">
-        <path fill={primaryColor} fillRule="evenodd" d="M.34 9.75a1 1 0 01-.1-1.4l7-8A1 1 0 018 0a1 1 0 01.82.43l6.93 7.91a1 1 0 11-1.5 1.32L9 3.67V17a1 1 0 01-.88 1H8a1 1 0 01-1-1V3.65l-5.25 6a1 1 0 01-1.3.18z" />
+        <path fill={color} fillRule="evenodd" d="M.34 9.75a1 1 0 01-.1-1.4l7-8A1 1 0 018 0a1 1 0 01.82.43l6.93 7.91a1 1 0 11-1.5 1.32L9 3.67V17a1 1 0 01-.88 1H8a1 1 0 01-1-1V3.65l-5.25 6a1 1 0 01-1.3.18z" />
     </svg>
 )
 const CrossSvg = () => (
@@ -127,7 +127,21 @@ const LinesComponent = ({ color }) => (
         <path fill={color} fill-rule="evenodd" d="M12 12a1 1 0 010 2H6a1 1 0 010-2zm2-6a1 1 0 010 2H4a1 1 0 010-2zm3-6a1 1 0 010 2H1a1 1 0 110-2z" />
     </svg>
 )
+const EditComponent = ({ color }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19">
+        <path fill={color} fill-rule="evenodd" d="M15.86 5.6l1.12-1.12-2.46-2.46-1.12 1.12 2.46 2.46zM14.46 7L12 4.55l-9.2 9.19-.56 3.02 3.02-.57L14.46 7zm3.98-3.87a1.9 1.9 0 010 2.7L6.45 17.82a1 1 0 01-.52.27l-4.75.9a1 1 0 01-1.16-1.17l.89-4.75a1 1 0 01.27-.52l12-12a1.9 1.9 0 012.69 0l2.57 2.58zM18.01 19H9.99c-1.32 0-1.32-2 0-2h8.02c1.32 0 1.32 2 0 2z" />
+    </svg>
+)
+const TrashComponent = ({ color }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+        <path fill={color} fill-rule="evenodd" d="M5.66 2.7L6.34.68A1 1 0 017.28 0h5.4a1 1 0 01.95.68l.67 2.02h4.68a1 1 0 110 2h-.85l-.74 12.48a3 3 0 01-3 2.82H5.58a3 3 0 01-3-2.82L1.85 4.7H1a1 1 0 110-2h4.66zm2.11 0h4.43l-.24-.7H8l-.23.7zm8.35 2H3.84l.73 12.36a1 1 0 001 .94h8.83a1 1 0 001-.94l.72-12.36zM11.7 7.24a1 1 0 012 .12l-.46 7.2a1 1 0 11-2-.12l.46-7.2zm-2.96 7.2a1 1 0 01-2 .12l-.44-7.2a1 1 0 112-.12l.44 7.2z" />
+    </svg>
+)
 
+const ArrowSvg = () => <ArrowComponent color={primaryColor} />
+const ArrowSvgGrey = () => <ArrowComponent color={greyColor} />
+const TrashSvgGrey = () => <TrashComponent color={greyColor} />
+const EditSvgGrey = () => <EditComponent color={greyColor} />
 const LinesSvgGrey = () => <LinesComponent color={greyColor} />
 const NotificationSvgGrey = () => <NotificationComponent color={greyColor} />
 const ChatSvgGrey = () => <ChatComponent color={greyColor} />
@@ -135,6 +149,7 @@ const DocSvgWhite = () => <DocComponent color={whiteColor} />
 const MoreSvgGrey = () => <MoreComponent color={greyColor} />
 const EyeSvgWhite = () => <EyeComponent color={whiteColor} />
 const FileSvgWhite = () => <FileComponent color={whiteColor} />
+const FileSvgGrey = () => <FileComponent color={greyColor} />
 const DashboardSvg = () => <DashboardComponent color={primaryColor} />
 const DashboardSvgLight = () => <DashboardComponent color={secondaryColor} />
 const FriendReqSvg = () => <FriendReqComponent color={primaryColor} />
@@ -155,6 +170,8 @@ const CardViewSvgGrey = () => <CardViewComponent color={greyColor} />
 const ListViewSvg = () => <ListViewComponent color={primaryColor} />
 const ListViewSvgGrey = () => <ListViewComponent color={greyColor} />
 
+export const TrashIconGrey = props => <Icon component={TrashSvgGrey} {...props} />
+export const EditIconGrey = props => <Icon component={EditSvgGrey} {...props} />
 export const LinesIconGrey = props => <Icon component={LinesSvgGrey} {...props} />
 export const NotificationIconGrey = props => <Icon component={NotificationSvgGrey} {...props} />
 export const ChatIconGrey = props => <Icon component={ChatSvgGrey} {...props} />
@@ -162,10 +179,12 @@ export const DocIconWhite = props => <Icon component={DocSvgWhite} {...props} />
 export const MoreIconGrey = props => <Icon component={MoreSvgGrey} {...props} />
 export const EyeIconWhite = props => <Icon component={EyeSvgWhite} {...props} />
 export const FileIconWhite = props => <Icon component={FileSvgWhite} {...props} />
+export const FileIconGrey = props => <Icon component={FileSvgGrey} {...props} />
 export const ListViewIcon = props => <Icon component={ListViewSvg} {...props} />
 export const ListViewIconGrey = props => <Icon component={ListViewSvgGrey} {...props} />
 export const CardViewIcon = props => <Icon component={CardViewSvg} {...props} />
 export const CardViewIconGrey = props => <Icon component={CardViewSvgGrey} {...props} />
+export const ArrowIconGrey = props => <Icon component={ArrowSvgGrey} {...props} />
 export const ArrowIcon = props => <Icon component={ArrowSvg} {...props} />
 export const CrossIcon = props => <Icon component={CrossSvg} {...props} />
 export const PlusIcon = props => <Icon component={PlusSvg} {...props} />

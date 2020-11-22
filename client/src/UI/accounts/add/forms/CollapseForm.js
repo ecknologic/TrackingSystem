@@ -116,7 +116,7 @@ const CollapseForm = ({ data, routeOptions, uniqueId, addressesErrors }) => {
             <div className='title-container'>
                 <span className='title'>Delivery Details</span>
             </div>
-            <div className='form-container'>
+            <div className='app-form-container'>
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='GST Number' error={errors.gstNo} />
