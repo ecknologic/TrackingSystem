@@ -146,9 +146,10 @@ const saveDeliveryDetails = (customerId, customerdetails, res) => {
       let count = 0
       for (let i of customerdetails.deliveryDetails) {
         saveDeliveryDays(i.deliveryDays).then(deliveryDays => {
-          let deliveryDetailsQuery = "insert  into DeliveryDetails (gstNo,location,address,phoneNumber,contactPerson,deliverydaysid,depositAmount,customer_Id,routingId,isActive,gstProof) values(?,?,?,?,?,?,?,?,?,?,?)";
+          let deliveryDetailsQuery = "insert  into DeliveryDetails (gstNo,location,address,phoneNumber,contactPerson,deliverydaysid,depositAmount,customer_Id,routingId,isActive,gstProof,registeredDate) values(?,?,?,?,?,?,?,?,?,?,?,?)";
           var gstProof = Buffer.from(i.gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-          let insertQueryValues = [i.gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, deliveryDays.insertId, i.depositAmount, customerId, i.routingId, i.isActive, gstProof]
+          let registeredDate = new Date()
+          let insertQueryValues = [i.gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, deliveryDays.insertId, i.depositAmount, customerId, i.routingId, i.isActive, gstProof, registeredDate]
           db.query(deliveryDetailsQuery, insertQueryValues, (err, results) => {
             if (err) res.json({ status: 500, message: err.sqlMessage });
             else {
@@ -191,7 +192,7 @@ const saveProductDetails = (products, deliveryDetailsId, customerId) => {
         let deliveryProductsQuery = "insert  into customerproductdetails (deliverydetailsId,customerId,noOfJarsTobePlaced,productPrice,productName) values(?,?,?,?,?)";
         let insertQueryValues = [deliveryDetailsId, customerId, i.noOfJarsTobePlaced, i.productPrice, i.productName]
         db.query(deliveryProductsQuery, insertQueryValues, (err, results) => {
-          if (err) res.send(err);
+          if (err) reject(err);
           else resolve(results)
         });
       }
@@ -225,7 +226,7 @@ const createQrCode = (qrcodeText) => {
         let customerDetailsQuery = "insert  into QRDetails (QRImage) values(?)";
         let insertQueryValues = [fs.readFileSync(filePath)]
         db.query(customerDetailsQuery, insertQueryValues, (err, results) => {
-          if (err) res.send(err);
+          if (err) reject(err);
           else {
             // console.log("JSJS", JSON.stringify(results))
             resolve(results.insertId);
@@ -253,7 +254,7 @@ const getLatLongDetails = (req) => {
 
 
 router.get("/getCustomerDetails/:creatorId", (req, res) => {
-  let customerDetailsQuery = "SELECT c.organizationName,c.isActive,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.createdBy=?  GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.customerId,c.registeredDate ORDER BY registeredDate DESC;"
+  let customerDetailsQuery = "SELECT c.organizationName,c.isActive,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.createdBy=?  GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.customerId,c.registeredDate ORDER BY c.registeredDate DESC"
   db.query(customerDetailsQuery, [req.params.creatorId], (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
@@ -271,22 +272,22 @@ router.get("/getCustomerDetailsById/:customerId", (req, res) => {
   })
 });
 router.get("/getCustomerDeliveryDetails/:customerId", (req, res) => {
-  let customerDetailsQuery = "SELECT * from customerdetails c  WHERE c.customerId=?";
-  db.query(customerDetailsQuery, [req.params.customerId], (err, results) => {
-    getDeliveryDetails(req.params.customerId).then(response => {
-      if (err) res.send(err);
-      else {
-        const customerDeliveryDetails = JSON.parse(JSON.stringify(results));
-        customerDeliveryDetails[0]["deliveryDetails"] = response;
+  // let customerDetailsQuery = "SELECT * from customerdetails c  WHERE c.customerId=?";
+  // db.query(customerDetailsQuery, [req.params.customerId], (err, results) => {
+  getDeliveryDetails(req.params.customerId).then(response => {
+    // if (err) res.send(err);
+    // else {
+    const customerDeliveryDetails = [{}];
+    customerDeliveryDetails[0]["deliveryDetails"] = response;
 
-        //var customerDeliveryDetails = results.concat(JSON.stringify(response));
+    //var customerDeliveryDetails = results.concat(JSON.stringify(response));
 
-        res.json({ status: 200, statusMessage: "Success", data: customerDeliveryDetails })
-      }
-    });
-
-
+    res.json({ status: 200, statusMessage: "Success", data: customerDeliveryDetails })
   })
+  // });
+
+
+  // })
 });
 router.get("/getProductsDetails", (req, res) => {
   let productDetailsQuery = "SELECT * from productdetails"
@@ -317,7 +318,7 @@ const getDeliveryDetails = (customerId, deliveryDetailsId) => {
        "CASE WHEN cd.thu=1 THEN 'Thursday,' ELSE '' END,"+
        "CASE WHEN cd.fri=1 THEN 'Friday,' ELSE '' END,"+
        "CASE WHEN cd.sat=1 THEN 'Saturday,' ELSE '' END) AS 'Delivery Days'"+ */
-      "FROM DeliveryDetails d INNER JOIN customerdeliverydays cd ON cd.deliveryDaysId=d.deliverydaysid INNER JOIN routes r ON r.RouteId=d.routingId WHERE d.customer_Id=? OR d.deliveryDetailsId=?";
+      "FROM DeliveryDetails d INNER JOIN customerdeliverydays cd ON cd.deliveryDaysId=d.deliverydaysid INNER JOIN routes r ON r.RouteId=d.routingId WHERE d.customer_Id=? OR d.deliveryDetailsId=?  ORDER BY d.registeredDate DESC;";
     db.query(deliveryDetailsQuery, [customerId, deliveryDetailsId], (err, results) => {
       if (err) reject(err)
       else {
@@ -326,7 +327,7 @@ const getDeliveryDetails = (customerId, deliveryDetailsId) => {
           for (let result of results) {
             customerProductDetails(result.deliveryDetailsId).then(response => {
               count++
-              if (err) res.send(err);
+              if (err) reject(err);
               else {
                 result['deliveryDays'] = JSON.parse(result.deliveryDays)
                 result["products"] = response;
@@ -376,9 +377,10 @@ router.post('/updateDeliveryDetails', (req, res) => {
     for (let i of deliveryDetails) {
       if (i.isNew == true) {
         saveDeliveryDays(i.deliveryDays).then(deliveryDays => {
-          let deliveryDetailsQuery = "insert  into DeliveryDetails (gstNo,location,address,phoneNumber,contactPerson,deliverydaysid,depositAmount,customer_Id,routingId,isActive,gstProof) values(?,?,?,?,?,?,?,?,?,?,?)";
+          let deliveryDetailsQuery = "insert  into DeliveryDetails (gstNo,location,address,phoneNumber,contactPerson,deliverydaysid,depositAmount,customer_Id,routingId,isActive,gstProof,registeredDate) values(?,?,?,?,?,?,?,?,?,?,?,?)";
           var gstProof = i.gstProof ? i.test ? Buffer.from(i.gstProof, 'base64') : Buffer.from(i.gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64') : null
-          let insertQueryValues = [i.gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, deliveryDays.insertId, i.depositAmount, i.customer_Id, i.routingId, i.isActive, gstProof]
+          let registeredDate = new Date()
+          let insertQueryValues = [i.gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, deliveryDays.insertId, i.depositAmount, i.customer_Id, i.routingId, i.isActive, gstProof, registeredDate]
           db.query(deliveryDetailsQuery, insertQueryValues, (err, results) => {
             if (err) res.json({ status: 500, message: err.sqlMessage });
             else {
