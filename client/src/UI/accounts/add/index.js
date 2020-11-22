@@ -292,7 +292,7 @@ const AddAccount = () => {
     }
 
     const handleAddDelivery = () => {
-        const limit = 5
+        const limit = 4
 
         if (addresses.length < limit) {
             const address = { ...deliveryValues, devDays, isNew: true }
@@ -312,7 +312,7 @@ const AddAccount = () => {
             clone.push(address)
             setAddresses(clone)
             resetDeliveryValues()
-        } else message.info('Draft Limit Reached')
+        } else message.info('Max limit reached. You can add more from Manage Accounts later')
     }
 
     const resetCorporateValues = () => {
