@@ -3,7 +3,8 @@ import { Select, Tag } from 'antd';
 import { DDownIcon } from './SVG_Icons';
 import { setTrackForm } from '../utils/Functions';
 
-const SelectInput = ({ options, mode, onSelect, onDeselect, value, disabled, track, error = '' }) => {
+const SelectInput = ({ options, mode, onSelect, onDeselect, value, disabled,
+    placeholder = 'Select', track, error = '', className, suffixIcon = <DDownIcon /> }) => {
     const [hasTracked, setHasTracked] = useState(false)
 
     const handleSelect = (value) => {
@@ -39,16 +40,16 @@ const SelectInput = ({ options, mode, onSelect, onDeselect, value, disabled, tra
         <Select
             value={value}
             mode={mode}
-            className={error && 'app-select-error'}
+            className={`${className} ${error && 'app-select-error'}`}
             size='large'
-            placeholder='Select'
+            placeholder={placeholder}
             tagRender={tagRender}
             onSelect={handleSelect}
             onDeselect={handleDeselect}
             disabled={disabled}
             maxTagCount={4}
             showArrow
-            suffixIcon={<DDownIcon />}
+            suffixIcon={suffixIcon}
             getPopupContainer={triggerNode => triggerNode.parentNode}
         >
             {options}

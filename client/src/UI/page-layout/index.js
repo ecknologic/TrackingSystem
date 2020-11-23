@@ -2,9 +2,8 @@ import React from 'react'
 import { Layout } from 'antd';
 import { useLocation } from 'react-router-dom';
 import { Scrollbars } from 'react-custom-scrollbars';
-import dashboardIcon13 from '../../assets/images/ic-chat.svg';
-import dashboardIcon14 from '../../assets/images/ic-cettings.svg';
 import SideMenu from './SideMenu';
+import { ChatIconGrey, NotificationIconGrey, SettingIconGrey } from '../../components/SVG_Icons';
 import '../../sass/pageLayout.scss'
 
 const { Header, Content, Sider } = Layout;
@@ -19,9 +18,9 @@ const PageLayout = ({ children }) => {
                     <h1 id='water'>Water</h1>
                 </div>
                 <div id='nav-container'>
-                    <img src={dashboardIcon14} alt="" />
-                    <img src={dashboardIcon13} alt="" />
-                    <img src={dashboardIcon13} alt="" />
+                    <SettingIconGrey />
+                    <NotificationIconGrey />
+                    <ChatIconGrey />
                 </div >
             </Header>
             <Layout id='app-content'>

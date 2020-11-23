@@ -54,3 +54,46 @@ export const productOptions = [
 export const getRouteOptions = (routes = []) => {
     return routes.map((item) => <Option key={item.RouteId} value={item.RouteId}>{item.RouteName}</Option>)
 }
+
+export const getDriverOptions = (drivers = []) => {
+    return drivers.map((item) => <Option key={item.driverId} value={item.driverId}>{item.driverName}</Option>)
+}
+
+export const deliveryColumns = [
+    {
+        title: 'DC Number',
+        dataIndex: 'dcnumber',
+        key: 'dcnumber',
+    },
+    {
+        title: 'Shop Address',
+        dataIndex: 'shopAddress',
+        key: 'shopAddress',
+    },
+    {
+        title: 'Route',
+        dataIndex: 'route',
+        key: 'route',
+    },
+    {
+        title: 'Driver Name',
+        key: 'driverName',
+        dataIndex: 'driverName',
+    },
+    {
+        title: 'Order Details',
+        dataIndex: 'orderDetails',
+        key: 'routeorderDetails',
+    },
+    {
+        title: 'Status',
+        dataIndex: 'status',
+        key: 'status',
+    },
+
+    {
+        title: 'Actions',
+        dataIndex: 'action',
+        key: 'action'
+    },
+]

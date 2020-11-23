@@ -11,7 +11,7 @@ import Header from './header';
 import { validateDeliveryValues, validateDevDays, validateIDNumbers, validateMobileNumber, validateNames, validateNumber } from '../../../utils/validations';
 import { extractDeliveryDetails, getProductsForDB, extractProductsFromForm, isEmpty, getDevDaysForDB, getBase64, resetTrackForm } from '../../../utils/Functions';
 import CustomModal from '../../../components/CustomModal';
-import { FileIconWhite } from '../../../components/SVG_Icons';
+import { DocIconWhite } from '../../../components/SVG_Icons';
 import { TRACKFORM } from '../../../utils/constants';
 import QuitModal from '../../../components/CustomModal';
 import ConfirmMessage from '../../../components/ConfirmMessage';
@@ -196,7 +196,7 @@ const ViewAccount = () => {
                             <CustomButton
                                 className='extra-btn'
                                 onClick={handleClick}
-                                icon={<FileIconWhite />}
+                                icon={<DocIconWhite />}
                                 text='Add new Delivery address' />
                         }
                     >
@@ -216,7 +216,7 @@ const ViewAccount = () => {
                 </div>
             </div>
             <CustomModal
-                className={`delivery-form-modal ${shake ? 'app-shake' : ''}`}
+                className={`app-form-modal ${shake ? 'app-shake' : ''}`}
                 visible={viewModal}
                 btnDisabled={btnDisabled}
                 onOk={handleCreate}

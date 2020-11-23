@@ -217,6 +217,7 @@ export const extractGADetails = (data) => {
     const { customerName: organizationName, address: Address1 } = data
     const clone = deepClone(data)
     delete clone.address
+    delete clone.registeredDate
     delete clone.price1L
     delete clone.price20L
     delete clone.price500ML
@@ -235,6 +236,14 @@ export const getAddressesForDB = (data) => {
         const deliveryDays = getDevDaysForDB(devDays)
         return { products, deliveryDays, ...rest }
     })
+}
+
+export const getDCValuesForDB = (data) => {
+
+    const { customerName, mobileNumber, address, routeId, driverId,
+        twentyLCans: Cans20L, OneLBoxes: Boxes1L, fiveHLBoxes: Boxes500ML, twofiftyLBoxes: Boxes250ML } = data
+
+    return { customerName, mobileNumber, address, routeId, driverId, Cans20L, Boxes1L, Boxes500ML, Boxes250ML }
 }
 
 export const setTrackForm = () => {
