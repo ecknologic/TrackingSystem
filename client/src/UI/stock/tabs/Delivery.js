@@ -56,7 +56,6 @@ const Delivery = ({ date }) => {
     }
 
     const getDeliveries = async () => {
-        const date = '2020-10-23' // for now
         const url = `/warehouse/deliveryDetails/${date}`
         const data = await http.GET(url)
         setDeliveriesClone(data)
@@ -244,8 +243,8 @@ const Delivery = ({ date }) => {
 }
 
 const renderStatus = (delivered) => {
-    const color = delivered ? '#0EDD4D' : '#A10101'
-    const text = delivered ? 'Delivered' : 'Pending'
+    const color = delivered === 'Inprogress' ? '#A10101' : '#0EDD4D'
+    const text = delivered === 'Inprogress' ? 'Pending' : 'Delivered'
     return (
         <div className='status'>
             <span className='dot' style={{ background: color }}></span>
