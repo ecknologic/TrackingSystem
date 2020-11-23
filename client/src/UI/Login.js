@@ -23,6 +23,7 @@ const Login = (props) => {
             let userData = {
                 username: username, password: password
             }
+            message.loading('Logging you in...', 0)
             createOrUpdateAPI('bibo/login', userData, "POST")
                 .then(response => {
                     if (response.token) {
@@ -36,7 +37,7 @@ const Login = (props) => {
                             role
                         }
                         sessionStorage.setItem("user", JSON.stringify(user))
-                        message.success("Login Success")
+                        message.success("Logged in successfully.")
                         if (role == MARKETINGADMIN) history.push('/dashboard');
                         else if (role == WAREHOUSEADMIN) history.push('/bibowarehouse');
                         else message.error('Screen Not designed for your role')
@@ -46,6 +47,7 @@ const Login = (props) => {
                 })
                 .catch(error => {
                     console.log(error)
+                    message.destroy()
                 });
         }
     }

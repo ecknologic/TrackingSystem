@@ -13,8 +13,9 @@ import DCForm from '../forms/DCForm';
 import QuitModal from '../../../components/CustomModal';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import { validateMobileNumber, validateNames, validateNumber, validateDCValues } from '../../../utils/validations';
-import { isEmpty, resetTrackForm, getDCValuesForDB } from '../../../utils/Functions';
+import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone } from '../../../utils/Functions';
 import { getWarehoseId, TRACKFORM } from '../../../utils/constants';
+import CustomPagination from '../../../components/CustomPagination';
 
 const Delivery = ({ date }) => {
     const warehouseId = getWarehoseId()
@@ -25,6 +26,8 @@ const Delivery = ({ date }) => {
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [deliveriesClone, setDeliveriesClone] = useState([])
+    const [pageSize, _] = useState(10)
+    const [totalCount, setTotalCount] = useState('')
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [DCModal, setDCModal] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
@@ -33,7 +36,10 @@ const Delivery = ({ date }) => {
     const routeOptions = useMemo(() => getRouteOptions(routes), [routes])
     const driverOptions = useMemo(() => getDriverOptions(drivers), [drivers])
 
-    const customerIdRef = useRef()
+    const dcNoRef = useRef()
+    const pageNumberRef = useRef(1)
+    const DCFormTitleRef = useRef()
+    const DCFormBtnRef = useRef()
 
     useEffect(() => {
         getRoutes()
@@ -58,6 +64,7 @@ const Delivery = ({ date }) => {
     const getDeliveries = async () => {
         const url = `/warehouse/deliveryDetails/${date}`
         const data = await http.GET(url)
+        setTotalCount(data.length)
         setDeliveriesClone(data)
         setDeliveries(data)
         setLoading(false)
@@ -68,15 +75,15 @@ const Delivery = ({ date }) => {
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
         // Validations
-        if (key === 'personShopName') {
+        if (key === 'customerName') {
             const error = validateNames(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key === 'phoneNumber') {
+        else if (key === 'mobileNumber') {
             const error = validateMobileNumber(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key.includes('Box') || key.includes('Can')) {
+        else if (key.includes('box') || key.includes('can')) {
             const error = validateNumber(value)
             setFormErrors(errors => ({ ...errors, stockDetails: error }))
         }
@@ -84,7 +91,7 @@ const Delivery = ({ date }) => {
 
     const handleBlur = (value, key) => {
         // Validations
-        if (key === 'phoneNumber') {
+        if (key === 'mobileNumber') {
             const error = validateMobileNumber(value, true)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -99,10 +106,16 @@ const Delivery = ({ date }) => {
 
     const handleMenuSelect = (key, data) => {
         if (key === 'view') {
-            customerIdRef.current = data.customerOrderId
+            dcNoRef.current = data.dcNo
+            DCFormTitleRef.current = `DC - ${data.customerName}`
+            DCFormBtnRef.current = 'Update'
             setFormData(data)
             setDCModal(true)
         }
+    }
+
+    const handlePageChange = (number) => {
+
     }
 
     const handleSaveDC = async () => {
@@ -116,7 +129,7 @@ const Delivery = ({ date }) => {
         }
 
         const dcValues = getDCValuesForDB(formData)
-        const customerOrderId = customerIdRef.current
+        const customerOrderId = dcNoRef.current
 
         let url = '/warehouse/createDC'
         let method = 'POST'
@@ -131,14 +144,25 @@ const Delivery = ({ date }) => {
 
         try {
             setBtnDisabled(true)
-            message.loading('Adding DC...', 0)
+            showToast('DC', 'loading', method)
             let { data: [data] } = await http[method](url, body)
-            // setRecentDelivery(data)
-            message.success('DC added successfully!')
+            showToast('DC', 'success', method)
+            optimisticUpdate(data, method)
             onModalClose(true)
         } catch (error) {
             setBtnDisabled(false)
         }
+    }
+
+    const optimisticUpdate = (data, method) => {
+        if (method === 'PUT') {
+            const clone = deepClone(deliveries)
+            const dc = clone.find(dc => dc.dcNo === data.dcNo)
+            const index = clone.indexOf(dc)
+            clone[index] = data
+            setDeliveries(clone)
+        }
+        else setDeliveries([data, ...deliveries])
     }
 
     const onModalClose = (hasSaved) => {
@@ -146,7 +170,7 @@ const Delivery = ({ date }) => {
         if (formHasChanged && !hasSaved) {
             return setConfirmModal(true)
         }
-        customerIdRef.current = undefined
+        dcNoRef.current = undefined
         setDCModal(false)
         setBtnDisabled(false)
         setFormData({})
@@ -173,7 +197,12 @@ const Delivery = ({ date }) => {
         onModalClose()
     }, [])
 
-    const onCreateDC = useCallback(() => setDCModal(true), [])
+    const onCreateDC = useCallback(() => {
+        DCFormTitleRef.current = 'Add New DC'
+        DCFormBtnRef.current = 'Save'
+        setDCModal(true)
+    }, [])
+
     const handleDCModalCancel = useCallback(() => onModalClose(), [])
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
 
@@ -207,16 +236,28 @@ const Delivery = ({ date }) => {
                     loading={{ spinning: loading, indicator: <Spinner /> }}
                     dataSource={dataSource}
                     columns={deliveryColumns}
+                    pagination={false}
                 />
             </div>
+            {
+                !!dataSource.length && (
+                    <CustomPagination
+                        total={totalCount}
+                        pageSize={pageSize}
+                        current={pageNumberRef.current}
+                        onChange={handlePageChange}
+                        pageSizeOptions={['10', '20', '30', '40', '50']}
+                        onPageSizeChange={(c, s) => console.log('c', c, 's', s)}
+                    />)
+            }
             <CustomModal
                 className={`app-form-modal ${shake ? 'app-shake' : ''}`}
                 visible={DCModal}
                 btnDisabled={btnDisabled}
                 onOk={handleSaveDC}
                 onCancel={handleDCModalCancel}
-                title='Create New DC'
-                okTxt='Save'
+                title={DCFormTitleRef.current}
+                okTxt={DCFormBtnRef.current}
                 track
             >
                 <DCForm
@@ -259,5 +300,4 @@ const renderOrderDetails = (data) => {
     500 ml - ${data['500MLBoxes']} boxes, 250 ml - ${data['250MLBoxes']} boxes
     `
 }
-
 export default Delivery

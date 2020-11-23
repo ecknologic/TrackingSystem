@@ -1,3 +1,4 @@
+import { message } from 'antd'
 import { TRACKFORM } from "../constants"
 
 export const editData = (updatedItem, data, idField) => {
@@ -13,6 +14,21 @@ export const editData = (updatedItem, data, idField) => {
             resolve(updatedData)
         } else resolve([])
     })
+}
+export const showToast = (item, action, method) => {
+    let msg = ''
+    let duration = action === 'loading' ? 0 : undefined
+
+    if (method === 'PUT') {
+        if (action === 'loading') msg = `Updating ${item}...`
+        else msg = `${item} updated successfully.`
+        message[action](msg, duration)
+    }
+    else {
+        if (action === 'loading') msg = `Adding ${item}...`
+        else msg = `${item} added successfully.`
+        message[action](msg, duration)
+    }
 }
 export const blobToBase64 = (blob) => {
     const content = new Uint8Array(blob);
@@ -112,9 +128,9 @@ export const getDevDays = (data = {}) => {
     return days
 }
 export const extractProductsFromForm = (data) => {
-    const { product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML, product20LId, product1LId, product500MLId } = data //product250MLId
+    const { product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML, product20LId, product1LId, product500MLId, product250MLId } = data
 
-    return { product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML, product20LId, product1LId, product500MLId }//product250MLId
+    return { product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML, product20LId, product1LId, product500MLId, product250MLId }
 }
 export const getProductsForDB = ({ product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML }) => {
     const products = []
@@ -168,7 +184,7 @@ export const getProductsForUI = (data) => {
             product250MLId = productId
         }
     })
-    const products = { product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML, product20LId, product1LId, product500MLId }//product250MLId
+    const products = { product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML, product20LId, product1LId, product500MLId, product250MLId }
     return products
 }
 
@@ -241,9 +257,12 @@ export const getAddressesForDB = (data) => {
 export const getDCValuesForDB = (data) => {
 
     const { customerName, mobileNumber, address, routeId, driverId,
-        twentyLCans: Cans20L, OneLBoxes: Boxes1L, fiveHLBoxes: Boxes500ML, twofiftyLBoxes: Boxes250ML } = data
+        cans20L = 0, boxes1L = 0, boxes500ML = 0, boxes250ML = 0 } = data
 
-    return { customerName, mobileNumber, address, routeId, driverId, Cans20L, Boxes1L, Boxes500ML, Boxes250ML }
+    return {
+        customerName, mobileNumber, address, routeId, driverId,
+        cans20L, boxes1L, boxes500ML, boxes250ML
+    }
 }
 
 export const setTrackForm = () => {

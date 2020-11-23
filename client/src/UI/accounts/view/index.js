@@ -9,7 +9,7 @@ import DeliveryForm from '../add/forms/Delivery';
 import { http } from '../../../modules/http';
 import Header from './header';
 import { validateDeliveryValues, validateDevDays, validateIDNumbers, validateMobileNumber, validateNames, validateNumber } from '../../../utils/validations';
-import { extractDeliveryDetails, getProductsForDB, extractProductsFromForm, isEmpty, getDevDaysForDB, getBase64, resetTrackForm } from '../../../utils/Functions';
+import { extractDeliveryDetails, getProductsForDB, extractProductsFromForm, isEmpty, getDevDaysForDB, getBase64, resetTrackForm, showToast } from '../../../utils/Functions';
 import CustomModal from '../../../components/CustomModal';
 import { DocIconWhite } from '../../../components/SVG_Icons';
 import { TRACKFORM } from '../../../utils/constants';
@@ -78,10 +78,10 @@ const ViewAccount = () => {
         const url = '/customer/updateDeliveryDetails'
         try {
             setBtnDisabled(true)
-            message.loading('Adding details...', 0)
+            showToast('Delivery details', 'loading')
             let { data: [data] } = await http.POST(url, body)
             setRecentDelivery(data)
-            message.success('Details added successfully!')
+            showToast('Delivery details', 'success')
             onModalClose(true)
         } catch (error) {
             setBtnDisabled(false)

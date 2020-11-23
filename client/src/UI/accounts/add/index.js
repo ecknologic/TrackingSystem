@@ -12,7 +12,7 @@ import { http } from '../../../modules/http'
 import { getRouteOptions, WEEKDAYS } from '../../../assets/fixtures';
 import {
     getBase64, deepClone, getIdProofsForDB, getDevDaysForDB, getAddressesForDB, resetTrackForm,
-    getProductsForDB, extractGADeliveryDetails, extractGADetails, isEmpty, trackAccountFormOnce
+    getProductsForDB, extractGADeliveryDetails, extractGADetails, isEmpty, trackAccountFormOnce, showToast
 } from '../../../utils/Functions';
 import { TRACKFORM, getUserId, getUsername, getWarehoseId, TODAYDATE } from '../../../utils/constants';
 import {
@@ -408,7 +408,7 @@ const AddAccount = () => {
         const url = '/customer/createCustomer'
         try {
             setBtnDisabled(true)
-            message.loading('Adding customer...', 0)
+            showToast('Customer', 'loading')
             await http.POST(url, body)
             message.destroy()
             setSucessModal(true)

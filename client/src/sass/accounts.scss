@@ -70,6 +70,10 @@ $primary-color: #0062FF;
         height: calc(100vh - 20em);
         width: 100%;
     }
+
+    .app-pagination {
+        padding-right: 1em;
+    }
 }
 
 .account-view-header, .account-add-header {

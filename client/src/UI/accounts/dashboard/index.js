@@ -1,4 +1,4 @@
-import { Col, Pagination, Row } from 'antd';
+import { Col, Row } from 'antd';
 import { useHistory } from 'react-router-dom';
 import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import Header from './header';
@@ -9,6 +9,7 @@ import { getUserId } from '../../../utils/constants';
 import CustomModal from '../../../components/CustomModal';
 import AccountsFilter from '../../../components/AccountsFilter';
 import { complexDateSort, complexSort, doubleKeyComplexSearch } from '../../../utils/Functions'
+import CustomPagination from '../../../components/CustomPagination';
 import { http } from '../../../modules/http'
 
 const Accounts = () => {
@@ -18,7 +19,7 @@ const Accounts = () => {
     const [filteredClone, setFilteredClone] = useState([])
     const [accounts, setAccounts] = useState([])
     const [loading, setLoading] = useState(true)
-    const [pageCount, _] = useState(12)
+    const [pageSize, setPageSize] = useState(12)
     const [totalCount, setTotalCount] = useState('')
     const [filterModal, setFilterModal] = useState(false)
     const [filterInfo, setFilterInfo] = useState({})
@@ -34,7 +35,7 @@ const Accounts = () => {
 
         const { data } = await http.GET(url)
         setAccountsClone(data)
-        setAccounts(data.slice(0, pageCount))
+        setAccounts(data.slice(0, pageSize))
         setTotalCount(data.length)
         setLoading(false)
     }
@@ -43,7 +44,7 @@ const Accounts = () => {
         pageNumberRef.current = 1
         if (value === "") {
             setTotalCount(accountsClone.length)
-            setAccounts(accountsClone.slice(0, pageCount))
+            setAccounts(accountsClone.slice(0, pageSize))
             return
         }
         const result = doubleKeyComplexSearch(accountsClone, value, 'organizationName', 'customerName')
@@ -54,44 +55,65 @@ const Accounts = () => {
     const handleSort = (type) => {
         pageNumberRef.current = 1
         if (type === 'Z - A') {
-            const clone = [...accountsClone]
+            const clone = [...(filterON ? filteredClone : accountsClone)]
             complexSort(clone, 'organizationName', 'desc')
-            setAccountsClone(clone)
+            filterON ? setFilteredClone(clone) : setAccountsClone(clone)
             setTotalCount(clone.length)
-            setAccounts(clone.slice(0, pageCount))
+            setAccounts(clone.slice(0, pageSize))
+
+            //Also sort the accountsClone when filter is ON
+            complexSort(accountsClone, 'organizationName', 'desc')
         }
         else if (type === 'A - Z') {
-            const clone = [...accountsClone]
+            const clone = [...(filterON ? filteredClone : accountsClone)]
             complexSort(clone, 'organizationName')
-            setAccountsClone(clone)
+            filterON ? setFilteredClone(clone) : setAccountsClone(clone)
             setTotalCount(clone.length)
-            setAccounts(clone.slice(0, pageCount))
+            setAccounts(clone.slice(0, pageSize))
+
+            //Also sort the accountsClone when filter is ON
+            complexSort(accountsClone, 'organizationName')
         }
         else if (type === 'OLD') {
-            const clone = [...accountsClone]
+            const clone = [...(filterON ? filteredClone : accountsClone)]
             complexDateSort(clone, 'registeredDate')
-            setAccountsClone(clone)
+            filterON ? setFilteredClone(clone) : setAccountsClone(clone)
             setTotalCount(clone.length)
-            setAccounts(clone.slice(0, pageCount))
+            setAccounts(clone.slice(0, pageSize))
+
+            //Also sort the accountsClone when filter is ON
+            complexDateSort(accountsClone, 'registeredDate')
         }
         else {
-            const clone = [...accountsClone]
+            const clone = [...(filterON ? filteredClone : accountsClone)]
             complexDateSort(clone, 'registeredDate', 'desc')
-            setAccountsClone(clone)
+            filterON ? setFilteredClone(clone) : setAccountsClone(clone)
             setTotalCount(clone.length)
-            setAccounts(clone.slice(0, pageCount))
+            setAccounts(clone.slice(0, pageSize))
+
+            //Also sort the accountsClone when filter is ON
+            filterON && complexDateSort(accountsClone, 'registeredDate', 'desc')
         }
     }
 
     const handlePageChange = (number) => {
         pageNumberRef.current = number
-        const sliceFrom = (number - 1) * pageCount
-        const sliceTo = sliceFrom + pageCount
+        const sliceFrom = (number - 1) * pageSize
+        const sliceTo = sliceFrom + pageSize
         const clone = filterON ? filteredClone : accountsClone
         const accounts = clone.slice(sliceFrom, sliceTo)
         setAccounts(accounts)
     }
 
+    const handleSizeChange = (number, size) => {
+        pageNumberRef.current = number
+        const sliceFrom = (number - 1) * size
+        const sliceTo = sliceFrom + size
+        const clone = filterON ? filteredClone : accountsClone
+        const accounts = clone.slice(sliceFrom, sliceTo)
+        setPageSize(size)
+        setAccounts(accounts)
+    }
     const handleFilter = () => {
         const { natureOfBussiness, status } = filterInfo
         const filtered = accountsClone.filter((item) => {
@@ -102,7 +124,7 @@ const Accounts = () => {
             return match
         })
         pageNumberRef.current = 1
-        setAccounts(filtered.slice(0, pageCount))
+        setAccounts(filtered.slice(0, pageSize))
         setFilteredClone(filtered)
         setTotalCount(filtered.length)
         setFilterModal(false)
@@ -111,7 +133,7 @@ const Accounts = () => {
 
     const handleFilterClear = () => {
         pageNumberRef.current = 1
-        setAccounts(accountsClone.slice(0, pageCount))
+        setAccounts(accountsClone.slice(0, pageSize))
         setTotalCount(accountsClone.length)
         setFilteredClone([])
         setFilterInfo({})
@@ -142,12 +164,13 @@ const Accounts = () => {
                 </Row>
                 {
                     !!accounts.length && (
-                        <Pagination
-                            defaultCurrent={1}
+                        <CustomPagination
                             total={totalCount}
-                            pageSize={pageCount}
+                            pageSize={pageSize}
                             current={pageNumberRef.current}
                             onChange={handlePageChange}
+                            pageSizeOptions={['12', '15', '18', '21', '24']}
+                            onPageSizeChange={handleSizeChange}
                         />)
                 }
                 <CustomModal

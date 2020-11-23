@@ -1,11 +1,11 @@
-import { Col, message, Row } from 'antd';
+import { Col, Row } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import Spinner from '../../../../components/Spinner';
 import NoContent from '../../../../components/NoContent';
 import AddressCard from '../../../../components/AddressCard';
 import { useParams } from 'react-router-dom';
 import { http } from '../../../../modules/http';
-import { getDevDays, getProductsWithIdForDB, getProductsForUI, isEmpty, extractDeliveryDetails, extractProductsFromForm, deepClone, getBase64, getDevDaysForDB, base64String, resetTrackForm } from '../../../../utils/Functions';
+import { getDevDays, getProductsWithIdForDB, getProductsForUI, isEmpty, extractDeliveryDetails, extractProductsFromForm, deepClone, getBase64, getDevDaysForDB, base64String, resetTrackForm, showToast } from '../../../../utils/Functions';
 import { validateDeliveryValues, validateDevDays, validateIDNumbers, validateMobileNumber, validateNames, validateNumber } from '../../../../utils/validations';
 import DeliveryForm from '../../add/forms/Delivery';
 import CustomModal from '../../../../components/CustomModal';
@@ -77,10 +77,10 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
         const url = '/customer/updateDeliveryDetails'
         try {
             setBtnDisabled(true)
-            message.loading('Updating details...', 0)
+            showToast('Delivery details', 'loading', 'PUT')
             const { data: [data] } = await http.POST(url, body)
             updateDeliveryDetails(data)
-            message.success('Details updated successfully!')
+            showToast('Delivery details', 'success', 'PUT')
             onModalClose(true)
             setBtnDisabled(false)
         } catch (error) {
