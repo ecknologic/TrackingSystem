@@ -5,7 +5,7 @@
         "title": "Tracking System Rest APIs",
         "description": "Node Js rest services for the tracking system which includes warehouse,driver and motherplant modules"
     },
-    "host": "localhost:8888",
+    "host": "http://15.207.25.20:8888",
     "basePath": "/",
     "tags": [
         {
