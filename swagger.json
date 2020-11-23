@@ -841,7 +841,8 @@
                 "roleId",
                 "emailid",
                 "password",
-                "privilegeDetails"
+                "privilegeDetails",
+                "departmentId"
             ],
             "properties": {
                 "userName": {
@@ -855,6 +856,9 @@
                 },
                 "password": {
                     "type": "string"
+                },
+                "departmentId":{
+                    "type": "integer"
                 },
                 "privilegeDetails": {
                     "type": "array",

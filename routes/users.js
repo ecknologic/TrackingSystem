@@ -8,9 +8,9 @@ router.post('/createUser', (req, res) => {
   var createHash = function (password) {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(10), null);
   }
-  let query = "insert into usermaster (userName,roleId,emailid,password) values(?,?,?,?)";
+  let query = "insert into usermaster (userName,roleId,emailid,password,departmentId) values(?,?,?,?,?)";
   let userDetails = req.body;
-  let insertQueryValues = [userDetails.userName, userDetails.roleId, userDetails.emailid, createHash(userDetails.password)]
+  let insertQueryValues = [userDetails.userName, userDetails.roleId, userDetails.emailid, createHash(userDetails.password), userDetails.departmentId]
   db.query(query, insertQueryValues, (err, results) => {
     if (err) res.json({ status: 200, message: err });
     else {
