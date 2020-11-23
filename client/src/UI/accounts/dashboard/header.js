@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { FilterOutlined } from '@ant-design/icons'
 import SortBy from '../../../components/SortByDropdown';
 import SearchInput from '../../../components/SearchInput';
 import ViewsComponent from '../../../components/ViewsComponent';

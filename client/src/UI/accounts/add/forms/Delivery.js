@@ -22,7 +22,7 @@ const DeliveryForm = (props) => {
 
     return (
         <>
-            <div className='form-container delivery-form-container'>
+            <div className='app-form-container'>
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='GST Number' error={errors.gstNo} />

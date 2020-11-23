@@ -31,7 +31,7 @@ const CorporateAccountForm = ({ data, errors, IDProofs, IDProofErrors, onChange,
     const gstUploadDisable = gstProof
 
     return (
-        <div className='app-form-container form-container'>
+        <div className='app-form-container'>
             <div className='app-identity-proof-container identity-proof-container'>
                 <div className='input-container'>
                     <InputLabel name='Select Id Proof' error={errors.idProofType} mandatory />

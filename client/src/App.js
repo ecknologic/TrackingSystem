@@ -5,6 +5,7 @@ import BiboWarehouse from './UI/Bibo_Warehouse_Stock Inventory';
 import AccountsDashboard from './UI/accounts/dashboard';
 import ViewAccount from './UI/accounts/view';
 import AddAccount from './UI/accounts/add';
+import Stock from './UI/stock';
 import NoContent from './components/NoContent';
 import PageLayout from './UI/page-layout';
 import './App.css';
@@ -15,13 +16,14 @@ const App = () => {
          <Route exact path='/' component={Login} />
          <PageLayout>
             <Switch>
-               <Route path='/add-customer' render={() => requireAuth(<AddAccount />)} />
                <Route path='/bibowarehouse' render={(props) => requireAuth(<BiboWarehouse {...props} />)} />
-               <Route path='/customerDashboard' render={() => requireAuth(<NoContent content='Design is in progress' />)} />
-               <Route path='/dashboard' render={() => requireAuth(<NoContent content='Design is in progress' />)} />
+               <Route path='/manage-stock' render={() => requireAuth(<Stock />)} />
                <Route path='/manage-accounts/add-account' render={() => requireAuth(<AddAccount />)} />
                <Route path='/manage-accounts/:accountId' render={() => requireAuth(<ViewAccount />)} />
                <Route path='/manage-accounts' render={() => requireAuth(<AccountsDashboard />)} />
+               <Route path='/add-customer' render={() => requireAuth(<AddAccount />)} />
+               <Route path='/customerDashboard' render={() => requireAuth(<NoContent content='Design is in progress' />)} />
+               <Route path='/dashboard' render={() => requireAuth(<NoContent content='Design is in progress' />)} />
                <Route path='/*' render={() => redirectAuth()} />
             </Switch>
          </PageLayout>

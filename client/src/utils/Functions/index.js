@@ -237,6 +237,14 @@ export const getAddressesForDB = (data) => {
     })
 }
 
+export const getDCValuesForDB = (data) => {
+
+    const { customerName, mobileNumber, address, routeId, driverId,
+        twentyLCans: Cans20L, OneLBoxes: Boxes1L, fiveHLBoxes: Boxes500ML, twofiftyLBoxes: Boxes250ML } = data
+
+    return { customerName, mobileNumber, address, routeId, driverId, Cans20L, Boxes1L, Boxes500ML, Boxes250ML }
+}
+
 export const setTrackForm = () => {
     sessionStorage.setItem(TRACKFORM, true)
 }

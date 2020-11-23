@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { SearchIconGrey } from './SVG_Icons';
 import '../sass/searchInput.scss'
 
-const SearchInput = ({ placeholder, onSearch, width = '300px', onChange }) => {
+const SearchInput = ({ placeholder, onSearch, width = '300px', onChange, className }) => {
     const [input, setInput] = useState('')
 
     const handleChange = ({ currentTarget: { value } }) => {
@@ -24,7 +24,7 @@ const SearchInput = ({ placeholder, onSearch, width = '300px', onChange }) => {
     }
 
     return (
-        <div className='search-input-container' style={{ width }}>
+        <div className={`search-input-container ${className}`} style={{ width }}>
             <input
                 value={input}
                 placeholder={placeholder}

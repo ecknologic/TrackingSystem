@@ -201,7 +201,7 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
                 }
             </Row>
             <CustomModal
-                className={`delivery-form-modal ${shake ? 'app-shake' : ''}`}
+                className={`app-form-modal ${shake ? 'app-shake' : ''}`}
                 visible={viewModal}
                 btnDisabled={btnDisabled}
                 onOk={handleUpdate}

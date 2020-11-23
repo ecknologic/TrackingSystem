@@ -28,14 +28,15 @@
         padding-right: 3.3em;
         width: 100%;
         background-color: #FAFCFF;
-        border: .5px solid #FAFCFF;
+        border: .5px solid #E2E2EA;
         transition: all 300ms ease;
+        font-family: 'PoppinsRegular400';
     }
-
+    
     input:focus {
         border: .5px solid #0062FF;
     }
-
+    
     input::placeholder {
         color: #92929D;
     }

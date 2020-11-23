@@ -202,15 +202,6 @@
     background-color: #fafcff !important;
     padding: 4px 11px !important;
 }
-.ant-table-thead > tr > th {
-    background-color: #fff !important;
-}
-.ant-table-tbody > tr.ant-table-row:hover > td {
-    background-color: transparent !important;
-}
-.ant-table-tbody > tr:nth-child(odd) {
-    background-color: #f2f3f5 !important;
-}
 .deliveryCompTable td {
     color: #333333;
     font-size: 12px;

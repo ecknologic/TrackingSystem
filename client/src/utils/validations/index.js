@@ -186,19 +186,25 @@ export const validateDeliveryValues = (data) => {
 const validateProducts = ({ product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML }) => {
     let errors = {};
 
-    if (!((product20L == 0 || !product20L) && (price20L == 0 || !price20L))) {
+    if ((product20L == 0 || !product20L) && (price20L == 0 || !price20L)
+        && (product1L == 0 || !product1L) && (price1L == 0 || !price1L)
+        && (product500ML == 0 || !product500ML) && (price500ML == 0 || !price500ML)
+        && (product250ML == 0 || !product250ML) && (price250ML == 0 || !price250ML)) {
+        errors.productNPrice = 'Atleast 1 product is required'
+    }
+    else if (!((product20L == 0 || !product20L) && (price20L == 0 || !price20L))) {
         if (!product20L) errors.productNPrice = 'Enter quantity for 20 Ltrs'
         if (!price20L) errors.productNPrice = 'Enter price for 20 Ltrs'
     }
-    if (!((product1L == 0 || !product1L) && (price1L == 0 || !price1L))) {
+    else if (!((product1L == 0 || !product1L) && (price1L == 0 || !price1L))) {
         if (!product1L) errors.productNPrice = 'Enter quantity for 1 Ltrs'
         if (!price1L) errors.productNPrice = 'Enter price for 1 Ltrs'
     }
-    if (!((product500ML == 0 || !product500ML) && (price500ML == 0 || !price500ML))) {
+    else if (!((product500ML == 0 || !product500ML) && (price500ML == 0 || !price500ML))) {
         if (!product500ML) errors.productNPrice = 'Enter quantity for 500 ml'
         if (!price500ML) errors.productNPrice = 'Enter price for 500 ml'
     }
-    if (!((product250ML == 0 || !product250ML) && (price250ML == 0 || !price250ML))) {
+    else if (!((product250ML == 0 || !product250ML) && (price250ML == 0 || !price250ML))) {
         if (!product250ML) errors.productNPrice = 'Enter quantity for 250 ml'
         if (!price250ML) errors.productNPrice = 'Enter price for 250 ml'
     }
@@ -215,12 +221,43 @@ const validateProducts = ({ product20L, price20L, product1L, price1L, product500
     if (error1 || error2 || error3 || error4 || error5 || error6 || error7 || error8)
         errors.productNPrice = error1 || error2 || error3 || error4 || error5 || error6 || error7 || error8
 
-    if ((product20L == 0 || !product20L) && (price20L == 0 || !price20L)
-        && (product1L == 0 || !product1L) && (price1L == 0 || !price1L)
-        && (product500ML == 0 || !product500ML) && (price500ML == 0 || !price500ML)
-        && (product250ML == 0 || !product250ML) && (price250ML == 0 || !price250ML)) {
-        errors.productNPrice = 'Atleast 1 product is required'
+
+    return errors
+}
+
+export const validateDCValues = (data) => {
+    let errors = {};
+    const text = 'Required'
+    const text2 = 'Incomplete'
+
+    const { routeId, customerName, mobileNumber, address,
+        driverId, twentyLCans, OneLBoxes, fiveHLBoxes, twofiftyLBoxes } = data
+
+    if (!routeId) errors.routeId = text
+    if (!driverId) errors.driverId = text
+    if (!address) errors.address = text
+    if (!mobileNumber) errors.mobileNumber = text
+    else {
+        if (String(mobileNumber).length < 10) errors.mobileNumber = text2
+        else {
+            const error = validateMobileNumber(mobileNumber)
+            error && (errors.mobileNumber = error)
+        }
     }
+    if (!customerName) errors.customerName = text
+    else {
+        const error = validateNames(customerName)
+        error && (errors.customerName = error)
+    }
+
+    const error1 = validateNumber(twentyLCans)
+    const error2 = validateNumber(OneLBoxes)
+    const error3 = validateNumber(fiveHLBoxes)
+    const error4 = validateNumber(twofiftyLBoxes)
+
+    if (error1 || error2 || error3 || error4)
+        errors.stockDetails = error1 || error2 || error3 || error4
+
     return errors
 }
 
