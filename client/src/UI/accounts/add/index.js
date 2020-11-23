@@ -377,9 +377,11 @@ const AddAccount = () => {
                 return
             }
             const idProofs = getIdProofsForDB(IDProofs)
-            const Address1 = corporateValues.address
             const delivery = getAddressesForDB(allDeliveries)
+            const Address1 = corporateValues.address
             const account = { ...corporateValues, Address1, idProofs, ...extra }
+            delete account.address
+            delete account.registeredDate
             body = { ...account, deliveryDetails: delivery }
         }
         else {

@@ -217,6 +217,7 @@ export const extractGADetails = (data) => {
     const { customerName: organizationName, address: Address1 } = data
     const clone = deepClone(data)
     delete clone.address
+    delete clone.registeredDate
     delete clone.price1L
     delete clone.price20L
     delete clone.price500ML
