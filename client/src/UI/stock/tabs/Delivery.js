@@ -20,6 +20,7 @@ import CustomPagination from '../../../components/CustomPagination';
 const Delivery = ({ date }) => {
     const warehouseId = getWarehoseId()
     const [routes, setRoutes] = useState([])
+    const [selectedRoutes, setSelectedRoutes] = useState([])
     const [drivers, setDrivers] = useState([])
     const [loading, setLoading] = useState(true)
     const [deliveries, setDeliveries] = useState([])
@@ -49,6 +50,14 @@ const Delivery = ({ date }) => {
     useEffect(() => {
         getDeliveries()
     }, [date])
+
+    useEffect(() => {
+        if (!selectedRoutes.length) setDeliveries(deliveriesClone)
+        else {
+            const filtered = deliveriesClone.filter((item) => selectedRoutes.includes(item.routeId))
+            setDeliveries(filtered)
+        }
+    }, [selectedRoutes])
 
     const getRoutes = async () => {
         const data = await http.GET('/warehouse/getroutes')
@@ -97,11 +106,15 @@ const Delivery = ({ date }) => {
         }
     }
 
-    const handleRouteSelect = () => {
-
+    const handleRouteSelect = (value) => {
+        const clone = [...selectedRoutes]
+        clone.push(value)
+        setSelectedRoutes(clone)
     }
-    const handleRouteDeselect = () => {
 
+    const handleRouteDeselect = (value) => {
+        const filtered = selectedRoutes.filter(routeId => routeId !== value)
+        setSelectedRoutes(filtered)
     }
 
     const handleMenuSelect = (key, data) => {
@@ -215,7 +228,7 @@ const Delivery = ({ date }) => {
                         placeholder='Select Routes'
                         className='filter-select'
                         suffixIcon={<LinesIconGrey />}
-                        value={[]} options={routeOptions}
+                        value={selectedRoutes} options={routeOptions}
                         onSelect={handleRouteSelect}
                         onDeselect={handleRouteDeselect}
                     />
@@ -294,10 +307,10 @@ const renderStatus = (delivered) => {
     )
 }
 
-const renderOrderDetails = (data) => {
+const renderOrderDetails = ({ cans20L, boxes1L, boxes500ML, boxes250ML }) => {
     return `
-    20 lts - ${data['20LCans']}, 1 ltr - ${data['1LBoxes']} boxes, 
-    500 ml - ${data['500MLBoxes']} boxes, 250 ml - ${data['250MLBoxes']} boxes
+    20 lts - ${cans20L}, 1 ltr - ${boxes1L} boxes, 
+    500 ml - ${boxes500ML} boxes, 250 ml - ${boxes250ML} boxes
     `
 }
 export default Delivery
