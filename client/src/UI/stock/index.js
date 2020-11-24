@@ -22,7 +22,7 @@ const Stock = () => {
 
     return (
         <Fragment>
-            <Header data={{}} />
+            <Header />
             <div className='stock-manager-content'>
                 <div className='tabs-container stock-manager-tabs'>
                     <Tabs
