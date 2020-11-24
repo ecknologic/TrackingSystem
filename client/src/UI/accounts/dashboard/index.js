@@ -1,6 +1,6 @@
 import { Col, Row } from 'antd';
 import { useHistory } from 'react-router-dom';
-import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Header from './header';
 import AccountCard from '../../../components/AccountCard';
 import Spinner from '../../../components/Spinner';
@@ -20,11 +20,14 @@ const Accounts = () => {
     const [accounts, setAccounts] = useState([])
     const [loading, setLoading] = useState(true)
     const [pageSize, setPageSize] = useState(12)
+    const [pageNumber, setPageNumber] = useState(1)
     const [totalCount, setTotalCount] = useState('')
     const [filterModal, setFilterModal] = useState(false)
     const [filterInfo, setFilterInfo] = useState({})
     const [filterON, setFilterON] = useState(false)
-    const pageNumberRef = useRef(1)
+    const [sortBy, setSortBy] = useState('NEW')
+
+    const pageSizeOptions = useMemo(() => generatePageSizeOptions(), [window.innerWidth])
 
     useEffect(() => {
         getAccounts()
@@ -35,16 +38,16 @@ const Accounts = () => {
 
         const { data } = await http.GET(url)
         setAccountsClone(data)
-        setAccounts(data.slice(0, pageSize))
+        setAccounts(data)
         setTotalCount(data.length)
         setLoading(false)
     }
 
     const handleSearch = (value) => {
-        pageNumberRef.current = 1
+        setPageNumber(1)
         if (value === "") {
             setTotalCount(accountsClone.length)
-            setAccounts(accountsClone.slice(0, pageSize))
+            setAccounts(accountsClone)
             return
         }
         const result = doubleKeyComplexSearch(accountsClone, value, 'organizationName', 'customerName')
@@ -52,68 +55,46 @@ const Accounts = () => {
         setAccounts(result)
     }
 
-    const handleSort = (type) => {
-        pageNumberRef.current = 1
-        if (type === 'Z - A') {
-            const clone = [...(filterON ? filteredClone : accountsClone)]
-            complexSort(clone, 'organizationName', 'desc')
-            filterON ? setFilteredClone(clone) : setAccountsClone(clone)
-            setTotalCount(clone.length)
-            setAccounts(clone.slice(0, pageSize))
+    const onSort = (type) => {
+        handleSort(type, filterON)
+    }
 
-            //Also sort the accountsClone when filter is ON
-            complexSort(accountsClone, 'organizationName', 'desc')
+    const handleSort = (type, filterON) => {
+        // setPageNumber(1)
+        const clone = [...(filterON ? filteredClone : accountsClone)]
+
+        if (type === 'Z - A') {
+            complexSort(clone, 'organizationName', 'desc')
         }
         else if (type === 'A - Z') {
-            const clone = [...(filterON ? filteredClone : accountsClone)]
             complexSort(clone, 'organizationName')
-            filterON ? setFilteredClone(clone) : setAccountsClone(clone)
-            setTotalCount(clone.length)
-            setAccounts(clone.slice(0, pageSize))
-
-            //Also sort the accountsClone when filter is ON
-            complexSort(accountsClone, 'organizationName')
         }
         else if (type === 'OLD') {
-            const clone = [...(filterON ? filteredClone : accountsClone)]
             complexDateSort(clone, 'registeredDate')
-            filterON ? setFilteredClone(clone) : setAccountsClone(clone)
-            setTotalCount(clone.length)
-            setAccounts(clone.slice(0, pageSize))
-
-            //Also sort the accountsClone when filter is ON
-            complexDateSort(accountsClone, 'registeredDate')
         }
         else {
-            const clone = [...(filterON ? filteredClone : accountsClone)]
             complexDateSort(clone, 'registeredDate', 'desc')
-            filterON ? setFilteredClone(clone) : setAccountsClone(clone)
-            setTotalCount(clone.length)
-            setAccounts(clone.slice(0, pageSize))
-
-            //Also sort the accountsClone when filter is ON
-            filterON && complexDateSort(accountsClone, 'registeredDate', 'desc')
         }
+
+        filterON ? setFilteredClone(clone) : setAccountsClone(clone)
+        setTotalCount(clone.length)
+        setAccounts(clone)
+        setSortBy(type)
     }
 
     const handlePageChange = (number) => {
-        pageNumberRef.current = number
-        const sliceFrom = (number - 1) * pageSize
-        const sliceTo = sliceFrom + pageSize
         const clone = filterON ? filteredClone : accountsClone
-        const accounts = clone.slice(sliceFrom, sliceTo)
-        setAccounts(accounts)
+        setPageNumber(number)
+        setAccounts(clone)
     }
 
     const handleSizeChange = (number, size) => {
-        pageNumberRef.current = number
-        const sliceFrom = (number - 1) * size
-        const sliceTo = sliceFrom + size
         const clone = filterON ? filteredClone : accountsClone
-        const accounts = clone.slice(sliceFrom, sliceTo)
         setPageSize(size)
-        setAccounts(accounts)
+        setPageNumber(number)
+        setAccounts(clone)
     }
+
     const handleFilter = () => {
         const { natureOfBussiness, status } = filterInfo
         const filtered = accountsClone.filter((item) => {
@@ -123,22 +104,23 @@ const Accounts = () => {
             else match = (item.natureOfBussiness === natureOfBussiness) || (item.isActive === status)
             return match
         })
-        pageNumberRef.current = 1
-        setAccounts(filtered.slice(0, pageSize))
+        setFilterON(true)
+        setFilterModal(false)
+        setPageNumber(1)
+        setAccounts(filtered)
         setFilteredClone(filtered)
         setTotalCount(filtered.length)
-        setFilterModal(false)
-        setFilterON(true)
     }
 
     const handleFilterClear = () => {
-        pageNumberRef.current = 1
-        setAccounts(accountsClone.slice(0, pageSize))
+        setPageNumber(1)
+        setAccounts(accountsClone)
         setTotalCount(accountsClone.length)
         setFilteredClone([])
         setFilterInfo({})
         setFilterON(false)
         setFilterModal(false)
+        handleSort(sortBy, false)
     }
 
     const handleFilterInput = useCallback((value, key) => setFilterInfo(data => ({ ...data, [key]: value })), [])
@@ -148,14 +130,17 @@ const Accounts = () => {
     const goToAddAccount = () => history.push('/manage-accounts/add-account')
     const goToViewAccount = (id) => history.push(`/manage-accounts/${id}`)
 
+    const sliceFrom = (pageNumber - 1) * pageSize
+    const sliceTo = sliceFrom + pageSize
+
     return (
         <Fragment>
-            <Header onSearch={handleSearch} onSort={handleSort} onFilter={onFilterClick} onClick={goToAddAccount} />
+            <Header onSearch={handleSearch} onSort={onSort} onFilter={onFilterClick} onClick={goToAddAccount} />
             <div className='account-manager-content'>
                 <Row gutter={[{ lg: 32, xl: 16 }, { lg: 32, xl: 32 }]}>
                     {
                         loading ? <NoContent content={<Spinner />} />
-                            : accounts.length ? accounts.map((account) => (
+                            : accounts.length ? accounts.slice(sliceFrom, sliceTo).map((account) => (
                                 <Col lg={{ span: 12 }} xl={{ span: 8 }} xxl={{ span: 6 }} key={account.customerId}>
                                     <AccountCard customerDetails={account} onClick={() => goToViewAccount(account.customerId)} />
                                 </Col>
@@ -167,9 +152,9 @@ const Accounts = () => {
                         <CustomPagination
                             total={totalCount}
                             pageSize={pageSize}
-                            current={pageNumberRef.current}
+                            current={pageNumber}
                             onChange={handlePageChange}
-                            pageSizeOptions={['12', '15', '18', '21', '24']}
+                            pageSizeOptions={pageSizeOptions}
                             onPageSizeChange={handleSizeChange}
                         />)
                 }
@@ -191,5 +176,12 @@ const Accounts = () => {
             </div>
         </Fragment>
     )
+}
+
+const generatePageSizeOptions = () => {
+    if (window.innerWidth < 1200) return ['12', '16', '20', '24', '28']
+    if (window.innerWidth >= 1200) return ['12', '15', '18', '21', '24']
+    if (window.innerWidth >= 1600) return ['12', '16', '20', '24', '28']
+    return ['12', '15', '18', '21', '24']
 }
 export default Accounts
