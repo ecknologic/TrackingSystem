@@ -14,7 +14,7 @@ $primary-color: #0062FF;
         padding: 0 3em;
 
         .title {
-            font-size: 2.9ch;
+            font-size: 1.55em;
             font-weight: 700;
             color: $primary-color;
         }
@@ -90,12 +90,12 @@ $primary-color: #0062FF;
         .titles-container {
             display: flex;
             flex-direction: column;
-            margin-left: 2em;
+            margin-left: 1.5em;
 
             .title {
                 color: #171725;
                 font-family: 'PoppinsSemiBold600';
-                font-size: 2.9ch;
+                font-size: 1.55em;
             }
 
             .address {
@@ -205,7 +205,7 @@ $primary-color: #0062FF;
 
             .text {
                 margin-left: .5em;
-                font-size: 2.1ch;
+                font-size: 1.4em;
             }
         }
 
@@ -294,7 +294,7 @@ $primary-color: #0062FF;
         .title {
             color: #1B2125;
             font-family: 'PoppinsRegular400';
-            font-size: 2.6ch;
+            font-size: 1.4em;
             margin-right: 1em;
         }
     }
