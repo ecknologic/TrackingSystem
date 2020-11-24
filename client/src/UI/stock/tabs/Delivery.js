@@ -1,4 +1,4 @@
-import { message, Table } from 'antd';
+import { Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { http } from '../../../modules/http';
 import SelectInput from '../../../components/SelectInput';
@@ -23,12 +23,13 @@ const Delivery = ({ date }) => {
     const [selectedRoutes, setSelectedRoutes] = useState([])
     const [drivers, setDrivers] = useState([])
     const [loading, setLoading] = useState(true)
+    const [deliveriesClone, setDeliveriesClone] = useState([])
     const [deliveries, setDeliveries] = useState([])
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
-    const [deliveriesClone, setDeliveriesClone] = useState([])
-    const [pageSize, _] = useState(10)
-    const [totalCount, setTotalCount] = useState('')
+    const [pageSize, setPageSize] = useState(10)
+    const [totalCount, setTotalCount] = useState(0)
+    const [pageNumber, setPageNumber] = useState(1)
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [DCModal, setDCModal] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
@@ -38,7 +39,6 @@ const Delivery = ({ date }) => {
     const driverOptions = useMemo(() => getDriverOptions(drivers), [drivers])
 
     const dcNoRef = useRef()
-    const pageNumberRef = useRef(1)
     const DCFormTitleRef = useRef()
     const DCFormBtnRef = useRef()
 
@@ -52,10 +52,14 @@ const Delivery = ({ date }) => {
     }, [date])
 
     useEffect(() => {
-        if (!selectedRoutes.length) setDeliveries(deliveriesClone)
+        if (!selectedRoutes.length) {
+            setDeliveries(deliveriesClone)
+            setTotalCount(deliveriesClone.length)
+        }
         else {
             const filtered = deliveriesClone.filter((item) => selectedRoutes.includes(item.routeId))
             setDeliveries(filtered)
+            setTotalCount(filtered.length)
         }
     }, [selectedRoutes])
 
@@ -128,7 +132,12 @@ const Delivery = ({ date }) => {
     }
 
     const handlePageChange = (number) => {
+        setPageNumber(number)
+    }
 
+    const handleSizeChange = (number, size) => {
+        setPageSize(size)
+        setPageNumber(number)
     }
 
     const handleSaveDC = async () => {
@@ -190,7 +199,7 @@ const Delivery = ({ date }) => {
         setFormErrors({})
     }
 
-    const dataSource = useMemo(() => deliveries.map((delivery, index) => {
+    const dataSource = useMemo(() => deliveries.map((delivery) => {
         const { dcNo, address, RouteName, driverName, isDelivered } = delivery
         return {
             key: dcNo,
@@ -218,6 +227,9 @@ const Delivery = ({ date }) => {
 
     const handleDCModalCancel = useCallback(() => onModalClose(), [])
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
+
+    const sliceFrom = (pageNumber - 1) * pageSize
+    const sliceTo = sliceFrom + pageSize
 
     return (
         <div className='stock-delivery-container'>
@@ -247,20 +259,20 @@ const Delivery = ({ date }) => {
             <div className='stock-delivery-table'>
                 <Table
                     loading={{ spinning: loading, indicator: <Spinner /> }}
-                    dataSource={dataSource}
+                    dataSource={dataSource.slice(sliceFrom, sliceTo)}
                     columns={deliveryColumns}
                     pagination={false}
                 />
             </div>
             {
-                !!dataSource.length && (
+                totalCount && (
                     <CustomPagination
                         total={totalCount}
                         pageSize={pageSize}
-                        current={pageNumberRef.current}
+                        current={pageNumber}
                         onChange={handlePageChange}
                         pageSizeOptions={['10', '20', '30', '40', '50']}
-                        onPageSizeChange={(c, s) => console.log('c', c, 's', s)}
+                        onPageSizeChange={handleSizeChange}
                     />)
             }
             <CustomModal

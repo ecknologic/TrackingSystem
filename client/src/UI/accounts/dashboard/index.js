@@ -21,7 +21,7 @@ const Accounts = () => {
     const [loading, setLoading] = useState(true)
     const [pageSize, setPageSize] = useState(12)
     const [pageNumber, setPageNumber] = useState(1)
-    const [totalCount, setTotalCount] = useState('')
+    const [totalCount, setTotalCount] = useState(0)
     const [filterModal, setFilterModal] = useState(false)
     const [filterInfo, setFilterInfo] = useState({})
     const [filterON, setFilterON] = useState(false)
@@ -148,7 +148,7 @@ const Accounts = () => {
                     }
                 </Row>
                 {
-                    !!accounts.length && (
+                    totalCount && (
                         <CustomPagination
                             total={totalCount}
                             pageSize={pageSize}
