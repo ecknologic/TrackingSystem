@@ -1,10 +1,9 @@
-import { DatePicker } from 'antd';
 import dayjs from 'dayjs';
+import DatePicker from '../components/DatePicker.ts';
 import React, { Fragment, useEffect, useState } from 'react';
 import DateSlider from './DateSlider';
 import { ScheduleIcon } from './SVG_Icons';
 import '../sass/datePickerPanel.scss'
-
 const format = 'YYYY-MM-DD';
 const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -12,6 +11,7 @@ const DatePickerPanel = ({ onChange }) => {
     const [open, setOpen] = useState(false)
     const [daysInMonth, SetdaysInMonth] = useState(0)
     const [selectedDay, setSelectedDay] = useState(0)
+    const [pickerDate, setPickerDate] = useState()
     const [selectedMonth, setSelectedMonth] = useState(0)
     const [selectedYear, setSelectedYear] = useState(0)
     const [slides, setSlides] = useState([])
@@ -36,6 +36,7 @@ const DatePickerPanel = ({ onChange }) => {
         setSlides(slides)
         SetdaysInMonth(daysInMonth)
         setSelectedDay(day)
+        setPickerDate(dayjs(date))
         setSelectedMonth(month)
         setSelectedYear(year)
     }
@@ -53,6 +54,7 @@ const DatePickerPanel = ({ onChange }) => {
     const handleSlideSelect = (value) => {
         setSelectedDay(value)
         const date = `${selectedYear}-${selectedMonth}-${value}`
+        setPickerDate(dayjs(date))
         onChange(date)
     }
 
@@ -73,11 +75,12 @@ const DatePickerPanel = ({ onChange }) => {
             </div>
             <DatePicker // Hidden in the DOM
                 open={open}
-                getPopupContainer={triggerNode => triggerNode.parentNode}
+                value={pickerDate}
                 placeholder='Select Date'
-                onOpenChange={datePickerStatus}
-                onChange={handleDateSelect}
                 className='date-panel-picker'
+                onChange={handleDateSelect}
+                onOpenChange={datePickerStatus}
+                getPopupContainer={triggerNode => triggerNode.parentNode}
             />
         </Fragment>
     )
