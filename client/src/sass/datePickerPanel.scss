@@ -4,17 +4,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 0 3em;
-
-    .month-week {
-        font-family: 'PoppinsMedium500';
-        color: #333333;
-    }
-
-    .date-slider {
-        width: 60%;
-        height: 6.5em;
-        padding: 1em;
-    }
+    padding-left: 2em;
 
     .date-picker {
         display: flex;
@@ -25,6 +15,7 @@
         border-radius: .6em;
         border: 1px solid #0062FF;
         cursor: pointer;
+        margin-left: 1em;
         
         span {
             color: #0062FF;

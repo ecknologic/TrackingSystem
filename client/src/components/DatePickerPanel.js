@@ -7,11 +7,9 @@ import '../sass/datePickerPanel.scss'
 
 const format = 'YYYY-MM-DD';
 const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
 const DatePickerPanel = ({ onChange }) => {
     const [open, setOpen] = useState(false)
-    const [weekText, setWeekText] = useState('')
     const [daysInMonth, SetdaysInMonth] = useState(0)
     const [selectedDay, setSelectedDay] = useState(0)
     const [selectedMonth, setSelectedMonth] = useState(0)
@@ -61,14 +59,12 @@ const DatePickerPanel = ({ onChange }) => {
     return (
         <Fragment>
             <div className='date-panel-container'>
-                <div className='month-week'>
-                    {`${months[selectedMonth - 1]} - ${weekText}`}
-                </div>
                 <DateSlider
                     data={slides}
                     selected={selectedDay}
+                    month={selectedMonth}
                     onSelect={handleSlideSelect}
-                    onWeekText={(text) => setWeekText(text)}
+                    daysInMonth={daysInMonth}
                 />
                 <div className='date-picker' onClick={() => setOpen(true)}>
                     <ScheduleIcon />
