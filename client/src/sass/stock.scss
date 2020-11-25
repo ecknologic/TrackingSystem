@@ -78,13 +78,10 @@
     padding: 1.5em;
     padding-left: 1em;
 
-    .titles {
-        width: 12.5em;
-    }
-
     .box {
         display: flex;
         flex-direction: column;
+        justify-content: space-between;
         padding: .3em 1em;
         border-right: 1px solid #C6C6C6;
 
@@ -143,7 +140,12 @@
         justify-content: space-between;
         font-family: 'PoppinsSemiBold600';
 
+        .title {
+            align-self: start;
+        }
+        
         .new {
+            align-self: flex-end;
             color: #333333;
             font-family: 'PoppinsMedium500';
         }
@@ -174,9 +176,33 @@
         .numbers-container {
             justify-content: flex-end;
             .number {
-                font-size: 1em;
+                font-size: .9em;
             }
         }
+    }
+}
+
+.cas-panel-container,.ds-panel-container,.ofd-panel-container {
+    .titles {
+        width: 12.2em;
+    }
+}
+
+.ec-panel-container,.erc-panel-container,.dc-panel-container {
+    .titles {
+        width: 12.8em;
+    }
+}
+.ec-panel-container {
+    .mother-plant {
+        width: 21.5em;
+    }
+    .add {
+        color: #007AFF;
+        font-family: 'PoppinsBold700';
+        font-size: .85em;
+        cursor: pointer;
+        align-self: flex-start;
     }
 }
 

@@ -7,18 +7,16 @@ import NoContent from '../../components/NoContent';
 import ReportsDropdown from '../../components/ReportsDropdown';
 import Delivery from './tabs/Delivery';
 import { TODAYDATE } from '../../utils/constants';
+import DatePickerPanel from '../../components/DatePickerPanel';
 
 const Stock = () => {
 
-    const [loading, setLoading] = useState(true)
     const [activeTab, setActiveTab] = useState('1')
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
 
-    useEffect(() => {
-        setTimeout(() => {
-            setLoading(false)
-        }, 2000)
-    }, [])
+    const handleDateChange = (date) => {
+        setSelectedDate(date)
+    }
 
     return (
         <Fragment>
@@ -38,13 +36,12 @@ const Stock = () => {
                     </Tabs>
                 </div>
                 <div className='date-picker-panel'>
-                    <span>Date Picker goes here</span>
+                    <DatePickerPanel onChange={handleDateChange} />
                 </div>
                 {
-                    loading ? <NoContent content={<Spinner />} />
-                        : activeTab === '1' ? <StockDetails />
-                            : activeTab === '2' ? <Delivery date={selectedDate} />
-                                : null
+                    activeTab === '1' ? <StockDetails date={selectedDate} />
+                        : activeTab === '2' ? <Delivery date={selectedDate} />
+                            : null
                 }
 
             </div>

@@ -1,8 +1,8 @@
 import React from 'react';
 import CustomButton from './CustomButton';
 
-const ECPanel = () => {
-
+const ECPanel = ({ data }) => {
+    const { emptycans } = data
     return (
         <div className='stock-panel ec-panel-container'>
             <div className='box titles'>
@@ -11,26 +11,15 @@ const ECPanel = () => {
             <div className='box items'>
                 <span className='name'>Total Cans (20 ltr)</span>
                 <div className='numbers-container'>
-                    <span className='number'>367</span>
+                    <span className='number'>{emptycans || '--'}</span>
                 </div>
             </div>
-            <div className='box items'>
-                <span className='name'>Total 1 Ltr Boxes (1x12)</span>
-                <div className='numbers-container'>
+            <div className='box items mother-plant'>
+                <span className='name'>Return to Mother Plant</span>
+                <span className='add'>Add Empty Cans</span>
+                {/* <div className='numbers-container'>
                     <span className='number'>845</span>
-                </div>
-            </div>
-            <div className='box items'>
-                <span className='name'>Total 500 ml Boxes (1x12)</span>
-                <div className='numbers-container'>
-                    <span className='number'>845</span>
-                </div>
-            </div>
-            <div className='box items last'>
-                <span className='name'>Total 250 ml Boxes (1x12)</span>
-                <div className='numbers-container'>
-                    <span className='number'>845</span>
-                </div>
+                </div> */}
             </div>
             <div className='buttons'>
                 <CustomButton text='Get Reports' className='app-stock-btn' />

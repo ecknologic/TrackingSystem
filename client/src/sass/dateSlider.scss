@@ -1,0 +1,20 @@
+.date-slider {
+    width: 50%;
+    height: 6.5em;
+    padding: 1em;
+    
+    .slick-dots{
+        display: none;
+    }
+
+    .slick-arrow {
+        display: flex !important;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .slick-disabled {
+        opacity: .5;
+        cursor: default;
+    }
+}

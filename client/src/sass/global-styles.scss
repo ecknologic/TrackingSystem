@@ -571,10 +571,10 @@ $textColorDisabled:rgba(0,0,0,0.55);
 
 .app-stock-btn {
     border: 1px solid #9D9D9D;
-    border-radius: .6em;
+    border-radius: .5em;
     background-color: #F0F0F1;
     color: #252525;
-    height: 1.8em;
+    height: 1.6em;
     padding: 0 .6em;
 
     .text {
@@ -703,9 +703,11 @@ $textColorDisabled:rgba(0,0,0,0.55);
         padding-left: .5em;
 
         .ant-pagination-total-text {
+            display: flex;
             font-family: 'PoppinsRegular400';
             color: #44444F;
             margin-right: auto;
+            margin-left: calc(100vw/2 - 16em);
         }
     }
     
@@ -844,5 +846,34 @@ $textColorDisabled:rgba(0,0,0,0.55);
         .ant-select-arrow {
             display: none;
         }
+    }
+}
+
+.app-date-slide-item {
+    border: 0.94px solid #EEEEEE;
+    background-color: #FFFFFF;
+    color: #171725;
+    font-family: 'PoppinsSemiBold600';
+    border-radius: 1em;
+    width: 4em;
+    height: 4.5em;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: all .3s;
+
+    .date {
+        font-size: 1.25em;
+    }
+
+    .day {
+        font-size: .75em;
+    }
+
+    &.selected {
+        background-color: $primaryColor;
+        color: #fff;
     }
 }
