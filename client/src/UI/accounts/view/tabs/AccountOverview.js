@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import { message } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { http } from '../../../../modules/http';
-import { base64String, getBase64, getIdProofsForDB, isEmpty, resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
+import { base64String, getBase64, getIdProofsForDB, isEmpty, resetTrackForm, showToast, trackAccountFormOnce } from '../../../../utils/Functions';
 import CustomButton from '../../../../components/CustomButton';
 import CorporateAccountForm from '../../add/forms/CorporateAccount';
 import NoContent from '../../../../components/NoContent';
@@ -167,14 +167,15 @@ const AccountOverview = ({ data, routeOptions }) => {
         const idProofs = getIdProofsForDB(IDProofs)
 
         const body = { ...accountValues, Address1, idProofs }
+        delete body.registeredDate
         const url = '/customer/updateCustomer'
 
         try {
             setBtnDisabled(true)
-            message.loading('Updating customer...', 0)
+            showToast('Customer', 'loading', 'PUT')
             await http.POST(url, body)
             setBtnDisabled(false)
-            message.success('Customer updated successfully!')
+            showToast('Customer', 'success', 'PUT')
         } catch (error) {
             setBtnDisabled(false)
             message.destroy()

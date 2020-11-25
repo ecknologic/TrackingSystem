@@ -93,7 +93,7 @@ router.get('/getPhoto', (req, res) => {
   let query = "SELECT * FROM customerDocStore";
   // let query = "SELECT * FROM customerdetails WHERE customerId=" + customerId;
   db.query(query, (err, results) => {
-    if (err) res.send(err);
+    if (err) res.status(500).json(err);
     else {
       res.send(results)
     }
@@ -104,7 +104,7 @@ router.get('/getQrcode/:customerId', (req, res) => {
   let query = "SELECT mobileNumber,adharNo FROM customerdetails WHERE customerId=" + customerId;
   let result = db.query(query, (err, results) => {
     let qrText;
-    if (err) res.send(err);
+    if (err) res.status(500).json(err);
     if (results.length) {
       qrText = results[0].adharNo + results[0].mobileNumber
     }
@@ -115,9 +115,8 @@ router.get('/getQrcode/:customerId', (req, res) => {
 router.get('/getCustomers', (req, res) => {
   let query = "SELECT * from customerdetails";
   db.query(query, (err, results) => {
-    if (err) res.send(err);
+    if (err) res.status(500).json(err);
     res.send(JSON.stringify(results));
-
   });
 });
 
@@ -131,13 +130,11 @@ router.post('/createCustomer', async (req, res) => {
     .then(response => {
       let registeredDate = customerdetails.registeredDate ? customerdetails.registeredDate : new Date()
       let insertQueryValues = [customerdetails.customerName, customerdetails.mobileNumber, customerdetails.AlternatePhNo, customerdetails.EmailId, customerdetails.Address1, customerdetails.Address2, customerdetails.gstNo, customerdetails.contactperson, customerdetails.panNo, customerdetails.adharNo, registeredDate, customerdetails.invoicetype, customerdetails.natureOfBussiness, customerdetails.creditPeriodInDays, customerdetails.referredBy, customerdetails.departmentId, customerdetails.deliveryDaysId, customerdetails.depositamount, customerdetails.isActive, response[0], response[1].latitude, response[1].longitude, customerdetails.shippingAddress, customerdetails.shippingContactPerson, customerdetails.shippingContactNo, customerdetails.customertype, customerdetails.organizationName, customerdetails.createdBy, response[2], customerdetails.idProofType]
-      // let insertQueryValues = [customerdetails.customerName, customerdetails.mobileNumber, customerdetails.EmailId, customerdetails.Address1, customerdetails.gstNo, customerdetails.registeredDate, customerdetails.invoicetype, customerdetails.natureOfBussiness, customerdetails.creditPeriodInDays, customerdetails.referredBy, customerdetails.isActive, response[0], response[1].latitude, response[1].longitude, customerdetails.customerType, customerdetails.organizationName, customerdetails.createdBy]
       db.query(customerDetailsQuery, insertQueryValues, (err, results) => {
         if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
         else {
           saveDeliveryDetails(results.insertId, customerdetails, res)
         }
-        // res.send("Record Inserted");
       });
     })
 });
@@ -229,7 +226,6 @@ const createQrCode = (qrcodeText) => {
         db.query(customerDetailsQuery, insertQueryValues, (err, results) => {
           if (err) reject(err);
           else {
-            // console.log("JSJS", JSON.stringify(results))
             resolve(results.insertId);
           }
         })
@@ -264,9 +260,9 @@ router.get("/getCustomerDetails/:creatorId", (req, res) => {
   })
 });
 router.get("/getCustomerDetailsById/:customerId", (req, res) => {
-  let customerDetailsQuery = "SELECT * from customerdetails c INNER JOIN customerDocStore d ON c.customer_id_proof=d.docId WHERE c.customerId=" + req.params.customerId
+  let customerDetailsQuery = "SELECT customerId,customerName,mobileNumber,EmailId,Address1,gstNo,panNo,adharNo,registeredDate,invoicetype,natureOfBussiness,creditPeriodInDays,referredBy,isActive,customertype,organizationName,idProofType,customer_id_proof,d.idProof_backside,d.idProof_frontside,d.gstProof from customerdetails c INNER JOIN customerDocStore d ON c.customer_id_proof=d.docId WHERE c.customerId=" + req.params.customerId
   db.query(customerDetailsQuery, (err, results) => {
-    if (err) res.send(err);
+    if (err) res.status(500).json(err);
     else {
       res.json({ status: 200, statusMessage: "Success", data: results })
     }
@@ -276,7 +272,7 @@ router.get("/getCustomerDeliveryDetails/:customerId", (req, res) => {
   // let customerDetailsQuery = "SELECT * from customerdetails c  WHERE c.customerId=?";
   // db.query(customerDetailsQuery, [req.params.customerId], (err, results) => {
   getDeliveryDetails(req.params.customerId).then(response => {
-    // if (err) res.send(err);
+    // if (err) res.status(500).json(err);
     // else {
     const customerDeliveryDetails = [{}];
     customerDeliveryDetails[0]["deliveryDetails"] = response;
@@ -293,7 +289,7 @@ router.get("/getCustomerDeliveryDetails/:customerId", (req, res) => {
 router.get("/getProductsDetails", (req, res) => {
   let productDetailsQuery = "SELECT * from productdetails"
   db.query(productDetailsQuery, (err, results) => {
-    if (err) res.send(err);
+    if (err) res.status(500).json(err);
     else {
       res.json({ status: 200, statusMessage: "Success", data: results })
     }

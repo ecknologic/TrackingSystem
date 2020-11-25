@@ -5,6 +5,11 @@
     padding: 0 3em;
     background-color: #F1F2F7;
 
+    .heading-container {
+        display: flex;
+        align-items: center;
+    }
+
     .titles-container {
         display: flex;
         flex-direction: column;
@@ -13,7 +18,7 @@
         .title {
             color: #171725;
             font-family: 'PoppinsSemiBold600';
-            font-size: 2.9ch;
+            font-size: 1.55em;
         }
 
         .address {
@@ -23,16 +28,16 @@
     }
     
     .three-dot-menu {
+        align-self: flex-start;
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-bottom: .4em;
         width: 2.4em;
         height: 2.4em;
         border-radius: .6em;
         cursor: pointer;
         background-color: #FAFAFB;
-
+        margin-top: .4em;
     }
 }
 
@@ -85,14 +90,14 @@
 
         .title {
             font-family: 'PoppinsSemiBold600';
-            font-size: 1.5ch;
+            font-size: .96em;
             color: #4F63BC;
         }
 
         .name {
             color: rgba(0,0,0,0.85);
             font-family: 'PoppinsRegular400';
-            font-size: 1.4ch;
+            font-size: .75em;
         }
 
         .numbers-container {
@@ -147,7 +152,7 @@
     .items {
         .numbers-container {
             .number {
-                font-size: 2.2ch;
+                font-size: 1.2em;
             }
             .new {
                 font-family: 'PoppinsRegular400';
@@ -169,7 +174,7 @@
         .numbers-container {
             justify-content: flex-end;
             .number {
-                font-size: 1.8ch;
+                font-size: 1em;
             }
         }
     }
@@ -178,23 +183,21 @@
 .empty-cans-header {
     background-color: #FAFAFB;
     border-top: solid 1px #E4E6E5;
-    height: 8em;
-    padding: 1.5em;
-    padding-left: 2em;
-
+    height: 6.5em;
+    padding: 1.5em 1.5em 1em 2em;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
     
     .title {
         font-family: 'PoppinsBold700';
-        font-size: 2ch;
+        font-size: 1.1em;
     }
     
     .msg {
         font-family: 'PoppinsMedium500';
         color: #6D7278;
-        font-size: 1.7ch;
+        font-size: .9em;
     }
 
 }
@@ -248,6 +251,10 @@
         }
 
     }
+
+    .app-pagination {
+        padding-top: 2em;
+    }
 }
 
 .stock-delivery-table {
@@ -257,7 +264,7 @@
         color: #333333;
         font-family: 'PoppinsSemiBold600';
         background-color: #FFF;
-        font-size: 1.7ch;
+        font-size: .95em;
         text-align: center;
         white-space: nowrap;
     }
@@ -265,7 +272,7 @@
     .ant-table-tbody > tr > td {
         color: #333333;
         font-family: 'PoppinsRegular400';
-        font-size: 1.65ch;
+        font-size: .9em;
     }
 
     .ant-table-tbody > tr.ant-table-row:hover > td {
@@ -281,7 +288,7 @@
             text-align: center;
 
             .ant-dropdown-menu-item {
-                font-size: 1.45ch;
+                font-size: .9em;
             }
         }
     }

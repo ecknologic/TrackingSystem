@@ -62,18 +62,13 @@
                 transition: all .3s;
                 z-index: 1;
             }
-            // .eye:hover {
-            //     .image-shadow {
-            //         background-color: rgba(0,0,0,.25);
-            //     }
-            // }
 
             .preview-error {
                 position: absolute;
                 top: 35%;
                 left: 23%;
                 color: #E90614;
-                font-size: 1.5ch;
+                font-size: .8em;
                 font-family: 'PoppinsItalic400';
             }
 
@@ -82,7 +77,7 @@
         span {
             color: rgba(0,0,0,0.85);
             font-family: 'PoppinsRegular400';
-            font-size: 1.4ch;
+            font-size: .75em;
         }
     }
 

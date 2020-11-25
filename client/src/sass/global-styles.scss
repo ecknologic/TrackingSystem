@@ -690,3 +690,159 @@ $textColorDisabled:rgba(0,0,0,0.55);
 .app-gst-upload-container {
     justify-content: flex-start;
 }
+
+// -------------- Various Pagination styles ------------------- //
+
+.app-pagination {
+    display: flex;
+    
+    .ant-pagination {
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+        padding-left: .5em;
+
+        .ant-pagination-total-text {
+            font-family: 'PoppinsRegular400';
+            color: #44444F;
+            margin-right: auto;
+        }
+    }
+    
+    .ant-pagination-item {
+        border: none;
+        background-color: transparent;
+        font-family: 'PoppinsRegular400';
+        min-width: 1.8em;
+        
+        a {
+            color: #92929D;
+        }
+
+        &:hover {
+            a {
+                color: $primaryColor;
+                font-weight: 500;
+            }
+        }
+    }
+
+    .ant-pagination-item-active {
+        a {
+            color: $primaryColor;
+        }
+    }
+
+    .ant-pagination-prev, .ant-pagination-next {
+        border-color: #E2E2EA;
+        font-family: 'PoppinsMedium500';
+
+        .ant-pagination-item-link {
+            border-radius: .6em;
+            svg {
+                opacity: .8;
+            }
+        }
+        .anticon {
+            display: none;
+
+        }
+    }
+    
+    .ant-pagination-prev {
+        .ant-pagination-item-link{
+            background: url(./../assets/icons/ic_Chevron_Left.svg) no-repeat center transparent;
+        }
+
+        &.ant-pagination-disabled {
+            .ant-pagination-item-link{
+                background: url(./../assets/icons/ic_Chevron_Left_Faded.svg) no-repeat center transparent;
+            }
+        }
+    }
+    .ant-pagination-next {
+        .ant-pagination-item-link{
+            background: url(./../assets/icons/ic_Chevron_Right.svg) no-repeat center transparent;
+        }
+
+        &.ant-pagination-disabled {
+            .ant-pagination-item-link{
+                background: url(./../assets/icons/ic_Chevron_Right_Faded.svg) no-repeat center transparent;
+            }
+        }
+    }
+
+    .ant-pagination-prev:hover {
+        .ant-pagination-item-link{
+            border-color: $primaryColor;
+            background: url(./../assets/color/ic_Chevron_Left.svg) no-repeat center transparent;
+        }
+
+        &.ant-pagination-disabled {
+            .ant-pagination-item-link{
+                background: url(./../assets/icons/ic_Chevron_Left_Faded.svg) no-repeat center transparent;
+            }
+        }
+    }
+    .ant-pagination-next:hover {
+        .ant-pagination-item-link{
+            border-color: $primaryColor;
+            background: url(./../assets/color/ic_Chevron_Right.svg) no-repeat center transparent;
+        }
+
+        &.ant-pagination-disabled {
+            .ant-pagination-item-link{
+                background: url(./../assets/icons/ic_Chevron_Right_Faded.svg) no-repeat center transparent;
+            }
+        }
+    }
+
+    // .ant-pagination-disabled {
+    //     cursor: default;
+
+    //     .ant-pagination-item-link {
+    //         cursor: default;
+    //     }
+    // }
+
+
+    .ant-pagination-disabled:hover {
+        .ant-pagination-item-link {
+            border-color: #E2E2EA;
+        }
+    }
+
+    .ant-pagination-jump-next 
+    .ant-pagination-item-container 
+    .ant-pagination-item-link-icon {
+        color: $primaryColor;
+    }
+
+    .ant-pagination-options {
+        .ant-select {
+            margin-top: 0;
+        }
+        
+        .ant-select-selector {
+            height: 100% !important;
+            padding: 0;
+        }
+        
+        .ant-select-selection-search {
+            border-right: 1px solid #E2E2EA;
+            width: 45%;
+        }
+        
+        .ant-select-selection-item {
+            color: #92929D;
+            background: url(./../assets/icons/ic_Up&Down.svg) no-repeat right transparent;
+            background-position-x: 3.25em;
+            padding-left: .9em;
+            padding-right: 2em;
+        }
+
+        .ant-select-arrow {
+            display: none;
+        }
+    }
+}

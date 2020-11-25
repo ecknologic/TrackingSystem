@@ -8,7 +8,7 @@ const DCForm = (props) => {
     const { data, errors, routeOptions, disabled, onBlur, driverOptions, onChange, track } = props
 
     const { routeId, customerName, mobileNumber, address,
-        driverId, twentyLCans, OneLBoxes, fiveHLBoxes, twofiftyLBoxes } = data
+        driverId, cans20L, boxes1L, boxes500ML, boxes250ML } = data
 
     return (
         <>
@@ -61,29 +61,29 @@ const DCForm = (props) => {
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='20 Ltrs' />
-                                <CustomInput value={twentyLCans} disabled={disabled}
-                                    placeholder='Add' onChange={(value) => onChange(value, 'twentyLCans')} />
+                                <CustomInput value={cans20L} disabled={disabled}
+                                    placeholder='Add' onChange={(value) => onChange(value, 'cans20L')} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='1 Ltrs (Box-1x12)' />
-                                <CustomInput value={OneLBoxes} disabled={disabled}
-                                    placeholder='Add' onChange={(value) => onChange(value, 'OneLBoxes')} />
+                                <CustomInput value={boxes1L} disabled={disabled}
+                                    placeholder='Add' onChange={(value) => onChange(value, 'boxes1L')} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='500 Ml (Box-1x12)' />
-                                <CustomInput value={fiveHLBoxes} disabled={disabled}
-                                    placeholder='Add' onChange={(value) => onChange(value, 'fiveHLBoxes')} />
+                                <CustomInput value={boxes500ML} disabled={disabled}
+                                    placeholder='Add' onChange={(value) => onChange(value, 'boxes500ML')} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='250 Ml (Box-1x12)' />
-                                <CustomInput value={twofiftyLBoxes} disabled={disabled}
-                                    placeholder='Add' onChange={(value) => onChange(value, 'twofiftyLBoxes')} />
+                                <CustomInput value={boxes250ML} disabled={disabled}
+                                    placeholder='Add' onChange={(value) => onChange(value, 'boxes250ML')} />
                             </div>
                         </div>
                     </div>

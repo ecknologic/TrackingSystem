@@ -1,4 +1,4 @@
-import { message, Table } from 'antd';
+import { Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { http } from '../../../modules/http';
 import SelectInput from '../../../components/SelectInput';
@@ -13,18 +13,23 @@ import DCForm from '../forms/DCForm';
 import QuitModal from '../../../components/CustomModal';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import { validateMobileNumber, validateNames, validateNumber, validateDCValues } from '../../../utils/validations';
-import { isEmpty, resetTrackForm, getDCValuesForDB } from '../../../utils/Functions';
+import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone } from '../../../utils/Functions';
 import { getWarehoseId, TRACKFORM } from '../../../utils/constants';
+import CustomPagination from '../../../components/CustomPagination';
 
 const Delivery = ({ date }) => {
     const warehouseId = getWarehoseId()
     const [routes, setRoutes] = useState([])
+    const [selectedRoutes, setSelectedRoutes] = useState([])
     const [drivers, setDrivers] = useState([])
     const [loading, setLoading] = useState(true)
+    const [deliveriesClone, setDeliveriesClone] = useState([])
     const [deliveries, setDeliveries] = useState([])
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
-    const [deliveriesClone, setDeliveriesClone] = useState([])
+    const [pageSize, setPageSize] = useState(10)
+    const [totalCount, setTotalCount] = useState(null)
+    const [pageNumber, setPageNumber] = useState(1)
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [DCModal, setDCModal] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
@@ -33,7 +38,9 @@ const Delivery = ({ date }) => {
     const routeOptions = useMemo(() => getRouteOptions(routes), [routes])
     const driverOptions = useMemo(() => getDriverOptions(drivers), [drivers])
 
-    const customerIdRef = useRef()
+    const customerOrderIdRef = useRef()
+    const DCFormTitleRef = useRef()
+    const DCFormBtnRef = useRef()
 
     useEffect(() => {
         getRoutes()
@@ -43,6 +50,18 @@ const Delivery = ({ date }) => {
     useEffect(() => {
         getDeliveries()
     }, [date])
+
+    useEffect(() => {
+        if (!selectedRoutes.length) {
+            setDeliveries(deliveriesClone)
+            setTotalCount(deliveriesClone.length)
+        }
+        else {
+            const filtered = deliveriesClone.filter((item) => selectedRoutes.includes(item.routeId))
+            setDeliveries(filtered)
+            setTotalCount(filtered.length)
+        }
+    }, [selectedRoutes])
 
     const getRoutes = async () => {
         const data = await http.GET('/warehouse/getroutes')
@@ -58,6 +77,7 @@ const Delivery = ({ date }) => {
     const getDeliveries = async () => {
         const url = `/warehouse/deliveryDetails/${date}`
         const data = await http.GET(url)
+        setTotalCount(data.length)
         setDeliveriesClone(data)
         setDeliveries(data)
         setLoading(false)
@@ -68,15 +88,15 @@ const Delivery = ({ date }) => {
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
         // Validations
-        if (key === 'personShopName') {
+        if (key === 'customerName') {
             const error = validateNames(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key === 'phoneNumber') {
+        else if (key === 'mobileNumber') {
             const error = validateMobileNumber(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key.includes('Box') || key.includes('Can')) {
+        else if (key.includes('box') || key.includes('can')) {
             const error = validateNumber(value)
             setFormErrors(errors => ({ ...errors, stockDetails: error }))
         }
@@ -84,25 +104,40 @@ const Delivery = ({ date }) => {
 
     const handleBlur = (value, key) => {
         // Validations
-        if (key === 'phoneNumber') {
+        if (key === 'mobileNumber') {
             const error = validateMobileNumber(value, true)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
     }
 
-    const handleRouteSelect = () => {
-
+    const handleRouteSelect = (value) => {
+        const clone = [...selectedRoutes]
+        clone.push(value)
+        setSelectedRoutes(clone)
     }
-    const handleRouteDeselect = () => {
 
+    const handleRouteDeselect = (value) => {
+        const filtered = selectedRoutes.filter(routeId => routeId !== value)
+        setSelectedRoutes(filtered)
     }
 
     const handleMenuSelect = (key, data) => {
         if (key === 'view') {
-            customerIdRef.current = data.customerOrderId
+            customerOrderIdRef.current = data.customerOrderId
+            DCFormTitleRef.current = `DC - ${data.customerName}`
+            DCFormBtnRef.current = 'Update'
             setFormData(data)
             setDCModal(true)
         }
+    }
+
+    const handlePageChange = (number) => {
+        setPageNumber(number)
+    }
+
+    const handleSizeChange = (number, size) => {
+        setPageSize(size)
+        setPageNumber(number)
     }
 
     const handleSaveDC = async () => {
@@ -116,7 +151,7 @@ const Delivery = ({ date }) => {
         }
 
         const dcValues = getDCValuesForDB(formData)
-        const customerOrderId = customerIdRef.current
+        const customerOrderId = customerOrderIdRef.current
 
         let url = '/warehouse/createDC'
         let method = 'POST'
@@ -131,14 +166,25 @@ const Delivery = ({ date }) => {
 
         try {
             setBtnDisabled(true)
-            message.loading('Adding DC...', 0)
+            showToast('DC', 'loading', method)
             let { data: [data] } = await http[method](url, body)
-            // setRecentDelivery(data)
-            message.success('DC added successfully!')
+            showToast('DC', 'success', method)
+            optimisticUpdate(data, method)
             onModalClose(true)
         } catch (error) {
             setBtnDisabled(false)
         }
+    }
+
+    const optimisticUpdate = (data, method) => {
+        if (method === 'PUT') {
+            const clone = deepClone(deliveries)
+            const dc = clone.find(dc => dc.dcNo === data.dcNo)
+            const index = clone.indexOf(dc)
+            clone[index] = data
+            setDeliveries(clone)
+        }
+        else setDeliveries([data, ...deliveries])
     }
 
     const onModalClose = (hasSaved) => {
@@ -146,14 +192,14 @@ const Delivery = ({ date }) => {
         if (formHasChanged && !hasSaved) {
             return setConfirmModal(true)
         }
-        customerIdRef.current = undefined
+        customerOrderIdRef.current = undefined
         setDCModal(false)
         setBtnDisabled(false)
         setFormData({})
         setFormErrors({})
     }
 
-    const dataSource = useMemo(() => deliveries.map((delivery, index) => {
+    const dataSource = useMemo(() => deliveries.map((delivery) => {
         const { dcNo, address, RouteName, driverName, isDelivered } = delivery
         return {
             key: dcNo,
@@ -173,9 +219,17 @@ const Delivery = ({ date }) => {
         onModalClose()
     }, [])
 
-    const onCreateDC = useCallback(() => setDCModal(true), [])
+    const onCreateDC = useCallback(() => {
+        DCFormTitleRef.current = 'Add New DC'
+        DCFormBtnRef.current = 'Save'
+        setDCModal(true)
+    }, [])
+
     const handleDCModalCancel = useCallback(() => onModalClose(), [])
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
+
+    const sliceFrom = (pageNumber - 1) * pageSize
+    const sliceTo = sliceFrom + pageSize
 
     return (
         <div className='stock-delivery-container'>
@@ -186,7 +240,7 @@ const Delivery = ({ date }) => {
                         placeholder='Select Routes'
                         className='filter-select'
                         suffixIcon={<LinesIconGrey />}
-                        value={[]} options={routeOptions}
+                        value={selectedRoutes} options={routeOptions}
                         onSelect={handleRouteSelect}
                         onDeselect={handleRouteDeselect}
                     />
@@ -205,18 +259,30 @@ const Delivery = ({ date }) => {
             <div className='stock-delivery-table'>
                 <Table
                     loading={{ spinning: loading, indicator: <Spinner /> }}
-                    dataSource={dataSource}
+                    dataSource={dataSource.slice(sliceFrom, sliceTo)}
                     columns={deliveryColumns}
+                    pagination={false}
                 />
             </div>
+            {
+                !!totalCount && (
+                    <CustomPagination
+                        total={totalCount}
+                        pageSize={pageSize}
+                        current={pageNumber}
+                        onChange={handlePageChange}
+                        pageSizeOptions={['10', '20', '30', '40', '50']}
+                        onPageSizeChange={handleSizeChange}
+                    />)
+            }
             <CustomModal
                 className={`app-form-modal ${shake ? 'app-shake' : ''}`}
                 visible={DCModal}
                 btnDisabled={btnDisabled}
                 onOk={handleSaveDC}
                 onCancel={handleDCModalCancel}
-                title='Create New DC'
-                okTxt='Save'
+                title={DCFormTitleRef.current}
+                okTxt={DCFormBtnRef.current}
                 track
             >
                 <DCForm
@@ -253,11 +319,10 @@ const renderStatus = (delivered) => {
     )
 }
 
-const renderOrderDetails = (data) => {
+const renderOrderDetails = ({ cans20L, boxes1L, boxes500ML, boxes250ML }) => {
     return `
-    20 lts - ${data['20LCans']}, 1 ltr - ${data['1LBoxes']} boxes, 
-    500 ml - ${data['500MLBoxes']} boxes, 250 ml - ${data['250MLBoxes']} boxes
+    20 lts - ${cans20L}, 1 ltr - ${boxes1L} boxes, 
+    500 ml - ${boxes500ML} boxes, 250 ml - ${boxes250ML} boxes
     `
 }
-
 export default Delivery
