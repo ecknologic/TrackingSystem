@@ -28,7 +28,7 @@ const Delivery = ({ date }) => {
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [pageSize, setPageSize] = useState(10)
-    const [totalCount, setTotalCount] = useState(0)
+    const [totalCount, setTotalCount] = useState(null)
     const [pageNumber, setPageNumber] = useState(1)
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [DCModal, setDCModal] = useState(false)
@@ -38,7 +38,7 @@ const Delivery = ({ date }) => {
     const routeOptions = useMemo(() => getRouteOptions(routes), [routes])
     const driverOptions = useMemo(() => getDriverOptions(drivers), [drivers])
 
-    const dcNoRef = useRef()
+    const customerOrderIdRef = useRef()
     const DCFormTitleRef = useRef()
     const DCFormBtnRef = useRef()
 
@@ -123,7 +123,7 @@ const Delivery = ({ date }) => {
 
     const handleMenuSelect = (key, data) => {
         if (key === 'view') {
-            dcNoRef.current = data.dcNo
+            customerOrderIdRef.current = data.customerOrderId
             DCFormTitleRef.current = `DC - ${data.customerName}`
             DCFormBtnRef.current = 'Update'
             setFormData(data)
@@ -151,7 +151,7 @@ const Delivery = ({ date }) => {
         }
 
         const dcValues = getDCValuesForDB(formData)
-        const customerOrderId = dcNoRef.current
+        const customerOrderId = customerOrderIdRef.current
 
         let url = '/warehouse/createDC'
         let method = 'POST'
@@ -192,7 +192,7 @@ const Delivery = ({ date }) => {
         if (formHasChanged && !hasSaved) {
             return setConfirmModal(true)
         }
-        dcNoRef.current = undefined
+        customerOrderIdRef.current = undefined
         setDCModal(false)
         setBtnDisabled(false)
         setFormData({})
@@ -265,7 +265,7 @@ const Delivery = ({ date }) => {
                 />
             </div>
             {
-                totalCount && (
+                !!totalCount && (
                     <CustomPagination
                         total={totalCount}
                         pageSize={pageSize}
