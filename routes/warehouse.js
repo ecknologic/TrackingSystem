@@ -51,7 +51,7 @@ router.post('/createDC', (req, res) => {
       db.query(updateQuery, updateQueryValues, (err1, results1) => {
         if (err1) res.json({ status: 500, message: err.sqlMessage });
         else {
-          let deliveryDetailsQuery = "select c.customerOrderId,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS cans20L,c.1LBoxes AS boxes1L,c.500MLBoxes AS boxes500ML,c.250MLBoxes AS boxes250ML,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid INNER JOIN driverdetails d  ON c.driverId=d.driverid  WHERE DATE(`deliveryDate`) ='" + date + "'";
+          let deliveryDetailsQuery = "select c.customerOrderId,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS cans20L,c.1LBoxes AS boxes1L,c.500MLBoxes AS boxes500ML,c.250MLBoxes AS boxes250ML,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid INNER JOIN driverdetails d  ON c.driverId=d.driverid  WHERE customerOrderId =?";
           db.query(deliveryDetailsQuery, [inserted_id], (deliveryErr, deliveryDetails) => {
             if (deliveryErr) res.json({ status: 500, message: deliveryErr.sqlMessage });
             else res.json({ status: 200, message: "DC created successfully", data: deliveryDetails })
@@ -69,7 +69,7 @@ router.put('/updateDC', (req, res) => {
   db.query(dcCreateQuery, updateQueryValues, (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
-      let deliveryDetailsQuery = "select c.customerOrderId,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS cans20L,c.1LBoxes AS boxes1L,c.500MLBoxes AS boxes500ML,c.250MLBoxes AS boxes250ML,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid INNER JOIN driverdetails d  ON c.driverId=d.driverid  WHERE DATE(`deliveryDate`) ='" + date + "'";
+      let deliveryDetailsQuery = "select c.customerOrderId,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS cans20L,c.1LBoxes AS boxes1L,c.500MLBoxes AS boxes500ML,c.250MLBoxes AS boxes250ML,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid INNER JOIN driverdetails d  ON c.driverId=d.driverid   WHERE customerOrderId =?";
       db.query(deliveryDetailsQuery, [dcDetails.customerOrderId], (deliveryErr, deliveryDetails) => {
         if (deliveryErr) res.json({ status: 500, message: deliveryErr.sqlMessage });
         else res.json({ status: 200, message: "DC Updated successfully", data: deliveryDetails })
