@@ -18,6 +18,16 @@ export const statusOptions = [
     <Option key='1' value={1}>Active</Option>,
     <Option key='2' value={0}>Draft</Option>,
 ]
+export const statusFilterOptions = [
+    { value: 0, option: 'Draft' },
+    { value: 1, option: 'Active' }
+]
+export const businessFilterOptions = [
+    { value: 'Residential', option: 'Residential' },
+    { value: 'Software', option: 'Software' },
+    { value: 'Corporate', option: 'Corporate' },
+    { value: 'Traders', option: 'Traders' }
+]
 export const invoiceOptions = [
     <Option key="1" value="complimentary">Complimentary</Option>,
     <Option key="2" value="nonComplimentary">Non Complimentary</Option>

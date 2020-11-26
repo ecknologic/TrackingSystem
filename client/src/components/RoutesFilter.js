@@ -21,20 +21,22 @@ const RoutesDropdown = ({ routes, onChange }) => {
 
     const reportsMenu = useMemo(() => (
         <Menu>
-            {
-                routes.map((item) => {
-                    return (
-                        <Menu.Item key={item.RouteId}>
-                            <CheckboxOption
-                                value={item.RouteId}
-                                option={item.RouteName}
-                                onSelect={handleSelect}
-                                onDeselect={handleDeselect}
-                            />
-                        </Menu.Item>
-                    )
-                })
-            }
+            <Menu.ItemGroup title='Select Routes'>
+                {
+                    routes.map((item) => {
+                        return (
+                            <Menu.Item key={item.RouteId}>
+                                <CheckboxOption
+                                    value={item.RouteId}
+                                    option={item.RouteName}
+                                    onSelect={handleSelect}
+                                    onDeselect={handleDeselect}
+                                />
+                            </Menu.Item>
+                        )
+                    })
+                }
+            </Menu.ItemGroup>
         </Menu>
     ), [routes])
 

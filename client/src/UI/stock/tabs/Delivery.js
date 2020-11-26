@@ -1,26 +1,25 @@
 import { Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { http } from '../../../modules/http';
-import { deliveryColumns, getRouteOptions, getDriverOptions } from '../../../assets/fixtures';
-import CustomButton from '../../../components/CustomButton';
-import SearchInput from '../../../components/SearchInput';
-import { PlusIcon } from '../../../components/SVG_Icons';
-import Spinner from '../../../components/Spinner';
-import TableAction from '../../../components/TableAction';
-import CustomModal from '../../../components/CustomModal';
 import DCForm from '../forms/DCForm';
+import { http } from '../../../modules/http';
+import Spinner from '../../../components/Spinner';
 import QuitModal from '../../../components/CustomModal';
+import { PlusIcon } from '../../../components/SVG_Icons';
+import TableAction from '../../../components/TableAction';
+import SearchInput from '../../../components/SearchInput';
+import CustomModal from '../../../components/CustomModal';
+import CustomButton from '../../../components/CustomButton';
+import RoutesFilter from '../../../components/RoutesFilter';
 import ConfirmMessage from '../../../components/ConfirmMessage';
-import { validateMobileNumber, validateNames, validateNumber, validateDCValues } from '../../../utils/validations';
-import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone } from '../../../utils/Functions';
 import { getWarehoseId, TRACKFORM } from '../../../utils/constants';
 import CustomPagination from '../../../components/CustomPagination';
-import RoutesDropdown from '../../../components/RoutesDropdown';
+import { deliveryColumns, getRouteOptions, getDriverOptions } from '../../../assets/fixtures';
+import { validateMobileNumber, validateNames, validateNumber, validateDCValues } from '../../../utils/validations';
+import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone } from '../../../utils/Functions';
 
 const Delivery = ({ date }) => {
     const warehouseId = getWarehoseId()
     const [routes, setRoutes] = useState([])
-    const [selectedRoutes, setSelectedRoutes] = useState([])
     const [drivers, setDrivers] = useState([])
     const [loading, setLoading] = useState(true)
     const [deliveriesClone, setDeliveriesClone] = useState([])
@@ -50,18 +49,6 @@ const Delivery = ({ date }) => {
     useEffect(() => {
         getDeliveries()
     }, [date])
-
-    useEffect(() => {
-        if (!selectedRoutes.length) {
-            setDeliveries(deliveriesClone)
-            setTotalCount(deliveriesClone.length)
-        }
-        else {
-            const filtered = deliveriesClone.filter((item) => selectedRoutes.includes(item.RouteId))
-            setDeliveries(filtered)
-            setTotalCount(filtered.length)
-        }
-    }, [selectedRoutes])
 
     const getRoutes = async () => {
         const data = await http.GET('/warehouse/getroutes')
@@ -112,7 +99,15 @@ const Delivery = ({ date }) => {
     }
 
     const handleFilterChange = (data) => {
-        setSelectedRoutes(data)
+        if (!data.length) {
+            setDeliveries(deliveriesClone)
+            setTotalCount(deliveriesClone.length)
+        }
+        else {
+            const filtered = deliveriesClone.filter((item) => data.includes(item.RouteId))
+            setDeliveries(filtered)
+            setTotalCount(filtered.length)
+        }
     }
 
     const handleMenuSelect = (key, data) => {
@@ -229,16 +224,7 @@ const Delivery = ({ date }) => {
         <div className='stock-delivery-container'>
             <div className='header'>
                 <div className='left'>
-                    {/* <SelectInput
-                        mode='multiple'
-                        placeholder='Select Routes'
-                        className='filter-select'
-                        suffixIcon={<LinesIconGrey />}
-                        value={selectedRoutes} options={routeOptions}
-                        onSelect={handleRouteSelect}
-                        onDeselect={handleRouteDeselect}
-                    /> */}
-                    <RoutesDropdown
+                    <RoutesFilter
                         routes={routes}
                         onChange={handleFilterChange}
                     />

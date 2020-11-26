@@ -443,8 +443,9 @@ $textColorDisabled:rgba(0,0,0,0.55);
     }
 }
 
-// -------------- Antd Modal styles ------------------- //
+// -------------- Antd Dropdown styles ------------------- //
 .ant-dropdown {
+    // width: 12em;
     .ant-dropdown-menu-item {
         color: #333333;
         font-family: 'PoppinsRegular400';
@@ -456,6 +457,17 @@ $textColorDisabled:rgba(0,0,0,0.55);
             transform: scale(.6);
         }
     }
+}
+.ant-dropdown-menu-item-group-title {
+    color: #333333;
+    font-family: 'PoppinsSemiBold600';
+    font-size: .95em;
+}
+.ant-dropdown-menu-item-group-list {
+    margin: 0;
+}
+.app-accounts-filter {
+    width: 12em;
 }
 // -------------- Various Input styles ------------------- //
 

@@ -22,21 +22,4 @@
         transform: scale(.8);
         opacity: .6;
     }
-
-    
-
-    .ant-dropdown-menu-item {
-        .ant-checkbox-wrapper {
-            display: flex !important;
-            align-items: center;
-            width: 100% !important;
-        }
-
-        label.indeterminate-check {
-            display: flex !important;
-            align-items: center;
-            width: 100% !important;
-    
-        }
-    }
 }

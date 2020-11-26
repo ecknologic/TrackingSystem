@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import SortBy from '../../../components/SortByDropdown';
 import SearchInput from '../../../components/SearchInput';
 import ViewsComponent from '../../../components/ViewsComponent';
-import { PlusIconGrey, FilterIconGrey } from '../../../components/SVG_Icons';
+import { PlusIconGrey } from '../../../components/SVG_Icons';
 import CustomButton from '../../../components/CustomButton';
 import '../../../sass/accounts.scss'
+import AccountsFilter from '../../../components/AccountsFilter';
 
 const Header = ({ onClick, onSearch, onSort, onFilter }) => {
     const [view, setView] = useState('card')
@@ -32,9 +33,7 @@ const Header = ({ onClick, onSearch, onSort, onFilter }) => {
                     <ViewsComponent selected={view} onViewChange={(e) => setView(e)} />
                     <div className='op-container'>
                         <SortBy onSelect={onSort} />
-                        <div className='fiter-container' onClick={onFilter}>
-                            <FilterIconGrey />
-                        </div>
+                        <AccountsFilter onChange={onFilter} />
                     </div>
                 </div>
             </div>
