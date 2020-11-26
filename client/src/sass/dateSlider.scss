@@ -1,0 +1,76 @@
+$width1400: 1400px;
+$width1300: 1300px;
+$width1200: 1200px;
+$width1120: 1120px;
+$width1050: 1050px;
+
+@mixin width1400 {
+    @media screen  and (max-width: #{$width1400}) {
+        @content;
+    }
+}
+
+@mixin width1300 {
+    @media screen  and (max-width: #{$width1300}) {
+        @content;
+    }
+}
+
+@mixin width1200 {
+    @media screen  and (max-width: #{$width1200}) {
+        @content;
+    }
+}
+
+@mixin width1120 {
+    @media screen  and (max-width: #{$width1120}) {
+        @content;
+    }
+}
+
+@mixin width1050 {
+    @media screen  and (max-width: #{$width1050}) {
+        @content;
+    }
+}
+
+.date-slider {
+    width: 58%;
+    height: 6.5em;
+    padding: 1em .5em;
+
+    @include width1400 {
+        width: 60%;
+    }
+
+    @include width1300 {
+        width: 57%;
+    }
+
+    @include width1200 {
+        width: 55%;
+    }
+
+    @include width1120 {
+        width: 50%;
+    }
+
+    @include width1050 {
+        width: 46%;
+    }
+    
+    .slick-dots{
+        display: none;
+    }
+
+    .slick-arrow {
+        display: flex !important;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .slick-disabled {
+        opacity: .5;
+        cursor: default;
+    }
+}

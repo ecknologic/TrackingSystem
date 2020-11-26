@@ -7,8 +7,8 @@ import { getSideMenuKey, resetTrackForm } from '../../utils/Functions'
 import ConfirmModal from '../../components/CustomModal';
 import ConfirmMessage from '../../components/ConfirmMessage';
 import {
-    DashboardIcon, SettingIcon, FriendReqIcon, FriendReqIconLight,
-    DashboardIconLight, SettingIconLight, ProjectIcon, ProjectIconLight,
+    DashboardIcon, SettingIcon, FriendReqIcon, FriendReqIconLight, DocIconLight,
+    DashboardIconLight, SettingIconLight, ProjectIcon, ProjectIconLight, DocIcon,
 } from '../../components/SVG_Icons'
 const { Item } = Menu
 
@@ -58,7 +58,7 @@ const SideMenu = () => {
                 </Item>
                 {
                     ROLE === WAREHOUSEADMIN ?
-                        <Item key='stock' onClick={handleMenuSelect}>
+                        <Item key='/manage-stock' onClick={handleMenuSelect}>
                             <img src={dashboardIcon12} alt="" />
                             <span>Manage Stock</span>
                         </Item>
@@ -77,11 +77,12 @@ const SideMenu = () => {
                         : null
                 }
                 {
-                    ROLE === MARKETINGADMIN ? <Item key='/customerDashboard' onClick={handleMenuSelect}>
-                        {selected === '/customerDashboard' ? <SettingIcon /> : <SettingIconLight />}
-                        <span>Settings</span>
-                    </Item> : <Item key='reports' onClick={handleMenuSelect}>
-                            <img src={dashboardIcon12} alt="" />
+                    ROLE === MARKETINGADMIN ?
+                        <Item key='/customerDashboard' onClick={handleMenuSelect}>
+                            {selected === '/customerDashboard' ? <SettingIcon /> : <SettingIconLight />}
+                            <span>Settings</span>
+                        </Item> : <Item key='/reports' onClick={handleMenuSelect}>
+                            {selected === '/reports' ? <DocIcon /> : <DocIconLight />}
                             <span>Reports</span>
                         </Item>
                 }

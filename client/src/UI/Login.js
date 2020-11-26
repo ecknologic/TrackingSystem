@@ -5,7 +5,6 @@ import { QuestionCircleFilled } from '@ant-design/icons';
 import './login.css'
 import { createOrUpdateAPI } from '../utils/apis';
 import { useHistory } from 'react-router-dom';
-import { MARKETINGADMIN, WAREHOUSEADMIN } from '../utils/constants';
 
 const Login = (props) => {
     const history = useHistory()
@@ -38,9 +37,7 @@ const Login = (props) => {
                         }
                         sessionStorage.setItem("user", JSON.stringify(user))
                         message.success("Logged in successfully.")
-                        if (role == MARKETINGADMIN) history.push('/dashboard');
-                        else if (role == WAREHOUSEADMIN) history.push('/bibowarehouse');
-                        else message.error('Screen Not designed for your role')
+                        history.replace('/dashboard')
                     } else {
                         message.error(response.message)
                     }

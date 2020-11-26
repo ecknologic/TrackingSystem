@@ -75,6 +75,7 @@ const Delivery = ({ date }) => {
     }
 
     const getDeliveries = async () => {
+        setLoading(true)
         const url = `/warehouse/deliveryDetails/${date}`
         const data = await http.GET(url)
         setTotalCount(data.length)

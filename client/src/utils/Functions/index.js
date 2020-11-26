@@ -48,7 +48,11 @@ export const base64String = (buffer) => {
             .reduce((data, byte) => data + String.fromCharCode(byte), '')
     );
 }
-
+export const getAdjustedSlideIndex = (actualIndex, slidesToShow) => {
+    const centerIndex = Math.floor(slidesToShow / 2)
+    if (actualIndex <= centerIndex) return 0
+    return actualIndex - centerIndex
+}
 export const stringToHslColor = (str) => {
     var hash = 0;
     for (var i = 0; i < str.length; i++) {
