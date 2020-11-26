@@ -17,10 +17,14 @@ const DateSlider = ({ data, selected, month, onSelect }) => {
         if (hasSlides) {
             const item = data.find((item) => item.date == selected)
             const actualIndex = data.indexOf(item)
-            const adjustedIndex = getAdjustedSlideIndex(actualIndex, slidesToShow)
+            const adjustedIndex = getAdjustedSlideIndex(actualIndex, getSlidesToShow())
             sliderRef.current.slickGoTo(adjustedIndex)
         }
     }, [selected])
+
+    useEffect(() => {
+        setSlidesToShow(getSlidesToShow())
+    }, [])
 
     const beforeChange = (prev, next) => {
         setWeekStart(next + 1)
@@ -29,11 +33,12 @@ const DateSlider = ({ data, selected, month, onSelect }) => {
 
     const props = {
         infinite: false,
-        slidesToShow: 9,
+        slidesToShow,
         slidesToScroll: 7,
         prevArrow: <LeftChevronIconGrey />,
         nextArrow: <RightChevronIconGrey />,
-        beforeChange
+        beforeChange,
+        responsive: getResponsive()
     };
 
     return (
@@ -48,6 +53,7 @@ const DateSlider = ({ data, selected, month, onSelect }) => {
                 {
                     data.map((item) => (
                         <DateSlideItem
+                            key={item.date}
                             item={item}
                             selected={selected}
                             onSelect={onSelect}
@@ -57,6 +63,51 @@ const DateSlider = ({ data, selected, month, onSelect }) => {
             </Slider>
         </>
     )
+}
+
+const getSlidesToShow = () => {
+    if (window.innerWidth >= 1360) return 10;
+    else if (window.innerWidth >= 1270) return 9;
+    else if (window.innerWidth >= 1200) return 8;
+    else if (window.innerWidth >= 1120) return 7;
+    else if (window.innerWidth >= 1050) return 6;
+    else if (window.innerWidth < 1050) return 5;
+}
+const getResponsive = () => {
+    return [
+        {
+            breakpoint: 1360,
+            settings: {
+                slidesToShow: 9
+            }
+        },
+        {
+            breakpoint: 1270,
+            settings: {
+                slidesToShow: 8
+            }
+        },
+        {
+            breakpoint: 1200,
+            settings: {
+                slidesToShow: 7,
+            }
+        },
+        {
+            breakpoint: 1120,
+            settings: {
+                slidesToShow: 6,
+                slidesToScroll: 6
+            }
+        },
+        {
+            breakpoint: 1050,
+            settings: {
+                slidesToShow: 5,
+                slidesToScroll: 5
+            }
+        }
+    ]
 }
 
 export default DateSlider
