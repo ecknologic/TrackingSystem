@@ -1,0 +1,42 @@
+.routes-filter-dropdown {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #C6CBD4;
+    background-color: #FAFAFB;
+    cursor: pointer;
+    padding: 0 1em;
+    height: 2.6em;
+    flex: 1;
+    margin-right: 1em;
+    border-radius: .6em;
+    max-width: 18em;
+    min-width: 14em;
+    
+    .text {
+        color: #333333;
+        font-family: 'PoppinsMedium500';
+    }
+
+    svg {
+        transform: scale(.8);
+        opacity: .6;
+    }
+
+    
+
+    .ant-dropdown-menu-item {
+        .ant-checkbox-wrapper {
+            display: flex !important;
+            align-items: center;
+            width: 100% !important;
+        }
+
+        label.indeterminate-check {
+            display: flex !important;
+            align-items: center;
+            width: 100% !important;
+    
+        }
+    }
+}

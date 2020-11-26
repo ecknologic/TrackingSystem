@@ -1,9 +1,7 @@
 import { Tabs } from 'antd';
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useState } from 'react';
 import Header from './header';
-import Spinner from '../../components/Spinner';
 import StockDetails from './tabs/StockDetails';
-import NoContent from '../../components/NoContent';
 import ReportsDropdown from '../../components/ReportsDropdown';
 import Delivery from './tabs/Delivery';
 import { TODAYDATE } from '../../utils/constants';
@@ -43,7 +41,6 @@ const Stock = () => {
                         : activeTab === '2' ? <Delivery date={selectedDate} />
                             : null
                 }
-
             </div>
         </Fragment>
     )

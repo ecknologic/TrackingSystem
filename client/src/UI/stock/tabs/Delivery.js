@@ -1,11 +1,10 @@
 import { Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { http } from '../../../modules/http';
-import SelectInput from '../../../components/SelectInput';
 import { deliveryColumns, getRouteOptions, getDriverOptions } from '../../../assets/fixtures';
 import CustomButton from '../../../components/CustomButton';
 import SearchInput from '../../../components/SearchInput';
-import { PlusIcon, LinesIconGrey } from '../../../components/SVG_Icons';
+import { PlusIcon } from '../../../components/SVG_Icons';
 import Spinner from '../../../components/Spinner';
 import TableAction from '../../../components/TableAction';
 import CustomModal from '../../../components/CustomModal';
@@ -16,6 +15,7 @@ import { validateMobileNumber, validateNames, validateNumber, validateDCValues }
 import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone } from '../../../utils/Functions';
 import { getWarehoseId, TRACKFORM } from '../../../utils/constants';
 import CustomPagination from '../../../components/CustomPagination';
+import RoutesDropdown from '../../../components/RoutesDropdown';
 
 const Delivery = ({ date }) => {
     const warehouseId = getWarehoseId()
@@ -57,7 +57,7 @@ const Delivery = ({ date }) => {
             setTotalCount(deliveriesClone.length)
         }
         else {
-            const filtered = deliveriesClone.filter((item) => selectedRoutes.includes(item.routeId))
+            const filtered = deliveriesClone.filter((item) => selectedRoutes.includes(item.RouteId))
             setDeliveries(filtered)
             setTotalCount(filtered.length)
         }
@@ -111,15 +111,8 @@ const Delivery = ({ date }) => {
         }
     }
 
-    const handleRouteSelect = (value) => {
-        const clone = [...selectedRoutes]
-        clone.push(value)
-        setSelectedRoutes(clone)
-    }
-
-    const handleRouteDeselect = (value) => {
-        const filtered = selectedRoutes.filter(routeId => routeId !== value)
-        setSelectedRoutes(filtered)
+    const handleFilterChange = (data) => {
+        setSelectedRoutes(data)
     }
 
     const handleMenuSelect = (key, data) => {
@@ -236,7 +229,7 @@ const Delivery = ({ date }) => {
         <div className='stock-delivery-container'>
             <div className='header'>
                 <div className='left'>
-                    <SelectInput
+                    {/* <SelectInput
                         mode='multiple'
                         placeholder='Select Routes'
                         className='filter-select'
@@ -244,6 +237,10 @@ const Delivery = ({ date }) => {
                         value={selectedRoutes} options={routeOptions}
                         onSelect={handleRouteSelect}
                         onDeselect={handleRouteDeselect}
+                    /> */}
+                    <RoutesDropdown
+                        routes={routes}
+                        onChange={handleFilterChange}
                     />
                     <CustomButton text='Create New DC' onClick={onCreateDC} className='app-add-new-btn' icon={<PlusIcon />} />
                 </div>
