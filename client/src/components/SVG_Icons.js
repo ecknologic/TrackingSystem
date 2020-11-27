@@ -180,6 +180,8 @@ const SettingSvgLight = () => <SettingComponent color={secondaryColor} />
 const ProjectSvg = () => <ProjectComponent color={primaryColor} />
 const ProjectSvgLight = () => <ProjectComponent color={secondaryColor} />
 const FriendsSvgGrey = () => <FriendsComponent color={greyColor} />
+const FriendsSvgLight = () => <FriendsComponent color={secondaryColor} />
+const FriendsSvg = () => <FriendsComponent color={primaryColor} />
 const FriendSvgGrey = () => <FriendComponent color={greyColor} />
 const SearchSvgGrey = () => <SearchComponent color={greyColor} />
 const PlusSvg = () => <PlusComponent color={primaryColor} />
@@ -225,6 +227,8 @@ export const FriendReqIcon = props => <Icon component={FriendReqSvg} {...props} 
 export const FriendReqIconLight = props => <Icon component={FriendReqSvgLight} {...props} />
 export const ProjectIcon = props => <Icon component={ProjectSvg} {...props} />
 export const ProjectIconLight = props => <Icon component={ProjectSvgLight} {...props} />
+export const FriendsIcon = props => <Icon component={FriendsSvg} {...props} />
+export const FriendsIconLight = props => <Icon component={FriendsSvgLight} {...props} />
 export const FriendsIconGrey = props => <Icon component={FriendsSvgGrey} {...props} />
 export const FriendIconGrey = props => <Icon component={FriendSvgGrey} {...props} />
 export const SearchIconGrey = props => <Icon component={SearchSvgGrey} {...props} />

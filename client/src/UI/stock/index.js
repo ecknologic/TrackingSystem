@@ -22,7 +22,6 @@ const Stock = () => {
             <div className='stock-manager-content'>
                 <div className='tabs-container stock-manager-tabs'>
                     <Tabs
-                        tabBarGutter={40}
                         tabBarExtraContent={<ReportsDropdown />}
                         onTabClick={(key) => setActiveTab(key)}
                     >

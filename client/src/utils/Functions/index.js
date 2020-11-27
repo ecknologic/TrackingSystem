@@ -67,9 +67,7 @@ export const getCleanObject = (data) => {
 }
 
 export const getSideMenuKey = (path) => {
-    if (path.includes('/bibowarehouse'))
-        return '/dashboard'
-    else if (path.includes('/manage-accounts'))
+    if (path.includes('/manage-accounts'))
         return '/manage-accounts'
     return path
 }

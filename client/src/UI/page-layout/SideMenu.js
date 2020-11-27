@@ -1,14 +1,13 @@
 import { Menu } from 'antd';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom';
-import dashboardIcon12 from '../../assets/images/ic-manage-accounts.svg';
 import { getRole, MARKETINGADMIN, TRACKFORM, WAREHOUSEADMIN } from '../../utils/constants';
 import { getSideMenuKey, resetTrackForm } from '../../utils/Functions'
 import ConfirmModal from '../../components/CustomModal';
 import ConfirmMessage from '../../components/ConfirmMessage';
 import {
     DashboardIcon, SettingIcon, FriendReqIcon, FriendReqIconLight, DocIconLight,
-    DashboardIconLight, SettingIconLight, ProjectIcon, ProjectIconLight, DocIcon,
+    DashboardIconLight, SettingIconLight, ProjectIcon, ProjectIconLight, DocIcon, FriendsIconLight, FriendsIcon,
 } from '../../components/SVG_Icons'
 const { Item } = Menu
 
@@ -64,10 +63,18 @@ const SideMenu = () => {
                         </Item>
                         : null
                 }
-                <Item key='/manage-accounts' onClick={handleMenuSelect}>
-                    {selected === '/manage-accounts' ? <ProjectIcon /> : <ProjectIconLight />}
-                    <span>Manage Accounts</span>
-                </Item>
+                {
+                    ROLE === MARKETINGADMIN ?
+                        <Item key='/manage-accounts' onClick={handleMenuSelect}>
+                            {selected === '/manage-accounts' ? <ProjectIcon /> : <ProjectIconLight />}
+                            <span>Manage Accounts</span>
+                        </Item>
+                        : <Item key='/manage-routes' onClick={handleMenuSelect}>
+                            {selected === '/manage-routes' ? <FriendsIcon /> : <FriendsIconLight />}
+                            <span>Manage Routes</span>
+                        </Item>
+                }
+
                 {
                     ROLE === MARKETINGADMIN ?
                         <Item key='/add-customer' onClick={handleMenuSelect}>
