@@ -1,23 +1,84 @@
-import React from 'react';
-import { businessOptions, statusOptions } from '../assets/fixtures';
-import SelectInput from './SelectInput';
+import { Dropdown, Menu } from 'antd';
+import React, { useState, useRef } from 'react';
+import { FilterIconGrey } from './SVG_Icons';
+import CheckboxOption from './CheckboxOption';
+import { businessFilterOptions, statusFilterOptions } from '../assets/fixtures'
 
-const AccountsFilter = ({ onChange, data }) => {
-    const { natureOfBussiness, status } = data
+const AccountsFilter = ({ onChange }) => {
+
+    const dataRef = useRef({ business: [], status: [] })
+    const [visible, setVisible] = useState(false)
+
+    const handleSelect = (option) => {
+        if (typeof option === 'string') {
+            dataRef.current.business.push(option)
+        }
+        else dataRef.current.status.push(option)
+        onChange(dataRef.current)
+    }
+
+    const handleDeselect = (option) => {
+        let filtered = []
+        if (typeof option === 'string') {
+            filtered = dataRef.current.business.filter((item) => item !== option)
+            dataRef.current.business = filtered
+        }
+        else {
+            filtered = dataRef.current.status.filter((item) => item !== option)
+            dataRef.current.status = filtered
+        }
+        onChange(dataRef.current)
+    }
+
+    const menu = () => (
+        <Menu className='app-accounts-filter'>
+            <Menu.ItemGroup title='Select Business'>
+                {
+                    businessFilterOptions.map((item) => {
+                        return (
+                            <Menu.Item key={item.value}>
+                                <CheckboxOption
+                                    value={item.value}
+                                    option={item.option}
+                                    onSelect={handleSelect}
+                                    onDeselect={handleDeselect}
+                                />
+                            </Menu.Item>
+                        )
+                    })
+                }
+            </Menu.ItemGroup>
+            <Menu.ItemGroup title='Select Status'>
+                {
+                    statusFilterOptions.map((item) => {
+                        return (
+                            <Menu.Item key={item.value}>
+                                <CheckboxOption
+                                    value={item.value}
+                                    option={item.option}
+                                    onSelect={handleSelect}
+                                    onDeselect={handleDeselect}
+                                />
+                            </Menu.Item>
+                        )
+                    })
+                }
+            </Menu.ItemGroup>
+        </Menu>
+    )
+
     return (
-        <div className='accounts-filter-body'>
-            <div className='row'>
-                <div className='input-container'>
-                    <label className='app-input-label-name'>Nature Of Business</label>
-                    <SelectInput value={natureOfBussiness} options={businessOptions} onSelect={(value) => onChange(value, 'natureOfBussiness')} />
-                </div>
-                <div className='input-container'>
-                    <label className='app-input-label-name'>Status</label>
-                    <SelectInput value={status} options={statusOptions} onSelect={(value) => onChange(value, 'status')} />
-                </div>
+        <Dropdown
+            overlay={menu}
+            trigger={['click']}
+            getPopupContainer={triggerNode => triggerNode.parentNode}
+            visible={visible}
+            onVisibleChange={(bool) => setVisible(bool)}
+        >
+            <div className='fiter-container'>
+                <FilterIconGrey />
             </div>
-        </div>
+        </Dropdown>
     )
 }
-
-export default AccountsFilter;
+export default AccountsFilter

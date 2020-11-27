@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import { message } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { http } from '../../../../modules/http';
-import { base64String, getBase64, getIdProofsForDB, isEmpty, resetTrackForm, showToast, trackAccountFormOnce } from '../../../../utils/Functions';
+import { base64String, getBase64, getIdProofsForDB, isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../../utils/Functions';
 import CustomButton from '../../../../components/CustomButton';
 import CorporateAccountForm from '../../add/forms/CorporateAccount';
 import NoContent from '../../../../components/NoContent';
@@ -42,7 +42,9 @@ const AccountOverview = ({ data, routeOptions }) => {
     useEffect(() => {
         resetTrackForm()
         trackAccountFormOnce()
-        return () => resetTrackForm()
+        return () => {
+            removeFormTracker()
+        }
     }, [])
 
     const handleChange = (value, key) => {

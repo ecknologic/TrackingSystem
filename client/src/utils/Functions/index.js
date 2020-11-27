@@ -278,6 +278,10 @@ export const resetTrackForm = () => {
 export const trackAccountFormOnce = () => {
     window.addEventListener('input', setTrackForm, { once: true })
 }
+export const removeFormTracker = () => {
+    resetTrackForm()
+    window.removeEventListener('input', setTrackForm)
+}
 export const getIDInputValidationProps = (IDType) => {
     const props = {}
     if (IDType === 'panNo') {

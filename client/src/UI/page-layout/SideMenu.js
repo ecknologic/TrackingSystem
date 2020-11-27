@@ -59,7 +59,7 @@ const SideMenu = () => {
                 {
                     ROLE === WAREHOUSEADMIN ?
                         <Item key='/manage-stock' onClick={handleMenuSelect}>
-                            <img src={dashboardIcon12} alt="" />
+                            {selected === '/manage-stock' ? <ProjectIcon /> : <ProjectIconLight />}
                             <span>Manage Stock</span>
                         </Item>
                         : null

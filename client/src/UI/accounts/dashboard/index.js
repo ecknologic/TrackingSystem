@@ -1,16 +1,15 @@
 import { Col, Row } from 'antd';
 import { useHistory } from 'react-router-dom';
-import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import Header from './header';
 import AccountCard from '../../../components/AccountCard';
 import Spinner from '../../../components/Spinner';
 import NoContent from '../../../components/NoContent';
 import { getUserId } from '../../../utils/constants';
-import CustomModal from '../../../components/CustomModal';
-import AccountsFilter from '../../../components/AccountsFilter';
 import { complexDateSort, complexSort, doubleKeyComplexSearch } from '../../../utils/Functions'
 import CustomPagination from '../../../components/CustomPagination';
 import { http } from '../../../modules/http'
+import { stat } from 'fs';
 
 const Accounts = () => {
     const USERID = getUserId()
@@ -22,8 +21,6 @@ const Accounts = () => {
     const [pageSize, setPageSize] = useState(12)
     const [pageNumber, setPageNumber] = useState(1)
     const [totalCount, setTotalCount] = useState(null)
-    const [filterModal, setFilterModal] = useState(false)
-    const [filterInfo, setFilterInfo] = useState({})
     const [filterON, setFilterON] = useState(false)
     const [sortBy, setSortBy] = useState('NEW')
 
@@ -95,17 +92,23 @@ const Accounts = () => {
         setAccounts(clone)
     }
 
-    const handleFilter = () => {
-        const { natureOfBussiness, status } = filterInfo
-        const filtered = accountsClone.filter((item) => {
-            let match = false
-            if (natureOfBussiness && (status === 0 || status === 1))
-                match = (item.natureOfBussiness === natureOfBussiness) && (item.isActive === status)
-            else match = (item.natureOfBussiness === natureOfBussiness) || (item.isActive === status)
-            return match
-        })
+    const handleFilter = (filterInfo) => {
+        const { business, status } = filterInfo
+        let singleFiltered = [], bothFiltered = []
+        if (business.length && status.length) {
+            bothFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && status.includes(item.isActive))
+        }
+        else {
+            singleFiltered = accountsClone.filter((item) => {
+                if (business.length) {
+                    return business.includes(item.natureOfBussiness)
+                }
+                return status.includes(item.isActive)
+            })
+        }
+
+        const filtered = [...singleFiltered, ...bothFiltered]
         setFilterON(true)
-        setFilterModal(false)
         setPageNumber(1)
         setAccounts(filtered)
         setFilteredClone(filtered)
@@ -117,15 +120,15 @@ const Accounts = () => {
         setAccounts(accountsClone)
         setTotalCount(accountsClone.length)
         setFilteredClone([])
-        setFilterInfo({})
         setFilterON(false)
-        setFilterModal(false)
         handleSort(sortBy, false)
     }
 
-    const handleFilterInput = useCallback((value, key) => setFilterInfo(data => ({ ...data, [key]: value })), [])
-    const onFilterClick = useCallback(() => setFilterModal(true), [])
-    const handleModalCancel = useCallback(() => setFilterModal(false), [])
+    const onFilterChange = (data) => {
+        const { business, status } = data
+        if (!business.length && !status.length) handleFilterClear()
+        else handleFilter(data)
+    }
 
     const goToAddAccount = () => history.push('/manage-accounts/add-account')
     const goToViewAccount = (id) => history.push(`/manage-accounts/${id}`)
@@ -135,7 +138,7 @@ const Accounts = () => {
 
     return (
         <Fragment>
-            <Header onSearch={handleSearch} onSort={onSort} onFilter={onFilterClick} onClick={goToAddAccount} />
+            <Header onSearch={handleSearch} onSort={onSort} onFilter={onFilterChange} onClick={goToAddAccount} />
             <div className='account-manager-content'>
                 <Row gutter={[{ lg: 32, xl: 16 }, { lg: 32, xl: 32 }]}>
                     {
@@ -158,21 +161,6 @@ const Accounts = () => {
                             onPageSizeChange={handleSizeChange}
                         />)
                 }
-                <CustomModal
-                    className='accounts-filter-modal'
-                    visible={filterModal}
-                    onOk={handleFilter}
-                    onCancel={handleModalCancel}
-                    onOther={handleFilterClear}
-                    title='Filter By'
-                    okTxt='Filter'
-                    cancelTxt='Clear'
-                >
-                    <AccountsFilter
-                        data={filterInfo}
-                        onChange={handleFilterInput}
-                    />
-                </CustomModal>
             </div>
         </Fragment>
     )

@@ -12,7 +12,7 @@ import { http } from '../../../modules/http'
 import { getRouteOptions, WEEKDAYS } from '../../../assets/fixtures';
 import {
     getBase64, deepClone, getIdProofsForDB, getDevDaysForDB, getAddressesForDB, resetTrackForm,
-    getProductsForDB, extractGADeliveryDetails, extractGADetails, isEmpty, trackAccountFormOnce, showToast
+    getProductsForDB, extractGADeliveryDetails, extractGADetails, isEmpty, trackAccountFormOnce, showToast, removeFormTracker
 } from '../../../utils/Functions';
 import { TRACKFORM, getUserId, getUsername, getWarehoseId, TODAYDATE } from '../../../utils/constants';
 import {
@@ -78,7 +78,9 @@ const AddAccount = () => {
     useEffect(() => {
         resetTrackForm()
         trackAccountFormOnce()
-        return () => resetTrackForm()
+        return () => {
+            removeFormTracker()
+        }
     }, [corporate])
 
     useEffect(() => {
