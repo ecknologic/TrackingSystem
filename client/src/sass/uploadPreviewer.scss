@@ -62,11 +62,29 @@
                 transition: all .3s;
                 z-index: 1;
             }
+        }
 
+        .upload-input-container {
+            display: block;
+            border: 1px dashed #E7E7E7;
+            width: 6em;
+            height: 4em;
+            transition: border 0.3s;
+
+            &:hover {
+                border: 1px dashed #0062FF;
+            }
+            
+            .ant-upload {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                cursor: pointer;
+                height: 100%;
+                width: 100%;
+            }
+           
             .preview-error {
-                position: absolute;
-                top: 35%;
-                left: 23%;
                 color: #E90614;
                 font-size: .8em;
                 font-family: 'PoppinsItalic400';
@@ -74,7 +92,7 @@
 
         }
 
-        span {
+        .title {
             color: rgba(0,0,0,0.85);
             font-family: 'PoppinsRegular400';
             font-size: .75em;

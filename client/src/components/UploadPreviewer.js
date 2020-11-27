@@ -4,8 +4,9 @@ import '../sass/uploadPreviewer.scss'
 import PreviewModal from './PreviewModal';
 import { EyeIconWhite } from '../components/SVG_Icons';
 import { setTrackForm } from '../utils/Functions';
+import UploadInput from './UploadInput';
 
-const UploadPreviewer = ({ title, value, onRemove, disabled, className = '', track, error = '' }) => {
+const UploadPreviewer = ({ title, value, onUpload, onRemove, disabled, className = '', track, error = '' }) => {
 
     const [modal, setModal] = useState(false)
 
@@ -16,14 +17,20 @@ const UploadPreviewer = ({ title, value, onRemove, disabled, className = '', tra
 
     return (
         <div className={`item-container ${className}`}>
-            <span>{title}</span>
-            <div className='img-container'>
-                {value && <img src={value} alt='' />}
-                {!disabled && value && <img className='cross' src={Remove} onClick={handleRemove} alt='' />}
-                {value && <EyeIconWhite className='eye' onClick={() => setModal(true)} />}
-                {error && <span className='preview-error'>{error}</span>}
-                {value && <div className='image-shadow'></div>}
-            </div>
+            <span className='title'>{title}</span>
+            {
+                value ? <div className='img-container'>
+                    <img src={value} alt='' />
+                    {!disabled && <img className='cross' src={Remove} onClick={handleRemove} alt='' />}
+                    <EyeIconWhite className='eye' onClick={() => setModal(true)} />
+                    <div className='image-shadow'></div>
+                </div>
+                    : <UploadInput onUpload={onUpload}>
+                        {error && <span className='preview-error'>{error}</span>}
+                        {!value && <div></div>}
+                    </UploadInput>
+            }
+
             <PreviewModal data={value} visible={modal} onCancel={() => setModal(false)} />
         </div>
     )
