@@ -32,6 +32,7 @@ const Delivery = ({ date }) => {
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [DCModal, setDCModal] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
+    const [filterInfo, setFilterInfo] = useState([])
     const [shake, setShake] = useState(false)
 
     const routeOptions = useMemo(() => getRouteOptions(routes), [routes])
@@ -65,10 +66,16 @@ const Delivery = ({ date }) => {
         setLoading(true)
         const url = `/warehouse/deliveryDetails/${date}`
         const data = await http.GET(url)
-        setTotalCount(data.length)
+        setPageNumber(1)
         setDeliveriesClone(data)
-        setDeliveries(data)
         setLoading(false)
+        if (filterInfo.length) {
+            generateFiltered(data, filterInfo)
+        }
+        else {
+            setTotalCount(data.length)
+            setDeliveries(data)
+        }
     }
 
     const handleChange = (value, key) => {
@@ -98,16 +105,20 @@ const Delivery = ({ date }) => {
         }
     }
 
-    const handleFilterChange = (data) => {
+    const onFilterChange = (data) => {
+        setPageNumber(1)
+        setFilterInfo(data)
         if (!data.length) {
             setDeliveries(deliveriesClone)
             setTotalCount(deliveriesClone.length)
         }
-        else {
-            const filtered = deliveriesClone.filter((item) => data.includes(item.RouteId))
-            setDeliveries(filtered)
-            setTotalCount(filtered.length)
-        }
+        else generateFiltered(deliveriesClone, data)
+    }
+
+    const generateFiltered = (original, filterInfo) => {
+        const filtered = original.filter((item) => filterInfo.includes(item.RouteId))
+        setDeliveries(filtered)
+        setTotalCount(filtered.length)
     }
 
     const handleMenuSelect = (key, data) => {
@@ -226,7 +237,7 @@ const Delivery = ({ date }) => {
                 <div className='left'>
                     <RoutesFilter
                         routes={routes}
-                        onChange={handleFilterChange}
+                        onChange={onFilterChange}
                     />
                     <CustomButton text='Create New DC' onClick={onCreateDC} className='app-add-new-btn' icon={<PlusIcon />} />
                 </div>

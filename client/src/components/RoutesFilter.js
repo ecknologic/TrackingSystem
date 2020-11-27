@@ -1,25 +1,26 @@
 import { Dropdown, Menu } from 'antd';
-import React, { useMemo, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { LinesIconGrey } from './SVG_Icons';
 import CheckboxOption from './CheckboxOption';
 import '../sass/routesDropdown.scss'
 
 const RoutesDropdown = ({ routes, onChange }) => {
 
-    const [data, _] = useState([])
+    const dataRef = useRef([])
     const [visible, setVisible] = useState(false)
 
     const handleSelect = (option) => {
-        data.push(option)
-        onChange(data)
+        dataRef.current.push(option)
+        onChange(dataRef.current)
     }
 
     const handleDeselect = (option) => {
-        data.filter((item) => item !== option)
-        onChange(data)
+        const filtered = dataRef.current.filter((item) => item !== option)
+        dataRef.current = filtered
+        onChange(filtered)
     }
 
-    const reportsMenu = useMemo(() => (
+    const reportsMenu = (
         <Menu>
             <Menu.ItemGroup title='Select Routes'>
                 {
@@ -38,7 +39,7 @@ const RoutesDropdown = ({ routes, onChange }) => {
                 }
             </Menu.ItemGroup>
         </Menu>
-    ), [routes])
+    )
 
     return (
         <Dropdown

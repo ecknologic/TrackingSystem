@@ -4,9 +4,9 @@ import { Checkbox } from 'antd';
 const CheckboxOption = ({ value, option, onSelect, onDeselect }) => {
     const [isChecked, setIsChecked] = useState(false)
 
-    const onChange = ({ target: { checked } }) => {
-        checked && onSelect(value)
-        !checked && onDeselect(value)
+    const onChange = () => {
+        !isChecked && onSelect(value)
+        isChecked && onDeselect(value)
         setIsChecked(!isChecked)
     }
 

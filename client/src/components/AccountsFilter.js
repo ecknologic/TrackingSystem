@@ -1,25 +1,36 @@
 import { Dropdown, Menu } from 'antd';
-import React, { useState, useMemo } from 'react';
+import React, { useState, useRef } from 'react';
 import { FilterIconGrey } from './SVG_Icons';
 import CheckboxOption from './CheckboxOption';
 import { businessFilterOptions, statusFilterOptions } from '../assets/fixtures'
 
 const AccountsFilter = ({ onChange }) => {
 
-    const [data, _] = useState([])
+    const dataRef = useRef({ business: [], status: [] })
     const [visible, setVisible] = useState(false)
 
     const handleSelect = (option) => {
-        data.push(option)
-        onChange(data)
+        if (typeof option === 'string') {
+            dataRef.current.business.push(option)
+        }
+        else dataRef.current.status.push(option)
+        onChange(dataRef.current)
     }
 
     const handleDeselect = (option) => {
-        data.filter((item) => item !== option)
-        onChange(data)
+        let filtered = []
+        if (typeof option === 'string') {
+            filtered = dataRef.current.business.filter((item) => item !== option)
+            dataRef.current.business = filtered
+        }
+        else {
+            filtered = dataRef.current.status.filter((item) => item !== option)
+            dataRef.current.status = filtered
+        }
+        onChange(dataRef.current)
     }
 
-    const menu = useMemo(() => (
+    const menu = () => (
         <Menu className='app-accounts-filter'>
             <Menu.ItemGroup title='Select Business'>
                 {
@@ -54,7 +65,7 @@ const AccountsFilter = ({ onChange }) => {
                 }
             </Menu.ItemGroup>
         </Menu>
-    ), [])
+    )
 
     return (
         <Dropdown
@@ -70,5 +81,4 @@ const AccountsFilter = ({ onChange }) => {
         </Dropdown>
     )
 }
-const { SubMenu } = Menu;
 export default AccountsFilter
