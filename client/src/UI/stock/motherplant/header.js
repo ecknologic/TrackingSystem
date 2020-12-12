@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import Spinner from '../../components/Spinner';
-import { MoreIconGrey } from '../../components/SVG_Icons'
-import { getWarehoseId } from '../../utils/constants';
-import { http } from '../../modules/http';
-import '../../sass/stock.scss'
+import Spinner from '../../../components/Spinner';
+import { MoreIconGrey } from '../../../components/SVG_Icons'
+import { getWarehoseId } from '../../../utils/constants';
+import { http } from '../../../modules/http';
+import '../../../sass/stock.scss'
 
 const Header = () => {
 

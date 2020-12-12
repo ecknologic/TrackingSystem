@@ -1,13 +1,13 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
-import { getRole, MARKETINGADMIN, WAREHOUSEADMIN } from './utils/constants';
-import BiboWarehouse from './UI/Bibo_Warehouse_Stock Inventory';
+import { getRole, MARKETINGADMIN, MOTHERPLANTADMIN, WAREHOUSEADMIN } from './utils/constants';
 import AccountsDashboard from './UI/accounts/dashboard';
 import NoContent from './components/NoContent';
 import ViewAccount from './UI/accounts/view';
 import AddAccount from './UI/accounts/add';
 import PageLayout from './UI/page-layout';
-import StockDashboard from './UI/stock';
+import WarehouseStock from './UI/stock/warehouse';
+import MotherplantStock from './UI/stock/motherplant';
 import Login from './UI/Login';
 import './App.css';
 
@@ -17,7 +17,11 @@ const App = () => {
          <Route exact path='/' component={Login} />
          <PageLayout>
             <Switch>
-               <Route path='/manage-stock' render={() => requireAuth(<StockDashboard />)} />
+               <Route path='/stock-details' render={() => requireAuth(<MotherplantStock />)} />
+               <Route path='/dispatches' render={() => requireAuth(<NoContent content='Design is in progress' />)} />
+               <Route path='/materials' render={() => requireAuth(<NoContent content='Design is in progress' />)} />
+               <Route path='/quality-control' render={() => requireAuth(<NoContent content='Design is in progress' />)} />
+               <Route path='/manage-stock' render={() => requireAuth(<WarehouseStock />)} />
                <Route path='/manage-accounts/add-account' render={() => requireAuth(<AddAccount />)} />
                <Route path='/manage-accounts/:accountId' render={() => requireAuth(<ViewAccount />)} />
                <Route path='/manage-accounts' render={() => requireAuth(<AccountsDashboard />)} />
@@ -41,7 +45,7 @@ const requireAuth = (Component) => {
 
 const redirectAuth = () => {
    const authenticated = JSON.parse(sessionStorage.getItem('isLogged'))
-   if (authenticated) return <Redirect to="/bibowarehouse" />
+   if (authenticated) return <Redirect to="/dashboard" />
    else return <Redirect to="/" />
 }
 
@@ -51,6 +55,7 @@ const renderByRole = () => {
       const role = getRole()
       if (role == MARKETINGADMIN) return <NoContent content='Design is in progress' />
       else if (role == WAREHOUSEADMIN) return <NoContent content='Design is in progress' />
+      else if (role == MOTHERPLANTADMIN) return <NoContent content='Design is in progress' />
       return <NoContent content='Screen Not designed for your role' />
    }
    else return <Redirect to="/" />

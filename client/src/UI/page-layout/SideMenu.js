@@ -1,7 +1,7 @@
 import { Menu } from 'antd';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom';
-import { getRole, MARKETINGADMIN, TRACKFORM, WAREHOUSEADMIN } from '../../utils/constants';
+import { getRole, MARKETINGADMIN, TRACKFORM, WAREHOUSEADMIN, MOTHERPLANTADMIN } from '../../utils/constants';
 import { getSideMenuKey, resetTrackForm } from '../../utils/Functions'
 import ConfirmModal from '../../components/CustomModal';
 import ConfirmMessage from '../../components/ConfirmMessage';
@@ -56,42 +56,62 @@ const SideMenu = () => {
                     <span>Dashboard</span>
                 </Item>
                 {
+                    ROLE === MOTHERPLANTADMIN ?
+                        <>
+                            <Item key='/stock-details' onClick={handleMenuSelect}>
+                                {selected === '/stock-details' ? <ProjectIcon /> : <ProjectIconLight />}
+                                <span>Stock Details</span>
+                            </Item>
+                            <Item key='/dispatches' onClick={handleMenuSelect}>
+                                {selected === '/dispatches' ? <ProjectIcon /> : <ProjectIconLight />}
+                                <span>Dispatches</span>
+                            </Item>
+                            <Item key='/materials' onClick={handleMenuSelect}>
+                                {selected === '/materials' ? <ProjectIcon /> : <ProjectIconLight />}
+                                <span>Materials</span>
+                            </Item>
+                            <Item key='/quality-control' onClick={handleMenuSelect}>
+                                {selected === '/quality-control' ? <ProjectIcon /> : <ProjectIconLight />}
+                                <span>Quality Control</span>
+                            </Item>
+                        </>
+                        : null
+                }
+                {
                     ROLE === WAREHOUSEADMIN ?
-                        <Item key='/manage-stock' onClick={handleMenuSelect}>
-                            {selected === '/manage-stock' ? <ProjectIcon /> : <ProjectIconLight />}
-                            <span>Manage Stock</span>
-                        </Item>
+                        <>
+                            <Item key='/manage-stock' onClick={handleMenuSelect}>
+                                {selected === '/manage-stock' ? <ProjectIcon /> : <ProjectIconLight />}
+                                <span>Manage Stock</span>
+                            </Item>
+                            <Item key='/manage-routes' onClick={handleMenuSelect}>
+                                {selected === '/manage-routes' ? <FriendsIcon /> : <FriendsIconLight />}
+                                <span>Manage Routes</span>
+                            </Item>
+                            <Item key='/reports' onClick={handleMenuSelect}>
+                                {selected === '/reports' ? <DocIcon /> : <DocIconLight />}
+                                <span>Reports</span>
+                            </Item>
+                        </>
                         : null
                 }
                 {
                     ROLE === MARKETINGADMIN ?
-                        <Item key='/manage-accounts' onClick={handleMenuSelect}>
-                            {selected === '/manage-accounts' ? <ProjectIcon /> : <ProjectIconLight />}
-                            <span>Manage Accounts</span>
-                        </Item>
-                        : <Item key='/manage-routes' onClick={handleMenuSelect}>
-                            {selected === '/manage-routes' ? <FriendsIcon /> : <FriendsIconLight />}
-                            <span>Manage Routes</span>
-                        </Item>
-                }
-
-                {
-                    ROLE === MARKETINGADMIN ?
-                        <Item key='/add-customer' onClick={handleMenuSelect}>
-                            {selected === '/add-customer' ? <FriendReqIcon /> : <FriendReqIconLight />}
-                            <span>Add Customer</span>
-                        </Item>
+                        <>
+                            <Item key='/manage-accounts' onClick={handleMenuSelect}>
+                                {selected === '/manage-accounts' ? <ProjectIcon /> : <ProjectIconLight />}
+                                <span>Manage Accounts</span>
+                            </Item>
+                            <Item key='/add-customer' onClick={handleMenuSelect}>
+                                {selected === '/add-customer' ? <FriendReqIcon /> : <FriendReqIconLight />}
+                                <span>Add Customer</span>
+                            </Item>
+                            <Item key='/customerDashboard' onClick={handleMenuSelect}>
+                                {selected === '/customerDashboard' ? <SettingIcon /> : <SettingIconLight />}
+                                <span>Settings</span>
+                            </Item>
+                        </>
                         : null
-                }
-                {
-                    ROLE === MARKETINGADMIN ?
-                        <Item key='/customerDashboard' onClick={handleMenuSelect}>
-                            {selected === '/customerDashboard' ? <SettingIcon /> : <SettingIconLight />}
-                            <span>Settings</span>
-                        </Item> : <Item key='/reports' onClick={handleMenuSelect}>
-                            {selected === '/reports' ? <DocIcon /> : <DocIconLight />}
-                            <span>Reports</span>
-                        </Item>
                 }
             </Menu>
             <ConfirmModal

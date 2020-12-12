@@ -2,12 +2,12 @@ import { Tabs } from 'antd';
 import React, { Fragment, useState } from 'react';
 import Header from './header';
 import StockDetails from './tabs/StockDetails';
-import ReportsDropdown from '../../components/ReportsDropdown';
+import ReportsDropdown from '../../../components/ReportsDropdown';
 import Delivery from './tabs/Delivery';
-import { TODAYDATE } from '../../utils/constants';
-import DatePickerPanel from '../../components/DatePickerPanel';
+import { TODAYDATE } from '../../../utils/constants';
+import DatePickerPanel from '../../../components/DatePickerPanel';
 
-const Stock = () => {
+const WarehouseStock = () => {
 
     const [activeTab, setActiveTab] = useState('1')
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
@@ -45,4 +45,4 @@ const Stock = () => {
     )
 }
 const { TabPane } = Tabs;
-export default Stock
+export default WarehouseStock

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import CASPanel from '../../../components/CASPanel';
-import DCPanel from '../../../components/DCPanel';
-import DSPanel from '../../../components/DSPanel';
-import ECPanel from '../../../components/ECPanel';
-import ERCPanel from '../../../components/ERCPanel';
-import OFDPanel from '../../../components/OFDPanel';
-import { http } from '../../../modules/http';
-import { getWarehoseId } from '../../../utils/constants';
+import CASPanel from '../../../../components/CASPanel';
+import DCPanel from '../../../../components/DCPanel';
+import DSPanel from '../../../../components/DSPanel';
+import ECPanel from '../../../../components/ECPanel';
+import ERCPanel from '../../../../components/ERCPanel';
+import OFDPanel from '../../../../components/OFDPanel';
+import { http } from '../../../../modules/http';
+import { getWarehoseId } from '../../../../utils/constants';
 
 const StockDetails = ({ date }) => {
     const warehouseId = getWarehoseId()

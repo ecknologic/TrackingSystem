@@ -162,6 +162,26 @@
         }
     }
 }
+.casmp-panel-container {
+    border-top: none;
+    background-color: #fff;
+    height: 6.5em;
+
+    .titles {
+        justify-content: center;
+    }
+
+    .items {
+        .numbers-container {
+            .number {
+                font-size: 1.2em;
+            }
+            .new {
+                font-family: 'PoppinsRegular400';
+            }
+        }
+    }
+}
 .ofd-panel-container,.ds-panel-container,.ec-panel-container,
 .erc-panel-container,.dc-panel-container {
     height: 6.5em;
@@ -320,5 +340,26 @@
         svg {
             transform: rotate(90deg) scale(.8);
         }
+    }
+}
+
+.stock-manager-content {
+    .prod-form-container {
+        width: 60%;
+        padding: 1.5em 0 0 2em;
+
+        .columns {
+            width: 80%;
+        }
+
+        .row {
+            .stretch {
+                width: 70%;
+            }
+        }
+    }
+
+    .app-footer-buttons-container {
+        margin-left: 2em;
     }
 }

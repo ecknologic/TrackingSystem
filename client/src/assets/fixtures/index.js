@@ -107,3 +107,51 @@ export const deliveryColumns = [
         key: 'action'
     },
 ]
+
+export const productionColumns = [
+    {
+        title: 'Batch ID',
+        dataIndex: 'batchId',
+        key: 'batchId',
+    },
+    {
+        title: 'Production Details',
+        dataIndex: 'productionDetails',
+        key: 'productionDetails',
+    },
+    {
+        title: 'PH',
+        dataIndex: 'ph',
+        key: 'ph',
+    },
+    {
+        title: 'Ozone Level',
+        key: 'driverName',
+        dataIndex: 'driverName',
+    },
+    {
+        title: 'TDS',
+        dataIndex: 'orderDetails',
+        key: 'routeorderDetails',
+    },
+    {
+        title: 'Date & time',
+        dataIndex: 'dateAndTime',
+        key: 'dateAndTime',
+    },
+    {
+        title: 'Shift Type',
+        dataIndex: 'shiftType',
+        key: 'shiftType'
+    },
+    {
+        title: 'Manager',
+        dataIndex: 'manager',
+        key: 'manager'
+    },
+    {
+        title: 'Actions',
+        dataIndex: 'action',
+        key: 'action'
+    },
+]

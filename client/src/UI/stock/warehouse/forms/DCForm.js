@@ -1,7 +1,7 @@
 import React from 'react';
-import SelectInput from '../../../components/SelectInput';
-import InputLabel from '../../../components/InputLabel';
-import CustomInput from '../../../components/CustomInput';
+import SelectInput from '../../../../components/SelectInput';
+import InputLabel from '../../../../components/InputLabel';
+import CustomInput from '../../../../components/CustomInput';
 
 const DCForm = (props) => {
 
@@ -12,7 +12,7 @@ const DCForm = (props) => {
 
     return (
         <>
-            <div className='app-form-container dc-form-container'>
+            <div className='app-form-container'>
                 <div className='row'>
                     <div className='input-container stretch'>
                         <InputLabel name='Select Route' error={errors.routeId} mandatory />
