@@ -154,7 +154,7 @@
     .items {
         .numbers-container {
             .number {
-                font-size: 1.2em;
+                font-size: 1.1em;
             }
             .new {
                 font-family: 'PoppinsRegular400';
@@ -174,7 +174,7 @@
     .items {
         .numbers-container {
             .number {
-                font-size: 1.2em;
+                font-size: 1.1em;
             }
             .new {
                 font-family: 'PoppinsRegular400';
@@ -344,7 +344,8 @@
 }
 
 .stock-manager-content {
-    .prod-form-container {
+
+    .batch-form-container, .dispatch-form-container {
         width: 60%;
         padding: 1.5em 0 0 2em;
 
@@ -360,6 +361,7 @@
     }
 
     .app-footer-buttons-container {
-        margin-left: 2em;
+        height: auto;
+        padding: 4em 0 2em 2em;
     }
 }

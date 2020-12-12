@@ -2,7 +2,7 @@ import React from 'react';
 import InputLabel from '../../../../components/InputLabel';
 import CustomInput from '../../../../components/CustomInput';
 
-const ProductionForm = (props) => {
+const BatchForm = (props) => {
 
     const { data, errors, routeOptions, disabled, onBlur, driverOptions, onChange, track } = props
 
@@ -11,7 +11,7 @@ const ProductionForm = (props) => {
 
     return (
         <>
-            <div className='app-form-container prod-form-container'>
+            <div className='app-form-container batch-form-container'>
                 <div className='columns'>
                     <InputLabel name='Products and Price' error={errors.stockDetails} />
                     <div className='columns-container'>
@@ -90,4 +90,4 @@ const ProductionForm = (props) => {
         </>
     )
 }
-export default ProductionForm
+export default BatchForm

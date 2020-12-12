@@ -8,6 +8,7 @@ import AddAccount from './UI/accounts/add';
 import PageLayout from './UI/page-layout';
 import WarehouseStock from './UI/stock/warehouse';
 import MotherplantStock from './UI/stock/motherplant';
+import Dispatches from './UI/dispatches';
 import Login from './UI/Login';
 import './App.css';
 
@@ -18,7 +19,7 @@ const App = () => {
          <PageLayout>
             <Switch>
                <Route path='/stock-details' render={() => requireAuth(<MotherplantStock />)} />
-               <Route path='/dispatches' render={() => requireAuth(<NoContent content='Design is in progress' />)} />
+               <Route path='/dispatches' render={() => requireAuth(<Dispatches />)} />
                <Route path='/materials' render={() => requireAuth(<NoContent content='Design is in progress' />)} />
                <Route path='/quality-control' render={() => requireAuth(<NoContent content='Design is in progress' />)} />
                <Route path='/manage-stock' render={() => requireAuth(<WarehouseStock />)} />

@@ -354,3 +354,7 @@ export const isAadharValid = (aadharNumber) => {
 
     return (c === 0)
 }
+
+export const disableFutureDates = (current) => {
+    return current && current.valueOf() > Date.now();
+}

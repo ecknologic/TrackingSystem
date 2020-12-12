@@ -110,9 +110,9 @@ export const deliveryColumns = [
 
 export const productionColumns = [
     {
-        title: 'Batch ID',
-        dataIndex: 'batchId',
-        key: 'batchId',
+        title: 'Batch No',
+        dataIndex: 'batchNo',
+        key: 'batchNo',
     },
     {
         title: 'Production Details',
@@ -126,13 +126,13 @@ export const productionColumns = [
     },
     {
         title: 'Ozone Level',
-        key: 'driverName',
-        dataIndex: 'driverName',
+        key: 'ozoneLevel',
+        dataIndex: 'ozoneLevel',
     },
     {
         title: 'TDS',
-        dataIndex: 'orderDetails',
-        key: 'routeorderDetails',
+        dataIndex: 'tds',
+        key: 'tds',
     },
     {
         title: 'Date & time',
@@ -148,6 +148,54 @@ export const productionColumns = [
         title: 'Manager',
         dataIndex: 'manager',
         key: 'manager'
+    },
+    {
+        title: 'Actions',
+        dataIndex: 'action',
+        key: 'action'
+    },
+]
+
+export const dispatchColumns = [
+    {
+        title: 'DC Number',
+        dataIndex: 'dcnumber',
+        key: 'dcnumber',
+    },
+    {
+        title: 'Batch No',
+        dataIndex: 'batchNo',
+        key: 'batchNo',
+    },
+    {
+        title: 'Production Details',
+        dataIndex: 'productionDetails',
+        key: 'productionDetails',
+    },
+    {
+        title: 'Vehicle No',
+        dataIndex: 'vehicleNo',
+        key: 'vehicleNo',
+    },
+    {
+        title: 'Driver Name',
+        key: 'driverName',
+        dataIndex: 'driverName',
+    },
+    {
+        title: 'Dispatch To',
+        dataIndex: 'dispatchTo',
+        key: 'dispatchTo',
+    },
+    {
+        title: 'Date & time',
+        dataIndex: 'dateAndTime',
+        key: 'dateAndTime',
+    },
+    {
+        title: 'Status',
+        dataIndex: 'status',
+        key: 'status'
     },
     {
         title: 'Actions',

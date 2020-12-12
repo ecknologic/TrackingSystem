@@ -234,7 +234,6 @@ $textColorDisabled:rgba(0,0,0,0.55);
 .ant-input, .ant-input-number {
     height: 2.7em !important;
     width: 100%;
-    background-color: #FCFDFE !important;
     border-radius: .6em !important;
     display: flex;
     justify-content: center;
@@ -880,6 +879,8 @@ $textColorDisabled:rgba(0,0,0,0.55);
     }
 }
 
+// -------------- Various Date Picker styles ------------------- //
+
 .app-date-slide-item {
     border: 0.94px solid #EEEEEE;
     background-color: #FFFFFF;
@@ -896,11 +897,11 @@ $textColorDisabled:rgba(0,0,0,0.55);
     transition: all .3s;
 
     .date {
-        font-size: 1.25em;
+        font-size: 1.16em;
     }
 
     .day {
-        font-size: .75em;
+        font-size: .77em;
     }
 
     &.selected {
@@ -908,3 +909,51 @@ $textColorDisabled:rgba(0,0,0,0.55);
         color: #fff;
     }
 }
+
+.app-date-picker-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 1em;
+
+    .date-picker {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 9em;
+        height: 2.6em;
+        border-radius: .6em;
+        border: 1px solid #0062FF;
+        cursor: pointer;
+        position: relative;
+        
+        span {
+            color: #0062FF;
+            font-family: 'PoppinsSemiBold600';
+            font-size: .9em;
+            margin-left: .2em;
+        }
+    
+        svg {
+            transform: scale(.7);
+        }
+    
+    }
+
+    .date-panel-picker {
+        width: 0;
+    
+        .ant-picker-suffix {
+            display: none;
+        }
+    
+        &.ant-picker {
+            padding: 0;
+            visibility: hidden;
+            height: 2em;
+            position: absolute;
+        }
+    }
+}
+

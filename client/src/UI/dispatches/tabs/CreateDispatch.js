@@ -1,17 +1,15 @@
 import React from 'react';
-import CASMPPanel from '../../../../components/CASMPPanel';
-import CustomButton from '../../../../components/CustomButton';
-import FormHeader from '../../../../components/FormHeader';
-import BatchForm from '../forms/BatchForm';
+import CustomButton from '../../../components/CustomButton';
+import FormHeader from '../../../components/FormHeader';
+import DispatchForm from '../forms/DispatchForm';
 
-const StockDetails = () => {
+const CreateDispatch = () => {
 
     const { btnDisabled, shake, handleAccountUpdate } = {}
     return (
         <>
-            <CASMPPanel data={{}} />
-            <FormHeader title='Create Production Batch' showShift />
-            <BatchForm data={{}} errors={{}} />
+            <FormHeader title='Create Dispatch DC' />
+            <DispatchForm data={{}} errors={{}} />
             <div className='app-footer-buttons-container'>
                 <CustomButton
                     onClick={handleAccountUpdate}
@@ -19,11 +17,11 @@ const StockDetails = () => {
                     app-create-btn footer-btn ${btnDisabled ? 'disabled' : ''} 
                     ${shake ? 'app-shake' : ''}
                 `}
-                    text='Create Batch'
+                    text='Create DC'
                 />
             </div>
         </>
     )
 }
 
-export default StockDetails
+export default CreateDispatch
