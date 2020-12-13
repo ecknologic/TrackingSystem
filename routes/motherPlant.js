@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 const { getProductionDetails, getVehicleDetails, getDispatchDetails, getAllQCDetails,
     createQC, getInternalQualityControl, createInternalQC, addProductionDetails, addVehicleDetails,
-    getNatureOfBussiness, addDispatchDetails, getRMDetails, createRM, createRMReceipt, getRMReceiptDetails } = require('../dbQueries/motherplant/index.js');
+    getNatureOfBussiness, addDispatchDetails, getRMDetails, createRM, createRMReceipt, getRMReceiptDetails, updateProductionDetails } = require('../dbQueries/motherplant/index.js');
 const { dbError } = require('../utils/functions.js');
 
 //Middle ware that is specific to this router
@@ -124,8 +124,12 @@ router.post('/addProductionDetails', (req, res) => {
     let input = req.body;
     addProductionDetails(input, (err, results) => {
         if (err) res.status(500).json(dbError(err));
-        else
+        else {
+            input.batchNo = `BI-${results.insertId}`
+            updateProductionDetails(input, (updateErr, data) => {
+            })
             res.json("Record Inserted");
+        }
     });
 })
 module.exports = router;

@@ -51,8 +51,9 @@ const createInternalQC = async (input, callback) => {
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 const addProductionDetails = async (input, callback) => {
-    let query = "insert into production (productionDate,batchNo,phLevel,TDS,ozonelevel,qtyproduced,itemproduced) values(?,?,?,?,?,?,?)";
-    let requestBody = [input.productionDate, input.batchNo, input.phLevel, input.TDS, input.ozonelevel, input.qtyproduced, input.itemproduced]
+    let query = "insert into production (productionDate,phLevel,TDS,ozoneLevel,product20L, product1L, product500ML, product250ML,managerName,createdBy,shiftType) values(?,?,?,?,?,?,?,?,?,?,?)";
+    let productionDate = new Date()
+    let requestBody = [productionDate, input.phLevel, input.TDS, input.ozoneLevel, input.product20L, input.product1L, input.product500ML, input.product250ML, input.managerName, input.createdBy, input.shiftType]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 const addVehicleDetails = async (input, callback) => {
@@ -75,9 +76,13 @@ const createRMReceipt = async (input, callback) => {
     let requestBody = [input.receiptdate, input.receivedFromParty, input.invoiceNo, input.itemreceived, input.price, input.qtyReceived, input.tax, input.invoiceValue, input.rawmaterialId, input.invoiceDate]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
+const updateProductionDetails = async (input, callback) => {
+    let query = "update production set batchNo=?,productionDate=?,phLevel=?,TDS=?,ozoneLevel=?,product20L=?,product1L=?,product500ML=?,product250ML=?,managerName=?,shiftType=? where productionid=" + input.productionid;
+    let requestBody = [input.batchNo, input.productionDate, input.phLevel, input.TDS, input.ozoneLevel, input.product20L, input.product1L, input.product500ML, input.product250ML, input.managerName, input.shiftType]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
 module.exports = {
     getProductionDetails, getVehicleDetails, getDispatchDetails, getAllQCDetails, createQC,
     getInternalQualityControl, createInternalQC, addProductionDetails, addVehicleDetails, getNatureOfBussiness,
-    addDispatchDetails, createRM, createRMReceipt,
-    getRMDetails, getRMReceiptDetails
+    addDispatchDetails, createRM, createRMReceipt, getRMDetails, getRMReceiptDetails, updateProductionDetails
 }
