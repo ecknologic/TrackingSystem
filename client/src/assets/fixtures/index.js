@@ -64,9 +64,18 @@ export const productOptions = [
 export const getRouteOptions = (routes = []) => {
     return routes.map((item) => <Option key={item.RouteId} value={item.RouteId}>{item.RouteName}</Option>)
 }
+export const getBatchNoOptions = (batches = []) => {
+    return batches.map((item) => <Option key={item.batchNo} value={item.batchNo}>{item.batchNo}</Option>)
+}
 
 export const getDriverOptions = (drivers = []) => {
     return drivers.map((item) => <Option key={item.driverId} value={item.driverId}>{item.driverName}</Option>)
+}
+export const getDepartmentOptions = (departments = []) => {
+    return departments.map((item) => <Option key={item.departmentId} value={item.departmentId}>{item.departmentName}</Option>)
+}
+export const getVehiclesOptions = (vehicles = []) => {
+    return vehicles.map((item) => <Option key={item.vehicleId} value={item.vehicleId}>{item.vehicleNo}</Option>)
 }
 
 export const deliveryColumns = [

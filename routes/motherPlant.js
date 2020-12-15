@@ -2,7 +2,8 @@ var express = require('express');
 var router = express.Router();
 const { getProductionDetails, getVehicleDetails, getDispatchDetails, getAllQCDetails,
     createQC, getInternalQualityControl, createInternalQC, addProductionDetails, addVehicleDetails,
-    getNatureOfBussiness, addDispatchDetails, getRMDetails, createRM, createRMReceipt, getRMReceiptDetails, updateProductionDetails } = require('../dbQueries/motherplant/index.js');
+    getNatureOfBussiness, addDispatchDetails, getRMDetails, createRM, createRMReceipt, getRMReceiptDetails,
+    updateProductionDetails, getBatchNumbers, updateDispatchDetails, getDepartmentsList } = require('../dbQueries/motherplant/index.js');
 const { dbError } = require('../utils/functions.js');
 
 //Middle ware that is specific to this router
@@ -85,13 +86,31 @@ router.post('/addDispatchDetails', (req, res) => {
     let input = req.body;
     addDispatchDetails(input, (err, results) => {
         if (err) res.status(500).json(dbError(err));
-        else
+        else {
+            input.DCNO = `DC-${results.insertId}`
+            input.dispatchId = results.insertId
+            updateDispatchDetails(input, (updateErr, data) => {
+                if (updateErr) console.log(updateErr)
+            })
             res.json("Record Inserted");
+        }
     });
 })
+router.get('/getDepartmentsList', (req, res) => {
+    getDepartmentsList(req.query.departmentType, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        res.json((results));
+    });
+});
 
 router.get('/getProductionDetails', (req, res) => {
     getProductionDetails((err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        res.json(results);
+    })
+});
+router.get('/getBatchNumbers', (req, res) => {
+    getBatchNumbers((err, results) => {
         if (err) res.status(500).json(dbError(err));
         res.json(results);
     })

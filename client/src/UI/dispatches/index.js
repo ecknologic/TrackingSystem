@@ -24,7 +24,7 @@ const Dispatch = () => {
                 </div>
                 {
                     activeTab === '1' ? <Dispatches />
-                        : activeTab === '2' ? <CreateDispatch />
+                        : activeTab === '2' ? <CreateDispatch setActiveTab={setActiveTab} />
                             : null
                 }
             </div>

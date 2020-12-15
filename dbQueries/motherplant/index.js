@@ -3,14 +3,18 @@ const { executeGetQuery, executePostOrUpdateQuery } = require('../../utils/funct
 const getProductionDetails = async (callback) => {
     let query = "select * from production";
     return executeGetQuery(query, callback)
-
 }
+const getBatchNumbers = async (callback) => {
+    let query = "select batchNo from production";
+    return executeGetQuery(query, callback)
+}
+
 const getVehicleDetails = async (callback) => {
-    let query = "select * from vehicleDetails";
+    let query = "select * from VehicleDetails";
     return executeGetQuery(query, callback)
 }
 const getDispatchDetails = async (callback) => {
-    let query = "select * from dispatches";
+    let query = "SELECT DCNO,batchNo,product20L,product1L,product500ML,product250ML,driverName,dispatchTo,dispatchedDate from dispatches d INNER JOIN VehicleDetails v ON d.vehicleNo=v.vehicleId";
     return executeGetQuery(query, callback)
 }
 const getAllQCDetails = async (callback) => {
@@ -32,6 +36,10 @@ const getRMDetails = async (callback) => {
 }
 const getRMReceiptDetails = async (callback) => {
     let query = "select * from rawmaterialreceipt";
+    return executeGetQuery(query, callback)
+}
+const getDepartmentsList = async (deptType, callback) => {
+    let query = `select * from departmentmaster where departmentType="${deptType}"`
     return executeGetQuery(query, callback)
 }
 
@@ -62,8 +70,8 @@ const addVehicleDetails = async (input, callback) => {
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 const addDispatchDetails = async (input, callback) => {
-    let query = "insert into dispatches (dispatchId,dispatchedDate,DCNO,vehicleNo,driverName,dispatchTo,itemDispatched,qtyDispatched,batchNo) values(?,?,?,?,?,?,?,?,?)";
-    let requestBody = [input.dispatchId, input.dispatchedDate, input.DCNO, input.vehicleNo, input.driverName, input.dispatchTo, input.itemDispatched, input.qtyDispatched, input.batchNo]
+    let query = "insert into dispatches (vehicleNo,driverId,driverName,dispatchTo,batchNo,product20L,product1L,product500ML,product250ML) values(?,?,?,?,?,?,?,?,?)";
+    let requestBody = [input.vehicleNo, input.driverId, input.driverName, input.dispatchTo, input.batchNo, input.product20L, input.product1L, input.product500ML, input.product250ML]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 const createRM = async (input, callback) => {
@@ -81,8 +89,14 @@ const updateProductionDetails = async (input, callback) => {
     let requestBody = [input.batchNo, input.productionDate, input.phLevel, input.TDS, input.ozoneLevel, input.product20L, input.product1L, input.product500ML, input.product250ML, input.managerName, input.shiftType]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
+const updateDispatchDetails = async (input, callback) => {
+    let query = `update dispatches SET DCNO=?,vehicleNo=?,driverId=?,driverName=?,dispatchTo=?,batchNo=?,product20L=?,product1L=?,product500ML=?,product250ML=?,managerName=? where dispatchId="${input.dispatchId}"`;
+    let requestBody = [input.DCNO, input.vehicleNo, input.driverId, input.driverName, input.dispatchTo, input.batchNo, input.product20L, input.product1L, input.product500ML, input.product250ML, input.managerName]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
 module.exports = {
     getProductionDetails, getVehicleDetails, getDispatchDetails, getAllQCDetails, createQC,
     getInternalQualityControl, createInternalQC, addProductionDetails, addVehicleDetails, getNatureOfBussiness,
-    addDispatchDetails, createRM, createRMReceipt, getRMDetails, getRMReceiptDetails, updateProductionDetails
+    addDispatchDetails, createRM, createRMReceipt, getRMDetails, getRMReceiptDetails, updateProductionDetails,
+    getBatchNumbers, updateDispatchDetails, getDepartmentsList
 }
