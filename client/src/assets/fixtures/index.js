@@ -121,8 +121,8 @@ export const productionColumns = [
     },
     {
         title: 'PH',
-        dataIndex: 'ph',
-        key: 'ph',
+        dataIndex: 'phLevel',
+        key: 'phLevel',
     },
     {
         title: 'Ozone Level',
@@ -131,8 +131,8 @@ export const productionColumns = [
     },
     {
         title: 'TDS',
-        dataIndex: 'tds',
-        key: 'tds',
+        dataIndex: 'TDS',
+        key: 'TDS',
     },
     {
         title: 'Date & time',
@@ -146,8 +146,8 @@ export const productionColumns = [
     },
     {
         title: 'Manager',
-        dataIndex: 'manager',
-        key: 'manager'
+        dataIndex: 'managerName',
+        key: 'managerName'
     },
     {
         title: 'Actions',

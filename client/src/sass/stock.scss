@@ -313,12 +313,13 @@
     }
 
     .ant-table-tbody {
+        
+        .ant-dropdown-menu-item {
+            font-size: .9em;
+        }
+        
         tr > :nth-child(7) {
             text-align: center;
-
-            .ant-dropdown-menu-item {
-                font-size: .9em;
-            }
         }
     }
 
@@ -344,7 +345,6 @@
 }
 
 .stock-manager-content {
-
     .batch-form-container, .dispatch-form-container {
         width: 60%;
         padding: 1.5em 0 0 2em;
@@ -361,7 +361,6 @@
     }
 
     .app-footer-buttons-container {
-        height: auto;
-        padding: 4em 0 2em 2em;
+        padding-left: 2em;
     }
 }

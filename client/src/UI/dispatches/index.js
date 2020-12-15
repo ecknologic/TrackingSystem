@@ -12,7 +12,7 @@ const Dispatch = () => {
     return (
         <Fragment>
             <Header />
-            <div className='stock-manager-content dispatches-manager-content'>
+            <div className='stock-manager-content dispatches-content'>
                 <div className='tabs-container stock-manager-tabs'>
                     <Tabs
                         tabBarExtraContent={<ReportsDropdown />}

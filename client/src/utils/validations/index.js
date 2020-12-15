@@ -76,7 +76,7 @@ export const validateAccountValues = (data, customerType, isInView) => {
                 const error = validateNames(deliveryLocation)
                 error && (errors.deliveryLocation = error)
             }
-            productErrors = validateProducts(rest)
+            productErrors = validateProductNPrice(rest)
         }
     }
 
@@ -179,11 +179,59 @@ export const validateDeliveryValues = (data) => {
         error && (errors.deliveryLocation = error)
     }
 
+    const productErrors = validateProductNPrice(rest)
+    return { ...errors, ...productErrors }
+}
+
+export const validateBatchValues = (data) => {
+    let errors = {};
+    const text = 'Required'
+    const { phLevel, TDS, ozoneLevel, managerName, ...rest } = data
+
+    if (!phLevel) errors.phLevel = text
+    else {
+        const error = validateNumber(phLevel)
+        error && (errors.phLevel = error)
+    }
+    if (!ozoneLevel) errors.ozoneLevel = text
+    else {
+        const error = validateNumber(ozoneLevel)
+        error && (errors.ozoneLevel = error)
+    }
+    if (!TDS) errors.TDS = text
+    else {
+        const error = validateNumber(TDS)
+        error && (errors.TDS = error)
+    }
+    if (!managerName) errors.managerName = text
+    else {
+        const error = validateNames(managerName)
+        error && (errors.managerName = error)
+    }
+
     const productErrors = validateProducts(rest)
     return { ...errors, ...productErrors }
 }
 
-const validateProducts = ({ product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML }) => {
+const validateProducts = ({ product20L, product1L, product500ML, product250ML }) => {
+    let errors = {};
+
+    if ((product20L == 0 || !product20L) && (product1L == 0 || !product1L) &&
+        (product500ML == 0 || !product500ML) && (product250ML == 0 || !product250ML)) {
+        errors.products = 'Atleast 1 product is required'
+    }
+    const error1 = validateNumber(product20L)
+    const error2 = validateNumber(product1L)
+    const error3 = validateNumber(product500ML)
+    const error4 = validateNumber(product250ML)
+
+    if (error1 || error2 || error3 || error4)
+        errors.products = error1 || error2 || error3 || error4
+
+    return errors
+}
+
+const validateProductNPrice = ({ product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML }) => {
     let errors = {};
 
     if ((product20L == 0 || !product20L) && (price20L == 0 || !price20L)

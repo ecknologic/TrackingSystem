@@ -1,11 +1,13 @@
 import dayjs from 'dayjs';
 import { DatePicker } from 'antd';
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import DateSlider from './DateSlider';
 import { ScheduleIcon } from './SVG_Icons';
-import { disableFutureDates } from '../utils/Functions';
+import { disableFutureDates, resetTrackForm } from '../utils/Functions';
+import { TODAYDATE, TRACKFORM } from '../utils/constants';
+import ConfirmModal from '../components/CustomModal';
+import ConfirmMessage from '../components/ConfirmMessage';
 import '../sass/datePickerPanel.scss'
-import { TODAYDATE } from '../utils/constants';
 const format = 'YYYY-MM-DD';
 const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -16,7 +18,10 @@ const DatePickerPanel = ({ onChange }) => {
     const [selectedDay, setSelectedDay] = useState(0)
     const [selectedMonth, setSelectedMonth] = useState(0)
     const [selectedYear, setSelectedYear] = useState(0)
+    const [confirm, setConfirm] = useState(false)
     const [slides, setSlides] = useState([])
+
+    const clickRef = useRef('')
 
     useEffect(() => {
         const today = dayjs().format(format)
@@ -49,16 +54,45 @@ const DatePickerPanel = ({ onChange }) => {
 
     const handleDateSelect = (value) => {
         const date = dayjs(value).format(format)
-        generateRequiredDates(date)
-        setOpen(false)
+        const sameDay = selectedDate == date
+        const formHasChanged = sessionStorage.getItem(TRACKFORM)
+
+        if (formHasChanged && !sameDay) {
+            clickRef.current = value
+            setConfirm(true)
+        }
+        else {
+            generateRequiredDates(date)
+            setOpen(false)
+        }
     }
 
     const handleSlideSelect = (value) => {
-        setSelectedDay(value)
-        const date = `${selectedYear}-${selectedMonth}-${value}`
-        setSelectedDate(date)
-        onChange(date)
+        const sameDay = selectedDay == value
+        const formHasChanged = sessionStorage.getItem(TRACKFORM)
+        if (formHasChanged && !sameDay) {
+            clickRef.current = value
+            setConfirm(true)
+        }
+        else {
+            setSelectedDay(value)
+            const date = `${selectedYear}-${selectedMonth}-${value}`
+            setSelectedDate(date)
+            onChange(date)
+        }
     }
+
+    const handleConfirmCancel = useCallback(() => setConfirm(false), [])
+    const handleConfirmOk = useCallback(() => {
+        setConfirm(false)
+        resetTrackForm()
+        const value = clickRef.current
+
+        if (typeof value === 'number') {
+            handleSlideSelect(value)
+        }
+        else handleDateSelect(value)
+    }, [selectedDay])
 
     return (
         <Fragment>
@@ -88,6 +122,15 @@ const DatePickerPanel = ({ onChange }) => {
                     />
                 </div>
             </div>
+            <ConfirmModal
+                visible={confirm}
+                onOk={handleConfirmOk}
+                onCancel={handleConfirmCancel}
+                title='Are you sure to leave?'
+                okTxt='Yes'
+            >
+                <ConfirmMessage msg='Changes you made may not be saved.' />
+            </ConfirmModal>
         </Fragment>
     )
 }

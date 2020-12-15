@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { http } from '../../../../modules/http';
@@ -10,13 +11,13 @@ import CustomPagination from '../../../../components/CustomPagination';
 import { productionColumns } from '../../../../assets/fixtures';
 import { resetTrackForm } from '../../../../utils/Functions';
 
-const Production = ({ date }) => {
+const Production = () => {
     const warehouseId = getWarehoseId()
     const [routes, setRoutes] = useState([])
     const [drivers, setDrivers] = useState([])
-    const [loading, setLoading] = useState(false)
-    const [deliveriesClone, setDeliveriesClone] = useState([])
-    const [deliveries, setDeliveries] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [productsClone, setProductsClone] = useState([])
+    const [products, setProducts] = useState([])
     const [formData, setFormData] = useState({})
     const [pageSize, setPageSize] = useState(10)
     const [totalCount, setTotalCount] = useState(null)
@@ -30,40 +31,28 @@ const Production = ({ date }) => {
     const DCFormBtnRef = useRef()
 
     useEffect(() => {
-        // getRoutes()
-        // getDrivers()
+        getProducts()
     }, [])
 
-    useEffect(() => {
-        // getDeliveries()
-    }, [date])
-
-
-    const getDrivers = async () => {
-        const url = `/warehouse/getdriverDetails/${warehouseId}`
-        const data = await http.GET(url)
-        setDrivers(data)
-    }
-
-    const getDeliveries = async () => {
+    const getProducts = async () => {
         setLoading(true)
-        const url = `/warehouse/deliveryDetails/${date}`
+        const url = `/motherPlant/getProductionDetails`
         const data = await http.GET(url)
         setPageNumber(1)
-        setDeliveriesClone(data)
+        setProductsClone(data)
         setLoading(false)
         if (filterInfo.length) {
             generateFiltered(data, filterInfo)
         }
         else {
             setTotalCount(data.length)
-            setDeliveries(data)
+            setProducts(data)
         }
     }
 
     const generateFiltered = (original, filterInfo) => {
         const filtered = original.filter((item) => filterInfo.includes(item.RouteId))
-        setDeliveries(filtered)
+        setProducts(filtered)
         setTotalCount(filtered.length)
     }
 
@@ -94,19 +83,18 @@ const Production = ({ date }) => {
         setFormData({})
     }
 
-    const dataSource = useMemo(() => deliveries.map((delivery) => {
-        const { dcNo, address, RouteName, driverName, isDelivered } = delivery
+    const dataSource = useMemo(() => products.map((product) => {
+        const { batchNo, phLevel, TDS, ozoneLevel, managerName, productionDate,
+            shiftType = 'morning', isDelivered, ...rest } = product
         return {
-            key: dcNo,
-            dcnumber: dcNo,
-            shopAddress: address,
-            route: RouteName,
-            driverName: driverName,
-            orderDetails: renderOrderDetails(delivery),
+            key: batchNo,
+            TDS, batchNo, phLevel, ozoneLevel, managerName, shiftType,
             status: renderStatus(isDelivered),
-            action: <TableAction onSelect={({ key }) => handleMenuSelect(key, delivery)} />
+            productionDetails: renderProductionDetails(rest),
+            dateAndTime: dayjs(productionDate).format('DD/MM/YYYY HH:mm'),
+            action: <TableAction onSelect={({ key }) => handleMenuSelect(key, product)} />
         }
-    }), [deliveries])
+    }), [products])
 
     const handleConfirmModalOk = useCallback(() => {
         setConfirmModal(false);
@@ -164,10 +152,10 @@ const renderStatus = (delivered) => {
     )
 }
 
-const renderOrderDetails = ({ cans20L, boxes1L, boxes500ML, boxes250ML }) => {
+const renderProductionDetails = ({ product20L, product1L, product500ML, product250ML }) => {
     return `
-    20 lts - ${cans20L}, 1 ltr - ${boxes1L} boxes, 
-    500 ml - ${boxes500ML} boxes, 250 ml - ${boxes250ML} boxes
+    20 lts - ${product20L}, 1 ltr - ${product1L}, 
+    500 ml - ${product500ML}, 250 ml - ${product250ML}
     `
 }
 export default Production

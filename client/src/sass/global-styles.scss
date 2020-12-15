@@ -5,6 +5,7 @@ $textColor:rgba(0,0,0,0.85);
 $textColorDisabled:rgba(0,0,0,0.55);
 
 #scroll-view {
+    background-color: #FAFAFB;
     :first-child {
         scroll-behavior: smooth;
     }
@@ -310,12 +311,6 @@ $textColorDisabled:rgba(0,0,0,0.55);
     }
 }
 
-.app-label-error {
-    color: $errorColor;
-    float: right;
-    font-family: 'PoppinsItalic400';
-}
-
 // -------------- antd Input Addon styles ------------------- //
 
 .ant-input-group-addon {
@@ -480,6 +475,11 @@ $textColorDisabled:rgba(0,0,0,0.55);
 .label-mandatory::before {
     content:'*';
     color:  $errorColor;
+}
+.app-label-error {
+    color: $errorColor;
+    float: right;
+    font-family: 'PoppinsItalic400';
 }
 .app-input-addon-button {
     display: flex;
