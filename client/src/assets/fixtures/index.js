@@ -28,6 +28,11 @@ export const businessFilterOptions = [
     { value: 'Corporate', option: 'Corporate' },
     { value: 'Traders', option: 'Traders' }
 ]
+export const shiftOptions = [
+    { value: 'morning', option: 'Morning' },
+    { value: 'afternoon', option: 'Afternoon' },
+    { value: 'night', option: 'Night' }
+]
 export const invoiceOptions = [
     <Option key="1" value="complimentary">Complimentary</Option>,
     <Option key="2" value="nonComplimentary">Non Complimentary</Option>

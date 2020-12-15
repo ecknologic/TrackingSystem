@@ -81,6 +81,7 @@ $primary-color: #0062FF;
     flex-direction: column;
     justify-content: center;
     height: 6.1em;
+    background-color: #F0F2F5;
 
     .heading-container {
         display: flex;
@@ -141,6 +142,7 @@ $primary-color: #0062FF;
             color: #171725;
             font-family: 'PoppinsSemiBold600';
             padding: 1em 1em 1.4em 1em;
+            margin-right: 2em;
         }
 
         .ant-tabs-tab:hover .ant-tabs-tab-btn {

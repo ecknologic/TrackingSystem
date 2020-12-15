@@ -18,10 +18,10 @@ const Header = () => {
 
     const getWarehouseInfo = async () => {
         const url = `/warehouse/getWarehouseDetails/${warehouseId}`
-        const { data: { DepartmentName, Address } } = await http.GET(url)
+        const { data: { departmentName, address } } = await http.GET(url)
         setLoading(false)
-        setTitle(DepartmentName)
-        setAddress(Address)
+        setTitle(departmentName)
+        setAddress(address)
     }
 
     return (

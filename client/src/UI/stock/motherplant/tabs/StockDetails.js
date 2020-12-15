@@ -7,6 +7,7 @@ import FormHeader from '../../../../components/FormHeader';
 import ConfirmModal from '../../../../components/CustomModal';
 import { getUserId } from '../../../../utils/constants';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
+import { shiftOptions } from '../../../../assets/fixtures';
 import { isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../../utils/Functions';
 import { validateBatchValues, validateNames, validateNumber } from '../../../../utils/validations';
 
@@ -89,10 +90,12 @@ const StockDetails = ({ date }) => {
     return (
         <>
             <CASMPPanel data={{}} />
-            <FormHeader title='Create Production Batch' showShift />
+            <FormHeader title='Create Production Batch' />
             <BatchForm
+                track
                 data={formData}
                 errors={formErrors}
+                shiftOpitons={shiftOptions}
                 onChange={handleChange}
             />
             <div className='app-footer-buttons-container'>

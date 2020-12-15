@@ -1,17 +1,30 @@
 import React from 'react';
 import InputLabel from '../../../../components/InputLabel';
 import CustomInput from '../../../../components/CustomInput';
+import SelectInput from '../../../../components/SelectInput';
 
 const BatchForm = (props) => {
 
-    const { data, errors, disabled, onChange } = props
+    const { data, errors, disabled, onChange, shiftOptions, track } = props
 
     const { phLevel, TDS, ozoneLevel, product20L, product1L,
-        product500ML, product250ML, managerName } = data
+        product500ML, product250ML, managerName, shiftType } = data
 
     return (
         <>
             <div className='app-form-container batch-form-container'>
+                <div className='row'>
+                    <div className='input-container'>
+                        <InputLabel name='Shift Time' error={errors.shiftType} mandatory />
+                        <SelectInput
+                            value={shiftType}
+                            options={shiftOptions}
+                            track={track} disabled={disabled}
+                            error={errors.shiftType}
+                            onSelect={(value) => onChange(value, 'shiftType')}
+                        />
+                    </div>
+                </div>
                 <div className='columns'>
                     <InputLabel name='Products and Price' error={errors.products} />
                     <div className='columns-container'>

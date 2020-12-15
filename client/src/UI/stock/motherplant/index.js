@@ -32,6 +32,7 @@ const MotherplantStock = () => {
                         <TabPane tab="Stock Details" key="1" />
                         <TabPane tab="Damaged Stock" key="2" />
                         <TabPane tab="Production" key="3" />
+                        <TabPane tab="Quality Control (Internal)" key="4" />
                     </Tabs>
                 </div>
                 {
