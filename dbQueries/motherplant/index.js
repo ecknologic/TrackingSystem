@@ -1,4 +1,5 @@
 const { executeGetQuery, executePostOrUpdateQuery } = require('../../utils/functions.js');
+const GETDISPATCHQUERY = "SELECT d.DCNO,d.batchNo,d.product20L,d.product1L,d.product500ML,d.product250ML,d.driverName,d.dispatchTo,d.dispatchedDate,v.vehicleType,v.vehicleNo,m.departmentName from dispatches d INNER JOIN VehicleDetails v ON d.vehicleNo=v.vehicleId INNER JOIN departmentmaster m ON d.dispatchTo=m.departmentId ORDER BY d.dispatchedDate DESC";
 
 const getProductionDetails = async (callback) => {
     let query = "select * from production";
@@ -14,8 +15,7 @@ const getVehicleDetails = async (callback) => {
     return executeGetQuery(query, callback)
 }
 const getDispatchDetails = async (callback) => {
-    let query = "SELECT DCNO,batchNo,product20L,product1L,product500ML,product250ML,driverName,dispatchTo,dispatchedDate from dispatches d INNER JOIN VehicleDetails v ON d.vehicleNo=v.vehicleId";
-    return executeGetQuery(query, callback)
+    return executeGetQuery(GETDISPATCHQUERY, callback)
 }
 const getAllQCDetails = async (callback) => {
     let query = "select * from qualitycontrol";

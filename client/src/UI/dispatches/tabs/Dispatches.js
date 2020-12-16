@@ -11,14 +11,13 @@ import { getWarehoseId, TRACKFORM } from '../../../utils/constants';
 import CustomPagination from '../../../components/CustomPagination';
 import { dispatchColumns } from '../../../assets/fixtures';
 import { disableFutureDates } from '../../../utils/Functions';
-
+import dayjs from 'dayjs';
+const DATEFORMAT = 'DD-MM-YYYY'
+const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 const Dispatches = ({ date }) => {
     const warehouseId = getWarehoseId()
-    const [routes, setRoutes] = useState([])
     const [drivers, setDrivers] = useState([])
-    const [loading, setLoading] = useState(false)
-    const [deliveriesClone, setDeliveriesClone] = useState([])
-    const [deliveries, setDeliveries] = useState([])
+    const [loading, setLoading] = useState(true)
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [pageSize, setPageSize] = useState(10)
@@ -30,45 +29,32 @@ const Dispatches = ({ date }) => {
     const [filterInfo, setFilterInfo] = useState([])
     const [shake, setShake] = useState(false)
     const [open, setOpen] = useState(false)
+    const [dispatches, setDispatches] = useState([])
+    const [dispatchesClone, setDispatchesClone] = useState([])
 
     const customerOrderIdRef = useRef()
     const DCFormTitleRef = useRef()
     const DCFormBtnRef = useRef()
 
     useEffect(() => {
-        // getRoutes()
         // getDrivers()
+        getDispatches()
     }, [])
 
     useEffect(() => {
         // getDeliveries()
     }, [date])
-
-    const getRoutes = async () => {
-        const data = await http.GET('/warehouse/getroutes')
-        setRoutes(data)
+    const getDispatches = async () => {
+        const data = await http.GET('/motherplant/getDispatchDetails')
+        setDispatches(data)
+        setDispatchesClone(data)
+        setTotalCount(data.length)
+        setLoading(false)
     }
-
     const getDrivers = async () => {
         const url = `/warehouse/getdriverDetails/${warehouseId}`
         const data = await http.GET(url)
         setDrivers(data)
-    }
-
-    const getDeliveries = async () => {
-        setLoading(true)
-        const url = `/warehouse/deliveryDetails/${date}`
-        const data = await http.GET(url)
-        setPageNumber(1)
-        setDeliveriesClone(data)
-        setLoading(false)
-        if (filterInfo.length) {
-            generateFiltered(data, filterInfo)
-        }
-        else {
-            setTotalCount(data.length)
-            setDeliveries(data)
-        }
     }
 
     const datePickerStatus = (status) => {
@@ -77,11 +63,12 @@ const Dispatches = ({ date }) => {
 
     const handleDateSelect = (value) => {
         setOpen(false)
+        let filteredData = dispatchesClone.filter(item => dayjs(value).format(DATEFORMAT) == dayjs(item.dispatchedDate).format(DATEFORMAT))
+        setDispatches(filteredData)
     }
 
     const generateFiltered = (original, filterInfo) => {
         const filtered = original.filter((item) => filterInfo.includes(item.RouteId))
-        setDeliveries(filtered)
         setTotalCount(filtered.length)
     }
 
@@ -116,19 +103,21 @@ const Dispatches = ({ date }) => {
         setFormErrors({})
     }
 
-    const dataSource = useMemo(() => deliveries.map((delivery) => {
-        const { dcNo, address, RouteName, driverName, isDelivered } = delivery
+    const dataSource = useMemo(() => dispatches.map((dispatch) => {
+        const { DCNO: dcnumber, batchNo, dispatchedDate, departmentName, vehicleNo, vehicleType, driverName, status } = dispatch
         return {
-            key: dcNo,
-            dcnumber: dcNo,
-            shopAddress: address,
-            route: RouteName,
-            driverName: driverName,
-            orderDetails: renderOrderDetails(delivery),
-            status: renderStatus(isDelivered),
-            action: <TableAction onSelect={({ key }) => handleMenuSelect(key, delivery)} />
+            key: dcnumber,
+            dcnumber,
+            batchNo,
+            vehicleNo: vehicleNo + ' ' + vehicleType,
+            driverName,
+            dispatchTo: departmentName,
+            dateAndTime: dayjs(dispatchedDate).format(DATEANDTIMEFORMAT),
+            productionDetails: renderOrderDetails(dispatch),
+            status: renderStatus(status),
+            action: <TableAction onSelect={({ key }) => handleMenuSelect(key, dispatch)} />
         }
-    }), [deliveries])
+    }), [dispatches])
 
     const handleConfirmModalOk = useCallback(() => {
         setConfirmModal(false);
@@ -204,9 +193,9 @@ const Dispatches = ({ date }) => {
     )
 }
 
-const renderStatus = (delivered) => {
-    const color = delivered === 'Inprogress' ? '#A10101' : '#0EDD4D'
-    const text = delivered === 'Inprogress' ? 'Pending' : 'Delivered'
+const renderStatus = (status) => {
+    const color = status ? '#0EDD4D' : '#A10101'
+    const text = status ? status : 'Pending'
     return (
         <div className='status'>
             <span className='dot' style={{ background: color }}></span>
@@ -215,10 +204,10 @@ const renderStatus = (delivered) => {
     )
 }
 
-const renderOrderDetails = ({ cans20L, boxes1L, boxes500ML, boxes250ML }) => {
+const renderOrderDetails = ({ product20L, product1L, product500ML, product250ML }) => {
     return `
-    20 lts - ${cans20L}, 1 ltr - ${boxes1L} boxes, 
-    500 ml - ${boxes500ML} boxes, 250 ml - ${boxes250ML} boxes
+    20 lts - ${product20L ? product20L : 0}, 1 ltr - ${product1L ? product1L : 0} boxes, 
+    500 ml - ${product500ML ? product500ML : 0} boxes, 250 ml - ${product250ML ? product250ML : 0} boxes
     `
 }
 export default Dispatches

@@ -1,10 +1,11 @@
 var express = require('express');
+
 var router = express.Router();
 const { getProductionDetails, getVehicleDetails, getDispatchDetails, getAllQCDetails,
     createQC, getInternalQualityControl, createInternalQC, addProductionDetails, addVehicleDetails,
     getNatureOfBussiness, addDispatchDetails, getRMDetails, createRM, createRMReceipt, getRMReceiptDetails,
     updateProductionDetails, getBatchNumbers, updateDispatchDetails, getDepartmentsList } = require('../dbQueries/motherplant/index.js');
-const { dbError } = require('../utils/functions.js');
+const { dbError, getBatchNo } = require('../utils/functions.js');
 
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -96,6 +97,13 @@ router.post('/addDispatchDetails', (req, res) => {
         }
     });
 })
+router.post('/updateDispatchDetails', (req, res) => {
+    let input = req.body;
+    updateDispatchDetails(input, (updateErr, data) => {
+        if (updateErr) console.log(updateErr)
+    })
+    res.json("Record Updated");
+})
 router.get('/getDepartmentsList', (req, res) => {
     getDepartmentsList(req.query.departmentType, (err, results) => {
         if (err) res.status(500).json(dbError(err));
@@ -141,14 +149,15 @@ router.post('/addVehicleDetails', (req, res) => {
 
 router.post('/addProductionDetails', (req, res) => {
     let input = req.body;
-    addProductionDetails(input, (err, results) => {
+    addProductionDetails(input, async (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
-            input.batchNo = `BI-${results.insertId}`
+            input.batchNo = await getBatchNo(input.shiftType)
             updateProductionDetails(input, (updateErr, data) => {
             })
             res.json("Record Inserted");
         }
     });
 })
+
 module.exports = router;

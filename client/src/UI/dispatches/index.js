@@ -17,6 +17,7 @@ const Dispatch = () => {
                 <div className='tabs-container stock-manager-tabs'>
                     <Tabs
                         tabBarExtraContent={<ReportsDropdown />}
+                        activeKey={activeTab}
                         onTabClick={(key) => setActiveTab(key)}
                     >
                         <TabPane tab="Dispatches" key="1" />

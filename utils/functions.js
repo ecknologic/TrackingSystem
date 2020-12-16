@@ -1,4 +1,12 @@
 const db = require('../config/db.js');
+var dayjs = require('dayjs');
+
+const format = 'DDMM-YY'
+const getBatchNo = (shiftType) => {
+    let shift = shiftType == 'Morning' ? 'A' : shiftType == 'Evening' ? 'B' : shiftType == 'Night' ? 'C' : 'A';
+    let currentDate = dayjs().format(format)
+    return shift + '-' + currentDate
+}
 
 const executeGetQuery = (query, callback) => {
     try {
@@ -25,4 +33,4 @@ const dbError = (err) => {
     }
     return errMessage;
 }
-module.exports = { executeGetQuery, executePostOrUpdateQuery, dbError }
+module.exports = { executeGetQuery, executePostOrUpdateQuery, dbError, getBatchNo }
