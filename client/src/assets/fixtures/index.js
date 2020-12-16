@@ -28,6 +28,11 @@ export const businessFilterOptions = [
     { value: 'Corporate', option: 'Corporate' },
     { value: 'Traders', option: 'Traders' }
 ]
+export const shiftOptions = [
+    { value: 'morning', option: 'Morning' },
+    { value: 'afternoon', option: 'Afternoon' },
+    { value: 'night', option: 'Night' }
+]
 export const invoiceOptions = [
     <Option key="1" value="complimentary">Complimentary</Option>,
     <Option key="2" value="nonComplimentary">Non Complimentary</Option>
@@ -130,8 +135,8 @@ export const productionColumns = [
     },
     {
         title: 'PH',
-        dataIndex: 'ph',
-        key: 'ph',
+        dataIndex: 'phLevel',
+        key: 'phLevel',
     },
     {
         title: 'Ozone Level',
@@ -140,8 +145,8 @@ export const productionColumns = [
     },
     {
         title: 'TDS',
-        dataIndex: 'tds',
-        key: 'tds',
+        dataIndex: 'TDS',
+        key: 'TDS',
     },
     {
         title: 'Date & time',
@@ -155,8 +160,8 @@ export const productionColumns = [
     },
     {
         title: 'Manager',
-        dataIndex: 'manager',
-        key: 'manager'
+        dataIndex: 'managerName',
+        key: 'managerName'
     },
     {
         title: 'Actions',

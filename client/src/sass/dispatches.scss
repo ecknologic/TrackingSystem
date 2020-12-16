@@ -1,6 +1,4 @@
-.dispatches-manager-content {
-    padding-bottom: 5.1em;
-    
+.dispatches-content {
     .dispatch-form-container {
         .row {
             .stretch {
@@ -8,9 +6,9 @@
             }
         }
     }
-
-    .app-footer-buttons-container {
-        height: auto;
-        padding: 4em 0 0 2em;
+    .external-dispatch-form-container {
+        .columns {
+            width: 100%;
+        }
     }
 }

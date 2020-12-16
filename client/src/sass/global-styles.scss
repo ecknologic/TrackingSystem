@@ -5,6 +5,7 @@ $textColor:rgba(0,0,0,0.85);
 $textColorDisabled:rgba(0,0,0,0.55);
 
 #scroll-view {
+    background-color: #FAFAFB;
     :first-child {
         scroll-behavior: smooth;
     }
@@ -232,9 +233,9 @@ $textColorDisabled:rgba(0,0,0,0.55);
 // -------------- antd Input styles ------------------- //
 
 .ant-input, .ant-input-number {
-    height: 2.7em !important;
+    height: 2.7em;
     width: 100%;
-    border-radius: .6em !important;
+    border-radius: .6em;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -243,7 +244,7 @@ $textColorDisabled:rgba(0,0,0,0.55);
     
     &:hover, &:focus {
         border-color: $primaryColor;
-        box-shadow: none !important;
+        box-shadow: none;
     }
 }
 
@@ -308,12 +309,6 @@ $textColorDisabled:rgba(0,0,0,0.55);
         border-color: $errorColor;
         box-shadow: none !important;
     }
-}
-
-.app-label-error {
-    color: $errorColor;
-    float: right;
-    font-family: 'PoppinsItalic400';
 }
 
 // -------------- antd Input Addon styles ------------------- //
@@ -480,6 +475,11 @@ $textColorDisabled:rgba(0,0,0,0.55);
 .label-mandatory::before {
     content:'*';
     color:  $errorColor;
+}
+.app-label-error {
+    color: $errorColor;
+    float: right;
+    font-family: 'PoppinsItalic400';
 }
 .app-input-addon-button {
     display: flex;
