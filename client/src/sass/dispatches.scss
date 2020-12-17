@@ -1,0 +1,22 @@
+.dispatches-content {
+    .dispatch-form-container {
+        .row {
+            .stretch {
+                width: 100%;
+            }
+        }
+    }
+    .external-dispatch-form-container {
+        .columns {
+            width: 100%;
+        }
+    }
+}
+
+.dispatch-table {
+    .ant-table-tbody {
+        tr > :nth-child(9) {
+            text-align: center;
+        }
+    }
+}

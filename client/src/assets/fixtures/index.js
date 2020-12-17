@@ -28,6 +28,11 @@ export const businessFilterOptions = [
     { value: 'Corporate', option: 'Corporate' },
     { value: 'Traders', option: 'Traders' }
 ]
+export const shiftOptions = [
+    <Option key="1" value="Morning">Morning</Option>,
+    <Option key="2" value="Afternoon">Afternoon</Option>,
+    <Option key="2" value="Night">Night</Option>
+]
 export const invoiceOptions = [
     <Option key="1" value="complimentary">Complimentary</Option>,
     <Option key="2" value="nonComplimentary">Non Complimentary</Option>
@@ -64,9 +69,18 @@ export const productOptions = [
 export const getRouteOptions = (routes = []) => {
     return routes.map((item) => <Option key={item.RouteId} value={item.RouteId}>{item.RouteName}</Option>)
 }
+export const getBatchIdOptions = (batches = []) => {
+    return batches.map((item) => <Option key={item.batchId} value={item.batchId}>{item.batchId}</Option>)
+}
 
 export const getDriverOptions = (drivers = []) => {
     return drivers.map((item) => <Option key={item.driverId} value={item.driverId}>{item.driverName}</Option>)
+}
+export const getDepartmentOptions = (departments = []) => {
+    return departments.map((item) => <Option key={item.departmentId} value={item.departmentId}>{item.departmentName}</Option>)
+}
+export const getVehiclesOptions = (vehicles = []) => {
+    return vehicles.map((item) => <Option key={item.vehicleId} value={item.vehicleId}>{item.vehicleNo}</Option>)
 }
 
 export const deliveryColumns = [
@@ -101,6 +115,102 @@ export const deliveryColumns = [
         key: 'status',
     },
 
+    {
+        title: 'Actions',
+        dataIndex: 'action',
+        key: 'action'
+    },
+]
+
+export const productionColumns = [
+    {
+        title: 'Batch No',
+        dataIndex: 'batchId',
+        key: 'batchId',
+    },
+    {
+        title: 'Production Details',
+        dataIndex: 'productionDetails',
+        key: 'productionDetails',
+    },
+    {
+        title: 'PH',
+        dataIndex: 'phLevel',
+        key: 'phLevel',
+    },
+    {
+        title: 'Ozone Level',
+        key: 'ozoneLevel',
+        dataIndex: 'ozoneLevel',
+    },
+    {
+        title: 'TDS',
+        dataIndex: 'TDS',
+        key: 'TDS',
+    },
+    {
+        title: 'Date & time',
+        dataIndex: 'dateAndTime',
+        key: 'dateAndTime',
+    },
+    {
+        title: 'Shift Type',
+        dataIndex: 'shiftType',
+        key: 'shiftType'
+    },
+    {
+        title: 'Manager',
+        dataIndex: 'managerName',
+        key: 'managerName'
+    },
+    {
+        title: 'Actions',
+        dataIndex: 'action',
+        key: 'action'
+    },
+]
+
+export const dispatchColumns = [
+    {
+        title: 'DC Number',
+        dataIndex: 'dcnumber',
+        key: 'dcnumber',
+    },
+    {
+        title: 'Batch No',
+        dataIndex: 'batchId',
+        key: 'batchId',
+    },
+    {
+        title: 'Production Details',
+        dataIndex: 'productionDetails',
+        key: 'productionDetails',
+    },
+    {
+        title: 'Vehicle No',
+        dataIndex: 'vehicleNo',
+        key: 'vehicleNo',
+    },
+    {
+        title: 'Driver Name',
+        key: 'driverName',
+        dataIndex: 'driverName',
+    },
+    {
+        title: 'Dispatch To',
+        dataIndex: 'dispatchTo',
+        key: 'dispatchTo',
+    },
+    {
+        title: 'Date & time',
+        dataIndex: 'dateAndTime',
+        key: 'dateAndTime',
+    },
+    {
+        title: 'Status',
+        dataIndex: 'status',
+        key: 'status'
+    },
     {
         title: 'Actions',
         dataIndex: 'action',

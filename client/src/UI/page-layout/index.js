@@ -6,10 +6,9 @@ import SideMenu from './SideMenu';
 import { ChatIconGrey, NotificationIconGrey, SettingIconGrey } from '../../components/SVG_Icons';
 import '../../sass/pageLayout.scss'
 
-const { Header, Content, Sider } = Layout;
-
 const PageLayout = ({ children }) => {
     const { pathname } = useLocation()
+
     return (
         <Layout id='app-container'>
             <Header id='app-header'>
@@ -29,7 +28,7 @@ const PageLayout = ({ children }) => {
                 </Sider>
                 <Content key={pathname}>
                     <Scrollbars autoHide id='scroll-view'>
-                        {children}
+                        <div id='content'>{children}</div>
                     </Scrollbars>
                 </Content>
             </Layout>
@@ -37,4 +36,5 @@ const PageLayout = ({ children }) => {
     );
 }
 
+const { Header, Content, Sider } = Layout;
 export default PageLayout;

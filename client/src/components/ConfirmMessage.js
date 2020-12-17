@@ -1,5 +1,4 @@
 import React from 'react';
-// import '../sass/confirmMessage.scss';
 
 const ConfirmMessage = ({ msg }) => {
     return (

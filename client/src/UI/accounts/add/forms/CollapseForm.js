@@ -129,7 +129,7 @@ const CollapseForm = ({ data, routeOptions, uniqueId, addressesErrors }) => {
                     <div className='input-container app-upload-file-container app-gst-upload-container'>
                         <DraggerInput onUpload={handleUpload} disabled={gstUploadDisable} />
                         <div className='upload-preview-container'>
-                            <UploadPreviewer value={gstProof} title='GST Proof' onRemove={onRemove} className='last' error={errors.gstProof} />
+                            <UploadPreviewer value={gstProof} title='GST Proof' onUpload={handleUpload} onRemove={onRemove} className='last' error={errors.gstProof} />
                         </div>
                     </div>
                 </div>

@@ -109,6 +109,12 @@ const AccountOverview = ({ data, routeOptions }) => {
                 }
                 setIDProofs(clone)
             }
+            else if (name === 'Front' || name === 'Back') {
+                setIDProofErrors(errors => ({ ...errors, [name]: '' }))
+                const clone = { ...IDProofs }
+                clone[name] = buffer
+                setIDProofs(clone)
+            }
         })
     }
 

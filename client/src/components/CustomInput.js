@@ -23,7 +23,7 @@ const CustomInput = ({ disabled, maxLength, type, value, placeholder, uppercase,
             maxLength={maxLength}
             value={value}
             placeholder={placeholder}
-            className={`app-id-input ${error && 'app-input-error'}`}
+            className={error && 'app-input-error'}
             onBlur={({ target: { value } }) => handleBlur(value)}
             onChange={({ target: { value } }) => handleChange(value)}
             autoComplete='none'

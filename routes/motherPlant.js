@@ -1,6 +1,13 @@
+const dayjs = require('dayjs');
 var express = require('express');
+
 var router = express.Router();
-const db = require('../config/db.js');
+const { getProductionDetails, getVehicleDetails, getDispatchDetails, getAllQCDetails,
+    createQC, getInternalQualityControl, createInternalQC, addProductionDetails, addVehicleDetails,
+    getNatureOfBussiness, addDispatchDetails, getRMDetails, createRM, createRMReceipt, getRMReceiptDetails,
+    updateProductionDetails, getBatchNumbers, updateDispatchDetails, getDepartmentsList, getCurrentProductionDetailsByDate } = require('../dbQueries/motherplant/index.js');
+const { DATEFORMAT } = require('../utils/constants.js');
+const { dbError, getBatchId } = require('../utils/functions.js');
 
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -11,194 +18,177 @@ router.use(function timeLog(req, res, next) {
 
 
 router.get('/getQualityControl', (req, res) => {
-    let query = "select * from qualitycontrol";
-    let result = db.query(query, (err, results) => {
-
-        if (err) res.send(err);
-
-        res.send(JSON.stringify(results));
-
-
+    getAllQCDetails((err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        res.json(results);
     });
 });
 
 router.post('/createQC', (req, res) => {
-    let CreateQuery = "insert into qualitycontrol (reportdate,batchNo,testType,reportImage) values(?,?,?,?)";
-
-    console.log(req.body);
-
     let input = req.body;
-
-    let insertQueryValues = [input.reportdate, input.batchNo, input.testType, input.reportImage]
-    db.query(CreateQuery, insertQueryValues, (err, results) => {
-
-        console.log(insertQueryValues);
-
-        if (err) res.send(err);
+    createQC(input, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
         else
-            res.send("Record Inserted");
-
+            res.json("Record Inserted");
+    });
+})
+router.get('/getInternalQualityControl', (req, res) => {
+    getInternalQualityControl((err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        res.json(results);
+    });
+});
+router.post('/createInternalQC', (req, res) => {
+    let input = req.body;
+    createInternalQC(input, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else
+            res.json("Record Inserted");
     });
 })
 
-
 router.get('/getRMDetails', (req, res) => {
-    let query = "select * from requiredrawmaterial";
-    let result = db.query(query, (err, results) => {
-
-        if (err) res.send(err);
-
-        res.send(JSON.stringify(results));
-
-
+    getRMDetails((err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        res.json(results);
     });
 });
+
 router.post('/createRM', (req, res) => {
-    let CreateQuery = "insert into requiredrawmaterial (itemName,description,recordLevel) values(?,?,?)";
-
-    console.log(req.body);
-
     let input = req.body;
-
-    let insertQueryValues = [input.itemName, input.description, input.recordLevel]
-    db.query(CreateQuery, insertQueryValues, (err, results) => {
-
-        console.log(insertQueryValues);
-
-        if (err) res.send(err);
+    createRM(input, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
         else
-            res.send("Record Inserted");
-
+            res.json("Record Inserted");
     });
 })
 router.get('/getRMReceipt', (req, res) => {
-    let query = "select * from rawmaterialreceipt";
-    let result = db.query(query, (err, results) => {
-
-        if (err) res.send(err);
-
-        res.send(JSON.stringify(results));
-
-
+    getRMReceiptDetails((err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        res.json(results);
     });
 });
+
 router.post('/createRMReceipt', (req, res) => {
-    let CreateQuery = "insert into rawmaterialreceipt (receiptdate,receivedFromParty,invoiceNo,itemreceived,price,qtyReceived,tax,invoiceValue,rawmaterialId) values(?,?,?,?,?,?,?,?,?)";
-
-    console.log(req.body);
-
     let input = req.body;
-
-    let insertQueryValues = [input.receiptdate, input.receivedFromParty, input.invoiceNo, input.itemreceived, input.price, input.qtyReceived, input.tax, input.invoiceValue, input.rawmaterialId]
-    db.query(CreateQuery, insertQueryValues, (err, results) => {
-
-        console.log(insertQueryValues);
-
-        if (err) res.send(err);
+    createRMReceipt(input, (err, results) => {
+        if (err) res.status(500).json(err.sqlMessage);
         else
-            res.send("Record Inserted");
-
+            res.json("Record Inserted");
     });
 })
+
 router.get('/getDispatchDetails', (req, res) => {
-    let query = "select * from dispatches";
-    let result = db.query(query, (err, results) => {
-
-        if (err) res.send(err);
-
-        res.send(JSON.stringify(results));
-
-
+    getDispatchDetails((err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        res.json((results));
     });
 });
+
 router.post('/addDispatchDetails', (req, res) => {
-    let CreateQuery = "insert into dispatches (dispatchId,dispatchedDate,DCNO,vehicleNo,driverName,dispatchTo,itemDispatched,qtyDispatched) values(?,?,?,?,?,?,?,?)";
-
-    console.log(req.body);
-
     let input = req.body;
-
-    let insertQueryValues = [input.dispatchId, input.dispatchedDate, input.DCNO, input.vehicleNo, input.driverName, input.dispatchTo, input.itemDispatched, input.qtyDispatched]
-    db.query(CreateQuery, insertQueryValues, (err, results) => {
-
-        console.log(insertQueryValues);
-
-        if (err) res.send(err);
-        else
-            res.send("Record Inserted");
-
+    addDispatchDetails(input, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else {
+            input.DCNO = `DC-${results.insertId}`
+            input.dispatchId = results.insertId
+            updateDispatchDetails(input, (updateErr, data) => {
+                if (updateErr) console.log(updateErr)
+            })
+            res.json("Record Inserted");
+        }
     });
 })
-router.get('/getProductionDetails', (req, res) => {
-    let query = "select * from production";
-    let result = db.query(query, (err, results) => {
-
-        if (err) res.send(err);
-
-        res.send(JSON.stringify(results));
-
-
+router.post('/updateDispatchDetails', (req, res) => {
+    let input = req.body;
+    updateDispatchDetails(input, (updateErr, data) => {
+        if (updateErr) console.log(updateErr)
+    })
+    res.json("Record Updated");
+})
+router.get('/getDepartmentsList', (req, res) => {
+    getDepartmentsList(req.query.departmentType, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        res.json((results));
     });
+});
+
+router.get('/getProductionDetails', (req, res) => {
+    getProductionDetails((err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        res.json(results);
+    })
+});
+
+router.get('/getProductionDetailsByDate/:date', (req, res) => {
+    getCurrentProductionDetailsByDate((err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else if (results.length) {
+            let product20LCount = 0, product1LCount = 0, product500MLCount = 0, product250MLCount = 0, count = 0
+            for (let item of results) {
+                count++
+                if (dayjs(item.productionDate).format(DATEFORMAT) <= dayjs(req.params.date).format(DATEFORMAT)) {
+                    if (dayjs(item.productionDate).format(DATEFORMAT) == dayjs(item.dispatchedDate).format(DATEFORMAT)) {
+                        product20LCount = product20LCount + Math.abs(item.product20L - item.dispatched20L)
+                        product1LCount = product1LCount + Math.abs(item.product1L - item.dispatched1L)
+                        product500MLCount = product500MLCount + Math.abs(item.product500ML - item.dispatched500ML)
+                        product250MLCount = product250MLCount + Math.abs(item.product250ML - item.dispatched250ML)
+                    } else {
+                        product20LCount = product20LCount++
+                        product1LCount = product1LCount++
+                        product500MLCount = product500MLCount++
+                        product250MLCount = product250MLCount++
+                    }
+                }
+                if (count == results.length)
+                    res.json({ product20LCount, product1LCount, product500MLCount, product250MLCount });
+            }
+        }
+    })
+});
+router.get('/getBatchNumbers', (req, res) => {
+    getBatchNumbers((err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        res.json(results);
+    })
 });
 
 router.get('/getNatureOfBussiness', (req, res) => {
- 
-    let query = "SELECT SUBSTRING(COLUMN_TYPE,5) AS natureOfBussiness FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'customerorderdetails' AND COLUMN_NAME = 'isDelivered'";
-    let result = db.query(query, (err, results) => {
-  
-      if (err) res.send(err);
-      res.send(JSON.stringify(results));
-  
-  
+    getNatureOfBussiness((err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        res.json(results);
     });
-  });
+});
 
 router.get('/getVehicleDetails', (req, res) => {
-    let query = "select * from vehicleDetails";
-    let result = db.query(query, (err, results) => {
-
-        if (err) res.send(err);
-
-        res.send(JSON.stringify(results));
-
-
+    getVehicleDetails((err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        res.json(results);
     });
 });
 
 router.post('/addVehicleDetails', (req, res) => {
-    let CreateQuery = "insert into VehicleDetails (vehicleNo,vehicleType) values(?,?)";
-
-    console.log(req.body);
-
     let input = req.body;
-
-    let insertQueryValues = [input.vehicleNo, input.vehicleType]
-    db.query(CreateQuery, insertQueryValues, (err, results) => {
-
-        console.log(insertQueryValues);
-
-        if (err) res.send(err);
+    addVehicleDetails(input, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
         else
-            res.send("Record Inserted");
-
+            res.json("Record Inserted");
     });
 })
+
 router.post('/addProductionDetails', (req, res) => {
-    let CreateQuery = "insert into production (productionDate,batchNo,phLevel,TDS,ozonelevel,qtyproduced,itemproduced) values(?,?,?,?,?,?,?)";
-
-    console.log(req.body);
-
     let input = req.body;
-
-    let insertQueryValues = [input.productionDate, input.batchNo, input.phLevel, input.TDS, input.ozonelevel, input.qtyproduced, input.itemproduced]
-    db.query(CreateQuery, insertQueryValues, (err, results) => {
-
-        console.log(insertQueryValues);
-
-        if (err) res.send(err);
-        else
-            res.send("Record Inserted");
-
+    addProductionDetails(input, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else {
+            input.batchId = getBatchId(input.shiftType)
+            input.productionDate = new Date()
+            input.productionid = results.insertId
+            updateProductionDetails(input, (updateErr, data) => {
+            })
+            res.json("Record Inserted");
+        }
     });
 })
+
 module.exports = router;

@@ -1,12 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Slider from "react-slick";
 import DateSlideItem from './DateSlideItem';
 import { RightChevronIconGrey, LeftChevronIconGrey } from './SVG_Icons';
 import { getAdjustedSlideIndex } from '../utils/Functions';
+import { TODAYDATE } from '../utils/constants';
 import WeekSlider from './WeekSlider';
 import '../sass/dateSlider.scss'
+import dayjs from 'dayjs';
 
-const DateSlider = ({ data, selected, month, onSelect }) => {
+const DateSlider = ({ data, selected, selectedDate, month, onSelect }) => {
     const sliderRef = useRef()
     const [slidesToShow, setSlidesToShow] = useState(9)
     const [weekStart, setWeekStart] = useState('')
@@ -41,6 +43,17 @@ const DateSlider = ({ data, selected, month, onSelect }) => {
         responsive: getResponsive()
     };
 
+    const todaysDay = useMemo(() => dayjs(TODAYDATE).format('D'), [])
+    const disableNextDates = useMemo(() => {
+        const date1 = dayjs(selectedDate)
+        const date2 = dayjs(TODAYDATE)
+        const diff = date1.diff(date2, 'day')
+        const difference = Math.abs(diff) - todaysDay
+        if (difference >= 0) return false
+        return true
+
+    }, [selected])
+
     return (
         <>
             <WeekSlider
@@ -55,6 +68,8 @@ const DateSlider = ({ data, selected, month, onSelect }) => {
                         <DateSlideItem
                             key={item.date}
                             item={item}
+                            todaysDay={todaysDay}
+                            disable={disableNextDates}
                             selected={selected}
                             onSelect={onSelect}
                         />

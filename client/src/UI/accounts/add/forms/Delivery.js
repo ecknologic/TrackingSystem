@@ -37,6 +37,7 @@ const DeliveryForm = (props) => {
                         <div className='upload-preview-container'>
                             <UploadPreviewer value={gstProof} track={track}
                                 title='GST Proof' disabled={sameAddress || isActive} error={errors.gstProof}
+                                onUpload={(file) => onUpload(file, 'gstProof', 'delivery')}
                                 onRemove={() => onRemove('gstProof', 'delivery')} className='last' />
                         </div>
                     </div>

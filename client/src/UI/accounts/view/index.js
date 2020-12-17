@@ -191,7 +191,6 @@ const ViewAccount = () => {
             <div className='account-view-content'>
                 <div className='tabs-container'>
                     <Tabs
-                        tabBarGutter={40}
                         tabBarExtraContent={
                             <CustomButton
                                 className='extra-btn'
