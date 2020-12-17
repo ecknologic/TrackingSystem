@@ -1,10 +1,12 @@
+const dayjs = require('dayjs');
 var express = require('express');
 
 var router = express.Router();
 const { getProductionDetails, getVehicleDetails, getDispatchDetails, getAllQCDetails,
     createQC, getInternalQualityControl, createInternalQC, addProductionDetails, addVehicleDetails,
     getNatureOfBussiness, addDispatchDetails, getRMDetails, createRM, createRMReceipt, getRMReceiptDetails,
-    updateProductionDetails, getBatchNumbers, updateDispatchDetails, getDepartmentsList } = require('../dbQueries/motherplant/index.js');
+    updateProductionDetails, getBatchNumbers, updateDispatchDetails, getDepartmentsList, getCurrentProductionDetailsByDate } = require('../dbQueries/motherplant/index.js');
+const { DATEFORMAT } = require('../utils/constants.js');
 const { dbError, getBatchNo } = require('../utils/functions.js');
 
 //Middle ware that is specific to this router
@@ -115,6 +117,33 @@ router.get('/getProductionDetails', (req, res) => {
     getProductionDetails((err, results) => {
         if (err) res.status(500).json(dbError(err));
         res.json(results);
+    })
+});
+
+router.get('/getProductionDetailsByDate/:date', (req, res) => {
+    getCurrentProductionDetailsByDate((err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else if (results.length) {
+            let product20LCount = 0, product1LCount = 0, product500MLCount = 0, product250MLCount = 0, count = 0
+            for (let item of results) {
+                count++
+                if (dayjs(item.productionDate).format(DATEFORMAT) <= dayjs(req.params.date).format(DATEFORMAT)) {
+                    if (dayjs(item.productionDate).format(DATEFORMAT) == dayjs(item.dispatchedDate).format(DATEFORMAT)) {
+                        product20LCount = product20LCount + Math.abs(item.product20L - item.dispatched20L)
+                        product1LCount = product1LCount + Math.abs(item.product1L - item.dispatched1L)
+                        product500MLCount = product500MLCount + Math.abs(item.product500ML - item.dispatched500ML)
+                        product250MLCount = product250MLCount + Math.abs(item.product250ML - item.dispatched250ML)
+                    } else {
+                        product20LCount = product20LCount++
+                        product1LCount = product1LCount++
+                        product500MLCount = product500MLCount++
+                        product250MLCount = product250MLCount++
+                    }
+                }
+                if (count == results.length)
+                    res.json({ product20LCount, product1LCount, product500MLCount, product250MLCount });
+            }
+        }
     })
 });
 router.get('/getBatchNumbers', (req, res) => {

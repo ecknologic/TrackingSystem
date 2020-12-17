@@ -43,6 +43,10 @@ const getDepartmentsList = async (deptType, callback) => {
     return executeGetQuery(query, callback)
 }
 
+const getCurrentProductionDetailsByDate = async (callback) => {
+    let query = `select p.productionDate,p.batchId,p.product20L,p.product1L,p.product500ML,p.product250ML,d.batchId,d.product20L AS dispatched20L,d.product1L AS dispatched1L,d.product500ML AS dispatched500ML,d.product250ML AS dispatched250ML,d.dispatchedDate from production p INNER JOIN dispatches d ON p.batchId=d.batchId`
+    return executeGetQuery(query, callback)
+}
 
 
 
@@ -92,11 +96,17 @@ const updateProductionDetails = async (input, callback) => {
 const updateDispatchDetails = async (input, callback) => {
     let query = `update dispatches SET DCNO=?,vehicleNo=?,driverId=?,driverName=?,dispatchTo=?,batchNo=?,product20L=?,product1L=?,product500ML=?,product250ML=?,managerName=? where dispatchId="${input.dispatchId}"`;
     let requestBody = [input.DCNO, input.vehicleNo, input.driverId, input.driverName, input.dispatchTo, input.batchNo, input.product20L, input.product1L, input.product500ML, input.product250ML, input.managerName]
-    return executePostOrUpdateQuery(query, requestBody, callback)
+    executePostOrUpdateQuery(query, requestBody, (err, data) => {
+        if (err) callback(err, data)
+        else {
+            let getQuery = `${GETDISPATCHQUERY} WHERE dispatchId=${input.dispatchId}`
+            executeGetQuery(getQuery, callback)
+        }
+    })
 }
 module.exports = {
     getProductionDetails, getVehicleDetails, getDispatchDetails, getAllQCDetails, createQC,
     getInternalQualityControl, createInternalQC, addProductionDetails, addVehicleDetails, getNatureOfBussiness,
     addDispatchDetails, createRM, createRMReceipt, getRMDetails, getRMReceiptDetails, updateProductionDetails,
-    getBatchNumbers, updateDispatchDetails, getDepartmentsList
+    getBatchNumbers, updateDispatchDetails, getDepartmentsList, getCurrentProductionDetailsByDate
 }
