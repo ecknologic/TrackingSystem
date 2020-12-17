@@ -6,28 +6,21 @@ import CustomTextArea from '../../../components/CustomTextArea';
 
 const ExternalDispatchForm = (props) => {
 
-    const { data, errors, routeOptions, disabled, onBlur, driverOptions, dayOptions = [],
+    const { data, errors, batchIdOptions, departmentOptions, vehicleOptions, disabled, onBlur, driverOptions, dayOptions = [],
         onSelect, onDeselect, onChange, track } = props
 
-    const { routeId, customerName, mobileNumber, address, driverId, product20L, product1L,
-        product500ML, price20L, price1L, price500ML, } = data
+    const { batchId, dispatchTo, managerName, vehicleNo, customerName, mobileNumber, address, driverId, product20L, product1L,
+        product500ML, price20L, price1L, price500ML } = data
 
     return (
         <>
             <div className='app-form-container external-dispatch-form-container'>
                 <div className='row'>
                     <div className='input-container'>
-                        <InputLabel name='DC No' error={errors.customerName} mandatory />
-                        <CustomInput value={customerName} placeholder='Add DC Number'
-                            disabled={disabled} error={errors.customerName}
-                            onChange={(value) => onChange(value, 'customerName')}
-                        />
-                    </div>
-                    <div className='input-container'>
                         <InputLabel name='Batch No' error={errors.customerName} mandatory />
-                        <CustomInput value={customerName} placeholder='Add Batch Number'
-                            disabled={disabled} error={errors.customerName}
-                            onChange={(value) => onChange(value, 'customerName')}
+                        <SelectInput track={track} value={batchId} options={batchIdOptions}
+                            disabled={disabled} error={errors.batchId}
+                            onSelect={(value) => onChange(value, 'batchId')}
                         />
                     </div>
                 </div>
@@ -74,33 +67,33 @@ const ExternalDispatchForm = (props) => {
                 </div>
                 <div className='row'>
                     <div className='input-container'>
-                        <InputLabel name='Driver Mobile Number' error={errors.customerName} mandatory />
-                        <CustomInput value={customerName} placeholder='Add Driver Mobile Number'
-                            disabled={disabled} error={errors.customerName}
-                            onChange={(value) => onChange(value, 'customerName')}
+                        <InputLabel name='Driver Name' error={errors.driverName} mandatory />
+                        <SelectInput track={track} value={driverId} options={driverOptions}
+                            disabled={disabled} error={errors.dispatchTo}
+                            onSelect={(value) => onChange(value, 'driverId')}
                         />
                     </div>
                     <div className='input-container'>
-                        <InputLabel name='Driver Name' error={errors.mobileNumber} mandatory />
-                        <SelectInput track={track} value={mobileNumber} options={dayOptions}
+                        <InputLabel name='Mobile No' error={errors.mobileNumber} mandatory />
+                        <CustomInput value={mobileNumber} placeholder='Add Mobile Number'
                             disabled={disabled} error={errors.mobileNumber}
-                            onSelect={onSelect} onDeselect={onDeselect}
+                            onChange={(value) => onChange(value, 'mobileNumber')}
                         />
                     </div>
                 </div>
                 <div className='row'>
                     <div className='input-container'>
-                        <InputLabel name='Vehicle No' error={errors.customerName} mandatory />
-                        <CustomInput value={customerName} placeholder='Add Vehicle Number'
-                            disabled={disabled} error={errors.customerName}
-                            onChange={(value) => onChange(value, 'customerName')}
+                        <InputLabel name='Vehicle No' error={errors.vehicleNo} mandatory />
+                        <SelectInput track={track} value={vehicleNo} options={vehicleOptions}
+                            disabled={disabled} error={errors.vehicleNo}
+                            onSelect={(value) => onChange(value, 'vehicleNo')}
                         />
                     </div>
                     <div className='input-container'>
-                        <InputLabel name='Manager Name' error={errors.mobileNumber} mandatory />
-                        <SelectInput track={track} value={mobileNumber} options={dayOptions}
-                            disabled={disabled} error={errors.mobileNumber}
-                            onSelect={onSelect} onDeselect={onDeselect}
+                        <InputLabel name='Manager Name' error={errors.managerName} mandatory />
+                        <CustomInput value={managerName} placeholder='Add Manager Name'
+                            disabled={disabled} error={errors.managerName}
+                            onChange={(value) => onChange(value, 'managerName')}
                         />
                     </div>
                 </div>
@@ -111,11 +104,11 @@ const ExternalDispatchForm = (props) => {
                     </div>
                 </div>
                 <div className='row'>
-                    <div className='input-container'>
-                        <InputLabel name='Amount' error={errors.customerName} mandatory />
-                        <CustomInput value={customerName} placeholder='Add Amount'
-                            disabled={disabled} error={errors.customerName}
-                            onChange={(value) => onChange(value, 'customerName')}
+                    <div className='input-container stretch'>
+                        <InputLabel name='Dispatch To' error={errors.dispatchTo} mandatory />
+                        <SelectInput track={track} value={dispatchTo} options={departmentOptions}
+                            disabled={disabled} error={errors.dispatchTo}
+                            onSelect={(value) => onChange(value, 'dispatchTo')}
                         />
                     </div>
                 </div>

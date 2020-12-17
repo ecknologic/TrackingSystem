@@ -39,6 +39,9 @@ const StockDetails = ({ date, goToTab }) => {
     }
 
     const handleChange = (value, key) => {
+        if (key === 'shiftType') {
+            setShiftType(value)
+        }
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 

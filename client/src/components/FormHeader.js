@@ -1,4 +1,5 @@
 import React from 'react';
+import dayjs from 'dayjs'
 import '../sass/formHeader.scss'
 
 const FormHeader = ({ title }) => {
@@ -6,8 +7,8 @@ const FormHeader = ({ title }) => {
     return (
         <div className='form-header-container'>
             <span className='title'>{title}</span>
-            <span className='date'>24/09/2020</span>
-            <span className='time' >12:45 AM</span>
+            <span className='date'>{dayjs().format('DD/MM/YYYY')}</span>
+            <span className='time' >{dayjs().format('hh:mm A')}</span>
         </div>
     )
 }
