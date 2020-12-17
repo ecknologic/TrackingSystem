@@ -1,12 +1,12 @@
 const { executeGetQuery, executePostOrUpdateQuery } = require('../../utils/functions.js');
-const GETDISPATCHQUERY = "SELECT d.DCNO,d.batchNo,d.product20L,d.product1L,d.product500ML,d.product250ML,d.driverName,d.dispatchTo,d.dispatchedDate,v.vehicleType,v.vehicleNo,m.departmentName from dispatches d INNER JOIN VehicleDetails v ON d.vehicleNo=v.vehicleId INNER JOIN departmentmaster m ON d.dispatchTo=m.departmentId ORDER BY d.dispatchedDate DESC";
+const GETDISPATCHQUERY = "SELECT d.DCNO,d.batchId,d.product20L,d.product1L,d.product500ML,d.product250ML,d.driverName,d.dispatchTo,d.dispatchedDate,v.vehicleType,v.vehicleNo,m.departmentName from dispatches d INNER JOIN VehicleDetails v ON d.vehicleNo=v.vehicleId INNER JOIN departmentmaster m ON d.dispatchTo=m.departmentId ORDER BY d.dispatchedDate DESC";
 
 const getProductionDetails = async (callback) => {
     let query = "select * from production";
     return executeGetQuery(query, callback)
 }
 const getBatchNumbers = async (callback) => {
-    let query = "select batchNo from production";
+    let query = "select batchId from production";
     return executeGetQuery(query, callback)
 }
 
@@ -48,14 +48,14 @@ const getDepartmentsList = async (deptType, callback) => {
 
 //POST Request Methods
 const createQC = async (input, callback) => {
-    let query = "insert into qualitycontrol (reportdate,batchNo,testType,reportImage,description) values(?,?,?,?,?)";
+    let query = "insert into qualitycontrol (reportdate,batchId,testType,reportImage,description) values(?,?,?,?,?)";
     let reportImage = Buffer.from(input.reportImage.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-    let requestBody = [input.reportdate, input.batchNo, input.testType, reportImage, input.description]
+    let requestBody = [input.reportdate, input.batchId, input.testType, reportImage, input.description]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 const createInternalQC = async (input, callback) => {
-    let query = "insert into internalqualitycontrol (productionDate,batchNo,testType,description) values(?,?,?,?,?)";
-    let requestBody = [input.productionDate, input.batchNo, input.testType, input.description]
+    let query = "insert into internalqualitycontrol (productionDate,batchId,testType,description) values(?,?,?,?,?)";
+    let requestBody = [input.productionDate, input.batchId, input.testType, input.description]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 const addProductionDetails = async (input, callback) => {
@@ -70,8 +70,8 @@ const addVehicleDetails = async (input, callback) => {
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 const addDispatchDetails = async (input, callback) => {
-    let query = "insert into dispatches (vehicleNo,driverId,driverName,dispatchTo,batchNo,product20L,product1L,product500ML,product250ML) values(?,?,?,?,?,?,?,?,?)";
-    let requestBody = [input.vehicleNo, input.driverId, input.driverName, input.dispatchTo, input.batchNo, input.product20L, input.product1L, input.product500ML, input.product250ML]
+    let query = "insert into dispatches (vehicleNo,driverId,driverName,dispatchTo,batchId,product20L,product1L,product500ML,product250ML) values(?,?,?,?,?,?,?,?,?)";
+    let requestBody = [input.vehicleNo, input.driverId, input.driverName, input.dispatchTo, input.batchId, input.product20L, input.product1L, input.product500ML, input.product250ML]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 const createRM = async (input, callback) => {
@@ -85,13 +85,13 @@ const createRMReceipt = async (input, callback) => {
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 const updateProductionDetails = async (input, callback) => {
-    let query = "update production set batchNo=?,productionDate=?,phLevel=?,TDS=?,ozoneLevel=?,product20L=?,product1L=?,product500ML=?,product250ML=?,managerName=?,shiftType=? where productionid=" + input.productionid;
-    let requestBody = [input.batchNo, input.productionDate, input.phLevel, input.TDS, input.ozoneLevel, input.product20L, input.product1L, input.product500ML, input.product250ML, input.managerName, input.shiftType]
+    let query = `update production set batchId=?,productionDate=?,phLevel=?,TDS=?,ozoneLevel=?,product20L=?,product1L=?,product500ML=?,product250ML=?,managerName=?,shiftType=? where productionid=${input.productionid}`;
+    let requestBody = [input.batchId, input.productionDate, input.phLevel, input.TDS, input.ozoneLevel, input.product20L, input.product1L, input.product500ML, input.product250ML, input.managerName, input.shiftType]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 const updateDispatchDetails = async (input, callback) => {
-    let query = `update dispatches SET DCNO=?,vehicleNo=?,driverId=?,driverName=?,dispatchTo=?,batchNo=?,product20L=?,product1L=?,product500ML=?,product250ML=?,managerName=? where dispatchId="${input.dispatchId}"`;
-    let requestBody = [input.DCNO, input.vehicleNo, input.driverId, input.driverName, input.dispatchTo, input.batchNo, input.product20L, input.product1L, input.product500ML, input.product250ML, input.managerName]
+    let query = `update dispatches SET DCNO=?,vehicleNo=?,driverId=?,driverName=?,dispatchTo=?,batchId=?,product20L=?,product1L=?,product500ML=?,product250ML=?,managerName=? where dispatchId="${input.dispatchId}"`;
+    let requestBody = [input.DCNO, input.vehicleNo, input.driverId, input.driverName, input.dispatchTo, input.batchId, input.product20L, input.product1L, input.product500ML, input.product250ML, input.managerName]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 module.exports = {

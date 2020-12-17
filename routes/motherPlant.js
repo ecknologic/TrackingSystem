@@ -5,7 +5,7 @@ const { getProductionDetails, getVehicleDetails, getDispatchDetails, getAllQCDet
     createQC, getInternalQualityControl, createInternalQC, addProductionDetails, addVehicleDetails,
     getNatureOfBussiness, addDispatchDetails, getRMDetails, createRM, createRMReceipt, getRMReceiptDetails,
     updateProductionDetails, getBatchNumbers, updateDispatchDetails, getDepartmentsList } = require('../dbQueries/motherplant/index.js');
-const { dbError, getBatchNo } = require('../utils/functions.js');
+const { dbError, getBatchId } = require('../utils/functions.js');
 
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -149,10 +149,12 @@ router.post('/addVehicleDetails', (req, res) => {
 
 router.post('/addProductionDetails', (req, res) => {
     let input = req.body;
-    addProductionDetails(input, async (err, results) => {
+    addProductionDetails(input, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
-            input.batchNo = await getBatchNo(input.shiftType)
+            input.batchId = getBatchId(input.shiftType)
+            input.productionDate = new Date()
+            input.productionid = results.insertId
             updateProductionDetails(input, (updateErr, data) => {
             })
             res.json("Record Inserted");
