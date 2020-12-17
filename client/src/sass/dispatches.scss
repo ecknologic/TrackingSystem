@@ -12,3 +12,11 @@
         }
     }
 }
+
+.dispatch-table {
+    .ant-table-tbody {
+        tr > :nth-child(9) {
+            text-align: center;
+        }
+    }
+}

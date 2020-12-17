@@ -5,19 +5,19 @@ import SelectInput from '../../../components/SelectInput';
 
 const DispatchForm = (props) => {
 
-    const { data, errors, batchNoOptions, departmentOptions, vehicleOptions, disabled, onBlur, driverOptions, onChange, track } = props
+    const { data, errors, batchIdOptions, departmentOptions, vehicleOptions, disabled, onBlur, driverOptions, onChange, track } = props
 
-    const { batchNo, dispatchTo, managerName, vehicleNo,
+    const { batchId, dispatchTo, managerName, vehicleNo,
         driverId, driverName, mobileNumber, product20L, product1L, product500ML, product250ML } = data
     return (
         <>
             <div className='app-form-container dispatch-form-container'>
                 <div className='row'>
                     <div className='input-container'>
-                        <InputLabel name='Batch No' error={errors.batchNo} mandatory />
-                        <SelectInput track={track} value={batchNo} options={batchNoOptions}
-                            disabled={disabled} error={errors.batchNo}
-                            onSelect={(value) => onChange(value, 'batchNo')}
+                        <InputLabel name='Batch No' error={errors.batchId} mandatory />
+                        <SelectInput track={track} value={batchId} options={batchIdOptions}
+                            disabled={disabled} error={errors.batchId}
+                            onSelect={(value) => onChange(value, 'batchId')}
                         />
                     </div>
                 </div>

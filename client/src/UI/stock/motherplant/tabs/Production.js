@@ -84,11 +84,11 @@ const Production = () => {
     }
 
     const dataSource = useMemo(() => products.map((product) => {
-        const { batchNo, phLevel, TDS, ozoneLevel, managerName, productionDate,
+        const { batchId, phLevel, TDS, ozoneLevel, managerName, productionDate,
             shiftType = 'morning', isDelivered, ...rest } = product
         return {
-            key: batchNo,
-            TDS, batchNo, phLevel, ozoneLevel, managerName, shiftType,
+            key: batchId,
+            TDS, batchId, phLevel, ozoneLevel, managerName, shiftType,
             status: renderStatus(isDelivered),
             productionDetails: renderProductionDetails(rest),
             dateAndTime: dayjs(productionDate).format('DD/MM/YYYY HH:mm'),
@@ -109,7 +109,7 @@ const Production = () => {
 
     return (
         <div className='stock-delivery-container'>
-            <div className='stock-delivery-table'>
+            <div className='app-table-container prod-table'>
                 <Table
                     loading={{ spinning: loading, indicator: <Spinner /> }}
                     dataSource={dataSource.slice(sliceFrom, sliceTo)}

@@ -82,10 +82,10 @@ const CreateExternalDispatch = () => {
                 onChange={handleChange}
                 onBlur={handleBlur}
             />
-            <div className='input-container'>
+            {/* <div className='input-container'>
                 <InputLabel name='Select Payment Mode' mandatory />
                 <Radio.Group size='large' options={plainOptions} onChange={() => { }} />
-            </div>
+            </div> */}
             <div className='app-footer-buttons-container'>
                 <CustomButton
                     onClick={handleBatchCreate}

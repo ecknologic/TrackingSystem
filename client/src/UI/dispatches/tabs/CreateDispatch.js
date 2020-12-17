@@ -3,8 +3,8 @@ import CustomButton from '../../../components/CustomButton';
 import FormHeader from '../../../components/FormHeader';
 import DispatchForm from '../forms/DispatchForm';
 import ConfirmModal from '../../../components/CustomModal';
-import { resetTrackForm, showToast } from '../../../utils/Functions';
-import { getBatchNoOptions, getDepartmentOptions, getDriverOptions, getVehiclesOptions } from '../../../assets/fixtures';
+import { removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../utils/Functions';
+import { getBatchIdOptions, getDepartmentOptions, getDriverOptions, getVehiclesOptions } from '../../../assets/fixtures';
 
 import { getWarehoseId, TRACKFORM } from '../../../utils/constants';
 import ConfirmMessage from '../../../components/ConfirmMessage';
@@ -22,16 +22,22 @@ const CreateDispatch = ({ setActiveTab }) => {
     const [driversList, setDrivers] = useState([])
     const [departments, setDepartmentsList] = useState([])
     const [vehiclesList, setVehiclesList] = useState([])
-    const batchNoOptions = useMemo(() => getBatchNoOptions(batches), [batches])
+    const batchIdOptions = useMemo(() => getBatchIdOptions(batches), [batches])
     const driversListOptions = useMemo(() => getDriverOptions(driversList), [driversList])
     const departmentListOptions = useMemo(() => getDepartmentOptions(departments), [departments])
     const vehiclesListOptions = useMemo(() => getVehiclesOptions(vehiclesList), [vehiclesList])
 
     useEffect(() => {
+        resetTrackForm()
+        trackAccountFormOnce()
         getBatchsList()
         getDepartmentsList()
         getDriversList()
         getVehicleDetails()
+
+        return () => {
+            removeFormTracker()
+        }
     }, [])
     const getBatchsList = async () => {
         const data = await http.GET('/motherplant/getBatchNumbers')
@@ -116,7 +122,7 @@ const CreateDispatch = ({ setActiveTab }) => {
                 errors={formErrors}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                batchNoOptions={batchNoOptions}
+                batchIdOptions={batchIdOptions}
                 driverOptions={driversListOptions}
                 departmentOptions={departmentListOptions}
                 vehicleOptions={vehiclesListOptions}

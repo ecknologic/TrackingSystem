@@ -1,6 +1,7 @@
 .stock-header {
     display: flex;
     align-items: center;
+    min-height: 6.1em;
     height: 6.1em;
     padding: 0 3em;
     background-color: #F1F2F7;
@@ -249,8 +250,10 @@
 }
 
 .stock-delivery-container {
+    flex: 1;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     padding: 1.5em 2em 0 2em;
 
     .header {
@@ -282,64 +285,22 @@
     }
 
     .app-pagination {
-        padding-top: 2em;
+        padding-top: 3em;
     }
 }
 
-.stock-delivery-table {
-    min-height: calc(100vh - 30em);
-
-    .ant-table-thead > tr > th {
-        color: #333333;
-        font-family: 'PoppinsSemiBold600';
-        background-color: #FFF;
-        font-size: .95em;
-        text-align: center;
-        white-space: nowrap;
-    }
-
-    .ant-table-tbody > tr > td {
-        color: #333333;
-        font-family: 'PoppinsRegular400';
-        font-size: .9em;
-    }
-
-    .ant-table-tbody > tr.ant-table-row:hover > td {
-        background-color: transparent;
-    }
-
-    .ant-table-tbody > tr:nth-child(odd) {
-        background-color: #F2F3F5;
-    }
-
+.delivery-table {
     .ant-table-tbody {
-        
-        .ant-dropdown-menu-item {
-            font-size: .9em;
-        }
-        
         tr > :nth-child(7) {
             text-align: center;
         }
     }
+}
 
-    .status {
-        display: flex;
-        align-items: center;
-
-        .dot {
-            width: .6em;
-            height: .6em;
-            border-radius: 50%;
-            margin-right: .2em;
-        }
-    }
-
-    .action-dots {
-        padding: .5em 0;
-        
-        svg {
-            transform: rotate(90deg) scale(.8);
+.prod-table {
+    .ant-table-tbody {
+        tr > :nth-child(9) {
+            text-align: center;
         }
     }
 }

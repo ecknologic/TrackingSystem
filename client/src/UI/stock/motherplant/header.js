@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import Spinner from '../../../components/Spinner';
-import { MoreIconGrey } from '../../../components/SVG_Icons'
 import { getWarehoseId } from '../../../utils/constants';
 import { http } from '../../../modules/http';
 import '../../../sass/stock.scss'
@@ -17,7 +16,7 @@ const Header = () => {
     }, [])
 
     const getWarehouseInfo = async () => {
-        const url = `/warehouse/getWarehouseDetails/${warehouseId}`
+        const url = `/warehouse/getWarehouseDetails/2`
         const { data: { departmentName, address } } = await http.GET(url)
         setLoading(false)
         setTitle(departmentName)
@@ -33,9 +32,6 @@ const Header = () => {
                             <div className='titles-container'>
                                 <span className='title'>{title}</span>
                                 <span className='address'>{address}</span>
-                            </div>
-                            <div className='three-dot-menu'>
-                                <MoreIconGrey />
                             </div>
                         </div>
                     )

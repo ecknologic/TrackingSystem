@@ -251,7 +251,7 @@ const Delivery = ({ date }) => {
                     />
                 </div>
             </div>
-            <div className='stock-delivery-table'>
+            <div className='app-table-container delivery-table'>
                 <Table
                     loading={{ spinning: loading, indicator: <Spinner /> }}
                     dataSource={dataSource.slice(sliceFrom, sliceTo)}

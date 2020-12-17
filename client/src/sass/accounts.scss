@@ -111,11 +111,11 @@ $primary-color: #0062FF;
 }
 
 .account-view-content, .stock-manager-content {
+    flex: 1;
     display: flex;
     flex-direction: column;
     
     .tabs-container {
-        flex: 1;
         display: flex;
         background-color: #FAFAFB;
         justify-content: space-between;

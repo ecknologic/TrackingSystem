@@ -28,7 +28,7 @@ const PageLayout = ({ children }) => {
                 </Sider>
                 <Content key={pathname}>
                     <Scrollbars autoHide id='scroll-view'>
-                        {children}
+                        <div id='content'>{children}</div>
                     </Scrollbars>
                 </Content>
             </Layout>

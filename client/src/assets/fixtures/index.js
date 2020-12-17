@@ -29,9 +29,9 @@ export const businessFilterOptions = [
     { value: 'Traders', option: 'Traders' }
 ]
 export const shiftOptions = [
-    { value: 'morning', option: 'Morning' },
-    { value: 'afternoon', option: 'Afternoon' },
-    { value: 'night', option: 'Night' }
+    <Option key="1" value="Morning">Morning</Option>,
+    <Option key="2" value="Afternoon">Afternoon</Option>,
+    <Option key="2" value="Night">Night</Option>
 ]
 export const invoiceOptions = [
     <Option key="1" value="complimentary">Complimentary</Option>,
@@ -69,8 +69,8 @@ export const productOptions = [
 export const getRouteOptions = (routes = []) => {
     return routes.map((item) => <Option key={item.RouteId} value={item.RouteId}>{item.RouteName}</Option>)
 }
-export const getBatchNoOptions = (batches = []) => {
-    return batches.map((item) => <Option key={item.batchNo} value={item.batchNo}>{item.batchNo}</Option>)
+export const getBatchIdOptions = (batches = []) => {
+    return batches.map((item) => <Option key={item.batchId} value={item.batchId}>{item.batchId}</Option>)
 }
 
 export const getDriverOptions = (drivers = []) => {
@@ -125,8 +125,8 @@ export const deliveryColumns = [
 export const productionColumns = [
     {
         title: 'Batch No',
-        dataIndex: 'batchNo',
-        key: 'batchNo',
+        dataIndex: 'batchId',
+        key: 'batchId',
     },
     {
         title: 'Production Details',
@@ -178,8 +178,8 @@ export const dispatchColumns = [
     },
     {
         title: 'Batch No',
-        dataIndex: 'batchNo',
-        key: 'batchNo',
+        dataIndex: 'batchId',
+        key: 'batchId',
     },
     {
         title: 'Production Details',

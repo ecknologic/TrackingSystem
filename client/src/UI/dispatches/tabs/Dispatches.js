@@ -14,6 +14,7 @@ import { disableFutureDates } from '../../../utils/Functions';
 import dayjs from 'dayjs';
 const DATEFORMAT = 'DD-MM-YYYY'
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
+
 const Dispatches = ({ date }) => {
     const warehouseId = getWarehoseId()
     const [drivers, setDrivers] = useState([])
@@ -104,11 +105,11 @@ const Dispatches = ({ date }) => {
     }
 
     const dataSource = useMemo(() => dispatches.map((dispatch) => {
-        const { DCNO: dcnumber, batchNo, dispatchedDate, departmentName, vehicleNo, vehicleType, driverName, status } = dispatch
+        const { DCNO: dcnumber, batchId, dispatchedDate, departmentName, vehicleNo, vehicleType, driverName, status } = dispatch
         return {
             key: dcnumber,
             dcnumber,
-            batchNo,
+            batchId,
             vehicleNo: vehicleNo + ' ' + vehicleType,
             driverName,
             dispatchTo: departmentName,
@@ -161,7 +162,7 @@ const Dispatches = ({ date }) => {
 
                 </div>
             </div>
-            <div className='stock-delivery-table'>
+            <div className='app-table-container dispatch-table'>
                 <Table
                     loading={{ spinning: loading, indicator: <Spinner /> }}
                     dataSource={dataSource.slice(sliceFrom, sliceTo)}

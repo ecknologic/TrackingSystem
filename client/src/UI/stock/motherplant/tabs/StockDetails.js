@@ -11,9 +11,10 @@ import { shiftOptions } from '../../../../assets/fixtures';
 import { isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../../utils/Functions';
 import { validateBatchValues, validateNames, validateNumber } from '../../../../utils/validations';
 
-const StockDetails = ({ date }) => {
+const StockDetails = ({ date, goToTab }) => {
     const USERID = getUserId()
     const [formData, setFormData] = useState({})
+    const [stock, setStock] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [shiftType, setShiftType] = useState('morning')
     const [btnDisabled, setBtnDisabled] = useState(false)
@@ -24,11 +25,18 @@ const StockDetails = ({ date }) => {
         resetTrackForm()
         trackAccountFormOnce()
         resetForm()
+        getActiveStockByDate(date)
 
         return () => {
             removeFormTracker()
         }
     }, [date])
+
+    const getActiveStockByDate = async (date) => {
+        const url = `/motherPlant/getProductionDetailsByDate/${date}`
+        const data = await http.GET(url)
+        setStock(data)
+    }
 
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
@@ -37,10 +45,6 @@ const StockDetails = ({ date }) => {
         // Validations
         if (key === 'managerName') {
             const error = validateNames(value)
-            setFormErrors(errors => ({ ...errors, [key]: error }))
-        }
-        else if (key === 'phLevel' || key === 'ozoneLevel' || key === 'TDS') {
-            const error = validateNumber(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
         else if (key.includes('product')) {
@@ -68,6 +72,7 @@ const StockDetails = ({ date }) => {
             showToast('Batch', 'loading')
             await http.POST(url, body)
             resetForm()
+            goToTab('3')
             showToast('Batch', 'success')
         } catch (error) {
             setBtnDisabled(false)
@@ -89,13 +94,13 @@ const StockDetails = ({ date }) => {
 
     return (
         <>
-            <CASMPPanel data={{}} />
+            <CASMPPanel data={stock} />
             <FormHeader title='Create Production Batch' />
             <BatchForm
                 track
                 data={formData}
                 errors={formErrors}
-                shiftOpitons={shiftOptions}
+                shiftOptions={shiftOptions}
                 onChange={handleChange}
             />
             <div className='app-footer-buttons-container'>

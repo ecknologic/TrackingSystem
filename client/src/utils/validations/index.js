@@ -186,23 +186,12 @@ export const validateDeliveryValues = (data) => {
 export const validateBatchValues = (data) => {
     let errors = {};
     const text = 'Required'
-    const { phLevel, TDS, ozoneLevel, managerName, ...rest } = data
+    const { shiftType, phLevel, TDS, ozoneLevel, managerName, ...rest } = data
 
+    if (!shiftType) errors.shiftType = text
     if (!phLevel) errors.phLevel = text
-    else {
-        const error = validateNumber(phLevel)
-        error && (errors.phLevel = error)
-    }
     if (!ozoneLevel) errors.ozoneLevel = text
-    else {
-        const error = validateNumber(ozoneLevel)
-        error && (errors.ozoneLevel = error)
-    }
     if (!TDS) errors.TDS = text
-    else {
-        const error = validateNumber(TDS)
-        error && (errors.TDS = error)
-    }
     if (!managerName) errors.managerName = text
     else {
         const error = validateNames(managerName)

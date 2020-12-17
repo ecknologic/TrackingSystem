@@ -7,7 +7,7 @@ const { getProductionDetails, getVehicleDetails, getDispatchDetails, getAllQCDet
     getNatureOfBussiness, addDispatchDetails, getRMDetails, createRM, createRMReceipt, getRMReceiptDetails,
     updateProductionDetails, getBatchNumbers, updateDispatchDetails, getDepartmentsList, getCurrentProductionDetailsByDate } = require('../dbQueries/motherplant/index.js');
 const { DATEFORMAT } = require('../utils/constants.js');
-const { dbError, getBatchNo } = require('../utils/functions.js');
+const { dbError, getBatchId } = require('../utils/functions.js');
 
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {

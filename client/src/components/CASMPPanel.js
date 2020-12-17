@@ -1,7 +1,7 @@
 import React from 'react';
 
 const CASMPPanel = ({ data }) => {
-    const { total1LBoxes, total20LCans, total250MLBoxes, total500MLBoxes } = data
+    const { product20LCount, product1LCount, product500MLCount, product250MLCount } = data
 
     return (
         <div className='stock-panel casmp-panel-container'>
@@ -11,25 +11,25 @@ const CASMPPanel = ({ data }) => {
             <div className='box items'>
                 <span className='name'>20 ltrs</span>
                 <div className='numbers-container'>
-                    <span className='number'>{total1LBoxes || '--'}</span>
+                    <span className='number'>{product20LCount || '--'}</span>
                 </div>
             </div>
             <div className='box items'>
                 <span className='name'>1 Ltrs</span>
                 <div className='numbers-container'>
-                    <span className='number'>{total20LCans || '--'}</span>
+                    <span className='number'>{product1LCount || '--'}</span>
                 </div>
             </div>
             <div className='box items'>
                 <span className='name'>500 Ml</span>
                 <div className='numbers-container'>
-                    <span className='number'>{total250MLBoxes || '--'}</span>
+                    <span className='number'>{product500MLCount || '--'}</span>
                 </div>
             </div>
             <div className='box items last'>
                 <span className='name'>250 Ml</span>
                 <div className='numbers-container'>
-                    <span className='number'>{total500MLBoxes || '--'}</span>
+                    <span className='number'>{product250MLCount || '--'}</span>
                 </div>
             </div>
         </div>
