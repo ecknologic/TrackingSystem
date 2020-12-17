@@ -94,8 +94,8 @@ router.post('/addDispatchDetails', (req, res) => {
             input.dispatchId = results.insertId
             updateDispatchDetails(input, (updateErr, data) => {
                 if (updateErr) console.log(updateErr)
+                else res.json("Record Inserted");
             })
-            res.json("Record Inserted");
         }
     });
 })
@@ -134,7 +134,7 @@ router.get('/getProductionDetailsByDate/:date', (req, res) => {
                         product500MLCount = product500MLCount + Math.abs(item.product500ML - item.dispatched500ML)
                         product250MLCount = product250MLCount + Math.abs(item.product250ML - item.dispatched250ML)
                     } else {
-                        product20LCount = product20LCount++
+                        product20LCount = product20LCount++ // 100 - 50 => 50
                         product1LCount = product1LCount++
                         product500MLCount = product500MLCount++
                         product250MLCount = product250MLCount++
@@ -185,8 +185,9 @@ router.post('/addProductionDetails', (req, res) => {
             input.productionDate = new Date()
             input.productionid = results.insertId
             updateProductionDetails(input, (updateErr, data) => {
+                if (updateErr) res.status(500).json(dbError(updateErr));
+                else res.json("Record Inserted");
             })
-            res.json("Record Inserted");
         }
     });
 })

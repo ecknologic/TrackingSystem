@@ -966,6 +966,8 @@ $textColorDisabled:rgba(0,0,0,0.55);
 // -------------- Various Table styles ------------------- //
 
 .app-table-container {
+    overflow: hidden;
+    
     .ant-table-thead > tr > th {
         color: #333333;
         font-family: 'PoppinsSemiBold600';

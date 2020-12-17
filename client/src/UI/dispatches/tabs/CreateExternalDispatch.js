@@ -1,18 +1,18 @@
-import { Radio } from 'antd';
+import { message, Radio } from 'antd';
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import CustomButton from '../../../components/CustomButton';
 import FormHeader from '../../../components/FormHeader';
 import ExternalDispatchForm from '../forms/ExternalDispatchForm';
 import ConfirmModal from '../../../components/CustomModal';
-import { resetTrackForm } from '../../../utils/Functions';
-import { getWarehoseId,TRACKFORM } from '../../../utils/constants';
+import { isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../utils/Functions';
+import { getWarehoseId, TRACKFORM } from '../../../utils/constants';
 import ConfirmMessage from '../../../components/ConfirmMessage';
-import { validateMobileNumber, validateNames, validateNumber } from '../../../utils/validations';
+import { validateExternalDispatchValues, validateMobileNumber, validateNames, validateNumber } from '../../../utils/validations';
 import InputLabel from '../../../components/InputLabel';
 import { getBatchIdOptions, getDepartmentOptions, getDriverOptions, getVehiclesOptions } from '../../../assets/fixtures';
 import { http } from '../../../modules/http';
- 
-const CreateExternalDispatch = () => {
+
+const CreateExternalDispatch = ({ goToTab }) => {
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
@@ -27,37 +27,49 @@ const CreateExternalDispatch = () => {
     const departmentListOptions = useMemo(() => getDepartmentOptions(departments), [departments])
     const vehiclesListOptions = useMemo(() => getVehiclesOptions(vehiclesList), [vehiclesList])
 
-    useEffect(()=>{
+    useEffect(() => {
+        resetTrackForm()
+        trackAccountFormOnce()
         getBatchsList()
         getDepartmentsList()
         getDriversList()
         getVehicleDetails()
-    },[])
+
+        return () => {
+            removeFormTracker()
+        }
+    }, [])
+
     const getBatchsList = async () => {
-        const data = await http.GET('/motherplant/getBatchNumbers')
+        const data = await http.GET('/motherPlant/getBatchNumbers')
         setBatches(data)
     }
+
     const getDriversList = async () => {
         const data = await http.GET('/warehouse/getdriverDetails/' + getWarehoseId())
         setDrivers(data)
     }
+
     const getDepartmentsList = async () => {
-        const data = await http.GET('/motherplant/getDepartmentsList?departmentType=warehouse')
+        const data = await http.GET('/motherPlant/getDepartmentsList?departmentType=warehouse')
         setDepartmentsList(data)
     }
+
     const getVehicleDetails = async () => {
-        const data = await http.GET('/motherplant/getVehicleDetails')
+        const data = await http.GET('/motherPlant/getVehicleDetails')
         setVehiclesList(data)
     }
+
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
         // Validations
         if (key === 'driverId') {
-            let selectedDriver = driversList.filter(driver => driver.driverId == value)
-            let { driverName = null, mobileNumber = null } = selectedDriver.length ? selectedDriver[0] : []
+            let selectedDriver = driversList.find(driver => driver.driverId === Number(value))
+            let { driverName = null, mobileNumber = null } = selectedDriver || {}
             setFormData(data => ({ ...data, driverName, mobileNumber }))
+            setFormErrors(errors => ({ ...errors, mobileNumber: '' }))
         }
         if (key === 'managerName') {
             const error = validateNames(value)
@@ -78,15 +90,36 @@ const CreateExternalDispatch = () => {
     }
 
     const handleBlur = (value, key) => {
+
         // Validations
-        if (key === 'phoneNumber') {
+        if (key === 'mobileNumber') {
             const error = validateMobileNumber(value, true)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
     }
 
-    const handleBatchCreate = () => {
+    const handleBatchCreate = async () => {
+        const dispatchErrors = validateExternalDispatchValues(formData)
 
+        if (!isEmpty(dispatchErrors)) {
+            setShake(true)
+            setTimeout(() => setShake(false), 820)
+            setFormErrors(dispatchErrors)
+            return
+        }
+
+        let body = { ...formData, dispatchType: 'External', dispatchTo: 1 }
+        const url = '/motherPlant/addDispatchDetails'
+        try {
+            setBtnDisabled(true)
+            showToast('Dispatch', 'loading')
+            await http.POST(url, body)
+            message.destroy()
+            goToTab('1')
+        } catch (error) {
+            message.destroy()
+            setBtnDisabled(false)
+        }
     }
 
     const onModalClose = (hasSaved) => {
@@ -105,6 +138,7 @@ const CreateExternalDispatch = () => {
         onModalClose()
     }, [])
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
+
     return (
         <>
             <FormHeader title='Create Dispatch DC' />

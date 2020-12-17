@@ -1,6 +1,6 @@
 import {
-    isNumber, isAadharValid, isPANValid, isEmpty, isGSTValid, hasLowerCase, isAlphaOnly,
-    isIndMobileNum, isAlphaNumOnly, isEmail
+    isStrictDigit, isAadharValid, isPANValid, isEmpty, isGSTValid, isAlphaOnly,
+    isIndMobileNum, isAlphaNumOnly, isEmail, isStrictIntFloat, isIntFloat
 } from "../Functions"
 
 export const checkValidation = (stateValues) => {
@@ -202,6 +202,54 @@ export const validateBatchValues = (data) => {
     return { ...errors, ...productErrors }
 }
 
+export const validateDispatchValues = (data) => {
+    let errors = {};
+    const text = 'Required'
+    const { batchId, dispatchTo, managerName, vehicleNo, driverId, mobileNumber, ...rest } = data
+
+    if (!batchId) errors.batchId = text
+    if (!driverId) errors.driverId = text
+    if (!vehicleNo) errors.vehicleNo = text
+    if (!dispatchTo) errors.dispatchTo = text
+    if (!mobileNumber) errors.mobileNumber = text
+    else {
+        const error = validateMobileNumber(mobileNumber)
+        error && (errors.mobileNumber = error)
+    }
+    if (!managerName) errors.managerName = text
+    else {
+        const error = validateNames(managerName)
+        error && (errors.managerName = error)
+    }
+
+    const productErrors = validateProducts(rest)
+    return { ...errors, ...productErrors }
+}
+
+export const validateExternalDispatchValues = (data) => {
+    let errors = {};
+    const text = 'Required'
+    const { batchId, dispatchAddress, managerName, vehicleNo, mobileNumber, driverId, ...rest } = data
+
+    if (!batchId) errors.batchId = text
+    if (!driverId) errors.driverId = text
+    if (!vehicleNo) errors.vehicleNo = text
+    if (!dispatchAddress) errors.dispatchAddress = text
+    if (!mobileNumber) errors.mobileNumber = text
+    else {
+        const error = validateMobileNumber(mobileNumber)
+        error && (errors.mobileNumber = error)
+    }
+    if (!managerName) errors.managerName = text
+    else {
+        const error = validateNames(managerName)
+        error && (errors.managerName = error)
+    }
+
+    const productErrors = validateProductNPrice(rest)
+    return { ...errors, ...productErrors }
+}
+
 const validateProducts = ({ product20L, product1L, product500ML, product250ML }) => {
     let errors = {};
 
@@ -220,7 +268,8 @@ const validateProducts = ({ product20L, product1L, product500ML, product250ML })
     return errors
 }
 
-const validateProductNPrice = ({ product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML }) => {
+const validateProductNPrice = ({ product20L, price20L, product1L, price1L,
+    product500ML, price500ML, product250ML, price250ML }) => {
     let errors = {};
 
     if ((product20L == 0 || !product20L) && (price20L == 0 || !price20L)
@@ -314,6 +363,10 @@ export const validateAddresses = (data) => {
 
 export const validateIDNumbers = (key, value, isBlur) => {
     if (key === 'panNo') {
+        if (isBlur && value) {
+            const isValid = isAlphaNumOnly(value)
+            if (!isValid) return 'Invalid'
+        }
         if (isBlur && value && String(value).length < 10) {
             return 'Incomplete'
         }
@@ -326,10 +379,14 @@ export const validateIDNumbers = (key, value, isBlur) => {
         }
     }
     else if (key === 'adharNo') {
+        if (isBlur && value) {
+            const isValid = isStrictDigit(value)
+            if (!isValid) return 'Invalid'
+        }
         if (isBlur && value && String(value).length < 12) {
             return 'Incomplete'
         }
-        if (!isNumber(value)) {
+        if (value && !isStrictDigit(value)) {
             return 'Enter digits only'
         }
         if (String(value).length === 12) {
@@ -338,6 +395,10 @@ export const validateIDNumbers = (key, value, isBlur) => {
         }
     }
     else if (key === 'gstNo') {
+        if (isBlur && value) {
+            const isValid = isAlphaNumOnly(value)
+            if (!isValid) return 'Invalid'
+        }
         if (isBlur && value && String(value).length < 15) {
             return 'Incomplete'
         }
@@ -358,27 +419,46 @@ export const validateNames = (value) => {
     if (!isValid) return 'Enter letters only'
     return ''
 }
+
 export const validateEmailId = (value) => {
     const isValid = isEmail(value)
     if (!isValid) return 'Invalid'
     return ''
 }
+
 export const validateNumber = (value) => {
-    if (value && !isNumber(value)) {
+    if (value && !isStrictDigit(value)) {
         return 'Enter digits only'
     }
     return ''
 }
+
 export const validateMobileNumber = (value, isBlur) => {
+    if (isBlur && value) {
+        const isValid = isStrictDigit(value)
+        if (!isValid) return 'Invalid'
+    }
     if (isBlur && value && String(value).length < 10) {
         return 'Incomplete'
     }
-    if (!isNumber(value)) {
+    if (value && !isStrictDigit(value)) {
         return 'Enter digits only'
     }
     if (String(value).length === 10) {
         const isValid = isIndMobileNum(value)
         if (!isValid) return 'Invalid'
+    }
+    return ''
+}
+
+export const validateIntFloat = (value, isBlur) => {
+    if (isBlur && value) {
+        const isValid = isStrictIntFloat(value)
+        if (!isValid) return 'Invalid'
+    }
+    if (value) {
+        const isValid = isIntFloat(value)
+        if (!isValid) return 'Enter digits only'
     }
     return ''
 }

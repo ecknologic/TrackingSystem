@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { message } from 'antd';
 
-message.config({ maxCount: 1, });
+message.config({ maxCount: 1 });
 
 // Setting access token in request
 // axios.interceptors.request.use(function (config) {

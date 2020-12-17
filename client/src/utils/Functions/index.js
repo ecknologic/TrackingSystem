@@ -313,8 +313,14 @@ export const isPANValid = (PANNumber) => {
 export const isGSTValid = (gstNumber) => {
     return gstNumber.match(/(0[0-9]|1[1-9]|2[0-9]|3[0-7])[A-Z]{3}[CPHFATBLJG]{1}[A-Z]{1}\d{4}[A-Z]{1}\d{1}[A-Z0-9]{2}/g)
 }
-export const isNumber = (number) => {
-    return String(number).match(/^(\s*|\d+)$/)
+export const isStrictDigit = (number) => {
+    return String(number).match(/^(\d+)$/)
+}
+export const isStrictIntFloat = (string) => { // Allows digits with single dot and hiphen
+    return string.match(/^((-)?(0|([1-9][0-9]*))(\.[0-9]+)?)$/)
+}
+export const isIntFloat = (string) => { // Allows digits with multiple dots and hiphens at any position
+    return string.match(/^[0-9.-]+$/)
 }
 
 // multiplication table

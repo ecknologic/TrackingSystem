@@ -5,7 +5,7 @@ import SelectInput from '../../../../components/SelectInput';
 
 const BatchForm = (props) => {
 
-    const { data, errors, disabled, onChange, shiftOptions, track } = props
+    const { data, errors, disabled, onChange, shiftOptions, onBlur, track } = props
 
     const { phLevel, TDS, ozoneLevel, product20L, product1L,
         product500ML, product250ML, managerName, shiftType } = data
@@ -63,6 +63,7 @@ const BatchForm = (props) => {
                         <InputLabel name='PH' error={errors.phLevel} mandatory />
                         <CustomInput value={phLevel} placeholder='Add PH'
                             disabled={disabled} error={errors.phLevel}
+                            onBlur={(value) => onBlur(value, 'phLevel')}
                             onChange={(value) => onChange(value, 'phLevel')}
                         />
                     </div>
@@ -70,6 +71,7 @@ const BatchForm = (props) => {
                         <InputLabel name='Ozone Level (mg/Litre)' error={errors.ozoneLevel} mandatory />
                         <CustomInput value={ozoneLevel} placeholder='Add Ozone Level'
                             disabled={disabled} error={errors.ozoneLevel}
+                            onBlur={(value) => onBlur(value, 'ozoneLevel')}
                             onChange={(value) => onChange(value, 'ozoneLevel')}
                         />
                     </div>
@@ -79,6 +81,7 @@ const BatchForm = (props) => {
                         <InputLabel name='Total Dissolved Solids (TDS - mg/litre)' mandatory />
                         <CustomInput value={TDS} placeholder='Add Total Dissolved Solids'
                             disabled={disabled} error={errors.TDS}
+                            onBlur={(value) => onBlur(value, 'TDS')}
                             onChange={(value) => onChange(value, 'TDS')}
                         />
                         <InputLabel error={errors.TDS} />

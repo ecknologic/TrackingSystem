@@ -9,7 +9,7 @@ import { getUserId } from '../../../../utils/constants';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import { shiftOptions } from '../../../../assets/fixtures';
 import { isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../../utils/Functions';
-import { validateBatchValues, validateNames, validateNumber } from '../../../../utils/validations';
+import { validateBatchValues, validateIntFloat, validateNames, validateNumber } from '../../../../utils/validations';
 
 const StockDetails = ({ date, goToTab }) => {
     const USERID = getUserId()
@@ -50,9 +50,21 @@ const StockDetails = ({ date, goToTab }) => {
             const error = validateNames(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
+        else if (key === 'phLevel' || key === 'ozoneLevel' || key === 'TDS') {
+            const error = validateIntFloat(value)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
         else if (key.includes('product')) {
             const error = validateNumber(value)
             setFormErrors(errors => ({ ...errors, products: error }))
+        }
+    }
+
+    const handleBlur = (value, key) => {
+        // Validations
+        if (key === 'phLevel' || key === 'ozoneLevel' || key === 'TDS') {
+            const error = validateIntFloat(value, true)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
         }
     }
 
@@ -105,6 +117,7 @@ const StockDetails = ({ date, goToTab }) => {
                 errors={formErrors}
                 shiftOptions={shiftOptions}
                 onChange={handleChange}
+                onBlur={handleBlur}
             />
             <div className='app-footer-buttons-container'>
                 <CustomButton

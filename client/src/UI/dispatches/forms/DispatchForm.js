@@ -5,10 +5,11 @@ import SelectInput from '../../../components/SelectInput';
 
 const DispatchForm = (props) => {
 
-    const { data, errors, batchIdOptions, departmentOptions, vehicleOptions, disabled, onBlur, driverOptions, onChange, track } = props
+    const { data, errors, batchIdOptions, departmentOptions, vehicleOptions, disabled, driverOptions,
+        onChange, onBlur, track } = props
 
-    const { batchId, dispatchTo, managerName, vehicleNo,
-        driverId, driverName, mobileNumber, product20L, product1L, product500ML, product250ML } = data
+    const { batchId, dispatchTo, managerName, vehicleNo, driverId, mobileNumber,
+        product20L, product1L, product500ML, product250ML } = data
     return (
         <>
             <div className='app-form-container dispatch-form-container'>
@@ -56,16 +57,17 @@ const DispatchForm = (props) => {
                 </div>
                 <div className='row'>
                     <div className='input-container'>
-                        <InputLabel name='Driver Name' error={errors.driverName} mandatory />
+                        <InputLabel name='Driver Name' error={errors.driverId} mandatory />
                         <SelectInput track={track} value={driverId} options={driverOptions}
-                            disabled={disabled} error={errors.dispatchTo}
+                            disabled={disabled} error={errors.driverId}
                             onSelect={(value) => onChange(value, 'driverId')}
                         />
                     </div>
                     <div className='input-container'>
                         <InputLabel name='Mobile No' error={errors.mobileNumber} mandatory />
                         <CustomInput value={mobileNumber} placeholder='Add Mobile Number'
-                            disabled={disabled} error={errors.mobileNumber}
+                            maxLength={10} disabled={disabled} error={errors.mobileNumber}
+                            onBlur={(value) => onBlur(value, 'mobileNumber')}
                             onChange={(value) => onChange(value, 'mobileNumber')}
                         />
                     </div>
@@ -81,7 +83,7 @@ const DispatchForm = (props) => {
                     <div className='input-container'>
                         <InputLabel name='Manager Name' error={errors.managerName} mandatory />
                         <CustomInput value={managerName} placeholder='Add Manager Name'
-                            disabled={disabled} error={errors.managerName}
+                            maxLength={20} disabled={disabled} error={errors.managerName}
                             onChange={(value) => onChange(value, 'managerName')}
                         />
                     </div>

@@ -1,5 +1,5 @@
 import { Tabs } from 'antd';
-import React, { Fragment, useState, useRef, useCallback } from 'react';
+import React, { Fragment, useState, useRef, useCallback, useEffect } from 'react';
 import Header from './header';
 import Dispatches from './tabs/Dispatches';
 import CreateDispatch from './tabs/CreateDispatch';
@@ -16,6 +16,10 @@ const Dispatch = () => {
     const [confirm, setConfirm] = useState(false)
     const clickRef = useRef('')
 
+    useEffect(() => {
+        resetTrackForm()
+    }, [])
+
     const handleTabClick = (key) => {
         const formHasChanged = sessionStorage.getItem(TRACKFORM)
         if (formHasChanged) {
@@ -23,6 +27,10 @@ const Dispatch = () => {
             setConfirm(true)
         }
         else setActiveTab(key)
+    }
+
+    const handleGoToTab = (key) => {
+        setActiveTab(key)
     }
 
     const handleConfirmCancel = useCallback(() => setConfirm(false), [])
@@ -50,8 +58,8 @@ const Dispatch = () => {
                 </div>
                 {
                     activeTab === '1' ? <Dispatches />
-                        : activeTab === '2' ? <CreateDispatch setActiveTab={(tabKey) => setActiveTab(tabKey)} />
-                            : activeTab === '3' ? <CreateExternalDispatch />
+                        : activeTab === '2' ? <CreateDispatch goToTab={handleGoToTab} />
+                            : activeTab === '3' ? <CreateExternalDispatch goToTab={handleGoToTab} />
                                 : null
                 }
             </div>

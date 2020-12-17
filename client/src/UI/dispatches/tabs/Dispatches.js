@@ -46,7 +46,7 @@ const Dispatches = ({ date }) => {
         // getDeliveries()
     }, [date])
     const getDispatches = async () => {
-        const data = await http.GET('/motherplant/getDispatchDetails')
+        const data = await http.GET('/motherPlant/getDispatchDetails')
         setDispatches(data)
         setDispatchesClone(data)
         setTotalCount(data.length)
@@ -105,14 +105,15 @@ const Dispatches = ({ date }) => {
     }
 
     const dataSource = useMemo(() => dispatches.map((dispatch) => {
-        const { DCNO: dcnumber, batchId, dispatchedDate, departmentName, vehicleNo, vehicleType, driverName, status } = dispatch
+        const { DCNO: dcnumber, batchId, dispatchedDate, departmentName, dispatchType, vehicleNo,
+            dispatchAddress, vehicleType, driverName, status } = dispatch
         return {
             key: dcnumber,
             dcnumber,
             batchId,
             vehicleNo: vehicleNo + ' ' + vehicleType,
             driverName,
-            dispatchTo: departmentName,
+            dispatchTo: dispatchType === 'Internal' ? departmentName : dispatchAddress,
             dateAndTime: dayjs(dispatchedDate).format(DATEANDTIMEFORMAT),
             productionDetails: renderOrderDetails(dispatch),
             status: renderStatus(status),

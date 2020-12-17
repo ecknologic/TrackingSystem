@@ -6,10 +6,9 @@ import CustomTextArea from '../../../components/CustomTextArea';
 
 const ExternalDispatchForm = (props) => {
 
-    const { data, errors, batchIdOptions, departmentOptions, vehicleOptions, disabled, onBlur, driverOptions, dayOptions = [],
-        onSelect, onDeselect, onChange, track } = props
+    const { data, errors, batchIdOptions, vehicleOptions, disabled, driverOptions, onChange, onBlur, track } = props
 
-    const { batchId, dispatchTo, managerName, vehicleNo, customerName, mobileNumber, address, driverId, product20L, product1L,
+    const { batchId, dipatchAddress, managerName, vehicleNo, mobileNumber, driverId, product20L, product1L,
         product500ML, price20L, price1L, price500ML } = data
 
     return (
@@ -67,16 +66,17 @@ const ExternalDispatchForm = (props) => {
                 </div>
                 <div className='row'>
                     <div className='input-container'>
-                        <InputLabel name='Driver Name' error={errors.driverName} mandatory />
+                        <InputLabel name='Driver Name' error={errors.driverId} mandatory />
                         <SelectInput track={track} value={driverId} options={driverOptions}
-                            disabled={disabled} error={errors.dispatchTo}
+                            disabled={disabled} error={errors.driverId}
                             onSelect={(value) => onChange(value, 'driverId')}
                         />
                     </div>
                     <div className='input-container'>
                         <InputLabel name='Mobile No' error={errors.mobileNumber} mandatory />
-                        <CustomInput value={mobileNumber} placeholder='Add Mobile Number'
+                        <CustomInput maxLength={10} value={mobileNumber} placeholder='Add Mobile Number'
                             disabled={disabled} error={errors.mobileNumber}
+                            onBlur={(value) => onBlur(value, 'mobileNumber')}
                             onChange={(value) => onChange(value, 'mobileNumber')}
                         />
                     </div>
@@ -92,23 +92,16 @@ const ExternalDispatchForm = (props) => {
                     <div className='input-container'>
                         <InputLabel name='Manager Name' error={errors.managerName} mandatory />
                         <CustomInput value={managerName} placeholder='Add Manager Name'
-                            disabled={disabled} error={errors.managerName}
+                            maxLength={20} disabled={disabled} error={errors.managerName}
                             onChange={(value) => onChange(value, 'managerName')}
                         />
                     </div>
                 </div>
                 <div className='row'>
                     <div className='input-container stretch'>
-                        <InputLabel name='Dispatch To' error={errors.mobileNumber} mandatory />
-                        <CustomTextArea placeholder='Add Address' maxRows={4} />
-                    </div>
-                </div>
-                <div className='row'>
-                    <div className='input-container stretch'>
-                        <InputLabel name='Dispatch To' error={errors.dispatchTo} mandatory />
-                        <SelectInput track={track} value={dispatchTo} options={departmentOptions}
-                            disabled={disabled} error={errors.dispatchTo}
-                            onSelect={(value) => onChange(value, 'dispatchTo')}
+                        <InputLabel name='Dispatch To' error={errors.dispatchAddress} mandatory />
+                        <CustomTextArea maxLength={100} error={errors.dispatchAddress} placeholder='Add Address' value={dipatchAddress}
+                            maxRows={4} onChange={(value) => onChange(value, 'dispatchAddress')}
                         />
                     </div>
                 </div>

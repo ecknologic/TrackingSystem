@@ -30,8 +30,8 @@ export const businessFilterOptions = [
 ]
 export const shiftOptions = [
     <Option key="1" value="Morning">Morning</Option>,
-    <Option key="2" value="Afternoon">Afternoon</Option>,
-    <Option key="2" value="Night">Night</Option>
+    <Option key="2" value="Evening">Evening</Option>,
+    <Option key="3" value="Night">Night</Option>
 ]
 export const invoiceOptions = [
     <Option key="1" value="complimentary">Complimentary</Option>,

@@ -3,16 +3,16 @@ import CustomButton from '../../../components/CustomButton';
 import FormHeader from '../../../components/FormHeader';
 import DispatchForm from '../forms/DispatchForm';
 import ConfirmModal from '../../../components/CustomModal';
-import { removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../utils/Functions';
+import { isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../utils/Functions';
 import { getBatchIdOptions, getDepartmentOptions, getDriverOptions, getVehiclesOptions } from '../../../assets/fixtures';
 
 import { getWarehoseId, TRACKFORM } from '../../../utils/constants';
 import ConfirmMessage from '../../../components/ConfirmMessage';
-import { validateMobileNumber, validateNames, validateNumber, validateVehicleNo } from '../../../utils/validations';
+import { validateDispatchValues, validateMobileNumber, validateNames, validateNumber, validateVehicleNo } from '../../../utils/validations';
 import { http } from '../../../modules/http';
 import { message } from 'antd';
 
-const CreateDispatch = ({ setActiveTab }) => {
+const CreateDispatch = ({ goToTab }) => {
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
@@ -39,22 +39,27 @@ const CreateDispatch = ({ setActiveTab }) => {
             removeFormTracker()
         }
     }, [])
+
     const getBatchsList = async () => {
         const data = await http.GET('/motherplant/getBatchNumbers')
         setBatches(data)
     }
+
     const getDriversList = async () => {
         const data = await http.GET('/warehouse/getdriverDetails/' + getWarehoseId())
         setDrivers(data)
     }
+
     const getDepartmentsList = async () => {
         const data = await http.GET('/motherplant/getDepartmentsList?departmentType=warehouse')
         setDepartmentsList(data)
     }
+
     const getVehicleDetails = async () => {
         const data = await http.GET('/motherplant/getVehicleDetails')
         setVehiclesList(data)
     }
+
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
@@ -62,8 +67,12 @@ const CreateDispatch = ({ setActiveTab }) => {
         // Validations
         if (key === 'driverId') {
             let selectedDriver = driversList.filter(driver => driver.driverId == value)
-            let { driverName = null, mobileNumber = null } = selectedDriver.length ? selectedDriver[0] : []
+            let { driverName = null, mobileNumber = null } = selectedDriver.length ? selectedDriver[0] : {}
             setFormData(data => ({ ...data, driverName, mobileNumber }))
+        }
+        if (key === 'managerName') {
+            const error = validateNames(value)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
         }
         if (key === 'managerName') {
             const error = validateNames(value)
@@ -77,26 +86,37 @@ const CreateDispatch = ({ setActiveTab }) => {
 
     const handleBlur = (value, key) => {
         // Validations
-        if (key === 'phoneNumber') {
+        if (key === 'mobileNumber') {
             const error = validateMobileNumber(value, true)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
     }
 
     const handleDispatchCreate = async () => {
-        let body = { ...formData }
+        const dispatchErrors = validateDispatchValues(formData)
+
+        if (!isEmpty(dispatchErrors)) {
+            setShake(true)
+            setTimeout(() => setShake(false), 820)
+            setFormErrors(dispatchErrors)
+            return
+        }
+
+        let body = { ...formData, dispatchType: 'Internal' }
         const url = '/motherplant/addDispatchDetails'
+
         try {
             setBtnDisabled(true)
             showToast('Dispatch', 'loading')
             await http.POST(url, body)
             message.destroy()
-            setActiveTab('1')
+            goToTab('1')
         } catch (error) {
             message.destroy()
             setBtnDisabled(false)
         }
     }
+
     const onModalClose = (hasSaved) => {
         const formHasChanged = sessionStorage.getItem(TRACKFORM)
         if (formHasChanged && !hasSaved) {
@@ -113,6 +133,7 @@ const CreateDispatch = ({ setActiveTab }) => {
         onModalClose()
     }, [])
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
+
     return (
         <>
             <FormHeader title='Create Dispatch DC' />

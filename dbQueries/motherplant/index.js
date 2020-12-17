@@ -1,5 +1,5 @@
 const { executeGetQuery, executePostOrUpdateQuery } = require('../../utils/functions.js');
-const GETDISPATCHQUERY = "SELECT d.DCNO,d.batchId,d.product20L,d.product1L,d.product500ML,d.product250ML,d.driverName,d.dispatchTo,d.dispatchedDate,v.vehicleType,v.vehicleNo,m.departmentName from dispatches d INNER JOIN VehicleDetails v ON d.vehicleNo=v.vehicleId INNER JOIN departmentmaster m ON d.dispatchTo=m.departmentId ORDER BY d.dispatchedDate DESC";
+const GETDISPATCHQUERY = "SELECT d.dispatchType,d.dispatchAddress,d.DCNO,d.batchId,d.product20L,d.product1L,d.product500ML,d.product250ML,d.driverName,d.dispatchTo,d.dispatchedDate,v.vehicleType,v.vehicleNo,m.departmentName from dispatches d INNER JOIN VehicleDetails v ON d.vehicleNo=v.vehicleId INNER JOIN departmentmaster m ON d.dispatchTo=m.departmentId ORDER BY d.dispatchedDate DESC";
 
 const getProductionDetails = async (callback) => {
     let query = "select * from production ORDER BY productionDate DESC";
@@ -74,8 +74,8 @@ const addVehicleDetails = async (input, callback) => {
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 const addDispatchDetails = async (input, callback) => {
-    let query = "insert into dispatches (vehicleNo,driverId,driverName,dispatchTo,batchId,product20L,product1L,product500ML,product250ML) values(?,?,?,?,?,?,?,?,?)";
-    let requestBody = [input.vehicleNo, input.driverId, input.driverName, input.dispatchTo, input.batchId, input.product20L, input.product1L, input.product500ML, input.product250ML]
+    let query = "insert into dispatches (vehicleNo,driverId,driverName,dispatchTo,batchId,product20L,product1L,product500ML,product250ML,dispatchAddress, dispatchType) values(?,?,?,?,?,?,?,?,?,?,?)";
+    let requestBody = [input.vehicleNo, input.driverId, input.driverName, input.dispatchTo, input.batchId, input.product20L, input.product1L, input.product500ML, input.product250ML, input.dispatchAddress, input.dispatchType]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 const createRM = async (input, callback) => {
@@ -94,12 +94,12 @@ const updateProductionDetails = async (input, callback) => {
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 const updateDispatchDetails = async (input, callback) => {
-    let query = `update dispatches SET DCNO=?,vehicleNo=?,driverId=?,driverName=?,dispatchTo=?,batchId=?,product20L=?,product1L=?,product500ML=?,product250ML=?,managerName=? where dispatchId="${input.dispatchId}"`;
-    let requestBody = [input.DCNO, input.vehicleNo, input.driverId, input.driverName, input.dispatchTo, input.batchId, input.product20L, input.product1L, input.product500ML, input.product250ML, input.managerName]
+    let query = `update dispatches SET DCNO=?,vehicleNo=?,driverId=?,driverName=?,dispatchTo=?,batchId=?,product20L=?,product1L=?,product500ML=?,product250ML=?,managerName=?,dispatchAddress=? where dispatchId="${input.dispatchId}"`;
+    let requestBody = [input.DCNO, input.vehicleNo, input.driverId, input.driverName, input.dispatchTo, input.batchId, input.product20L, input.product1L, input.product500ML, input.product250ML, input.managerName, input.dispatchAddress]
     executePostOrUpdateQuery(query, requestBody, (err, data) => {
         if (err) callback(err, data)
         else {
-            let getQuery = `${GETDISPATCHQUERY} WHERE dispatchId=${input.dispatchId}`
+            let getQuery = `SELECT d.dispatchAddress,d.dispatchType,d.DCNO,d.batchId,d.product20L,d.product1L,d.product500ML,d.product250ML,d.driverName,d.dispatchTo,d.dispatchedDate,v.vehicleType,v.vehicleNo,m.departmentName from dispatches d INNER JOIN VehicleDetails v ON d.vehicleNo=v.vehicleId INNER JOIN departmentmaster m ON d.dispatchTo=m.departmentId WHERE dispatchId=${input.dispatchId}`
             executeGetQuery(getQuery, callback)
         }
     })
