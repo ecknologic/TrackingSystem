@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
-const db = require('../config/db.js')
+const db = require('../config/db.js');
+const { getCurrentDispatchDetailsByDate } = require('../dbQueries/motherplant/queries.js');
+const { dbError } = require('../utils/functions.js');
 
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -28,11 +30,9 @@ router.get('/getdriverDetails/:warehouseId', (req, res) => {
 });
 
 router.get('/getNewStockDetails/:id', (req, res) => {
-  let warehouseId = req.params.id;
-  let query = "SELECT n.20LCans AS twentyLCans,n.1LBoxes AS OneLBoxes,n.500MLBoxes AS fiveHLBoxes,n.isConfirmed,n.id,n.MPDCNo,n.deliveryDate,n.returnStockId,d.*,r.* FROM newstockdetails n INNER JOIN departmentmaster d ON d.departmentId=n.warehouseid INNER JOIN returnstockdetails r ON r.id=n.returnstockid  WHERE warehouseId=" + warehouseId;
-  db.query(query, (err, results) => {
-    if (err) res.status(500).json(err.sqlMessage);
-    res.send(JSON.stringify(results));
+  getCurrentDispatchDetailsByDate(new Date(), (err, results) => {
+    if (err) res.json(dbError(err));
+    res.json(results);
   });
 });
 

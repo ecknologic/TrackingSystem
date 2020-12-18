@@ -1,99 +1,102 @@
 const { executeGetQuery, executePostOrUpdateQuery } = require('../../utils/functions.js');
 const GETDISPATCHQUERY = "SELECT d.dispatchType,d.dispatchAddress,d.DCNO,d.batchId,d.product20L,d.product1L,d.product500ML,d.product250ML,d.driverName,d.dispatchTo,d.dispatchedDate,v.vehicleType,v.vehicleNo,m.departmentName from dispatches d INNER JOIN VehicleDetails v ON d.vehicleNo=v.vehicleId INNER JOIN departmentmaster m ON d.dispatchTo=m.departmentId ORDER BY d.dispatchedDate DESC";
-
-const getProductionDetails = async (callback) => {
+var motherPlantDbQueries = {}
+motherPlantDbQueries.getProductionDetails = async (callback) => {
     let query = "select * from production ORDER BY productionDate DESC";
     return executeGetQuery(query, callback)
 }
-const getBatchNumbers = async (callback) => {
+motherPlantDbQueries.getBatchNumbers = async (callback) => {
     let query = "select batchId from production";
     return executeGetQuery(query, callback)
 }
 
-const getVehicleDetails = async (callback) => {
+motherPlantDbQueries.getVehicleDetails = async (callback) => {
     let query = "select * from VehicleDetails";
     return executeGetQuery(query, callback)
 }
-const getDispatchDetails = async (callback) => {
+motherPlantDbQueries.getDispatchDetails = async (callback) => {
     return executeGetQuery(GETDISPATCHQUERY, callback)
 }
-const getAllQCDetails = async (callback) => {
+motherPlantDbQueries.getAllQCDetails = async (callback) => {
     let query = "select * from qualitycontrol";
     return executeGetQuery(query, callback)
 }
 
-const getInternalQualityControl = async (callback) => {
+motherPlantDbQueries.getInternalQualityControl = async (callback) => {
     let query = "select * from internalqualitycontrol";
     return executeGetQuery(query, callback)
 }
-const getNatureOfBussiness = async (callback) => {
+motherPlantDbQueries.getNatureOfBussiness = async (callback) => {
     let query = "SELECT SUBSTRING(COLUMN_TYPE,5) AS natureOfBussiness FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'customerorderdetails' AND COLUMN_NAME = 'isDelivered'";
     return executeGetQuery(query, callback)
 }
-const getRMDetails = async (callback) => {
+motherPlantDbQueries.getRMDetails = async (callback) => {
     let query = "select * from requiredrawmaterial";
     return executeGetQuery(query, callback)
 }
-const getRMReceiptDetails = async (callback) => {
+motherPlantDbQueries.getRMReceiptDetails = async (callback) => {
     let query = "select * from rawmaterialreceipt";
     return executeGetQuery(query, callback)
 }
-const getDepartmentsList = async (deptType, callback) => {
+motherPlantDbQueries.getDepartmentsList = async (deptType, callback) => {
     let query = `select * from departmentmaster where departmentType="${deptType}"`
     return executeGetQuery(query, callback)
 }
 
-const getCurrentProductionDetailsByDate = async (callback) => {
-    let query = `select p.productionDate,p.batchId,p.product20L,p.product1L,p.product500ML,p.product250ML,d.batchId,d.product20L AS dispatched20L,d.product1L AS dispatched1L,d.product500ML AS dispatched500ML,d.product250ML AS dispatched250ML,d.dispatchedDate from production p INNER JOIN dispatches d ON p.batchId=d.batchId`
+motherPlantDbQueries.getCurrentProductionDetailsByDate = async (inputDate, callback) => {
+    let query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product250ML) total250MLBoxes FROM production p WHERE  DATE(`productionDate`)<='" + inputDate + "'";
+    return executeGetQuery(query, callback)
+}
+motherPlantDbQueries.getCurrentDispatchDetailsByDate = async (inputDate, callback) => {
+    let query = "SELECT SUM(d.product20L) AS total20LCans,SUM(d.product1L) AS total1LBoxes,SUM(d.product500ML) total500MLBoxes,SUM(d.product250ML) total250MLBoxes FROM dispatches d WHERE  DATE(`dispatchedDate`)<='" + inputDate + "'";
     return executeGetQuery(query, callback)
 }
 
 
-
 //POST Request Methods
-const createQC = async (input, callback) => {
+motherPlantDbQueries.createQC = async (input, callback) => {
     let query = "insert into qualitycontrol (reportdate,batchId,testType,reportImage,description) values(?,?,?,?,?)";
     let reportImage = Buffer.from(input.reportImage.replace(/^data:image\/\w+;base64,/, ""), 'base64')
     let requestBody = [input.reportdate, input.batchId, input.testType, reportImage, input.description]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
-const createInternalQC = async (input, callback) => {
+motherPlantDbQueries.createInternalQC = async (input, callback) => {
     let query = "insert into internalqualitycontrol (productionDate,batchId,testType,description) values(?,?,?,?,?)";
     let requestBody = [input.productionDate, input.batchId, input.testType, input.description]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
-const addProductionDetails = async (input, callback) => {
+motherPlantDbQueries.addProductionDetails = async (input, callback) => {
     let query = "insert into production (productionDate,phLevel,TDS,ozoneLevel,product20L, product1L, product500ML, product250ML,managerName,createdBy,shiftType) values(?,?,?,?,?,?,?,?,?,?,?)";
     let productionDate = new Date()
     let requestBody = [productionDate, input.phLevel, input.TDS, input.ozoneLevel, input.product20L, input.product1L, input.product500ML, input.product250ML, input.managerName, input.createdBy, input.shiftType]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
-const addVehicleDetails = async (input, callback) => {
+motherPlantDbQueries.addVehicleDetails = async (input, callback) => {
     let query = "insert into VehicleDetails (vehicleNo,vehicleType) values(?,?)";
     let requestBody = [input.vehicleNo, input.vehicleType]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
-const addDispatchDetails = async (input, callback) => {
+motherPlantDbQueries.addDispatchDetails = async (input, callback) => {
     let query = "insert into dispatches (vehicleNo,driverId,driverName,dispatchTo,batchId,product20L,product1L,product500ML,product250ML,dispatchAddress, dispatchType) values(?,?,?,?,?,?,?,?,?,?,?)";
     let requestBody = [input.vehicleNo, input.driverId, input.driverName, input.dispatchTo, input.batchId, input.product20L, input.product1L, input.product500ML, input.product250ML, input.dispatchAddress, input.dispatchType]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
-const createRM = async (input, callback) => {
+motherPlantDbQueries.createRM = async (input, callback) => {
     let query = "insert into requiredrawmaterial (itemName,description,recordLevel,minOrderLevel) values(?,?,?,?)";
     let requestBody = [input.itemName, input.description, input.recordLevel, input.minOrderLevel]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
-const createRMReceipt = async (input, callback) => {
+motherPlantDbQueries.createRMReceipt = async (input, callback) => {
     let query = "insert into rawmaterialreceipt (receiptdate,receivedFromParty,invoiceNo,itemreceived,price,qtyReceived,tax,invoiceValue,rawmaterialId,invoiceDate) values(?,?,?,?,?,?,?,?,?,?)";
     let requestBody = [input.receiptdate, input.receivedFromParty, input.invoiceNo, input.itemreceived, input.price, input.qtyReceived, input.tax, input.invoiceValue, input.rawmaterialId, input.invoiceDate]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
-const updateProductionDetails = async (input, callback) => {
+motherPlantDbQueries.updateProductionDetails = async (input, callback) => {
     let query = `update production set batchId=?,productionDate=?,phLevel=?,TDS=?,ozoneLevel=?,product20L=?,product1L=?,product500ML=?,product250ML=?,managerName=?,shiftType=? where productionid=${input.productionid}`;
     let requestBody = [input.batchId, input.productionDate, input.phLevel, input.TDS, input.ozoneLevel, input.product20L, input.product1L, input.product500ML, input.product250ML, input.managerName, input.shiftType]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
-const updateDispatchDetails = async (input, callback) => {
+motherPlantDbQueries.updateDispatchDetails = async (input, callback) => {
     let query = `update dispatches SET DCNO=?,vehicleNo=?,driverId=?,driverName=?,dispatchTo=?,batchId=?,product20L=?,product1L=?,product500ML=?,product250ML=?,managerName=?,dispatchAddress=? where dispatchId="${input.dispatchId}"`;
     let requestBody = [input.DCNO, input.vehicleNo, input.driverId, input.driverName, input.dispatchTo, input.batchId, input.product20L, input.product1L, input.product500ML, input.product250ML, input.managerName, input.dispatchAddress]
     executePostOrUpdateQuery(query, requestBody, (err, data) => {
@@ -104,9 +107,4 @@ const updateDispatchDetails = async (input, callback) => {
         }
     })
 }
-module.exports = {
-    getProductionDetails, getVehicleDetails, getDispatchDetails, getAllQCDetails, createQC,
-    getInternalQualityControl, createInternalQC, addProductionDetails, addVehicleDetails, getNatureOfBussiness,
-    addDispatchDetails, createRM, createRMReceipt, getRMDetails, getRMReceiptDetails, updateProductionDetails,
-    getBatchNumbers, updateDispatchDetails, getDepartmentsList, getCurrentProductionDetailsByDate
-}
+module.exports = motherPlantDbQueries
