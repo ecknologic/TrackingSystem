@@ -1,20 +1,20 @@
-import { message, Tabs } from 'antd';
+import { Tabs } from 'antd';
 import { useParams } from 'react-router-dom';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { getRouteOptions, WEEKDAYS } from '../../../assets/fixtures';
+import ConfirmMessage from '../../../components/ConfirmMessage';
+import { DocIconWhite } from '../../../components/SVG_Icons';
 import CustomButton from '../../../components/CustomButton';
+import CustomModal from '../../../components/CustomModal';
+import QuitModal from '../../../components/CustomModal';
 import DeliveryDetails from './tabs/DeliveryDetails';
 import AccountOverview from './tabs/AccountOverview';
+import { TRACKFORM } from '../../../utils/constants';
 import DeliveryForm from '../add/forms/Delivery';
 import { http } from '../../../modules/http';
 import Header from './header';
 import { validateDeliveryValues, validateDevDays, validateIDNumbers, validateMobileNumber, validateNames, validateNumber } from '../../../utils/validations';
 import { extractDeliveryDetails, getProductsForDB, extractProductsFromForm, isEmpty, getDevDaysForDB, getBase64, resetTrackForm, showToast } from '../../../utils/Functions';
-import CustomModal from '../../../components/CustomModal';
-import { DocIconWhite } from '../../../components/SVG_Icons';
-import { TRACKFORM } from '../../../utils/constants';
-import QuitModal from '../../../components/CustomModal';
-import ConfirmMessage from '../../../components/ConfirmMessage';
 
 const ViewAccount = () => {
     const { accountId } = useParams()

@@ -12,9 +12,6 @@ import { productionColumns } from '../../../../assets/fixtures';
 import { resetTrackForm } from '../../../../utils/Functions';
 
 const Production = () => {
-    const warehouseId = getWarehoseId()
-    const [routes, setRoutes] = useState([])
-    const [drivers, setDrivers] = useState([])
     const [loading, setLoading] = useState(true)
     const [productsClone, setProductsClone] = useState([])
     const [products, setProducts] = useState([])

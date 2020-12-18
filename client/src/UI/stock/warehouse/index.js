@@ -6,6 +6,7 @@ import ReportsDropdown from '../../../components/ReportsDropdown';
 import Delivery from './tabs/Delivery';
 import { TODAYDATE } from '../../../utils/constants';
 import DatePickerPanel from '../../../components/DatePickerPanel';
+import NoContent from '../../../components/NoContent';
 
 const WarehouseStock = () => {
 
@@ -38,7 +39,7 @@ const WarehouseStock = () => {
                 {
                     activeTab === '1' ? <StockDetails date={selectedDate} />
                         : activeTab === '2' ? <Delivery date={selectedDate} />
-                            : null
+                            : <NoContent content='Design is in progress' />
                 }
             </div>
         </Fragment>

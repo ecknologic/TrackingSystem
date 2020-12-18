@@ -185,7 +185,10 @@ $textColorDisabled:rgba(0,0,0,0.55);
 }
 .ant-select-arrow {
     right: 1.5em;
-    cursor: default;
+
+    .anticon:not(.ant-select-suffix) {
+        pointer-events: none;
+    }
     
     svg {
         transform: scale(.8);
