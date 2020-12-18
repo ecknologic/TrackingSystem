@@ -8,7 +8,7 @@ const ExternalDispatchForm = (props) => {
 
     const { data, errors, batchIdOptions, vehicleOptions, disabled, driverOptions, onChange, onBlur, track } = props
 
-    const { batchId, dipatchAddress, managerName, vehicleNo, mobileNumber, driverId, product20L, product1L,
+    const { batchId, dispatchAddress, managerName, vehicleNo, mobileNumber, driverId, product20L, product1L,
         product500ML, price20L, price1L, price500ML } = data
 
     return (
@@ -100,7 +100,7 @@ const ExternalDispatchForm = (props) => {
                 <div className='row'>
                     <div className='input-container stretch'>
                         <InputLabel name='Dispatch To' error={errors.dispatchAddress} mandatory />
-                        <CustomTextArea maxLength={100} error={errors.dispatchAddress} placeholder='Add Address' value={dipatchAddress}
+                        <CustomTextArea maxLength={100} error={errors.dispatchAddress} placeholder='Add Address' value={dispatchAddress}
                             maxRows={4} onChange={(value) => onChange(value, 'dispatchAddress')}
                         />
                     </div>

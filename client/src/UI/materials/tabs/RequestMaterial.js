@@ -2,15 +2,15 @@ import { message } from 'antd';
 import React, { useState, useCallback, useEffect } from 'react';
 import CustomButton from '../../../components/CustomButton';
 import FormHeader from '../../../components/FormHeader';
-import DispatchForm from '../forms/DispatchForm';
+import MaterialRequestForm from '../forms/MaterialRequestForm';
 import ConfirmModal from '../../../components/CustomModal';
 import { TRACKFORM } from '../../../utils/constants';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import { http } from '../../../modules/http';
 import { isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../utils/Functions';
-import { validateDispatchValues, validateMobileNumber, validateNames, validateNumber } from '../../../utils/validations';
+import { validateRequestMaterialValues, validateNumber } from '../../../utils/validations';
 
-const RequestMaterials = ({ goToTab, driverList, ...rest }) => {
+const RequestMaterial = ({ goToTab, driverList, ...rest }) => {
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
@@ -31,20 +31,7 @@ const RequestMaterials = ({ goToTab, driverList, ...rest }) => {
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
         // Validations
-        if (key === 'driverId') {
-            let selectedDriver = driverList.filter(driver => driver.driverId == value)
-            let { driverName = null, mobileNumber = null } = selectedDriver.length ? selectedDriver[0] : {}
-            setFormData(data => ({ ...data, driverName, mobileNumber }))
-        }
-        if (key === 'managerName') {
-            const error = validateNames(value)
-            setFormErrors(errors => ({ ...errors, [key]: error }))
-        }
-        if (key === 'managerName') {
-            const error = validateNames(value)
-            setFormErrors(errors => ({ ...errors, [key]: error }))
-        }
-        else if (key.includes('product')) {
+        if (key.includes('Level')) {
             const error = validateNumber(value)
             setFormErrors(errors => ({ ...errors, products: error }))
         }
@@ -52,35 +39,35 @@ const RequestMaterials = ({ goToTab, driverList, ...rest }) => {
 
     const handleBlur = (value, key) => {
         // Validations
-        if (key === 'mobileNumber') {
-            const error = validateMobileNumber(value, true)
+        if (key.includes('Level')) {
+            const error = validateNumber(value, true)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
     }
 
-    const handleDispatchCreate = async () => {
-        const dispatchErrors = validateDispatchValues(formData)
+    const handleSubmit = async () => {
+        const formErrors = validateRequestMaterialValues(formData)
 
-        if (!isEmpty(dispatchErrors)) {
+        if (!isEmpty(formErrors)) {
             setShake(true)
             setTimeout(() => setShake(false), 820)
-            setFormErrors(dispatchErrors)
+            setFormErrors(formErrors)
             return
         }
 
-        let body = { ...formData, dispatchType: 'Internal' }
-        const url = '/motherplant/addDispatchDetails'
+        // let body = { ...formData, dispatchType: 'Internal' }
+        // const url = '/motherplant/addDispatchDetails'
 
-        try {
-            setBtnDisabled(true)
-            showToast('Dispatch', 'loading')
-            await http.POST(url, body)
-            message.destroy()
-            goToTab('1')
-        } catch (error) {
-            message.destroy()
-            setBtnDisabled(false)
-        }
+        // try {
+        //     setBtnDisabled(true)
+        //     showToast('Dispatch', 'loading')
+        //     await http.POST(url, body)
+        //     message.destroy()
+        //     goToTab('1')
+        // } catch (error) {
+        //     message.destroy()
+        //     setBtnDisabled(false)
+        // }
     }
 
     const onModalClose = (hasSaved) => {
@@ -102,8 +89,8 @@ const RequestMaterials = ({ goToTab, driverList, ...rest }) => {
 
     return (
         <>
-            <FormHeader title='Create Dispatch DC' />
-            <DispatchForm
+            <FormHeader title='Raw Material Required' />
+            <MaterialRequestForm
                 track
                 data={formData}
                 errors={formErrors}
@@ -113,12 +100,12 @@ const RequestMaterials = ({ goToTab, driverList, ...rest }) => {
             />
             <div className='app-footer-buttons-container'>
                 <CustomButton
-                    onClick={handleDispatchCreate}
+                    onClick={handleSubmit}
                     className={`
                     app-create-btn footer-btn ${btnDisabled ? 'disabled' : ''} 
                     ${shake ? 'app-shake' : ''}
                 `}
-                    text='Create'
+                    text='Send Request'
                 />
             </div>
             <ConfirmModal
@@ -134,4 +121,4 @@ const RequestMaterials = ({ goToTab, driverList, ...rest }) => {
     )
 }
 
-export default RequestMaterials
+export default RequestMaterial

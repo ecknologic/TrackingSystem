@@ -2,7 +2,7 @@ import { Tabs } from 'antd';
 import { http } from '../../modules/http';
 import React, { Fragment, useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import Header from './header';
-import RequestMaterials from './tabs/RequestMaterials';
+import RequestMaterial from './tabs/RequestMaterial';
 import ReceivedMaterials from './tabs/ReceivedMaterials';
 import MaterialStatus from './tabs/MaterialStatus';
 import AddMaterials from './tabs/AddMaterials';
@@ -94,7 +94,7 @@ const Dispatch = () => {
                     </Tabs>
                 </div>
                 {
-                    activeTab === '1' ? <RequestMaterials />
+                    activeTab === '1' ? <RequestMaterial />
                         : activeTab === '2' ? <MaterialStatus />
                             : activeTab === '3' ? <AddMaterials />
                                 : activeTab === '4' ? <ReceivedMaterials />

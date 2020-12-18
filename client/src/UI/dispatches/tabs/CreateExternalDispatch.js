@@ -65,13 +65,13 @@ const CreateExternalDispatch = ({ goToTab, driverList, ...rest }) => {
         }
     }
 
-    const handleBatchCreate = async () => {
-        const dispatchErrors = validateExternalDispatchValues(formData)
+    const handleSubmit = async () => {
+        const formErrors = validateExternalDispatchValues(formData)
 
-        if (!isEmpty(dispatchErrors)) {
+        if (!isEmpty(formErrors)) {
             setShake(true)
             setTimeout(() => setShake(false), 820)
-            setFormErrors(dispatchErrors)
+            setFormErrors(formErrors)
             return
         }
 
@@ -123,12 +123,12 @@ const CreateExternalDispatch = ({ goToTab, driverList, ...rest }) => {
             </div> */}
             <div className='app-footer-buttons-container'>
                 <CustomButton
-                    onClick={handleBatchCreate}
+                    onClick={handleSubmit}
                     className={`
                     app-create-btn footer-btn ${btnDisabled ? 'disabled' : ''} 
                     ${shake ? 'app-shake' : ''}
                 `}
-                    text='Create DC'
+                    text='Send Request'
                 />
             </div>
             <ConfirmModal

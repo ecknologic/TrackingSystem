@@ -68,13 +68,13 @@ const StockDetails = ({ date, goToTab }) => {
         }
     }
 
-    const handleBatchCreate = async () => {
-        const batchErrors = validateBatchValues(formData)
+    const handleSubmit = async () => {
+        const formErrors = validateBatchValues(formData)
 
-        if (!isEmpty(batchErrors)) {
+        if (!isEmpty(formErrors)) {
             setShake(true)
             setTimeout(() => setShake(false), 820)
-            setFormErrors(batchErrors)
+            setFormErrors(formErrors)
             return
         }
 
@@ -121,7 +121,7 @@ const StockDetails = ({ date, goToTab }) => {
             />
             <div className='app-footer-buttons-container'>
                 <CustomButton
-                    onClick={handleBatchCreate}
+                    onClick={handleSubmit}
                     className={`
                         app-create-btn footer-btn ${btnDisabled ? 'disabled' : ''} 
                         ${shake ? 'app-shake' : ''}

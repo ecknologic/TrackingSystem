@@ -140,13 +140,13 @@ const Delivery = ({ date }) => {
         setPageNumber(number)
     }
 
-    const handleSaveDC = async () => {
-        const dcErrors = validateDCValues(formData)
+    const handleSubmit = async () => {
+        const formErrors = validateDCValues(formData)
 
-        if (!isEmpty(dcErrors)) {
+        if (!isEmpty(formErrors)) {
             setShake(true)
             setTimeout(() => setShake(false), 820)
-            setFormErrors(dcErrors)
+            setFormErrors(formErrors)
             return
         }
 
@@ -274,7 +274,7 @@ const Delivery = ({ date }) => {
                 className={`app-form-modal ${shake ? 'app-shake' : ''}`}
                 visible={DCModal}
                 btnDisabled={btnDisabled}
-                onOk={handleSaveDC}
+                onOk={handleSubmit}
                 onCancel={handleDCModalCancel}
                 title={DCFormTitleRef.current}
                 okTxt={DCFormBtnRef.current}

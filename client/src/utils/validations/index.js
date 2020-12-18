@@ -250,6 +250,33 @@ export const validateExternalDispatchValues = (data) => {
     return { ...errors, ...productErrors }
 }
 
+export const validateRequestMaterialValues = (data) => {
+    let errors = {};
+    const text = 'Required'
+    const { itemName, itemCode, vendorId, description, recordLevel, minOrderLevel } = data
+
+    if (!itemName) errors.itemName = text
+    if (!vendorId) errors.vendorId = text
+    if (!description) errors.description = text
+    if (!itemCode) errors.itemCode = text
+    else {
+        const error = validateNumber(itemCode)
+        error && (errors.itemCode = error)
+    }
+    if (!recordLevel) errors.recordLevel = text
+    else {
+        const error = validateNumber(recordLevel)
+        error && (errors.recordLevel = error)
+    }
+    if (!minOrderLevel) errors.minOrderLevel = text
+    else {
+        const error = validateNumber(minOrderLevel)
+        error && (errors.minOrderLevel = error)
+    }
+
+    return errors
+}
+
 const validateProducts = ({ product20L, product1L, product500ML, product250ML }) => {
     let errors = {};
 
@@ -426,7 +453,11 @@ export const validateEmailId = (value) => {
     return ''
 }
 
-export const validateNumber = (value) => {
+export const validateNumber = (value, isBlur) => {
+    if (isBlur && value) {
+        const isValid = isStrictDigit(value)
+        if (!isValid) return 'Invalid'
+    }
     if (value && !isStrictDigit(value)) {
         return 'Enter digits only'
     }

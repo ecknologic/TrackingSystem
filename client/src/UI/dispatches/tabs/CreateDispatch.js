@@ -58,13 +58,13 @@ const CreateDispatch = ({ goToTab, driverList, ...rest }) => {
         }
     }
 
-    const handleDispatchCreate = async () => {
-        const dispatchErrors = validateDispatchValues(formData)
+    const handleSubmit = async () => {
+        const formErrors = validateDispatchValues(formData)
 
-        if (!isEmpty(dispatchErrors)) {
+        if (!isEmpty(formErrors)) {
             setShake(true)
             setTimeout(() => setShake(false), 820)
-            setFormErrors(dispatchErrors)
+            setFormErrors(formErrors)
             return
         }
 
@@ -113,7 +113,7 @@ const CreateDispatch = ({ goToTab, driverList, ...rest }) => {
             />
             <div className='app-footer-buttons-container'>
                 <CustomButton
-                    onClick={handleDispatchCreate}
+                    onClick={handleSubmit}
                     className={`
                     app-create-btn footer-btn ${btnDisabled ? 'disabled' : ''} 
                     ${shake ? 'app-shake' : ''}
