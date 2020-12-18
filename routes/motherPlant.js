@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const motherPlantDbQueries = require('../dbQueries/motherplant/queries');
 const { dbError, getBatchId } = require('../utils/functions');
+const { INSERTMESSAGE, UPDATEMESSAGE } = require('../utils/constants');
 
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -23,7 +24,7 @@ router.post('/createQC', (req, res) => {
     motherPlantDbQueries.createQC(input, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else
-            res.json("Record Inserted");
+            res.json(INSERTMESSAGE);
     });
 })
 
@@ -54,9 +55,22 @@ router.post('/createRM', (req, res) => {
     let input = req.body;
     motherPlantDbQueries.createRM(input, (err, results) => {
         if (err) res.status(500).json(dbError(err));
-        else
-            res.json("Record Inserted");
+        else if (results.length) {
+            input.orderId = `OD-${results.insertId}`
+            motherPlantDbQueries.updateRMDetails(input, (updateErr, updatedData) => {
+                if (updateErr) res.status(500).json(dbError(err));
+                else res.json(INSERTMESSAGE)
+            })
+        } else res.json(results)
     });
+})
+
+router.post('/updateRM', (req, res) => {
+    let input = req.body;
+    motherPlantDbQueries.updateRMDetails(input, (updateErr, updatedData) => {
+        if (updateErr) res.status(500).json(dbError(err));
+        else res.json(UPDATEMESSAGE)
+    })
 })
 
 router.get('/getRMReceipt', (req, res) => {
@@ -71,7 +85,7 @@ router.post('/createRMReceipt', (req, res) => {
     motherPlantDbQueries.createRMReceipt(input, (err, results) => {
         if (err) res.status(500).json(err.sqlMessage);
         else
-            res.json("Record Inserted");
+            res.json(INSERTMESSAGE);
     });
 })
 
@@ -91,7 +105,7 @@ router.post('/addDispatchDetails', (req, res) => {
             input.dispatchId = results.insertId
             motherPlantDbQueries.updateDispatchDetails(input, (updateErr, data) => {
                 if (updateErr) console.log(updateErr)
-                else res.json("Record Inserted");
+                else res.json(INSERTMESSAGE);
             })
         }
     });
@@ -180,7 +194,7 @@ router.post('/addVehicleDetails', (req, res) => {
     motherPlantDbQueries.addVehicleDetails(input, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else
-            res.json("Record Inserted");
+            res.json(INSERTMESSAGE);
     });
 })
 
@@ -194,7 +208,7 @@ router.post('/addProductionDetails', (req, res) => {
             input.productionid = results.insertId
             motherPlantDbQueries.updateProductionDetails(input, (updateErr, data) => {
                 if (updateErr) res.status(500).json(dbError(updateErr));
-                else res.json("Record Inserted");
+                else res.json(INSERTMESSAGE);
             })
         }
     });
