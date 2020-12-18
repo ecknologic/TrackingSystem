@@ -16,6 +16,14 @@ const executeGetQuery = (query, callback) => {
         throw err
     }
 }
+const executeGetParamsQuery = (query, input, callback) => {
+    try {
+        return db.query(query, input, callback);
+    }
+    catch (err) {
+        throw err
+    }
+}
 const executePostOrUpdateQuery = (query, requestBody, callback) => {
     try {
         return db.query(query, requestBody, callback);
@@ -33,4 +41,4 @@ const dbError = (err) => {
     }
     return errMessage;
 }
-module.exports = { executeGetQuery, executePostOrUpdateQuery, dbError, getBatchId }
+module.exports = { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, dbError, getBatchId }
