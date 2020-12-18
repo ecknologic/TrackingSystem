@@ -6,7 +6,7 @@ motherPlantDbQueries.getProductionDetails = async (callback) => {
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getProductsByBatch = async (batchId, callback) => {
-    let query = `SELECT SUM(p.product20L) AS product20LCount,SUM(p.product1L) AS v,SUM(p.product500ML) product500MLCount,SUM(p.product250ML) product250MLCount FROM production p WHERE  batchId=?`;
+    let query = `SELECT SUM(p.product20L) AS product20LCount,SUM(p.product1L) AS product1LCount,SUM(p.product500ML) product500MLCount,SUM(p.product250ML) product250MLCount FROM production p WHERE  batchId=?`;
     return executeGetParamsQuery(query, [batchId], callback)
 }
 motherPlantDbQueries.getBatchNumbers = async (callback) => {
@@ -98,6 +98,11 @@ motherPlantDbQueries.createRMReceipt = async (input, callback) => {
 motherPlantDbQueries.updateProductionDetails = async (input, callback) => {
     let query = `update production set batchId=?,productionDate=?,phLevel=?,TDS=?,ozoneLevel=?,product20L=?,product1L=?,product500ML=?,product250ML=?,managerName=?,shiftType=? where productionid=${input.productionid}`;
     let requestBody = [input.batchId, input.productionDate, input.phLevel, input.TDS, input.ozoneLevel, input.product20L, input.product1L, input.product500ML, input.product250ML, input.managerName, input.shiftType]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+motherPlantDbQueries.updateRMDetails = async (input, callback) => {
+    let query = `update requiredrawmaterial set orderId=?,itemName=?,description=?,recordLevel=?,minOrderLevel=?,itemCode=?,vendorName=? where rawmaterialid=${input.rawmaterialid}`;
+    let requestBody = [input.orderId, input.itemName, input.description, input.recordLevel, input.minOrderLevel, input.itemCode, input.vendorName]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.updateDispatchDetails = async (input, callback) => {
