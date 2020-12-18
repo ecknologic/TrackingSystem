@@ -6,17 +6,16 @@ import CustomTextArea from '../../../components/CustomTextArea';
 
 const MaterialRequestForm = (props) => {
 
-    const { data, errors, batchIdOptions, departmentOptions, disabled,
-        onChange, onBlur, track } = props
-
+    const { data, errors, disabled, onChange, onBlur, track, materialOptions, vendorOptions } = props
     const { itemName, itemCode, vendorId, description, recordLevel, minOrderLevel } = data
+
     return (
         <>
             <div className='app-form-container dispatch-form-container'>
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Item Name' error={errors.itemName} mandatory />
-                        <SelectInput track={track} value={itemName} options={batchIdOptions}
+                        <SelectInput track={track} value={itemName} options={materialOptions}
                             disabled={disabled} error={errors.itemName}
                             onSelect={(value) => onChange(value, 'itemName')}
                         />
@@ -51,7 +50,7 @@ const MaterialRequestForm = (props) => {
                 <div className='row'>
                     <div className='input-container stretch'>
                         <InputLabel name='Vendor' error={errors.vendorId} mandatory />
-                        <SelectInput track={track} value={vendorId} options={departmentOptions}
+                        <SelectInput track={track} value={vendorId} options={vendorOptions}
                             disabled={disabled} error={errors.vendorId}
                             onSelect={(value) => onChange(value, 'vendorId')}
                         />

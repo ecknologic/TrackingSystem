@@ -2,7 +2,7 @@ import { message, Radio } from 'antd';
 import React, { useState, useCallback, useEffect } from 'react';
 import CustomButton from '../../../components/CustomButton';
 import FormHeader from '../../../components/FormHeader';
-import ExternalDispatchForm from '../forms/ExternalDispatchForm';
+import ExternalDispatchForm from '../forms/ExternalDispatch';
 import ConfirmModal from '../../../components/CustomModal';
 import { TRACKFORM } from '../../../utils/constants';
 import ConfirmMessage from '../../../components/ConfirmMessage';
@@ -75,7 +75,7 @@ const CreateExternalDispatch = ({ goToTab, driverList, ...rest }) => {
             return
         }
 
-        let body = { ...formData, dispatchType: 'External', dispatchTo: 1 }
+        let body = { ...formData, dispatchType: 'External', dispatchTo: 0 }
         const url = '/motherPlant/addDispatchDetails'
         try {
             setBtnDisabled(true)

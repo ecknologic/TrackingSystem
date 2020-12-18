@@ -40,7 +40,7 @@ const ViewAccount = () => {
     const getAccount = async () => {
         const url = `/customer/getCustomerDetailsById/${accountId}`
         try {
-            const { data: [data] } = await http.GET(url)
+            const { data: [data = {}] } = await http.GET(url)
             const { customerName, organizationName, Address1 } = data
             setAccount({ ...data, loading: false })
             setHeaderContent({
@@ -79,7 +79,7 @@ const ViewAccount = () => {
         try {
             setBtnDisabled(true)
             showToast('Delivery details', 'loading')
-            let { data: [data] } = await http.POST(url, body)
+            let { data: [data = {}] } = await http.POST(url, body)
             setRecentDelivery(data)
             showToast('Delivery details', 'success')
             onModalClose(true)

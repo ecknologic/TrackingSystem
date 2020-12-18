@@ -10,7 +10,7 @@ import SearchInput from '../../../components/SearchInput';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import { TRACKFORM } from '../../../utils/constants';
 import CustomPagination from '../../../components/CustomPagination';
-import { dispatchColumns } from '../../../assets/fixtures';
+import { requestedMaterialColumns } from '../../../assets/fixtures';
 import { disableFutureDates } from '../../../utils/Functions';
 const DATEFORMAT = 'DD-MM-YYYY'
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
@@ -39,10 +39,11 @@ const MaterialStatus = () => {
     }, [])
 
     const getDispatches = async () => {
-        const data = await http.GET('/motherPlant/getDispatchDetails')
-        setDispatches(data)
-        setDispatchesClone(data)
-        setTotalCount(data.length)
+        const data = await http.GET('/motherPlant/getRMDetails')
+        console.log('data>>>>', data)
+        // setDispatches(data)
+        // setDispatchesClone(data)
+        // setTotalCount(data.length)
         setLoading(false)
     }
 
@@ -93,16 +94,16 @@ const MaterialStatus = () => {
     }
 
     const dataSource = useMemo(() => dispatches.map((dispatch) => {
-        const { DCNO: dcnumber, batchId, dispatchedDate, departmentName, dispatchType, vehicleNo,
+        const { DCNO: dcnumber, itemCode, requestedDate, departmentName, dispatchType, vehicleNo,
             dispatchAddress, vehicleType, driverName, status } = dispatch
         return {
             key: dcnumber,
             dcnumber,
-            batchId,
+            itemCode,
             vehicleNo: vehicleNo + ' ' + vehicleType,
             driverName,
             dispatchTo: dispatchType === 'Internal' ? departmentName : dispatchAddress,
-            dateAndTime: dayjs(dispatchedDate).format(DATEANDTIMEFORMAT),
+            dateAndTime: dayjs(requestedDate).format('DD/MM/YYYY'),
             productionDetails: renderOrderDetails(dispatch),
             status: renderStatus(status),
             action: <TableAction onSelect={({ key }) => handleMenuSelect(key, dispatch)} />
@@ -155,7 +156,7 @@ const MaterialStatus = () => {
                 <Table
                     loading={{ spinning: loading, indicator: <Spinner /> }}
                     dataSource={dataSource.slice(sliceFrom, sliceTo)}
-                    columns={dispatchColumns}
+                    columns={requestedMaterialColumns}
                     pagination={false}
                 />
             </div>

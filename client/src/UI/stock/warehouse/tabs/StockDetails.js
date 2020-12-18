@@ -25,13 +25,13 @@ const StockDetails = ({ date, stockDetails }) => {
 
     const getCAS = async () => {
         const url = `warehouse/currentActiveStockDetails?warehouseId=${warehouseId}`
-        const { data: [data] } = await http.GET(url)
+        const { data: [data = {}] } = await http.GET(url)
         setCAS(data)
     }
 
     const getOFD = async () => {
         const url = `warehouse/outForDeliveryDetails/${date}?warehouseId=${warehouseId}`
-        const { data: [data] } = await http.GET(url)
+        const { data: [data = {}] } = await http.GET(url)
         setOFC(data)
     }
 

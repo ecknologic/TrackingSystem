@@ -70,9 +70,14 @@ export const getRouteOptions = (routes = []) => {
     return routes.map((item) => <Option key={item.RouteId} value={item.RouteId}>{item.RouteName}</Option>)
 }
 export const getBatchIdOptions = (batches = []) => {
-    return batches.map((item) => <Option key={item.batchId} value={item.batchId}>{item.batchId}</Option>)
+    return batches.map((item, index) => <Option key={index} value={item.batchId}>{item.batchId}</Option>)
 }
-
+export const getMaterialOpitons = (materials = [{ name: 'Caps' }, { name: 'Bottles' }]) => {
+    return materials.map((item, index) => <Option key={index} value={item.name}>{item.name}</Option>)
+}
+export const getVendorOptions = (vendors = [{ name: 'Balaji Industries' }, { name: 'Praveen Builders' }]) => {
+    return vendors.map((item, index) => <Option key={index} value={item.name}>{item.name}</Option>)
+}
 export const getDriverOptions = (drivers = []) => {
     return drivers.map((item) => <Option key={item.driverId} value={item.driverId}>{item.driverName}</Option>)
 }
@@ -210,6 +215,49 @@ export const dispatchColumns = [
         title: 'Status',
         dataIndex: 'status',
         key: 'status'
+    },
+    {
+        title: 'Actions',
+        dataIndex: 'action',
+        key: 'action'
+    },
+]
+
+export const requestedMaterialColumns = [
+    {
+        title: 'Order ID',
+        dataIndex: 'orderId',
+        key: 'orderId',
+    },
+    {
+        title: 'Date',
+        dataIndex: 'dataAndTime',
+        key: 'dataAndTime',
+    },
+    {
+        title: 'Product Details',
+        dataIndex: 'productDetails',
+        key: 'productDetails',
+    },
+    {
+        title: 'Vendor Name',
+        dataIndex: 'vendorName',
+        key: 'vendorName',
+    },
+    {
+        title: 'Reorder level',
+        key: 'recordLevel',
+        dataIndex: 'recordLevel',
+    },
+    {
+        title: 'Order level',
+        dataIndex: 'minOrderLevel',
+        key: 'minOrderLevel',
+    },
+    {
+        title: 'Approval Status',
+        dataIndex: 'dateAndTime',
+        key: 'dateAndTime',
     },
     {
         title: 'Actions',

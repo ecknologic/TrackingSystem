@@ -26,7 +26,7 @@ const Dispatch = () => {
     const driverOptions = useMemo(() => getDriverOptions(driverList), [driverList])
     const vehicleOptions = useMemo(() => getVehicleOptions(vehiclesList), [vehiclesList])
     const departmentOptions = useMemo(() => getDepartmentOptions(departmentList), [departmentList])
-    const childProps = useMemo(() => ({ driverList, batchIdOptions, driverOptions, departmentOptions, vehicleOptions }),
+    const childProps = useMemo(() => ({ driverList, batchIdOptions, departmentList, driverOptions, departmentOptions, vehicleOptions }),
         [batchIdOptions, driverOptions, departmentOptions, vehicleOptions])
 
     useEffect(() => {

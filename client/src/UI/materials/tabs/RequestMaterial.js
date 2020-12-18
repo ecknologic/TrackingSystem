@@ -2,7 +2,7 @@ import { message } from 'antd';
 import React, { useState, useCallback, useEffect } from 'react';
 import CustomButton from '../../../components/CustomButton';
 import FormHeader from '../../../components/FormHeader';
-import MaterialRequestForm from '../forms/MaterialRequestForm';
+import MaterialRequestForm from '../forms/MaterialRequest';
 import ConfirmModal from '../../../components/CustomModal';
 import { TRACKFORM } from '../../../utils/constants';
 import ConfirmMessage from '../../../components/ConfirmMessage';
@@ -10,7 +10,7 @@ import { http } from '../../../modules/http';
 import { isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../utils/Functions';
 import { validateRequestMaterialValues, validateNumber } from '../../../utils/validations';
 
-const RequestMaterial = ({ goToTab, driverList, ...rest }) => {
+const RequestMaterial = ({ goToTab, ...rest }) => {
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
@@ -55,19 +55,19 @@ const RequestMaterial = ({ goToTab, driverList, ...rest }) => {
             return
         }
 
-        // let body = { ...formData, dispatchType: 'Internal' }
-        // const url = '/motherplant/addDispatchDetails'
+        const body = { ...formData }
+        const url = '/motherPlant/createRM'
 
-        // try {
-        //     setBtnDisabled(true)
-        //     showToast('Dispatch', 'loading')
-        //     await http.POST(url, body)
-        //     message.destroy()
-        //     goToTab('1')
-        // } catch (error) {
-        //     message.destroy()
-        //     setBtnDisabled(false)
-        // }
+        try {
+            setBtnDisabled(true)
+            showToast('Dispatch', 'loading')
+            await http.POST(url, body)
+            message.destroy()
+            goToTab('1')
+        } catch (error) {
+            message.destroy()
+            setBtnDisabled(false)
+        }
     }
 
     const onModalClose = (hasSaved) => {

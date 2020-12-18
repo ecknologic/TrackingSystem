@@ -2,7 +2,7 @@ import { message } from 'antd';
 import React, { useState, useCallback, useEffect } from 'react';
 import CustomButton from '../../../components/CustomButton';
 import FormHeader from '../../../components/FormHeader';
-import DispatchForm from '../forms/DispatchForm';
+import DispatchForm from '../forms/Dispatch';
 import ConfirmModal from '../../../components/CustomModal';
 import { TRACKFORM } from '../../../utils/constants';
 import ConfirmMessage from '../../../components/ConfirmMessage';
@@ -10,7 +10,7 @@ import { http } from '../../../modules/http';
 import { isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../utils/Functions';
 import { validateDispatchValues, validateMobileNumber, validateNames, validateNumber } from '../../../utils/validations';
 
-const CreateDispatch = ({ goToTab, driverList, ...rest }) => {
+const CreateDispatch = ({ goToTab, driverList, departmentList, ...rest }) => {
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
@@ -26,9 +26,20 @@ const CreateDispatch = ({ goToTab, driverList, ...rest }) => {
         }
     }, [])
 
+    const getProductsByBatchId = async (batchId) => {
+        const [data = {}] = await http.GET(`/motherPlant/getProductByBatch/${batchId}`)
+
+    }
+
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
+
+        if (key === 'batchId') {
+            getProductsByBatchId(value)
+            setFormData(data => ({ ...data, product20L: '', product1L: '', product500ML: '', product250ML: '' }))
+            setFormErrors(errors => ({ ...errors, product20L: '', product1L: '', product500ML: '', product250ML: '' }))
+        }
 
         // Validations
         if (key === 'driverId') {
@@ -68,7 +79,9 @@ const CreateDispatch = ({ goToTab, driverList, ...rest }) => {
             return
         }
 
-        let body = { ...formData, dispatchType: 'Internal' }
+        let { departmentName: dispatchAddress } = departmentList.find(dep => dep.departmentId === formData.dispatchTo)
+
+        let body = { ...formData, dispatchType: 'Internal', dispatchAddress }
         const url = '/motherplant/addDispatchDetails'
 
         try {

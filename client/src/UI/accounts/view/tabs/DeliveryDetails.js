@@ -41,7 +41,7 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
     const getDeliveryDetails = async () => {
         const url = `/customer/getCustomerDeliveryDetails/${accountId}`
         try {
-            const { data: [data] } = await http.GET(url)
+            const { data: [data = {}] } = await http.GET(url)
             const { deliveryDetails } = data
             setDelivery(deliveryDetails)
             setLoading(false)
@@ -78,7 +78,7 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
         try {
             setBtnDisabled(true)
             showToast('Delivery details', 'loading', 'PUT')
-            const { data: [data] } = await http.POST(url, body)
+            const { data: [data = {}] } = await http.POST(url, body)
             updateDeliveryDetails(data)
             showToast('Delivery details', 'success', 'PUT')
             onModalClose(true)

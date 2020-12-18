@@ -12,6 +12,8 @@ import { TRACKFORM } from '../../../utils/constants';
 import CustomPagination from '../../../components/CustomPagination';
 import { dispatchColumns } from '../../../assets/fixtures';
 import { disableFutureDates } from '../../../utils/Functions';
+import CustomModal from '../../../components/CustomModal';
+import MaterialReceivedForm from '../forms/MaterialReceived';
 const DATEFORMAT = 'DD-MM-YYYY'
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
@@ -23,16 +25,17 @@ const AddMaterials = () => {
     const [totalCount, setTotalCount] = useState(null)
     const [pageNumber, setPageNumber] = useState(1)
     const [btnDisabled, setBtnDisabled] = useState(false)
-    const [DCModal, setDCModal] = useState(false)
+    const [viewModal, setViewModal] = useState(false)
+    const [modal, setModal] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
     const [shake, setShake] = useState(false)
     const [open, setOpen] = useState(false)
     const [dispatches, setDispatches] = useState([])
     const [dispatchesClone, setDispatchesClone] = useState([])
 
-    const customerOrderIdRef = useRef()
-    const DCFormTitleRef = useRef()
-    const DCFormBtnRef = useRef()
+    const orderIdRef = useRef()
+    const formTitleRef = useRef()
+    const formBtnRef = useRef()
 
     useEffect(() => {
         getDispatches()
@@ -56,18 +59,13 @@ const AddMaterials = () => {
         setDispatches(filteredData)
     }
 
-    const generateFiltered = (original, filterInfo) => {
-        const filtered = original.filter((item) => filterInfo.includes(item.RouteId))
-        setTotalCount(filtered.length)
-    }
-
     const handleMenuSelect = (key, data) => {
         if (key === 'view') {
-            customerOrderIdRef.current = data.customerOrderId
-            DCFormTitleRef.current = `DC - ${data.customerName}`
-            DCFormBtnRef.current = 'Update'
+            orderIdRef.current = data.customerOrderId
+            formTitleRef.current = `Received Material Details - Order ID - ${data.orderId}`
+            formBtnRef.current = 'Confirm Details'
             setFormData(data)
-            setDCModal(true)
+            setModal(true)
         }
     }
 
@@ -80,13 +78,88 @@ const AddMaterials = () => {
         setPageNumber(number)
     }
 
+    const handleChange = (value, key) => {
+        setFormData(data => ({ ...data, [key]: value }))
+        setFormErrors(errors => ({ ...errors, [key]: '' }))
+
+        // // Validations
+        // if (key === 'gstNo') {
+        //     const error = validateIDNumbers(key, value)
+        //     setFormErrors(errors => ({ ...errors, [key]: error }))
+        // }
+        // if (key === 'deliveryLocation') {
+        //     const error = validateNames(value)
+        //     setFormErrors(errors => ({ ...errors, [key]: error }))
+        // }
+        // else if (key === 'phoneNumber') {
+        //     const error = validateMobileNumber(value)
+        //     setFormErrors(errors => ({ ...errors, [key]: error }))
+        // }
+        // else if (key === 'depositAmount') {
+        //     const error = validateNumber(value)
+        //     setFormErrors(errors => ({ ...errors, [key]: error }))
+        // }
+        // else if (key === 'contactPerson') {
+        //     const error = validateNames(value)
+        //     setFormErrors(errors => ({ ...errors, [key]: error }))
+        // }
+        // else if (key.includes('price') || key.includes('product')) {
+        //     const error = validateNumber(value)
+        //     setFormErrors(errors => ({ ...errors, productNPrice: error }))
+        // }
+    }
+
+    const handleBlur = (value, key) => {
+        // Validations
+        // if (key === 'gstNo') {
+        //     const error = validateIDNumbers(key, value, true)
+        //     setFormErrors(errors => ({ ...errors, [key]: error }))
+        // }
+        // else if (key === 'phoneNumber') {
+        //     const error = validateMobileNumber(value, true)
+        //     setFormErrors(errors => ({ ...errors, [key]: error }))
+        // }
+    }
+
+    const handleUpdate = async () => {
+        // const deliveryErrors = validateDeliveryValues(formData)
+        // const devDaysError = validateDevDays(devDays)
+
+        // if (!isEmpty(deliveryErrors) || !isEmpty(devDaysError)) {
+        //     setShake(true)
+        //     setTimeout(() => setShake(false), 820)
+        //     setFormErrors(deliveryErrors)
+        //     setDevDaysError(devDaysError)
+        //     return
+        // }
+
+        // const productsUI = extractProductsFromForm(formData)
+        // const products = getProductsWithIdForDB(productsUI)
+        // const deliveryDays = getDevDaysForDB(devDays)
+        // const formValues = extractDeliveryDetails(formData)
+        // const body = [{ ...formValues, isNew: false, delete: 0, isActive: 0, products, deliveryDays }]
+
+        // const url = '/customer/updateDeliveryDetails'
+        // try {
+        //     setBtnDisabled(true)
+        //     showToast('Delivery details', 'loading', 'PUT')
+        //     const { data: [data] } = await http.POST(url, body)
+        //     updateDeliveryDetails(data)
+        //     showToast('Delivery details', 'success', 'PUT')
+        //     onModalClose(true)
+        //     setBtnDisabled(false)
+        // } catch (error) {
+        //     setBtnDisabled(false)
+        // }
+    }
+
     const onModalClose = (hasSaved) => {
         const formHasChanged = sessionStorage.getItem(TRACKFORM)
         if (formHasChanged && !hasSaved) {
             return setConfirmModal(true)
         }
-        customerOrderIdRef.current = undefined
-        setDCModal(false)
+        orderIdRef.current = undefined
+        setModal(false)
         setBtnDisabled(false)
         setFormData({})
         setFormErrors({})
@@ -115,6 +188,7 @@ const AddMaterials = () => {
     }, [])
 
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
+    const handleModalCancel = useCallback(() => onModalClose(), [])
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
@@ -170,6 +244,24 @@ const AddMaterials = () => {
                         onPageSizeChange={handleSizeChange}
                     />)
             }
+            <CustomModal
+                className={`app-form-modal ${shake ? 'app-shake' : ''}`}
+                visible={modal}
+                btnDisabled={btnDisabled}
+                onOk={handleUpdate}
+                onCancel={handleModalCancel}
+                title={formTitleRef.current}
+                okTxt={formBtnRef.current}
+                track
+            >
+                <MaterialReceivedForm
+                    track
+                    data={formData}
+                    errors={formErrors}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                />
+            </CustomModal>
             <QuitModal
                 visible={confirmModal}
                 onOk={handleConfirmModalOk}

@@ -52,13 +52,9 @@ const Dispatches = () => {
 
     const handleDateSelect = (value) => {
         setOpen(false)
-        let filteredData = dispatchesClone.filter(item => dayjs(value).format(DATEFORMAT) == dayjs(item.dispatchedDate).format(DATEFORMAT))
+        const filteredData = dispatchesClone.filter(item => dayjs(value).format(DATEFORMAT) === dayjs(item.dispatchedDate).format(DATEFORMAT))
         setDispatches(filteredData)
-    }
-
-    const generateFiltered = (original, filterInfo) => {
-        const filtered = original.filter((item) => filterInfo.includes(item.RouteId))
-        setTotalCount(filtered.length)
+        setTotalCount(filteredData.length)
     }
 
     const handleMenuSelect = (key, data) => {

@@ -167,7 +167,7 @@ const Delivery = ({ date }) => {
         try {
             setBtnDisabled(true)
             showToast('DC', 'loading', method)
-            let { data: [data] } = await http[method](url, body)
+            let { data: [data = {}] } = await http[method](url, body)
             showToast('DC', 'success', method)
             optimisticUpdate(data, method)
             onModalClose(true)

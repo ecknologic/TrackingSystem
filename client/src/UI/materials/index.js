@@ -5,13 +5,13 @@ import Header from './header';
 import RequestMaterial from './tabs/RequestMaterial';
 import ReceivedMaterials from './tabs/ReceivedMaterials';
 import MaterialStatus from './tabs/MaterialStatus';
-import AddMaterials from './tabs/AddMaterials';
+import AddMaterials from './tabs/AddReceivedMaterials';
 import ConfirmModal from '../../components/CustomModal';
 import ConfirmMessage from '../../components/ConfirmMessage';
 import ReportsDropdown from '../../components/ReportsDropdown';
 import { getWarehoseId, TRACKFORM } from '../../utils/constants';
 import { resetTrackForm } from '../../utils/Functions';
-import { getBatchIdOptions, getDepartmentOptions, getDriverOptions, getVehicleOptions } from '../../assets/fixtures';
+import { getMaterialOpitons, getVendorOptions } from '../../assets/fixtures';
 import NoContent from '../../components/NoContent';
 
 const Dispatch = () => {
@@ -24,12 +24,12 @@ const Dispatch = () => {
     const [vehiclesList, setVehiclesList] = useState([])
     const clickRef = useRef('')
 
-    const batchIdOptions = useMemo(() => getBatchIdOptions(batchList), [batchList])
-    const driverOptions = useMemo(() => getDriverOptions(driverList), [driverList])
-    const vehicleOptions = useMemo(() => getVehicleOptions(vehiclesList), [vehiclesList])
-    const departmentOptions = useMemo(() => getDepartmentOptions(departmentList), [departmentList])
-    const childProps = useMemo(() => ({ driverList, batchIdOptions, driverOptions, departmentOptions, vehicleOptions }),
-        [batchIdOptions, driverOptions, departmentOptions, vehicleOptions])
+    const materialOptions = useMemo(() => getMaterialOpitons(), [])
+    const vendorOptions = useMemo(() => getVendorOptions(), [])
+    // const driverOptions = useMemo(() => getDriverOptions(driverList), [driverList])
+    // const vehicleOptions = useMemo(() => getVehicleOptions(vehiclesList), [vehiclesList])
+    // const departmentOptions = useMemo(() => getDepartmentOptions(departmentList), [departmentList])
+    const childProps = useMemo(() => ({ materialOptions, vendorOptions }), [materialOptions, vendorOptions])
 
     useEffect(() => {
         getBatchsList()
@@ -94,7 +94,7 @@ const Dispatch = () => {
                     </Tabs>
                 </div>
                 {
-                    activeTab === '1' ? <RequestMaterial />
+                    activeTab === '1' ? <RequestMaterial {...childProps} />
                         : activeTab === '2' ? <MaterialStatus />
                             : activeTab === '3' ? <AddMaterials />
                                 : activeTab === '4' ? <ReceivedMaterials />
