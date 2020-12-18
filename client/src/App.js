@@ -1,15 +1,16 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
 import { getRole, MARKETINGADMIN, MOTHERPLANTADMIN, WAREHOUSEADMIN } from './utils/constants';
+import { resetTrackForm } from './utils/Functions';
 import AccountsDashboard from './UI/accounts/dashboard';
+import MotherplantStock from './UI/stock/motherplant';
+import WarehouseStock from './UI/stock/warehouse';
 import NoContent from './components/NoContent';
 import ViewAccount from './UI/accounts/view';
 import AddAccount from './UI/accounts/add';
 import PageLayout from './UI/page-layout';
-import WarehouseStock from './UI/stock/warehouse';
-import MotherplantStock from './UI/stock/motherplant';
-import { resetTrackForm } from './utils/Functions';
 import Dispatches from './UI/dispatches';
+import Materials from './UI/materials';
 import Login from './UI/Login';
 import './App.css';
 
@@ -26,7 +27,7 @@ const App = () => {
             <Switch>
                <Route path='/stock-details' render={() => requireAuth(<MotherplantStock />)} />
                <Route path='/dispatches' render={() => requireAuth(<Dispatches />)} />
-               <Route path='/materials' render={() => requireAuth(<NoContent content='Design is in progress' />)} />
+               <Route path='/materials' render={() => requireAuth(<Materials />)} />
                <Route path='/quality-control' render={() => requireAuth(<NoContent content='Design is in progress' />)} />
                <Route path='/manage-stock' render={() => requireAuth(<WarehouseStock />)} />
                <Route path='/manage-accounts/add-account' render={() => requireAuth(<AddAccount />)} />
