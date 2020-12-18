@@ -1,5 +1,5 @@
 import { Tabs } from 'antd';
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import Header from './header';
 import StockDetails from './tabs/StockDetails';
 import ReportsDropdown from '../../../components/ReportsDropdown';
@@ -7,15 +7,25 @@ import Delivery from './tabs/Delivery';
 import { TODAYDATE } from '../../../utils/constants';
 import DatePickerPanel from '../../../components/DatePickerPanel';
 import NoContent from '../../../components/NoContent';
+import { http } from '../../../modules/http';
 
 const WarehouseStock = () => {
 
     const [activeTab, setActiveTab] = useState('1')
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
-
+    const [newStockDetails, setStockDetails] = useState({})
+    useEffect(() => {
+        getNewStockDetails()
+    }, [])
+    const getNewStockDetails = async () => {
+        const url = `/warehouse/getNewStockDetails/1`
+        const data = await http.GET(url)
+        setStockDetails(data)
+    }
     const handleDateChange = (date) => {
         setSelectedDate(date)
     }
+
 
     return (
         <Fragment>
@@ -37,7 +47,7 @@ const WarehouseStock = () => {
                     <DatePickerPanel onChange={handleDateChange} />
                 </div>
                 {
-                    activeTab === '1' ? <StockDetails date={selectedDate} />
+                    activeTab === '1' ? <StockDetails date={selectedDate} stockDetails={newStockDetails} />
                         : activeTab === '2' ? <Delivery date={selectedDate} />
                             : <NoContent content='Design is in progress' />
                 }

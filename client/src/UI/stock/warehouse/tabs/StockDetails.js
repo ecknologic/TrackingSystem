@@ -8,7 +8,7 @@ import OFDPanel from '../../../../components/OFDPanel';
 import { http } from '../../../../modules/http';
 import { getWarehoseId } from '../../../../utils/constants';
 
-const StockDetails = ({ date }) => {
+const StockDetails = ({ date, stockDetails }) => {
     const warehouseId = getWarehoseId()
     const [CAS, setCAS] = useState({})
     const [OFD, setOFC] = useState({})
@@ -43,7 +43,7 @@ const StockDetails = ({ date }) => {
 
     return (
         <div className='stock-details-container'>
-            <CASPanel data={CAS} />
+            <CASPanel data={CAS} newStockDetails={stockDetails} />
             <OFDPanel data={OFD} />
             <DSPanel />
             <div className='empty-cans-header'>

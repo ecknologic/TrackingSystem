@@ -32,7 +32,7 @@ router.get('/getdriverDetails/:warehouseId', (req, res) => {
 router.get('/getNewStockDetails/:id', (req, res) => {
   getCurrentDispatchDetailsByDate(new Date(), (err, results) => {
     if (err) res.json(dbError(err));
-    res.json(results);
+    res.json(results.length ? results[0] : {});
   });
 });
 
