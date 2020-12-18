@@ -1,64 +1,31 @@
 import { message, Radio } from 'antd';
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import CustomButton from '../../../components/CustomButton';
 import FormHeader from '../../../components/FormHeader';
 import ExternalDispatchForm from '../forms/ExternalDispatchForm';
 import ConfirmModal from '../../../components/CustomModal';
-import { isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../utils/Functions';
-import { getWarehoseId, TRACKFORM } from '../../../utils/constants';
+import { TRACKFORM } from '../../../utils/constants';
 import ConfirmMessage from '../../../components/ConfirmMessage';
-import { validateExternalDispatchValues, validateMobileNumber, validateNames, validateNumber } from '../../../utils/validations';
 import InputLabel from '../../../components/InputLabel';
-import { getBatchIdOptions, getDepartmentOptions, getDriverOptions, getVehiclesOptions } from '../../../assets/fixtures';
 import { http } from '../../../modules/http';
+import { isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../utils/Functions';
+import { validateExternalDispatchValues, validateMobileNumber, validateNames, validateNumber } from '../../../utils/validations';
 
-const CreateExternalDispatch = ({ goToTab }) => {
+const CreateExternalDispatch = ({ goToTab, driverList, ...rest }) => {
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
     const [shake, setShake] = useState(false)
-    const [batches, setBatches] = useState([])
-    const [driversList, setDrivers] = useState([])
-    const [departments, setDepartmentsList] = useState([])
-    const [vehiclesList, setVehiclesList] = useState([])
-    const batchIdOptions = useMemo(() => getBatchIdOptions(batches), [batches])
-    const driversListOptions = useMemo(() => getDriverOptions(driversList), [driversList])
-    const departmentListOptions = useMemo(() => getDepartmentOptions(departments), [departments])
-    const vehiclesListOptions = useMemo(() => getVehiclesOptions(vehiclesList), [vehiclesList])
 
     useEffect(() => {
         resetTrackForm()
         trackAccountFormOnce()
-        getBatchsList()
-        getDepartmentsList()
-        getDriversList()
-        getVehicleDetails()
 
         return () => {
             removeFormTracker()
         }
     }, [])
-
-    const getBatchsList = async () => {
-        const data = await http.GET('/motherPlant/getBatchNumbers')
-        setBatches(data)
-    }
-
-    const getDriversList = async () => {
-        const data = await http.GET('/warehouse/getdriverDetails/' + getWarehoseId())
-        setDrivers(data)
-    }
-
-    const getDepartmentsList = async () => {
-        const data = await http.GET('/motherPlant/getDepartmentsList?departmentType=warehouse')
-        setDepartmentsList(data)
-    }
-
-    const getVehicleDetails = async () => {
-        const data = await http.GET('/motherPlant/getVehicleDetails')
-        setVehiclesList(data)
-    }
 
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
@@ -66,7 +33,7 @@ const CreateExternalDispatch = ({ goToTab }) => {
 
         // Validations
         if (key === 'driverId') {
-            let selectedDriver = driversList.find(driver => driver.driverId === Number(value))
+            let selectedDriver = driverList.find(driver => driver.driverId === Number(value))
             let { driverName = null, mobileNumber = null } = selectedDriver || {}
             setFormData(data => ({ ...data, driverName, mobileNumber }))
             setFormErrors(errors => ({ ...errors, mobileNumber: '' }))
@@ -148,10 +115,7 @@ const CreateExternalDispatch = ({ goToTab }) => {
                 errors={formErrors}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                batchIdOptions={batchIdOptions}
-                driverOptions={driversListOptions}
-                departmentOptions={departmentListOptions}
-                vehicleOptions={vehiclesListOptions}
+                {...rest}
             />
             {/* <div className='input-container'>
                 <InputLabel name='Select Payment Mode' mandatory />

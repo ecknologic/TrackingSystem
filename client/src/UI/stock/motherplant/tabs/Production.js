@@ -109,7 +109,7 @@ const Production = () => {
 
     return (
         <div className='stock-delivery-container'>
-            <div className='app-table-container prod-table'>
+            <div className='app-table prod-table'>
                 <Table
                     loading={{ spinning: loading, indicator: <Spinner /> }}
                     dataSource={dataSource.slice(sliceFrom, sliceTo)}

@@ -9,6 +9,7 @@ import ConfirmMessage from '../../../components/ConfirmMessage';
 import { TODAYDATE, TRACKFORM } from '../../../utils/constants';
 import DatePickerPanel from '../../../components/DatePickerPanel';
 import { resetTrackForm } from '../../../utils/Functions';
+import NoContent from '../../../components/NoContent';
 
 const MotherplantStock = () => {
 
@@ -71,9 +72,8 @@ const MotherplantStock = () => {
                 }
                 {
                     activeTab === '1' ? <StockDetails goToTab={handleGoToTab} date={selectedDate} />
-                        : activeTab === '2' ? null
-                            : activeTab === '3' ? <Production />
-                                : null
+                        : activeTab === '3' ? <Production />
+                            : <NoContent content='Design is in progress' />
                 }
             </div>
             <ConfirmModal

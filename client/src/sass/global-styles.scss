@@ -965,7 +965,8 @@ $textColorDisabled:rgba(0,0,0,0.55);
 
 // -------------- Various Table styles ------------------- //
 
-.app-table-container {
+.app-table {
+    min-height: 17em;
     overflow: hidden;
     
     .ant-table-thead > tr > th {

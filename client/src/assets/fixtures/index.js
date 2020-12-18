@@ -79,7 +79,7 @@ export const getDriverOptions = (drivers = []) => {
 export const getDepartmentOptions = (departments = []) => {
     return departments.map((item) => <Option key={item.departmentId} value={item.departmentId}>{item.departmentName}</Option>)
 }
-export const getVehiclesOptions = (vehicles = []) => {
+export const getVehicleOptions = (vehicles = []) => {
     return vehicles.map((item) => <Option key={item.vehicleId} value={item.vehicleId}>{item.vehicleNo}</Option>)
 }
 

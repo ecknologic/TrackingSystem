@@ -1,5 +1,6 @@
 import { Tabs } from 'antd';
-import React, { Fragment, useState, useRef, useCallback, useEffect } from 'react';
+import { http } from '../../modules/http';
+import React, { Fragment, useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import Header from './header';
 import Dispatches from './tabs/Dispatches';
 import CreateDispatch from './tabs/CreateDispatch';
@@ -7,18 +8,53 @@ import CreateExternalDispatch from './tabs/CreateExternalDispatch';
 import ConfirmModal from '../../components/CustomModal';
 import ConfirmMessage from '../../components/ConfirmMessage';
 import ReportsDropdown from '../../components/ReportsDropdown';
-import { TRACKFORM } from '../../utils/constants';
+import { getWarehoseId, TRACKFORM } from '../../utils/constants';
 import { resetTrackForm } from '../../utils/Functions';
+import { getBatchIdOptions, getDepartmentOptions, getDriverOptions, getVehicleOptions } from '../../assets/fixtures';
 
 const Dispatch = () => {
-
+    const warehouseId = getWarehoseId()
     const [activeTab, setActiveTab] = useState('1')
     const [confirm, setConfirm] = useState(false)
+    const [batchList, setBatchList] = useState([])
+    const [driverList, setDrivers] = useState([])
+    const [departmentList, setDepartmentsList] = useState([])
+    const [vehiclesList, setVehiclesList] = useState([])
     const clickRef = useRef('')
 
+    const batchIdOptions = useMemo(() => getBatchIdOptions(batchList), [batchList])
+    const driverOptions = useMemo(() => getDriverOptions(driverList), [driverList])
+    const vehicleOptions = useMemo(() => getVehicleOptions(vehiclesList), [vehiclesList])
+    const departmentOptions = useMemo(() => getDepartmentOptions(departmentList), [departmentList])
+    const childProps = useMemo(() => ({ driverList, batchIdOptions, driverOptions, departmentOptions, vehicleOptions }),
+        [batchIdOptions, driverOptions, departmentOptions, vehicleOptions])
+
     useEffect(() => {
-        resetTrackForm()
+        getBatchsList()
+        getDriverList()
+        getVehicleDetails()
+        getDepartmentsList()
     }, [])
+
+    const getBatchsList = async () => {
+        const data = await http.GET('/motherPlant/getBatchNumbers')
+        setBatchList(data)
+    }
+
+    const getDriverList = async () => {
+        const data = await http.GET(`/warehouse/getdriverDetails/${warehouseId}`)
+        setDrivers(data)
+    }
+
+    const getDepartmentsList = async () => {
+        const data = await http.GET('/motherPlant/getDepartmentsList?departmentType=warehouse')
+        setDepartmentsList(data)
+    }
+
+    const getVehicleDetails = async () => {
+        const data = await http.GET('/motherPlant/getVehicleDetails')
+        setVehiclesList(data)
+    }
 
     const handleTabClick = (key) => {
         const formHasChanged = sessionStorage.getItem(TRACKFORM)
@@ -29,10 +65,7 @@ const Dispatch = () => {
         else setActiveTab(key)
     }
 
-    const handleGoToTab = (key) => {
-        setActiveTab(key)
-    }
-
+    const handleGoToTab = useCallback((key) => setActiveTab(key), [])
     const handleConfirmCancel = useCallback(() => setConfirm(false), [])
     const handleConfirmOk = useCallback(() => {
         setConfirm(false)
@@ -58,8 +91,8 @@ const Dispatch = () => {
                 </div>
                 {
                     activeTab === '1' ? <Dispatches />
-                        : activeTab === '2' ? <CreateDispatch goToTab={handleGoToTab} />
-                            : activeTab === '3' ? <CreateExternalDispatch goToTab={handleGoToTab} />
+                        : activeTab === '2' ? <CreateDispatch goToTab={handleGoToTab} {...childProps} />
+                            : activeTab === '3' ? <CreateExternalDispatch goToTab={handleGoToTab} {...childProps} />
                                 : null
                 }
             </div>

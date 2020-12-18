@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
 import { getRole, MARKETINGADMIN, MOTHERPLANTADMIN, WAREHOUSEADMIN } from './utils/constants';
 import AccountsDashboard from './UI/accounts/dashboard';
@@ -8,11 +8,17 @@ import AddAccount from './UI/accounts/add';
 import PageLayout from './UI/page-layout';
 import WarehouseStock from './UI/stock/warehouse';
 import MotherplantStock from './UI/stock/motherplant';
+import { resetTrackForm } from './utils/Functions';
 import Dispatches from './UI/dispatches';
 import Login from './UI/Login';
 import './App.css';
 
 const App = () => {
+
+   useEffect(() => {
+      resetTrackForm()
+   }, [])
+
    return (
       <Router>
          <Route exact path='/' component={Login} />

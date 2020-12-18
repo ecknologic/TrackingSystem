@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { DatePicker, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { http } from '../../../modules/http';
@@ -7,17 +8,14 @@ import { ScheduleIcon } from '../../../components/SVG_Icons';
 import TableAction from '../../../components/TableAction';
 import SearchInput from '../../../components/SearchInput';
 import ConfirmMessage from '../../../components/ConfirmMessage';
-import { getWarehoseId, TRACKFORM } from '../../../utils/constants';
+import { TRACKFORM } from '../../../utils/constants';
 import CustomPagination from '../../../components/CustomPagination';
 import { dispatchColumns } from '../../../assets/fixtures';
 import { disableFutureDates } from '../../../utils/Functions';
-import dayjs from 'dayjs';
 const DATEFORMAT = 'DD-MM-YYYY'
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
-const Dispatches = ({ date }) => {
-    const warehouseId = getWarehoseId()
-    const [drivers, setDrivers] = useState([])
+const Dispatches = () => {
     const [loading, setLoading] = useState(true)
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
@@ -27,7 +25,6 @@ const Dispatches = ({ date }) => {
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [DCModal, setDCModal] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
-    const [filterInfo, setFilterInfo] = useState([])
     const [shake, setShake] = useState(false)
     const [open, setOpen] = useState(false)
     const [dispatches, setDispatches] = useState([])
@@ -38,24 +35,15 @@ const Dispatches = ({ date }) => {
     const DCFormBtnRef = useRef()
 
     useEffect(() => {
-        // getDrivers()
         getDispatches()
     }, [])
 
-    useEffect(() => {
-        // getDeliveries()
-    }, [date])
     const getDispatches = async () => {
         const data = await http.GET('/motherPlant/getDispatchDetails')
         setDispatches(data)
         setDispatchesClone(data)
         setTotalCount(data.length)
         setLoading(false)
-    }
-    const getDrivers = async () => {
-        const url = `/warehouse/getdriverDetails/${warehouseId}`
-        const data = await http.GET(url)
-        setDrivers(data)
     }
 
     const datePickerStatus = (status) => {
@@ -163,7 +151,7 @@ const Dispatches = ({ date }) => {
 
                 </div>
             </div>
-            <div className='app-table-container dispatch-table'>
+            <div className='app-table dispatch-table'>
                 <Table
                     loading={{ spinning: loading, indicator: <Spinner /> }}
                     dataSource={dataSource.slice(sliceFrom, sliceTo)}

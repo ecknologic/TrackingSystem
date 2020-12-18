@@ -1,64 +1,30 @@
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import { message } from 'antd';
+import React, { useState, useCallback, useEffect } from 'react';
 import CustomButton from '../../../components/CustomButton';
 import FormHeader from '../../../components/FormHeader';
 import DispatchForm from '../forms/DispatchForm';
 import ConfirmModal from '../../../components/CustomModal';
-import { isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../utils/Functions';
-import { getBatchIdOptions, getDepartmentOptions, getDriverOptions, getVehiclesOptions } from '../../../assets/fixtures';
-
-import { getWarehoseId, TRACKFORM } from '../../../utils/constants';
+import { TRACKFORM } from '../../../utils/constants';
 import ConfirmMessage from '../../../components/ConfirmMessage';
-import { validateDispatchValues, validateMobileNumber, validateNames, validateNumber, validateVehicleNo } from '../../../utils/validations';
 import { http } from '../../../modules/http';
-import { message } from 'antd';
+import { isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../utils/Functions';
+import { validateDispatchValues, validateMobileNumber, validateNames, validateNumber } from '../../../utils/validations';
 
-const CreateDispatch = ({ goToTab }) => {
+const CreateDispatch = ({ goToTab, driverList, ...rest }) => {
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
     const [shake, setShake] = useState(false)
-    const [batches, setBatches] = useState([])
-    const [driversList, setDrivers] = useState([])
-    const [departments, setDepartmentsList] = useState([])
-    const [vehiclesList, setVehiclesList] = useState([])
-    const batchIdOptions = useMemo(() => getBatchIdOptions(batches), [batches])
-    const driversListOptions = useMemo(() => getDriverOptions(driversList), [driversList])
-    const departmentListOptions = useMemo(() => getDepartmentOptions(departments), [departments])
-    const vehiclesListOptions = useMemo(() => getVehiclesOptions(vehiclesList), [vehiclesList])
 
     useEffect(() => {
         resetTrackForm()
         trackAccountFormOnce()
-        getBatchsList()
-        getDepartmentsList()
-        getDriversList()
-        getVehicleDetails()
 
         return () => {
             removeFormTracker()
         }
     }, [])
-
-    const getBatchsList = async () => {
-        const data = await http.GET('/motherplant/getBatchNumbers')
-        setBatches(data)
-    }
-
-    const getDriversList = async () => {
-        const data = await http.GET('/warehouse/getdriverDetails/' + getWarehoseId())
-        setDrivers(data)
-    }
-
-    const getDepartmentsList = async () => {
-        const data = await http.GET('/motherplant/getDepartmentsList?departmentType=warehouse')
-        setDepartmentsList(data)
-    }
-
-    const getVehicleDetails = async () => {
-        const data = await http.GET('/motherplant/getVehicleDetails')
-        setVehiclesList(data)
-    }
 
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
@@ -66,7 +32,7 @@ const CreateDispatch = ({ goToTab }) => {
 
         // Validations
         if (key === 'driverId') {
-            let selectedDriver = driversList.filter(driver => driver.driverId == value)
+            let selectedDriver = driverList.filter(driver => driver.driverId == value)
             let { driverName = null, mobileNumber = null } = selectedDriver.length ? selectedDriver[0] : {}
             setFormData(data => ({ ...data, driverName, mobileNumber }))
         }
@@ -143,10 +109,7 @@ const CreateDispatch = ({ goToTab }) => {
                 errors={formErrors}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                batchIdOptions={batchIdOptions}
-                driverOptions={driversListOptions}
-                departmentOptions={departmentListOptions}
-                vehicleOptions={vehiclesListOptions}
+                {...rest}
             />
             <div className='app-footer-buttons-container'>
                 <CustomButton
