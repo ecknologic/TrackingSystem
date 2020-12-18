@@ -118,6 +118,13 @@ router.get('/getProductionDetails', (req, res) => {
         res.json(results);
     })
 });
+router.get('/getProductByBatch/:batchNo', (req, res) => {
+    let { batchNo } = req.params
+    motherPlantDbQueries.getProductsByBatch(batchNo, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        res.json(results);
+    })
+});
 
 router.get('/getProductionDetailsByDate/:date', (req, res) => {
     let { date } = req.params;

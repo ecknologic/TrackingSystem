@@ -1,9 +1,13 @@
-const { executeGetQuery, executePostOrUpdateQuery } = require('../../utils/functions.js');
-const GETDISPATCHQUERY = "SELECT d.dispatchType,d.dispatchAddress,d.DCNO,d.batchId,d.product20L,d.product1L,d.product500ML,d.product250ML,d.driverName,d.dispatchTo,d.dispatchedDate,v.vehicleType,v.vehicleNo,m.departmentName from dispatches d INNER JOIN VehicleDetails v ON d.vehicleNo=v.vehicleId INNER JOIN departmentmaster m ON d.dispatchTo=m.departmentId ORDER BY d.dispatchedDate DESC";
+const { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery } = require('../../utils/functions.js');
+const GETDISPATCHQUERY = "SELECT d.dispatchType,d.dispatchAddress,d.DCNO,d.batchId,d.product20L,d.product1L,d.product500ML,d.product250ML,d.driverName,d.dispatchTo,d.dispatchedDate,v.vehicleType,v.vehicleNo from dispatches d INNER JOIN VehicleDetails v ON d.vehicleNo=v.vehicleId ORDER BY d.dispatchedDate DESC";
 var motherPlantDbQueries = {}
 motherPlantDbQueries.getProductionDetails = async (callback) => {
     let query = "select * from production ORDER BY productionDate DESC";
     return executeGetQuery(query, callback)
+}
+motherPlantDbQueries.getProductsByBatch = async (batchId, callback) => {
+    let query = `SELECT SUM(p.product20L) AS product20LCount,SUM(p.product1L) AS v,SUM(p.product500ML) product500MLCount,SUM(p.product250ML) product250MLCount FROM production p WHERE  batchId=?`;
+    return executeGetParamsQuery(query, [batchId], callback)
 }
 motherPlantDbQueries.getBatchNumbers = async (callback) => {
     let query = "select batchId from production";
@@ -82,8 +86,8 @@ motherPlantDbQueries.addDispatchDetails = async (input, callback) => {
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.createRM = async (input, callback) => {
-    let query = "insert into requiredrawmaterial (itemName,description,recordLevel,minOrderLevel) values(?,?,?,?)";
-    let requestBody = [input.itemName, input.description, input.recordLevel, input.minOrderLevel]
+    let query = "insert into requiredrawmaterial (itemName,description,recordLevel,minOrderLevel,itemCode,vendorName) values(?,?,?,?,?,?)";
+    let requestBody = [input.itemName, input.description, input.recordLevel, input.minOrderLevel, input.itemCode, input.vendorName]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.createRMReceipt = async (input, callback) => {
