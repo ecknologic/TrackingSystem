@@ -1,13 +1,7 @@
-const dayjs = require('dayjs');
 var express = require('express');
-
 var router = express.Router();
-const { getProductionDetails, getVehicleDetails, getDispatchDetails, getAllQCDetails,
-    createQC, getInternalQualityControl, createInternalQC, addProductionDetails, addVehicleDetails,
-    getNatureOfBussiness, addDispatchDetails, getRMDetails, createRM, createRMReceipt, getRMReceiptDetails,
-    updateProductionDetails, getBatchNumbers, updateDispatchDetails, getDepartmentsList, getCurrentProductionDetailsByDate } = require('../dbQueries/motherplant/index.js');
-const { DATEFORMAT } = require('../utils/constants.js');
-const { dbError, getBatchId } = require('../utils/functions.js');
+const motherPlantDbQueries = require('../dbQueries/motherplant/queries');
+const { dbError, getBatchId } = require('../utils/functions');
 
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -18,7 +12,7 @@ router.use(function timeLog(req, res, next) {
 
 
 router.get('/getQualityControl', (req, res) => {
-    getAllQCDetails((err, results) => {
+    motherPlantDbQueries.getAllQCDetails((err, results) => {
         if (err) res.status(500).json(dbError(err));
         res.json(results);
     });
@@ -26,21 +20,23 @@ router.get('/getQualityControl', (req, res) => {
 
 router.post('/createQC', (req, res) => {
     let input = req.body;
-    createQC(input, (err, results) => {
+    motherPlantDbQueries.createQC(input, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else
             res.json("Record Inserted");
     });
 })
+
 router.get('/getInternalQualityControl', (req, res) => {
-    getInternalQualityControl((err, results) => {
+    motherPlantDbQueries.getInternalQualityControl((err, results) => {
         if (err) res.status(500).json(dbError(err));
         res.json(results);
     });
 });
+
 router.post('/createInternalQC', (req, res) => {
     let input = req.body;
-    createInternalQC(input, (err, results) => {
+    motherPlantDbQueries.createInternalQC(input, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else
             res.json("Record Inserted");
@@ -48,7 +44,7 @@ router.post('/createInternalQC', (req, res) => {
 })
 
 router.get('/getRMDetails', (req, res) => {
-    getRMDetails((err, results) => {
+    motherPlantDbQueries.getRMDetails((err, results) => {
         if (err) res.status(500).json(dbError(err));
         res.json(results);
     });
@@ -56,14 +52,15 @@ router.get('/getRMDetails', (req, res) => {
 
 router.post('/createRM', (req, res) => {
     let input = req.body;
-    createRM(input, (err, results) => {
+    motherPlantDbQueries.createRM(input, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else
             res.json("Record Inserted");
     });
 })
+
 router.get('/getRMReceipt', (req, res) => {
-    getRMReceiptDetails((err, results) => {
+    motherPlantDbQueries.getRMReceiptDetails((err, results) => {
         if (err) res.status(500).json(dbError(err));
         res.json(results);
     });
@@ -71,7 +68,7 @@ router.get('/getRMReceipt', (req, res) => {
 
 router.post('/createRMReceipt', (req, res) => {
     let input = req.body;
-    createRMReceipt(input, (err, results) => {
+    motherPlantDbQueries.createRMReceipt(input, (err, results) => {
         if (err) res.status(500).json(err.sqlMessage);
         else
             res.json("Record Inserted");
@@ -79,7 +76,7 @@ router.post('/createRMReceipt', (req, res) => {
 })
 
 router.get('/getDispatchDetails', (req, res) => {
-    getDispatchDetails((err, results) => {
+    motherPlantDbQueries.getDispatchDetails((err, results) => {
         if (err) res.status(500).json(dbError(err));
         res.json((results));
     });
@@ -87,81 +84,85 @@ router.get('/getDispatchDetails', (req, res) => {
 
 router.post('/addDispatchDetails', (req, res) => {
     let input = req.body;
-    addDispatchDetails(input, (err, results) => {
+    motherPlantDbQueries.addDispatchDetails(input, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
             input.DCNO = `DC-${results.insertId}`
             input.dispatchId = results.insertId
-            updateDispatchDetails(input, (updateErr, data) => {
+            motherPlantDbQueries.updateDispatchDetails(input, (updateErr, data) => {
                 if (updateErr) console.log(updateErr)
                 else res.json("Record Inserted");
             })
         }
     });
 })
+
 router.post('/updateDispatchDetails', (req, res) => {
     let input = req.body;
-    updateDispatchDetails(input, (updateErr, data) => {
+    motherPlantDbQueries.updateDispatchDetails(input, (updateErr, data) => {
         if (updateErr) console.log(updateErr)
     })
     res.json("Record Updated");
 })
+
 router.get('/getDepartmentsList', (req, res) => {
-    getDepartmentsList(req.query.departmentType, (err, results) => {
+    motherPlantDbQueries.getDepartmentsList(req.query.departmentType, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         res.json((results));
     });
 });
 
 router.get('/getProductionDetails', (req, res) => {
-    getProductionDetails((err, results) => {
+    motherPlantDbQueries.getProductionDetails((err, results) => {
         if (err) res.status(500).json(dbError(err));
         res.json(results);
     })
 });
 
 router.get('/getProductionDetailsByDate/:date', (req, res) => {
-    getCurrentProductionDetailsByDate((err, results) => {
+    let { date } = req.params;
+    motherPlantDbQueries.getCurrentProductionDetailsByDate(date, (err, productionResult) => {
         if (err) res.status(500).json(dbError(err));
-        else if (results.length) {
-            let product20LCount = 0, product1LCount = 0, product500MLCount = 0, product250MLCount = 0, count = 0
-            for (let item of results) {
-                count++
-                if (dayjs(item.productionDate).format(DATEFORMAT) <= dayjs(req.params.date).format(DATEFORMAT)) {
-                    if (dayjs(item.productionDate).format(DATEFORMAT) == dayjs(item.dispatchedDate).format(DATEFORMAT)) {
-                        product20LCount = product20LCount + Math.abs(item.product20L - item.dispatched20L)
-                        product1LCount = product1LCount + Math.abs(item.product1L - item.dispatched1L)
-                        product500MLCount = product500MLCount + Math.abs(item.product500ML - item.dispatched500ML)
-                        product250MLCount = product250MLCount + Math.abs(item.product250ML - item.dispatched250ML)
-                    } else {
-                        product20LCount = product20LCount++ // 100 - 50 => 50
-                        product1LCount = product1LCount++
-                        product500MLCount = product500MLCount++
-                        product250MLCount = product250MLCount++
-                    }
-                }
-                if (count == results.length)
+        else if (productionResult.length) {
+            motherPlantDbQueries.getCurrentDispatchDetailsByDate(date, (dispatchErr, dispatchResults) => {
+                if (dispatchErr) res.status(500).json(dbError(err));
+                else {
+                    let product20LCount = 0, product1LCount = 0, product500MLCount = 0, product250MLCount = 0, count = 0
+
+                    let productionObj = productionResult[0]
+                    let { total20LCans = 0, total1LBoxes = 0, total500MLBoxes = 0, total250MLBoxes = 0 } = productionObj
+
+                    let dispatchedObj = dispatchResults.length ? dispatchResults[0] : {}
+                    let { total20LCans: dispatched20L = 0, total1LBoxes: dispatched1L = 0, total500MLBoxes: dispatched500ML = 0, total250MLBoxes: dispatched250ML = 0 } = dispatchedObj
+
+                    product20LCount = total20LCans - dispatched20L
+                    product1LCount = total1LBoxes - dispatched1L
+                    product500MLCount = total500MLBoxes - dispatched500ML
+                    product250MLCount = total250MLBoxes - dispatched250ML
                     res.json({ product20LCount, product1LCount, product500MLCount, product250MLCount });
-            }
+                }
+            })
         }
+        else res.json({ product20LCount: 0, product1LCount: 0, product500MLCount: 0, product250MLCount: 0 });
     })
 });
+
 router.get('/getBatchNumbers', (req, res) => {
-    getBatchNumbers((err, results) => {
+    motherPlantDbQueries.getBatchNumbers((err, results) => {
         if (err) res.status(500).json(dbError(err));
         res.json(results);
     })
 });
 
 router.get('/getNatureOfBussiness', (req, res) => {
-    getNatureOfBussiness((err, results) => {
+    motherPlantDbQueries.getNatureOfBussiness((err, results) => {
         if (err) res.status(500).json(dbError(err));
         res.json(results);
     });
 });
 
 router.get('/getVehicleDetails', (req, res) => {
-    getVehicleDetails((err, results) => {
+    motherPlantDbQueries.getVehicleDetails((err, results) => {
         if (err) res.status(500).json(dbError(err));
         res.json(results);
     });
@@ -169,7 +170,7 @@ router.get('/getVehicleDetails', (req, res) => {
 
 router.post('/addVehicleDetails', (req, res) => {
     let input = req.body;
-    addVehicleDetails(input, (err, results) => {
+    motherPlantDbQueries.addVehicleDetails(input, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else
             res.json("Record Inserted");
@@ -178,13 +179,13 @@ router.post('/addVehicleDetails', (req, res) => {
 
 router.post('/addProductionDetails', (req, res) => {
     let input = req.body;
-    addProductionDetails(input, (err, results) => {
+    motherPlantDbQueries.addProductionDetails(input, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
             input.batchId = getBatchId(input.shiftType)
             input.productionDate = new Date()
             input.productionid = results.insertId
-            updateProductionDetails(input, (updateErr, data) => {
+            motherPlantDbQueries.updateProductionDetails(input, (updateErr, data) => {
                 if (updateErr) res.status(500).json(dbError(updateErr));
                 else res.json("Record Inserted");
             })
