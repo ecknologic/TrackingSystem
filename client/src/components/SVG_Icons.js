@@ -192,8 +192,8 @@ const CardViewSvgGrey = () => <CardViewComponent color={greyColor} />
 const ListViewSvg = () => <ListViewComponent color={primaryColor} />
 const ListViewSvgGrey = () => <ListViewComponent color={greyColor} />
 
-export const RightChevronIconGrey = props => <Icon component={RightChevronSvgGrey} {...props} />
-export const LeftChevronIconGrey = props => <Icon component={LeftChevronSvgGrey} {...props} />
+export const RightChevronIconGrey = ({ currentSlide, slideCount, ...props }) => <Icon component={RightChevronSvgGrey} {...props} />
+export const LeftChevronIconGrey = ({ currentSlide, slideCount, ...props }) => <Icon component={LeftChevronSvgGrey} {...props} />
 export const ScheduleIcon = props => <Icon component={ScheduleSvg} {...props} />
 export const TrashIconGrey = props => <Icon component={TrashSvgGrey} {...props} />
 export const EditIconGrey = props => <Icon component={EditSvgGrey} {...props} />
