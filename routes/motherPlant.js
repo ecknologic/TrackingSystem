@@ -6,7 +6,7 @@ const { INSERTMESSAGE, UPDATEMESSAGE } = require('../utils/constants');
 let departmentId;
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
-    departmentId = req.headers['departmentid'] || 0
+    departmentId = req.headers['departmentid'] || 1
     next();
 });
 
@@ -79,8 +79,27 @@ router.post('/updateRM', (req, res) => {
     })
 })
 
-router.get('/getRMReceipt', (req, res) => {
+router.post('/updateRMStatus', (req, res) => {
+    let input = req.body;
+    motherPlantDbQueries.updateRMStatus(input, (updateErr, updatedData) => {
+        if (updateErr) res.status(500).json(dbError(err));
+        else res.json(UPDATEMESSAGE)
+    })
+})
+
+router.get('/getRMReceiptDetails', (req, res) => {
     motherPlantDbQueries.getRMReceiptDetails(departmentId, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.json(results);
+    });
+});
+
+router.get('/getReceiptDetails/:RMId', (req, res) => {
+    let input = {
+        departmentId,
+        rmId: req.params.RMId
+    }
+    motherPlantDbQueries.getReceiptDetailsByRMId(input, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else res.json(results);
     });
@@ -140,6 +159,7 @@ router.get('/getProductionDetails', (req, res) => {
         else res.json(results);
     })
 });
+
 router.get('/getProductByBatch/:batchNo', (req, res) => {
     let { batchNo } = req.params
     let input = {

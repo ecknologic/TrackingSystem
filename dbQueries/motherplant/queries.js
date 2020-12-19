@@ -47,6 +47,12 @@ motherPlantDbQueries.getRMReceiptDetails = async (departmentId, callback) => {
     let query = `select * from rawmaterialreceipt WHERE departmentId=${departmentId}`;
     return executeGetQuery(query, callback)
 }
+
+motherPlantDbQueries.getReceiptDetailsByRMId = async (input, callback) => {
+    let query = `select rmr.receiptDate,rmr.receiptNo,rmr.invoiceNo,rmr.taxAmount,rmr.invoiceValue,rmr.rawmaterialId,rmr.invoiceDate,rmr.managerName,rmr.receiptImage,rm.itemName,rm.itemCode,rm.vendorName,rm.approvedDate,rm.description from rawmaterialreceipt rmr INNER JOIN requiredrawmaterial rm on rmr.rawmaterialId=rm.rawmaterialid WHERE rmr.departmentId=? AND rmr.rawmaterialId=?`;
+    return executeGetParamsQuery(query, [input.departmentId, input.rmId], callback)
+}
+
 motherPlantDbQueries.getDepartmentsList = async (deptType, callback) => {
     let query = `select * from departmentmaster where departmentType="${deptType}"`
     return executeGetQuery(query, callback)
@@ -96,20 +102,31 @@ motherPlantDbQueries.createRM = async (input, callback) => {
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.createRMReceipt = async (input, callback) => {
-    let query = "insert into rawmaterialreceipt (receiptdate,receivedFromParty,invoiceNo,itemreceived,price,qtyReceived,tax,invoiceValue,rawmaterialId,invoiceDate,departmentId) values(?,?,?,?,?,?,?,?,?,?,?)";
-    let requestBody = [input.receiptdate, input.receivedFromParty, input.invoiceNo, input.itemreceived, input.price, input.qtyReceived, input.tax, input.invoiceValue, input.rawmaterialId, input.invoiceDate, input.departmentId]
+    let query = "insert into rawmaterialreceipt (receiptNo,invoiceNo,taxAmount,invoiceAmount,rawmaterialId,invoiceDate,departmentId,managerName,receiptImage) values(?,?,?,?,?,?,?,?,?)";
+    const { receiptNo, invoiceNo, taxAmount, invoiceAmount, rawmaterialId, invoiceDate, departmentId, managerName } = input
+    let receiptImage = Buffer.from(input.receiptImage.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+    let requestBody = [receiptNo, invoiceNo, taxAmount, invoiceAmount, rawmaterialId, invoiceDate, departmentId, managerName, receiptImage]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
+
 motherPlantDbQueries.updateProductionDetails = async (input, callback) => {
     let query = `update production set batchId=?,productionDate=?,phLevel=?,TDS=?,ozoneLevel=?,product20L=?,product1L=?,product500ML=?,product250ML=?,managerName=?,shiftType=? where productionid=${input.productionid}`;
     let requestBody = [input.batchId, input.productionDate, input.phLevel, input.TDS, input.ozoneLevel, input.product20L, input.product1L, input.product500ML, input.product250ML, input.managerName, input.shiftType]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
+
 motherPlantDbQueries.updateRMDetails = async (input, callback) => {
     let query = `update requiredrawmaterial set orderId=?,itemName=?,description=?,recordLevel=?,minOrderLevel=?,itemCode=?,vendorName=? where rawmaterialid=${input.rawmaterialid}`;
     let requestBody = [input.orderId, input.itemName, input.description, input.recordLevel, input.minOrderLevel, input.itemCode, input.vendorName]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
+
+motherPlantDbQueries.updateRMStatus = async (input, callback) => {
+    let query = `update requiredrawmaterial set status=? where rawmaterialid=${input.rawmaterialid}`;
+    let requestBody = [input.status]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+
 motherPlantDbQueries.updateDispatchDetails = async (input, callback) => {
     let query = `update dispatches SET DCNO=?,vehicleNo=?,driverId=?,driverName=?,dispatchTo=?,batchId=?,product20L=?,product1L=?,product500ML=?,product250ML=?,managerName=?,dispatchAddress=? where dispatchId="${input.dispatchId}"`;
     let requestBody = [input.DCNO, input.vehicleNo, input.driverId, input.driverName, input.dispatchTo, input.batchId, input.product20L, input.product1L, input.product500ML, input.product250ML, input.managerName, input.dispatchAddress]
