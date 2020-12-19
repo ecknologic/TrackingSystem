@@ -236,8 +236,8 @@ export const requestedMaterialColumns = [
     },
     {
         title: 'Product Details',
-        dataIndex: 'productDetails',
-        key: 'productDetails',
+        dataIndex: 'itemName',
+        key: 'itemName',
     },
     {
         title: 'Vendor Name',
@@ -250,14 +250,14 @@ export const requestedMaterialColumns = [
         dataIndex: 'recordLevel',
     },
     {
-        title: 'Order level',
+        title: 'Min Order level',
         dataIndex: 'minOrderLevel',
         key: 'minOrderLevel',
     },
     {
         title: 'Approval Status',
-        dataIndex: 'dateAndTime',
-        key: 'dateAndTime',
+        dataIndex: 'status',
+        key: 'status',
     },
     {
         title: 'Actions',

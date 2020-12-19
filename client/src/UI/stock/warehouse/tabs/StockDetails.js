@@ -6,21 +6,27 @@ import ECPanel from '../../../../components/ECPanel';
 import ERCPanel from '../../../../components/ERCPanel';
 import OFDPanel from '../../../../components/OFDPanel';
 import { http } from '../../../../modules/http';
-import { getWarehoseId } from '../../../../utils/constants';
+import { getWarehoseId, TODAYDATE } from '../../../../utils/constants';
 
-const StockDetails = ({ date, stockDetails }) => {
+const StockDetails = ({ date }) => {
     const warehouseId = getWarehoseId()
     const [CAS, setCAS] = useState({})
     const [OFD, setOFC] = useState({})
     const [EC, setEC] = useState({})
+    const [newStock, setNewStock] = useState({})
 
     useEffect(() => {
         getCAS()
     }, [])
 
     useEffect(() => {
+        const isToday = (date === TODAYDATE)
         getOFD()
         getEC()
+
+        if (isToday) getNewStock()
+        else setNewStock({})
+
     }, [date])
 
     const getCAS = async () => {
@@ -41,9 +47,15 @@ const StockDetails = ({ date, stockDetails }) => {
         setEC(data)
     }
 
+    const getNewStock = async () => {
+        const url = `/warehouse/getNewStockDetails/1`
+        const data = await http.GET(url)
+        setNewStock(data)
+    }
+
     return (
         <div className='stock-details-container'>
-            <CASPanel data={CAS} newStockDetails={stockDetails} />
+            <CASPanel data={CAS} newStock={newStock} />
             <OFDPanel data={OFD} />
             <DSPanel />
             <div className='empty-cans-header'>

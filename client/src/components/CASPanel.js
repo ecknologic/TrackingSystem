@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import CustomButton from './CustomButton';
 
-const CASPanel = ({ data, newStockDetails }) => {
-    console.log("DBDHBHD", newStockDetails)
-    const { total20LCans: newStock20L = 0, total1LBoxes: newStock1L = 0, total500MLBoxes: newStock500ML = 0, total250MLBoxes: newStock250ML = 0 } = newStockDetails
+const CASPanel = ({ data, newStock }) => {
+
+    const { total20LCans: newStock20L = 0, total1LBoxes: newStock1L = 0, total500MLBoxes: newStock500ML = 0, total250MLBoxes: newStock250ML = 0 } = newStock
     const { total1LBoxes, total20LCans, total250MLBoxes, total500MLBoxes } = data
+
     return (
         <div className='stock-panel cas-panel-container'>
             <div className='box titles'>

@@ -27,23 +27,22 @@ const MaterialStatus = () => {
     const [confirmModal, setConfirmModal] = useState(false)
     const [shake, setShake] = useState(false)
     const [open, setOpen] = useState(false)
-    const [dispatches, setDispatches] = useState([])
-    const [dispatchesClone, setDispatchesClone] = useState([])
+    const [RM, setRM] = useState([])
+    const [RMClone, setRMClone] = useState([])
 
     const customerOrderIdRef = useRef()
     const DCFormTitleRef = useRef()
     const DCFormBtnRef = useRef()
 
     useEffect(() => {
-        getDispatches()
+        getRM()
     }, [])
 
-    const getDispatches = async () => {
+    const getRM = async () => {
         const data = await http.GET('/motherPlant/getRMDetails')
-        console.log('data>>>>', data)
-        // setDispatches(data)
-        // setDispatchesClone(data)
-        // setTotalCount(data.length)
+        setRM(data)
+        setRMClone(data)
+        setTotalCount(data.length)
         setLoading(false)
     }
 
@@ -53,12 +52,8 @@ const MaterialStatus = () => {
 
     const handleDateSelect = (value) => {
         setOpen(false)
-        let filteredData = dispatchesClone.filter(item => dayjs(value).format(DATEFORMAT) == dayjs(item.dispatchedDate).format(DATEFORMAT))
-        setDispatches(filteredData)
-    }
-
-    const generateFiltered = (original, filterInfo) => {
-        const filtered = original.filter((item) => filterInfo.includes(item.RouteId))
+        const filtered = RMClone.filter(item => dayjs(value).format(DATEFORMAT) === dayjs(item.requestedDate).format(DATEFORMAT))
+        setRM(filtered)
         setTotalCount(filtered.length)
     }
 
@@ -93,22 +88,22 @@ const MaterialStatus = () => {
         setFormErrors({})
     }
 
-    const dataSource = useMemo(() => dispatches.map((dispatch) => {
-        const { DCNO: dcnumber, itemCode, requestedDate, departmentName, dispatchType, vehicleNo,
-            dispatchAddress, vehicleType, driverName, status } = dispatch
+    const dataSource = useMemo(() => RM.map((dispatch) => {
+        const { rawmaterialid: key, orderId, itemCode, itemName, requestedDate, recordLevel,
+            minOrderLevel, vendorName, status } = dispatch
         return {
-            key: dcnumber,
-            dcnumber,
+            key,
+            orderId,
             itemCode,
-            vehicleNo: vehicleNo + ' ' + vehicleType,
-            driverName,
-            dispatchTo: dispatchType === 'Internal' ? departmentName : dispatchAddress,
+            recordLevel,
+            vendorName,
+            minOrderLevel,
+            itemName,
             dateAndTime: dayjs(requestedDate).format('DD/MM/YYYY'),
-            productionDetails: renderOrderDetails(dispatch),
             status: renderStatus(status),
             action: <TableAction onSelect={({ key }) => handleMenuSelect(key, dispatch)} />
         }
-    }), [dispatches])
+    }), [RM])
 
     const handleConfirmModalOk = useCallback(() => {
         setConfirmModal(false);
@@ -185,20 +180,13 @@ const MaterialStatus = () => {
 }
 
 const renderStatus = (status) => {
-    const color = status ? '#0EDD4D' : '#A10101'
-    const text = status ? status : 'Pending'
+    const color = status === 'Pending' ? '#A10101' : '#0EDD4D'
     return (
         <div className='status'>
             <span className='dot' style={{ background: color }}></span>
-            <span className='status-text'>{text}</span>
+            <span className='status-text'>{status}</span>
         </div>
     )
 }
 
-const renderOrderDetails = ({ product20L, product1L, product500ML, product250ML }) => {
-    return `
-    20 lts - ${product20L ? product20L : 0}, 1 ltr - ${product1L ? product1L : 0} boxes, 
-    500 ml - ${product500ML ? product500ML : 0} boxes, 250 ml - ${product250ML ? product250ML : 0} boxes
-    `
-}
 export default MaterialStatus

@@ -4,7 +4,7 @@ import React, { Fragment, useState, useRef, useCallback, useEffect, useMemo } fr
 import Header from './header';
 import RequestMaterial from './tabs/RequestMaterial';
 import ReceivedMaterials from './tabs/ReceivedMaterials';
-import MaterialStatus from './tabs/MaterialStatus';
+import RequestedMaterialStatus from './tabs/RequestedMaterialStatus';
 import AddMaterials from './tabs/AddReceivedMaterials';
 import ConfirmModal from '../../components/CustomModal';
 import ConfirmMessage from '../../components/ConfirmMessage';
@@ -95,7 +95,7 @@ const Dispatch = () => {
                 </div>
                 {
                     activeTab === '1' ? <RequestMaterial {...childProps} />
-                        : activeTab === '2' ? <MaterialStatus />
+                        : activeTab === '2' ? <RequestedMaterialStatus />
                             : activeTab === '3' ? <AddMaterials />
                                 : activeTab === '4' ? <ReceivedMaterials />
                                     : <NoContent content='Design is in progress' />

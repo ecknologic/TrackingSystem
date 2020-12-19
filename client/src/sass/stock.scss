@@ -289,22 +289,6 @@
     }
 }
 
-.delivery-table {
-    .ant-table-tbody {
-        tr > :nth-child(7) {
-            text-align: center;
-        }
-    }
-}
-
-.prod-table {
-    .ant-table-tbody {
-        tr > :nth-child(9) {
-            text-align: center;
-        }
-    }
-}
-
 .stock-manager-content {
     .batch-form-container, .dispatch-form-container,  .external-dispatch-form-container{
         width: 60%;
