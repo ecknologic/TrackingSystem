@@ -89,7 +89,7 @@ const Dispatches = () => {
     }
 
     const dataSource = useMemo(() => dispatches.map((dispatch) => {
-        const { DCNO: dcnumber, batchId, dispatchedDate, departmentName, dispatchType, vehicleNo,
+        const { DCNO: dcnumber, batchId, dispatchedDate, vehicleNo,
             dispatchAddress, vehicleType, driverName, status } = dispatch
         return {
             key: dcnumber,
@@ -97,7 +97,7 @@ const Dispatches = () => {
             batchId,
             vehicleNo: vehicleNo + ' ' + vehicleType,
             driverName,
-            dispatchTo: dispatchType === 'Internal' ? departmentName : dispatchAddress,
+            dispatchTo: dispatchAddress,
             dateAndTime: dayjs(dispatchedDate).format(DATEANDTIMEFORMAT),
             productionDetails: renderOrderDetails(dispatch),
             status: renderStatus(status),

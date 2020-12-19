@@ -3,10 +3,10 @@ var router = express.Router();
 const motherPlantDbQueries = require('../dbQueries/motherplant/queries');
 const { dbError, getBatchId } = require('../utils/functions');
 const { INSERTMESSAGE, UPDATEMESSAGE } = require('../utils/constants');
-
+let departmentId;
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
-    console.log('Time: ', Date.now());
+    departmentId = req.headers['departmentid']
     next();
 });
 
@@ -45,7 +45,7 @@ router.post('/createInternalQC', (req, res) => {
 })
 
 router.get('/getRMDetails', (req, res) => {
-    motherPlantDbQueries.getRMDetails((err, results) => {
+    motherPlantDbQueries.getRMDetails(departmentId, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         res.json(results);
     });
@@ -53,6 +53,7 @@ router.get('/getRMDetails', (req, res) => {
 
 router.post('/createRM', (req, res) => {
     let input = req.body;
+    input.departmentId = departmentId
     motherPlantDbQueries.createRM(input, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
@@ -75,14 +76,15 @@ router.post('/updateRM', (req, res) => {
 })
 
 router.get('/getRMReceipt', (req, res) => {
-    motherPlantDbQueries.getRMReceiptDetails((err, results) => {
+    motherPlantDbQueries.getRMReceiptDetails(departmentId, (err, results) => {
         if (err) res.status(500).json(dbError(err));
-        res.json(results);
+        else res.json(results);
     });
 });
 
 router.post('/createRMReceipt', (req, res) => {
     let input = req.body;
+    input.departmentId = departmentId
     motherPlantDbQueries.createRMReceipt(input, (err, results) => {
         if (err) res.status(500).json(err.sqlMessage);
         else
@@ -91,7 +93,7 @@ router.post('/createRMReceipt', (req, res) => {
 })
 
 router.get('/getDispatchDetails', (req, res) => {
-    motherPlantDbQueries.getDispatchDetails((err, results) => {
+    motherPlantDbQueries.getDispatchDetails(departmentId, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         res.json((results));
     });
@@ -99,6 +101,7 @@ router.get('/getDispatchDetails', (req, res) => {
 
 router.post('/addDispatchDetails', (req, res) => {
     let input = req.body;
+    input.departmentId = departmentId
     motherPlantDbQueries.addDispatchDetails(input, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
@@ -128,14 +131,17 @@ router.get('/getDepartmentsList', (req, res) => {
 });
 
 router.get('/getProductionDetails', (req, res) => {
-    motherPlantDbQueries.getProductionDetails((err, results) => {
+    motherPlantDbQueries.getProductionDetails(departmentId, (err, results) => {
         if (err) res.status(500).json(dbError(err));
-        res.json(results);
+        else res.json(results);
     })
 });
 router.get('/getProductByBatch/:batchNo', (req, res) => {
     let { batchNo } = req.params
-    motherPlantDbQueries.getProductsByBatch(batchNo, (err, results) => {
+    let input = {
+        departmentId, batchNo
+    }
+    motherPlantDbQueries.getProductsByBatch(input, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         res.json(results);
     })
@@ -143,7 +149,10 @@ router.get('/getProductByBatch/:batchNo', (req, res) => {
 
 router.get('/getProductionDetailsByDate/:date', (req, res) => {
     let { date } = req.params;
-    motherPlantDbQueries.getCurrentProductionDetailsByDate(date, (err, productionResult) => {
+    let input = {
+        departmentId, date
+    }
+    motherPlantDbQueries.getCurrentProductionDetailsByDate(input, (err, productionResult) => {
         if (err) res.status(500).json(dbError(err));
         else if (productionResult.length) {
             motherPlantDbQueries.getCurrentDispatchDetailsByDate(date, (dispatchErr, dispatchResults) => {
@@ -170,7 +179,7 @@ router.get('/getProductionDetailsByDate/:date', (req, res) => {
 });
 
 router.get('/getBatchNumbers', (req, res) => {
-    motherPlantDbQueries.getBatchNumbers((err, results) => {
+    motherPlantDbQueries.getBatchNumbers(departmentId, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         res.json(results);
     })
@@ -201,6 +210,7 @@ router.post('/addVehicleDetails', (req, res) => {
 
 router.post('/addProductionDetails', (req, res) => {
     let input = req.body;
+    input.departmentId = departmentId
     motherPlantDbQueries.addProductionDetails(input, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
