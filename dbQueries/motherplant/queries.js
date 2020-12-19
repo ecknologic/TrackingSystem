@@ -39,9 +39,9 @@ motherPlantDbQueries.getNatureOfBussiness = async (callback) => {
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getRMDetails = async (input, callback) => {
-    let query = `select * from requiredrawmaterial WHERE departmentId=${input.departmentId} ORDER BY requestedDate DESC`;
-    if (input.status) query = `select * from requiredrawmaterial WHERE departmentId=${departmentId} AND status=${input.status} ORDER BY requestedDate DESC`
-    return executeGetQuery(query, callback)
+    let query = `select * from requiredrawmaterial WHERE departmentId=? ORDER BY requestedDate DESC`;
+    if (input.status) query = `select * from requiredrawmaterial WHERE departmentId=? AND status=?`
+    return executeGetParamsQuery(query, input.status ? [input.departmentId, input.status] : [input.departmentId], callback)
 }
 motherPlantDbQueries.getRMReceiptDetails = async (departmentId, callback) => {
     let query = `select * from rawmaterialreceipt WHERE departmentId=${departmentId}`;
@@ -91,8 +91,8 @@ motherPlantDbQueries.addDispatchDetails = async (input, callback) => {
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.createRM = async (input, callback) => {
-    let query = "insert into requiredrawmaterial (itemName,description,recordLevel,minOrderLevel,itemCode,vendorName,departmentId) values(?,?,?,?,?,?,?)";
-    let requestBody = [input.itemName, input.description, input.recordLevel, input.minOrderLevel, input.itemCode, input.vendorName, input.departmentId]
+    let query = "insert into requiredrawmaterial (itemName,description,reorderLevel,minOrderLevel,itemCode,vendorName,departmentId) values(?,?,?,?,?,?,?)";
+    let requestBody = [input.itemName, input.description, input.reorderLevel, input.minOrderLevel, input.itemCode, input.vendorName, input.departmentId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.createRMReceipt = async (input, callback) => {
@@ -106,8 +106,8 @@ motherPlantDbQueries.updateProductionDetails = async (input, callback) => {
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.updateRMDetails = async (input, callback) => {
-    let query = `update requiredrawmaterial set orderId=?,itemName=?,description=?,recordLevel=?,minOrderLevel=?,itemCode=?,vendorName=? where rawmaterialid=${input.rawmaterialid}`;
-    let requestBody = [input.orderId, input.itemName, input.description, input.recordLevel, input.minOrderLevel, input.itemCode, input.vendorName]
+    let query = `update requiredrawmaterial set orderId=?,itemName=?,description=?,reorderLevel=?,minOrderLevel=?,itemCode=?,vendorName=? where rawmaterialid=${input.rawmaterialid}`;
+    let requestBody = [input.orderId, input.itemName, input.description, input.reorderLevel, input.minOrderLevel, input.itemCode, input.vendorName]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.updateDispatchDetails = async (input, callback) => {
