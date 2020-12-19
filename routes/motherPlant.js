@@ -6,7 +6,7 @@ const { INSERTMESSAGE, UPDATEMESSAGE } = require('../utils/constants');
 let departmentId;
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
-    departmentId = req.headers['departmentid']
+    departmentId = req.headers['departmentid'] || 0
     next();
 });
 
@@ -45,7 +45,11 @@ router.post('/createInternalQC', (req, res) => {
 })
 
 router.get('/getRMDetails', (req, res) => {
-    motherPlantDbQueries.getRMDetails(departmentId, (err, results) => {
+    let input = {
+        status: req.query.status,
+        departmentId
+    }
+    motherPlantDbQueries.getRMDetails(input, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         res.json(results);
     });

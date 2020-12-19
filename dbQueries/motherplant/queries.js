@@ -13,7 +13,7 @@ motherPlantDbQueries.getProductsByBatch = async (input, callback) => {
 }
 motherPlantDbQueries.getBatchNumbers = async (departmentId, callback) => {
     let past10thDay = dayjs().subtract(10, 'day').format('YYYY-MM-DD')
-    let query = "select batchId from production WHERE departmentId=? AND DATE(`productionDate`)>=?";
+    let query = "select batchId from production WHERE departmentId=? AND DATE(`productionDate`)>=? ORDER BY productionDate DESC";
     return executeGetParamsQuery(query, [departmentId, past10thDay], callback)
 }
 
@@ -38,8 +38,9 @@ motherPlantDbQueries.getNatureOfBussiness = async (callback) => {
     let query = "SELECT SUBSTRING(COLUMN_TYPE,5) AS natureOfBussiness FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'customerorderdetails' AND COLUMN_NAME = 'isDelivered'";
     return executeGetQuery(query, callback)
 }
-motherPlantDbQueries.getRMDetails = async (departmentId, callback) => {
-    let query = `select * from requiredrawmaterial WHERE departmentId=${departmentId}`;
+motherPlantDbQueries.getRMDetails = async (input, callback) => {
+    let query = `select * from requiredrawmaterial WHERE departmentId=${input.departmentId} ORDER BY requestedDate DESC`;
+    if (input.status) query = `select * from requiredrawmaterial WHERE departmentId=${departmentId} AND status=${input.status} ORDER BY requestedDate DESC`
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getRMReceiptDetails = async (departmentId, callback) => {
