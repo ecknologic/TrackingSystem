@@ -1,7 +1,9 @@
+const dayjs = require('dayjs');
 var express = require('express');
 var router = express.Router();
 const db = require('../config/db.js');
 const { getCurrentDispatchDetailsByDate } = require('../dbQueries/motherplant/queries.js');
+const { DATEFORMAT } = require('../utils/constants.js');
 const { dbError } = require('../utils/functions.js');
 
 //Middle ware that is specific to this router
@@ -30,9 +32,13 @@ router.get('/getdriverDetails/:warehouseId', (req, res) => {
 });
 
 router.get('/getNewStockDetails/:id', (req, res) => {
-  getCurrentDispatchDetailsByDate(new Date(), (err, results) => {
+  let input = {
+    currentDate: dayjs().format('DD-MM-YYYY'),
+    departmentId: req.params.id
+  }
+  getCurrentDispatchDetailsByDate(input, (err, results) => {
     if (err) res.json(dbError(err));
-    res.json(results.length ? results[0] : {});
+    else res.json(results.length ? results[0] : {});
   });
 });
 
