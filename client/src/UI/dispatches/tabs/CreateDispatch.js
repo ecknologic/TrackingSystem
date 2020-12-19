@@ -15,6 +15,7 @@ const CreateDispatch = ({ goToTab, driverList, departmentList, ...rest }) => {
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
+    const [currentStock, setCurrentStock] = useState({})
     const [shake, setShake] = useState(false)
 
     useEffect(() => {
@@ -26,26 +27,23 @@ const CreateDispatch = ({ goToTab, driverList, departmentList, ...rest }) => {
         }
     }, [])
 
-    const getProductsByBatchId = async (batchId) => {
+    const getCurrentStock = async (batchId) => {
         const [data = {}] = await http.GET(`/motherPlant/getProductByBatch/${batchId}`)
-
+        setCurrentStock(data)
     }
 
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
-        if (key === 'batchId') {
-            getProductsByBatchId(value)
-            setFormData(data => ({ ...data, product20L: '', product1L: '', product500ML: '', product250ML: '' }))
-            setFormErrors(errors => ({ ...errors, product20L: '', product1L: '', product500ML: '', product250ML: '' }))
-        }
+        if (key === 'batchId') getCurrentStock(value)
 
         // Validations
         if (key === 'driverId') {
-            let selectedDriver = driverList.filter(driver => driver.driverId == value)
-            let { driverName = null, mobileNumber = null } = selectedDriver.length ? selectedDriver[0] : {}
+            let selectedDriver = driverList.find(driver => driver.driverId === Number(value))
+            let { driverName = null, mobileNumber = null } = selectedDriver || {}
             setFormData(data => ({ ...data, driverName, mobileNumber }))
+            setFormErrors(errors => ({ ...errors, mobileNumber: '' }))
         }
         if (key === 'managerName') {
             const error = validateNames(value)
@@ -70,7 +68,7 @@ const CreateDispatch = ({ goToTab, driverList, departmentList, ...rest }) => {
     }
 
     const handleSubmit = async () => {
-        const formErrors = validateDispatchValues(formData)
+        const formErrors = validateDispatchValues(formData, currentStock)
 
         if (!isEmpty(formErrors)) {
             setShake(true)

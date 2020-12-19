@@ -202,7 +202,7 @@ export const validateBatchValues = (data) => {
     return { ...errors, ...productErrors }
 }
 
-export const validateDispatchValues = (data) => {
+export const validateDispatchValues = (data, currentStock) => {
     let errors = {};
     const text = 'Required'
     const { batchId, dispatchTo, managerName, vehicleNo, driverId, mobileNumber, ...rest } = data
@@ -222,11 +222,14 @@ export const validateDispatchValues = (data) => {
         error && (errors.managerName = error)
     }
 
-    const productErrors = validateProducts(rest)
+    let productErrors = validateProducts(rest)
+    if (isEmpty(productErrors)) {
+        productErrors = validateProductsInStock(currentStock, rest, 'products')
+    }
     return { ...errors, ...productErrors }
 }
 
-export const validateExternalDispatchValues = (data) => {
+export const validateExternalDispatchValues = (data, currentStock) => {
     let errors = {};
     const text = 'Required'
     const { batchId, dispatchAddress, managerName, vehicleNo, mobileNumber, driverId, ...rest } = data
@@ -246,7 +249,10 @@ export const validateExternalDispatchValues = (data) => {
         error && (errors.managerName = error)
     }
 
-    const productErrors = validateProductNPrice(rest)
+    let productErrors = validateProductNPrice(rest)
+    if (isEmpty(productErrors)) {
+        productErrors = validateProductsInStock(currentStock, rest, 'productNPrice')
+    }
     return { ...errors, ...productErrors }
 }
 
@@ -276,9 +282,13 @@ export const validateRequestMaterialValues = (data) => {
 const validateProducts = ({ product20L, product1L, product500ML, product250ML }) => {
     let errors = {};
 
-    if ((product20L == 0 || !product20L) && (product1L == 0 || !product1L) &&
-        (product500ML == 0 || !product500ML) && (product250ML == 0 || !product250ML)) {
-        errors.products = 'Atleast 1 product is required'
+    const noP20L = product20L == 0 || !product20L
+    const noP1L = product1L == 0 || !product1L
+    const noP500ML = product500ML == 0 || !product500ML
+    const noP250ML = product250ML == 0 || !product250ML
+
+    if (noP20L && noP1L && noP500ML && noP250ML) {
+        errors.productNPrice = 'Atleast 1 product is required'
     }
     const error1 = validateNumber(product20L)
     const error2 = validateNumber(product1L)
@@ -295,27 +305,35 @@ const validateProductNPrice = ({ product20L, price20L, product1L, price1L,
     product500ML, price500ML, product250ML, price250ML }) => {
     let errors = {};
 
-    if ((product20L == 0 || !product20L) && (price20L == 0 || !price20L)
-        && (product1L == 0 || !product1L) && (price1L == 0 || !price1L)
-        && (product500ML == 0 || !product500ML) && (price500ML == 0 || !price500ML)
-        && (product250ML == 0 || !product250ML) && (price250ML == 0 || !price250ML)) {
+    const noP20L = product20L == 0 || !product20L
+    const nop20L = price20L == 0 || !price20L
+    const noP1L = product1L == 0 || !product1L
+    const nop1L = price1L == 0 || !price1L
+    const noP500ML = product500ML == 0 || !product500ML
+    const nop500ML = price500ML == 0 || !price500ML
+    const noP250ML = product250ML == 0 || !product250ML
+    const nop250ML = price250ML == 0 || !price250ML
+
+    if (noP20L && nop20L && noP1L && nop1L && noP500ML && nop500ML && noP250ML && nop250ML) {
         errors.productNPrice = 'Atleast 1 product is required'
     }
-    else if (!((product20L == 0 || !product20L) && (price20L == 0 || !price20L))) {
-        if (!product20L) errors.productNPrice = 'Enter quantity for 20 Ltrs'
-        if (!price20L) errors.productNPrice = 'Enter price for 20 Ltrs'
-    }
-    else if (!((product1L == 0 || !product1L) && (price1L == 0 || !price1L))) {
-        if (!product1L) errors.productNPrice = 'Enter quantity for 1 Ltrs'
-        if (!price1L) errors.productNPrice = 'Enter price for 1 Ltrs'
-    }
-    else if (!((product500ML == 0 || !product500ML) && (price500ML == 0 || !price500ML))) {
-        if (!product500ML) errors.productNPrice = 'Enter quantity for 500 ml'
-        if (!price500ML) errors.productNPrice = 'Enter price for 500 ml'
-    }
-    else if (!((product250ML == 0 || !product250ML) && (price250ML == 0 || !price250ML))) {
-        if (!product250ML) errors.productNPrice = 'Enter quantity for 250 ml'
-        if (!price250ML) errors.productNPrice = 'Enter price for 250 ml'
+    else {
+        if (!noP20L || !nop20L) {
+            if (noP20L) errors.productNPrice = 'Enter quantity for 20 Ltrs'
+            if (nop20L) errors.productNPrice = 'Enter price for 20 Ltrs'
+        }
+        else if (!noP1L || !nop1L) {
+            if (noP1L) errors.productNPrice = 'Enter quantity for 1 Ltrs'
+            if (nop1L) errors.productNPrice = 'Enter price for 1 Ltrs'
+        }
+        else if (!noP500ML || !nop500ML) {
+            if (noP500ML) errors.productNPrice = 'Enter quantity for 500 ml'
+            if (nop500ML) errors.productNPrice = 'Enter price for 500 ml'
+        }
+        else if (!noP250ML || !nop250ML) {
+            if (noP250ML) errors.productNPrice = 'Enter quantity for 250 ml'
+            if (nop250ML) errors.productNPrice = 'Enter price for 250 ml'
+        }
     }
 
     const error1 = validateNumber(product20L)
@@ -330,6 +348,32 @@ const validateProductNPrice = ({ product20L, price20L, product1L, price1L,
     if (error1 || error2 || error3 || error4 || error5 || error6 || error7 || error8)
         errors.productNPrice = error1 || error2 || error3 || error4 || error5 || error6 || error7 || error8
 
+
+    return errors
+}
+
+export const validateProductsInStock = (inStock, products, key) => {
+    let errors = {};
+    let textArray = []
+    const { product20L, product1L, product500ML, product250ML } = products
+    const { product20LCount, product1LCount, product500MLCount, product250MLCount } = inStock
+
+    if (Number(product20L) > product20LCount) {
+        textArray.push('20 Ltrs')
+    }
+    if (Number(product1L) > product1LCount) {
+        textArray.push('1 Ltrs')
+    }
+    if (Number(product500ML) > product500MLCount) {
+        textArray.push('500 Ml')
+    }
+    if (Number(product250ML) > product250MLCount) {
+        textArray.push('250 Ml')
+    }
+
+    if (textArray.length) {
+        errors[key] = `${textArray.join(',')} qty exceeds current stock`
+    }
 
     return errors
 }

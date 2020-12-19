@@ -16,6 +16,7 @@ const CreateExternalDispatch = ({ goToTab, driverList, ...rest }) => {
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
+    const [currentStock, setCurrentStock] = useState({})
     const [shake, setShake] = useState(false)
 
     useEffect(() => {
@@ -27,9 +28,16 @@ const CreateExternalDispatch = ({ goToTab, driverList, ...rest }) => {
         }
     }, [])
 
+    const getCurrentStock = async (batchId) => {
+        const [data = {}] = await http.GET(`/motherPlant/getProductByBatch/${batchId}`)
+        setCurrentStock(data)
+    }
+
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
+
+        if (key === 'batchId') getCurrentStock(value)
 
         // Validations
         if (key === 'driverId') {
@@ -66,7 +74,7 @@ const CreateExternalDispatch = ({ goToTab, driverList, ...rest }) => {
     }
 
     const handleSubmit = async () => {
-        const formErrors = validateExternalDispatchValues(formData)
+        const formErrors = validateExternalDispatchValues(formData, currentStock)
 
         if (!isEmpty(formErrors)) {
             setShake(true)
