@@ -253,16 +253,12 @@ export const validateExternalDispatchValues = (data) => {
 export const validateRequestMaterialValues = (data) => {
     let errors = {};
     const text = 'Required'
-    const { itemName, itemCode, vendorId, description, recordLevel, minOrderLevel } = data
+    const { itemName, itemCode, vendorName, description, recordLevel, minOrderLevel } = data
 
     if (!itemName) errors.itemName = text
-    if (!vendorId) errors.vendorId = text
+    if (!vendorName) errors.vendorName = text
     if (!description) errors.description = text
     if (!itemCode) errors.itemCode = text
-    else {
-        const error = validateNumber(itemCode)
-        error && (errors.itemCode = error)
-    }
     if (!recordLevel) errors.recordLevel = text
     else {
         const error = validateNumber(recordLevel)

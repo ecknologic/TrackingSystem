@@ -33,7 +33,7 @@ const RequestMaterial = ({ goToTab, ...rest }) => {
         // Validations
         if (key.includes('Level')) {
             const error = validateNumber(value)
-            setFormErrors(errors => ({ ...errors, products: error }))
+            setFormErrors(errors => ({ ...errors, [key]: error }))
         }
     }
 
@@ -63,7 +63,7 @@ const RequestMaterial = ({ goToTab, ...rest }) => {
             showToast('Dispatch', 'loading')
             await http.POST(url, body)
             message.destroy()
-            goToTab('1')
+            goToTab('2')
         } catch (error) {
             message.destroy()
             setBtnDisabled(false)

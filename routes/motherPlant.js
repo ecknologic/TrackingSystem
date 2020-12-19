@@ -55,13 +55,14 @@ router.post('/createRM', (req, res) => {
     let input = req.body;
     motherPlantDbQueries.createRM(input, (err, results) => {
         if (err) res.status(500).json(dbError(err));
-        else if (results.length) {
+        else {
             input.orderId = `OD-${results.insertId}`
+            input.rawmaterialid = results.insertId
             motherPlantDbQueries.updateRMDetails(input, (updateErr, updatedData) => {
                 if (updateErr) res.status(500).json(dbError(err));
                 else res.json(INSERTMESSAGE)
             })
-        } else res.json(results)
+        }
     });
 })
 

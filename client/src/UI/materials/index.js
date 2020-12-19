@@ -94,11 +94,11 @@ const Dispatch = () => {
                     </Tabs>
                 </div>
                 {
-                    activeTab === '1' ? <RequestMaterial {...childProps} />
+                    activeTab === '1' ? <RequestMaterial goToTab={handleGoToTab} {...childProps} />
                         : activeTab === '2' ? <RequestedMaterialStatus />
-                            : activeTab === '3' ? <AddMaterials />
-                                : activeTab === '4' ? <ReceivedMaterials />
-                                    : <NoContent content='Design is in progress' />
+                            // : activeTab === '3' ? <AddMaterials />
+                            // : activeTab === '4' ? <ReceivedMaterials />
+                            : <NoContent content='Design is in progress' />
                 }
             </div>
             <ConfirmModal

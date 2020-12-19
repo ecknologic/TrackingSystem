@@ -231,8 +231,8 @@ export const requestedMaterialColumns = [
     },
     {
         title: 'Date',
-        dataIndex: 'dataAndTime',
-        key: 'dataAndTime',
+        dataIndex: 'dateAndTime',
+        key: 'dateAndTime',
     },
     {
         title: 'Product Details',

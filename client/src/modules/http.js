@@ -1,15 +1,15 @@
 import axios from 'axios';
 import { message } from 'antd';
+import { getWarehoseId } from '../utils/constants';
 
 message.config({ maxCount: 1 });
 
-// Setting access token in request
-// axios.interceptors.request.use(function (config) {
-// const token = sessionStorage.getItem('token')
-// config.headers['x-access-token'] = token
+// Setting headers in request
+axios.interceptors.request.use(function (config) {
+    config.headers.departmentId = getWarehoseId()
 
-// return config;
-// });
+    return config;
+});
 
 // Handling unexpected errors
 axios.interceptors.response.use(null, error => {
