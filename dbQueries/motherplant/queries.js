@@ -51,8 +51,8 @@ motherPlantDbQueries.getCurrentProductionDetailsByDate = async (inputDate, callb
     let query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product250ML) total250MLBoxes FROM production p WHERE  DATE(`productionDate`)<='" + inputDate + "'";
     return executeGetQuery(query, callback)
 }
-motherPlantDbQueries.getCurrentDispatchDetailsByDate = async (inputDate, callback) => {
-    let query = "SELECT SUM(d.product20L) AS total20LCans,SUM(d.product1L) AS total1LBoxes,SUM(d.product500ML) total500MLBoxes,SUM(d.product250ML) total250MLBoxes FROM dispatches d WHERE  DATE(`dispatchedDate`)<='" + inputDate + "'";
+motherPlantDbQueries.getCurrentDispatchDetailsByDate = async (input, callback) => {
+    let query = "SELECT SUM(d.product20L) AS total20LCans,SUM(d.product1L) AS total1LBoxes,SUM(d.product500ML) total500MLBoxes,SUM(d.product250ML) total250MLBoxes FROM dispatches d WHERE dispatchTo='" + input.departmentId + "'AND DATE(`dispatchedDate`)<='" + input.currentDate + "'";
     return executeGetQuery(query, callback)
 }
 
