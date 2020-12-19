@@ -10,7 +10,7 @@ import SearchInput from '../../../components/SearchInput';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import { TRACKFORM } from '../../../utils/constants';
 import CustomPagination from '../../../components/CustomPagination';
-import { requestedMaterialColumns } from '../../../assets/fixtures';
+import { getRMColumns } from '../../../assets/fixtures';
 import { disableFutureDates } from '../../../utils/Functions';
 const DATEFORMAT = 'DD-MM-YYYY'
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
@@ -33,6 +33,8 @@ const MaterialStatus = () => {
     const customerOrderIdRef = useRef()
     const DCFormTitleRef = useRef()
     const DCFormBtnRef = useRef()
+
+    const RMColumns = useMemo(() => getRMColumns(), [])
 
     useEffect(() => {
         getRM()
@@ -89,13 +91,13 @@ const MaterialStatus = () => {
     }
 
     const dataSource = useMemo(() => RM.map((dispatch) => {
-        const { rawmaterialid: key, orderId, itemCode, itemName, requestedDate, recordLevel,
+        const { rawmaterialid: key, orderId, itemCode, itemName, requestedDate, reorderLevel,
             minOrderLevel, vendorName, status } = dispatch
         return {
             key,
             orderId,
             itemCode,
-            recordLevel,
+            reorderLevel,
             vendorName,
             minOrderLevel,
             itemName,
@@ -151,8 +153,9 @@ const MaterialStatus = () => {
                 <Table
                     loading={{ spinning: loading, indicator: <Spinner /> }}
                     dataSource={dataSource.slice(sliceFrom, sliceTo)}
-                    columns={requestedMaterialColumns}
+                    columns={RMColumns}
                     pagination={false}
+                    scroll={{ x: true }}
                 />
             </div>
             {

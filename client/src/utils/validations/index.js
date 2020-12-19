@@ -190,8 +190,20 @@ export const validateBatchValues = (data) => {
 
     if (!shiftType) errors.shiftType = text
     if (!phLevel) errors.phLevel = text
+    else {
+        const error = validateIntFloat(phLevel)
+        error && (errors.phLevel = error)
+    }
     if (!ozoneLevel) errors.ozoneLevel = text
+    else {
+        const error = validateIntFloat(ozoneLevel)
+        error && (errors.ozoneLevel = error)
+    }
     if (!TDS) errors.TDS = text
+    else {
+        const error = validateIntFloat(TDS)
+        error && (errors.TDS = error)
+    }
     if (!managerName) errors.managerName = text
     else {
         const error = validateNames(managerName)
@@ -232,15 +244,12 @@ export const validateDispatchValues = (data, currentStock) => {
 export const validateExternalDispatchValues = (data, currentStock) => {
     let errors = {};
     const text = 'Required'
-    const { batchId, dispatchAddress, managerName, vehicleNo, mobileNumber, driverId, ...rest } = data
+    const { batchId, dispatchAddress, managerName, mobileNumber, ...rest } = data
 
     if (!batchId) errors.batchId = text
-    if (!driverId) errors.driverId = text
-    if (!vehicleNo) errors.vehicleNo = text
     if (!dispatchAddress) errors.dispatchAddress = text
-    if (!mobileNumber) errors.mobileNumber = text
-    else {
-        const error = validateMobileNumber(mobileNumber)
+    if (mobileNumber) {
+        const error = validateMobileNumber(mobileNumber, true)
         error && (errors.mobileNumber = error)
     }
     if (!managerName) errors.managerName = text
@@ -259,21 +268,57 @@ export const validateExternalDispatchValues = (data, currentStock) => {
 export const validateRequestMaterialValues = (data) => {
     let errors = {};
     const text = 'Required'
-    const { itemName, itemCode, vendorName, description, recordLevel, minOrderLevel } = data
+    const { itemName, itemCode, vendorName, description, reorderLevel, minOrderLevel } = data
 
     if (!itemName) errors.itemName = text
     if (!vendorName) errors.vendorName = text
     if (!description) errors.description = text
     if (!itemCode) errors.itemCode = text
-    if (!recordLevel) errors.recordLevel = text
+    if (!reorderLevel) errors.reorderLevel = text
     else {
-        const error = validateNumber(recordLevel)
-        error && (errors.recordLevel = error)
+        const error = validateNumber(reorderLevel)
+        error && (errors.reorderLevel = error)
     }
     if (!minOrderLevel) errors.minOrderLevel = text
     else {
         const error = validateNumber(minOrderLevel)
         error && (errors.minOrderLevel = error)
+    }
+
+    return errors
+}
+
+export const validateReceivedMaterialValues = (data) => {
+    let errors = {};
+    const text = 'Required'
+    const { receiptImage, receiptNo, invoiceNo, invoiceValue, invoiceDate, taxAmount, managerName } = data
+
+    if (!receiptImage) errors.receiptImage = text
+    if (!invoiceDate) errors.invoiceDate = text
+    if (!managerName) errors.managerName = text
+    else {
+        const error = validateNames(managerName)
+        error && (errors.managerName = error)
+    }
+    if (!invoiceNo) errors.invoiceNo = text
+    else {
+        const error = validateNumber(invoiceNo)
+        error && (errors.invoiceNo = error)
+    }
+    if (!invoiceValue) errors.invoiceValue = text
+    else {
+        const error = validateNumber(invoiceValue)
+        error && (errors.invoiceValue = error)
+    }
+    if (!receiptNo) errors.receiptNo = text
+    else {
+        const error = validateNumber(receiptNo)
+        error && (errors.receiptNo = error)
+    }
+    if (!taxAmount) errors.taxAmount = text
+    else {
+        const error = validateNumber(taxAmount)
+        error && (errors.taxAmount = error)
     }
 
     return errors
@@ -288,7 +333,7 @@ const validateProducts = ({ product20L, product1L, product500ML, product250ML })
     const noP250ML = product250ML == 0 || !product250ML
 
     if (noP20L && noP1L && noP500ML && noP250ML) {
-        errors.productNPrice = 'Atleast 1 product is required'
+        errors.products = 'Atleast 1 product is required'
     }
     const error1 = validateNumber(product20L)
     const error2 = validateNumber(product1L)

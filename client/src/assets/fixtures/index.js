@@ -223,19 +223,19 @@ export const dispatchColumns = [
     },
 ]
 
-export const requestedMaterialColumns = [
+export const ReceivedMColumns = [
     {
-        title: 'Order ID',
-        dataIndex: 'orderId',
-        key: 'orderId',
+        title: 'Invoice No',
+        dataIndex: 'invoiceNo',
+        key: 'invoiceNo',
     },
     {
-        title: 'Date',
-        dataIndex: 'dateAndTime',
-        key: 'dateAndTime',
+        title: 'Date of Invoice',
+        dataIndex: 'invoiceDate',
+        key: 'invoiceDate',
     },
     {
-        title: 'Product Details',
+        title: 'Production Details',
         dataIndex: 'itemName',
         key: 'itemName',
     },
@@ -245,23 +245,93 @@ export const requestedMaterialColumns = [
         key: 'vendorName',
     },
     {
-        title: 'Reorder level',
-        key: 'recordLevel',
-        dataIndex: 'recordLevel',
+        title: 'Invoice Value',
+        key: 'invoiceValue',
+        dataIndex: 'invoiceValue',
     },
     {
-        title: 'Min Order level',
-        dataIndex: 'minOrderLevel',
-        key: 'minOrderLevel',
+        title: 'Dispatch To',
+        dataIndex: 'dispatchTo',
+        key: 'dispatchTo',
     },
     {
-        title: 'Approval Status',
+        title: 'Tax Amount',
+        dataIndex: 'taxAmount',
+        key: 'taxAmount',
+    },
+    {
+        title: 'Status',
         dataIndex: 'status',
-        key: 'status',
+        key: 'status'
     },
     {
         title: 'Actions',
         dataIndex: 'action',
         key: 'action'
-    },
+    }
 ]
+
+export const getRMColumns = (type) => {
+
+    let statusText = 'Approval Status'
+    let dateText = 'Date'
+
+    if (type === 'add') {
+        statusText = 'Confirm Order'
+        dateText = 'Approval Date'
+    }
+
+    const columns = [
+        {
+            title: 'Order ID',
+            dataIndex: 'orderId',
+            key: 'orderId',
+        },
+        {
+            title: dateText,
+            dataIndex: 'dateAndTime',
+            key: 'dateAndTime',
+        },
+        {
+            title: 'Item Code',
+            dataIndex: 'itemCode',
+            key: 'itemCode',
+        },
+        {
+            title: 'Product Details',
+            dataIndex: 'itemName',
+            key: 'itemName',
+        },
+        {
+            title: 'Vendor Name',
+            dataIndex: 'vendorName',
+            key: 'vendorName',
+        },
+        {
+            title: 'Reorder level',
+            key: 'reorderLevel',
+            dataIndex: 'reorderLevel',
+        },
+        {
+            title: 'Min Order level',
+            dataIndex: 'minOrderLevel',
+            key: 'minOrderLevel',
+        },
+        {
+            title: statusText,
+            dataIndex: 'status',
+            key: 'status',
+        },
+        {
+            title: 'Actions',
+            dataIndex: 'action',
+            key: 'action'
+        },
+    ]
+
+    if (type === 'add') {
+        columns.pop()
+    }
+
+    return columns
+}

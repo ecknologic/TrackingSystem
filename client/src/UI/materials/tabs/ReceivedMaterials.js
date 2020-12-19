@@ -10,10 +10,9 @@ import SearchInput from '../../../components/SearchInput';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import { TRACKFORM } from '../../../utils/constants';
 import CustomPagination from '../../../components/CustomPagination';
-import { dispatchColumns } from '../../../assets/fixtures';
+import { ReceivedMColumns } from '../../../assets/fixtures';
 import { disableFutureDates } from '../../../utils/Functions';
 const DATEFORMAT = 'DD-MM-YYYY'
-const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
 const ReceivedMaterials = () => {
     const [loading, setLoading] = useState(true)
@@ -23,25 +22,24 @@ const ReceivedMaterials = () => {
     const [totalCount, setTotalCount] = useState(null)
     const [pageNumber, setPageNumber] = useState(1)
     const [btnDisabled, setBtnDisabled] = useState(false)
-    const [DCModal, setDCModal] = useState(false)
+    const [modal, setModal] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
-    const [shake, setShake] = useState(false)
     const [open, setOpen] = useState(false)
-    const [dispatches, setDispatches] = useState([])
-    const [dispatchesClone, setDispatchesClone] = useState([])
+    const [RM, setRM] = useState([])
+    const [RMClone, setRMClone] = useState([])
 
-    const customerOrderIdRef = useRef()
-    const DCFormTitleRef = useRef()
-    const DCFormBtnRef = useRef()
+    const RMIdRef = useRef()
+    const orderIdRef = useRef()
+    const formTitleRef = useRef()
 
     useEffect(() => {
-        getDispatches()
+        getRM()
     }, [])
 
-    const getDispatches = async () => {
-        const data = await http.GET('/motherPlant/getDispatchDetails')
-        setDispatches(data)
-        setDispatchesClone(data)
+    const getRM = async () => {
+        const data = await http.GET('/motherPlant/getRMDetails?status=Approved')
+        setRM(data)
+        setRMClone(data)
         setTotalCount(data.length)
         setLoading(false)
     }
@@ -52,22 +50,17 @@ const ReceivedMaterials = () => {
 
     const handleDateSelect = (value) => {
         setOpen(false)
-        let filteredData = dispatchesClone.filter(item => dayjs(value).format(DATEFORMAT) == dayjs(item.dispatchedDate).format(DATEFORMAT))
-        setDispatches(filteredData)
-    }
-
-    const generateFiltered = (original, filterInfo) => {
-        const filtered = original.filter((item) => filterInfo.includes(item.RouteId))
+        const filtered = RMClone.filter(item => dayjs(value).format(DATEFORMAT) == dayjs(item.dispatchedDate).format(DATEFORMAT))
+        setRM(filtered)
         setTotalCount(filtered.length)
     }
 
     const handleMenuSelect = (key, data) => {
         if (key === 'view') {
-            customerOrderIdRef.current = data.customerOrderId
-            DCFormTitleRef.current = `DC - ${data.customerName}`
-            DCFormBtnRef.current = 'Update'
+            RMIdRef.current = data.rawmaterialid
+            formTitleRef.current = `Received Material Details - Order ID - ${data.orderId}`
             setFormData(data)
-            setDCModal(true)
+            setModal(true)
         }
     }
 
@@ -85,29 +78,25 @@ const ReceivedMaterials = () => {
         if (formHasChanged && !hasSaved) {
             return setConfirmModal(true)
         }
-        customerOrderIdRef.current = undefined
-        setDCModal(false)
+        setModal(false)
         setBtnDisabled(false)
         setFormData({})
         setFormErrors({})
     }
 
-    const dataSource = useMemo(() => dispatches.map((dispatch) => {
-        const { DCNO: dcnumber, batchId, dispatchedDate, departmentName, dispatchType, vehicleNo,
-            dispatchAddress, vehicleType, driverName, status } = dispatch
+    const dataSource = useMemo(() => RM.map((item) => {
+        const { rawmaterialid: key, itemName, invoiceNo, status, invoiceValue, invoiceDate, taxAmount } = item
         return {
-            key: dcnumber,
-            dcnumber,
-            batchId,
-            vehicleNo: vehicleNo + ' ' + vehicleType,
-            driverName,
-            dispatchTo: dispatchType === 'Internal' ? departmentName : dispatchAddress,
-            dateAndTime: dayjs(dispatchedDate).format(DATEANDTIMEFORMAT),
-            productionDetails: renderOrderDetails(dispatch),
+            key,
+            itemName,
+            invoiceNo,
+            taxAmount,
+            invoiceValue,
+            dateAndTime: dayjs(invoiceDate).format('DD/MM/YYYY'),
             status: renderStatus(status),
-            action: <TableAction onSelect={({ key }) => handleMenuSelect(key, dispatch)} />
+            action: <TableAction onSelect={({ key }) => handleMenuSelect(key, item)} />
         }
-    }), [dispatches])
+    }), [RM])
 
     const handleConfirmModalOk = useCallback(() => {
         setConfirmModal(false);
@@ -155,8 +144,9 @@ const ReceivedMaterials = () => {
                 <Table
                     loading={{ spinning: loading, indicator: <Spinner /> }}
                     dataSource={dataSource.slice(sliceFrom, sliceTo)}
-                    columns={dispatchColumns}
+                    columns={ReceivedMColumns}
                     pagination={false}
+                    scroll={{ x: true }}
                 />
             </div>
             {
@@ -184,8 +174,8 @@ const ReceivedMaterials = () => {
 }
 
 const renderStatus = (status) => {
-    const color = status ? '#0EDD4D' : '#A10101'
-    const text = status ? status : 'Pending'
+    const color = status === 'Confirmed' ? '#0EDD4D' : '#A10101'
+    const text = status === 'Confirmed' ? 'Delivered' : status
     return (
         <div className='status'>
             <span className='dot' style={{ background: color }}></span>
@@ -194,10 +184,4 @@ const renderStatus = (status) => {
     )
 }
 
-const renderOrderDetails = ({ product20L, product1L, product500ML, product250ML }) => {
-    return `
-    20 lts - ${product20L ? product20L : 0}, 1 ltr - ${product1L ? product1L : 0} boxes, 
-    500 ml - ${product500ML ? product500ML : 0} boxes, 250 ml - ${product250ML ? product250ML : 0} boxes
-    `
-}
 export default ReceivedMaterials

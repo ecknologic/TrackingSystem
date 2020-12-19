@@ -16,7 +16,6 @@ const StockDetails = ({ date, goToTab }) => {
     const [formData, setFormData] = useState({})
     const [stock, setStock] = useState({})
     const [formErrors, setFormErrors] = useState({})
-    const [shiftType, setShiftType] = useState('morning')
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
     const [shake, setShake] = useState(false)
@@ -39,9 +38,6 @@ const StockDetails = ({ date, goToTab }) => {
     }
 
     const handleChange = (value, key) => {
-        if (key === 'shiftType') {
-            setShiftType(value)
-        }
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
@@ -80,8 +76,9 @@ const StockDetails = ({ date, goToTab }) => {
 
         const url = '/motherPlant/addProductionDetails'
         const body = {
-            ...formData, shiftType, createdBy: USERID
+            ...formData, createdBy: USERID
         }
+
         try {
             setBtnDisabled(true)
             showToast('Batch', 'loading')

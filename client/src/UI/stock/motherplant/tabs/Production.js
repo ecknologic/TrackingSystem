@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import { Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import BatchForm from '../forms/BatchForm';
 import { http } from '../../../../modules/http';
 import Spinner from '../../../../components/Spinner';
 import QuitModal from '../../../../components/CustomModal';
@@ -8,24 +9,28 @@ import TableAction from '../../../../components/TableAction';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import { getWarehoseId, TRACKFORM } from '../../../../utils/constants';
 import CustomPagination from '../../../../components/CustomPagination';
-import { productionColumns } from '../../../../assets/fixtures';
-import { resetTrackForm } from '../../../../utils/Functions';
+import { deepClone, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
+import CustomModal from '../../../../components/CustomModal';
+import { shiftOptions, productionColumns } from '../../../../assets/fixtures';
+import { validateBatchValues, validateIntFloat, validateNames, validateNumber } from '../../../../utils/validations';
 
 const Production = () => {
     const [loading, setLoading] = useState(true)
     const [productsClone, setProductsClone] = useState([])
     const [products, setProducts] = useState([])
     const [formData, setFormData] = useState({})
+    const [formErrors, setFormErrors] = useState({})
     const [pageSize, setPageSize] = useState(10)
     const [totalCount, setTotalCount] = useState(null)
     const [pageNumber, setPageNumber] = useState(1)
     const [confirmModal, setConfirmModal] = useState(false)
+    const [btnDisabled, setBtnDisabled] = useState(false)
+    const [modal, setModal] = useState(false)
     const [filterInfo, setFilterInfo] = useState([])
     const [shake, setShake] = useState(false)
 
-    const customerOrderIdRef = useRef()
-    const DCFormTitleRef = useRef()
-    const DCFormBtnRef = useRef()
+    const productionIdRef = useRef()
+    const formTitleRef = useRef()
 
     useEffect(() => {
         getProducts()
@@ -47,6 +52,33 @@ const Production = () => {
         }
     }
 
+    const handleChange = (value, key) => {
+        setFormData(data => ({ ...data, [key]: value }))
+        setFormErrors(errors => ({ ...errors, [key]: '' }))
+
+        // Validations
+        if (key === 'managerName') {
+            const error = validateNames(value)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'phLevel' || key === 'ozoneLevel' || key === 'TDS') {
+            const error = validateIntFloat(value)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key.includes('product')) {
+            const error = validateNumber(value)
+            setFormErrors(errors => ({ ...errors, products: error }))
+        }
+    }
+
+    const handleBlur = (value, key) => {
+        // Validations
+        if (key === 'phLevel' || key === 'ozoneLevel' || key === 'TDS') {
+            const error = validateIntFloat(value, true)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+    }
+
     const generateFiltered = (original, filterInfo) => {
         const filtered = original.filter((item) => filterInfo.includes(item.RouteId))
         setProducts(filtered)
@@ -55,10 +87,10 @@ const Production = () => {
 
     const handleMenuSelect = (key, data) => {
         if (key === 'view') {
-            customerOrderIdRef.current = data.customerOrderId
-            DCFormTitleRef.current = `DC - ${data.customerName}`
-            DCFormBtnRef.current = 'Update'
+            productionIdRef.current = data.productionid
+            formTitleRef.current = `Batch - ${data.batchId}`
             setFormData(data)
+            setModal(true)
         }
     }
 
@@ -71,13 +103,50 @@ const Production = () => {
         setPageNumber(number)
     }
 
+    const optimisticUpdate = (data) => {
+        let clone = deepClone(products);
+        const index = clone.findIndex(item => item.productionid === data.productionid)
+        clone[index] = data;
+        setProducts(clone)
+    }
+
+    const handleUpdate = async () => {
+        const formErrors = validateBatchValues(formData)
+
+        if (!isEmpty(formErrors)) {
+            setShake(true)
+            setTimeout(() => setShake(false), 820)
+            setFormErrors(formErrors)
+            return
+        }
+
+        const url = '/motherPlant/updateProductionDetails'
+        const body = {
+            ...formData
+        }
+
+        try {
+            setBtnDisabled(true)
+            showToast('Batch', 'loading', 'PUT')
+            const { data: [data] } = await http.POST(url, body)
+            showToast('Batch', 'success', 'PUT')
+            optimisticUpdate(data)
+            onModalClose(true)
+            setBtnDisabled(false)
+        } catch (error) {
+            setBtnDisabled(false)
+        }
+    }
+
     const onModalClose = (hasSaved) => {
         const formHasChanged = sessionStorage.getItem(TRACKFORM)
         if (formHasChanged && !hasSaved) {
             return setConfirmModal(true)
         }
-        customerOrderIdRef.current = undefined
+        setModal(false)
+        setBtnDisabled(false)
         setFormData({})
+        setFormErrors({})
     }
 
     const dataSource = useMemo(() => products.map((product) => {
@@ -100,6 +169,7 @@ const Production = () => {
     }, [])
 
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
+    const handleModalCancel = useCallback(() => onModalClose(), [])
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
@@ -112,6 +182,7 @@ const Production = () => {
                     dataSource={dataSource.slice(sliceFrom, sliceTo)}
                     columns={productionColumns}
                     pagination={false}
+                    scroll={{ x: true }}
                 />
             </div>
             {
@@ -125,6 +196,25 @@ const Production = () => {
                         onPageSizeChange={handleSizeChange}
                     />)
             }
+            <CustomModal
+                className={`app-form-modal ${shake ? 'app-shake' : ''}`}
+                visible={modal}
+                btnDisabled={btnDisabled}
+                onOk={handleUpdate}
+                onCancel={handleModalCancel}
+                title={formTitleRef.current}
+                okTxt='Update'
+                track
+            >
+                <BatchForm
+                    track
+                    data={formData}
+                    errors={formErrors}
+                    shiftOptions={shiftOptions}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                />
+            </CustomModal>
             <QuitModal
                 visible={confirmModal}
                 onOk={handleConfirmModalOk}

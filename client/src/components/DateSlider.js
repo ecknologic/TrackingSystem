@@ -17,8 +17,7 @@ const DateSlider = ({ data, selected, selectedDate, month, onSelect }) => {
 
     useEffect(() => {
         if (hasSlides) {
-            const item = data.find((item) => item.date == selected)
-            const actualIndex = data.indexOf(item)
+            const actualIndex = data.findIndex((item) => item.date == selected)
             const adjustedIndex = getAdjustedSlideIndex(actualIndex, getSlidesToShow())
             sliderRef.current.slickGoTo(adjustedIndex)
         }

@@ -179,8 +179,7 @@ const Delivery = ({ date }) => {
     const optimisticUpdate = (data, method) => {
         if (method === 'PUT') {
             const clone = deepClone(deliveries)
-            const dc = clone.find(dc => dc.dcNo === data.dcNo)
-            const index = clone.indexOf(dc)
+            const index = clone.findIndex(dc => dc.dcNo === data.dcNo)
             clone[index] = data
             setDeliveries(clone)
         }
@@ -257,6 +256,7 @@ const Delivery = ({ date }) => {
                     dataSource={dataSource.slice(sliceFrom, sliceTo)}
                     columns={deliveryColumns}
                     pagination={false}
+                    scroll={{ x: true }}
                 />
             </div>
             {

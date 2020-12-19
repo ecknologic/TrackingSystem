@@ -60,10 +60,11 @@ const RequestMaterial = ({ goToTab, ...rest }) => {
 
         try {
             setBtnDisabled(true)
-            showToast('Dispatch', 'loading')
+            showToast('Materials', 'loading')
             await http.POST(url, body)
             message.destroy()
             goToTab('2')
+            showToast('Materials', 'success')
         } catch (error) {
             message.destroy()
             setBtnDisabled(false)

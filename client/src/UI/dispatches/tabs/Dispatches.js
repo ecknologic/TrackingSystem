@@ -153,6 +153,7 @@ const Dispatches = () => {
                     dataSource={dataSource.slice(sliceFrom, sliceTo)}
                     columns={dispatchColumns}
                     pagination={false}
+                    scroll={{ x: true }}
                 />
             </div>
             {

@@ -91,6 +91,7 @@ const CreateExternalDispatch = ({ goToTab, driverList, ...rest }) => {
             await http.POST(url, body)
             message.destroy()
             goToTab('1')
+            showToast('Dispatch', 'success')
         } catch (error) {
             message.destroy()
             setBtnDisabled(false)

@@ -66,14 +66,14 @@ const ExternalDispatchForm = (props) => {
                 </div>
                 <div className='row'>
                     <div className='input-container'>
-                        <InputLabel name='Driver Name' error={errors.driverId} mandatory />
+                        <InputLabel name='Driver Name' error={errors.driverId} />
                         <SelectInput track={track} value={driverId} options={driverOptions}
                             disabled={disabled} error={errors.driverId}
                             onSelect={(value) => onChange(value, 'driverId')}
                         />
                     </div>
                     <div className='input-container'>
-                        <InputLabel name='Mobile No' error={errors.mobileNumber} mandatory />
+                        <InputLabel name='Mobile No' error={errors.mobileNumber} />
                         <CustomInput maxLength={10} value={mobileNumber} placeholder='Add Mobile Number'
                             disabled={disabled} error={errors.mobileNumber}
                             onBlur={(value) => onBlur(value, 'mobileNumber')}
@@ -83,7 +83,7 @@ const ExternalDispatchForm = (props) => {
                 </div>
                 <div className='row'>
                     <div className='input-container'>
-                        <InputLabel name='Vehicle No' error={errors.vehicleNo} mandatory />
+                        <InputLabel name='Vehicle No' error={errors.vehicleNo} />
                         <SelectInput track={track} value={vehicleNo} options={vehicleOptions}
                             disabled={disabled} error={errors.vehicleNo}
                             onSelect={(value) => onChange(value, 'vehicleNo')}

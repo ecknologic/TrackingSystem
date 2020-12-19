@@ -3,19 +3,18 @@ import { DatePicker, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { http } from '../../../modules/http';
 import Spinner from '../../../components/Spinner';
-import QuitModal from '../../../components/CustomModal';
+import ConfirmModal from '../../../components/CustomModal';
 import { ScheduleIcon } from '../../../components/SVG_Icons';
-import TableAction from '../../../components/TableAction';
 import SearchInput from '../../../components/SearchInput';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import { TRACKFORM } from '../../../utils/constants';
 import CustomPagination from '../../../components/CustomPagination';
-import { dispatchColumns } from '../../../assets/fixtures';
-import { disableFutureDates } from '../../../utils/Functions';
+import { getRMColumns } from '../../../assets/fixtures';
+import { disableFutureDates, getBase64, isEmpty, resetTrackForm } from '../../../utils/Functions';
 import CustomModal from '../../../components/CustomModal';
 import MaterialReceivedForm from '../forms/MaterialReceived';
+import { validateNames, validateNumber, validateReceivedMaterialValues } from '../../../utils/validations';
 const DATEFORMAT = 'DD-MM-YYYY'
-const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
 const AddMaterials = () => {
     const [loading, setLoading] = useState(true)
@@ -25,26 +24,27 @@ const AddMaterials = () => {
     const [totalCount, setTotalCount] = useState(null)
     const [pageNumber, setPageNumber] = useState(1)
     const [btnDisabled, setBtnDisabled] = useState(false)
-    const [viewModal, setViewModal] = useState(false)
     const [modal, setModal] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
     const [shake, setShake] = useState(false)
     const [open, setOpen] = useState(false)
-    const [dispatches, setDispatches] = useState([])
-    const [dispatchesClone, setDispatchesClone] = useState([])
+    const [RM, setRM] = useState([])
+    const [RMClone, setRMClone] = useState([])
 
+    const RMIdRef = useRef()
     const orderIdRef = useRef()
     const formTitleRef = useRef()
-    const formBtnRef = useRef()
+
+    const RMColumns = useMemo(() => getRMColumns('add'), [])
 
     useEffect(() => {
-        getDispatches()
+        getRM()
     }, [])
 
-    const getDispatches = async () => {
-        const data = await http.GET('/motherPlant/getDispatchDetails')
-        setDispatches(data)
-        setDispatchesClone(data)
+    const getRM = async () => {
+        const data = await http.GET('/motherPlant/getRMDetails?status=Approved')
+        setRM(data)
+        setRMClone(data)
         setTotalCount(data.length)
         setLoading(false)
     }
@@ -55,18 +55,8 @@ const AddMaterials = () => {
 
     const handleDateSelect = (value) => {
         setOpen(false)
-        let filteredData = dispatchesClone.filter(item => dayjs(value).format(DATEFORMAT) == dayjs(item.dispatchedDate).format(DATEFORMAT))
-        setDispatches(filteredData)
-    }
-
-    const handleMenuSelect = (key, data) => {
-        if (key === 'view') {
-            orderIdRef.current = data.customerOrderId
-            formTitleRef.current = `Received Material Details - Order ID - ${data.orderId}`
-            formBtnRef.current = 'Confirm Details'
-            setFormData(data)
-            setModal(true)
-        }
+        let filteredData = RMClone.filter(item => dayjs(value).format(DATEFORMAT) == dayjs(item.dispatchedDate).format(DATEFORMAT))
+        setRM(filteredData)
     }
 
     const handlePageChange = (number) => {
@@ -82,64 +72,41 @@ const AddMaterials = () => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
-        // // Validations
-        // if (key === 'gstNo') {
-        //     const error = validateIDNumbers(key, value)
-        //     setFormErrors(errors => ({ ...errors, [key]: error }))
-        // }
-        // if (key === 'deliveryLocation') {
-        //     const error = validateNames(value)
-        //     setFormErrors(errors => ({ ...errors, [key]: error }))
-        // }
-        // else if (key === 'phoneNumber') {
-        //     const error = validateMobileNumber(value)
-        //     setFormErrors(errors => ({ ...errors, [key]: error }))
-        // }
-        // else if (key === 'depositAmount') {
-        //     const error = validateNumber(value)
-        //     setFormErrors(errors => ({ ...errors, [key]: error }))
-        // }
-        // else if (key === 'contactPerson') {
-        //     const error = validateNames(value)
-        //     setFormErrors(errors => ({ ...errors, [key]: error }))
-        // }
-        // else if (key.includes('price') || key.includes('product')) {
-        //     const error = validateNumber(value)
-        //     setFormErrors(errors => ({ ...errors, productNPrice: error }))
-        // }
+        // invoiceDate ?
+        // Validations
+        if (key === 'managerName') {
+            const error = validateNames(value)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'taxAmount' || key === 'receiptNo' ||
+            key === 'invoiceValue' || key === 'invoiceNo') {
+            const error = validateNumber(value)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
     }
 
-    const handleBlur = (value, key) => {
-        // Validations
-        // if (key === 'gstNo') {
-        //     const error = validateIDNumbers(key, value, true)
-        //     setFormErrors(errors => ({ ...errors, [key]: error }))
-        // }
-        // else if (key === 'phoneNumber') {
-        //     const error = validateMobileNumber(value, true)
-        //     setFormErrors(errors => ({ ...errors, [key]: error }))
-        // }
+    const handleUpload = (file) => {
+        getBase64(file, async (buffer) => {
+            setFormData(data => ({ ...data, receiptImage: buffer }))
+            setFormErrors(errors => ({ ...errors, receiptImage: '' }))
+        })
     }
+
+    const handleRemove = () => setFormData(data => ({ ...data, receiptImage: '' }))
 
     const handleUpdate = async () => {
-        // const deliveryErrors = validateDeliveryValues(formData)
-        // const devDaysError = validateDevDays(devDays)
+        const formErrors = validateReceivedMaterialValues(formData)
 
-        // if (!isEmpty(deliveryErrors) || !isEmpty(devDaysError)) {
-        //     setShake(true)
-        //     setTimeout(() => setShake(false), 820)
-        //     setFormErrors(deliveryErrors)
-        //     setDevDaysError(devDaysError)
-        //     return
-        // }
+        if (!isEmpty(formErrors)) {
+            setShake(true)
+            setTimeout(() => setShake(false), 820)
+            setFormErrors(formErrors)
+            return
+        }
 
-        // const productsUI = extractProductsFromForm(formData)
-        // const products = getProductsWithIdForDB(productsUI)
-        // const deliveryDays = getDevDaysForDB(devDays)
-        // const formValues = extractDeliveryDetails(formData)
-        // const body = [{ ...formValues, isNew: false, delete: 0, isActive: 0, products, deliveryDays }]
+        // const body = { ...formData }
+        // const url = '/motherPlant/createRM'
 
-        // const url = '/customer/updateDeliveryDetails'
         // try {
         //     setBtnDisabled(true)
         //     showToast('Delivery details', 'loading', 'PUT')
@@ -158,32 +125,50 @@ const AddMaterials = () => {
         if (formHasChanged && !hasSaved) {
             return setConfirmModal(true)
         }
-        orderIdRef.current = undefined
         setModal(false)
         setBtnDisabled(false)
         setFormData({})
         setFormErrors({})
     }
 
-    const dataSource = useMemo(() => dispatches.map((dispatch) => {
-        const { DCNO: dcnumber, batchId, dispatchedDate, departmentName, dispatchType, vehicleNo,
-            dispatchAddress, vehicleType, driverName, status } = dispatch
-        return {
-            key: dcnumber,
-            dcnumber,
-            batchId,
-            vehicleNo: vehicleNo + ' ' + vehicleType,
-            driverName,
-            dispatchTo: dispatchType === 'Internal' ? departmentName : dispatchAddress,
-            dateAndTime: dayjs(dispatchedDate).format(DATEANDTIMEFORMAT),
-            productionDetails: renderOrderDetails(dispatch),
-            status: renderStatus(status),
-            action: <TableAction onSelect={({ key }) => handleMenuSelect(key, dispatch)} />
+    const renderStatus = (status, item) => {
+        let text = status === 'Approved' ? 'Confirm' : status
+
+        const style = {
+            color: status === 'Approved' ? '#007AFF' : '',
+            cursor: status === 'Approved' ? 'pointer' : 'default',
+            fontFamily: status === 'Approved' ? 'PoppinsSemiBold600' : 'PoppinsMedium500'
         }
-    }), [dispatches])
+
+        return <span style={style} onClick={() => onConfirm(item)}>{text}</span>
+    }
+
+    const onConfirm = (data) => {
+        RMIdRef.current = data.rawmaterialid
+        formTitleRef.current = `Received Material Details - Order ID - ${data.orderId}`
+        setFormData(data)
+        setModal(true)
+    }
+
+    const dataSource = useMemo(() => RM.map((item) => {
+        const { rawmaterialid: key, orderId, itemCode, itemName, approvedDate, reorderLevel,
+            minOrderLevel, vendorName, status } = item
+        return {
+            key,
+            orderId,
+            itemCode,
+            reorderLevel,
+            vendorName,
+            minOrderLevel,
+            itemName,
+            dateAndTime: dayjs(approvedDate).format('DD/MM/YYYY'),
+            status: renderStatus(status, item)
+        }
+    }), [RM])
 
     const handleConfirmModalOk = useCallback(() => {
-        setConfirmModal(false);
+        setConfirmModal(false)
+        resetTrackForm()
         onModalClose()
     }, [])
 
@@ -229,8 +214,9 @@ const AddMaterials = () => {
                 <Table
                     loading={{ spinning: loading, indicator: <Spinner /> }}
                     dataSource={dataSource.slice(sliceFrom, sliceTo)}
-                    columns={dispatchColumns}
+                    columns={RMColumns}
                     pagination={false}
+                    scroll={{ x: true }}
                 />
             </div>
             {
@@ -251,7 +237,7 @@ const AddMaterials = () => {
                 onOk={handleUpdate}
                 onCancel={handleModalCancel}
                 title={formTitleRef.current}
-                okTxt={formBtnRef.current}
+                okTxt='Confirm Details'
                 track
             >
                 <MaterialReceivedForm
@@ -259,10 +245,11 @@ const AddMaterials = () => {
                     data={formData}
                     errors={formErrors}
                     onChange={handleChange}
-                    onBlur={handleBlur}
+                    onUpload={handleUpload}
+                    onRemove={handleRemove}
                 />
             </CustomModal>
-            <QuitModal
+            <ConfirmModal
                 visible={confirmModal}
                 onOk={handleConfirmModalOk}
                 onCancel={handleConfirmModalCancel}
@@ -270,26 +257,9 @@ const AddMaterials = () => {
                 okTxt='Yes'
             >
                 <ConfirmMessage msg='Changes you made may not be saved.' />
-            </QuitModal>
+            </ConfirmModal>
         </div>
     )
 }
 
-const renderStatus = (status) => {
-    const color = status ? '#0EDD4D' : '#A10101'
-    const text = status ? status : 'Pending'
-    return (
-        <div className='status'>
-            <span className='dot' style={{ background: color }}></span>
-            <span className='status-text'>{text}</span>
-        </div>
-    )
-}
-
-const renderOrderDetails = ({ product20L, product1L, product500ML, product250ML }) => {
-    return `
-    20 lts - ${product20L ? product20L : 0}, 1 ltr - ${product1L ? product1L : 0} boxes, 
-    500 ml - ${product500ML ? product500ML : 0} boxes, 250 ml - ${product250ML ? product250ML : 0} boxes
-    `
-}
 export default AddMaterials

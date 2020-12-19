@@ -7,7 +7,7 @@ import CustomTextArea from '../../../components/CustomTextArea';
 const MaterialRequestForm = (props) => {
 
     const { data, errors, disabled, onChange, onBlur, track, materialOptions, vendorOptions } = props
-    const { itemName, itemCode, vendorName, description, recordLevel, minOrderLevel } = data
+    const { itemName, itemCode, vendorName, description, reorderLevel, minOrderLevel } = data
 
     return (
         <>
@@ -33,11 +33,11 @@ const MaterialRequestForm = (props) => {
                 </div>
                 <div className='row'>
                     <div className='input-container'>
-                        <InputLabel name='Reorder Level' error={errors.recordLevel} mandatory />
-                        <CustomInput value={recordLevel} placeholder='Add Reorder Level'
-                            maxLength={20} disabled={disabled} error={errors.recordLevel}
-                            onBlur={(value) => onBlur(value, 'recordLevel')}
-                            onChange={(value) => onChange(value, 'recordLevel')}
+                        <InputLabel name='Reorder Level' error={errors.reorderLevel} mandatory />
+                        <CustomInput value={reorderLevel} placeholder='Add Reorder Level'
+                            maxLength={20} disabled={disabled} error={errors.reorderLevel}
+                            onBlur={(value) => onBlur(value, 'reorderLevel')}
+                            onChange={(value) => onChange(value, 'reorderLevel')}
                         />
                     </div>
                     <div className='input-container'>

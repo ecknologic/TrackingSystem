@@ -293,34 +293,34 @@ export const getIDInputValidationProps = (IDType) => {
 }
 
 export const isEmail = (string) => {
-    return string.match(/^(\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3})*$/)
+    return String(string).match(/^(\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3})*$/)
 }
 export const isIndMobileNum = (number) => {
     return String(number).match(/^[6-9]\d{9}$/)
 }
 export const isAlphaNumOnly = (string) => {
-    return string.match(/^[a-z0-9]*$/i)
+    return String(string).match(/^[a-z0-9]*$/i)
 }
 export const isAlphaOnly = (string) => {
-    return string.match(/^[a-zA-Z\s]*$/)
+    return String(string).match(/^[a-zA-Z\s]*$/)
 }
 export const hasLowerCase = (string) => {
-    return string.match(/[a-z]/)
+    return String(string).match(/[a-z]/)
 }
 export const isPANValid = (PANNumber) => {
-    return PANNumber.match(/^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/)
+    return String(PANNumber).match(/^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/)
 }
 export const isGSTValid = (gstNumber) => {
-    return gstNumber.match(/(0[0-9]|1[1-9]|2[0-9]|3[0-7])[A-Z]{3}[CPHFATBLJG]{1}[A-Z]{1}\d{4}[A-Z]{1}\d{1}[A-Z0-9]{2}/g)
+    return String(gstNumber).match(/(0[0-9]|1[1-9]|2[0-9]|3[0-7])[A-Z]{3}[CPHFATBLJG]{1}[A-Z]{1}\d{4}[A-Z]{1}\d{1}[A-Z0-9]{2}/g)
 }
 export const isStrictDigit = (number) => {
     return String(number).match(/^(\d+)$/)
 }
 export const isStrictIntFloat = (string) => { // Allows digits with single dot and hiphen
-    return string.match(/^((-)?(0|([1-9][0-9]*))(\.[0-9]+)?)$/)
+    return String(string).match(/^((-)?(0|([1-9][0-9]*))(\.[0-9]+)?)$/)
 }
 export const isIntFloat = (string) => { // Allows digits with multiple dots and hiphens at any position
-    return string.match(/^[0-9.-]+$/)
+    return String(string).match(/^[0-9.-]+$/)
 }
 
 // multiplication table

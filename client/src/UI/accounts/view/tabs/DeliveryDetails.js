@@ -48,10 +48,9 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
         } catch (error) { }
     }
 
-    const updateDeliveryDetails = (data) => {
+    const optimisticUpdate = (data) => {
         let clone = deepClone(delivery);
-        const item = clone.find(item => item.deliveryDetailsId == data.deliveryDetailsId)
-        const index = clone.indexOf(item)
+        const index = clone.findIndex(item => item.deliveryDetailsId === data.deliveryDetailsId)
         clone[index] = data;
         setDelivery(clone)
     }
@@ -79,7 +78,7 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
             setBtnDisabled(true)
             showToast('Delivery details', 'loading', 'PUT')
             const { data: [data = {}] } = await http.POST(url, body)
-            updateDeliveryDetails(data)
+            optimisticUpdate(data)
             showToast('Delivery details', 'success', 'PUT')
             onModalClose(true)
             setBtnDisabled(false)
