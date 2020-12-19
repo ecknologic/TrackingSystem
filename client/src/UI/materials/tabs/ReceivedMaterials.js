@@ -8,11 +8,13 @@ import { ScheduleIcon } from '../../../components/SVG_Icons';
 import TableAction from '../../../components/TableAction';
 import SearchInput from '../../../components/SearchInput';
 import ConfirmMessage from '../../../components/ConfirmMessage';
-import { TRACKFORM } from '../../../utils/constants';
+import { TODAYDATE, TRACKFORM } from '../../../utils/constants';
 import CustomPagination from '../../../components/CustomPagination';
 import { ReceivedMColumns } from '../../../assets/fixtures';
 import { disableFutureDates } from '../../../utils/Functions';
+import DateValue from '../../../components/DateValue';
 const DATEFORMAT = 'DD-MM-YYYY'
+const format = 'YYYY-MM-DD'
 
 const ReceivedMaterials = () => {
     const [loading, setLoading] = useState(true)
@@ -24,6 +26,7 @@ const ReceivedMaterials = () => {
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [modal, setModal] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
+    const [selectedDate, setSelectedDate] = useState(TODAYDATE)
     const [open, setOpen] = useState(false)
     const [RM, setRM] = useState([])
     const [RMClone, setRMClone] = useState([])
@@ -50,6 +53,7 @@ const ReceivedMaterials = () => {
 
     const handleDateSelect = (value) => {
         setOpen(false)
+        setSelectedDate(dayjs(value).format(format))
         const filtered = RMClone.filter(item => dayjs(value).format(DATEFORMAT) == dayjs(item.dispatchedDate).format(DATEFORMAT))
         setRM(filtered)
         setTotalCount(filtered.length)
@@ -112,6 +116,7 @@ const ReceivedMaterials = () => {
         <div className='stock-delivery-container'>
             <div className='header'>
                 <div className='left'>
+                    <DateValue date={selectedDate} />
                     <div className='app-date-picker-wrapper'>
                         <div className='date-picker' onClick={() => setOpen(true)}>
                             <ScheduleIcon />

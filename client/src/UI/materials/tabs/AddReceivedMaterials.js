@@ -7,14 +7,16 @@ import ConfirmModal from '../../../components/CustomModal';
 import { ScheduleIcon } from '../../../components/SVG_Icons';
 import SearchInput from '../../../components/SearchInput';
 import ConfirmMessage from '../../../components/ConfirmMessage';
-import { TRACKFORM } from '../../../utils/constants';
+import { TODAYDATE, TRACKFORM } from '../../../utils/constants';
 import CustomPagination from '../../../components/CustomPagination';
 import { getRMColumns } from '../../../assets/fixtures';
 import { disableFutureDates, getBase64, isEmpty, resetTrackForm } from '../../../utils/Functions';
 import CustomModal from '../../../components/CustomModal';
 import MaterialReceivedForm from '../forms/MaterialReceived';
 import { validateNames, validateNumber, validateReceivedMaterialValues } from '../../../utils/validations';
+import DateValue from '../../../components/DateValue';
 const DATEFORMAT = 'DD-MM-YYYY'
+const format = 'YYYY-MM-DD'
 
 const AddMaterials = () => {
     const [loading, setLoading] = useState(true)
@@ -26,6 +28,7 @@ const AddMaterials = () => {
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [modal, setModal] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
+    const [selectedDate, setSelectedDate] = useState(TODAYDATE)
     const [shake, setShake] = useState(false)
     const [open, setOpen] = useState(false)
     const [RM, setRM] = useState([])
@@ -55,6 +58,7 @@ const AddMaterials = () => {
 
     const handleDateSelect = (value) => {
         setOpen(false)
+        setSelectedDate(dayjs(value).format(format))
         let filteredData = RMClone.filter(item => dayjs(value).format(DATEFORMAT) == dayjs(item.dispatchedDate).format(DATEFORMAT))
         setRM(filteredData)
     }
@@ -182,6 +186,7 @@ const AddMaterials = () => {
         <div className='stock-delivery-container'>
             <div className='header'>
                 <div className='left'>
+                    <DateValue date={selectedDate} />
                     <div className='app-date-picker-wrapper'>
                         <div className='date-picker' onClick={() => setOpen(true)}>
                             <ScheduleIcon />

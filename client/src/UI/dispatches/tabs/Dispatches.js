@@ -8,12 +8,14 @@ import { ScheduleIcon } from '../../../components/SVG_Icons';
 import TableAction from '../../../components/TableAction';
 import SearchInput from '../../../components/SearchInput';
 import ConfirmMessage from '../../../components/ConfirmMessage';
-import { TRACKFORM } from '../../../utils/constants';
+import { TODAYDATE, TRACKFORM } from '../../../utils/constants';
 import CustomPagination from '../../../components/CustomPagination';
 import { dispatchColumns } from '../../../assets/fixtures';
 import { disableFutureDates } from '../../../utils/Functions';
+import DateValue from '../../../components/DateValue';
 const DATEFORMAT = 'DD-MM-YYYY'
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
+const format = 'YYYY-MM-DD'
 
 const Dispatches = () => {
     const [loading, setLoading] = useState(true)
@@ -25,6 +27,7 @@ const Dispatches = () => {
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [DCModal, setDCModal] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
+    const [selectedDate, setSelectedDate] = useState(TODAYDATE)
     const [shake, setShake] = useState(false)
     const [open, setOpen] = useState(false)
     const [dispatches, setDispatches] = useState([])
@@ -52,6 +55,7 @@ const Dispatches = () => {
 
     const handleDateSelect = (value) => {
         setOpen(false)
+        setSelectedDate(dayjs(value).format(format))
         const filteredData = dispatchesClone.filter(item => dayjs(value).format(DATEFORMAT) === dayjs(item.dispatchedDate).format(DATEFORMAT))
         setDispatches(filteredData)
         setTotalCount(filteredData.length)
@@ -119,6 +123,7 @@ const Dispatches = () => {
         <div className='stock-delivery-container'>
             <div className='header'>
                 <div className='left'>
+                    <DateValue date={selectedDate} />
                     <div className='app-date-picker-wrapper'>
                         <div className='date-picker' onClick={() => setOpen(true)}>
                             <ScheduleIcon />
