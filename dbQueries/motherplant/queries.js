@@ -1,4 +1,5 @@
 const { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery } = require('../../utils/functions.js');
+const dayjs = require('dayjs');
 const GETDISPATCHQUERY = "SELECT d.dispatchType,d.dispatchAddress,d.DCNO,d.batchId,d.product20L,d.product1L,d.product500ML,d.product250ML,d.driverName,d.dispatchTo,d.dispatchedDate,v.vehicleType,v.vehicleNo from dispatches d INNER JOIN VehicleDetails v ON d.vehicleNo=v.vehicleId ORDER BY d.dispatchedDate DESC";
 var motherPlantDbQueries = {}
 motherPlantDbQueries.getProductionDetails = async (callback) => {
@@ -10,7 +11,8 @@ motherPlantDbQueries.getProductsByBatch = async (batchId, callback) => {
     return executeGetParamsQuery(query, [batchId], callback)
 }
 motherPlantDbQueries.getBatchNumbers = async (callback) => {
-    let query = "select batchId from production";
+    let past10thDay = dayjs().subtract(10, 'day').format('YYYY-MM-DD')
+    let query = "select batchId from production WHERE DATE(`productionDate`)>='" + past10thDay + "'";
     return executeGetQuery(query, callback)
 }
 
