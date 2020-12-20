@@ -58,12 +58,12 @@ router.get('/getRMDetails', (req, res) => {
 router.post('/createRM', (req, res) => {
     let input = req.body;
     input.departmentId = departmentId
+    input.requestedDate = new Date()
     motherPlantDbQueries.createRM(input, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
             input.orderId = `OD-${results.insertId}`
             input.rawmaterialid = results.insertId
-            input.requestedDate = new Date()
             motherPlantDbQueries.updateRMDetails(input, (updateErr, updatedData) => {
                 if (updateErr) res.status(500).json(dbError(err));
                 else res.json(INSERTMESSAGE)
@@ -126,12 +126,12 @@ router.get('/getDispatchDetails', (req, res) => {
 router.post('/addDispatchDetails', (req, res) => {
     let input = req.body;
     input.departmentId = departmentId
+    input.dispatchedDate = new Date()
     motherPlantDbQueries.addDispatchDetails(input, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
             input.DCNO = `DC-${results.insertId}`
             input.dispatchId = results.insertId
-            input.dispatchedDate = new Date()
             motherPlantDbQueries.updateDispatchDetails(input, (updateErr, data) => {
                 if (updateErr) console.log(updateErr)
                 else res.json(INSERTMESSAGE);
@@ -241,7 +241,6 @@ router.post('/addProductionDetails', (req, res) => {
         if (err) res.status(500).json(dbError(err));
         else {
             input.batchId = getBatchId(input.shiftType)
-            input.productionDate = new Date()
             input.productionid = results.insertId
             motherPlantDbQueries.updateProductionDetails(input, (updateErr, data) => {
                 if (updateErr) res.status(500).json(dbError(updateErr));

@@ -92,13 +92,13 @@ motherPlantDbQueries.addVehicleDetails = async (input, callback) => {
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.addDispatchDetails = async (input, callback) => {
-    let query = "insert into dispatches (vehicleNo,driverId,driverName,dispatchTo,batchId,product20L,product1L,product500ML,product250ML,dispatchAddress, dispatchType,departmentId) values(?,?,?,?,?,?,?,?,?,?,?)";
-    let requestBody = [input.vehicleNo, input.driverId, input.driverName, input.dispatchTo, input.batchId, input.product20L, input.product1L, input.product500ML, input.product250ML, input.dispatchAddress, input.dispatchType, input.departmentId]
+    let query = "insert into dispatches (dispatchedDate,vehicleNo,driverId,driverName,dispatchTo,batchId,product20L,product1L,product500ML,product250ML,dispatchAddress, dispatchType,departmentId) values(?,?,?,?,?,?,?,?,?,?,?,?)";
+    let requestBody = [input.dispatchedDate, input.vehicleNo, input.driverId, input.driverName, input.dispatchTo, input.batchId, input.product20L, input.product1L, input.product500ML, input.product250ML, input.dispatchAddress, input.dispatchType, input.departmentId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.createRM = async (input, callback) => {
-    let query = "insert into requiredrawmaterial (itemName,description,reorderLevel,minOrderLevel,itemCode,vendorName,departmentId) values(?,?,?,?,?,?,?)";
-    let requestBody = [input.itemName, input.description, input.reorderLevel, input.minOrderLevel, input.itemCode, input.vendorName, input.departmentId]
+    let query = "insert into requiredrawmaterial (requestedDate,itemName,description,reorderLevel,minOrderLevel,itemCode,vendorName,departmentId) values(?,?,?,?,?,?,?)";
+    let requestBody = [input.requestedDate, input.itemName, input.description, input.reorderLevel, input.minOrderLevel, input.itemCode, input.vendorName, input.departmentId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.createRMReceipt = async (input, callback) => {
@@ -110,14 +110,14 @@ motherPlantDbQueries.createRMReceipt = async (input, callback) => {
 }
 
 motherPlantDbQueries.updateProductionDetails = async (input, callback) => {
-    let query = `update production set batchId=?,productionDate=?,phLevel=?,TDS=?,ozoneLevel=?,product20L=?,product1L=?,product500ML=?,product250ML=?,managerName=?,shiftType=? where productionid=${input.productionid}`;
-    let requestBody = [input.batchId, input.productionDate, input.phLevel, input.TDS, input.ozoneLevel, input.product20L, input.product1L, input.product500ML, input.product250ML, input.managerName, input.shiftType]
+    let query = `update production set batchId=?,phLevel=?,TDS=?,ozoneLevel=?,product20L=?,product1L=?,product500ML=?,product250ML=?,managerName=?,shiftType=? where productionid=${input.productionid}`;
+    let requestBody = [input.batchId, input.phLevel, input.TDS, input.ozoneLevel, input.product20L, input.product1L, input.product500ML, input.product250ML, input.managerName, input.shiftType]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
 motherPlantDbQueries.updateRMDetails = async (input, callback) => {
-    let query = `update requiredrawmaterial set requestedDate=?,orderId=?,itemName=?,description=?,reorderLevel=?,minOrderLevel=?,itemCode=?,vendorName=? where rawmaterialid=${input.rawmaterialid}`;
-    let requestBody = [input.requestedDate, input.orderId, input.itemName, input.description, input.reorderLevel, input.minOrderLevel, input.itemCode, input.vendorName]
+    let query = `update requiredrawmaterial set orderId=?,itemName=?,description=?,reorderLevel=?,minOrderLevel=?,itemCode=?,vendorName=? where rawmaterialid=${input.rawmaterialid}`;
+    let requestBody = [input.orderId, input.itemName, input.description, input.reorderLevel, input.minOrderLevel, input.itemCode, input.vendorName]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
@@ -128,8 +128,8 @@ motherPlantDbQueries.updateRMStatus = async (input, callback) => {
 }
 
 motherPlantDbQueries.updateDispatchDetails = async (input, callback) => {
-    let query = `update dispatches SET dispatchedDate=?,DCNO=?,vehicleNo=?,driverId=?,driverName=?,dispatchTo=?,batchId=?,product20L=?,product1L=?,product500ML=?,product250ML=?,managerName=?,dispatchAddress=? where dispatchId="${input.dispatchId}"`;
-    let requestBody = [input.dispatchedDate, input.DCNO, input.vehicleNo, input.driverId, input.driverName, input.dispatchTo, input.batchId, input.product20L, input.product1L, input.product500ML, input.product250ML, input.managerName, input.dispatchAddress]
+    let query = `update dispatches SET DCNO=?,vehicleNo=?,driverId=?,driverName=?,dispatchTo=?,batchId=?,product20L=?,product1L=?,product500ML=?,product250ML=?,managerName=?,dispatchAddress=? where dispatchId="${input.dispatchId}"`;
+    let requestBody = [input.DCNO, input.vehicleNo, input.driverId, input.driverName, input.dispatchTo, input.batchId, input.product20L, input.product1L, input.product500ML, input.product250ML, input.managerName, input.dispatchAddress]
     executePostOrUpdateQuery(query, requestBody, (err, data) => {
         if (err) callback(err, data)
         else {
