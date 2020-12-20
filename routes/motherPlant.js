@@ -3,6 +3,7 @@ var router = express.Router();
 const motherPlantDbQueries = require('../dbQueries/motherplant/queries');
 const { dbError, getBatchId } = require('../utils/functions');
 const { INSERTMESSAGE, UPDATEMESSAGE } = require('../utils/constants');
+const dayjs = require('dayjs');
 let departmentId;
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -181,9 +182,12 @@ router.get('/getProductionDetailsByDate/:date', (req, res) => {
     motherPlantDbQueries.getCurrentProductionDetailsByDate(input, (err, productionResult) => {
         if (err) res.status(500).json(dbError(err));
         else if (productionResult.length) {
-            motherPlantDbQueries.getCurrentDispatchDetailsByDate(date, (dispatchErr, dispatchResults) => {
+            console.log('productionResult', productionResult)
+            motherPlantDbQueries.getCurrentDispatchDetailsByDate(input, (dispatchErr, dispatchResults) => {
                 if (dispatchErr) res.status(500).json(dbError(err));
                 else {
+                    console.log('dispatchResults', dispatchResults)
+
                     let product20LCount = 0, product1LCount = 0, product500MLCount = 0, product250MLCount = 0, count = 0
 
                     let productionObj = productionResult[0]

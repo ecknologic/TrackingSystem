@@ -63,8 +63,8 @@ motherPlantDbQueries.getCurrentProductionDetailsByDate = async (input, callback)
     return executeGetParamsQuery(query, [input.departmentId, input.date], callback)
 }
 motherPlantDbQueries.getCurrentDispatchDetailsByDate = async (input, callback) => {
-    let query = "SELECT SUM(d.product20L) AS total20LCans,SUM(d.product1L) AS total1LBoxes,SUM(d.product500ML) total500MLBoxes,SUM(d.product250ML) total250MLBoxes FROM dispatches d WHERE dispatchTo='" + input.departmentId + "'AND DATE(`dispatchedDate`)<='" + input.currentDate + "'";
-    return executeGetQuery(query, callback)
+    let query = "SELECT SUM(d.product20L) AS total20LCans,SUM(d.product1L) AS total1LBoxes,SUM(d.product500ML) total500MLBoxes,SUM(d.product250ML) total250MLBoxes FROM dispatches d WHERE departmentId=? AND DATE(`dispatchedDate`)<=?";
+    return executeGetParamsQuery(query, [input.departmentId, input.date], callback)
 }
 
 
@@ -92,12 +92,12 @@ motherPlantDbQueries.addVehicleDetails = async (input, callback) => {
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.addDispatchDetails = async (input, callback) => {
-    let query = "insert into dispatches (dispatchedDate,vehicleNo,driverId,driverName,dispatchTo,batchId,product20L,product1L,product500ML,product250ML,dispatchAddress, dispatchType,departmentId) values(?,?,?,?,?,?,?,?,?,?,?,?)";
+    let query = "insert into dispatches (dispatchedDate,vehicleNo,driverId,driverName,dispatchTo,batchId,product20L,product1L,product500ML,product250ML,dispatchAddress, dispatchType,departmentId) values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
     let requestBody = [input.dispatchedDate, input.vehicleNo, input.driverId, input.driverName, input.dispatchTo, input.batchId, input.product20L, input.product1L, input.product500ML, input.product250ML, input.dispatchAddress, input.dispatchType, input.departmentId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.createRM = async (input, callback) => {
-    let query = "insert into requiredrawmaterial (requestedDate,itemName,description,reorderLevel,minOrderLevel,itemCode,vendorName,departmentId) values(?,?,?,?,?,?,?)";
+    let query = "insert into requiredrawmaterial (requestedDate,itemName,description,reorderLevel,minOrderLevel,itemCode,vendorName,departmentId) values(?,?,?,?,?,?,?,?)";
     let requestBody = [input.requestedDate, input.itemName, input.description, input.reorderLevel, input.minOrderLevel, input.itemCode, input.vendorName, input.departmentId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }

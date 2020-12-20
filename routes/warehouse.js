@@ -33,12 +33,14 @@ router.get('/getdriverDetails/:warehouseId', (req, res) => {
 
 router.get('/getNewStockDetails/:id', (req, res) => {
   let input = {
-    currentDate: dayjs().format('DD-MM-YYYY'),
+    date: dayjs().format('YYYY-MM-DD'),
     departmentId: req.params.id
   }
   getCurrentDispatchDetailsByDate(input, (err, results) => {
     if (err) res.json(dbError(err));
-    else res.json(results.length ? results[0] : {});
+    else {
+      res.json(results.length ? results[0] : {});
+    }
   });
 });
 
