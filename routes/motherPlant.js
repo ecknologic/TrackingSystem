@@ -249,5 +249,12 @@ router.post('/addProductionDetails', (req, res) => {
         }
     });
 })
+router.post('/updateProductionDetails', (req, res) => {
+    let input = req.body;
+    motherPlantDbQueries.updateProductionDetails(input, (updateErr, data) => {
+        if (updateErr) res.status(500).json(dbError(updateErr));
+        else res.json(UPDATEMESSAGE);
+    })
+})
 
 module.exports = router;

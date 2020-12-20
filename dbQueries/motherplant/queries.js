@@ -112,7 +112,13 @@ motherPlantDbQueries.createRMReceipt = async (input, callback) => {
 motherPlantDbQueries.updateProductionDetails = async (input, callback) => {
     let query = `update production set batchId=?,phLevel=?,TDS=?,ozoneLevel=?,product20L=?,product1L=?,product500ML=?,product250ML=?,managerName=?,shiftType=? where productionid=${input.productionid}`;
     let requestBody = [input.batchId, input.phLevel, input.TDS, input.ozoneLevel, input.product20L, input.product1L, input.product500ML, input.product250ML, input.managerName, input.shiftType]
-    return executePostOrUpdateQuery(query, requestBody, callback)
+    return executePostOrUpdateQuery(query, requestBody, (err, data) => {
+        if (err) callback(err, data)
+        else {
+            let getQuery = `select * from production WHERE productionid=${input.productionid}`
+            executeGetQuery(getQuery, callback)
+        }
+    })
 }
 
 motherPlantDbQueries.updateRMDetails = async (input, callback) => {
