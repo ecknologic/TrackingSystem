@@ -7,7 +7,7 @@ import CustomTextArea from '../../../components/CustomTextArea';
 const MaterialRequestForm = (props) => {
 
     const { data, errors, disabled, onChange, onBlur, track, materialOptions, vendorOptions } = props
-    const { itemName, itemCode, vendorName, description, reorderLevel, minOrderLevel } = data
+    const { itemName, itemCode, vendorName, itemQty, description, reorderLevel, minOrderLevel } = data
 
     return (
         <>
@@ -28,6 +28,14 @@ const MaterialRequestForm = (props) => {
                             maxLength={10} disabled={disabled} error={errors.itemCode}
                             onBlur={(value) => onBlur(value, 'itemCode')}
                             onChange={(value) => onChange(value, 'itemCode')}
+                        />
+                    </div>
+                    <div className='input-container'>
+                        <InputLabel name='Quantity' error={errors.itemQty} mandatory />
+                        <CustomInput value={itemQty} placeholder='Add Item Code'
+                            maxLength={10} disabled={disabled} error={errors.itemQty}
+                            onBlur={(value) => onBlur(value, 'itemQty')}
+                            onChange={(value) => onChange(value, 'itemQty')}
                         />
                     </div>
                 </div>

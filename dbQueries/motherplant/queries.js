@@ -11,6 +11,11 @@ motherPlantDbQueries.getProductsByBatch = async (input, callback) => {
     let query = `SELECT SUM(p.product20L) AS product20LCount,SUM(p.product1L) AS product1LCount,SUM(p.product500ML) product500MLCount,SUM(p.product250ML) product250MLCount FROM production p WHERE departmentId=? AND batchId=?`;
     return executeGetParamsQuery(query, [departmentId, batchNo], callback)
 }
+motherPlantDbQueries.getDispatchesByBatch = async (input, callback) => {
+    let { departmentId, batchNo } = input
+    let query = `SELECT SUM(d.product20L) AS product20LCount,SUM(d.product1L) AS product1LCount,SUM(d.product500ML) product500MLCount,SUM(d.product250ML) product250MLCount FROM dispatches d WHERE departmentId=? AND batchId=?`;
+    return executeGetParamsQuery(query, [departmentId, batchNo], callback)
+}
 motherPlantDbQueries.getBatchNumbers = async (departmentId, callback) => {
     let past10thDay = dayjs().subtract(10, 'day').format('YYYY-MM-DD')
     let query = "select batchId from production WHERE departmentId=? AND DATE(`productionDate`)>=? ORDER BY productionDate DESC";
@@ -62,8 +67,12 @@ motherPlantDbQueries.getCurrentProductionDetailsByDate = async (input, callback)
     let query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product250ML) total250MLBoxes FROM production p WHERE departmentId=? AND DATE(`productionDate`)<=?";
     return executeGetParamsQuery(query, [input.departmentId, input.date], callback)
 }
-motherPlantDbQueries.getCurrentDispatchDetailsByDate = async (input, callback) => {
+motherPlantDbQueries.getPDDetailsByDate = async (input, callback) => {
     let query = "SELECT SUM(d.product20L) AS total20LCans,SUM(d.product1L) AS total1LBoxes,SUM(d.product500ML) total500MLBoxes,SUM(d.product250ML) total250MLBoxes FROM dispatches d WHERE departmentId=? AND DATE(`dispatchedDate`)<=?";
+    return executeGetParamsQuery(query, [input.departmentId, input.date], callback)
+}
+motherPlantDbQueries.getCurrentDispatchDetailsByDate = async (input, callback) => {
+    let query = "SELECT SUM(d.product20L) AS total20LCans,SUM(d.product1L) AS total1LBoxes,SUM(d.product500ML) total500MLBoxes,SUM(d.product250ML) total250MLBoxes FROM dispatches d WHERE dispatchTo=? AND DATE(`dispatchedDate`)<=?";
     return executeGetParamsQuery(query, [input.departmentId, input.date], callback)
 }
 
@@ -97,8 +106,8 @@ motherPlantDbQueries.addDispatchDetails = async (input, callback) => {
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.createRM = async (input, callback) => {
-    let query = "insert into requiredrawmaterial (requestedDate,itemName,description,reorderLevel,minOrderLevel,itemCode,vendorName,departmentId) values(?,?,?,?,?,?,?,?)";
-    let requestBody = [input.requestedDate, input.itemName, input.description, input.reorderLevel, input.minOrderLevel, input.itemCode, input.vendorName, input.departmentId]
+    let query = "insert into requiredrawmaterial (requestedDate,itemName,itemQty,description,reorderLevel,minOrderLevel,itemCode,vendorName,departmentId) values(?,?,?,?,?,?,?,?,?)";
+    let requestBody = [input.requestedDate, input.itemName, input.itemQty, input.description, input.reorderLevel, input.minOrderLevel, input.itemCode, input.vendorName, input.departmentId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.createRMReceipt = async (input, callback) => {
@@ -122,8 +131,8 @@ motherPlantDbQueries.updateProductionDetails = async (input, callback) => {
 }
 
 motherPlantDbQueries.updateRMDetails = async (input, callback) => {
-    let query = `update requiredrawmaterial set orderId=?,itemName=?,description=?,reorderLevel=?,minOrderLevel=?,itemCode=?,vendorName=? where rawmaterialid=${input.rawmaterialid}`;
-    let requestBody = [input.orderId, input.itemName, input.description, input.reorderLevel, input.minOrderLevel, input.itemCode, input.vendorName]
+    let query = `update requiredrawmaterial set orderId=?,itemName=?,itemQty=?,description=?,reorderLevel=?,minOrderLevel=?,itemCode=?,vendorName=? where rawmaterialid=${input.rawmaterialid}`;
+    let requestBody = [input.orderId, input.itemName, input.itemQty, input.description, input.reorderLevel, input.minOrderLevel, input.itemCode, input.vendorName]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 

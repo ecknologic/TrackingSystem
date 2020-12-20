@@ -28,7 +28,7 @@ const CreateDispatch = ({ goToTab, driverList, departmentList, ...rest }) => {
     }, [])
 
     const getCurrentStock = async (batchId) => {
-        const [data = {}] = await http.GET(`/motherPlant/getProductByBatch/${batchId}`)
+        const data = await http.GET(`/motherPlant/getProductByBatch/${batchId}`)
         setCurrentStock(data)
     }
 

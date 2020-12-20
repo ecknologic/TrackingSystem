@@ -94,11 +94,12 @@ const MaterialStatus = () => {
 
     const dataSource = useMemo(() => RM.map((dispatch) => {
         const { rawmaterialid: key, orderId, itemCode, itemName, requestedDate, reorderLevel,
-            minOrderLevel, vendorName, status } = dispatch
+            minOrderLevel, vendorName, itemQty, status } = dispatch
         return {
             key,
             orderId,
             itemCode,
+            itemQty,
             reorderLevel,
             vendorName,
             minOrderLevel,

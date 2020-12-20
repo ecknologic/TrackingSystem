@@ -156,11 +156,12 @@ const AddMaterials = () => {
 
     const dataSource = useMemo(() => RM.map((item) => {
         const { rawmaterialid: key, orderId, itemCode, itemName, approvedDate, reorderLevel,
-            minOrderLevel, vendorName, status } = item
+            minOrderLevel, vendorName, itemQty, status } = item
         return {
             key,
             orderId,
             itemCode,
+            itemQty,
             reorderLevel,
             vendorName,
             minOrderLevel,

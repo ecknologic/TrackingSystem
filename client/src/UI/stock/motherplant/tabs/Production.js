@@ -128,7 +128,7 @@ const Production = () => {
         try {
             setBtnDisabled(true)
             showToast('Batch', 'loading', 'PUT')
-            const { data: [data] } = await http.POST(url, body)
+            const data = await http.POST(url, body)
             showToast('Batch', 'success', 'PUT')
             optimisticUpdate(data)
             onModalClose(true)
@@ -200,14 +200,15 @@ const Production = () => {
                 className={`app-form-modal ${shake ? 'app-shake' : ''}`}
                 visible={modal}
                 btnDisabled={btnDisabled}
-                onOk={handleUpdate}
+                onOk={handleModalCancel}
                 onCancel={handleModalCancel}
                 title={formTitleRef.current}
-                okTxt='Update'
+                okTxt='Close'
                 track
             >
                 <BatchForm
                     track
+                    disabled
                     data={formData}
                     errors={formErrors}
                     shiftOptions={shiftOptions}

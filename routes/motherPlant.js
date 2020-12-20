@@ -168,9 +168,23 @@ router.get('/getProductByBatch/:batchNo', (req, res) => {
     let input = {
         departmentId, batchNo
     }
-    motherPlantDbQueries.getProductsByBatch(input, (err, results) => {
+    motherPlantDbQueries.getProductsByBatch(input, (err, productionResult) => {
         if (err) res.status(500).json(dbError(err));
-        res.json(results);
+        else {
+            motherPlantDbQueries.getDispatchesByBatch(input, (err, dispatchResults) => {
+                if (err) res.status(500).json(dbError(err));
+                else {
+                    let { product20LCount = 0, product1LCount = 0, product500MLCount = 0, product250MLCount = 0 } = productionResult[0]
+                    let { product20LCount: dispatched20L = 0, product1LCount: dispatched1L = 0, product500MLCount: dispatched500ML = 0, product250MLCount: dispatched250ML = 0 } = dispatchResults[0]
+
+                    product20LCount = product20LCount - dispatched20L
+                    product1LCount = product1LCount - dispatched1L
+                    product500MLCount = product500MLCount - dispatched500ML
+                    product250MLCount = product250MLCount - dispatched250ML
+                    res.json({ product20LCount, product1LCount, product500MLCount, product250MLCount });
+                }
+            })
+        }
     })
 });
 
@@ -182,13 +196,10 @@ router.get('/getProductionDetailsByDate/:date', (req, res) => {
     motherPlantDbQueries.getCurrentProductionDetailsByDate(input, (err, productionResult) => {
         if (err) res.status(500).json(dbError(err));
         else if (productionResult.length) {
-            console.log('productionResult', productionResult)
-            motherPlantDbQueries.getCurrentDispatchDetailsByDate(input, (dispatchErr, dispatchResults) => {
+            motherPlantDbQueries.getPDDetailsByDate(input, (dispatchErr, dispatchResults) => {
                 if (dispatchErr) res.status(500).json(dbError(err));
                 else {
-                    console.log('dispatchResults', dispatchResults)
-
-                    let product20LCount = 0, product1LCount = 0, product500MLCount = 0, product250MLCount = 0, count = 0
+                    let product20LCount = 0, product1LCount = 0, product500MLCount = 0, product250MLCount = 0
 
                     let productionObj = productionResult[0]
                     let { total20LCans = 0, total1LBoxes = 0, total500MLBoxes = 0, total250MLBoxes = 0 } = productionObj
@@ -257,7 +268,7 @@ router.post('/updateProductionDetails', (req, res) => {
     let input = req.body;
     motherPlantDbQueries.updateProductionDetails(input, (updateErr, data) => {
         if (updateErr) res.status(500).json(dbError(updateErr));
-        else res.json(UPDATEMESSAGE);
+        else res.json(data);
     })
 })
 

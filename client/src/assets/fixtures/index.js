@@ -235,7 +235,12 @@ export const ReceivedMColumns = [
         key: 'invoiceDate',
     },
     {
-        title: 'Production Details',
+        title: 'Quantity',
+        dataIndex: 'itemQty',
+        key: 'itemQty',
+    },
+    {
+        title: 'Product Details',
         dataIndex: 'itemName',
         key: 'itemName',
     },
@@ -296,6 +301,11 @@ export const getRMColumns = (type) => {
             title: 'Item Code',
             dataIndex: 'itemCode',
             key: 'itemCode',
+        },
+        {
+            title: 'Quantity',
+            dataIndex: 'itemQty',
+            key: 'itemQty',
         },
         {
             title: 'Product Details',

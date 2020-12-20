@@ -89,11 +89,12 @@ const ReceivedMaterials = () => {
     }
 
     const dataSource = useMemo(() => RM.map((item) => {
-        const { rawmaterialid: key, itemName, invoiceNo, status, invoiceValue, invoiceDate, taxAmount } = item
+        const { rawmaterialid: key, itemName, itemQty, invoiceNo, status, invoiceValue, invoiceDate, taxAmount } = item
         return {
             key,
             itemName,
             invoiceNo,
+            itemQty,
             taxAmount,
             invoiceValue,
             dateAndTime: dayjs(invoiceDate).format('DD/MM/YYYY'),

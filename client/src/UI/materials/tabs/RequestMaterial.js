@@ -31,7 +31,7 @@ const RequestMaterial = ({ goToTab, ...rest }) => {
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
         // Validations
-        if (key.includes('Level')) {
+        if (key.includes('Level') || key === 'itemQty') {
             const error = validateNumber(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -39,7 +39,7 @@ const RequestMaterial = ({ goToTab, ...rest }) => {
 
     const handleBlur = (value, key) => {
         // Validations
-        if (key.includes('Level')) {
+        if (key.includes('Level') || key === 'itemQty') {
             const error = validateNumber(value, true)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }

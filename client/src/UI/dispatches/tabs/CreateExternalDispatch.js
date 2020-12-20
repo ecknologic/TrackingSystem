@@ -83,7 +83,9 @@ const CreateExternalDispatch = ({ goToTab, driverList, ...rest }) => {
             return
         }
 
-        let body = { ...formData, dispatchType: 'External', dispatchTo: 0 }
+        let body = {
+            ...formData, dispatchType: 'External', dispatchTo: 3
+        }
         const url = '/motherPlant/addDispatchDetails'
         try {
             setBtnDisabled(true)
