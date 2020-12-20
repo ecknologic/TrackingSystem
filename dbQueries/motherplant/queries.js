@@ -116,8 +116,8 @@ motherPlantDbQueries.updateProductionDetails = async (input, callback) => {
 }
 
 motherPlantDbQueries.updateRMDetails = async (input, callback) => {
-    let query = `update requiredrawmaterial set orderId=?,itemName=?,description=?,reorderLevel=?,minOrderLevel=?,itemCode=?,vendorName=? where rawmaterialid=${input.rawmaterialid}`;
-    let requestBody = [input.orderId, input.itemName, input.description, input.reorderLevel, input.minOrderLevel, input.itemCode, input.vendorName]
+    let query = `update requiredrawmaterial set requestedDate=?,orderId=?,itemName=?,description=?,reorderLevel=?,minOrderLevel=?,itemCode=?,vendorName=? where rawmaterialid=${input.rawmaterialid}`;
+    let requestBody = [input.requestedDate, input.orderId, input.itemName, input.description, input.reorderLevel, input.minOrderLevel, input.itemCode, input.vendorName]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
@@ -128,12 +128,12 @@ motherPlantDbQueries.updateRMStatus = async (input, callback) => {
 }
 
 motherPlantDbQueries.updateDispatchDetails = async (input, callback) => {
-    let query = `update dispatches SET DCNO=?,vehicleNo=?,driverId=?,driverName=?,dispatchTo=?,batchId=?,product20L=?,product1L=?,product500ML=?,product250ML=?,managerName=?,dispatchAddress=? where dispatchId="${input.dispatchId}"`;
-    let requestBody = [input.DCNO, input.vehicleNo, input.driverId, input.driverName, input.dispatchTo, input.batchId, input.product20L, input.product1L, input.product500ML, input.product250ML, input.managerName, input.dispatchAddress]
+    let query = `update dispatches SET dispatchedDate=?,DCNO=?,vehicleNo=?,driverId=?,driverName=?,dispatchTo=?,batchId=?,product20L=?,product1L=?,product500ML=?,product250ML=?,managerName=?,dispatchAddress=? where dispatchId="${input.dispatchId}"`;
+    let requestBody = [input.dispatchedDate, input.DCNO, input.vehicleNo, input.driverId, input.driverName, input.dispatchTo, input.batchId, input.product20L, input.product1L, input.product500ML, input.product250ML, input.managerName, input.dispatchAddress]
     executePostOrUpdateQuery(query, requestBody, (err, data) => {
         if (err) callback(err, data)
         else {
-            let getQuery = `SELECT d.dispatchAddress,d.dispatchType,d.DCNO,d.batchId,d.product20L,d.product1L,d.product500ML,d.product250ML,d.driverName,d.dispatchTo,d.dispatchedDate,v.vehicleType,v.vehicleNo,m.departmentName from dispatches d INNER JOIN VehicleDetails v ON d.vehicleNo=v.vehicleId INNER JOIN departmentmaster m ON d.dispatchTo=m.departmentId WHERE dispatchId=${input.dispatchId}`
+            let getQuery = `SELECT d.dispatchAddress,d.dispatchType,d.DCNO,d.batchId,d.product20L,d.product1L,d.product500ML,d.product250ML,d.driverName,d.dispatchTo,d.dispatchedDate,v.vehicleType,v.vehicleNo from dispatches d INNER JOIN VehicleDetails v ON d.vehicleNo=v.vehicleId WHERE dispatchId=${input.dispatchId}`
             executeGetQuery(getQuery, callback)
         }
     })

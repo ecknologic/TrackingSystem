@@ -63,6 +63,7 @@ router.post('/createRM', (req, res) => {
         else {
             input.orderId = `OD-${results.insertId}`
             input.rawmaterialid = results.insertId
+            input.requestedDate = new Date()
             motherPlantDbQueries.updateRMDetails(input, (updateErr, updatedData) => {
                 if (updateErr) res.status(500).json(dbError(err));
                 else res.json(INSERTMESSAGE)
@@ -130,6 +131,7 @@ router.post('/addDispatchDetails', (req, res) => {
         else {
             input.DCNO = `DC-${results.insertId}`
             input.dispatchId = results.insertId
+            input.dispatchedDate = new Date()
             motherPlantDbQueries.updateDispatchDetails(input, (updateErr, data) => {
                 if (updateErr) console.log(updateErr)
                 else res.json(INSERTMESSAGE);
