@@ -251,8 +251,8 @@ export const ReceivedMColumns = [
     },
     {
         title: 'Invoice Value',
-        key: 'invoiceValue',
-        dataIndex: 'invoiceValue',
+        key: 'invoiceAmount',
+        dataIndex: 'invoiceAmount',
     },
     {
         title: 'Dispatch To',

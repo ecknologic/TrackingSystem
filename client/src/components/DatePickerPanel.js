@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import { DatePicker } from 'antd';
 import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import DateSlider from './DateSlider';
 import { ScheduleIcon } from './SVG_Icons';
@@ -7,6 +6,7 @@ import { disableFutureDates, resetTrackForm } from '../utils/Functions';
 import { TODAYDATE, TRACKFORM } from '../utils/constants';
 import ConfirmModal from '../components/CustomModal';
 import ConfirmMessage from '../components/ConfirmMessage';
+import CustomDateInput from '../components/CustomDateInput';
 import '../sass/datePickerPanel.scss'
 const format = 'YYYY-MM-DD';
 const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -110,15 +110,15 @@ const DatePickerPanel = ({ onChange }) => {
                         <ScheduleIcon />
                         <span>Select Date</span>
                     </div>
-                    <DatePicker // Hidden in the DOM
+                    <CustomDateInput // Hidden in the DOM
                         open={open}
+                        value={selectedDate}
                         style={{ right: 0 }}
                         placeholder='Select Date'
                         className='date-panel-picker'
                         onChange={handleDateSelect}
                         onOpenChange={datePickerStatus}
                         disabledDate={disableFutureDates}
-                        getPopupContainer={triggerNode => triggerNode.parentNode}
                     />
                 </div>
             </div>

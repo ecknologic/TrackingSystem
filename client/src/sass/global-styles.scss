@@ -340,6 +340,25 @@ $textColorDisabled:rgba(0,0,0,0.55);
         box-shadow: none !important;
     }
 }
+
+// -------------- antd Date Picker styles ------------------- //
+
+.ant-picker {
+    margin-top: .5em;
+    height: 3.1em;
+    width: 100%;
+    border-radius: .6em;
+
+    &:hover {
+        border-color: $primaryColor;
+    }
+}
+
+.ant-picker-focused {
+    border-color: $primaryColor;
+    box-shadow: none !important;
+}
+
 // -------------- Antd Modal styles ------------------- //
 .ant-modal {
 
@@ -478,6 +497,11 @@ $textColorDisabled:rgba(0,0,0,0.55);
 }
 .app-accounts-filter {
     width: 12em;
+}
+.ant-tabs-dropdown-menu-item {
+    color: #333333;
+    font-family: 'PoppinsRegular400';
+    font-size: 1.8ch;
 }
 // -------------- Various Input styles ------------------- //
 
@@ -1064,6 +1088,16 @@ $textColorDisabled:rgba(0,0,0,0.55);
             height: .6em;
             border-radius: 50%;
             margin-right: .2em;
+        }
+    }
+
+    .eye-container {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+
+        .eye {
+            margin-left: 1em;
         }
     }
 

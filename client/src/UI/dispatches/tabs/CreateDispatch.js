@@ -29,7 +29,11 @@ const CreateDispatch = ({ goToTab, driverList, departmentList, ...rest }) => {
 
     const getCurrentStock = async (batchId) => {
         const data = await http.GET(`/motherPlant/getProductByBatch/${batchId}`)
+        const { product20LCount: product20L, product1LCount: product1L,
+            product500MLCount: product500ML, product250MLCount: product250ML } = data
+        const currentStock = { product20L, product1L, product500ML, product250ML }
         setCurrentStock(data)
+        setFormData(data => ({ ...data, ...currentStock }))
     }
 
     const handleChange = (value, key) => {

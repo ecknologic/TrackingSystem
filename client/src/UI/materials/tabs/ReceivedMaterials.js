@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { DatePicker, Table } from 'antd';
+import { Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { http } from '../../../modules/http';
 import Spinner from '../../../components/Spinner';
@@ -13,6 +13,7 @@ import CustomPagination from '../../../components/CustomPagination';
 import { ReceivedMColumns } from '../../../assets/fixtures';
 import { disableFutureDates } from '../../../utils/Functions';
 import DateValue from '../../../components/DateValue';
+import CustomDateInput from '../../../components/CustomDateInput';
 const DATEFORMAT = 'DD-MM-YYYY'
 const format = 'YYYY-MM-DD'
 
@@ -40,7 +41,7 @@ const ReceivedMaterials = () => {
     }, [])
 
     const getRM = async () => {
-        const data = await http.GET('/motherPlant/getRMDetails?status=Approved')
+        const data = await http.GET('/motherPlant/getRMReceiptDetails')
         setRM(data)
         setRMClone(data)
         setTotalCount(data.length)
@@ -89,14 +90,14 @@ const ReceivedMaterials = () => {
     }
 
     const dataSource = useMemo(() => RM.map((item) => {
-        const { rawmaterialid: key, itemName, itemQty, invoiceNo, status, invoiceValue, invoiceDate, taxAmount } = item
+        const { rawmaterialid: key, itemName, itemQty, invoiceNo, status, invoiceAmount, invoiceDate, taxAmount } = item
         return {
             key,
             itemName,
             invoiceNo,
             itemQty,
             taxAmount,
-            invoiceValue,
+            invoiceAmount,
             dateAndTime: dayjs(invoiceDate).format('DD/MM/YYYY'),
             status: renderStatus(status),
             action: <TableAction onSelect={({ key }) => handleMenuSelect(key, item)} />
@@ -123,15 +124,15 @@ const ReceivedMaterials = () => {
                             <ScheduleIcon />
                             <span>Select Date</span>
                         </div>
-                        <DatePicker // Hidden in the DOM
+                        <CustomDateInput // Hidden in the DOM
                             open={open}
                             style={{ left: 0 }}
+                            value={selectedDate}
                             placeholder='Select Date'
                             className='date-panel-picker'
                             onChange={handleDateSelect}
                             onOpenChange={datePickerStatus}
                             disabledDate={disableFutureDates}
-                            getPopupContainer={triggerNode => triggerNode.parentNode}
                         />
                     </div>
                 </div>

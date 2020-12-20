@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { DatePicker, Table } from 'antd';
+import { Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { http } from '../../../modules/http';
 import Spinner from '../../../components/Spinner';
@@ -13,6 +13,7 @@ import CustomPagination from '../../../components/CustomPagination';
 import { getRMColumns } from '../../../assets/fixtures';
 import { disableFutureDates } from '../../../utils/Functions';
 import DateValue from '../../../components/DateValue';
+import CustomDateInput from '../../../components/CustomDateInput';
 const DATEFORMAT = 'DD-MM-YYYY'
 const format = 'YYYY-MM-DD'
 
@@ -130,15 +131,15 @@ const MaterialStatus = () => {
                             <ScheduleIcon />
                             <span>Select Date</span>
                         </div>
-                        <DatePicker // Hidden in the DOM
+                        <CustomDateInput // Hidden in the DOM
                             open={open}
                             style={{ left: 0 }}
+                            value={selectedDate}
                             placeholder='Select Date'
                             className='date-panel-picker'
                             onChange={handleDateSelect}
                             onOpenChange={datePickerStatus}
                             disabledDate={disableFutureDates}
-                            getPopupContainer={triggerNode => triggerNode.parentNode}
                         />
                     </div>
                 </div>

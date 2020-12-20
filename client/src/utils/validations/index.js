@@ -279,7 +279,7 @@ export const validateRequestMaterialValues = (data) => {
         const error = validateNumber(itemQty)
         error && (errors.itemQty = error)
         if (Number(itemQty) < Number(minOrderLevel)) {
-            errors.itemQty = 'Must be greater than Min. Order Level'
+            errors.itemQty = `Quantity should exceed ${minOrderLevel}`
         }
     }
     if (!reorderLevel) errors.reorderLevel = text
@@ -299,7 +299,7 @@ export const validateRequestMaterialValues = (data) => {
 export const validateReceivedMaterialValues = (data) => {
     let errors = {};
     const text = 'Required'
-    const { receiptImage, receiptNo, invoiceNo, invoiceValue, invoiceDate, taxAmount, managerName } = data
+    const { receiptImage, receiptNo, invoiceNo, invoiceAmount, invoiceDate, taxAmount, managerName } = data
 
     if (!receiptImage) errors.receiptImage = text
     if (!invoiceDate) errors.invoiceDate = text
@@ -313,10 +313,10 @@ export const validateReceivedMaterialValues = (data) => {
         const error = validateNumber(invoiceNo)
         error && (errors.invoiceNo = error)
     }
-    if (!invoiceValue) errors.invoiceValue = text
+    if (!invoiceAmount) errors.invoiceAmount = text
     else {
-        const error = validateNumber(invoiceValue)
-        error && (errors.invoiceValue = error)
+        const error = validateNumber(invoiceAmount)
+        error && (errors.invoiceAmount = error)
     }
     if (!receiptNo) errors.receiptNo = text
     else {

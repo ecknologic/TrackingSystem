@@ -84,7 +84,7 @@ router.put('/updateRM', (req, res) => {
 router.put('/updateRMStatus', (req, res) => {
     let input = req.body;
     motherPlantDbQueries.updateRMStatus(input, (updateErr, updatedData) => {
-        if (updateErr) res.status(500).json(dbError(err));
+        if (updateErr) res.status(500).json(dbError(updateErr));
         else res.json(UPDATEMESSAGE)
     })
 })
