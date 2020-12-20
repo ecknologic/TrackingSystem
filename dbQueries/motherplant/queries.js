@@ -112,9 +112,9 @@ motherPlantDbQueries.createRM = async (input, callback) => {
 }
 motherPlantDbQueries.createRMReceipt = async (input, callback) => {
     let query = "insert into rawmaterialreceipt (receiptNo,invoiceNo,taxAmount,invoiceAmount,rawmaterialId,invoiceDate,departmentId,managerName,receiptImage) values(?,?,?,?,?,?,?,?,?)";
-    const { receiptNo, invoiceNo, taxAmount, invoiceAmount, rawmaterialId, invoiceDate, departmentId, managerName } = input
+    const { receiptNo, invoiceNo, taxAmount, invoiceAmount, rawmaterialid, invoiceDate, departmentId, managerName } = input
     let receiptImage = Buffer.from(input.receiptImage.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-    let requestBody = [receiptNo, invoiceNo, taxAmount, invoiceAmount, rawmaterialId, invoiceDate, departmentId, managerName, receiptImage]
+    let requestBody = [receiptNo, invoiceNo, taxAmount, invoiceAmount, rawmaterialid, invoiceDate, departmentId, managerName, receiptImage]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 

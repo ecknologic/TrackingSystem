@@ -73,7 +73,7 @@ router.post('/createRM', (req, res) => {
     });
 })
 
-router.post('/updateRM', (req, res) => {
+router.put('/updateRM', (req, res) => {
     let input = req.body;
     motherPlantDbQueries.updateRMDetails(input, (updateErr, updatedData) => {
         if (updateErr) res.status(500).json(dbError(err));
@@ -81,7 +81,7 @@ router.post('/updateRM', (req, res) => {
     })
 })
 
-router.post('/updateRMStatus', (req, res) => {
+router.put('/updateRMStatus', (req, res) => {
     let input = req.body;
     motherPlantDbQueries.updateRMStatus(input, (updateErr, updatedData) => {
         if (updateErr) res.status(500).json(dbError(err));
