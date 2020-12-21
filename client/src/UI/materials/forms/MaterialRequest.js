@@ -23,7 +23,7 @@ const MaterialRequestForm = (props) => {
                 </div>
                 <div className='row'>
                     <div className='input-container'>
-                        <InputLabel name='Item Code' error={errors.itemCode} mandatory />
+                        <InputLabel name='Item Code' error={errors.itemCode} />
                         <CustomInput value={itemCode} placeholder='Add Item Code'
                             maxLength={10} disabled={disabled} error={errors.itemCode}
                             onBlur={(value) => onBlur(value, 'itemCode')}

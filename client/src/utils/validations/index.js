@@ -273,7 +273,7 @@ export const validateRequestMaterialValues = (data) => {
     if (!itemName) errors.itemName = text
     if (!vendorName) errors.vendorName = text
     if (!description) errors.description = text
-    if (!itemCode) errors.itemCode = text
+    // if (!itemCode) errors.itemCode = text
     if (!itemQty) errors.itemQty = text
     else {
         const error = validateNumber(itemQty)
