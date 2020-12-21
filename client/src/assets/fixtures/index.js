@@ -297,11 +297,11 @@ export const getRMColumns = (type) => {
             dataIndex: 'dateAndTime',
             key: 'dateAndTime',
         },
-        {
-            title: 'Item Code',
-            dataIndex: 'itemCode',
-            key: 'itemCode',
-        },
+        // {
+        //     title: 'Item Code',
+        //     dataIndex: 'itemCode',
+        //     key: 'itemCode',
+        // },
         {
             title: 'Quantity',
             dataIndex: 'itemQty',

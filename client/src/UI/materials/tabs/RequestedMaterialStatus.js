@@ -99,7 +99,7 @@ const MaterialStatus = () => {
         return {
             key,
             orderId,
-            itemCode,
+            // itemCode,
             itemQty,
             reorderLevel,
             vendorName,
