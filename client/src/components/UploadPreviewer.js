@@ -25,9 +25,9 @@ const UploadPreviewer = ({ title, value, onUpload, onRemove, disabled, className
                     <EyeIconWhite className='eye' onClick={() => setModal(true)} />
                     <div className='image-shadow'></div>
                 </div>
-                    : <UploadInput onUpload={onUpload}>
+                    : <UploadInput onUpload={onUpload} disabled={disabled}>
                         {error && <span className='preview-error'>{error}</span>}
-                        {!value && <div></div>}
+                        <div></div>
                     </UploadInput>
             }
 

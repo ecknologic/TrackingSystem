@@ -1,7 +1,7 @@
 import React from 'react';
 
-const InputValue = ({ value }) => {
-    return <span className='app-input-value'>{value}</span>
+const InputValue = ({ value, size }) => {
+    return <span className={`app-input-value-${size}`}>{value}</span>
 }
 
 export default InputValue

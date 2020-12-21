@@ -10,7 +10,7 @@ import ConfirmMessage from '../../../components/ConfirmMessage';
 import { TODAYDATE, TRACKFORM } from '../../../utils/constants';
 import CustomPagination from '../../../components/CustomPagination';
 import { getRMColumns } from '../../../assets/fixtures';
-import { deepClone, disableFutureDates, getBase64, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
+import { base64String, deepClone, disableFutureDates, getBase64, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
 import CustomModal from '../../../components/CustomModal';
 import MaterialReceivedForm from '../forms/MaterialReceived';
 import { validateNames, validateNumber, validateReceivedMaterialValues } from '../../../utils/validations';
@@ -34,9 +34,12 @@ const AddMaterials = () => {
     const [open, setOpen] = useState(false)
     const [RM, setRM] = useState([])
     const [RMClone, setRMClone] = useState([])
+    const [currentRMId, setCurrentRMId] = useState('')
+    const [hideCancel, setHideCancel] = useState(false)
+    const [formDisabled, setFormDisabled] = useState(false)
+    const [okTxt, setOkText] = useState('Confirm Details')
+    const [formTitle, setFormTitle] = useState('')
 
-    const RMIdRef = useRef()
-    const formTitleRef = useRef()
     const RMColumns = useMemo(() => getRMColumns('add'), [])
 
     useEffect(() => {
@@ -44,11 +47,17 @@ const AddMaterials = () => {
     }, [])
 
     const getRM = async () => {
-        const data = await http.GET('/motherPlant/getRMDetails')
+        const data = await http.GET('/motherPlant/getRMDetails?status=Approved')
         setRM(data)
         setRMClone(data)
         setTotalCount(data.length)
         setLoading(false)
+    }
+
+    const getRMReceipt = async (RMId) => {
+        const [data = {}] = await http.GET(`/motherPlant/getReceiptDetails/${RMId}`)
+        const receiptImage = base64String(data?.receiptImage?.data)
+        setFormData(prev => ({ ...prev, ...data, receiptImage }))
     }
 
     const datePickerStatus = (status) => {
@@ -58,7 +67,7 @@ const AddMaterials = () => {
     const handleDateSelect = (value) => {
         setOpen(false)
         setSelectedDate(dayjs(value).format(format))
-        let filteredData = RMClone.filter(item => dayjs(value).format(DATEFORMAT) == dayjs(item.dispatchedDate).format(DATEFORMAT))
+        let filteredData = RMClone.filter(item => dayjs(value).format(DATEFORMAT) == dayjs(item.approvedDate).format(DATEFORMAT))
         setRM(filteredData)
     }
 
@@ -75,7 +84,6 @@ const AddMaterials = () => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
-        // invoiceDate ?
         // Validations
         if (key === 'managerName') {
             const error = validateNames(value)
@@ -98,6 +106,12 @@ const AddMaterials = () => {
     const handleRemove = () => setFormData(data => ({ ...data, receiptImage: '' }))
 
     const handleUpdate = async () => {
+        const { status } = formData
+        if (status === 'Confirmed') {
+            onModalClose(true)
+            return
+        }
+
         const formErrors = validateReceivedMaterialValues(formData)
 
         if (!isEmpty(formErrors)) {
@@ -107,19 +121,17 @@ const AddMaterials = () => {
             return
         }
 
-        const rawmaterialid = RMIdRef.current
-
-        const body = { ...formData, rawmaterialid }
         const url = '/motherPlant/createRMReceipt'
+        const body = { ...formData, rawmaterialid: currentRMId }
         const otherUrl = '/motherPlant/updateRMStatus'
-        const otherBody = { rawmaterialid, status: 'Approved' }
+        const otherBody = { rawmaterialid: currentRMId, status: 'Confirmed' }
 
         try {
             setBtnDisabled(true)
             showToast('Received Materials', 'loading', 'PUT')
             await http.POST(url, body)
             await http.PUT(otherUrl, otherBody)
-            optimisticUpdate(rawmaterialid)
+            optimisticUpdate(currentRMId)
             showToast('Received Materials', 'success', 'PUT')
             onModalClose(true)
             setBtnDisabled(false)
@@ -142,7 +154,7 @@ const AddMaterials = () => {
     const optimisticUpdate = (id) => {
         let clone = deepClone(RM);
         const index = clone.findIndex(item => item.rawmaterialid === id)
-        clone[index].status = 'Approved';
+        clone[index].status = 'Confirmed';
         setRM(clone)
     }
 
@@ -163,19 +175,33 @@ const AddMaterials = () => {
     }
 
     const onConfirm = (data) => {
-        RMIdRef.current = data.rawmaterialid
-        formTitleRef.current = `Received Material Details - Order ID - ${data.orderId}`
+        setCurrentRMId(data.rawmaterialid)
+        configureModalUI(data)
         setFormData(data)
         setModal(true)
     }
 
+    const configureModalUI = (data) => {
+        setFormTitle(`Received Material Details - Order ID - ${data.orderId}`)
+        if (data.status === 'Confirmed') {
+            setFormDisabled(true)
+            setOkText('Close')
+            setHideCancel(true)
+            getRMReceipt(data.rawmaterialid)
+        }
+        else {
+            setOkText('Confirm Details')
+            setHideCancel(false)
+            setFormDisabled(false)
+        }
+    }
+
     const dataSource = useMemo(() => RM.map((item) => {
-        const { rawmaterialid: key, orderId, itemCode, itemName, approvedDate, reorderLevel,
-            minOrderLevel, vendorName, itemQty, status } = item
+        const { rawmaterialid: key, orderId, itemQty, itemName, approvedDate, reorderLevel,
+            minOrderLevel, vendorName, status } = item
         return {
             key,
             orderId,
-            itemCode,
             itemQty,
             reorderLevel,
             vendorName,
@@ -252,19 +278,21 @@ const AddMaterials = () => {
                     />)
             }
             <CustomModal
-                className={`app-form-modal ${shake ? 'app-shake' : ''}`}
+                track
+                okTxt={okTxt}
                 visible={modal}
+                title={formTitle}
+                hideCancel={hideCancel}
                 btnDisabled={btnDisabled}
                 onOk={handleUpdate}
                 onCancel={handleModalCancel}
-                title={formTitleRef.current}
-                okTxt='Confirm Details'
-                track
+                className={`app-form-modal ${shake ? 'app-shake' : ''}`}
             >
                 <MaterialReceivedForm
                     track
                     data={formData}
                     errors={formErrors}
+                    disabled={formDisabled}
                     onChange={handleChange}
                     onUpload={handleUpload}
                     onRemove={handleRemove}

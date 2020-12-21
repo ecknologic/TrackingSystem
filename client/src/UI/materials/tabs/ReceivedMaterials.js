@@ -11,7 +11,7 @@ import ConfirmMessage from '../../../components/ConfirmMessage';
 import { TODAYDATE, TRACKFORM } from '../../../utils/constants';
 import CustomPagination from '../../../components/CustomPagination';
 import { ReceivedMColumns } from '../../../assets/fixtures';
-import { disableFutureDates } from '../../../utils/Functions';
+import { disableFutureDates, getStatusColor } from '../../../utils/Functions';
 import DateValue from '../../../components/DateValue';
 import CustomDateInput from '../../../components/CustomDateInput';
 const DATEFORMAT = 'DD-MM-YYYY'
@@ -55,7 +55,7 @@ const ReceivedMaterials = () => {
     const handleDateSelect = (value) => {
         setOpen(false)
         setSelectedDate(dayjs(value).format(format))
-        const filtered = RMClone.filter(item => dayjs(value).format(DATEFORMAT) == dayjs(item.dispatchedDate).format(DATEFORMAT))
+        const filtered = RMClone.filter(item => dayjs(value).format(DATEFORMAT) == dayjs(item.invoiceDate).format(DATEFORMAT))
         setRM(filtered)
         setTotalCount(filtered.length)
     }
@@ -90,16 +90,17 @@ const ReceivedMaterials = () => {
     }
 
     const dataSource = useMemo(() => RM.map((item) => {
-        const { rawmaterialid: key, itemName, itemQty, invoiceNo, status, invoiceAmount, invoiceDate, taxAmount } = item
+        const { rawmaterialid: key, itemName, itemQty, invoiceNo, vendorName, invoiceAmount, invoiceDate, taxAmount } = item
         return {
             key,
             itemName,
             invoiceNo,
-            itemQty,
             taxAmount,
+            itemQty,
+            vendorName,
             invoiceAmount,
             dateAndTime: dayjs(invoiceDate).format('DD/MM/YYYY'),
-            status: renderStatus(status),
+            status: renderStatus('Delivered'),
             action: <TableAction onSelect={({ key }) => handleMenuSelect(key, item)} />
         }
     }), [RM])
@@ -181,12 +182,11 @@ const ReceivedMaterials = () => {
 }
 
 const renderStatus = (status) => {
-    const color = status === 'Confirmed' ? '#0EDD4D' : '#A10101'
-    const text = status === 'Confirmed' ? 'Delivered' : status
+    const color = getStatusColor(status)
     return (
         <div className='status'>
             <span className='dot' style={{ background: color }}></span>
-            <span className='status-text'>{text}</span>
+            <span className='status-text'>{status}</span>
         </div>
     )
 }

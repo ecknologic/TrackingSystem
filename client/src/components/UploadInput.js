@@ -6,7 +6,7 @@ const UploadInput = ({ onUpload, disabled, children }) => {
     const props = {
         accept: ".png,.jpg,.jpeg,.pdf",
         customRequest: (e) => onUpload(e.file),
-        className: 'upload-input-container',
+        className: `upload-input-container ${disabled ? 'disabled' : ''}`,
         showUploadList: false,
         disabled
     }

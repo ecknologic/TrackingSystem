@@ -11,7 +11,7 @@ import ConfirmMessage from '../../../components/ConfirmMessage';
 import { TODAYDATE, TRACKFORM } from '../../../utils/constants';
 import CustomPagination from '../../../components/CustomPagination';
 import { getRMColumns } from '../../../assets/fixtures';
-import { disableFutureDates } from '../../../utils/Functions';
+import { disableFutureDates, getStatusColor } from '../../../utils/Functions';
 import DateValue from '../../../components/DateValue';
 import CustomDateInput from '../../../components/CustomDateInput';
 const DATEFORMAT = 'DD-MM-YYYY'
@@ -94,12 +94,11 @@ const MaterialStatus = () => {
     }
 
     const dataSource = useMemo(() => RM.map((dispatch) => {
-        const { rawmaterialid: key, orderId, itemCode, itemName, requestedDate, reorderLevel,
+        const { rawmaterialid: key, orderId, itemName, requestedDate, reorderLevel,
             minOrderLevel, vendorName, itemQty, status } = dispatch
         return {
             key,
             orderId,
-            // itemCode,
             itemQty,
             reorderLevel,
             vendorName,
@@ -151,7 +150,6 @@ const MaterialStatus = () => {
                         onSearch={() => { }}
                         onChange={() => { }}
                     />
-
                 </div>
             </div>
             <div className='app-table dispatch-table'>
@@ -188,7 +186,7 @@ const MaterialStatus = () => {
 }
 
 const renderStatus = (status) => {
-    const color = status === 'Pending' ? '#A10101' : '#0EDD4D'
+    const color = getStatusColor(status)
     return (
         <div className='status'>
             <span className='dot' style={{ background: color }}></span>

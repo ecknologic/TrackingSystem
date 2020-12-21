@@ -7,7 +7,7 @@ import ConfirmModal from '../../../components/CustomModal';
 import { TRACKFORM } from '../../../utils/constants';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import { http } from '../../../modules/http';
-import { isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../utils/Functions';
+import { extractValidProductsForDB, isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../utils/Functions';
 import { validateDispatchValues, validateMobileNumber, validateNames, validateNumber } from '../../../utils/validations';
 
 const CreateDispatch = ({ goToTab, driverList, departmentList, ...rest }) => {
@@ -82,8 +82,11 @@ const CreateDispatch = ({ goToTab, driverList, departmentList, ...rest }) => {
         }
 
         let { departmentName: dispatchAddress } = departmentList.find(dep => dep.departmentId === formData.dispatchTo)
-
-        let body = { ...formData, dispatchType: 'Internal', dispatchAddress }
+        const { product20L, product1L, product500ML, product250ML } = extractValidProductsForDB(formData)
+        let body = {
+            ...formData, dispatchType: 'Internal', dispatchAddress,
+            product20L, product1L, product500ML, product250ML
+        }
         const url = '/motherplant/addDispatchDetails'
 
         try {

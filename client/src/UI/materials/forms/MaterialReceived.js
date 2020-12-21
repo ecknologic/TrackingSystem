@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import InputLabel from '../../../components/InputLabel';
 import CustomInput from '../../../components/CustomInput';
 import DraggerInput from '../../../components/DraggerInput';
@@ -10,12 +10,9 @@ import CustomDateInput from '../../../components/CustomDateInput';
 const DATEFORMAT = 'DD-MM-YYYY'
 
 const MaterialReceivedForm = (props) => {
-
     const { data, errors, onUpload, onRemove, disabled, onChange, track } = props
     const { receiptImage, receiptNo, invoiceNo, invoiceAmount, invoiceDate, taxAmount,
-        itemName, vendorName, itemCode, approvedDate, managerName, itemQty } = data
-
-    console.log('date>>>', invoiceDate)
+        itemName, vendorName, itemCode, approvedDate, managerName, itemQty, status } = data
 
     return (
         <>
@@ -23,27 +20,27 @@ const MaterialReceivedForm = (props) => {
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Product Details' />
-                        <InputValue value={itemName} />
+                        <InputValue size='large' value={itemName} />
                     </div>
                     <div className='input-container'>
                         <InputLabel name='Quantity' />
-                        <InputValue value={itemQty} />
+                        <InputValue size='large' value={itemQty} />
                     </div>
                 </div>
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Item Code' />
-                        <InputValue value={itemCode} />
+                        <InputValue size='large' value={itemCode} />
                     </div>
                     <div className='input-container'>
                         <InputLabel name='Approved Date' />
-                        <InputValue value={dayjs(approvedDate).format(DATEFORMAT)} />
+                        <InputValue size='large' value={dayjs(approvedDate).format(DATEFORMAT)} />
                     </div>
                 </div>
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Vendor Name' />
-                        <InputValue value={vendorName} />
+                        <InputValue size='large' value={vendorName} />
                     </div>
                 </div>
                 <div className='row'>
@@ -77,7 +74,7 @@ const MaterialReceivedForm = (props) => {
                     <div className='input-container'>
                         <InputLabel name='Invoice Date' error={errors.invoiceDate} mandatory />
                         <CustomDateInput
-                            trackplaceholder='Select Date'
+                            trackplaceholder='Select Date' track disabled={disabled}
                             value={invoiceDate} disabledDate={disableFutureDates}
                             onChange={(value) => onChange(value, 'invoiceDate')}
                         />

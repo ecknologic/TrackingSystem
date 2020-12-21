@@ -11,7 +11,7 @@ import ConfirmMessage from '../../../components/ConfirmMessage';
 import { TODAYDATE, TRACKFORM } from '../../../utils/constants';
 import CustomPagination from '../../../components/CustomPagination';
 import { dispatchColumns } from '../../../assets/fixtures';
-import { disableFutureDates } from '../../../utils/Functions';
+import { disableFutureDates, getStatusColor } from '../../../utils/Functions';
 import DateValue from '../../../components/DateValue';
 import CustomDateInput from '../../../components/CustomDateInput';
 const DATEFORMAT = 'DD-MM-YYYY'
@@ -187,7 +187,7 @@ const Dispatches = () => {
 }
 
 const renderStatus = (status) => {
-    const color = status ? '#0EDD4D' : '#A10101'
+    const color = getStatusColor(status)
     const text = status ? status : 'Pending'
     return (
         <div className='status'>

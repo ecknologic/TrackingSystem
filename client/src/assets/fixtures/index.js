@@ -231,8 +231,8 @@ export const ReceivedMColumns = [
     },
     {
         title: 'Date of Invoice',
-        dataIndex: 'invoiceDate',
-        key: 'invoiceDate',
+        dataIndex: 'dateAndTime',
+        key: 'dateAndTime',
     },
     {
         title: 'Quantity',
@@ -253,11 +253,6 @@ export const ReceivedMColumns = [
         title: 'Invoice Value',
         key: 'invoiceAmount',
         dataIndex: 'invoiceAmount',
-    },
-    {
-        title: 'Dispatch To',
-        dataIndex: 'dispatchTo',
-        key: 'dispatchTo',
     },
     {
         title: 'Tax Amount',
@@ -297,11 +292,6 @@ export const getRMColumns = (type) => {
             dataIndex: 'dateAndTime',
             key: 'dateAndTime',
         },
-        // {
-        //     title: 'Item Code',
-        //     dataIndex: 'itemCode',
-        //     key: 'itemCode',
-        // },
         {
             title: 'Quantity',
             dataIndex: 'itemQty',

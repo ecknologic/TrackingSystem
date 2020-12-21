@@ -8,7 +8,7 @@ import { TRACKFORM } from '../../../utils/constants';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import InputLabel from '../../../components/InputLabel';
 import { http } from '../../../modules/http';
-import { isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../utils/Functions';
+import { extractValidProductsForDB, isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../utils/Functions';
 import { validateExternalDispatchValues, validateMobileNumber, validateNames, validateNumber } from '../../../utils/validations';
 
 const CreateExternalDispatch = ({ goToTab, driverList, ...rest }) => {
@@ -82,9 +82,10 @@ const CreateExternalDispatch = ({ goToTab, driverList, ...rest }) => {
             setFormErrors(formErrors)
             return
         }
+        const products = extractValidProductsForDB(formData)
 
         let body = {
-            ...formData, dispatchType: 'External', dispatchTo: 3
+            ...formData, dispatchType: 'External', dispatchTo: 3, ...products
         }
         const url = '/motherPlant/addDispatchDetails'
         try {
@@ -139,7 +140,7 @@ const CreateExternalDispatch = ({ goToTab, driverList, ...rest }) => {
                     app-create-btn footer-btn ${btnDisabled ? 'disabled' : ''} 
                     ${shake ? 'app-shake' : ''}
                 `}
-                    text='Send Request'
+                    text='Create'
                 />
             </div>
             <ConfirmModal

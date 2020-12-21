@@ -45,16 +45,17 @@ motherPlantDbQueries.getNatureOfBussiness = async (callback) => {
 }
 motherPlantDbQueries.getRMDetails = async (input, callback) => {
     let query = `select * from requiredrawmaterial WHERE departmentId=? ORDER BY requestedDate DESC`;
-    if (input.status) query = `select * from requiredrawmaterial WHERE departmentId=? AND status=?`
-    return executeGetParamsQuery(query, input.status ? [input.departmentId, input.status] : [input.departmentId], callback)
+    if (input.status) query = `select * from requiredrawmaterial WHERE departmentId=? AND (status="Approved" or status="Confirmed") ORDER BY requestedDate DESC`
+    return executeGetParamsQuery(query, [input.departmentId], callback)
 }
 motherPlantDbQueries.getRMReceiptDetails = async (departmentId, callback) => {
-    let query = `select * from rawmaterialreceipt WHERE departmentId=${departmentId}`;
+    let query = `select rmr.receiptDate,rmr.receiptNo,rmr.invoiceNo,rmr.taxAmount,rmr.invoiceAmount,rmr.rawmaterialId,rmr.invoiceDate,rmr.managerName,rmr.receiptImage,rm.itemName,rm.itemCode,rm.itemQty,rm.vendorName,rm.approvedDate,rm.description from rawmaterialreceipt rmr INNER JOIN requiredrawmaterial rm on rmr.rawmaterialId=rm.rawmaterialid WHERE rmr.departmentId=${departmentId} ORDER BY invoiceDate DESC`;
+    // let query = `select * from rawmaterialreceipt WHERE departmentId=${departmentId}`;
     return executeGetQuery(query, callback)
 }
 
 motherPlantDbQueries.getReceiptDetailsByRMId = async (input, callback) => {
-    let query = `select rmr.receiptDate,rmr.receiptNo,rmr.invoiceNo,rmr.taxAmount,rmr.invoiceValue,rmr.rawmaterialId,rmr.invoiceDate,rmr.managerName,rmr.receiptImage,rm.itemName,rm.itemCode,rm.vendorName,rm.approvedDate,rm.description from rawmaterialreceipt rmr INNER JOIN requiredrawmaterial rm on rmr.rawmaterialId=rm.rawmaterialid WHERE rmr.departmentId=? AND rmr.rawmaterialId=?`;
+    let query = `select rmr.receiptDate,rmr.receiptNo,rmr.invoiceNo,rmr.taxAmount,rmr.invoiceAmount,rmr.rawmaterialId,rmr.invoiceDate,rmr.managerName,rmr.receiptImage,rm.itemName,rm.itemCode,rm.vendorName,rm.approvedDate,rm.description from rawmaterialreceipt rmr INNER JOIN requiredrawmaterial rm on rmr.rawmaterialId=rm.rawmaterialid WHERE rmr.departmentId=? AND rmr.rawmaterialId=?`;
     return executeGetParamsQuery(query, [input.departmentId, input.rmId], callback)
 }
 
@@ -112,7 +113,8 @@ motherPlantDbQueries.createRM = async (input, callback) => {
 }
 motherPlantDbQueries.createRMReceipt = async (input, callback) => {
     let query = "insert into rawmaterialreceipt (receiptNo,invoiceNo,taxAmount,invoiceAmount,rawmaterialId,invoiceDate,departmentId,managerName,receiptImage) values(?,?,?,?,?,?,?,?,?)";
-    const { receiptNo, invoiceNo, taxAmount, invoiceAmount, rawmaterialid, invoiceDate, departmentId, managerName } = input
+    const { receiptNo, invoiceNo, taxAmount, invoiceAmount, rawmaterialid, invoiceDate: date, departmentId, managerName } = input
+    let invoiceDate = new Date(date)
     let receiptImage = Buffer.from(input.receiptImage.replace(/^data:image\/\w+;base64,/, ""), 'base64')
     let requestBody = [receiptNo, invoiceNo, taxAmount, invoiceAmount, rawmaterialid, invoiceDate, departmentId, managerName, receiptImage]
     return executePostOrUpdateQuery(query, requestBody, callback)
