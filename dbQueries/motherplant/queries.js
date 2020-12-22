@@ -72,7 +72,7 @@ motherPlantDbQueries.getPDDetailsByDate = async (input, callback) => {
     return executeGetParamsQuery(query, [input.departmentId, input.date], callback)
 }
 motherPlantDbQueries.getCurrentDispatchDetailsByDate = async (input, callback) => {
-    let query = "SELECT SUM(d.product20L) AS total20LCans,SUM(d.product1L) AS total1LBoxes,SUM(d.product500ML) total500MLBoxes,SUM(d.product250ML) total250MLBoxes FROM dispatches d WHERE dispatchTo=? AND DATE(`dispatchedDate`)<=?";
+    let query = "SELECT SUM(d.product20L) AS total20LCans,SUM(d.product1L) AS total1LBoxes,SUM(d.product500ML) total500MLBoxes,SUM(d.product250ML) total250MLBoxes,dep.address FROM dispatches d INNER JOIN departmentmaster dep on d.dispatchTo=dep.departmentId WHERE dispatchTo=? AND DATE(`dispatchedDate`)<=?";
     return executeGetParamsQuery(query, [input.departmentId, input.date], callback)
 }
 

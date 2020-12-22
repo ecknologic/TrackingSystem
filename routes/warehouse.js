@@ -3,11 +3,13 @@ var express = require('express');
 var router = express.Router();
 const db = require('../config/db.js');
 const { getCurrentDispatchDetailsByDate } = require('../dbQueries/motherplant/queries.js');
+const warehouseQueries = require('../dbQueries/warehouse/queries.js');
 const { DATEFORMAT } = require('../utils/constants.js');
 const { dbError } = require('../utils/functions.js');
-
+var departmentId;
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
+  departmentId = req.headers['departmentid'] || 1
   console.log('Time: ', Date.now());
   next();
 });
@@ -87,23 +89,26 @@ router.put('/updateDC', (req, res) => {
 })
 
 router.post('/confirmStockRecieved', (req, res) => {
-  let returnStockDetails = req.body;
-  let updateQuery = "update newstockdetails set returnStockId=?,isConfirmed=? where id=?";
-  let insertQuery = "insert into returnstockdetails (damaged20Lcans,damaged1LBoxes,damaged500MLBoxes,emptyCans) values(?,?,?,?)";
-  let insertQueryValues = [returnStockDetails.damaged20LCans, returnStockDetails.damaged1LBoxes, returnStockDetails.damaged500MLBoxes, returnStockDetails.emptyCans]
-  db.query(insertQuery, insertQueryValues, (err, results) => {
+  let input = req.body;
+  input.departmentId = departmentId
+  warehouseQueries.insertReturnStockDetails(input, (err, results) => {
     if (err) res.status(500).json(err.sqlMessage);
     else {
-      let inserted_id = results.insertId;
-      let updateQueryValues = [returnStockDetails.id, "1", inserted_id];
-      db.query(updateQuery, updateQueryValues, (err1, results1) => {
-        if (err1) throw err1;
-        else {
-          res.send("record inserted");
-        }
+      let obj = {
+        returnStockId: results.insertId,
+        dispatchId: input.dispatchId
+      }
+      warehouseQueries.confirmDispatchDetails(obj, (confirmErr, results1) => {
+        if (confirmErr) res.status(500).json(dbError(confirmErr));
       });
     }
   });
+
+  input.deliveryDate = new Date()
+  warehouseQueries.saveWarehouseStockDetails(input, (err, warehouseData) => {
+    if (err) res.status(500).json(dbError(confirmErr))
+    else console.log("warehouseData", warehouseData)
+  })
 });
 
 
