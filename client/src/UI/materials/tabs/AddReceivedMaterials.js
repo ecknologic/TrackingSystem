@@ -1,20 +1,21 @@
 import dayjs from 'dayjs';
-import { DatePicker, Table } from 'antd';
+import { Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { http } from '../../../modules/http';
 import Spinner from '../../../components/Spinner';
 import ConfirmModal from '../../../components/CustomModal';
-import { ScheduleIcon } from '../../../components/SVG_Icons';
+import { EyeIconGrey, ScheduleIcon } from '../../../components/SVG_Icons';
 import SearchInput from '../../../components/SearchInput';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import { TODAYDATE, TRACKFORM } from '../../../utils/constants';
 import CustomPagination from '../../../components/CustomPagination';
 import { getRMColumns } from '../../../assets/fixtures';
-import { disableFutureDates, getBase64, isEmpty, resetTrackForm } from '../../../utils/Functions';
+import { base64String, deepClone, disableFutureDates, getBase64, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
 import CustomModal from '../../../components/CustomModal';
 import MaterialReceivedForm from '../forms/MaterialReceived';
 import { validateNames, validateNumber, validateReceivedMaterialValues } from '../../../utils/validations';
 import DateValue from '../../../components/DateValue';
+import CustomDateInput from '../../../components/CustomDateInput';
 const DATEFORMAT = 'DD-MM-YYYY'
 const format = 'YYYY-MM-DD'
 
@@ -33,10 +34,11 @@ const AddMaterials = () => {
     const [open, setOpen] = useState(false)
     const [RM, setRM] = useState([])
     const [RMClone, setRMClone] = useState([])
-
-    const RMIdRef = useRef()
-    const orderIdRef = useRef()
-    const formTitleRef = useRef()
+    const [currentRMId, setCurrentRMId] = useState('')
+    const [hideCancel, setHideCancel] = useState(false)
+    const [formDisabled, setFormDisabled] = useState(false)
+    const [okTxt, setOkText] = useState('Confirm Details')
+    const [formTitle, setFormTitle] = useState('')
 
     const RMColumns = useMemo(() => getRMColumns('add'), [])
 
@@ -52,6 +54,12 @@ const AddMaterials = () => {
         setLoading(false)
     }
 
+    const getRMReceipt = async (RMId) => {
+        const [data = {}] = await http.GET(`/motherPlant/getReceiptDetails/${RMId}`)
+        const receiptImage = base64String(data?.receiptImage?.data)
+        setFormData(prev => ({ ...prev, ...data, receiptImage }))
+    }
+
     const datePickerStatus = (status) => {
         !status && setOpen(false)
     }
@@ -59,7 +67,7 @@ const AddMaterials = () => {
     const handleDateSelect = (value) => {
         setOpen(false)
         setSelectedDate(dayjs(value).format(format))
-        let filteredData = RMClone.filter(item => dayjs(value).format(DATEFORMAT) == dayjs(item.dispatchedDate).format(DATEFORMAT))
+        let filteredData = RMClone.filter(item => dayjs(value).format(DATEFORMAT) == dayjs(item.approvedDate).format(DATEFORMAT))
         setRM(filteredData)
     }
 
@@ -76,14 +84,13 @@ const AddMaterials = () => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
-        // invoiceDate ?
         // Validations
         if (key === 'managerName') {
             const error = validateNames(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
         else if (key === 'taxAmount' || key === 'receiptNo' ||
-            key === 'invoiceValue' || key === 'invoiceNo') {
+            key === 'invoiceAmount' || key === 'invoiceNo') {
             const error = validateNumber(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -99,6 +106,12 @@ const AddMaterials = () => {
     const handleRemove = () => setFormData(data => ({ ...data, receiptImage: '' }))
 
     const handleUpdate = async () => {
+        const { status } = formData
+        if (status === 'Confirmed') {
+            onModalClose(true)
+            return
+        }
+
         const formErrors = validateReceivedMaterialValues(formData)
 
         if (!isEmpty(formErrors)) {
@@ -108,20 +121,23 @@ const AddMaterials = () => {
             return
         }
 
-        // const body = { ...formData }
-        // const url = '/motherPlant/createRM'
+        const url = '/motherPlant/createRMReceipt'
+        const body = { ...formData, rawmaterialid: currentRMId }
+        const otherUrl = '/motherPlant/updateRMStatus'
+        const otherBody = { rawmaterialid: currentRMId, status: 'Confirmed' }
 
-        // try {
-        //     setBtnDisabled(true)
-        //     showToast('Delivery details', 'loading', 'PUT')
-        //     const { data: [data] } = await http.POST(url, body)
-        //     updateDeliveryDetails(data)
-        //     showToast('Delivery details', 'success', 'PUT')
-        //     onModalClose(true)
-        //     setBtnDisabled(false)
-        // } catch (error) {
-        //     setBtnDisabled(false)
-        // }
+        try {
+            setBtnDisabled(true)
+            showToast('Received Materials', 'loading', 'PUT')
+            await http.POST(url, body)
+            await http.PUT(otherUrl, otherBody)
+            optimisticUpdate(currentRMId)
+            showToast('Received Materials', 'success', 'PUT')
+            onModalClose(true)
+            setBtnDisabled(false)
+        } catch (error) {
+            setBtnDisabled(false)
+        }
     }
 
     const onModalClose = (hasSaved) => {
@@ -135,32 +151,57 @@ const AddMaterials = () => {
         setFormErrors({})
     }
 
+    const optimisticUpdate = (id) => {
+        let clone = deepClone(RM);
+        const index = clone.findIndex(item => item.rawmaterialid === id)
+        clone[index].status = 'Confirmed';
+        setRM(clone)
+    }
+
     const renderStatus = (status, item) => {
         let text = status === 'Approved' ? 'Confirm' : status
 
         const style = {
             color: status === 'Approved' ? '#007AFF' : '',
-            cursor: status === 'Approved' ? 'pointer' : 'default',
             fontFamily: status === 'Approved' ? 'PoppinsSemiBold600' : 'PoppinsMedium500'
         }
 
-        return <span style={style} onClick={() => onConfirm(item)}>{text}</span>
+        return (
+            <div className='eye-container'>
+                <span style={style}>{text}</span>
+                <EyeIconGrey className='eye' onClick={() => onConfirm(item)} />
+            </div>
+        )
     }
 
     const onConfirm = (data) => {
-        RMIdRef.current = data.rawmaterialid
-        formTitleRef.current = `Received Material Details - Order ID - ${data.orderId}`
+        setCurrentRMId(data.rawmaterialid)
+        configureModalUI(data)
         setFormData(data)
         setModal(true)
     }
 
+    const configureModalUI = (data) => {
+        setFormTitle(`Received Material Details - Order ID - ${data.orderId}`)
+        if (data.status === 'Confirmed') {
+            setFormDisabled(true)
+            setOkText('Close')
+            setHideCancel(true)
+            getRMReceipt(data.rawmaterialid)
+        }
+        else {
+            setOkText('Confirm Details')
+            setHideCancel(false)
+            setFormDisabled(false)
+        }
+    }
+
     const dataSource = useMemo(() => RM.map((item) => {
-        const { rawmaterialid: key, orderId, itemCode, itemName, approvedDate, reorderLevel,
-            minOrderLevel, vendorName, itemQty, status } = item
+        const { rawmaterialid: key, orderId, itemQty, itemName, approvedDate, reorderLevel,
+            minOrderLevel, vendorName, status } = item
         return {
             key,
             orderId,
-            itemCode,
             itemQty,
             reorderLevel,
             vendorName,
@@ -193,15 +234,15 @@ const AddMaterials = () => {
                             <ScheduleIcon />
                             <span>Select Date</span>
                         </div>
-                        <DatePicker // Hidden in the DOM
+                        <CustomDateInput // Hidden in the DOM
                             open={open}
                             style={{ left: 0 }}
+                            value={selectedDate}
                             placeholder='Select Date'
                             className='date-panel-picker'
                             onChange={handleDateSelect}
                             onOpenChange={datePickerStatus}
                             disabledDate={disableFutureDates}
-                            getPopupContainer={triggerNode => triggerNode.parentNode}
                         />
                     </div>
                 </div>
@@ -237,19 +278,21 @@ const AddMaterials = () => {
                     />)
             }
             <CustomModal
-                className={`app-form-modal ${shake ? 'app-shake' : ''}`}
+                track
+                okTxt={okTxt}
                 visible={modal}
+                title={formTitle}
+                hideCancel={hideCancel}
                 btnDisabled={btnDisabled}
                 onOk={handleUpdate}
                 onCancel={handleModalCancel}
-                title={formTitleRef.current}
-                okTxt='Confirm Details'
-                track
+                className={`app-form-modal ${shake ? 'app-shake' : ''}`}
             >
                 <MaterialReceivedForm
                     track
                     data={formData}
                     errors={formErrors}
+                    disabled={formDisabled}
                     onChange={handleChange}
                     onUpload={handleUpload}
                     onRemove={handleRemove}

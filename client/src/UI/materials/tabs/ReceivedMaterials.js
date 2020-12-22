@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { DatePicker, Table } from 'antd';
+import { Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { http } from '../../../modules/http';
 import Spinner from '../../../components/Spinner';
@@ -11,8 +11,9 @@ import ConfirmMessage from '../../../components/ConfirmMessage';
 import { TODAYDATE, TRACKFORM } from '../../../utils/constants';
 import CustomPagination from '../../../components/CustomPagination';
 import { ReceivedMColumns } from '../../../assets/fixtures';
-import { disableFutureDates } from '../../../utils/Functions';
+import { disableFutureDates, getStatusColor } from '../../../utils/Functions';
 import DateValue from '../../../components/DateValue';
+import CustomDateInput from '../../../components/CustomDateInput';
 const DATEFORMAT = 'DD-MM-YYYY'
 const format = 'YYYY-MM-DD'
 
@@ -40,7 +41,7 @@ const ReceivedMaterials = () => {
     }, [])
 
     const getRM = async () => {
-        const data = await http.GET('/motherPlant/getRMDetails?status=Approved')
+        const data = await http.GET('/motherPlant/getRMReceiptDetails')
         setRM(data)
         setRMClone(data)
         setTotalCount(data.length)
@@ -54,7 +55,7 @@ const ReceivedMaterials = () => {
     const handleDateSelect = (value) => {
         setOpen(false)
         setSelectedDate(dayjs(value).format(format))
-        const filtered = RMClone.filter(item => dayjs(value).format(DATEFORMAT) == dayjs(item.dispatchedDate).format(DATEFORMAT))
+        const filtered = RMClone.filter(item => dayjs(value).format(DATEFORMAT) == dayjs(item.invoiceDate).format(DATEFORMAT))
         setRM(filtered)
         setTotalCount(filtered.length)
     }
@@ -89,16 +90,17 @@ const ReceivedMaterials = () => {
     }
 
     const dataSource = useMemo(() => RM.map((item) => {
-        const { rawmaterialid: key, itemName, itemQty, invoiceNo, status, invoiceValue, invoiceDate, taxAmount } = item
+        const { rawmaterialid: key, itemName, itemQty, invoiceNo, vendorName, invoiceAmount, invoiceDate, taxAmount } = item
         return {
             key,
             itemName,
             invoiceNo,
-            itemQty,
             taxAmount,
-            invoiceValue,
+            itemQty,
+            vendorName,
+            invoiceAmount,
             dateAndTime: dayjs(invoiceDate).format('DD/MM/YYYY'),
-            status: renderStatus(status),
+            status: renderStatus('Delivered'),
             action: <TableAction onSelect={({ key }) => handleMenuSelect(key, item)} />
         }
     }), [RM])
@@ -123,15 +125,15 @@ const ReceivedMaterials = () => {
                             <ScheduleIcon />
                             <span>Select Date</span>
                         </div>
-                        <DatePicker // Hidden in the DOM
+                        <CustomDateInput // Hidden in the DOM
                             open={open}
                             style={{ left: 0 }}
+                            value={selectedDate}
                             placeholder='Select Date'
                             className='date-panel-picker'
                             onChange={handleDateSelect}
                             onOpenChange={datePickerStatus}
                             disabledDate={disableFutureDates}
-                            getPopupContainer={triggerNode => triggerNode.parentNode}
                         />
                     </div>
                 </div>
@@ -180,12 +182,11 @@ const ReceivedMaterials = () => {
 }
 
 const renderStatus = (status) => {
-    const color = status === 'Confirmed' ? '#0EDD4D' : '#A10101'
-    const text = status === 'Confirmed' ? 'Delivered' : status
+    const color = getStatusColor(status)
     return (
         <div className='status'>
             <span className='dot' style={{ background: color }}></span>
-            <span className='status-text'>{text}</span>
+            <span className='status-text'>{status}</span>
         </div>
     )
 }

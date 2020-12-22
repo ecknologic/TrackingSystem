@@ -127,6 +127,19 @@
             margin-bottom: .6em;
             margin-right: 1em;
         }
+
+        .purple-btn {
+            color: #485DBA;
+            border: 1px solid #485DBA;
+            background-color: #E7E9F4;
+        }
+        
+        .green-btn {
+            color: #70AA32;
+            border: 1px solid #70AA32;
+            background-color: #F8FBF5;
+            cursor: default;
+        }
     }
 }
 
@@ -253,7 +266,6 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     padding: 1.5em 2em 0 2em;
 
     .header {
@@ -301,5 +313,58 @@
 
     .app-footer-buttons-container {
         padding-left: 2em;
+    }
+}
+
+.stock-details-modal {
+    .ant-modal-content {
+        .ant-modal-body {
+            background-color: #FFF;
+        }
+    }
+
+    .app-form-container {
+        .row {
+            padding: .8em 0;
+
+            .input-container {
+                width: 70%;
+
+                .app-input-label-name {
+                    color: rgba(0,0,0,0.85);
+                }
+            }
+
+            .stretch {
+                width: 100%;
+            }
+        }
+
+        .columns {
+            padding: .8em 0;
+
+            .app-input-label-name {
+                color: rgba(0,0,0,0.85);
+            }
+
+            .ant-checkbox-wrapper {
+                align-self: flex-end;
+                margin-bottom: .8em;
+                margin-right: 1em;
+            }
+            
+            .columns-container {
+                justify-content: flex-start;
+                align-items: center;
+
+                .app-input-label-name {
+                    color: #92929D;
+                }
+                
+                .column {
+                    flex: 0 1 auto;
+                }
+            }
+        }
     }
 }

@@ -7,7 +7,7 @@ import ConfirmModal from '../../../components/CustomModal';
 import { TRACKFORM } from '../../../utils/constants';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import { http } from '../../../modules/http';
-import { isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../utils/Functions';
+import { extractValidProductsForDB, isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../utils/Functions';
 import { validateDispatchValues, validateMobileNumber, validateNames, validateNumber } from '../../../utils/validations';
 
 const CreateDispatch = ({ goToTab, driverList, departmentList, ...rest }) => {
@@ -29,7 +29,11 @@ const CreateDispatch = ({ goToTab, driverList, departmentList, ...rest }) => {
 
     const getCurrentStock = async (batchId) => {
         const data = await http.GET(`/motherPlant/getProductByBatch/${batchId}`)
+        const { product20LCount: product20L, product1LCount: product1L,
+            product500MLCount: product500ML, product250MLCount: product250ML } = data
+        const currentStock = { product20L, product1L, product500ML, product250ML }
         setCurrentStock(data)
+        setFormData(data => ({ ...data, ...currentStock }))
     }
 
     const handleChange = (value, key) => {
@@ -78,8 +82,11 @@ const CreateDispatch = ({ goToTab, driverList, departmentList, ...rest }) => {
         }
 
         let { departmentName: dispatchAddress } = departmentList.find(dep => dep.departmentId === formData.dispatchTo)
-
-        let body = { ...formData, dispatchType: 'Internal', dispatchAddress }
+        const { product20L, product1L, product500ML, product250ML } = extractValidProductsForDB(formData)
+        let body = {
+            ...formData, dispatchType: 'Internal', dispatchAddress,
+            product20L, product1L, product500ML, product250ML
+        }
         const url = '/motherplant/addDispatchDetails'
 
         try {

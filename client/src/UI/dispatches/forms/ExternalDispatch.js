@@ -9,7 +9,7 @@ const ExternalDispatchForm = (props) => {
     const { data, errors, batchIdOptions, vehicleOptions, disabled, driverOptions, onChange, onBlur, track } = props
 
     const { batchId, dispatchAddress, managerName, vehicleNo, mobileNumber, driverId, product20L, product1L,
-        product500ML, price20L, price1L, price500ML } = data
+        product500ML, product250ML, price20L, price1L, price500ML, price250ML } = data
 
     return (
         <>
@@ -60,6 +60,18 @@ const ExternalDispatchForm = (props) => {
                                 <InputLabel name='Price' />
                                 <CustomInput value={price500ML} disabled={disabled}
                                     placeholder='Rs' onChange={(value) => onChange(value, 'price500ML')} />
+                            </div>
+                        </div>
+                        <div className='column'>
+                            <div className='input-container'>
+                                <InputLabel name='250 Ml' />
+                                <CustomInput value={product250ML} disabled={disabled}
+                                    placeholder='Add' onChange={(value) => onChange(value, 'product250ML')} />
+                            </div>
+                            <div className='input-container'>
+                                <InputLabel name='Price' />
+                                <CustomInput value={price250ML} disabled={disabled}
+                                    placeholder='Rs' onChange={(value) => onChange(value, 'price250ML')} />
                             </div>
                         </div>
                     </div>

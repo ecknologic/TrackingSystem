@@ -168,6 +168,7 @@ const DocSvgLight = () => <DocComponent color={secondaryColor} />
 const DocSvg = () => <DocComponent color={primaryColor} />
 const MoreSvgGrey = () => <MoreComponent color={greyColor} />
 const EyeSvgWhite = () => <EyeComponent color={whiteColor} />
+const EyeSvgGrey = () => <EyeComponent color={greyColor} />
 const FileSvgWhite = () => <FileComponent color={whiteColor} />
 const FileSvgGrey = () => <FileComponent color={greyColor} />
 const DashboardSvg = () => <DashboardComponent color={primaryColor} />
@@ -205,6 +206,7 @@ export const DocIconLight = props => <Icon component={DocSvgLight} {...props} />
 export const DocIcon = props => <Icon component={DocSvg} {...props} />
 export const MoreIconGrey = props => <Icon component={MoreSvgGrey} {...props} />
 export const EyeIconWhite = props => <Icon component={EyeSvgWhite} {...props} />
+export const EyeIconGrey = props => <Icon component={EyeSvgGrey} {...props} />
 export const FileIconWhite = props => <Icon component={FileSvgWhite} {...props} />
 export const FileIconGrey = props => <Icon component={FileSvgGrey} {...props} />
 export const ListViewIcon = props => <Icon component={ListViewSvg} {...props} />

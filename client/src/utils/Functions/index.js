@@ -129,6 +129,14 @@ export const getDevDays = (data = {}) => {
 
     return days
 }
+export const extractValidProductsForDB = (data) => {
+    const { product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML } = data
+
+    return {
+        product20L: product20L || 0, price20L: price20L || 0, product1L: product1L || 0, price1L: price1L || 0,
+        product500ML: product500ML || 0, price500ML: price500ML || 0, product250ML: product250ML || 0, price250ML: price250ML || 0
+    }
+}
 export const extractProductsFromForm = (data) => {
     const { product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML, product20LId, product1LId, product500MLId, product250MLId } = data
 
@@ -363,4 +371,20 @@ export const isAadharValid = (aadharNumber) => {
 
 export const disableFutureDates = (current) => {
     return current && current.valueOf() > Date.now();
+}
+
+export const getStatusColor = (status) => {
+    switch (status) {
+        case 'Confirmed':
+            return '#0EDD4D'
+
+        case 'Delivered':
+            return '#0EDD4D'
+
+        case 'Approved':
+            return '#0EDD4D'
+
+        default:
+            return '#A10101'
+    }
 }

@@ -15,7 +15,7 @@ import { getWarehoseId, TRACKFORM } from '../../../../utils/constants';
 import CustomPagination from '../../../../components/CustomPagination';
 import { deliveryColumns, getRouteOptions, getDriverOptions } from '../../../../assets/fixtures';
 import { validateMobileNumber, validateNames, validateNumber, validateDCValues } from '../../../../utils/validations';
-import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone } from '../../../../utils/Functions';
+import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone, getStatusColor } from '../../../../utils/Functions';
 
 const Delivery = ({ date }) => {
     const warehouseId = getWarehoseId()
@@ -303,9 +303,9 @@ const Delivery = ({ date }) => {
     )
 }
 
-const renderStatus = (delivered) => {
-    const color = delivered === 'Inprogress' ? '#A10101' : '#0EDD4D'
-    const text = delivered === 'Inprogress' ? 'Pending' : 'Delivered'
+const renderStatus = (status) => {
+    const color = getStatusColor(status)
+    const text = status === 'Inprogress' ? 'Pending' : 'Delivered'
     return (
         <div className='status'>
             <span className='dot' style={{ background: color }}></span>

@@ -17,6 +17,13 @@ $textColorDisabled:rgba(0,0,0,0.55);
     flex-direction: column;
 }
 
+// -------------- antd Divider styles ------------------- //
+
+.ant-divider-horizontal {
+    margin: 0;
+    color: #E3E3E3;
+}
+
 // -------------- antd Collapse styles ------------------- //
 
 .ant-collapse {
@@ -286,7 +293,7 @@ $textColorDisabled:rgba(0,0,0,0.55);
     color: $textColorDisabled !important;
     background-color:#f4f4f4 !important;
 }
-.ant-input-disabled + .ant-input-group-addon{
+.ant-input-disabled + .ant-input-group-addon {
     cursor: not-allowed;
 
     .app-input-addon-button {
@@ -340,6 +347,35 @@ $textColorDisabled:rgba(0,0,0,0.55);
         box-shadow: none !important;
     }
 }
+
+// -------------- antd Date Picker styles ------------------- //
+
+.ant-picker {
+    margin-top: .5em;
+    height: 3.1em;
+    width: 100%;
+    border-radius: .6em;
+
+    &:hover {
+        border-color: $primaryColor;
+    }
+}
+
+.ant-picker-focused {
+    border-color: $primaryColor;
+    box-shadow: none !important;
+}
+.ant-picker.ant-picker-disabled {
+    background-color:#f4f4f4;
+
+    &:hover {
+        border-color: #d9d9d9;
+    }
+}
+.ant-picker-input > input[disabled] {
+    color: $textColorDisabled;
+}
+
 // -------------- Antd Modal styles ------------------- //
 .ant-modal {
 
@@ -356,12 +392,13 @@ $textColorDisabled:rgba(0,0,0,0.55);
         border-bottom-left-radius: 1em;
         height: 5em;
         display: flex;
+        flex-direction: row-reverse;
         justify-content: space-between;
         align-items: center;
         padding: 10px 24px;
         
         .right-btn {
-            height: 2.5em;
+            height: 2.7em;
             min-width: 8em;
             border-radius: .7em;
             background-color: #007AFF;
@@ -479,6 +516,11 @@ $textColorDisabled:rgba(0,0,0,0.55);
 .app-accounts-filter {
     width: 12em;
 }
+.ant-tabs-dropdown-menu-item {
+    color: #333333;
+    font-family: 'PoppinsRegular400';
+    font-size: 1.8ch;
+}
 // -------------- Various Input styles ------------------- //
 
 .app-input-label-name {
@@ -487,9 +529,18 @@ $textColorDisabled:rgba(0,0,0,0.55);
     font-family: 'PoppinsSemiBold600';
     font-size: .86em;
 }
-.app-input-value {
+.app-input-value-larger {
+    color: #2A2D37;
+    font-family: 'PoppinsBold700';
+}
+.app-input-value-large {
     color: #171725;
     font-family: 'PoppinsSemiBold600';
+}
+.app-input-value-smaller {
+    color: #535353;
+    font-family: 'PoppinsMedium500';
+    font-size: 12px;
 }
 .label-mandatory::before {
     content:'*';
@@ -634,10 +685,6 @@ $textColorDisabled:rgba(0,0,0,0.55);
 // -------------- Various Modal styles ------------------- //
 .app-preview-modal {
     margin-top: 1.8em;
-
-    .ant-modal-footer {
-        justify-content: flex-end;
-    }
 }
 
 // -------------- Various Animation styles ------------------- //
@@ -1064,6 +1111,16 @@ $textColorDisabled:rgba(0,0,0,0.55);
             height: .6em;
             border-radius: 50%;
             margin-right: .2em;
+        }
+    }
+
+    .eye-container {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+
+        .eye {
+            margin-left: 1em;
         }
     }
 

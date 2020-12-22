@@ -5,7 +5,7 @@ import { CrossIcon } from './SVG_Icons';
 import { removeFormTracker, resetTrackForm, trackAccountFormOnce } from '../utils/Functions';
 
 const CustomModal = (props) => {
-    const { visible, title, track, okTxt, cancelTxt, onCancel, onOk, onOther, btnDisabled, className, children } = props
+    const { visible, title, track, okTxt, hideCancel, cancelTxt, onCancel, onOk, onOther, btnDisabled, className, children } = props
 
     useEffect(() => {
         if (track) {
@@ -34,16 +34,17 @@ const CustomModal = (props) => {
             footer={(
                 <>
                     <CustomButton
-                        className='app-cancel-btn footer-btn'
-                        text={cancelTxt || 'Cancel'}
-                        onClick={cancelTxt ? onOther : onCancel}
-                    />
-
-                    <CustomButton
                         onClick={onOk}
-                        className={`app-create-btn right-btn ${btnDisabled && 'disabled'}`}
+                        className={`right-btn ${btnDisabled && 'disabled'}`}
                         text={okTxt}
                     />
+                    {
+                        !hideCancel && <CustomButton
+                            className='app-cancel-btn footer-btn'
+                            text={cancelTxt || 'Cancel'}
+                            onClick={cancelTxt ? onOther : onCancel}
+                        />
+                    }
                 </>
             )}
         >

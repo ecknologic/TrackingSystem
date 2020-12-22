@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { DatePicker, Table } from 'antd';
+import { Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { http } from '../../../modules/http';
 import Spinner from '../../../components/Spinner';
@@ -11,8 +11,9 @@ import ConfirmMessage from '../../../components/ConfirmMessage';
 import { TODAYDATE, TRACKFORM } from '../../../utils/constants';
 import CustomPagination from '../../../components/CustomPagination';
 import { getRMColumns } from '../../../assets/fixtures';
-import { disableFutureDates } from '../../../utils/Functions';
+import { disableFutureDates, getStatusColor } from '../../../utils/Functions';
 import DateValue from '../../../components/DateValue';
+import CustomDateInput from '../../../components/CustomDateInput';
 const DATEFORMAT = 'DD-MM-YYYY'
 const format = 'YYYY-MM-DD'
 
@@ -93,12 +94,11 @@ const MaterialStatus = () => {
     }
 
     const dataSource = useMemo(() => RM.map((dispatch) => {
-        const { rawmaterialid: key, orderId, itemCode, itemName, requestedDate, reorderLevel,
+        const { rawmaterialid: key, orderId, itemName, requestedDate, reorderLevel,
             minOrderLevel, vendorName, itemQty, status } = dispatch
         return {
             key,
             orderId,
-            // itemCode,
             itemQty,
             reorderLevel,
             vendorName,
@@ -130,15 +130,15 @@ const MaterialStatus = () => {
                             <ScheduleIcon />
                             <span>Select Date</span>
                         </div>
-                        <DatePicker // Hidden in the DOM
+                        <CustomDateInput // Hidden in the DOM
                             open={open}
                             style={{ left: 0 }}
+                            value={selectedDate}
                             placeholder='Select Date'
                             className='date-panel-picker'
                             onChange={handleDateSelect}
                             onOpenChange={datePickerStatus}
                             disabledDate={disableFutureDates}
-                            getPopupContainer={triggerNode => triggerNode.parentNode}
                         />
                     </div>
                 </div>
@@ -150,7 +150,6 @@ const MaterialStatus = () => {
                         onSearch={() => { }}
                         onChange={() => { }}
                     />
-
                 </div>
             </div>
             <div className='app-table dispatch-table'>
@@ -187,7 +186,7 @@ const MaterialStatus = () => {
 }
 
 const renderStatus = (status) => {
-    const color = status === 'Pending' ? '#A10101' : '#0EDD4D'
+    const color = getStatusColor(status)
     return (
         <div className='status'>
             <span className='dot' style={{ background: color }}></span>

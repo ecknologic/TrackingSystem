@@ -7,9 +7,9 @@ import Spinner from '../../../../components/Spinner';
 import QuitModal from '../../../../components/CustomModal';
 import TableAction from '../../../../components/TableAction';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
-import { getWarehoseId, TRACKFORM } from '../../../../utils/constants';
+import { TRACKFORM } from '../../../../utils/constants';
 import CustomPagination from '../../../../components/CustomPagination';
-import { deepClone, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
+import { deepClone, getStatusColor, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 import CustomModal from '../../../../components/CustomModal';
 import { shiftOptions, productionColumns } from '../../../../assets/fixtures';
 import { validateBatchValues, validateIntFloat, validateNames, validateNumber } from '../../../../utils/validations';
@@ -229,9 +229,9 @@ const Production = () => {
     )
 }
 
-const renderStatus = (delivered) => {
-    const color = delivered === 'Inprogress' ? '#A10101' : '#0EDD4D'
-    const text = delivered === 'Inprogress' ? 'Pending' : 'Delivered'
+const renderStatus = (status) => {
+    const color = getStatusColor(status)
+    const text = status === 'Inprogress' ? 'Pending' : 'Delivered'
     return (
         <div className='status'>
             <span className='dot' style={{ background: color }}></span>

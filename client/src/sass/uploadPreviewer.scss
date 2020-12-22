@@ -96,6 +96,10 @@
 
         }
 
+        .ant-upload-disabled {
+            cursor: disabled;
+        }
+
         .title {
             color: rgba(0,0,0,0.85);
             font-family: 'PoppinsRegular400';
