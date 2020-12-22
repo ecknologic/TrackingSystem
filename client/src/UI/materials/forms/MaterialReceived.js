@@ -12,7 +12,7 @@ const DATEFORMAT = 'DD-MM-YYYY'
 const MaterialReceivedForm = (props) => {
     const { data, errors, onUpload, onRemove, disabled, onChange, track } = props
     const { receiptImage, receiptNo, invoiceNo, invoiceAmount, invoiceDate, taxAmount,
-        itemName, vendorName, itemCode, approvedDate, managerName, itemQty, status } = data
+        itemName, vendorName, itemCode, approvedDate, managerName, itemQty, description } = data
 
     return (
         <>
@@ -28,13 +28,23 @@ const MaterialReceivedForm = (props) => {
                     </div>
                 </div>
                 <div className='row'>
-                    <div className='input-container'>
-                        <InputLabel name='Item Code' />
-                        <InputValue size='large' value={itemCode} />
-                    </div>
+                    {
+                        itemCode && (
+                            <div className='input-container'>
+                                <InputLabel name='Item Code' />
+                                <InputValue size='large' value={itemCode} />
+                            </div>
+                        )
+                    }
                     <div className='input-container'>
                         <InputLabel name='Approved Date' />
                         <InputValue size='large' value={dayjs(approvedDate).format(DATEFORMAT)} />
+                    </div>
+                </div>
+                <div className='row'>
+                    <div className='input-container'>
+                        <InputLabel name='Product Description' />
+                        <InputValue size='large' value={description} />
                     </div>
                 </div>
                 <div className='row'>

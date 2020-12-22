@@ -187,10 +187,11 @@ const MaterialStatus = () => {
 
 const renderStatus = (status) => {
     const color = getStatusColor(status)
+    const text = status === 'Pending' ? status : 'Approved'
     return (
         <div className='status'>
             <span className='dot' style={{ background: color }}></span>
-            <span className='status-text'>{status}</span>
+            <span className='status-text'>{text}</span>
         </div>
     )
 }
