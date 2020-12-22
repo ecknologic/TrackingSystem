@@ -2,7 +2,7 @@ const dayjs = require('dayjs');
 var express = require('express');
 var router = express.Router();
 const db = require('../config/db.js');
-const { getCurrentDispatchDetailsByDate } = require('../dbQueries/motherplant/queries.js');
+const motherPlantDbQueries = require('../dbQueries/motherplant/queries.js');
 const warehouseQueries = require('../dbQueries/warehouse/queries.js');
 const { DATEFORMAT, INSERTMESSAGE } = require('../utils/constants.js');
 const { dbError } = require('../utils/functions.js');
@@ -38,7 +38,16 @@ router.get('/getNewStockDetails/:id', (req, res) => {
     date: dayjs().format('YYYY-MM-DD'),
     departmentId: req.params.id
   }
-  getCurrentDispatchDetailsByDate(input, (err, results) => {
+  motherPlantDbQueries.getCurrentDispatchDetailsByDate(input, (err, results) => {
+    if (err) res.json(dbError(err));
+    else {
+      res.json(results.length ? results[0] : {});
+    }
+  });
+});
+
+router.get('/getDispatchDetailsByDC/:DCNO', (req, res) => {
+  motherPlantDbQueries.getDispatchDetailsByDC(req.params.DCNO, (err, results) => {
     if (err) res.json(dbError(err));
     else {
       res.json(results.length ? results[0] : {});
@@ -91,18 +100,24 @@ router.put('/updateDC', (req, res) => {
 router.post('/confirmStockRecieved', (req, res) => {
   let input = req.body;
   input.departmentId = departmentId
-  warehouseQueries.insertReturnStockDetails(input, (err, results) => {
-    if (err) res.status(500).json(err.sqlMessage);
-    else {
-      let obj = {
-        returnStockId: results.insertId,
-        dispatchId: input.dispatchId
+  if (input.isDamaged) {
+    warehouseQueries.insertReturnStockDetails(input, (err, results) => {
+      if (err) res.status(500).json(err.sqlMessage);
+      else {
+        let obj = {
+          returnStockId: results.insertId,
+          dcNo: input.dcNo
+        }
+        warehouseQueries.confirmDispatchDetails(obj, (confirmErr, results1) => {
+          if (confirmErr) res.status(500).json(dbError(confirmErr));
+        });
       }
-      // warehouseQueries.confirmDispatchDetails(obj, (confirmErr, results1) => {
-      //   if (confirmErr) res.status(500).json(dbError(confirmErr));
-      // });
-    }
-  });
+    });
+  } else {
+    warehouseQueries.confirmDispatchDetails(input.dcNo, (confirmErr, results1) => {
+      if (confirmErr) res.status(500).json(dbError(confirmErr));
+    });
+  }
 
   input.deliveryDate = new Date()
   warehouseQueries.saveWarehouseStockDetails(input, (err, warehouseData) => {

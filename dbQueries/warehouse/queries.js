@@ -17,8 +17,8 @@ warehouseQueries.insertReturnStockDetails = (input, callback) => {
 
 //Update Request Methods
 warehouseQueries.confirmDispatchDetails = (input, callback) => {
-    let query = "update dispatches set returnStockId=?,isConfirmed=? where id=?";
-    let requestBody = [input.returnStockId, "1", input.dispatchId];
+    let query = "update dispatches set returnStockId=?,isConfirmed=? where DCNO=?";
+    let requestBody = [input.returnStockId ? input.returnStockId : '0', "1", input.dcNo];
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 module.exports = warehouseQueries
