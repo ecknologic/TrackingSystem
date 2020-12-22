@@ -5,12 +5,12 @@ let warehouseQueries = {}
 //POST Request Methods
 warehouseQueries.saveWarehouseStockDetails = (input, callback) => {
     let query = "insert into warehousestockdetails (warehouseId,20LCans,1LBoxes,500MLBoxes,250MLBoxes,damaged20LCans,damaged1LBoxes,damaged500MLBoxes,damaged250MLBoxes,deliveryDate,isConfirmed) values(?,?,?,?,?,?,?,?,?,?,?)";
-    let requestBody = [input.departmentId, input.product20L, input.product1L, input.product500ML, input.product250ML, input.damaged20LCans, input.damaged1LBoxes, input.damaged500MLBoxes, input.damaged250MLBoxes, input.deliveryDate, '1']
+    let requestBody = [input.departmentId, input.total20LCans, input.total1LBoxes, input.total500MLBoxes, input.total250MLBoxes, input.damaged1LBoxes, input.damaged500MLBoxes, input.damaged250MLBoxes, input.deliveryDate, '1']
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 warehouseQueries.insertReturnStockDetails = (input, callback) => {
-    let query = "insert into returnstockdetails (damaged20Lcans,damaged1LBoxes,damaged500MLBoxes,emptyCans,departmentId) values(?,?,?,?,?)";
-    let requestBody = [input.damaged20LCans, input.damaged1LBoxes, input.damaged500MLBoxes, input.emptyCans, input.departmentId]
+    let query = "insert into returnstockdetails (damaged20LCans,damaged1LBoxes,damaged500MLBoxes,damaged250MLBoxes,damagedDesc,departmentId) values(?,?,?,?,?,?)";
+    let requestBody = [input.damaged20LCans, input.damaged1LBoxes, input.damaged500MLBoxes, input.damaged250MLBoxes, input.damagedDesc, input.departmentId]
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 

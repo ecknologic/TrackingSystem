@@ -4,7 +4,7 @@ var router = express.Router();
 const db = require('../config/db.js');
 const { getCurrentDispatchDetailsByDate } = require('../dbQueries/motherplant/queries.js');
 const warehouseQueries = require('../dbQueries/warehouse/queries.js');
-const { DATEFORMAT } = require('../utils/constants.js');
+const { DATEFORMAT, INSERTMESSAGE } = require('../utils/constants.js');
 const { dbError } = require('../utils/functions.js');
 var departmentId;
 //Middle ware that is specific to this router
@@ -98,16 +98,16 @@ router.post('/confirmStockRecieved', (req, res) => {
         returnStockId: results.insertId,
         dispatchId: input.dispatchId
       }
-      warehouseQueries.confirmDispatchDetails(obj, (confirmErr, results1) => {
-        if (confirmErr) res.status(500).json(dbError(confirmErr));
-      });
+      // warehouseQueries.confirmDispatchDetails(obj, (confirmErr, results1) => {
+      //   if (confirmErr) res.status(500).json(dbError(confirmErr));
+      // });
     }
   });
 
   input.deliveryDate = new Date()
   warehouseQueries.saveWarehouseStockDetails(input, (err, warehouseData) => {
     if (err) res.status(500).json(dbError(confirmErr))
-    else console.log("warehouseData", warehouseData)
+    else res.json(INSERTMESSAGE)
   })
 });
 

@@ -49,7 +49,7 @@ motherPlantDbQueries.getRMDetails = async (input, callback) => {
     return executeGetParamsQuery(query, [input.departmentId], callback)
 }
 motherPlantDbQueries.getRMReceiptDetails = async (departmentId, callback) => {
-    let query = `select rmr.receiptDate,rmr.receiptNo,rmr.invoiceNo,rmr.taxAmount,rmr.invoiceAmount,rmr.rawmaterialId,rmr.invoiceDate,rmr.managerName,rmr.receiptImage,rm.itemName,rm.itemCode,rm.itemQty,rm.vendorName,rm.approvedDate,rm.description from rawmaterialreceipt rmr INNER JOIN requiredrawmaterial rm on rmr.rawmaterialId=rm.rawmaterialid WHERE rmr.departmentId=${departmentId} ORDER BY invoiceDate DESC`;
+    let query = `select rmr.receiptDate,rmr.receiptNo,rmr.invoiceNo,rmr.taxAmount,rmr.invoiceAmount,rmr.rawmaterialId,rmr.invoiceDate,rmr.managerName,rmr.receiptImage,rm.itemName,rm.itemCode,rm.itemQty,rm.vendorName,rm.approvedDate,rm.description,rm.orderId from rawmaterialreceipt rmr INNER JOIN requiredrawmaterial rm on rmr.rawmaterialId=rm.rawmaterialid WHERE rmr.departmentId=${departmentId} ORDER BY receiptDate DESC`;
     // let query = `select * from rawmaterialreceipt WHERE departmentId=${departmentId}`;
     return executeGetQuery(query, callback)
 }
