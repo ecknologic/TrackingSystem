@@ -7,10 +7,10 @@ import CustomTextArea from '../../../../components/CustomTextArea';
 
 const ArrivedStockForm = (props) => {
 
-    const { data, errors, routeOptions, disabled, onBlur, driverOptions, onChange, track } = props
+    const { data, errors, disabled, onChange } = props
 
-    const { routeId, damageDesc, mobileNumber, address,
-        driverId, cans20L, boxes1L, boxes500ML, boxes250ML } = data
+    const { dcNo = '', damagedDesc, address = '', isDamaged, driverName = '', mobileNumber = '', vehicleNo = '', vehicleType = '',
+        damaged20Lcans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes, total20LCans, total1LBoxes, total250MLBoxes, total500MLBoxes } = data
 
     return (
         <>
@@ -18,28 +18,28 @@ const ArrivedStockForm = (props) => {
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Delivery Challan Number (DC Number)' />
-                        <InputValue size='larger' value='MP-D3491' />
+                        <InputValue size='larger' value={dcNo} />
                     </div>
                 </div>
                 <Divider />
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Location Details' />
-                        <InputValue size='smaller' value='429, HMT Sathavahana Nagar Rd, Hmt Sathavahana Nagar, Kukatpally, Hyderabad, Telangana 500072' />
+                        <InputValue size='smaller' value={address} />
                     </div>
                 </div>
                 <Divider />
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Vehicle Details' />
-                        <InputValue size='smaller' value='TS 19 AG 5465 - DCM Van' />
+                        <InputValue size='smaller' value={`${vehicleNo} - ${vehicleType}`} />
                     </div>
                 </div>
                 <Divider />
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Contact Name And Number' />
-                        <InputValue size='smaller' value='K.S Rama Rao, 9985752338' />
+                        <InputValue size='smaller' value={`${driverName}, ${mobileNumber}`} />
                     </div>
                 </div>
                 <Divider />
@@ -49,25 +49,25 @@ const ArrivedStockForm = (props) => {
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='20 Ltrs' />
-                                <InputValue size='smaller' value='338' />
+                                <InputValue size='smaller' value={total20LCans} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='1 Ltrs (Box-1x12)' />
-                                <InputValue size='smaller' value='338' />
+                                <InputValue size='smaller' value={total1LBoxes} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='500 Ml (Box-1x12)' />
-                                <InputValue size='smaller' value='338' />
+                                <InputValue size='smaller' value={total250MLBoxes} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='250 Ml (Box-1x12)' />
-                                <InputValue size='smaller' value='338' />
+                                <InputValue size='smaller' value={total500MLBoxes} />
                             </div>
                         </div>
                     </div>
@@ -76,33 +76,33 @@ const ArrivedStockForm = (props) => {
                 <div className='columns'>
                     <InputLabel name='Damaged Particules' />
                     <div className='columns-container'>
-                        <Checkbox />
+                        <Checkbox onChange={({ target: { checked } }) => onChange(checked, 'isDamaged')} />
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='20 Ltrs' />
-                                <CustomInput value={cans20L} disabled={disabled}
-                                    placeholder='Add' onChange={(value) => onChange(value, 'cans20L')} />
+                                <CustomInput value={damaged20Lcans} disabled={!isDamaged || disabled}
+                                    placeholder='Add' onChange={(value) => onChange(value, 'damaged20Lcans')} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='1 Ltrs (Box-1x12)' />
-                                <CustomInput value={boxes1L} disabled={disabled}
-                                    placeholder='Add' onChange={(value) => onChange(value, 'boxes1L')} />
+                                <CustomInput value={damaged1LBoxes} disabled={!isDamaged || disabled}
+                                    placeholder='Add' onChange={(value) => onChange(value, 'damaged1LBoxes')} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='500 Ml (Box-1x12)' />
-                                <CustomInput value={boxes500ML} disabled={disabled}
-                                    placeholder='Add' onChange={(value) => onChange(value, 'boxes500ML')} />
+                                <CustomInput value={damaged500MLBoxes} disabled={!isDamaged || disabled}
+                                    placeholder='Add' onChange={(value) => onChange(value, 'damaged500MLBoxes')} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='250 Ml (Box-1x12)' />
-                                <CustomInput value={boxes250ML} disabled={disabled}
-                                    placeholder='Add' onChange={(value) => onChange(value, 'boxes250ML')} />
+                                <CustomInput value={damaged250MLBoxes} disabled={!isDamaged || disabled}
+                                    placeholder='Add' onChange={(value) => onChange(value, 'damaged250MLBoxes')} />
                             </div>
                         </div>
                     </div>
@@ -110,8 +110,8 @@ const ArrivedStockForm = (props) => {
                 <div className='row'>
                     <div className='input-container stretch'>
                         <InputLabel name='Damaged Details' />
-                        <CustomTextArea maxLength={100} error={errors.damageDesc} placeholder='Add Damaged Details' value={damageDesc}
-                            minRows={3} maxRows={4} onChange={(value) => onChange(value, 'damageDesc')}
+                        <CustomTextArea disabled={!isDamaged || disabled} maxLength={1000} error={errors.damagedDesc} placeholder='Add Damaged Details' value={damagedDesc}
+                            minRows={3} maxRows={10} onChange={(value) => onChange(value, 'damagedDesc')}
                         />
                     </div>
                 </div>

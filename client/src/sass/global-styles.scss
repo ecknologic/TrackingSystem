@@ -487,7 +487,53 @@ $textColorDisabled:rgba(0,0,0,0.55);
     .input-container {
         margin-right: .5em;
     }
+}
 
+.app-view-modal {
+    .ant-modal-content {
+        .ant-modal-body {
+            background-color: #FFF;
+        }
+    }
+
+    .app-form-container {
+        .row {
+            padding: .8em 0;
+
+            .input-container {
+                width: 70%;
+
+                .app-input-label-name {
+                    color: rgba(0,0,0,0.85);
+                }
+            }
+
+            .stretch {
+                width: 100%;
+            }
+        }
+
+        .columns {
+            padding: .8em 0;
+
+            .app-input-label-name {
+                color: rgba(0,0,0,0.85);
+            }
+
+            .columns-container {
+                justify-content: flex-start;
+                align-items: center;
+
+                .app-input-label-name {
+                    color: #92929D;
+                }
+                
+                .column {
+                    flex: 0 1 auto;
+                }
+            }
+        }
+    }
 }
 
 // -------------- Antd Dropdown styles ------------------- //
@@ -1105,13 +1151,6 @@ $textColorDisabled:rgba(0,0,0,0.55);
         display: flex;
         align-items: center;
         justify-content: center;
-
-        .dot {
-            width: .6em;
-            height: .6em;
-            border-radius: 50%;
-            margin-right: .2em;
-        }
     }
 
     .eye-container {
@@ -1131,4 +1170,12 @@ $textColorDisabled:rgba(0,0,0,0.55);
             transform: rotate(90deg) scale(.8);
         }
     }
+}
+
+.app-dot {
+    display: inline-block;
+    width: .6em;
+    height: .6em;
+    border-radius: 50%;
+    margin-right: .2em;
 }

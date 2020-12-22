@@ -1,40 +1,34 @@
 import dayjs from 'dayjs';
 import { Table } from 'antd';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../modules/http';
 import Spinner from '../../../components/Spinner';
-import QuitModal from '../../../components/CustomModal';
 import { ScheduleIcon } from '../../../components/SVG_Icons';
 import TableAction from '../../../components/TableAction';
 import SearchInput from '../../../components/SearchInput';
-import ConfirmMessage from '../../../components/ConfirmMessage';
-import { TODAYDATE, TRACKFORM } from '../../../utils/constants';
+import { TODAYDATE } from '../../../utils/constants';
 import CustomPagination from '../../../components/CustomPagination';
 import { ReceivedMColumns } from '../../../assets/fixtures';
 import { disableFutureDates, getStatusColor } from '../../../utils/Functions';
 import DateValue from '../../../components/DateValue';
 import CustomDateInput from '../../../components/CustomDateInput';
+import CustomModal from '../../../components/CustomModal';
+import ReceivedMaterialView from '../views/ReceivedMaterials';
 const DATEFORMAT = 'DD-MM-YYYY'
 const format = 'YYYY-MM-DD'
 
 const ReceivedMaterials = () => {
     const [loading, setLoading] = useState(true)
-    const [formData, setFormData] = useState({})
-    const [formErrors, setFormErrors] = useState({})
+    const [viewData, setViewData] = useState({})
     const [pageSize, setPageSize] = useState(10)
     const [totalCount, setTotalCount] = useState(null)
     const [pageNumber, setPageNumber] = useState(1)
-    const [btnDisabled, setBtnDisabled] = useState(false)
-    const [modal, setModal] = useState(false)
-    const [confirmModal, setConfirmModal] = useState(false)
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
+    const [viewModal, setViewModal] = useState(false)
+    const [formTitle, setFormTitle] = useState('')
     const [open, setOpen] = useState(false)
     const [RM, setRM] = useState([])
     const [RMClone, setRMClone] = useState([])
-
-    const RMIdRef = useRef()
-    const orderIdRef = useRef()
-    const formTitleRef = useRef()
 
     useEffect(() => {
         getRM()
@@ -62,10 +56,9 @@ const ReceivedMaterials = () => {
 
     const handleMenuSelect = (key, data) => {
         if (key === 'view') {
-            RMIdRef.current = data.rawmaterialid
-            formTitleRef.current = `Received Material Details - Order ID - ${data.orderId}`
-            setFormData(data)
-            setModal(true)
+            setFormTitle(`Received Material Details - ${data.orderId}`)
+            setViewData(data)
+            setViewModal(true)
         }
     }
 
@@ -78,25 +71,15 @@ const ReceivedMaterials = () => {
         setPageNumber(number)
     }
 
-    const onModalClose = (hasSaved) => {
-        const formHasChanged = sessionStorage.getItem(TRACKFORM)
-        if (formHasChanged && !hasSaved) {
-            return setConfirmModal(true)
-        }
-        setModal(false)
-        setBtnDisabled(false)
-        setFormData({})
-        setFormErrors({})
-    }
-
     const dataSource = useMemo(() => RM.map((item) => {
-        const { rawmaterialid: key, itemName, itemQty, invoiceNo, vendorName, invoiceAmount, invoiceDate, taxAmount } = item
+        const { rawmaterialid: key, itemName, orderId, itemQty, invoiceNo, vendorName, invoiceAmount, invoiceDate, taxAmount } = item
         return {
             key,
             itemName,
             invoiceNo,
             taxAmount,
             itemQty,
+            orderId,
             vendorName,
             invoiceAmount,
             dateAndTime: dayjs(invoiceDate).format('DD/MM/YYYY'),
@@ -105,12 +88,7 @@ const ReceivedMaterials = () => {
         }
     }), [RM])
 
-    const handleConfirmModalOk = useCallback(() => {
-        setConfirmModal(false);
-        onModalClose()
-    }, [])
-
-    const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
+    const handleModalCancel = useCallback(() => setViewModal(false), [])
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
@@ -168,15 +146,19 @@ const ReceivedMaterials = () => {
                         onPageSizeChange={handleSizeChange}
                     />)
             }
-            <QuitModal
-                visible={confirmModal}
-                onOk={handleConfirmModalOk}
-                onCancel={handleConfirmModalCancel}
-                title='Are you sure to leave?'
-                okTxt='Yes'
+            <CustomModal
+                hideCancel
+                okTxt='Close'
+                visible={viewModal}
+                title={formTitle}
+                onOk={handleModalCancel}
+                onCancel={handleModalCancel}
+                className='app-form-modal app-view-modal'
             >
-                <ConfirmMessage msg='Changes you made may not be saved.' />
-            </QuitModal>
+                <ReceivedMaterialView
+                    data={viewData}
+                />
+            </CustomModal>
         </div>
     )
 }
@@ -185,7 +167,7 @@ const renderStatus = (status) => {
     const color = getStatusColor(status)
     return (
         <div className='status'>
-            <span className='dot' style={{ background: color }}></span>
+            <span className='app-dot' style={{ background: color }}></span>
             <span className='status-text'>{status}</span>
         </div>
     )

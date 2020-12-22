@@ -225,6 +225,11 @@ export const dispatchColumns = [
 
 export const ReceivedMColumns = [
     {
+        title: 'Order Id',
+        dataIndex: 'orderId',
+        key: 'orderId',
+    },
+    {
         title: 'Invoice No',
         dataIndex: 'invoiceNo',
         key: 'invoiceNo',

@@ -182,7 +182,7 @@ const AddMaterials = () => {
     }
 
     const configureModalUI = (data) => {
-        setFormTitle(`Received Material Details - Order ID - ${data.orderId}`)
+        setFormTitle(`Received Material Details - ${data.orderId}`)
         if (data.status === 'Confirmed') {
             setFormDisabled(true)
             setOkText('Close')

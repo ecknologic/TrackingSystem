@@ -234,7 +234,7 @@ const renderStatus = (status) => {
     const text = status === 'Inprogress' ? 'Pending' : 'Delivered'
     return (
         <div className='status'>
-            <span className='dot' style={{ background: color }}></span>
+            <span className='app-dot' style={{ background: color }}></span>
             <span className='status-text'>{text}</span>
         </div>
     )
