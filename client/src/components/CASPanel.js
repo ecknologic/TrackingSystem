@@ -1,19 +1,19 @@
 import React from 'react';
 import CustomButton from './CustomButton';
 
-const CASPanel = ({ data, newStock, onConfirm }) => {
+const CASPanel = ({ data, newStock, onConfirm, dcDetails }) => {
 
     const { total1LBoxes, total20LCans, total250MLBoxes, total500MLBoxes } = data
     const { total20LCans: newStock20L, total1LBoxes: newStock1L, total500MLBoxes: newStock500ML, total250MLBoxes: newStock250ML } = newStock
 
-    const isConfirmed = false // static for now
+    const isConfirmed = dcDetails.every(item => item.isConfirmed === 1)
+
     const style = {
         opacity: isConfirmed ? 1 : 0.4
     }
 
-    const isArrived = newStock20L || newStock1L || newStock500ML || newStock250ML
-    const showPurple = true
-    // const showPurple = isArrived && !isConfirmed
+    const isArrived = dcDetails.length
+    const showPurple = isArrived && !isConfirmed
     const showGreen = isArrived && isConfirmed
 
     return (

@@ -10,7 +10,7 @@ import ERCPanel from '../../../../components/ERCPanel';
 import OFDPanel from '../../../../components/OFDPanel';
 import { http } from '../../../../modules/http';
 import { getWarehoseId, TODAYDATE, TRACKFORM } from '../../../../utils/constants';
-import { isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
+import { getASValuesForDB, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 import { validateNumber, validateASValues } from '../../../../utils/validations';
 import ArrivedStockForm from '../forms/ArrivedStock';
 
@@ -64,7 +64,7 @@ const StockDetails = ({ date }) => {
         const url = `/warehouse/getNewStockDetails/1`
         const data = await http.GET(url)
         const { DCDetails } = data || {}
-        const dcDetails = JSON.parse(JSON.stringify(DCDetails)) || []
+        const dcDetails = JSON.parse(DCDetails || "[]")
         setNewStock(data)
         setdCDetails(dcDetails)
     }
@@ -90,6 +90,7 @@ const StockDetails = ({ date }) => {
         const dcItem = dcDetails.find(item => item.isConfirmed === 0)
         if (dcItem) {
             getStockDetailsByDC(dcItem.dcNo)
+            setModal(true)
         }
         getStockDetailsByDC('DC-188')
         setModal(true)
@@ -105,23 +106,20 @@ const StockDetails = ({ date }) => {
             return
         }
 
-        // const dcValues = getASValuesForDB(formData)
-
-        const { dcNo, isDamaged = false, total1LBoxes, total20LCans, total250MLBoxes, total500MLBoxes,
-            damaged20LCans = 0,damagedDesc, damaged1LBoxes = 0, damaged500MLBoxes = 0, damaged250MLBoxes = 0 } = formData
+        const dcValues = getASValuesForDB(formData)
 
         let url = '/warehouse/confirmStockRecieved'
         const body = {
-            dcNo, damaged20LCans, damagedDesc,isDamaged, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes,
-            total1LBoxes, total20LCans, total250MLBoxes, total500MLBoxes
+            ...dcValues
         }
 
         try {
             setBtnDisabled(true)
-            showToast('DC', 'loading')
+            showToast('Stock Perticules', 'loading')
             await http.POST(url, body)
-            showToast('DC', 'success')
+            showToast('Stock Perticules', 'success')
             onModalClose(true)
+            getNewStock()
         } catch (error) {
             setBtnDisabled(false)
         }
@@ -149,7 +147,7 @@ const StockDetails = ({ date }) => {
 
     return (
         <div className='stock-details-container'>
-            <CASPanel data={CAS} newStock={newStock} onConfirm={onArrivedStockConfirm} />
+            <CASPanel data={CAS} newStock={newStock} onConfirm={onArrivedStockConfirm} dcDetails={dcDetails} />
             <OFDPanel data={OFD} />
             <DSPanel />
             <div className='empty-cans-header'>

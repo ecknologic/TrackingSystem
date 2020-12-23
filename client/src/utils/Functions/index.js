@@ -275,6 +275,17 @@ export const getDCValuesForDB = (data) => {
     }
 }
 
+export const getASValuesForDB = (data) => {
+
+    const { dcNo, isDamaged = false, total1LBoxes, total20LCans, total250MLBoxes, total500MLBoxes,
+        damaged20LCans = 0, damagedDesc, damaged1LBoxes = 0, damaged500MLBoxes = 0, damaged250MLBoxes = 0 } = data
+
+    return {
+        dcNo, damaged20LCans, damagedDesc, isDamaged, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes,
+        total1LBoxes, total20LCans, total250MLBoxes, total500MLBoxes
+    }
+}
+
 export const setTrackForm = () => {
     sessionStorage.setItem(TRACKFORM, true)
 }
