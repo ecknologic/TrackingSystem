@@ -109,11 +109,11 @@ const StockDetails = ({ date }) => {
         // const customerOrderId = customerOrderIdRef.current
 
         const { dcNo, isDamaged = false, total1LBoxes, total20LCans, total250MLBoxes, total500MLBoxes,
-            damaged20Lcans = 0, damaged1LBoxes = 0, damaged500MLBoxes = 0, damaged250MLBoxes = 0 } = formData
+            damaged20LCans = 0,damagedDesc, damaged1LBoxes = 0, damaged500MLBoxes = 0, damaged250MLBoxes = 0 } = formData
 
         let url = '/warehouse/confirmStockRecieved'
         const body = {
-            dcNo, damaged20Lcans, isDamaged, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes,
+            dcNo, damaged20LCans, damagedDesc,isDamaged, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes,
             total1LBoxes, total20LCans, total250MLBoxes, total500MLBoxes
         }
 
