@@ -4,6 +4,7 @@ import { getRole, MARKETINGADMIN, MOTHERPLANTADMIN, WAREHOUSEADMIN } from './uti
 import { resetTrackForm } from './utils/Functions';
 import AccountsDashboard from './UI/accounts/dashboard';
 import MotherplantStock from './UI/stock/motherplant';
+import QualityControl from './UI/quality-control';
 import WarehouseStock from './UI/stock/warehouse';
 import NoContent from './components/NoContent';
 import ViewAccount from './UI/accounts/view';
@@ -25,6 +26,7 @@ const App = () => {
          <Route exact path='/' component={Login} />
          <PageLayout>
             <Switch>
+               <Route path='/quality-control' render={() => requireAuth(<QualityControl />)} />
                <Route path='/stock-details' render={() => requireAuth(<MotherplantStock />)} />
                <Route path='/dispatches' render={() => requireAuth(<Dispatches />)} />
                <Route path='/materials' render={() => requireAuth(<Materials />)} />

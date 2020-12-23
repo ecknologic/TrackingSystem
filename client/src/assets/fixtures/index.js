@@ -276,6 +276,92 @@ export const ReceivedMColumns = [
     }
 ]
 
+export const internalQCColumns = [
+    {
+        title: 'Batch Id',
+        dataIndex: 'batchId',
+        key: 'batchId',
+    },
+    {
+        title: 'Date & Time',
+        dataIndex: 'dateAndTime',
+        key: 'dateAndTime',
+    },
+    {
+        title: 'Shift Type',
+        dataIndex: 'shiftType',
+        key: 'shiftType',
+    },
+    {
+        title: 'Manager',
+        dataIndex: 'manager',
+        key: 'manager',
+    },
+    {
+        title: 'PH',
+        dataIndex: 'pHLevel',
+        key: 'pHLevel',
+    },
+    {
+        title: 'Ozone Level',
+        dataIndex: 'ozoneLevel',
+        key: 'ozoneLevel',
+    },
+    {
+        title: 'TDS',
+        key: 'TDS',
+        dataIndex: 'TDS',
+    },
+    {
+        title: 'QA Status',
+        dataIndex: 'status',
+        key: 'status',
+    },
+    {
+        title: 'Actions',
+        dataIndex: 'action',
+        key: 'action'
+    }
+]
+
+export const testedBatchesColumns = [
+    {
+        title: 'Batch Id',
+        dataIndex: 'batchId',
+        key: 'batchId',
+    },
+    {
+        title: 'Request Date',
+        dataIndex: 'dateAndTime',
+        key: 'dateAndTime',
+    },
+    {
+        title: 'Request Inputs',
+        dataIndex: 'shiftType',
+        key: 'shiftType',
+    },
+    {
+        title: 'Tested Date',
+        dataIndex: 'manager',
+        key: 'manager',
+    },
+    {
+        title: 'Tested Inputs',
+        dataIndex: 'pHLevel',
+        key: 'pHLevel',
+    },
+    {
+        title: 'Tested Manager',
+        dataIndex: 'ozoneLevel',
+        key: 'ozoneLevel',
+    },
+    {
+        title: 'Status',
+        dataIndex: 'status',
+        key: 'status',
+    }
+]
+
 export const getRMColumns = (type) => {
 
     let statusText = 'Approval Status'

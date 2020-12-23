@@ -92,8 +92,6 @@ const StockDetails = ({ date }) => {
             getStockDetailsByDC(dcItem.dcNo)
             setModal(true)
         }
-        getStockDetailsByDC('DC-188')
-        setModal(true)
     }
 
     const handleArrivedStockConfirm = async () => {

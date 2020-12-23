@@ -10,6 +10,7 @@ import { TODAYDATE, TRACKFORM } from '../../../utils/constants';
 import DatePickerPanel from '../../../components/DatePickerPanel';
 import { resetTrackForm } from '../../../utils/Functions';
 import NoContent from '../../../components/NoContent';
+import InternalQC from './tabs/InternalQC';
 
 const MotherplantStock = () => {
 
@@ -58,9 +59,9 @@ const MotherplantStock = () => {
                         activeKey={activeTab}
                     >
                         <TabPane tab="Stock Details" key="1" />
-                        <TabPane tab="Damaged Stock" key="2" />
-                        <TabPane tab="Production" key="3" />
-                        <TabPane tab="Quality Control (Internal)" key="4" />
+                        <TabPane tab="Production" key="2" />
+                        <TabPane tab="Quality Control (Internal)" key="3" />
+                        <TabPane tab="Damaged Stock" key="4" />
                     </Tabs>
                 </div>
                 {
@@ -72,8 +73,9 @@ const MotherplantStock = () => {
                 }
                 {
                     activeTab === '1' ? <StockDetails goToTab={handleGoToTab} date={selectedDate} />
-                        : activeTab === '3' ? <Production />
-                            : <NoContent content='Design is in progress' />
+                        : activeTab === '2' ? <Production />
+                            : activeTab === '3' ? <InternalQC />
+                                : <NoContent content='Design is in progress' />
                 }
             </div>
             <ConfirmModal

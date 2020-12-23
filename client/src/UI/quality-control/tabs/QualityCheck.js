@@ -2,7 +2,7 @@ import { message } from 'antd';
 import React, { useState, useCallback, useEffect } from 'react';
 import CustomButton from '../../../components/CustomButton';
 import FormHeader from '../../../components/FormHeader';
-import DispatchForm from '../forms/Dispatch';
+import QualityCheckForm from '../forms/QualityCheck';
 import ConfirmModal from '../../../components/CustomModal';
 import { TRACKFORM } from '../../../utils/constants';
 import ConfirmMessage from '../../../components/ConfirmMessage';
@@ -10,7 +10,7 @@ import { http } from '../../../modules/http';
 import { extractValidProductsForDB, isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../utils/Functions';
 import { validateDispatchValues, validateMobileNumber, validateNames, validateNumber } from '../../../utils/validations';
 
-const CreateDispatch = ({ goToTab, driverList, departmentList, ...rest }) => {
+const QualityCheck = ({ goToTab, driverList, departmentList, ...rest }) => {
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
@@ -117,8 +117,7 @@ const CreateDispatch = ({ goToTab, driverList, departmentList, ...rest }) => {
 
     return (
         <>
-            <FormHeader title='Create Dispatch DC' />
-            <DispatchForm
+            <QualityCheckForm
                 track
                 data={formData}
                 errors={formErrors}
@@ -133,7 +132,7 @@ const CreateDispatch = ({ goToTab, driverList, departmentList, ...rest }) => {
                     app-create-btn footer-btn ${btnDisabled ? 'disabled' : ''} 
                     ${shake ? 'app-shake' : ''}
                 `}
-                    text='Create'
+                    text='Send Report'
                 />
             </div>
             <ConfirmModal
@@ -149,4 +148,4 @@ const CreateDispatch = ({ goToTab, driverList, departmentList, ...rest }) => {
     )
 }
 
-export default CreateDispatch
+export default QualityCheck

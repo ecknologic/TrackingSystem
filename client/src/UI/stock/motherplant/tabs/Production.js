@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import { Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import BatchForm from '../forms/BatchForm';
+import BatchForm from '../forms/Batch';
 import { http } from '../../../../modules/http';
 import Spinner from '../../../../components/Spinner';
 import QuitModal from '../../../../components/CustomModal';

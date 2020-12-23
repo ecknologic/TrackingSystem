@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import BatchForm from '../forms/Batch';
+import InternalQCForm from '../forms/InternalQC';
 import { http } from '../../../../modules/http';
-import CASMPPanel from '../../../../components/CASMPPanel';
 import CustomButton from '../../../../components/CustomButton';
 import FormHeader from '../../../../components/FormHeader';
 import ConfirmModal from '../../../../components/CustomModal';
@@ -9,9 +8,9 @@ import { getUserId } from '../../../../utils/constants';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import { shiftOptions } from '../../../../assets/fixtures';
 import { isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../../utils/Functions';
-import { validateBatchValues, validateIntFloat, validateNames, validateNumber } from '../../../../utils/validations';
+import { validateQCValues, validateIntFloat, validateNames } from '../../../../utils/validations';
 
-const StockDetails = ({ date, goToTab }) => {
+const InternalQC = ({ date }) => {
     const USERID = getUserId()
     const [formData, setFormData] = useState({})
     const [stock, setStock] = useState({})
@@ -50,10 +49,6 @@ const StockDetails = ({ date, goToTab }) => {
             const error = validateIntFloat(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key.includes('product')) {
-            const error = validateNumber(value)
-            setFormErrors(errors => ({ ...errors, products: error }))
-        }
     }
 
     const handleBlur = (value, key) => {
@@ -65,7 +60,7 @@ const StockDetails = ({ date, goToTab }) => {
     }
 
     const handleSubmit = async () => {
-        const formErrors = validateBatchValues(formData)
+        const formErrors = validateQCValues(formData)
 
         if (!isEmpty(formErrors)) {
             setShake(true)
@@ -74,21 +69,21 @@ const StockDetails = ({ date, goToTab }) => {
             return
         }
 
-        const url = '/motherPlant/addProductionDetails'
-        const body = {
-            ...formData, createdBy: USERID
-        }
+        // const url = '/motherPlant/addProductionDetails'
+        // const body = {
+        //     ...formData, createdBy: USERID
+        // }
 
-        try {
-            setBtnDisabled(true)
-            showToast('Batch', 'loading')
-            await http.POST(url, body)
-            resetForm()
-            goToTab('3')
-            showToast('Batch', 'success')
-        } catch (error) {
-            setBtnDisabled(false)
-        }
+        // try {
+        //     setBtnDisabled(true)
+        //     showToast('Quality Control', 'loading')
+        //     await http.POST(url, body)
+        //     resetForm()
+        //     goToTab('3')
+        //     showToast('Quality Control', 'success')
+        // } catch (error) {
+        //     setBtnDisabled(false)
+        // }
     }
 
     const resetForm = () => {
@@ -106,9 +101,8 @@ const StockDetails = ({ date, goToTab }) => {
 
     return (
         <>
-            <CASMPPanel data={stock} />
             <FormHeader title='Create Production Batch' />
-            <BatchForm
+            <InternalQCForm
                 track
                 data={formData}
                 errors={formErrors}
@@ -123,7 +117,7 @@ const StockDetails = ({ date, goToTab }) => {
                         app-create-btn footer-btn ${btnDisabled ? 'disabled' : ''} 
                         ${shake ? 'app-shake' : ''}
                     `}
-                    text='Create Batch'
+                    text='Send'
                 />
             </div>
             <ConfirmModal
@@ -139,4 +133,4 @@ const StockDetails = ({ date, goToTab }) => {
     )
 }
 
-export default StockDetails
+export default InternalQC
