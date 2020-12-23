@@ -10,7 +10,7 @@ const ArrivedStockForm = (props) => {
     const { data, errors, disabled, onChange } = props
 
     const { dcNo = '', damagedDesc, address = '', isDamaged, driverName = '', mobileNumber = '', vehicleNo = '', vehicleType = '',
-        damaged20Lcans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes, total20LCans, total1LBoxes, total250MLBoxes, total500MLBoxes } = data
+        damaged20LCans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes, total20LCans, total1LBoxes, total250MLBoxes, total500MLBoxes } = data
 
     return (
         <>
@@ -80,8 +80,8 @@ const ArrivedStockForm = (props) => {
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='20 Ltrs' />
-                                <CustomInput value={damaged20Lcans} disabled={!isDamaged || disabled}
-                                    placeholder='Add' onChange={(value) => onChange(value, 'damaged20Lcans')} />
+                                <CustomInput value={damaged20LCans} disabled={!isDamaged || disabled}
+                                    placeholder='Add' onChange={(value) => onChange(value, 'damaged20LCans')} />
                             </div>
                         </div>
                         <div className='column'>

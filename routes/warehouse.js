@@ -110,19 +110,20 @@ router.post('/confirmStockRecieved', (req, res) => {
         }
         warehouseQueries.confirmDispatchDetails(obj, (confirmErr, results1) => {
           if (confirmErr) res.status(500).json(dbError(confirmErr));
+          else res.json(INSERTMESSAGE)
         });
       }
     });
   } else {
     warehouseQueries.confirmDispatchDetails(input.dcNo, (confirmErr, results1) => {
       if (confirmErr) res.status(500).json(dbError(confirmErr));
+      else res.json(INSERTMESSAGE)
     });
   }
 
   input.deliveryDate = new Date()
   warehouseQueries.saveWarehouseStockDetails(input, (err, warehouseData) => {
-    if (err) res.status(500).json(dbError(confirmErr))
-    else res.json(INSERTMESSAGE)
+    if (err) res.status(500).json(dbError(err))
   })
 });
 
