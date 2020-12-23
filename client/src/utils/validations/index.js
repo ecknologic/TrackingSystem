@@ -353,6 +353,28 @@ const validateProducts = ({ product20L, product1L, product500ML, product250ML })
     return errors
 }
 
+const validateDamagedProducts = ({ damaged20Lcans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes }) => {
+    let errors = {};
+
+    const noP20L = damaged20Lcans == 0 || !damaged20Lcans
+    const noP1L = damaged1LBoxes == 0 || !damaged1LBoxes
+    const noP500ML = damaged500MLBoxes == 0 || !damaged500MLBoxes
+    const noP250ML = damaged250MLBoxes == 0 || !damaged250MLBoxes
+
+    if (noP20L && noP1L && noP500ML && noP250ML) {
+        errors.damaged = 'Atleast 1 product is required'
+    }
+    const error1 = validateNumber(damaged20Lcans)
+    const error2 = validateNumber(damaged1LBoxes)
+    const error3 = validateNumber(damaged500MLBoxes)
+    const error4 = validateNumber(damaged250MLBoxes)
+
+    if (error1 || error2 || error3 || error4)
+        errors.damaged = error1 || error2 || error3 || error4
+
+    return errors
+}
+
 const validateProductNPrice = ({ product20L, price20L, product1L, price1L,
     product500ML, price500ML, product250ML, price250ML }) => {
     let errors = {};
@@ -464,6 +486,22 @@ export const validateDCValues = (data) => {
         errors.stockDetails = error1 || error2 || error3 || error4
 
     return errors
+}
+
+export const validateASValues = (data) => {
+    let errors = {}
+    let productErrors = {}
+    const text = 'Required'
+
+    const { isDamaged, damagedDesc, ...rest } = data
+
+    if (isDamaged) {
+        if (!damagedDesc) errors.damagedDesc = text
+        productErrors = validateDamagedProducts(rest)
+    }
+
+    return { ...errors, ...productErrors }
+
 }
 
 export const validateAddresses = (data) => {

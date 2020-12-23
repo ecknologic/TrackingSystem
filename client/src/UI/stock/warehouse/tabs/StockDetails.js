@@ -10,8 +10,8 @@ import ERCPanel from '../../../../components/ERCPanel';
 import OFDPanel from '../../../../components/OFDPanel';
 import { http } from '../../../../modules/http';
 import { getWarehoseId, TODAYDATE, TRACKFORM } from '../../../../utils/constants';
-import { resetTrackForm, showToast } from '../../../../utils/Functions';
-import { validateNumber } from '../../../../utils/validations';
+import { isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
+import { validateNumber, validateASValues } from '../../../../utils/validations';
 import ArrivedStockForm from '../forms/ArrivedStock';
 
 const StockDetails = ({ date }) => {
@@ -90,23 +90,22 @@ const StockDetails = ({ date }) => {
         const dcItem = dcDetails.find(item => item.isConfirmed === 0)
         if (dcItem) {
             getStockDetailsByDC(dcItem.dcNo)
-            setModal(true)
         }
-        // getStockDetailsByDC('DC-188')
+        getStockDetailsByDC('DC-188')
+        setModal(true)
     }
 
     const handleArrivedStockConfirm = async () => {
-        // const formErrors = validateASValues(formData)
+        const formErrors = validateASValues(formData)
 
-        // if (!isEmpty(formErrors)) {
-        //     setShake(true)
-        //     setTimeout(() => setShake(false), 820)
-        //     setFormErrors(formErrors)
-        //     return
-        // }
+        if (!isEmpty(formErrors)) {
+            setShake(true)
+            setTimeout(() => setShake(false), 820)
+            setFormErrors(formErrors)
+            return
+        }
 
         // const dcValues = getASValuesForDB(formData)
-        // const customerOrderId = customerOrderIdRef.current
 
         const { dcNo, isDamaged = false, total1LBoxes, total20LCans, total250MLBoxes, total500MLBoxes,
             damaged20Lcans = 0, damaged1LBoxes = 0, damaged500MLBoxes = 0, damaged250MLBoxes = 0 } = formData

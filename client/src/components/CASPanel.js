@@ -12,8 +12,8 @@ const CASPanel = ({ data, newStock, onConfirm }) => {
     }
 
     const isArrived = newStock20L || newStock1L || newStock500ML || newStock250ML
-
-    const showPurple = isArrived && !isConfirmed
+    const showPurple = true
+    // const showPurple = isArrived && !isConfirmed
     const showGreen = isArrived && isConfirmed
 
     return (
