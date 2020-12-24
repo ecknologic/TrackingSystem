@@ -1,60 +1,35 @@
 import { Tabs } from 'antd';
 import { http } from '../../modules/http';
 import React, { Fragment, useState, useRef, useCallback, useEffect, useMemo } from 'react';
-import Header from './header';
+import Header from '../../components/ContentHeader';
 import InternalQC from './tabs/InternalQC';
 import QualityCheck from './tabs/QualityCheck';
 import TestedBatches from './tabs/TestedBatches';
 import ConfirmModal from '../../components/CustomModal';
 import ConfirmMessage from '../../components/ConfirmMessage';
 import ReportsDropdown from '../../components/ReportsDropdown';
-import { getWarehoseId, TRACKFORM } from '../../utils/constants';
+import { TRACKFORM } from '../../utils/constants';
 import { resetTrackForm } from '../../utils/Functions';
 import NoContent from '../../components/NoContent';
-import { getBatchIdOptions, getDepartmentOptions, getDriverOptions, getVehicleOptions } from '../../assets/fixtures';
+import { getBatchIdOptions } from '../../assets/fixtures';
+import '../../sass/qualityControl.scss'
 
 const QualityControl = () => {
-    const warehouseId = getWarehoseId()
     const [activeTab, setActiveTab] = useState('1')
     const [confirm, setConfirm] = useState(false)
     const [batchList, setBatchList] = useState([])
-    const [driverList, setDrivers] = useState([])
-    const [departmentList, setDepartmentsList] = useState([])
-    const [vehiclesList, setVehiclesList] = useState([])
     const clickRef = useRef('')
 
     const batchIdOptions = useMemo(() => getBatchIdOptions(batchList), [batchList])
-    const driverOptions = useMemo(() => getDriverOptions(driverList), [driverList])
-    const vehicleOptions = useMemo(() => getVehicleOptions(vehiclesList), [vehiclesList])
-    const departmentOptions = useMemo(() => getDepartmentOptions(departmentList), [departmentList])
-    const childProps = useMemo(() => ({ driverList, batchIdOptions, departmentList, driverOptions, departmentOptions, vehicleOptions }),
-        [batchIdOptions, driverOptions, departmentOptions, vehicleOptions])
+    const childProps = useMemo(() => ({ batchIdOptions }), [batchIdOptions])
 
     useEffect(() => {
         getBatchsList()
-        getDriverList()
-        getVehicleDetails()
-        getDepartmentsList()
     }, [])
 
     const getBatchsList = async () => {
         const data = await http.GET('/motherPlant/getBatchNumbers')
         setBatchList(data)
-    }
-
-    const getDriverList = async () => {
-        const data = await http.GET(`/warehouse/getdriverDetails/${warehouseId}`)
-        setDrivers(data)
-    }
-
-    const getDepartmentsList = async () => {
-        const data = await http.GET('/motherPlant/getDepartmentsList?departmentType=warehouse')
-        setDepartmentsList(data)
-    }
-
-    const getVehicleDetails = async () => {
-        const data = await http.GET('/motherPlant/getVehicleDetails')
-        setVehiclesList(data)
     }
 
     const handleTabClick = (key) => {
@@ -95,7 +70,7 @@ const QualityControl = () => {
                 {
                     activeTab === '1' ? <InternalQC />
                         : activeTab === '2' ? <QualityCheck goToTab={handleGoToTab} {...childProps} />
-                            : activeTab === '3' ? <TestedBatches goToTab={handleGoToTab} {...childProps} />
+                            : activeTab === '3' ? <TestedBatches goToTab={handleGoToTab} />
                                 : <NoContent content='Design is in progress' />
                 }
             </div>

@@ -10,10 +10,9 @@ import { shiftOptions } from '../../../../assets/fixtures';
 import { isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../../utils/Functions';
 import { validateQCValues, validateIntFloat, validateNames } from '../../../../utils/validations';
 
-const InternalQC = ({ date }) => {
+const InternalQC = () => {
     const USERID = getUserId()
     const [formData, setFormData] = useState({})
-    const [stock, setStock] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
@@ -23,18 +22,12 @@ const InternalQC = ({ date }) => {
         resetTrackForm()
         trackAccountFormOnce()
         resetForm()
-        getActiveStockByDate(date)
 
         return () => {
             removeFormTracker()
         }
-    }, [date])
+    }, [])
 
-    const getActiveStockByDate = async (date) => {
-        const url = `/motherPlant/getProductionDetailsByDate/${date}`
-        const data = await http.GET(url)
-        setStock(data)
-    }
 
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
@@ -101,7 +94,7 @@ const InternalQC = ({ date }) => {
 
     return (
         <>
-            <FormHeader title='Create Production Batch' />
+            <FormHeader title='Create Request Quality Control (Internal)' />
             <InternalQCForm
                 track
                 data={formData}

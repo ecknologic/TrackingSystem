@@ -1,7 +1,7 @@
 import { Tabs } from 'antd';
 import { http } from '../../modules/http';
 import React, { Fragment, useState, useRef, useCallback, useEffect, useMemo } from 'react';
-import Header from './header';
+import Header from '../../components/ContentHeader';
 import Dispatches from './tabs/Dispatches';
 import CreateDispatch from './tabs/CreateDispatch';
 import CreateExternalDispatch from './tabs/CreateExternalDispatch';
@@ -11,6 +11,7 @@ import ReportsDropdown from '../../components/ReportsDropdown';
 import { getWarehoseId, TRACKFORM } from '../../utils/constants';
 import { resetTrackForm } from '../../utils/Functions';
 import { getBatchIdOptions, getDepartmentOptions, getDriverOptions, getVehicleOptions } from '../../assets/fixtures';
+import '../../sass/dispatches.scss'
 
 const Dispatch = () => {
     const warehouseId = getWarehoseId()

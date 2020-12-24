@@ -1,21 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import Spinner from '../../components/Spinner';
-import { getWarehoseId } from '../../utils/constants';
-import { http } from '../../modules/http';
-import '../../sass/qualityControl.scss'
+import Spinner from './Spinner';
+import { http } from '../modules/http';
 
-const Header = () => {
+const MotherPlantHeader = () => {
 
-    const warehouseId = getWarehoseId()
     const [loading, setLoading] = useState(true)
     const [title, setTitle] = useState('')
     const [address, setAddress] = useState('')
 
     useEffect(() => {
-        getWarehouseInfo()
+        getMotherPlantInfo()
     }, [])
 
-    const getWarehouseInfo = async () => {
+    const getMotherPlantInfo = async () => {
         const url = `/warehouse/getWarehouseDetails/2`
         const { data: { departmentName, address } } = await http.GET(url)
         setLoading(false)
@@ -41,4 +38,4 @@ const Header = () => {
 
 }
 
-export default Header
+export default MotherPlantHeader

@@ -31,21 +31,21 @@ const InternalQC = () => {
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
     const [shake, setShake] = useState(false)
     const [open, setOpen] = useState(false)
-    const [dispatches, setDispatches] = useState([])
-    const [dispatchesClone, setDispatchesClone] = useState([])
+    const [QC, setQC] = useState([])
+    const [QCClone, setQCClone] = useState([])
 
     const customerOrderIdRef = useRef()
     const DCFormTitleRef = useRef()
     const DCFormBtnRef = useRef()
 
     useEffect(() => {
-        getDispatches()
+        getQC()
     }, [])
 
-    const getDispatches = async () => {
+    const getQC = async () => {
         const data = await http.GET('/motherPlant/getDispatchDetails')
-        setDispatches(data)
-        setDispatchesClone(data)
+        setQC(data)
+        setQCClone(data)
         setTotalCount(data.length)
         setLoading(false)
     }
@@ -57,8 +57,8 @@ const InternalQC = () => {
     const handleDateSelect = (value) => {
         setOpen(false)
         setSelectedDate(dayjs(value).format(format))
-        const filteredData = dispatchesClone.filter(item => dayjs(value).format(DATEFORMAT) === dayjs(item.dispatchedDate).format(DATEFORMAT))
-        setDispatches(filteredData)
+        const filteredData = QCClone.filter(item => dayjs(value).format(DATEFORMAT) === dayjs(item.dispatchedDate).format(DATEFORMAT))
+        setQC(filteredData)
         setTotalCount(filteredData.length)
     }
 
@@ -93,9 +93,9 @@ const InternalQC = () => {
         setFormErrors({})
     }
 
-    const dataSource = useMemo(() => dispatches.map((dispatch) => {
+    const dataSource = useMemo(() => QC.map((qc) => {
         const { DCNO: dcnumber, batchId, dispatchedDate, vehicleNo,
-            dispatchAddress, vehicleType, driverName, status } = dispatch
+            dispatchAddress, vehicleType, driverName, status } = qc
         return {
             key: dcnumber,
             dcnumber,
@@ -105,9 +105,9 @@ const InternalQC = () => {
             dispatchTo: dispatchAddress,
             dateAndTime: dayjs(dispatchedDate).format(DATEANDTIMEFORMAT),
             status: renderStatus(status),
-            action: <TableAction onSelect={({ key }) => handleMenuSelect(key, dispatch)} />
+            action: <TableAction onSelect={({ key }) => handleMenuSelect(key, qc)} />
         }
-    }), [dispatches])
+    }), [QC])
 
     const handleConfirmModalOk = useCallback(() => {
         setConfirmModal(false);

@@ -244,6 +244,36 @@ export const validateQCValues = (data) => {
     return errors
 }
 
+export const validateQCcheckValues = (data) => {
+    let errors = {};
+    const text = 'Required'
+    const { batchId, phLevel, TDS, ozoneLevel, managerName } = data
+
+    if (!batchId) errors.batchId = text
+    if (!phLevel) errors.phLevel = text
+    else {
+        const error = validateIntFloat(phLevel)
+        error && (errors.phLevel = error)
+    }
+    if (!ozoneLevel) errors.ozoneLevel = text
+    else {
+        const error = validateIntFloat(ozoneLevel)
+        error && (errors.ozoneLevel = error)
+    }
+    if (!TDS) errors.TDS = text
+    else {
+        const error = validateIntFloat(TDS)
+        error && (errors.TDS = error)
+    }
+    if (!managerName) errors.managerName = text
+    else {
+        const error = validateNames(managerName)
+        error && (errors.managerName = error)
+    }
+
+    return errors
+}
+
 export const validateDispatchValues = (data, currentStock) => {
     let errors = {};
     const text = 'Required'

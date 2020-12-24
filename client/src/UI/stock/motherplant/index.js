@@ -1,6 +1,6 @@
 import { Tabs } from 'antd';
 import React, { Fragment, useMemo, useRef, useCallback, useState } from 'react';
-import Header from './header';
+import Header from '../../../components/ContentHeader';
 import StockDetails from './tabs/StockDetails';
 import Production from './tabs/Production';
 import ReportsDropdown from '../../../components/ReportsDropdown';

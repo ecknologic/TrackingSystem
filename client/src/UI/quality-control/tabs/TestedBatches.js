@@ -1,14 +1,11 @@
 import dayjs from 'dayjs';
 import { Table } from 'antd';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { http } from '../../../modules/http';
 import Spinner from '../../../components/Spinner';
-import QuitModal from '../../../components/CustomModal';
 import { ScheduleIcon } from '../../../components/SVG_Icons';
-import TableAction from '../../../components/TableAction';
 import SearchInput from '../../../components/SearchInput';
-import ConfirmMessage from '../../../components/ConfirmMessage';
-import { TODAYDATE, TRACKFORM } from '../../../utils/constants';
+import { TODAYDATE } from '../../../utils/constants';
 import CustomPagination from '../../../components/CustomPagination';
 import { testedBatchesColumns } from '../../../assets/fixtures';
 import { disableFutureDates, getStatusColor } from '../../../utils/Functions';
@@ -20,32 +17,22 @@ const format = 'YYYY-MM-DD'
 
 const TestedBatches = () => {
     const [loading, setLoading] = useState(true)
-    const [formData, setFormData] = useState({})
-    const [formErrors, setFormErrors] = useState({})
     const [pageSize, setPageSize] = useState(10)
     const [totalCount, setTotalCount] = useState(null)
     const [pageNumber, setPageNumber] = useState(1)
-    const [btnDisabled, setBtnDisabled] = useState(false)
-    const [DCModal, setDCModal] = useState(false)
-    const [confirmModal, setConfirmModal] = useState(false)
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
-    const [shake, setShake] = useState(false)
     const [open, setOpen] = useState(false)
-    const [dispatches, setDispatches] = useState([])
-    const [dispatchesClone, setDispatchesClone] = useState([])
-
-    const customerOrderIdRef = useRef()
-    const DCFormTitleRef = useRef()
-    const DCFormBtnRef = useRef()
+    const [TB, setTB] = useState([])
+    const [TBClone, setTBClone] = useState([])
 
     useEffect(() => {
-        getDispatches()
+        getTB()
     }, [])
 
-    const getDispatches = async () => {
+    const getTB = async () => {
         const data = await http.GET('/motherPlant/getDispatchDetails')
-        setDispatches(data)
-        setDispatchesClone(data)
+        setTB(data)
+        setTBClone(data)
         setTotalCount(data.length)
         setLoading(false)
     }
@@ -57,19 +44,9 @@ const TestedBatches = () => {
     const handleDateSelect = (value) => {
         setOpen(false)
         setSelectedDate(dayjs(value).format(format))
-        const filteredData = dispatchesClone.filter(item => dayjs(value).format(DATEFORMAT) === dayjs(item.dispatchedDate).format(DATEFORMAT))
-        setDispatches(filteredData)
+        const filteredData = TBClone.filter(item => dayjs(value).format(DATEFORMAT) === dayjs(item.dispatchedDate).format(DATEFORMAT))
+        setTB(filteredData)
         setTotalCount(filteredData.length)
-    }
-
-    const handleMenuSelect = (key, data) => {
-        if (key === 'view') {
-            customerOrderIdRef.current = data.customerOrderId
-            DCFormTitleRef.current = `DC - ${data.customerName}`
-            DCFormBtnRef.current = 'Update'
-            setFormData(data)
-            setDCModal(true)
-        }
     }
 
     const handlePageChange = (number) => {
@@ -81,21 +58,9 @@ const TestedBatches = () => {
         setPageNumber(number)
     }
 
-    const onModalClose = (hasSaved) => {
-        const formHasChanged = sessionStorage.getItem(TRACKFORM)
-        if (formHasChanged && !hasSaved) {
-            return setConfirmModal(true)
-        }
-        customerOrderIdRef.current = undefined
-        setDCModal(false)
-        setBtnDisabled(false)
-        setFormData({})
-        setFormErrors({})
-    }
-
-    const dataSource = useMemo(() => dispatches.map((dispatch) => {
+    const dataSource = useMemo(() => TB.map((tb) => {
         const { DCNO: dcnumber, batchId, dispatchedDate, vehicleNo,
-            dispatchAddress, vehicleType, driverName, status } = dispatch
+            dispatchAddress, vehicleType, driverName, status } = tb
         return {
             key: dcnumber,
             dcnumber,
@@ -104,17 +69,9 @@ const TestedBatches = () => {
             driverName,
             dispatchTo: dispatchAddress,
             dateAndTime: dayjs(dispatchedDate).format(DATEANDTIMEFORMAT),
-            status: renderStatus(status),
-            action: <TableAction onSelect={({ key }) => handleMenuSelect(key, dispatch)} />
+            status: renderStatus(status)
         }
-    }), [dispatches])
-
-    const handleConfirmModalOk = useCallback(() => {
-        setConfirmModal(false);
-        onModalClose()
-    }, [])
-
-    const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
+    }), [TB])
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
@@ -172,15 +129,6 @@ const TestedBatches = () => {
                         onPageSizeChange={handleSizeChange}
                     />)
             }
-            <QuitModal
-                visible={confirmModal}
-                onOk={handleConfirmModalOk}
-                onCancel={handleConfirmModalCancel}
-                title='Are you sure to leave?'
-                okTxt='Yes'
-            >
-                <ConfirmMessage msg='Changes you made may not be saved.' />
-            </QuitModal>
         </div>
     )
 }

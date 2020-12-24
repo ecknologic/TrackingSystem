@@ -1,21 +1,20 @@
 import { message } from 'antd';
 import React, { useState, useCallback, useEffect } from 'react';
 import CustomButton from '../../../components/CustomButton';
-import FormHeader from '../../../components/FormHeader';
 import QualityCheckForm from '../forms/QualityCheck';
 import ConfirmModal from '../../../components/CustomModal';
 import { TRACKFORM } from '../../../utils/constants';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import { http } from '../../../modules/http';
-import { extractValidProductsForDB, isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../utils/Functions';
-import { validateDispatchValues, validateMobileNumber, validateNames, validateNumber } from '../../../utils/validations';
+import { isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../utils/Functions';
+import { validateIntFloat, validateNames, validateQCcheckValues } from '../../../utils/validations';
 
-const QualityCheck = ({ goToTab, driverList, departmentList, ...rest }) => {
+const QualityCheck = ({ goToTab, ...rest }) => {
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
-    const [currentStock, setCurrentStock] = useState({})
+    const [QC, setQC] = useState({})
     const [shake, setShake] = useState(false)
 
     useEffect(() => {
@@ -27,48 +26,38 @@ const QualityCheck = ({ goToTab, driverList, departmentList, ...rest }) => {
         }
     }, [])
 
-    const getCurrentStock = async (batchId) => {
+    const getQCByBatchId = async (batchId) => {
         const data = await http.GET(`/motherPlant/getProductByBatch/${batchId}`)
-        const { product20LCount: product20L, product1LCount: product1L,
-            product500MLCount: product500ML, product250MLCount: product250ML } = data
-        const currentStock = { product20L, product1L, product500ML, product250ML }
-        setCurrentStock(data)
-        setFormData(data => ({ ...data, ...currentStock }))
+        setQC(data)
     }
 
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
-        if (key === 'batchId') getCurrentStock(value)
+        if (key === 'batchId') getQCByBatchId(value)
 
         // Validations
-        if (key === 'driverId') {
-            let selectedDriver = driverList.find(driver => driver.driverId === Number(value))
-            let { driverName = null, mobileNumber = null } = selectedDriver || {}
-            setFormData(data => ({ ...data, driverName, mobileNumber }))
-            setFormErrors(errors => ({ ...errors, mobileNumber: '' }))
-        }
-        else if (key === 'managerName') {
+        if (key === 'managerName') {
             const error = validateNames(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key.includes('product')) {
-            const error = validateNumber(value)
-            setFormErrors(errors => ({ ...errors, products: error }))
+        else if (key === 'phLevel' || key === 'ozoneLevel' || key === 'TDS') {
+            const error = validateIntFloat(value)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
         }
     }
 
     const handleBlur = (value, key) => {
         // Validations
-        if (key === 'mobileNumber') {
-            const error = validateMobileNumber(value, true)
+        if (key === 'phLevel' || key === 'ozoneLevel' || key === 'TDS') {
+            const error = validateIntFloat(value, true)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
     }
 
     const handleSubmit = async () => {
-        const formErrors = validateDispatchValues(formData, currentStock)
+        const formErrors = validateQCcheckValues(formData)
 
         if (!isEmpty(formErrors)) {
             setShake(true)
@@ -77,21 +66,18 @@ const QualityCheck = ({ goToTab, driverList, departmentList, ...rest }) => {
             return
         }
 
-        let { departmentName: dispatchAddress } = departmentList.find(dep => dep.departmentId === formData.dispatchTo)
-        const { product20L, product1L, product500ML, product250ML } = extractValidProductsForDB(formData)
         let body = {
-            ...formData, dispatchType: 'Internal', dispatchAddress,
-            product20L, product1L, product500ML, product250ML
+            ...formData
         }
         const url = '/motherplant/addDispatchDetails'
 
         try {
             setBtnDisabled(true)
-            showToast('Dispatch', 'loading')
+            showToast('QC Report', 'loading')
             await http.POST(url, body)
             message.destroy()
-            goToTab('1')
-            showToast('Dispatch', 'success')
+            goToTab('3')
+            showToast('QC Report', 'success')
         } catch (error) {
             message.destroy()
             setBtnDisabled(false)
@@ -119,6 +105,7 @@ const QualityCheck = ({ goToTab, driverList, departmentList, ...rest }) => {
         <>
             <QualityCheckForm
                 track
+                qc={QC}
                 data={formData}
                 errors={formErrors}
                 onChange={handleChange}

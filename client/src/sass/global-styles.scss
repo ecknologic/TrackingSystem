@@ -499,9 +499,9 @@ $textColorDisabled:rgba(0,0,0,0.55);
     .app-form-container {
         .row {
             padding: .8em 0;
-
+            
             .input-container {
-                width: 70%;
+                max-width: 50%;
 
                 .app-input-label-name {
                     color: rgba(0,0,0,0.85);
