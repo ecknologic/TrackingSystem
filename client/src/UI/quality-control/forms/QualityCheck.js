@@ -3,12 +3,13 @@ import InputLabel from '../../../components/InputLabel';
 import CustomInput from '../../../components/CustomInput';
 import SelectInput from '../../../components/SelectInput';
 import InputValue from '../../../components/InputValue';
+import CustomTextArea from '../../../components/CustomTextArea';
 
 const QualityCheckForm = (props) => {
 
     const { data, errors, disabled, onChange, batchIdOptions, onBlur, track } = props
 
-    const { phLevel, TDS, ozoneLevel, managerName, batchId } = data
+    const { phLevel, TDS, ozoneLevel, managerName, testType, description, batchId } = data
 
     return (
         <>
@@ -98,10 +99,25 @@ const QualityCheckForm = (props) => {
                 </div>
                 <div className='row'>
                     <div className='input-container'>
+                        <InputLabel name='Test Type' error={errors.testType} mandatory />
+                        <CustomInput value={testType} placeholder='Add Test Type'
+                            disabled={disabled} error={errors.testType}
+                            onChange={(value) => onChange(value, 'testType')}
+                        />
+                    </div>
+                    <div className='input-container'>
                         <InputLabel name='Manager Name' error={errors.managerName} mandatory />
                         <CustomInput value={managerName} placeholder='Add Manager Name'
                             disabled={disabled} error={errors.managerName}
                             onChange={(value) => onChange(value, 'managerName')}
+                        />
+                    </div>
+                </div>
+                <div className='row'>
+                    <div className='input-container stretch'>
+                        <InputLabel name='Test Description' error={errors.description} mandatory />
+                        <CustomTextArea maxLength={100} error={errors.description} placeholder='Add Description' value={description}
+                            maxRows={4} onChange={(value) => onChange(value, 'description')}
                         />
                     </div>
                 </div>
