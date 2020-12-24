@@ -16,9 +16,31 @@ router.use(function timeLog(req, res, next) {
 router.get('/getQualityControl', (req, res) => {
     motherPlantDbQueries.getAllQCDetails((err, results) => {
         if (err) res.status(500).json(dbError(err));
-        res.json(results);
+        else res.json(results);
     });
 });
+
+router.get('/getQCBatchIds/:batchId', (req, res) => {
+    motherPlantDbQueries.getProductionQcBatchIds(req.params.batchId, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.json(results);
+    });
+});
+
+router.get('/getQCDetailsByBatch', (req, res) => {
+    motherPlantDbQueries.getQCDetailsByBatch(departmentId, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.json(results);
+    });
+});
+
+router.get('/getProductionQcList', (req, res) => {
+    motherPlantDbQueries.getProductionQcList(departmentId, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.json(results);
+    });
+});
+
 
 router.post('/createQC', (req, res) => {
     let input = req.body;
@@ -26,6 +48,40 @@ router.post('/createQC', (req, res) => {
         if (err) res.status(500).json(dbError(err));
         else
             res.json(INSERTMESSAGE);
+    });
+})
+
+router.post('/createProductionQC', (req, res) => {
+    let input = req.body;
+    input.departmentId = departmentId
+    motherPlantDbQueries.createProductionQC(input, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else {
+            input.batchId = getBatchId(input.shiftType)
+            input.productionQcId = results.insertId
+            motherPlantDbQueries.updateProductionQC(input, (updateErr, data) => {
+                if (updateErr) res.status(500).json(dbError(updateErr));
+                else res.json(INSERTMESSAGE);
+            })
+        }
+    });
+})
+
+router.post('/updateProductionQCStatus', (req, res) => {
+    let input = req.body;
+    motherPlantDbQueries.updateProductionQCStatus(input, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else
+            res.json(UPDATEMESSAGE);
+    });
+})
+
+router.post('/createQualityCheck', (req, res) => {
+    let input = req.body;
+    input.departmentId = departmentId
+    motherPlantDbQueries.createQualityCheck(input, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.json(INSERTMESSAGE);
     });
 })
 
@@ -255,7 +311,6 @@ router.post('/addProductionDetails', (req, res) => {
     motherPlantDbQueries.addProductionDetails(input, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
-            input.batchId = getBatchId(input.shiftType)
             input.productionid = results.insertId
             motherPlantDbQueries.updateProductionDetails(input, (updateErr, data) => {
                 if (updateErr) res.status(500).json(dbError(updateErr));

@@ -35,6 +35,18 @@ motherPlantDbQueries.getAllQCDetails = async (callback) => {
     return executeGetQuery(query, callback)
 }
 
+motherPlantDbQueries.getProductionQcList = async (departmentId, callback) => {
+    let query = `select * from productionQC where departmentId=${departmentId}`;
+    return executeGetQuery(query, callback)
+}
+motherPlantDbQueries.getProductionQcBatchIds = async (departmentId, callback) => {
+    let query = "select productionQcId,batchId from productionQC where departmentId=? AND status=?";
+    return executeGetParamsQuery(query, [departmentId, "Pending"], callback)
+}
+motherPlantDbQueries.getQCDetailsByBatch = async (batchId, callback) => {
+    let query = `select * from productionQC where batchId=${batchId}`;
+    return executeGetQuery(query, callback)
+}
 motherPlantDbQueries.getInternalQualityControl = async (callback) => {
     let query = "select * from internalqualitycontrol";
     return executeGetQuery(query, callback)
@@ -77,7 +89,7 @@ motherPlantDbQueries.getCurrentDispatchDetailsByDate = async (input, callback) =
     return executeGetParamsQuery(query, [input.departmentId, input.date], callback)
 }
 motherPlantDbQueries.getDispatchDetailsByDC = async (dcNo, callback) => {
-    let query = `SELECT SUM(d.product20L) AS total20LCans,SUM(d.product1L) AS total1LBoxes,SUM(d.product500ML) total500MLBoxes,SUM(d.product250ML) total250MLBoxes,dcNo,GROUP_CONCAT(v.vehicleType) vehicleType,GROUP_CONCAT(v.vehicleNo) vehicleNo,GROUP_CONCAT(driver.driverName) driverName,GROUP_CONCAT(driver.mobileNumber) mobileNumber,GROUP_CONCAT(dep.address) address
+    let query = `SELECT SUM(d.product20L) AS total20LCans,SUM(d.product1L) AS total1LBoxes,SUM(d.product500ML) total500MLBoxes,SUM(d.product250ML) total250MLBoxes,dcNo,GROUP_CONCAT(d.departmentId) as motherplantId,GROUP_CONCAT(v.vehicleType) vehicleType,GROUP_CONCAT(v.vehicleNo) vehicleNo,GROUP_CONCAT(driver.driverName) driverName,GROUP_CONCAT(driver.mobileNumber) mobileNumber,GROUP_CONCAT(dep.address) address
     FROM dispatches d INNER JOIN VehicleDetails v on d.vehicleNo=v.vehicleId INNER JOIN driverdetails driver on d.driverId=driver.driverId INNER JOIN departmentmaster dep on d.dispatchTo=dep.departmentId WHERE DCNO=?`;
     return executeGetParamsQuery(query, [dcNo], callback)
 }
@@ -89,15 +101,28 @@ motherPlantDbQueries.createQC = async (input, callback) => {
     let requestBody = [input.reportdate, input.batchId, input.testType, reportImage, input.description]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
+motherPlantDbQueries.createProductionQC = async (input, callback) => {
+    const { phLevel, TDS, ozoneLevel, managerName, shiftType, departmentId } = input
+    let query = "insert into productionQC (requestedDate,phLevel,TDS,ozoneLevel,managerName,shiftType,departmentId) values(?,?,?,?,?,?,?)";
+    let requestBody = [new Date(), phLevel, TDS, ozoneLevel, managerName, shiftType, departmentId]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+motherPlantDbQueries.createQualityCheck = async (input, callback) => {
+    const { productionQcId, phLevel, TDS, ozoneLevel, testResult, managerName, description, testType, departmentId } = input
+    let query = "insert into qualitycheck (testedDate,productionQcId,phLevel,TDS,ozoneLevel,testResult,managerName,description,testType,departmentId) values(?,?,?,?,?,?,?,?,?,?)";
+    let requestBody = [new Date(), productionQcId, phLevel, TDS, ozoneLevel, testResult, managerName, description, testType, departmentId]
+    motherPlantDbQueries.updateProductionQCStatus = ({ productionQcId, status: testResult })
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
 motherPlantDbQueries.createInternalQC = async (input, callback) => {
     let query = "insert into internalqualitycontrol (productionDate,batchId,testType,description) values(?,?,?,?,?)";
     let requestBody = [input.productionDate, input.batchId, input.testType, input.description]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.addProductionDetails = async (input, callback) => {
-    let query = "insert into production (productionDate,phLevel,TDS,ozoneLevel,product20L, product1L, product500ML, product250ML,managerName,createdBy,shiftType,departmentId) values(?,?,?,?,?,?,?,?,?,?,?,?)";
+    let query = "insert into production (productionDate,phLevel,TDS,ozoneLevel,product20L, product1L, product500ML, product250ML,managerName,createdBy,shiftType,departmentId,batchId) values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
     let productionDate = new Date()
-    let requestBody = [productionDate, input.phLevel, input.TDS, input.ozoneLevel, input.product20L, input.product1L, input.product500ML, input.product250ML, input.managerName, input.createdBy, input.shiftType, input.departmentId]
+    let requestBody = [productionDate, input.phLevel, input.TDS, input.ozoneLevel, input.product20L, input.product1L, input.product500ML, input.product250ML, input.managerName, input.createdBy, input.shiftType, input.departmentId, input.batchId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.addVehicleDetails = async (input, callback) => {
@@ -158,5 +183,16 @@ motherPlantDbQueries.updateDispatchDetails = async (input, callback) => {
             executeGetQuery(getQuery, callback)
         }
     })
+}
+motherPlantDbQueries.updateProductionQC = (input, callback) => {
+    const { batchId, phLevel, TDS, ozoneLevel, managerName, shiftType, productionQcId } = input
+    let query = `update productionQC set batchId=?,phLevel=?,TDS=?,ozoneLevel=?,managerName=?,shiftType=? where productionQcId=${productionQcId}`;
+    let requestBody = [batchId, phLevel, TDS, ozoneLevel, managerName, shiftType]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+motherPlantDbQueries.updateProductionQCStatus = (input, callback) => {
+    let query = `update productionQC set status=? where productionQcId=${input.productionQcId}`;
+    let requestBody = [input.status]
+    return executePostOrUpdateQuery(query, requestBody, callback)
 }
 module.exports = motherPlantDbQueries
