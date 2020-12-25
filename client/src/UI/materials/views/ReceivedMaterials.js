@@ -3,6 +3,7 @@ import { Divider } from 'antd';
 import InputLabel from '../../../components/InputLabel';
 import InputValue from '../../../components/InputValue';
 import dayjs from 'dayjs';
+const DATEFORMAT = 'DD/MM/YYYY'
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
 const ReceivedMaterialView = ({ data }) => {
@@ -28,7 +29,7 @@ const ReceivedMaterialView = ({ data }) => {
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Receipt Date' />
-                        <InputValue size='smaller' value={dayjs(receiptDate).format(DATEANDTIMEFORMAT)} />
+                        <InputValue size='smaller' value={dayjs(receiptDate).format(DATEFORMAT)} />
                     </div>
                     <div className='input-container'>
                         <InputLabel name='Receipt No' />
@@ -39,7 +40,7 @@ const ReceivedMaterialView = ({ data }) => {
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Invoice Date' />
-                        <InputValue size='smaller' value={dayjs(invoiceDate).format(DATEANDTIMEFORMAT)} />
+                        <InputValue size='smaller' value={dayjs(invoiceDate).format(DATEFORMAT)} />
                     </div>
                     <div className='input-container'>
                         <InputLabel name='Invoice No' />
@@ -50,11 +51,11 @@ const ReceivedMaterialView = ({ data }) => {
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Invoice Amount' />
-                        <InputValue size='smaller' value={`₹ ${invoiceAmount}`} />
+                        <InputValue size='smaller' value={invoiceAmount} />
                     </div>
                     <div className='input-container'>
                         <InputLabel name='Tax Amount' />
-                        <InputValue size='smaller' value={`₹ ${taxAmount}`} />
+                        <InputValue size='smaller' value={taxAmount} />
                     </div>
                 </div>
                 <Divider />

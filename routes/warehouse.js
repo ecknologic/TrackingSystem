@@ -115,7 +115,7 @@ router.post('/confirmStockRecieved', (req, res) => {
       }
     });
   } else {
-    warehouseQueries.confirmDispatchDetails(input.dcNo, (confirmErr, results1) => {
+    warehouseQueries.confirmDispatchDetails(input, (confirmErr, results1) => {
       if (confirmErr) res.status(500).json(dbError(confirmErr));
       else res.json(INSERTMESSAGE)
     });

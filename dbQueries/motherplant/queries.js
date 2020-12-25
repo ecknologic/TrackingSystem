@@ -36,7 +36,7 @@ motherPlantDbQueries.getAllQCDetails = async (callback) => {
 }
 
 motherPlantDbQueries.getProductionQcList = async (departmentId, callback) => {
-    let query = `select * from productionQC where departmentId=${departmentId}`;
+    let query = `select * from productionQC where departmentId=${departmentId} ORDER BY requestedDate DESC`;
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getProductionQcBatchIds = async (departmentId, callback) => {
@@ -76,7 +76,7 @@ motherPlantDbQueries.getDepartmentsList = async (deptType, callback) => {
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getQCTestedBatches = async (departmentId, callback) => {
-    let query = `select q.phLevel,q.TDS,q.ozoneLevel,q.managerName,q.testResult,q.testedDate,p.batchId,p.phLevel as ph,p.TDS as tds,p.ozoneLevel as oz,p.requestedDate from qualitycheck q INNER JOIN productionQC p on q.productionQcId=p.productionQcId  where q.departmentId="${departmentId}"`
+    let query = `select q.phLevel,q.TDS,q.ozoneLevel,q.managerName,q.testResult,q.testedDate,p.batchId,p.phLevel as ph,p.TDS as tds,p.ozoneLevel as oz,p.requestedDate from qualitycheck q INNER JOIN productionQC p on q.productionQcId=p.productionQcId  where q.departmentId=${departmentId} ORDER BY q.testedDate DESC`
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getCurrentProductionDetailsByDate = async (input, callback) => {

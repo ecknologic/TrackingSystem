@@ -48,15 +48,18 @@ const QualityControl = () => {
                         <TabPane tab="Quality Control (Internal)" key="1" />
                         <TabPane tab="Quality Check" key="2" />
                         <TabPane tab="Tested Batches" key="3" />
-                        <TabPane tab="Send Request" key="4" />
-                        <TabPane tab="Quality Control (External)" key="5" />
+                        <TabPane tab="Quality Check (Production)" key="4" />
+                        <TabPane tab="Tested Batches (Production)" key="5" />
+                        <TabPane tab="Quality Control (External)" key="6" />
                     </Tabs>
                 </div>
                 {
                     activeTab === '1' ? <InternalQC />
                         : activeTab === '2' ? <QualityCheck goToTab={handleGoToTab} />
                             : activeTab === '3' ? <TestedBatches goToTab={handleGoToTab} />
-                                : <NoContent content='Design is in progress' />
+                                : activeTab === '4' ? <QualityCheck goToTab={handleGoToTab} />
+                                    : activeTab === '5' ? <TestedBatches goToTab={handleGoToTab} />
+                                        : <NoContent content='Design is in progress' />
                 }
             </div>
             <ConfirmModal
