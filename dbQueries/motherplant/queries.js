@@ -16,7 +16,7 @@ motherPlantDbQueries.getDispatchesByBatch = async (input, callback) => {
     let query = `SELECT SUM(d.product20L) AS product20LCount,SUM(d.product1L) AS product1LCount,SUM(d.product500ML) product500MLCount,SUM(d.product250ML) product250MLCount FROM dispatches d WHERE departmentId=? AND batchId=?`;
     return executeGetParamsQuery(query, [departmentId, batchNo], callback)
 }
-motherPlantDbQueries.getBatchNumbers = async (departmentId, callback) => {
+motherPlantDbQueries.getProducedBatchNumbers = async (departmentId, callback) => {
     let past10thDay = dayjs().subtract(10, 'day').format('YYYY-MM-DD')
     let query = "select batchId from production WHERE departmentId=? AND DATE(`productionDate`)>=? ORDER BY productionDate DESC";
     return executeGetParamsQuery(query, [departmentId, past10thDay], callback)
@@ -40,8 +40,12 @@ motherPlantDbQueries.getProductionQcList = async (departmentId, callback) => {
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getProductionQcBatchIds = async (departmentId, callback) => {
-    let query = "select productionQcId,batchId from productionQC where departmentId=? AND status=?";
+    let query = "select productionQcId,batchId from productionQC where departmentId=? AND status=? ORDER BY requestedDate DESC";
     return executeGetParamsQuery(query, [departmentId, "Pending"], callback)
+}
+motherPlantDbQueries.getProductionBatchIds = async (departmentId, callback) => {
+    let query = "select productionQcId,batchId from productionQC where departmentId=? AND status=? ORDER BY requestedDate DESC";
+    return executeGetParamsQuery(query, [departmentId, "Approved"], callback)
 }
 motherPlantDbQueries.getQCDetailsByBatch = async (batchId, callback) => {
     let query = `select * from productionQC where batchId=?`;

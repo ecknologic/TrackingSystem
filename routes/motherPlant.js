@@ -26,6 +26,12 @@ router.get('/getQCBatchIds', (req, res) => {
         else res.json(results);
     });
 });
+router.get('/getProductionBatchIds', (req, res) => {
+    motherPlantDbQueries.getProductionBatchIds(departmentId, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.json(results);
+    });
+});
 
 router.get('/getQCDetailsByBatch/:batchId', (req, res) => {
     motherPlantDbQueries.getQCDetailsByBatch(req.params.batchId, (err, results) => {
@@ -282,7 +288,7 @@ router.get('/getProductionDetailsByDate/:date', (req, res) => {
 });
 
 router.get('/getBatchNumbers', (req, res) => {
-    motherPlantDbQueries.getBatchNumbers(departmentId, (err, results) => {
+    motherPlantDbQueries.getProducedBatchNumbers(departmentId, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         res.json(results);
     })
