@@ -75,7 +75,10 @@ motherPlantDbQueries.getDepartmentsList = async (deptType, callback) => {
     let query = `select * from departmentmaster where departmentType="${deptType}"`
     return executeGetQuery(query, callback)
 }
-
+motherPlantDbQueries.getQCTestedResults = async (departmentId, callback) => {
+    let query = `select * from qualitycheck q INNER JOIN productionQC p on q.productionQcId=p.productionQcId  where departmentId="${departmentId}"`
+    return executeGetQuery(query, callback)
+}
 motherPlantDbQueries.getCurrentProductionDetailsByDate = async (input, callback) => {
     let query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product250ML) total250MLBoxes FROM production p WHERE departmentId=? AND DATE(`productionDate`)<=?";
     return executeGetParamsQuery(query, [input.departmentId, input.date], callback)
