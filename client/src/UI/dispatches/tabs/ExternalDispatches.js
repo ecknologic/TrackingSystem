@@ -34,7 +34,7 @@ const Dispatches = () => {
     const [dispatches, setDispatches] = useState([])
     const [dispatchesClone, setDispatchesClone] = useState([])
 
-    const dispatchColumns = useMemo(() => getDispatchColumns(), [])
+    const dispatchColumns = useMemo(() => getDispatchColumns('external'), [])
     const customerOrderIdRef = useRef()
     const DCFormTitleRef = useRef()
     const DCFormBtnRef = useRef()

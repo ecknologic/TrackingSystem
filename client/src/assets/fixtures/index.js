@@ -179,53 +179,63 @@ export const productionColumns = [
     },
 ]
 
-export const dispatchColumns = [
-    {
-        title: 'DC Number',
-        dataIndex: 'dcnumber',
-        key: 'dcnumber',
-    },
-    {
-        title: 'Batch No',
-        dataIndex: 'batchId',
-        key: 'batchId',
-    },
-    {
-        title: 'Production Details',
-        dataIndex: 'productionDetails',
-        key: 'productionDetails',
-    },
-    {
-        title: 'Vehicle No',
-        dataIndex: 'vehicleNo',
-        key: 'vehicleNo',
-    },
-    {
-        title: 'Driver Name',
-        key: 'driverName',
-        dataIndex: 'driverName',
-    },
-    {
-        title: 'Dispatch To',
-        dataIndex: 'dispatchTo',
-        key: 'dispatchTo',
-    },
-    {
-        title: 'Date & time',
-        dataIndex: 'dateAndTime',
-        key: 'dateAndTime',
-    },
-    {
-        title: 'Status',
-        dataIndex: 'status',
-        key: 'status'
-    },
-    {
-        title: 'Actions',
-        dataIndex: 'action',
-        key: 'action'
-    },
-]
+export const getDispatchColumns = (type) => {
+
+    const columns = [
+        {
+            title: 'DC Number',
+            dataIndex: 'dcnumber',
+            key: 'dcnumber',
+        },
+        {
+            title: 'Batch No',
+            dataIndex: 'batchId',
+            key: 'batchId',
+        },
+        {
+            title: 'Production Details',
+            dataIndex: 'productionDetails',
+            key: 'productionDetails',
+        },
+        {
+            title: 'Vehicle No',
+            dataIndex: 'vehicleNo',
+            key: 'vehicleNo',
+        },
+        {
+            title: 'Driver Name',
+            key: 'driverName',
+            dataIndex: 'driverName',
+        },
+        {
+            title: 'Dispatch To',
+            dataIndex: 'dispatchTo',
+            key: 'dispatchTo',
+        },
+        {
+            title: 'Date & time',
+            dataIndex: 'dateAndTime',
+            key: 'dateAndTime',
+        },
+        {
+            title: 'Status',
+            dataIndex: 'status',
+            key: 'status'
+        },
+        {
+            title: 'Actions',
+            dataIndex: 'action',
+            key: 'action'
+        },
+    ]
+
+    if (type === 'external') {
+        columns.splice(3, 2)
+    }
+
+    return columns
+
+}
 
 export const ReceivedMColumns = [
     {

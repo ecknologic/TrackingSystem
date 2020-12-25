@@ -5,6 +5,7 @@ import Header from '../../components/ContentHeader';
 import Dispatches from './tabs/Dispatches';
 import CreateDispatch from './tabs/CreateDispatch';
 import CreateExternalDispatch from './tabs/CreateExternalDispatch';
+import ExternalDispatches from './tabs/ExternalDispatches';
 import ConfirmModal from '../../components/CustomModal';
 import ConfirmMessage from '../../components/ConfirmMessage';
 import ReportsDropdown from '../../components/ReportsDropdown';
@@ -87,14 +88,16 @@ const Dispatch = () => {
                     >
                         <TabPane tab="Dispatches" key="1" />
                         <TabPane tab="Create Dispatch" key="2" />
-                        <TabPane tab="Create Dispatch (Outside)" key="3" />
+                        {/* <TabPane tab="Create Dispatch (Outside)" key="3" />
+                        <TabPane tab="Dispatches (Outside)" key="4" /> */}
                     </Tabs>
                 </div>
                 {
                     activeTab === '1' ? <Dispatches />
                         : activeTab === '2' ? <CreateDispatch goToTab={handleGoToTab} {...childProps} />
-                            : activeTab === '3' ? <CreateExternalDispatch goToTab={handleGoToTab} {...childProps} />
-                                : null
+                            // : activeTab === '3' ? <CreateExternalDispatch goToTab={handleGoToTab} {...childProps} />
+                            //     : activeTab === '4' ? <ExternalDispatches />
+                            : null
                 }
             </div>
             <ConfirmModal
