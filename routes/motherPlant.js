@@ -40,8 +40,8 @@ router.get('/getProductionQcList', (req, res) => {
         else res.json(results);
     });
 });
-router.get('/getQCTestedResults', (req, res) => {
-    motherPlantDbQueries.getQCTestedResults(departmentId, (err, results) => {
+router.get('/getQCTestedBatches', (req, res) => {
+    motherPlantDbQueries.getQCTestedBatches(departmentId, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else res.json(results);
     });
