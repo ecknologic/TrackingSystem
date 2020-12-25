@@ -1,7 +1,7 @@
 import { message } from 'antd';
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import CustomButton from '../../../components/CustomButton';
-import QualityCheckForm from '../forms/QualityCheck';
+import ProductionQCForm from '../forms/ProductionQCForm';
 import ConfirmModal from '../../../components/CustomModal';
 import { TRACKFORM } from '../../../utils/constants';
 import ConfirmMessage from '../../../components/ConfirmMessage';
@@ -10,7 +10,7 @@ import { getBatchIdOptions, testResultOptions } from '../../../assets/fixtures';
 import { isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../utils/Functions';
 import { validateIntFloat, validateNames, validateQCcheckValues } from '../../../utils/validations';
 
-const ProductionQualityCheck = ({ goToTab }) => {
+const ProductionQC = ({ goToTab }) => {
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
@@ -123,7 +123,7 @@ const ProductionQualityCheck = ({ goToTab }) => {
 
     return (
         <>
-            <QualityCheckForm
+            <ProductionQCForm
                 track
                 QC={QC}
                 data={formData}
@@ -155,4 +155,4 @@ const ProductionQualityCheck = ({ goToTab }) => {
     )
 }
 
-export default ProductionQualityCheck
+export default ProductionQC
