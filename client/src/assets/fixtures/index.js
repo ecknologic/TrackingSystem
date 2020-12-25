@@ -65,6 +65,10 @@ export const productOptions = [
     <Option key="6" value="p6">Product 6</Option>,
     <Option key="7" value="p7">Product 7</Option>
 ]
+export const testResultOptions = [
+    <Option key="1" value="Approved">Approve</Option>,
+    <Option key="2" value="Rejected">Reject</Option>
+]
 
 export const getRouteOptions = (routes = []) => {
     return routes.map((item) => <Option key={item.RouteId} value={item.RouteId}>{item.RouteName}</Option>)
@@ -294,13 +298,13 @@ export const internalQCColumns = [
     },
     {
         title: 'Manager',
-        dataIndex: 'manager',
-        key: 'manager',
+        dataIndex: 'managerName',
+        key: 'managerName',
     },
     {
         title: 'PH',
-        dataIndex: 'pHLevel',
-        key: 'pHLevel',
+        dataIndex: 'phLevel',
+        key: 'phLevel',
     },
     {
         title: 'Ozone Level',
@@ -337,23 +341,23 @@ export const testedBatchesColumns = [
     },
     {
         title: 'Request Inputs',
-        dataIndex: 'shiftType',
-        key: 'shiftType',
+        dataIndex: 'reqInputs',
+        key: 'reqInputs',
     },
     {
         title: 'Tested Date',
-        dataIndex: 'manager',
-        key: 'manager',
+        dataIndex: 'testedDate',
+        key: 'testedDate',
     },
     {
         title: 'Tested Inputs',
-        dataIndex: 'pHLevel',
-        key: 'pHLevel',
+        dataIndex: 'testInputs',
+        key: 'testInputs',
     },
     {
         title: 'Tested Manager',
-        dataIndex: 'ozoneLevel',
-        key: 'ozoneLevel',
+        dataIndex: 'managerName',
+        key: 'managerName',
     },
     {
         title: 'Status',

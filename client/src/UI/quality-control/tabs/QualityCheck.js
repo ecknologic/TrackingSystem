@@ -1,33 +1,44 @@
 import { message } from 'antd';
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import CustomButton from '../../../components/CustomButton';
 import QualityCheckForm from '../forms/QualityCheck';
 import ConfirmModal from '../../../components/CustomModal';
 import { TRACKFORM } from '../../../utils/constants';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import { http } from '../../../modules/http';
+import { getBatchIdOptions, testResultOptions } from '../../../assets/fixtures';
 import { isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../utils/Functions';
 import { validateIntFloat, validateNames, validateQCcheckValues } from '../../../utils/validations';
 
-const QualityCheck = ({ goToTab, ...rest }) => {
+const QualityCheck = () => {
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
-    const [QC, setQC] = useState({})
+    const [batchList, setBatchList] = useState([])
     const [shake, setShake] = useState(false)
+    const [QC, setQC] = useState({})
+
+    const batchIdOptions = useMemo(() => getBatchIdOptions(batchList), [batchList])
+    const childProps = useMemo(() => ({ batchIdOptions, testResultOptions }), [batchIdOptions, testResultOptions])
 
     useEffect(() => {
         resetTrackForm()
         trackAccountFormOnce()
+        getBatchsList()
 
         return () => {
             removeFormTracker()
         }
     }, [])
 
+    const getBatchsList = async () => {
+        const data = await http.GET(`/motherPlant/getQCBatchIds`)
+        setBatchList(data)
+    }
+
     const getQCByBatchId = async (batchId) => {
-        const data = await http.GET(`/motherPlant/getProductByBatch/${batchId}`)
+        const [data = {}] = await http.GET(`/motherPlant/getQCDetailsByBatch/${batchId}`)
         setQC(data)
     }
 
@@ -38,7 +49,7 @@ const QualityCheck = ({ goToTab, ...rest }) => {
         if (key === 'batchId') getQCByBatchId(value)
 
         // Validations
-        if (key === 'managerName') {
+        if (key === 'managerName' || key === 'testType') {
             const error = validateNames(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -58,6 +69,7 @@ const QualityCheck = ({ goToTab, ...rest }) => {
 
     const handleSubmit = async () => {
         const formErrors = validateQCcheckValues(formData)
+        const { productionQcId } = QC
 
         if (!isEmpty(formErrors)) {
             setShake(true)
@@ -67,21 +79,28 @@ const QualityCheck = ({ goToTab, ...rest }) => {
         }
 
         let body = {
-            ...formData
+            ...formData, productionQcId
         }
-        const url = '/motherplant/addDispatchDetails'
+        const url = '/motherplant/createQualityCheck'
 
         try {
             setBtnDisabled(true)
             showToast('QC Report', 'loading')
             await http.POST(url, body)
-            message.destroy()
-            goToTab('3')
+            resetForm()
             showToast('QC Report', 'success')
         } catch (error) {
             message.destroy()
             setBtnDisabled(false)
         }
+    }
+
+    const resetForm = () => {
+        setBtnDisabled(false)
+        resetTrackForm()
+        setFormData({})
+        setQC({})
+        setFormErrors({})
     }
 
     const onModalClose = (hasSaved) => {
@@ -105,12 +124,12 @@ const QualityCheck = ({ goToTab, ...rest }) => {
         <>
             <QualityCheckForm
                 track
-                qc={QC}
+                QC={QC}
                 data={formData}
                 errors={formErrors}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                {...rest}
+                {...childProps}
             />
             <div className='app-footer-buttons-container'>
                 <CustomButton

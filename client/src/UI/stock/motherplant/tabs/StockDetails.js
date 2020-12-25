@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import BatchForm from '../forms/Batch';
 import { http } from '../../../../modules/http';
 import CASMPPanel from '../../../../components/CASMPPanel';
@@ -7,29 +7,39 @@ import FormHeader from '../../../../components/FormHeader';
 import ConfirmModal from '../../../../components/CustomModal';
 import { getUserId } from '../../../../utils/constants';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
-import { shiftOptions } from '../../../../assets/fixtures';
-import { isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../../utils/Functions';
+import { shiftOptions, getBatchIdOptions } from '../../../../assets/fixtures';
+import { extractValidProductsForDB, isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../../utils/Functions';
 import { validateBatchValues, validateIntFloat, validateNames, validateNumber } from '../../../../utils/validations';
 
 const StockDetails = ({ date, goToTab }) => {
     const USERID = getUserId()
     const [formData, setFormData] = useState({})
     const [stock, setStock] = useState({})
+    const [batchList, setBatchList] = useState([])
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
     const [shake, setShake] = useState(false)
 
+    const batchOptions = useMemo(() => getBatchIdOptions(batchList), [batchList])
+    const childProps = useMemo(() => ({ batchOptions, shiftOptions }), [batchOptions, shiftOptions])
+
     useEffect(() => {
         resetTrackForm()
         trackAccountFormOnce()
         resetForm()
+        getBatchsList()
         getActiveStockByDate(date)
 
         return () => {
             removeFormTracker()
         }
     }, [date])
+
+    const getBatchsList = async () => {
+        const data = await http.GET('/motherPlant/getBatchNumbers')
+        setBatchList(data)
+    }
 
     const getActiveStockByDate = async (date) => {
         const url = `/motherPlant/getProductionDetailsByDate/${date}`
@@ -74,9 +84,12 @@ const StockDetails = ({ date, goToTab }) => {
             return
         }
 
+        const { product20L, product1L, product500ML, product250ML } = extractValidProductsForDB(formData)
+
         const url = '/motherPlant/addProductionDetails'
         const body = {
-            ...formData, createdBy: USERID
+            ...formData, createdBy: USERID,
+            product20L, product1L, product500ML, product250ML
         }
 
         try {
@@ -84,7 +97,7 @@ const StockDetails = ({ date, goToTab }) => {
             showToast('Batch', 'loading')
             await http.POST(url, body)
             resetForm()
-            goToTab('3')
+            goToTab('2')
             showToast('Batch', 'success')
         } catch (error) {
             setBtnDisabled(false)
@@ -112,9 +125,9 @@ const StockDetails = ({ date, goToTab }) => {
                 track
                 data={formData}
                 errors={formErrors}
-                shiftOptions={shiftOptions}
                 onChange={handleChange}
                 onBlur={handleBlur}
+                {...childProps}
             />
             <div className='app-footer-buttons-container'>
                 <CustomButton

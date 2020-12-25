@@ -1,6 +1,5 @@
 import { Tabs } from 'antd';
-import { http } from '../../modules/http';
-import React, { Fragment, useState, useRef, useCallback, useEffect, useMemo } from 'react';
+import React, { Fragment, useState, useRef, useCallback } from 'react';
 import Header from '../../components/ContentHeader';
 import InternalQC from './tabs/InternalQC';
 import QualityCheck from './tabs/QualityCheck';
@@ -11,26 +10,12 @@ import ReportsDropdown from '../../components/ReportsDropdown';
 import { TRACKFORM } from '../../utils/constants';
 import { resetTrackForm } from '../../utils/Functions';
 import NoContent from '../../components/NoContent';
-import { getBatchIdOptions } from '../../assets/fixtures';
 import '../../sass/qualityControl.scss'
 
 const QualityControl = () => {
     const [activeTab, setActiveTab] = useState('1')
     const [confirm, setConfirm] = useState(false)
-    const [batchList, setBatchList] = useState([])
     const clickRef = useRef('')
-
-    const batchIdOptions = useMemo(() => getBatchIdOptions(batchList), [batchList])
-    const childProps = useMemo(() => ({ batchIdOptions }), [batchIdOptions])
-
-    useEffect(() => {
-        getBatchsList()
-    }, [])
-
-    const getBatchsList = async () => {
-        const data = await http.GET('/motherPlant/getBatchNumbers')
-        setBatchList(data)
-    }
 
     const handleTabClick = (key) => {
         const formHasChanged = sessionStorage.getItem(TRACKFORM)
@@ -69,7 +54,7 @@ const QualityControl = () => {
                 </div>
                 {
                     activeTab === '1' ? <InternalQC />
-                        : activeTab === '2' ? <QualityCheck goToTab={handleGoToTab} {...childProps} />
+                        : activeTab === '2' ? <QualityCheck goToTab={handleGoToTab} />
                             : activeTab === '3' ? <TestedBatches goToTab={handleGoToTab} />
                                 : <NoContent content='Design is in progress' />
                 }

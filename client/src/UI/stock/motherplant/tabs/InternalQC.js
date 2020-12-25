@@ -21,7 +21,6 @@ const InternalQC = () => {
     useEffect(() => {
         resetTrackForm()
         trackAccountFormOnce()
-        resetForm()
 
         return () => {
             removeFormTracker()
@@ -62,25 +61,25 @@ const InternalQC = () => {
             return
         }
 
-        // const url = '/motherPlant/addProductionDetails'
-        // const body = {
-        //     ...formData, createdBy: USERID
-        // }
+        const url = '/motherPlant/createProductionQC'
+        const body = {
+            ...formData
+        }
 
-        // try {
-        //     setBtnDisabled(true)
-        //     showToast('Quality Control', 'loading')
-        //     await http.POST(url, body)
-        //     resetForm()
-        //     goToTab('3')
-        //     showToast('Quality Control', 'success')
-        // } catch (error) {
-        //     setBtnDisabled(false)
-        // }
+        try {
+            setBtnDisabled(true)
+            showToast('Quality Control', 'loading')
+            await http.POST(url, body)
+            resetForm()
+            showToast('Quality Control', 'success')
+        } catch (error) {
+            setBtnDisabled(false)
+        }
     }
 
     const resetForm = () => {
         setBtnDisabled(false)
+        resetTrackForm()
         setFormData({})
         setFormErrors({})
     }

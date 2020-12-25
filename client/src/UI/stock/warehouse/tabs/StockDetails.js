@@ -96,6 +96,7 @@ const StockDetails = ({ date }) => {
 
     const handleArrivedStockConfirm = async () => {
         const formErrors = validateASValues(formData)
+        const { motherplantId } = formData
 
         if (!isEmpty(formErrors)) {
             setShake(true)
@@ -108,7 +109,7 @@ const StockDetails = ({ date }) => {
 
         let url = '/warehouse/confirmStockRecieved'
         const body = {
-            ...dcValues
+            ...dcValues, motherplantId
         }
 
         try {

@@ -43,7 +43,7 @@ const InternalQC = () => {
     }, [])
 
     const getQC = async () => {
-        const data = await http.GET('/motherPlant/getDispatchDetails')
+        const data = await http.GET('/motherPlant/getProductionQcList')
         setQC(data)
         setQCClone(data)
         setTotalCount(data.length)
@@ -94,16 +94,17 @@ const InternalQC = () => {
     }
 
     const dataSource = useMemo(() => QC.map((qc) => {
-        const { DCNO: dcnumber, batchId, dispatchedDate, vehicleNo,
-            dispatchAddress, vehicleType, driverName, status } = qc
+        const { productionQcId: key, batchId, phLevel, TDS,
+            ozoneLevel, managerName, requestedDate, shiftType, status } = qc
         return {
-            key: dcnumber,
-            dcnumber,
+            key,
+            TDS,
+            phLevel,
             batchId,
-            vehicleNo: vehicleNo + ' ' + vehicleType,
-            driverName,
-            dispatchTo: dispatchAddress,
-            dateAndTime: dayjs(dispatchedDate).format(DATEANDTIMEFORMAT),
+            ozoneLevel,
+            managerName,
+            shiftType,
+            dateAndTime: dayjs(requestedDate).format(DATEANDTIMEFORMAT),
             status: renderStatus(status),
             action: <TableAction onSelect={({ key }) => handleMenuSelect(key, qc)} />
         }

@@ -5,9 +5,9 @@ import SelectInput from '../../../../components/SelectInput';
 
 const BatchForm = (props) => {
 
-    const { data, errors, disabled, onChange, shiftOptions, onBlur, track } = props
+    const { data, errors, disabled, onChange, shiftOptions, batchOptions, onBlur, track } = props
 
-    const { phLevel, TDS, ozoneLevel, product20L, product1L,
+    const { phLevel, TDS, ozoneLevel, batchId, product20L, product1L,
         product500ML, product250ML, managerName, shiftType } = data
 
     return (
@@ -22,6 +22,16 @@ const BatchForm = (props) => {
                             track={track} disabled={disabled}
                             error={errors.shiftType}
                             onSelect={(value) => onChange(value, 'shiftType')}
+                        />
+                    </div>
+                    <div className='input-container'>
+                        <InputLabel name='Batch No' error={errors.batchId} mandatory />
+                        <SelectInput
+                            value={batchId}
+                            options={batchOptions}
+                            track={track} disabled={disabled}
+                            error={errors.batchId}
+                            onSelect={(value) => onChange(value, 'batchId')}
                         />
                     </div>
                 </div>

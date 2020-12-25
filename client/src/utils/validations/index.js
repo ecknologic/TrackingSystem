@@ -186,9 +186,10 @@ export const validateDeliveryValues = (data) => {
 export const validateBatchValues = (data) => {
     let errors = {};
     const text = 'Required'
-    const { shiftType, phLevel, TDS, ozoneLevel, managerName, ...rest } = data
+    const { shiftType, batchId, phLevel, TDS, ozoneLevel, managerName, ...rest } = data
 
     if (!shiftType) errors.shiftType = text
+    if (!batchId) errors.batchId = text
     if (!phLevel) errors.phLevel = text
     else {
         const error = validateIntFloat(phLevel)
@@ -247,9 +248,11 @@ export const validateQCValues = (data) => {
 export const validateQCcheckValues = (data) => {
     let errors = {};
     const text = 'Required'
-    const { batchId, phLevel, TDS, ozoneLevel, managerName } = data
+    const { batchId, testResult, testType, description, phLevel, TDS, ozoneLevel, managerName } = data
 
     if (!batchId) errors.batchId = text
+    if (!testResult) errors.testResult = text
+    if (!description) errors.description = text
     if (!phLevel) errors.phLevel = text
     else {
         const error = validateIntFloat(phLevel)
@@ -264,6 +267,11 @@ export const validateQCcheckValues = (data) => {
     else {
         const error = validateIntFloat(TDS)
         error && (errors.TDS = error)
+    }
+    if (!testType) errors.testType = text
+    else {
+        const error = validateNames(testType)
+        error && (errors.testType = error)
     }
     if (!managerName) errors.managerName = text
     else {

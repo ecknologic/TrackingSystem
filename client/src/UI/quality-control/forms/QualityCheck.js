@@ -4,12 +4,17 @@ import CustomInput from '../../../components/CustomInput';
 import SelectInput from '../../../components/SelectInput';
 import InputValue from '../../../components/InputValue';
 import CustomTextArea from '../../../components/CustomTextArea';
+import dayjs from 'dayjs';
 
 const QualityCheckForm = (props) => {
 
-    const { data, errors, disabled, onChange, batchIdOptions, onBlur, track } = props
+    const { QC, data, errors, disabled, onChange, batchIdOptions, testResultOptions, onBlur, track } = props
 
-    const { phLevel, TDS, ozoneLevel, managerName, testType, description, batchId } = data
+    const { phLevel, TDS, ozoneLevel, testResult, managerName, testType, description, batchId } = data
+    const { requestedDate, shiftType, TDS: tds, phLevel: PH, ozoneLevel: oz, managerName: name } = QC
+
+    const date = requestedDate ? dayjs(requestedDate).format('DD/MM/YYYY') : null
+    const time = requestedDate ? dayjs(requestedDate).format('hh:mm A') : null
 
     return (
         <>
@@ -26,39 +31,39 @@ const QualityCheckForm = (props) => {
                 <div className='row half-stretch'>
                     <div className='input-container'>
                         <InputLabel name='Date' />
-                        <InputValue size='larger' value='24/09/2020' />
+                        <InputValue size='larger' value={date || '--'} />
                     </div>
                     <div className='input-container'>
                         <InputLabel name='Time' />
-                        <InputValue size='larger' value='12:45' />
+                        <InputValue size='larger' value={time || '--'} />
                     </div>
                     <div className='input-container'>
                         <InputLabel name='Shift Time' />
-                        <InputValue size='larger' value='Morning' />
+                        <InputValue size='larger' value={shiftType || '--'} />
                     </div>
                 </div>
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='PH' />
-                        <InputValue size='larger' value='2.4 to 5.4' />
+                        <InputValue size='larger' value={PH || '--'} />
                     </div>
                 </div>
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Ozone Level (Mg/Litre)' />
-                        <InputValue size='larger' value='2.4 to 5.4' />
+                        <InputValue size='larger' value={oz || '--'} />
                     </div>
                 </div>
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Total Dissolved Solids (TDS - mg/litre)' />
-                        <InputValue size='larger' value='900 to 1200' />
+                        <InputValue size='larger' value={tds || '--'} />
                     </div>
                 </div>
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Manager' />
-                        <InputValue size='larger' value='Hemasundar' />
+                        <InputValue size='larger' value={name || '--'} />
                     </div>
                 </div>
                 <div className='row'>
@@ -90,10 +95,10 @@ const QualityCheckForm = (props) => {
                         <InputLabel error={errors.TDS} />
                     </div>
                     <div className='input-container'>
-                        <InputLabel name='Test Results' error={errors.managerName} mandatory />
-                        <SelectInput track={track} value={batchId} options={batchIdOptions}
-                            disabled={disabled} error={errors.batchId}
-                            onSelect={(value) => onChange(value, 'batchId')}
+                        <InputLabel name='Test Results' error={errors.testResult} mandatory />
+                        <SelectInput track={track} value={testResult} options={testResultOptions}
+                            disabled={disabled} error={errors.testResult}
+                            onSelect={(value) => onChange(value, 'testResult')}
                         />
                     </div>
                 </div>

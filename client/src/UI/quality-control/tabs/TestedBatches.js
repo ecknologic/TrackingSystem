@@ -30,7 +30,7 @@ const TestedBatches = () => {
     }, [])
 
     const getTB = async () => {
-        const data = await http.GET('/motherPlant/getDispatchDetails')
+        const data = await http.GET('/motherPlant/getQCTestedBatches')
         setTB(data)
         setTBClone(data)
         setTotalCount(data.length)
@@ -59,17 +59,18 @@ const TestedBatches = () => {
     }
 
     const dataSource = useMemo(() => TB.map((tb) => {
-        const { DCNO: dcnumber, batchId, dispatchedDate, vehicleNo,
-            dispatchAddress, vehicleType, driverName, status } = tb
+        const { batchId: key, batchId, testedDate, testResult, managerName, requestedDate,
+            shiftType, ...rest } = tb
         return {
-            key: dcnumber,
-            dcnumber,
+            key,
             batchId,
-            vehicleNo: vehicleNo + ' ' + vehicleType,
-            driverName,
-            dispatchTo: dispatchAddress,
-            dateAndTime: dayjs(dispatchedDate).format(DATEANDTIMEFORMAT),
-            status: renderStatus(status)
+            managerName,
+            shiftType,
+            reqInputs: renderInputs(rest),
+            testInputs: renderInputs(rest, 'test'),
+            testedDate: dayjs(testedDate).format(DATEANDTIMEFORMAT),
+            dateAndTime: dayjs(requestedDate).format(DATEANDTIMEFORMAT),
+            status: renderStatus(testResult),
         }
     }), [TB])
 
@@ -144,4 +145,10 @@ const renderStatus = (status) => {
     )
 }
 
+const renderInputs = (data, type) => {
+    const { phLevel, TDS, ozoneLevel, ph, tds, oz } = data
+    if (type === 'test')
+        return `PH - ${phLevel}, TDS - ${TDS}, Ozone level - ${ozoneLevel}`
+    return `PH - ${ph}, TDS - ${tds}, Ozone level - ${oz}`
+}
 export default TestedBatches
