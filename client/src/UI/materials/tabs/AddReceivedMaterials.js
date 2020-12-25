@@ -67,8 +67,9 @@ const AddMaterials = () => {
     const handleDateSelect = (value) => {
         setOpen(false)
         setSelectedDate(dayjs(value).format(format))
-        let filteredData = RMClone.filter(item => dayjs(value).format(DATEFORMAT) == dayjs(item.approvedDate).format(DATEFORMAT))
-        setRM(filteredData)
+        const filtered = RMClone.filter(item => dayjs(value).format(DATEFORMAT) == dayjs(item.approvedDate).format(DATEFORMAT))
+        setRM(filtered)
+        setPageNumber(1)
     }
 
     const handlePageChange = (number) => {

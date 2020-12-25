@@ -57,9 +57,10 @@ const InternalQC = () => {
     const handleDateSelect = (value) => {
         setOpen(false)
         setSelectedDate(dayjs(value).format(format))
-        const filteredData = QCClone.filter(item => dayjs(value).format(DATEFORMAT) === dayjs(item.dispatchedDate).format(DATEFORMAT))
-        setQC(filteredData)
-        setTotalCount(filteredData.length)
+        const filtered = QCClone.filter(item => dayjs(value).format(DATEFORMAT) === dayjs(item.dispatchedDate).format(DATEFORMAT))
+        setQC(filtered)
+        setTotalCount(filtered.length)
+        setPageNumber(1)
     }
 
     const handleMenuSelect = (key, data) => {

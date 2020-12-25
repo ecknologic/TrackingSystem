@@ -57,9 +57,10 @@ const Dispatches = () => {
     const handleDateSelect = (value) => {
         setOpen(false)
         setSelectedDate(dayjs(value).format(format))
-        const filteredData = dispatchesClone.filter(item => dayjs(value).format(DATEFORMAT) === dayjs(item.dispatchedDate).format(DATEFORMAT))
-        setDispatches(filteredData)
-        setTotalCount(filteredData.length)
+        const filtered = dispatchesClone.filter(item => dayjs(value).format(DATEFORMAT) === dayjs(item.dispatchedDate).format(DATEFORMAT))
+        setDispatches(filtered)
+        setTotalCount(filtered.length)
+        setPageNumber(1)
     }
 
     const handleMenuSelect = (key, data) => {

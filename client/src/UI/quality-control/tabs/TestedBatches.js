@@ -44,9 +44,10 @@ const TestedBatches = () => {
     const handleDateSelect = (value) => {
         setOpen(false)
         setSelectedDate(dayjs(value).format(format))
-        const filteredData = TBClone.filter(item => dayjs(value).format(DATEFORMAT) === dayjs(item.dispatchedDate).format(DATEFORMAT))
-        setTB(filteredData)
-        setTotalCount(filteredData.length)
+        const filtered = TBClone.filter(item => dayjs(value).format(DATEFORMAT) === dayjs(item.dispatchedDate).format(DATEFORMAT))
+        setTB(filtered)
+        setTotalCount(filtered.length)
+        setPageNumber(1)
     }
 
     const handlePageChange = (number) => {
@@ -136,11 +137,10 @@ const TestedBatches = () => {
 
 const renderStatus = (status) => {
     const color = getStatusColor(status)
-    const text = status ? status : 'Pending'
     return (
         <div className='status'>
             <span className='app-dot' style={{ background: color }}></span>
-            <span className='status-text'>{text}</span>
+            <span className='status-text'>{status}</span>
         </div>
     )
 }

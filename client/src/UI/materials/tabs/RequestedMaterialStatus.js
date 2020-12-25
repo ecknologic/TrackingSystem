@@ -54,6 +54,7 @@ const MaterialStatus = () => {
         const filtered = RMClone.filter(item => dayjs(value).format(DATEFORMAT) === dayjs(item.requestedDate).format(DATEFORMAT))
         setRM(filtered)
         setTotalCount(filtered.length)
+        setPageNumber(1)
     }
 
     const handleMenuSelect = (key, data) => {

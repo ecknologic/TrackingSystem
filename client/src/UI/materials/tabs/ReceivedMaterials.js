@@ -52,6 +52,7 @@ const ReceivedMaterials = () => {
         const filtered = RMClone.filter(item => dayjs(value).format(DATEFORMAT) == dayjs(item.invoiceDate).format(DATEFORMAT))
         setRM(filtered)
         setTotalCount(filtered.length)
+        setPageNumber(1)
     }
 
     const handleMenuSelect = (key, data) => {

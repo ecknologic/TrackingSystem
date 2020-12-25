@@ -10,7 +10,7 @@ import { getBatchIdOptions, testResultOptions } from '../../../assets/fixtures';
 import { isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../utils/Functions';
 import { validateIntFloat, validateNames, validateQCcheckValues } from '../../../utils/validations';
 
-const QualityCheck = () => {
+const QualityCheck = ({ goToTab }) => {
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
@@ -87,7 +87,8 @@ const QualityCheck = () => {
             setBtnDisabled(true)
             showToast('QC Report', 'loading')
             await http.POST(url, body)
-            resetForm()
+            // resetForm()
+            goToTab('3')
             showToast('QC Report', 'success')
         } catch (error) {
             message.destroy()

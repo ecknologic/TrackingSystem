@@ -114,7 +114,7 @@ motherPlantDbQueries.createQualityCheck = async (input, callback) => {
     const { productionQcId, phLevel, TDS, ozoneLevel, testResult, managerName, description, testType, departmentId } = input
     let query = "insert into qualitycheck (testedDate,productionQcId,phLevel,TDS,ozoneLevel,testResult,managerName,description,testType,departmentId) values(?,?,?,?,?,?,?,?,?,?)";
     let requestBody = [new Date(), productionQcId, phLevel, TDS, ozoneLevel, testResult, managerName, description, testType, departmentId]
-    motherPlantDbQueries.updateProductionQCStatus = ({ productionQcId, status: testResult })
+    motherPlantDbQueries.updateProductionQCStatus({ productionQcId, status: testResult })
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.createInternalQC = async (input, callback) => {
