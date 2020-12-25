@@ -44,8 +44,8 @@ motherPlantDbQueries.getProductionQcBatchIds = async (departmentId, callback) =>
     return executeGetParamsQuery(query, [departmentId, "Pending"], callback)
 }
 motherPlantDbQueries.getQCDetailsByBatch = async (batchId, callback) => {
-    let query = `select * from productionQC where batchId=${batchId}`;
-    return executeGetQuery(query, callback)
+    let query = `select * from productionQC where batchId=?`;
+    return executeGetParamsQuery(query, [batchId], callback)
 }
 motherPlantDbQueries.getInternalQualityControl = async (callback) => {
     let query = "select * from internalqualitycontrol";

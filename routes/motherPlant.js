@@ -20,15 +20,15 @@ router.get('/getQualityControl', (req, res) => {
     });
 });
 
-router.get('/getQCBatchIds/:batchId', (req, res) => {
-    motherPlantDbQueries.getProductionQcBatchIds(req.params.batchId, (err, results) => {
+router.get('/getQCBatchIds', (req, res) => {
+    motherPlantDbQueries.getProductionQcBatchIds(departmentId, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else res.json(results);
     });
 });
 
-router.get('/getQCDetailsByBatch', (req, res) => {
-    motherPlantDbQueries.getQCDetailsByBatch(departmentId, (err, results) => {
+router.get('/getQCDetailsByBatch/:batchId', (req, res) => {
+    motherPlantDbQueries.getQCDetailsByBatch(req.params.batchId, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else res.json(results);
     });
