@@ -1,7 +1,6 @@
 import React from 'react'
 import { Layout } from 'antd';
 import { useLocation } from 'react-router-dom';
-import { Scrollbars } from 'react-custom-scrollbars';
 import SideMenu from './SideMenu';
 import { ChatIconGrey, NotificationIconGrey, SettingIconGrey } from '../../components/SVG_Icons';
 import '../../sass/pageLayout.scss'
@@ -26,10 +25,8 @@ const PageLayout = ({ children }) => {
                 <Sider width='16em' className='app-sider'>
                     <SideMenu />
                 </Sider>
-                <Content key={pathname}>
-                    <Scrollbars autoHide id='scroll-view'>
-                        <div id='content'>{children}</div>
-                    </Scrollbars>
+                <Content key={pathname} id='scroll-view'>
+                    {children}
                 </Content>
             </Layout>
         </Layout>

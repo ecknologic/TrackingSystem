@@ -4,10 +4,11 @@ import Header from '../../components/ContentHeader';
 import InternalQC from './tabs/InternalQC';
 import QualityCheck from './tabs/QualityCheck';
 import TestedBatches from './tabs/TestedBatches';
+import { TRACKFORM } from '../../utils/constants';
 import ConfirmModal from '../../components/CustomModal';
 import ConfirmMessage from '../../components/ConfirmMessage';
 import ReportsDropdown from '../../components/ReportsDropdown';
-import { TRACKFORM } from '../../utils/constants';
+import ProductionQualityCheck from './tabs/ProductionQualityCheck';
 import { resetTrackForm } from '../../utils/Functions';
 import NoContent from '../../components/NoContent';
 import '../../sass/qualityControl.scss'
@@ -57,7 +58,7 @@ const QualityControl = () => {
                     activeTab === '1' ? <InternalQC />
                         : activeTab === '2' ? <QualityCheck goToTab={handleGoToTab} />
                             : activeTab === '3' ? <TestedBatches goToTab={handleGoToTab} />
-                                : activeTab === '4' ? <QualityCheck goToTab={handleGoToTab} />
+                                : activeTab === '4' ? <ProductionQualityCheck goToTab={handleGoToTab} />
                                     : activeTab === '5' ? <TestedBatches goToTab={handleGoToTab} />
                                         : <NoContent content='Design is in progress' />
                 }

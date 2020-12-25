@@ -28,7 +28,7 @@ const StockDetails = ({ date, goToTab }) => {
         resetTrackForm()
         trackAccountFormOnce()
         resetForm()
-        getBatchsList()
+        getBatchesList()
         getActiveStockByDate(date)
 
         return () => {
@@ -36,8 +36,8 @@ const StockDetails = ({ date, goToTab }) => {
         }
     }, [date])
 
-    const getBatchsList = async () => {
-        const data = await http.GET('/motherPlant/getBatchNumbers')
+    const getBatchesList = async () => {
+        const data = await http.GET('/motherPlant/getProductionBatchIds')
         setBatchList(data)
     }
 

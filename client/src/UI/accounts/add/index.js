@@ -1,14 +1,21 @@
 import { useHistory } from 'react-router-dom';
 import { Divider, Checkbox, Collapse, message } from 'antd';
 import React, { Fragment, useEffect, useMemo, useState, useCallback } from 'react';
-import { DDownIcon, PlusIcon } from '../../../components/SVG_Icons'
 import Header from './header';
 import Delivery from './forms/Delivery';
-import CustomButton from '../../../components/CustomButton';
-import CorporateAccount from './forms/CorporateAccount';
-import GeneralAccount from './forms/GeneralAccount';
-import CollapseForm from './forms/CollapseForm';
 import { http } from '../../../modules/http'
+import CollapseForm from './forms/CollapseForm';
+import ScrollUp from '../../../components/ScrollUp';
+import GeneralAccount from './forms/GeneralAccount';
+import QuitModal from '../../../components/CustomModal';
+import CorporateAccount from './forms/CorporateAccount';
+import SwitchModal from '../../../components/CustomModal';
+import SuccessModal from '../../../components/CustomModal';
+import CustomButton from '../../../components/CustomButton';
+import ConfirmMessage from '../../../components/ConfirmMessage';
+import SuccessMessage from '../../../components/SuccessMessage';
+import CollapseHeader from '../../../components/CollapseHeader';
+import { DDownIcon, PlusIcon } from '../../../components/SVG_Icons'
 import { getRouteOptions, WEEKDAYS } from '../../../assets/fixtures';
 import {
     getBase64, deepClone, getIdProofsForDB, getDevDaysForDB, getAddressesForDB, resetTrackForm,
@@ -19,13 +26,6 @@ import {
     validateAccountValues, validateDeliveryValues, validateDevDays,
     validateIDProofs, validateAddresses, validateIDNumbers, validateNames, validateNumber, validateMobileNumber, validateEmailId
 } from '../../../utils/validations';
-import SuccessModal from '../../../components/CustomModal';
-import QuitModal from '../../../components/CustomModal';
-import SwitchModal from '../../../components/CustomModal';
-import SuccessMessage from '../../../components/SuccessMessage';
-import ConfirmMessage from '../../../components/ConfirmMessage';
-import CollapseHeader from '../../../components/CollapseHeader';
-import ScrollUp from '../../../components/ScrollUp';
 
 const AddAccount = () => {
     const USERID = getUserId()

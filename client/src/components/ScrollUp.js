@@ -4,9 +4,9 @@ export default function ScrollUp({ dep }) {
 
     useEffect(() => {
         let divElem, chElem, topPos;
-        divElem = document.getElementById('scroll-view').firstChild;
+        divElem = document.getElementById('scroll-view');
 
-        if (divElem) chElem = divElem.firstChild;
+        if (divElem) chElem = divElem;
         if (chElem) {
             topPos = divElem.offsetTop;
             divElem.scrollTop = topPos - chElem.offsetTo

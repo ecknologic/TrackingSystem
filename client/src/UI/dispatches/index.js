@@ -39,7 +39,7 @@ const Dispatch = () => {
     }, [])
 
     const getBatchsList = async () => {
-        const data = await http.GET('/motherPlant/getBatchNumbers')
+        const data = await http.GET('/motherPlant/getProductionBatchIds')
         setBatchList(data)
     }
 

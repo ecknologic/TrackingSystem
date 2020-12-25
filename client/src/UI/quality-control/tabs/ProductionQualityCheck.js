@@ -1,76 +1,107 @@
 import { message } from 'antd';
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import CustomButton from '../../../components/CustomButton';
-import FormHeader from '../../../components/FormHeader';
-import MaterialRequestForm from '../forms/MaterialRequest';
+import QualityCheckForm from '../forms/QualityCheck';
 import ConfirmModal from '../../../components/CustomModal';
 import { TRACKFORM } from '../../../utils/constants';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import { http } from '../../../modules/http';
+import { getBatchIdOptions, testResultOptions } from '../../../assets/fixtures';
 import { isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../utils/Functions';
-import { validateRequestMaterialValues, validateNumber, validateRequired } from '../../../utils/validations';
+import { validateIntFloat, validateNames, validateQCcheckValues } from '../../../utils/validations';
 
-const RequestMaterial = ({ goToTab, ...rest }) => {
-    const [formData, setFormData] = useState(INITIALFORMDATA)
+const ProductionQualityCheck = ({ goToTab }) => {
+    const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
+    const [batchList, setBatchList] = useState([])
     const [shake, setShake] = useState(false)
+    const [QC, setQC] = useState({})
+
+    const batchIdOptions = useMemo(() => getBatchIdOptions(batchList), [batchList])
+    const childProps = useMemo(() => ({ batchIdOptions, testResultOptions }), [batchIdOptions, testResultOptions])
 
     useEffect(() => {
         resetTrackForm()
         trackAccountFormOnce()
+        getBatchsList()
 
         return () => {
             removeFormTracker()
         }
     }, [])
 
+    const getBatchsList = async () => {
+        const data = await http.GET(`/motherPlant/getBatchNumbers`)
+        setBatchList(data)
+    }
+
+    const getQCByBatchId = async (batchId) => {
+        const [data = {}] = await http.GET(`/motherPlant/getQCDetailsByBatch/${batchId}`)
+        setQC(data)
+    }
+
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
+        if (key === 'batchId') getQCByBatchId(value)
+
         // Validations
-        if (key.includes('Level') || key === 'itemQty') {
-            const error = validateNumber(value)
+        if (key === 'managerName' || key === 'testType') {
+            const error = validateNames(value)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'phLevel' || key === 'ozoneLevel' || key === 'TDS') {
+            const error = validateIntFloat(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
     }
 
     const handleBlur = (value, key) => {
         // Validations
-        if (key.includes('Level') || key === 'itemQty') {
-            const error = validateNumber(value, true)
+        if (key === 'phLevel' || key === 'ozoneLevel' || key === 'TDS') {
+            const error = validateIntFloat(value, true)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
     }
 
     const handleSubmit = async () => {
+        const formErrors = validateQCcheckValues(formData)
+        const { productionQcId } = QC
 
-        const required = validateRequired(formData)
-        const second = validateRequestMaterialValues(formData)
-        const errors = { ...second, ...required }
-
-        if (!isEmpty(errors)) {
+        if (!isEmpty(formErrors)) {
             setShake(true)
             setTimeout(() => setShake(false), 820)
-            setFormErrors(errors)
+            setFormErrors(formErrors)
             return
         }
 
-        const body = { ...formData }
-        const url = '/motherPlant/createRM'
+        let body = {
+            ...formData, productionQcId
+        }
+        const url = '/motherplant/createQualityCheck'
 
         try {
             setBtnDisabled(true)
-            showToast('Materials', 'loading')
+            showToast('QC Report', 'loading')
             await http.POST(url, body)
-            showToast('Materials', 'success')
-            goToTab('2')
+            // resetForm()
+            goToTab('3')
+            showToast('QC Report', 'success')
         } catch (error) {
             message.destroy()
             setBtnDisabled(false)
         }
+    }
+
+    const resetForm = () => {
+        setBtnDisabled(false)
+        resetTrackForm()
+        setFormData({})
+        setQC({})
+        setFormErrors({})
     }
 
     const onModalClose = (hasSaved) => {
@@ -92,14 +123,14 @@ const RequestMaterial = ({ goToTab, ...rest }) => {
 
     return (
         <>
-            <FormHeader title='Raw Material Required' />
-            <MaterialRequestForm
+            <QualityCheckForm
                 track
+                QC={QC}
                 data={formData}
                 errors={formErrors}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                {...rest}
+                {...childProps}
             />
             <div className='app-footer-buttons-container'>
                 <CustomButton
@@ -108,7 +139,7 @@ const RequestMaterial = ({ goToTab, ...rest }) => {
                     app-create-btn footer-btn ${btnDisabled ? 'disabled' : ''} 
                     ${shake ? 'app-shake' : ''}
                 `}
-                    text='Send Request'
+                    text='Send Report'
                 />
             </div>
             <ConfirmModal
@@ -124,13 +155,4 @@ const RequestMaterial = ({ goToTab, ...rest }) => {
     )
 }
 
-const INITIALFORMDATA = {
-    itemName: null,
-    itemCode: '',
-    vendorName: null,
-    itemQty: '',
-    description: '',
-    reorderLevel: '',
-    minOrderLevel: ''
-}
-export default RequestMaterial
+export default ProductionQualityCheck

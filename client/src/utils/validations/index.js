@@ -18,6 +18,19 @@ export const checkValidation = (stateValues) => {
     })
 }
 
+export const validateRequired = (data) => {
+    const errors = {}
+    const text = 'Required'
+
+    Object.entries(data).map(([key, value]) => {
+        if (!value) errors[key] = text
+        else if (!value.trim())
+            errors[key] = text
+    })
+
+    return errors
+}
+
 export const validateIDProofs = (proofs) => {
     let errors = {};
     const text = 'Required'
@@ -335,27 +348,20 @@ export const validateExternalDispatchValues = (data, currentStock) => {
 
 export const validateRequestMaterialValues = (data) => {
     let errors = {};
-    const text = 'Required'
-    const { itemName, itemQty, vendorName, description, reorderLevel, minOrderLevel } = data
+    const { itemQty, reorderLevel, minOrderLevel } = data
 
-    if (!itemName) errors.itemName = text
-    if (!vendorName) errors.vendorName = text
-    if (!description) errors.description = text
-    if (!itemQty) errors.itemQty = text
-    else {
+    if (itemQty) {
         const error = validateNumber(itemQty)
         error && (errors.itemQty = error)
         if (Number(itemQty) < Number(minOrderLevel)) {
             errors.itemQty = `Quantity should exceed ${minOrderLevel}`
         }
     }
-    if (!reorderLevel) errors.reorderLevel = text
-    else {
+    if (reorderLevel) {
         const error = validateNumber(reorderLevel)
         error && (errors.reorderLevel = error)
     }
-    if (!minOrderLevel) errors.minOrderLevel = text
-    else {
+    if (minOrderLevel) {
         const error = validateNumber(minOrderLevel)
         error && (errors.minOrderLevel = error)
     }
