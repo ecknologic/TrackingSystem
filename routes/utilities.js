@@ -31,7 +31,7 @@ cron.schedule('0 0 2 * * *', function(){
             seqNo=results[0].orderId;
           });
 
-           let orderDetailsInsertQuery="insert into customerOrderDetails(existingCustomerId,dcNo) values(?,?)";
+           let orderDetailsInsertQuery="insert into customerorderdetails(existingCustomerId,dcNo) values(?,?)";
            db.query(orderDetailsInsertQuery,[customerId,"DC-"+seqNo],(err,results)=>{
 
       

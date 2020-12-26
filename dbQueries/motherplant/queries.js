@@ -83,6 +83,10 @@ motherPlantDbQueries.getQCTestedBatches = async (departmentId, callback) => {
     let query = `select q.phLevel,q.TDS,q.ozoneLevel,q.managerName,q.testResult,q.testedDate,p.batchId,p.phLevel as ph,p.TDS as tds,p.ozoneLevel as oz,p.requestedDate from qualitycheck q INNER JOIN productionQC p on q.productionQcId=p.productionQcId  where q.departmentId=${departmentId} ORDER BY q.testedDate DESC`
     return executeGetQuery(query, callback)
 }
+motherPlantDbQueries.getProdQCTestedBatches = async (departmentId, callback) => {
+    let query = "SELECT JSON_ARRAYAGG(json_object('phLevel',q.phLevel,'tds',q.TDS,'ozoneLevel',q.ozoneLevel,'qcLevel',q.qcLevel,'testResult',q.testResult,'managerName',q.managerName )) levels,p.batchId batchId FROM qualitycheck q INNER JOIN productionQC p on q.productionQcId=p.productionQcId GROUP BY q.productionQcId";
+    return executeGetQuery(query, callback)
+}
 motherPlantDbQueries.getCurrentProductionDetailsByDate = async (input, callback) => {
     let query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product250ML) total250MLBoxes FROM production p WHERE departmentId=? AND DATE(`productionDate`)<=?";
     return executeGetParamsQuery(query, [input.departmentId, input.date], callback)

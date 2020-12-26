@@ -52,6 +52,24 @@ router.get('/getQCTestedBatches', (req, res) => {
         else res.json(results);
     });
 });
+router.get('/getProdQCTestedBatches', (req, res) => {
+    motherPlantDbQueries.getProdQCTestedBatches(departmentId, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else {
+            if (results.length) {
+                let arr = []
+                for (let i of results) {
+                    let obj = i
+                    obj.levels = JSON.parse(i.levels)
+                    obj.batchId = i.batchId
+                    arr.push(obj)
+                }
+                res.json(results);
+            }
+            else res.json(results);
+        }
+    });
+});
 router.get('/getQCLevelsDetails/:productionQcId', (req, res) => {
     motherPlantDbQueries.getQCLevelsDetails(req.params.productionQcId, (err, results) => {
         if (err) res.status(500).json(dbError(err));
