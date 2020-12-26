@@ -12,6 +12,7 @@ import ReportsDropdown from '../../components/ReportsDropdown';
 import { resetTrackForm } from '../../utils/Functions';
 import NoContent from '../../components/NoContent';
 import '../../sass/qualityControl.scss'
+import ProductionTB from './tabs/ProductionTB';
 
 const QualityControl = () => {
     const [activeTab, setActiveTab] = useState('1')
@@ -57,9 +58,9 @@ const QualityControl = () => {
                 {
                     activeTab === '1' ? <InternalQC />
                         : activeTab === '2' ? <QualityCheck goToTab={handleGoToTab} />
-                            : activeTab === '3' ? <TestedBatches goToTab={handleGoToTab} />
+                            : activeTab === '3' ? <TestedBatches />
                                 : activeTab === '4' ? <ProductionQC goToTab={handleGoToTab} />
-                                    : activeTab === '5' ? <TestedBatches goToTab={handleGoToTab} />
+                                    : activeTab === '5' ? <ProductionTB />
                                         : <NoContent content='Design is in progress' />
                 }
             </div>

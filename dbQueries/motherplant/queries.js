@@ -84,7 +84,7 @@ motherPlantDbQueries.getQCTestedBatches = async (departmentId, callback) => {
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getProdQCTestedBatches = async (departmentId, callback) => {
-    let query = "SELECT JSON_ARRAYAGG(json_object('phLevel',q.phLevel,'tds',q.TDS,'ozoneLevel',q.ozoneLevel,'qcLevel',q.qcLevel,'testResult',q.testResult,'managerName',q.managerName )) levels,p.batchId batchId FROM qualitycheck q INNER JOIN productionQC p on q.productionQcId=p.productionQcId GROUP BY q.productionQcId";
+    let query = `SELECT JSON_ARRAYAGG(json_object('phLevel',q.phLevel,'tds',q.TDS,'ozoneLevel',q.ozoneLevel,'qcLevel',q.qcLevel,'testResult',q.testResult,'managerName',q.managerName )) levels,p.batchId batchId FROM qualitycheck q INNER JOIN productionQC p on q.productionQcId=p.productionQcId where q.departmentId=${departmentId} GROUP BY q.productionQcId`;
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getCurrentProductionDetailsByDate = async (input, callback) => {

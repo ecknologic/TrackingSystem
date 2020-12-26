@@ -379,6 +379,44 @@ export const testedBatchesColumns = [
     }
 ]
 
+export const productionTBColumns = [
+    {
+        title: 'Batch Id',
+        dataIndex: 'batchId',
+        key: 'batchId',
+    },
+    {
+        title: 'Level-1 Inputs',
+        dataIndex: 'level1',
+        key: 'level1',
+    },
+    {
+        title: 'Level-2 Inputs',
+        dataIndex: 'level2',
+        key: 'level2',
+    },
+    {
+        title: 'Level-3 Inputs',
+        dataIndex: 'level3',
+        key: 'level3',
+    },
+    {
+        title: 'Level-4 Inputs',
+        dataIndex: 'level4',
+        key: 'level4',
+    },
+    {
+        title: 'Tested Manager',
+        dataIndex: 'managerName',
+        key: 'managerName',
+    },
+    {
+        title: 'Status',
+        dataIndex: 'status',
+        key: 'status',
+    }
+]
+
 export const getRMColumns = (type) => {
 
     let statusText = 'Approval Status'
