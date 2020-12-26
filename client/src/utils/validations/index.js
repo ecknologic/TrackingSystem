@@ -258,12 +258,14 @@ export const validateQCValues = (data) => {
     return errors
 }
 
-export const validateQCcheckValues = (data) => {
+export const validateQCcheckValues = (data, type) => {
     let errors = {};
     const text = 'Required'
-    const { batchId, testResult, testType, description, phLevel, TDS, ozoneLevel, managerName } = data
-
-    if (!batchId) errors.batchId = text
+    const { batchId, testResult, productionQcId, testType, description, phLevel, TDS, ozoneLevel, managerName } = data
+    if (type === 'prod') {
+        if (!productionQcId) errors.productionQcId = text
+    }
+    else if (!batchId) errors.batchId = text
     if (!testResult) errors.testResult = text
     if (!description) errors.description = text
     if (!phLevel) errors.phLevel = text
@@ -470,15 +472,15 @@ const validateProductNPrice = ({ product20L, price20L, product1L, price1L,
             if (noP20L) errors.productNPrice = 'Enter quantity for 20 Ltrs'
             if (nop20L) errors.productNPrice = 'Enter price for 20 Ltrs'
         }
-        else if (!noP1L || !nop1L) {
+        if (!noP1L || !nop1L) {
             if (noP1L) errors.productNPrice = 'Enter quantity for 1 Ltrs'
             if (nop1L) errors.productNPrice = 'Enter price for 1 Ltrs'
         }
-        else if (!noP500ML || !nop500ML) {
+        if (!noP500ML || !nop500ML) {
             if (noP500ML) errors.productNPrice = 'Enter quantity for 500 ml'
             if (nop500ML) errors.productNPrice = 'Enter price for 500 ml'
         }
-        else if (!noP250ML || !nop250ML) {
+        if (!noP250ML || !nop250ML) {
             if (noP250ML) errors.productNPrice = 'Enter quantity for 250 ml'
             if (nop250ML) errors.productNPrice = 'Enter price for 250 ml'
         }

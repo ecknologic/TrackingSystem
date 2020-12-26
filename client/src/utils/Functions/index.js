@@ -235,8 +235,8 @@ export const extractDeliveryDetails = (data) => {
     return clone
 }
 
-export const extractGADeliveryDetails = ({ gstNo, gstProof, address, depositAmount, mobileNumber, customerName: contactPerson }) => {
-    return { gstNo, gstProof, address, depositAmount, phoneNumber: mobileNumber, contactPerson }
+export const extractGADeliveryDetails = ({ gstNo, deliveryLocation, routingId, isActive = 0, gstProof, address, depositAmount, mobileNumber, customerName: contactPerson }) => {
+    return { gstNo, gstProof, address, deliveryLocation, routingId, isActive, depositAmount, phoneNumber: mobileNumber, contactPerson }
 }
 
 export const extractGADetails = (data) => {

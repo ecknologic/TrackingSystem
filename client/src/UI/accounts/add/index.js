@@ -507,7 +507,7 @@ const AddAccount = () => {
                     <CustomButton
                         className='big second'
                         style={corporate ? fade : highlight}
-                        text='Other Customers' onClick={onGeneralBtnClick}
+                        text='Individual Customers' onClick={onGeneralBtnClick}
                     />
                 </div>
                 {

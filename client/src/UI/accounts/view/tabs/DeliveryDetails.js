@@ -42,6 +42,7 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
         const url = `/customer/getCustomerDeliveryDetails/${accountId}`
         try {
             const { data: [data = {}] } = await http.GET(url)
+            console.log('data>>>', data)
             const { deliveryDetails } = data
             setDelivery(deliveryDetails)
             setLoading(false)

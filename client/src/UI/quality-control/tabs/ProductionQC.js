@@ -6,7 +6,7 @@ import ConfirmModal from '../../../components/CustomModal';
 import { TRACKFORM } from '../../../utils/constants';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import { http } from '../../../modules/http';
-import { getBatchIdOptions, testResultOptions } from '../../../assets/fixtures';
+import { getBatchOptions, testResultOptions } from '../../../assets/fixtures';
 import { isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../utils/Functions';
 import { validateIntFloat, validateNames, validateQCcheckValues } from '../../../utils/validations';
 
@@ -17,10 +17,10 @@ const ProductionQC = ({ goToTab }) => {
     const [confirmModal, setConfirmModal] = useState(false)
     const [batchList, setBatchList] = useState([])
     const [shake, setShake] = useState(false)
-    const [QC, setQC] = useState({})
+    const [QCList, setQCList] = useState([])
 
-    const batchIdOptions = useMemo(() => getBatchIdOptions(batchList), [batchList])
-    const childProps = useMemo(() => ({ batchIdOptions, testResultOptions }), [batchIdOptions, testResultOptions])
+    const batchOptions = useMemo(() => getBatchOptions(batchList), [batchList])
+    const childProps = useMemo(() => ({ batchOptions, testResultOptions }), [batchOptions, testResultOptions])
 
     useEffect(() => {
         resetTrackForm()
@@ -37,16 +37,16 @@ const ProductionQC = ({ goToTab }) => {
         setBatchList(data)
     }
 
-    const getQCByBatchId = async (batchId) => {
-        const [data = {}] = await http.GET(`/motherPlant/getQCDetailsByBatch/${batchId}`)
-        setQC(data)
+    const getQCByProductionQcId = async (productionQcId) => {
+        const data = await http.GET(`/motherPlant/getQCLevelsDetails/${productionQcId}`)
+        setQCList(data)
     }
 
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
-        if (key === 'batchId') getQCByBatchId(value)
+        if (key === 'productionQcId') getQCByProductionQcId(value)
 
         // Validations
         if (key === 'managerName' || key === 'testType') {
@@ -68,8 +68,7 @@ const ProductionQC = ({ goToTab }) => {
     }
 
     const handleSubmit = async () => {
-        const formErrors = validateQCcheckValues(formData)
-        const { productionQcId } = QC
+        const formErrors = validateQCcheckValues(formData, 'prod')
 
         if (!isEmpty(formErrors)) {
             setShake(true)
@@ -78,8 +77,9 @@ const ProductionQC = ({ goToTab }) => {
             return
         }
 
+        const qcLevel = QCList.length + 1
         let body = {
-            ...formData, productionQcId
+            ...formData, qcLevel
         }
         const url = '/motherplant/createQualityCheck'
 
@@ -88,7 +88,7 @@ const ProductionQC = ({ goToTab }) => {
             showToast('QC Report', 'loading')
             await http.POST(url, body)
             // resetForm()
-            goToTab('3')
+            goToTab('5')
             showToast('QC Report', 'success')
         } catch (error) {
             message.destroy()
@@ -100,7 +100,7 @@ const ProductionQC = ({ goToTab }) => {
         setBtnDisabled(false)
         resetTrackForm()
         setFormData({})
-        setQC({})
+        setQCList([])
         setFormErrors({})
     }
 
@@ -125,7 +125,7 @@ const ProductionQC = ({ goToTab }) => {
         <>
             <ProductionQCForm
                 track
-                QC={QC}
+                QCList={QCList}
                 data={formData}
                 errors={formErrors}
                 onChange={handleChange}

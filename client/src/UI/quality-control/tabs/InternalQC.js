@@ -14,6 +14,8 @@ import { internalQCColumns } from '../../../assets/fixtures';
 import { disableFutureDates, getStatusColor } from '../../../utils/Functions';
 import DateValue from '../../../components/DateValue';
 import CustomDateInput from '../../../components/CustomDateInput';
+import InternalQCView from '../views/InternalQC';
+import CustomModal from '../../../components/CustomModal';
 const DATEFORMAT = 'DD-MM-YYYY'
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 const format = 'YYYY-MM-DD'
@@ -21,12 +23,15 @@ const format = 'YYYY-MM-DD'
 const InternalQC = () => {
     const [loading, setLoading] = useState(true)
     const [formData, setFormData] = useState({})
+    const [viewData, setViewData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [pageSize, setPageSize] = useState(10)
     const [totalCount, setTotalCount] = useState(null)
     const [pageNumber, setPageNumber] = useState(1)
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [DCModal, setDCModal] = useState(false)
+    const [viewModal, setViewModal] = useState(false)
+    const [formTitle, setFormTitle] = useState('')
     const [confirmModal, setConfirmModal] = useState(false)
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
     const [shake, setShake] = useState(false)
@@ -65,11 +70,9 @@ const InternalQC = () => {
 
     const handleMenuSelect = (key, data) => {
         if (key === 'view') {
-            customerOrderIdRef.current = data.customerOrderId
-            DCFormTitleRef.current = `DC - ${data.customerName}`
-            DCFormBtnRef.current = 'Update'
-            setFormData(data)
-            setDCModal(true)
+            setFormTitle(`Quality Control - ${data.batchId}`)
+            setViewData(data)
+            setViewModal(true)
         }
     }
 
@@ -117,6 +120,7 @@ const InternalQC = () => {
     }, [])
 
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
+    const handleModalCancel = useCallback(() => setViewModal(false), [])
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
@@ -183,6 +187,19 @@ const InternalQC = () => {
             >
                 <ConfirmMessage msg='Changes you made may not be saved.' />
             </QuitModal>
+            <CustomModal
+                hideCancel
+                okTxt='Close'
+                visible={viewModal}
+                title={formTitle}
+                onOk={handleModalCancel}
+                onCancel={handleModalCancel}
+                className='app-form-modal app-view-modal'
+            >
+                <InternalQCView
+                    data={viewData}
+                />
+            </CustomModal>
         </div>
     )
 }

@@ -11,79 +11,78 @@ import { Collapse } from 'antd';
 
 const ProductionQCForm = (props) => {
 
-    const { QC, data, errors, disabled, onChange, batchIdOptions, testResultOptions, onBlur, track } = props
-
-    const { phLevel, TDS, ozoneLevel, testResult, managerName, testType, description, batchId } = data
-    const { requestedDate, shiftType, TDS: tds, phLevel: PH, ozoneLevel: oz, managerName: name } = QC
-
-    const date = requestedDate ? dayjs(requestedDate).format('DD/MM/YYYY') : null
-    const time = requestedDate ? dayjs(requestedDate).format('hh:mm A') : null
+    const { QCList, data, errors, disabled, onChange, batchOptions, testResultOptions, onBlur, track } = props
+    const { phLevel, TDS, ozoneLevel, testResult, managerName, testType, description, productionQcId } = data
 
     return (
         <>
             <div className='app-form-container qc-form-container'>
                 <div className='row'>
                     <div className='input-container'>
-                        <InputLabel name='Select Batch No' error={errors.batchId} mandatory />
-                        <SelectInput track={track} value={batchId} options={batchIdOptions}
-                            disabled={disabled} error={errors.batchId}
-                            onSelect={(value) => onChange(value, 'batchId')}
+                        <InputLabel name='Select Batch No' error={errors.productionQcId} mandatory />
+                        <SelectInput track={track} value={productionQcId} options={batchOptions}
+                            disabled={disabled} error={errors.productionQcId}
+                            onSelect={(value) => onChange(value, 'productionQcId')}
                         />
                     </div>
                 </div>
-                <Collapse
-                    accordion
-                    // key={index}
-                    className='accordion-container'
-                    expandIcon={() => <DDownIcon />}
-                    expandIconPosition='right'
-                >
-                    <Panel
-                        header={<CollapseHeader title='Requested Inputs' />}
-                    // forceRender
-                    >
-                        <>
-                            <div className='row half-stretch'>
-                                <div className='input-container'>
-                                    <InputLabel name='Date' />
-                                    <InputValue size='larger' value={date || '--'} />
-                                </div>
-                                <div className='input-container'>
-                                    <InputLabel name='Time' />
-                                    <InputValue size='larger' value={time || '--'} />
-                                </div>
-                                <div className='input-container'>
-                                    <InputLabel name='Shift Time' />
-                                    <InputValue size='larger' value={shiftType || '--'} />
-                                </div>
-                            </div>
-                            <div className='row'>
-                                <div className='input-container'>
-                                    <InputLabel name='PH' />
-                                    <InputValue size='larger' value={PH || '--'} />
-                                </div>
-                            </div>
-                            <div className='row'>
-                                <div className='input-container'>
-                                    <InputLabel name='Ozone Level (Mg/Litre)' />
-                                    <InputValue size='larger' value={oz || '--'} />
-                                </div>
-                            </div>
-                            <div className='row'>
-                                <div className='input-container'>
-                                    <InputLabel name='Total Dissolved Solids (TDS - mg/litre)' />
-                                    <InputValue size='larger' value={tds || '--'} />
-                                </div>
-                            </div>
-                            <div className='row'>
-                                <div className='input-container'>
-                                    <InputLabel name='Manager' />
-                                    <InputValue size='larger' value={name || '--'} />
-                                </div>
-                            </div>
-                        </>
-                    </Panel>
-                </Collapse>
+                {
+                    QCList.map((item) => {
+                        const { qcLevel, ozoneLevel, phLevel, tds, managerName, testedDate } = item
+                        const date = testedDate ? dayjs(testedDate).format('DD/MM/YYYY') : null
+                        const time = testedDate ? dayjs(testedDate).format('hh:mm A') : null
+
+                        return (
+                            <Collapse
+                                accordion
+                                key={qcLevel}
+                                className='accordion-container'
+                                expandIcon={() => <DDownIcon />}
+                                expandIconPosition='right'
+                            >
+                                <Panel header={<CollapseHeader title={`Level-${qcLevel} Test`} />}>
+                                    <>
+                                        <div className='row half-stretch'>
+                                            <div className='input-container'>
+                                                <InputLabel name='Date' />
+                                                <InputValue size='larger' value={date || '--'} />
+                                            </div>
+                                            <div className='input-container'>
+                                                <InputLabel name='Time' />
+                                                <InputValue size='larger' value={time || '--'} />
+                                            </div>
+                                        </div>
+                                        <div className='row'>
+                                            <div className='input-container'>
+                                                <InputLabel name='PH' />
+                                                <InputValue size='larger' value={phLevel || '--'} />
+                                            </div>
+                                        </div>
+                                        <div className='row'>
+                                            <div className='input-container'>
+                                                <InputLabel name='Ozone Level (Mg/Litre)' />
+                                                <InputValue size='larger' value={ozoneLevel || '--'} />
+                                            </div>
+                                        </div>
+                                        <div className='row'>
+                                            <div className='input-container'>
+                                                <InputLabel name='Total Dissolved Solids (TDS - mg/litre)' />
+                                                <InputValue size='larger' value={tds || '--'} />
+                                            </div>
+                                        </div>
+                                        <div className='row'>
+                                            <div className='input-container'>
+                                                <InputLabel name='Manager' />
+                                                <InputValue size='larger' value={managerName || '--'} />
+                                            </div>
+                                        </div>
+                                    </>
+                                </Panel>
+                            </Collapse>
+                        )
+                    })
+                }
+
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='PH' error={errors.phLevel} mandatory />

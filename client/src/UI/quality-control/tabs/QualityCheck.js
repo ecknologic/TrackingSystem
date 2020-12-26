@@ -79,7 +79,7 @@ const QualityCheck = ({ goToTab }) => {
         }
 
         let body = {
-            ...formData, productionQcId
+            ...formData, productionQcId, qcLevel: 1
         }
         const url = '/motherplant/createQualityCheck'
 

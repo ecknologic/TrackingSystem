@@ -27,7 +27,7 @@ motherPlantDbQueries.getVehicleDetails = async (callback) => {
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getDispatchDetails = async (departmentId, callback) => {
-    let query = `SELECT d.dispatchType,d.dispatchAddress,d.DCNO,d.batchId,d.product20L,d.product1L,d.product500ML,d.product250ML,d.driverName,d.dispatchTo,d.dispatchedDate,v.vehicleType,v.vehicleNo from dispatches d INNER JOIN VehicleDetails v ON d.vehicleNo=v.vehicleId WHERE departmentId=${departmentId} ORDER BY d.dispatchedDate DESC`;
+    let query = `SELECT d.status,d.dispatchType,d.dispatchAddress,d.DCNO,d.batchId,d.product20L,d.product1L,d.product500ML,d.product250ML,d.driverName,d.dispatchTo,d.dispatchedDate,v.vehicleType,v.vehicleNo from dispatches d INNER JOIN VehicleDetails v ON d.vehicleNo=v.vehicleId WHERE departmentId=${departmentId} ORDER BY d.dispatchedDate DESC`;
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getAllQCDetails = async (callback) => {
@@ -120,7 +120,7 @@ motherPlantDbQueries.createProductionQC = async (input, callback) => {
 motherPlantDbQueries.createQualityCheck = async (input, callback) => {
     const { productionQcId, phLevel, TDS, ozoneLevel, testResult, managerName, description, testType, departmentId, qcLevel } = input
     let query = "insert into qualitycheck (testedDate,productionQcId,phLevel,TDS,ozoneLevel,testResult,managerName,description,testType,qcLevel,departmentId) values(?,?,?,?,?,?,?,?,?,?,?)";
-    let requestBody = [new Date(), productionQcId, phLevel, TDS, ozoneLevel, testResult, managerName, description, testType, input.qcLevel, departmentId]
+    let requestBody = [new Date(), productionQcId, phLevel, TDS, ozoneLevel, testResult, managerName, description, testType, qcLevel, departmentId]
     if (qcLevel == 1) motherPlantDbQueries.updateProductionQCStatus({ productionQcId, status: testResult })
     return executePostOrUpdateQuery(query, requestBody, callback)
 }

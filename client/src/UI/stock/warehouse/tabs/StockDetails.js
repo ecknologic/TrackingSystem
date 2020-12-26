@@ -119,6 +119,7 @@ const StockDetails = ({ date }) => {
             showToast('Stock Perticules', 'success')
             onModalClose(true)
             getNewStock()
+            getCAS()
         } catch (error) {
             setBtnDisabled(false)
         }

@@ -55,7 +55,7 @@ router.get('/getQCTestedBatches', (req, res) => {
 router.get('/getQCLevelsDetails/:productionQcId', (req, res) => {
     motherPlantDbQueries.getQCLevelsDetails(req.params.productionQcId, (err, results) => {
         if (err) res.status(500).json(dbError(err));
-        else res.json(JSON.parse(results[0].QCDetails));
+        else res.json(JSON.parse(results[0].QCDetails) || []);
     });
 });
 

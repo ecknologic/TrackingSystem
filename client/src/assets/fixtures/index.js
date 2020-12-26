@@ -76,6 +76,9 @@ export const getRouteOptions = (routes = []) => {
 export const getBatchIdOptions = (batches = []) => {
     return batches.map((item, index) => <Option key={index} value={item.batchId}>{item.batchId}</Option>)
 }
+export const getBatchOptions = (batches = []) => {
+    return batches.map((item) => <Option key={item.productionQcId} value={item.productionQcId}>{item.batchId}</Option>)
+}
 export const getMaterialOpitons = (materials = [{ name: 'Caps' }, { name: 'Bottles' }]) => {
     return materials.map((item, index) => <Option key={index} value={item.name}>{item.name}</Option>)
 }
@@ -360,7 +363,7 @@ export const testedBatchesColumns = [
         key: 'testedDate',
     },
     {
-        title: 'Tested Inputs',
+        title: 'Level-1 Inputs',
         dataIndex: 'testInputs',
         key: 'testInputs',
     },
