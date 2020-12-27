@@ -1,18 +1,13 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
 import BackButton from '../../../components/BackButton';
 import '../../../sass/accounts.scss'
 
 
-const Header = () => {
-    const history = useHistory()
-
-    const handleBack = () => history.push('/manage-accounts')
-
+const Header = ({ onClick }) => {
     return (
         <div className='account-add-header'>
             <div className='heading-container'>
-                <BackButton onClick={handleBack} />
+                <BackButton onClick={onClick} />
                 <div className='titles-container'>
                     <span className='title'>Create Account</span>
                 </div>

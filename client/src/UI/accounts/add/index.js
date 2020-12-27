@@ -490,13 +490,20 @@ const AddAccount = () => {
         resetTrackForm()
     }, [corporate])
 
+    const handleBack = () => {
+        const formHasChanged = sessionStorage.getItem(TRACKFORM)
+        if (formHasChanged) {
+            setConfirmModal(true)
+        }
+        else goToManageAccounts()
+    }
 
     const goToManageAccounts = () => history.push('/manage-accounts')
 
     return (
         <Fragment>
             <ScrollUp dep={scrollDep} />
-            <Header />
+            <Header onClick={handleBack} />
             <div className='account-add-content'>
                 <div className='header-buttons-container'>
                     <CustomButton
