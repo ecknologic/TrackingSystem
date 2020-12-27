@@ -1,17 +1,19 @@
 import dayjs from 'dayjs';
 import { Table } from 'antd';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../modules/http';
+import DispatchView from '../views/Dispatch';
 import Spinner from '../../../components/Spinner';
+import { TODAYDATE } from '../../../utils/constants';
+import DateValue from '../../../components/DateValue';
 import { ScheduleIcon } from '../../../components/SVG_Icons';
 import TableAction from '../../../components/TableAction';
 import SearchInput from '../../../components/SearchInput';
-import { TODAYDATE, TRACKFORM } from '../../../utils/constants';
-import CustomPagination from '../../../components/CustomPagination';
+import CustomModal from '../../../components/CustomModal';
 import { getDispatchColumns } from '../../../assets/fixtures';
-import { disableFutureDates, getStatusColor } from '../../../utils/Functions';
-import DateValue from '../../../components/DateValue';
 import CustomDateInput from '../../../components/CustomDateInput';
+import CustomPagination from '../../../components/CustomPagination';
+import { disableFutureDates, getStatusColor } from '../../../utils/Functions';
 const DATEFORMAT = 'DD-MM-YYYY'
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 const format = 'YYYY-MM-DD'
@@ -22,11 +24,12 @@ const Dispatches = ({ reFetch }) => {
     const [pageSize, setPageSize] = useState(10)
     const [totalCount, setTotalCount] = useState(null)
     const [pageNumber, setPageNumber] = useState(1)
-    const [viewModal, setViewModal] = useState(false)
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
-    const [open, setOpen] = useState(false)
-    const [dispatches, setDispatches] = useState([])
     const [dispatchesClone, setDispatchesClone] = useState([])
+    const [viewModal, setViewModal] = useState(false)
+    const [formTitle, setFormTitle] = useState('')
+    const [dispatches, setDispatches] = useState([])
+    const [open, setOpen] = useState(false)
 
     const dispatchColumns = useMemo(() => getDispatchColumns(), [])
 
@@ -58,6 +61,7 @@ const Dispatches = ({ reFetch }) => {
 
     const handleMenuSelect = (key, data) => {
         if (key === 'view') {
+            setFormTitle(`Dispatch Details - ${data.DCNO}`)
             setViewData(data)
             setViewModal(true)
         }
@@ -88,6 +92,8 @@ const Dispatches = ({ reFetch }) => {
             action: <TableAction onSelect={({ key }) => handleMenuSelect(key, dispatch)} />
         }
     }), [dispatches])
+
+    const handleModalCancel = useCallback(() => setViewModal(false), [])
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
@@ -145,6 +151,19 @@ const Dispatches = ({ reFetch }) => {
                         onPageSizeChange={handleSizeChange}
                     />)
             }
+            <CustomModal
+                hideCancel
+                okTxt='Close'
+                visible={viewModal}
+                title={formTitle}
+                onOk={handleModalCancel}
+                onCancel={handleModalCancel}
+                className='app-form-modal app-view-modal'
+            >
+                <DispatchView
+                    data={viewData}
+                />
+            </CustomModal>
         </div>
     )
 }
