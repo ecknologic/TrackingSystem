@@ -142,7 +142,7 @@ const CollapseForm = ({ data, routeOptions, uniqueId, addressesErrors }) => {
                             onChange={(value) => onChange(value, 'deliveryLocation')} />
                     </div>
                     <div className='input-container'>
-                        <InputLabel name='Route' error={errors.routingId} mandatory />
+                        <InputLabel name='Warehouse' error={errors.routingId} mandatory />
                         <SelectInput options={routeOptions} value={routingId}
                             error={errors.routingId}
                             onSelect={(value) => onChange(value, 'routingId')} />

@@ -25,7 +25,7 @@ const DCForm = (props) => {
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Person / Shop Name' error={errors.customerName} mandatory />
-                        <CustomInput value={customerName} placeholder='Add Location'
+                        <CustomInput value={customerName} placeholder='Add Name'
                             disabled={disabled} error={errors.customerName}
                             onChange={(value) => onChange(value, 'customerName')}
                         />
@@ -41,7 +41,7 @@ const DCForm = (props) => {
                 </div>
                 <div className='row'>
                     <div className='input-container stretch'>
-                        <InputLabel name='Shop Address' error={errors.address} mandatory />
+                        <InputLabel name='Address' error={errors.address} mandatory />
                         <CustomInput value={address} placeholder='Add Address'
                             disabled={disabled} error={errors.address}
                             onChange={(value) => onChange(value, 'address')}

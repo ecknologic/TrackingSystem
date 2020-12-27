@@ -4,16 +4,13 @@ import BackButton from '../../../components/BackButton';
 import Spinner from '../../../components/Spinner';
 import '../../../sass/accounts.scss'
 
-const Header = ({ data }) => {
+const Header = ({ data, onClick }) => {
     const { address, title, loading } = data
-    const history = useHistory()
-
-    const handleBack = () => history.push('/manage-accounts')
 
     return (
         <div className='account-view-header'>
             <div className='heading-container'>
-                <BackButton onClick={handleBack} />
+                <BackButton onClick={onClick} />
                 <div className='titles-container'>
                     {
                         loading ? <Spinner />

@@ -1,6 +1,6 @@
 import { Tabs } from 'antd';
-import { useParams } from 'react-router-dom';
-import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
+import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { getRouteOptions, WEEKDAYS } from '../../../assets/fixtures';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import { DocIconWhite } from '../../../components/SVG_Icons';
@@ -17,7 +17,9 @@ import { validateDeliveryValues, validateDevDays, validateIDNumbers, validateMob
 import { extractDeliveryDetails, getProductsForDB, extractProductsFromForm, isEmpty, getDevDaysForDB, getBase64, resetTrackForm, showToast } from '../../../utils/Functions';
 
 const ViewAccount = () => {
+    const history = useHistory()
     const { accountId } = useParams()
+    const [activeTab, setActiveTab] = useState('1')
     const [account, setAccount] = useState({ loading: true })
     const [headerContent, setHeaderContent] = useState({ loading: true })
     const [formData, setFormData] = useState({})
@@ -31,6 +33,8 @@ const ViewAccount = () => {
     const routeOptions = useMemo(() => getRouteOptions(routes), [routes])
     const [confirmModal, setConfirmModal] = useState(false)
     const [shake, setShake] = useState(false)
+    const [backClick, setBackClick] = useState(false)
+    const clickRef = useRef('')
 
     useEffect(() => {
         getAccount()
@@ -177,17 +181,46 @@ const ViewAccount = () => {
         setDevDaysError({})
     }
 
+    const handleTabClick = (key) => {
+        const formHasChanged = sessionStorage.getItem(TRACKFORM)
+        if (formHasChanged) {
+            clickRef.current = key
+            setConfirmModal(true)
+        }
+        else setActiveTab(key)
+    }
+
+    const handleBack = () => {
+        const formHasChanged = sessionStorage.getItem(TRACKFORM)
+        if (formHasChanged) {
+            setConfirmModal(true)
+            setBackClick(true)
+        }
+        else history.push('/manage-accounts')
+    }
+
     const handleConfirmModalOk = useCallback(() => {
         setConfirmModal(false);
         resetTrackForm()
+        if (backClick) {
+            history.push('/manage-accounts')
+        }
+        else {
+            const value = clickRef.current
+            setActiveTab(value)
+        }
         onModalClose()
+    }, [backClick])
+
+    const handleAccountUpdate = useCallback((title, address) => {
+        setHeaderContent({ title, address })
     }, [])
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
     const handleModalCancel = useCallback(() => onModalClose(), [])
 
     return (
         <Fragment>
-            <Header data={headerContent} />
+            <Header data={headerContent} onClick={handleBack} />
             <div className='account-view-content'>
                 <div className='tabs-container'>
                     <Tabs
@@ -198,9 +231,11 @@ const ViewAccount = () => {
                                 icon={<DocIconWhite />}
                                 text='Add new Delivery address' />
                         }
+                        onTabClick={handleTabClick}
+                        activeKey={activeTab}
                     >
                         <TabPane tab="Account Overview" key="1">
-                            <AccountOverview data={account} routeOptions={routeOptions} />
+                            <AccountOverview data={account} routeOptions={routeOptions} onUpdate={handleAccountUpdate} />
                         </TabPane>
                         <TabPane tab="Delivery Details" key="2">
                             <DeliveryDetails recentDelivery={recentDelivery} routeOptions={routeOptions} />

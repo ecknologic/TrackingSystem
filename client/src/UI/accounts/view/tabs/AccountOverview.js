@@ -11,7 +11,7 @@ import { validateIDProofs, validateAccountValues, validateIDNumbers, validateMob
 import GeneralAccountForm from '../../add/forms/GeneralAccount';
 import { WEEKDAYS } from '../../../../assets/fixtures';
 
-const AccountOverview = ({ data, routeOptions }) => {
+const AccountOverview = ({ data, routeOptions, onUpdate }) => {
     const { gstProof, idProof_backside, idProof_frontside, isActive, registeredDate,
         customertype, Address1, loading } = data
 
@@ -172,9 +172,10 @@ const AccountOverview = ({ data, routeOptions }) => {
         }
 
         const Address1 = accountValues.address
+        const organizationName = accountValues.customerName
         const idProofs = getIdProofsForDB(IDProofs)
 
-        const body = { ...accountValues, Address1, idProofs }
+        const body = { ...accountValues, organizationName, Address1, idProofs }
         delete body.registeredDate
         const url = '/customer/updateCustomer'
 
@@ -183,6 +184,7 @@ const AccountOverview = ({ data, routeOptions }) => {
             showToast('Customer', 'loading', 'PUT')
             await http.POST(url, body)
             setBtnDisabled(false)
+            onUpdate(organizationName, Address1)
             showToast('Customer', 'success', 'PUT')
         } catch (error) {
             setBtnDisabled(false)

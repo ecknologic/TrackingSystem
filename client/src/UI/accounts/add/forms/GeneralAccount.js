@@ -169,7 +169,7 @@ const GeneralAccountForm = (props) => {
                                     />
                                 </div>
                                 <div className='input-container'>
-                                    <InputLabel name='Route' error={errors.routingId} mandatory />
+                                    <InputLabel name='Warehouse' error={errors.routingId} mandatory />
                                     <SelectInput track={track} options={routeOptions}
                                         value={routingId} disabled={disabled}
                                         error={errors.routingId} onSelect={(value) => onChange(value, 'routingId')}

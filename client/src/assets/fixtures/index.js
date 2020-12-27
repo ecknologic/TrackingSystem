@@ -102,7 +102,7 @@ export const deliveryColumns = [
         key: 'dcnumber',
     },
     {
-        title: 'Shop Address',
+        title: 'Address',
         dataIndex: 'shopAddress',
         key: 'shopAddress',
     },
