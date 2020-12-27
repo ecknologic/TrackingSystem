@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import InputWithAddon from '../../../../components/InputWithAddon';
 import SelectInput from '../../../../components/SelectInput';
 import { dayOptions } from '../../../../assets/fixtures'
@@ -6,11 +6,12 @@ import UploadPreviewer from '../../../../components/UploadPreviewer';
 import DraggerInput from '../../../../components/DraggerInput';
 import InputLabel from '../../../../components/InputLabel';
 import CustomInput from '../../../../components/CustomInput';
+import { removeFormTracker, resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 
 const DeliveryForm = (props) => {
 
     const { data, errors, devDays, onBlur, devDaysError, onChange, onSelect, onDeselect,
-        routeOptions, track, sameAddress, onUpload, onRemove } = props
+        routeOptions, sameAddress, onUpload, onRemove } = props
 
     const {
         gstNo, gstProof, depositAmount, routingId, phoneNumber, contactPerson, address, isActive,
@@ -19,6 +20,15 @@ const DeliveryForm = (props) => {
     } = data
 
     const gstUploadDisable = gstProof
+
+    useEffect(() => {
+        resetTrackForm()
+        trackAccountFormOnce()
+
+        return () => {
+            removeFormTracker()
+        }
+    }, [])
 
     return (
         <>
@@ -35,7 +45,7 @@ const DeliveryForm = (props) => {
                     <div className='input-container app-upload-file-container app-gst-upload-container'>
                         <DraggerInput onUpload={(file) => onUpload(file, 'gstProof', 'delivery')} disabled={sameAddress || gstUploadDisable || isActive} />
                         <div className='upload-preview-container'>
-                            <UploadPreviewer value={gstProof} track={track}
+                            <UploadPreviewer value={gstProof} track
                                 title='GST Proof' disabled={sameAddress || isActive} error={errors.gstProof}
                                 onUpload={(file) => onUpload(file, 'gstProof', 'delivery')}
                                 onRemove={() => onRemove('gstProof', 'delivery')} className='last' />
@@ -52,7 +62,7 @@ const DeliveryForm = (props) => {
                     </div>
                     <div className='input-container'>
                         <InputLabel name='Warehouse' error={errors.routingId} mandatory />
-                        <SelectInput track={track} options={routeOptions} value={routingId}
+                        <SelectInput track options={routeOptions} value={routingId}
                             disabled={isActive} error={errors.routingId}
                             onSelect={(value) => onChange(value, 'routingId')}
                         />
@@ -141,7 +151,7 @@ const DeliveryForm = (props) => {
                     <div className='input-container'>
                         <InputLabel name='Delivery Days' error={devDaysError.devDays} mandatory />
                         <SelectInput
-                            track={track}
+                            track
                             mode='multiple' disabled={isActive}
                             value={devDays} options={dayOptions}
                             error={devDaysError.devDays} onSelect={onSelect} onDeselect={onDeselect}

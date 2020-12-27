@@ -19,7 +19,7 @@ import { DDownIcon, PlusIcon } from '../../../components/SVG_Icons'
 import { getRouteOptions, WEEKDAYS } from '../../../assets/fixtures';
 import {
     getBase64, deepClone, getIdProofsForDB, getDevDaysForDB, getAddressesForDB, resetTrackForm,
-    getProductsForDB, extractGADeliveryDetails, extractGADetails, isEmpty, trackAccountFormOnce, showToast, removeFormTracker
+    getProductsForDB, extractGADeliveryDetails, extractGADetails, isEmpty, showToast, extractCADetails
 } from '../../../utils/Functions';
 import { TRACKFORM, getUserId, getUsername, getWarehoseId, TODAYDATE } from '../../../utils/constants';
 import {
@@ -59,7 +59,7 @@ const AddAccount = () => {
     const [createShake, setCreateShake] = useState(false)
     const [addShake, setAddShake] = useState(false)
 
-    const customertype = corporate ? 'Corporate' : 'General'
+    const customertype = corporate ? 'Corporate' : 'Individual'
     const confirmMsg = 'Changes you made may not be saved.'
     const { organizationName } = corporateValues
     const { customerName } = generalValues
@@ -74,14 +74,6 @@ const AddAccount = () => {
         sessionStorage.removeItem('address3')
         sessionStorage.removeItem('address4')
     }, [])
-
-    useEffect(() => {
-        resetTrackForm()
-        trackAccountFormOnce()
-        return () => {
-            removeFormTracker()
-        }
-    }, [corporate])
 
     useEffect(() => {
         if (sameAddress) setDDForSameAddress()
@@ -385,11 +377,8 @@ const AddAccount = () => {
             }
             const idProofs = getIdProofsForDB(IDProofs)
             const delivery = getAddressesForDB(allDeliveries)
-            const Address1 = corporateValues.address
-            const account = { ...corporateValues, Address1, idProofs, ...extra }
-            delete account.address
-            delete account.registeredDate
-            body = { ...account, deliveryDetails: delivery }
+            const account = extractCADetails(corporateValues)
+            body = { ...account, deliveryDetails: delivery, idProofs, ...extra }
         }
         else {
 

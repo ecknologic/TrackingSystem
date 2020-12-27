@@ -1,23 +1,32 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import InputLabel from '../../../components/InputLabel';
 import CustomInput from '../../../components/CustomInput';
 import SelectInput from '../../../components/SelectInput';
 import CustomTextArea from '../../../components/CustomTextArea';
+import { removeFormTracker, resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
 
 const ExternalDispatchForm = (props) => {
 
-    const { data, errors, batchIdOptions, vehicleOptions, disabled, driverOptions, onChange, onBlur, track } = props
+    const { data, errors, batchIdOptions, vehicleOptions, disabled, driverOptions, onChange, onBlur } = props
 
     const { batchId, dispatchAddress, managerName, vehicleNo, mobileNumber, driverId, product20L, product1L,
         product500ML, product250ML, price20L, price1L, price500ML, price250ML } = data
 
+    useEffect(() => {
+        resetTrackForm()
+        trackAccountFormOnce()
+
+        return () => {
+            removeFormTracker()
+        }
+    }, [])
     return (
         <>
             <div className='app-form-container external-dispatch-form-container'>
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Batch No' error={errors.customerName} mandatory />
-                        <SelectInput track={track} value={batchId} options={batchIdOptions}
+                        <SelectInput track value={batchId} options={batchIdOptions}
                             disabled={disabled} error={errors.batchId}
                             onSelect={(value) => onChange(value, 'batchId')}
                         />
@@ -79,7 +88,7 @@ const ExternalDispatchForm = (props) => {
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Driver Name' error={errors.driverId} />
-                        <SelectInput track={track} value={driverId} options={driverOptions}
+                        <SelectInput track value={driverId} options={driverOptions}
                             disabled={disabled} error={errors.driverId}
                             onSelect={(value) => onChange(value, 'driverId')}
                         />
@@ -96,7 +105,7 @@ const ExternalDispatchForm = (props) => {
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Vehicle No' error={errors.vehicleNo} />
-                        <SelectInput track={track} value={vehicleNo} options={vehicleOptions}
+                        <SelectInput track value={vehicleNo} options={vehicleOptions}
                             disabled={disabled} error={errors.vehicleNo}
                             onSelect={(value) => onChange(value, 'vehicleNo')}
                         />

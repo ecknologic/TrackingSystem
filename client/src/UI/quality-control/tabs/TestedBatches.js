@@ -3,19 +3,19 @@ import { Table } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import { http } from '../../../modules/http';
 import Spinner from '../../../components/Spinner';
-import { ScheduleIcon } from '../../../components/SVG_Icons';
-import SearchInput from '../../../components/SearchInput';
 import { TODAYDATE } from '../../../utils/constants';
-import CustomPagination from '../../../components/CustomPagination';
-import { testedBatchesColumns } from '../../../assets/fixtures';
-import { disableFutureDates, getStatusColor } from '../../../utils/Functions';
 import DateValue from '../../../components/DateValue';
+import SearchInput from '../../../components/SearchInput';
+import { ScheduleIcon } from '../../../components/SVG_Icons';
+import { testedBatchesColumns } from '../../../assets/fixtures';
+import CustomPagination from '../../../components/CustomPagination';
 import CustomDateInput from '../../../components/CustomDateInput';
+import { disableFutureDates, getStatusColor } from '../../../utils/Functions';
 const DATEFORMAT = 'DD-MM-YYYY'
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 const format = 'YYYY-MM-DD'
 
-const TestedBatches = () => {
+const TestedBatches = ({ reFetch }) => {
     const [loading, setLoading] = useState(true)
     const [pageSize, setPageSize] = useState(10)
     const [totalCount, setTotalCount] = useState(null)
@@ -26,8 +26,9 @@ const TestedBatches = () => {
     const [TBClone, setTBClone] = useState([])
 
     useEffect(() => {
+        setLoading(true)
         getTB()
-    }, [])
+    }, [reFetch])
 
     const getTB = async () => {
         const data = await http.GET('/motherPlant/getQCTestedBatches')

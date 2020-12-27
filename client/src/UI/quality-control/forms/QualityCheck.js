@@ -1,14 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import InputLabel from '../../../components/InputLabel';
 import CustomInput from '../../../components/CustomInput';
 import SelectInput from '../../../components/SelectInput';
 import InputValue from '../../../components/InputValue';
 import CustomTextArea from '../../../components/CustomTextArea';
 import dayjs from 'dayjs';
+import { removeFormTracker, resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
 
 const QualityCheckForm = (props) => {
 
-    const { QC, data, errors, disabled, onChange, batchIdOptions, testResultOptions, onBlur, track } = props
+    const { QC, data, errors, disabled, onChange, batchIdOptions, testResultOptions, onBlur } = props
 
     const { phLevel, TDS, ozoneLevel, testResult, managerName, testType, description, batchId } = data
     const { requestedDate, shiftType, TDS: tds, phLevel: PH, ozoneLevel: oz, managerName: name } = QC
@@ -16,13 +17,22 @@ const QualityCheckForm = (props) => {
     const date = requestedDate ? dayjs(requestedDate).format('DD/MM/YYYY') : null
     const time = requestedDate ? dayjs(requestedDate).format('hh:mm A') : null
 
+    useEffect(() => {
+        resetTrackForm()
+        trackAccountFormOnce()
+
+        return () => {
+            removeFormTracker()
+        }
+    }, [])
+
     return (
         <>
             <div className='app-form-container qc-form-container'>
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Select Batch No' error={errors.batchId} mandatory />
-                        <SelectInput track={track} value={batchId} options={batchIdOptions}
+                        <SelectInput track value={batchId} options={batchIdOptions}
                             disabled={disabled} error={errors.batchId}
                             onSelect={(value) => onChange(value, 'batchId')}
                         />
@@ -96,7 +106,7 @@ const QualityCheckForm = (props) => {
                     </div>
                     <div className='input-container'>
                         <InputLabel name='Test Results' error={errors.testResult} mandatory />
-                        <SelectInput track={track} value={testResult} options={testResultOptions}
+                        <SelectInput track value={testResult} options={testResultOptions}
                             disabled={disabled} error={errors.testResult}
                             onSelect={(value) => onChange(value, 'testResult')}
                         />

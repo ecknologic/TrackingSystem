@@ -1,13 +1,23 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import InputLabel from '../../../../components/InputLabel';
 import CustomInput from '../../../../components/CustomInput';
 import SelectInput from '../../../../components/SelectInput';
+import { removeFormTracker, resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 
 const InteralQCForm = (props) => {
 
-    const { data, errors, disabled, onChange, shiftOptions, onBlur, track } = props
+    const { data, errors, disabled, onChange, shiftOptions, onBlur } = props
 
     const { phLevel, TDS, ozoneLevel, managerName, shiftType } = data
+
+    useEffect(() => {
+        resetTrackForm()
+        trackAccountFormOnce()
+
+        return () => {
+            removeFormTracker()
+        }
+    }, [])
 
     return (
         <>
@@ -18,7 +28,7 @@ const InteralQCForm = (props) => {
                         <SelectInput
                             value={shiftType}
                             options={shiftOptions}
-                            track={track} disabled={disabled}
+                            track disabled={disabled}
                             error={errors.shiftType}
                             onSelect={(value) => onChange(value, 'shiftType')}
                         />

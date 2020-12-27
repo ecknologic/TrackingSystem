@@ -3,18 +3,18 @@ import { Table } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import { http } from '../../../modules/http';
 import Spinner from '../../../components/Spinner';
-import { ScheduleIcon } from '../../../components/SVG_Icons';
-import SearchInput from '../../../components/SearchInput';
 import { TODAYDATE } from '../../../utils/constants';
-import CustomPagination from '../../../components/CustomPagination';
-import { productionTBColumns } from '../../../assets/fixtures';
-import { disableFutureDates, getStatusColor } from '../../../utils/Functions';
 import DateValue from '../../../components/DateValue';
+import SearchInput from '../../../components/SearchInput';
+import { ScheduleIcon } from '../../../components/SVG_Icons';
+import { productionTBColumns } from '../../../assets/fixtures';
 import CustomDateInput from '../../../components/CustomDateInput';
+import CustomPagination from '../../../components/CustomPagination';
+import { disableFutureDates, getStatusColor } from '../../../utils/Functions';
 const DATEFORMAT = 'DD-MM-YYYY'
 const format = 'YYYY-MM-DD'
 
-const ProductionTB = () => {
+const ProductionTB = ({ reFetch }) => {
     const [loading, setLoading] = useState(true)
     const [pageSize, setPageSize] = useState(10)
     const [totalCount, setTotalCount] = useState(null)
@@ -25,8 +25,9 @@ const ProductionTB = () => {
     const [TBClone, setTBClone] = useState([])
 
     useEffect(() => {
+        setLoading(true)
         getTB()
-    }, [])
+    }, [reFetch])
 
     const getTB = async () => {
         const data = await http.GET('/motherPlant/getProdQCTestedBatches')

@@ -1,18 +1,28 @@
-import React from 'react';
+import dayjs from 'dayjs';
+import { Collapse } from 'antd';
+import React, { useEffect } from 'react';
+import InputValue from '../../../components/InputValue';
 import InputLabel from '../../../components/InputLabel';
 import CustomInput from '../../../components/CustomInput';
 import SelectInput from '../../../components/SelectInput';
-import InputValue from '../../../components/InputValue';
-import CustomTextArea from '../../../components/CustomTextArea';
-import dayjs from 'dayjs';
 import { DDownIcon } from '../../../components/SVG_Icons';
 import CollapseHeader from '../../../components/CollapseHeader';
-import { Collapse } from 'antd';
+import CustomTextArea from '../../../components/CustomTextArea';
+import { removeFormTracker, resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
 
 const ProductionQCForm = (props) => {
 
-    const { QCList, data, errors, disabled, onChange, batchOptions, testResultOptions, onBlur, track } = props
+    const { QCList, data, errors, disabled, onChange, batchOptions, testResultOptions, onBlur } = props
     const { phLevel, TDS, ozoneLevel, testResult, managerName, testType, description, productionQcId } = data
+
+    useEffect(() => {
+        resetTrackForm()
+        trackAccountFormOnce()
+
+        return () => {
+            removeFormTracker()
+        }
+    }, [])
 
     return (
         <>
@@ -20,7 +30,7 @@ const ProductionQCForm = (props) => {
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Select Batch No' error={errors.productionQcId} mandatory />
-                        <SelectInput track={track} value={productionQcId} options={batchOptions}
+                        <SelectInput track value={productionQcId} options={batchOptions}
                             disabled={disabled} error={errors.productionQcId}
                             onSelect={(value) => onChange(value, 'productionQcId')}
                         />
@@ -113,7 +123,7 @@ const ProductionQCForm = (props) => {
                     </div>
                     <div className='input-container'>
                         <InputLabel name='Test Results' error={errors.testResult} mandatory />
-                        <SelectInput track={track} value={testResult} options={testResultOptions}
+                        <SelectInput track value={testResult} options={testResultOptions}
                             disabled={disabled} error={errors.testResult}
                             onSelect={(value) => onChange(value, 'testResult')}
                         />

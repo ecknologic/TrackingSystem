@@ -1,14 +1,24 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import InputLabel from '../../../../components/InputLabel';
 import CustomInput from '../../../../components/CustomInput';
 import SelectInput from '../../../../components/SelectInput';
+import { removeFormTracker, resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 
 const BatchForm = (props) => {
 
-    const { data, errors, disabled, onChange, shiftOptions, batchOptions, onBlur, track } = props
+    const { data, errors, disabled, onChange, shiftOptions, batchOptions, onBlur } = props
 
     const { phLevel, TDS, ozoneLevel, batchId, product20L, product1L,
         product500ML, product250ML, managerName, shiftType } = data
+
+    useEffect(() => {
+        resetTrackForm()
+        trackAccountFormOnce()
+
+        return () => {
+            removeFormTracker()
+        }
+    }, [])
 
     return (
         <>
@@ -19,7 +29,7 @@ const BatchForm = (props) => {
                         <SelectInput
                             value={shiftType}
                             options={shiftOptions}
-                            track={track} disabled={disabled}
+                            track disabled={disabled}
                             error={errors.shiftType}
                             onSelect={(value) => onChange(value, 'shiftType')}
                         />
@@ -29,7 +39,7 @@ const BatchForm = (props) => {
                         <SelectInput
                             value={batchId}
                             options={batchOptions}
-                            track={track} disabled={disabled}
+                            track disabled={disabled}
                             error={errors.batchId}
                             onSelect={(value) => onChange(value, 'batchId')}
                         />

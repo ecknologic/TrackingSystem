@@ -1,5 +1,5 @@
 import { message } from 'antd';
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import CustomButton from '../../../components/CustomButton';
 import FormHeader from '../../../components/FormHeader';
 import DispatchForm from '../forms/Dispatch';
@@ -7,7 +7,7 @@ import ConfirmModal from '../../../components/CustomModal';
 import { TRACKFORM } from '../../../utils/constants';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import { http } from '../../../modules/http';
-import { extractValidProductsForDB, isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../utils/Functions';
+import { extractValidProductsForDB, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
 import { validateDispatchValues, validateMobileNumber, validateNames, validateNumber } from '../../../utils/validations';
 
 const CreateDispatch = ({ goToTab, driverList, departmentList, ...rest }) => {
@@ -17,15 +17,6 @@ const CreateDispatch = ({ goToTab, driverList, departmentList, ...rest }) => {
     const [confirmModal, setConfirmModal] = useState(false)
     const [currentStock, setCurrentStock] = useState({})
     const [shake, setShake] = useState(false)
-
-    useEffect(() => {
-        resetTrackForm()
-        trackAccountFormOnce()
-
-        return () => {
-            removeFormTracker()
-        }
-    }, [])
 
     const getCurrentStock = async (batchId) => {
         const data = await http.GET(`/motherPlant/getProductByBatch/${batchId}`)
@@ -89,13 +80,20 @@ const CreateDispatch = ({ goToTab, driverList, departmentList, ...rest }) => {
             setBtnDisabled(true)
             showToast('Dispatch', 'loading')
             await http.POST(url, body)
-            message.destroy()
-            goToTab('1')
             showToast('Dispatch', 'success')
+            goToTab('1')
+            resetForm()
         } catch (error) {
             message.destroy()
             setBtnDisabled(false)
         }
+    }
+
+    const resetForm = () => {
+        setBtnDisabled(false)
+        resetTrackForm()
+        setFormData({})
+        setFormErrors({})
     }
 
     const onModalClose = (hasSaved) => {

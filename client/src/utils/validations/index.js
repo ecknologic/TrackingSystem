@@ -350,20 +350,27 @@ export const validateExternalDispatchValues = (data, currentStock) => {
 
 export const validateRequestMaterialValues = (data) => {
     let errors = {};
-    const { itemQty, reorderLevel, minOrderLevel } = data
+    const text = 'Required'
+    const { itemName, itemQty, vendorName, description, reorderLevel, minOrderLevel } = data
 
-    if (itemQty) {
+    if (!itemName) errors.itemName = text
+    if (!vendorName) errors.vendorName = text
+    if (!description) errors.description = text
+    if (!itemQty) errors.itemQty = text
+    else {
         const error = validateNumber(itemQty)
         error && (errors.itemQty = error)
         if (Number(itemQty) < Number(minOrderLevel)) {
             errors.itemQty = `Quantity should exceed ${minOrderLevel}`
         }
     }
-    if (reorderLevel) {
+    if (!reorderLevel) errors.reorderLevel = text
+    else {
         const error = validateNumber(reorderLevel)
         error && (errors.reorderLevel = error)
     }
-    if (minOrderLevel) {
+    if (!minOrderLevel) errors.minOrderLevel = text
+    else {
         const error = validateNumber(minOrderLevel)
         error && (errors.minOrderLevel = error)
     }
@@ -429,10 +436,10 @@ const validateProducts = ({ product20L, product1L, product500ML, product250ML })
     return errors
 }
 
-const validateDamagedProducts = ({ damaged20Lcans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes }) => {
+const validateDamagedProducts = ({ damaged20LCans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes }) => {
     let errors = {};
 
-    const noP20L = damaged20Lcans == 0 || !damaged20Lcans
+    const noP20L = damaged20LCans == 0 || !damaged20LCans
     const noP1L = damaged1LBoxes == 0 || !damaged1LBoxes
     const noP500ML = damaged500MLBoxes == 0 || !damaged500MLBoxes
     const noP250ML = damaged250MLBoxes == 0 || !damaged250MLBoxes
@@ -440,7 +447,7 @@ const validateDamagedProducts = ({ damaged20Lcans, damaged1LBoxes, damaged500MLB
     if (noP20L && noP1L && noP500ML && noP250ML) {
         errors.damaged = 'Atleast 1 product is required'
     }
-    const error1 = validateNumber(damaged20Lcans)
+    const error1 = validateNumber(damaged20LCans)
     const error2 = validateNumber(damaged1LBoxes)
     const error3 = validateNumber(damaged500MLBoxes)
     const error4 = validateNumber(damaged250MLBoxes)

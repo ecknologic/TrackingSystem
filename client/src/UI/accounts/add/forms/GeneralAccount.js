@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getIDInputValidationProps, getIdProofName } from '../../../../utils/Functions';
+import { getIDInputValidationProps, getIdProofName, removeFormTracker, resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 import SelectInput from '../../../../components/SelectInput';
 import DraggerInput from '../../../../components/DraggerInput';
 import InputWithAddon from '../../../../components/InputWithAddon';
@@ -11,7 +11,7 @@ import CustomInput from '../../../../components/CustomInput';
 const GeneralAccountForm = (props) => {
 
     const { data, errors, devDays, IDProofs, IDProofErrors, devDaysError, onChange, onBlur, onUpload, onSelect,
-        onDeselect, accountOnly, disabled, onRemove, routeOptions, track } = props
+        onDeselect, accountOnly, disabled, onRemove, routeOptions } = props
     const { Front, Back } = IDProofs
 
     const {
@@ -30,6 +30,15 @@ const GeneralAccountForm = (props) => {
         setIdProps(props)
     }, [idProofType])
 
+    useEffect(() => {
+        resetTrackForm()
+        trackAccountFormOnce()
+
+        return () => {
+            removeFormTracker()
+        }
+    }, [])
+
     const idUploadDisable = Front && Back
     const gstUploadDisable = gstProof
 
@@ -40,7 +49,7 @@ const GeneralAccountForm = (props) => {
                     <div className='input-container'>
                         <InputLabel name='Select Id Proof' error={errors.idProofType} mandatory />
                         <SelectInput
-                            track={track} value={idProofType}
+                            track value={idProofType}
                             options={idOptions} disabled={disabled}
                             error={errors.idProofType}
                             onSelect={(value) => onChange(value, 'idProofType')}
@@ -63,8 +72,8 @@ const GeneralAccountForm = (props) => {
                     <div className='upload-container'>
                         <DraggerInput onUpload={(file) => onUpload(file, 'idProofs')} disabled={idUploadDisable || disabled} />
                         <div className='upload-preview-container'>
-                            <UploadPreviewer track={track} value={Front} title='Front' disabled={disabled} onUpload={(file) => onUpload(file, 'Front')} onRemove={() => onRemove('Front')} error={IDProofErrors.Front} />
-                            <UploadPreviewer track={track} value={Back} title='Back' disabled={disabled} onUpload={(file) => onUpload(file, 'Back')} onRemove={() => onRemove('Back')} className='last' error={IDProofErrors.Back} />
+                            <UploadPreviewer track value={Front} title='Front' disabled={disabled} onUpload={(file) => onUpload(file, 'Front')} onRemove={() => onRemove('Front')} error={IDProofErrors.Front} />
+                            <UploadPreviewer track value={Back} title='Back' disabled={disabled} onUpload={(file) => onUpload(file, 'Back')} onRemove={() => onRemove('Back')} className='last' error={IDProofErrors.Back} />
                         </div>
                     </div>
                     <div className='upload-instructions'>
@@ -85,7 +94,7 @@ const GeneralAccountForm = (props) => {
                     <div className='input-container app-upload-file-container app-gst-upload-container'>
                         <DraggerInput onUpload={(file) => onUpload(file, 'gstProof')} disabled={gstUploadDisable || disabled} />
                         <div className='upload-preview-container'>
-                            <UploadPreviewer track={track} value={gstProof} title='GST Proof' disabled={disabled} onUpload={(file) => onUpload(file, 'gstProof')} onRemove={() => onRemove('gstProof')} className='last' error={errors.gstProof} />
+                            <UploadPreviewer track value={gstProof} title='GST Proof' disabled={disabled} onUpload={(file) => onUpload(file, 'gstProof')} onRemove={() => onRemove('gstProof')} className='last' error={errors.gstProof} />
                         </div>
                     </div>
                 </div>
@@ -135,7 +144,7 @@ const GeneralAccountForm = (props) => {
                     <div className='input-container'>
                         <InputLabel name='Nature Of Business' error={errors.natureOfBussiness} mandatory />
                         <SelectInput
-                            track={track} value={natureOfBussiness}
+                            track value={natureOfBussiness}
                             disabled={disabled} options={businessOptions}
                             error={errors.natureOfBussiness} onSelect={(value) => onChange(value, 'natureOfBussiness')}
                         />
@@ -154,7 +163,7 @@ const GeneralAccountForm = (props) => {
                                 </div>
                                 <div className='input-container'>
                                     <InputLabel name='Delivery Days' error={devDaysError.devDays} mandatory />
-                                    <SelectInput track={track} value={devDays} options={dayOptions}
+                                    <SelectInput track value={devDays} options={dayOptions}
                                         disabled={disabled} mode='multiple' error={devDaysError.devDays}
                                         onSelect={onSelect} onDeselect={onDeselect}
                                     />
@@ -170,7 +179,7 @@ const GeneralAccountForm = (props) => {
                                 </div>
                                 <div className='input-container'>
                                     <InputLabel name='Warehouse' error={errors.routingId} mandatory />
-                                    <SelectInput track={track} options={routeOptions}
+                                    <SelectInput track options={routeOptions}
                                         value={routingId} disabled={disabled}
                                         error={errors.routingId} onSelect={(value) => onChange(value, 'routingId')}
                                     />
@@ -243,7 +252,7 @@ const GeneralAccountForm = (props) => {
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Invoice Type' error={errors.invoicetype} mandatory />
-                        <SelectInput track={track} value={invoicetype}
+                        <SelectInput track value={invoicetype}
                             options={invoiceOptions} disabled={disabled}
                             error={errors.invoicetype} onSelect={(value) => onChange(value, 'invoicetype')}
                         />

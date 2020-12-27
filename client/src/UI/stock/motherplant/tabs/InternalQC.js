@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import InternalQCForm from '../forms/InternalQC';
 import { http } from '../../../../modules/http';
 import CustomButton from '../../../../components/CustomButton';
@@ -7,7 +7,7 @@ import ConfirmModal from '../../../../components/CustomModal';
 import { getUserId } from '../../../../utils/constants';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import { shiftOptions } from '../../../../assets/fixtures';
-import { isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../../utils/Functions';
+import { isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 import { validateQCValues, validateIntFloat, validateNames } from '../../../../utils/validations';
 
 const InternalQC = () => {
@@ -17,16 +17,6 @@ const InternalQC = () => {
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
     const [shake, setShake] = useState(false)
-
-    useEffect(() => {
-        resetTrackForm()
-        trackAccountFormOnce()
-
-        return () => {
-            removeFormTracker()
-        }
-    }, [])
-
 
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))

@@ -1,26 +1,37 @@
 import { Tabs } from 'antd';
-import React, { Fragment, useState, useCallback, useMemo } from 'react';
+import ScrollUp from '../../components/ScrollUp';
+import NoContent from '../../components/NoContent';
 import Header from '../../components/ContentHeader';
 import RequestMaterial from './tabs/RequestMaterial';
-import ReceivedMaterials from './tabs/ReceivedMaterials';
-import RequestedMaterialStatus from './tabs/RequestedMaterialStatus';
 import AddMaterials from './tabs/AddReceivedMaterials';
+import ReceivedMaterials from './tabs/ReceivedMaterials';
 import ReportsDropdown from '../../components/ReportsDropdown';
-import NoContent from '../../components/NoContent';
+import RequestedMaterialStatus from './tabs/RequestedMaterialStatus';
+import React, { Fragment, useState, useCallback, useMemo } from 'react';
 import { getMaterialOpitons, getVendorOptions } from '../../assets/fixtures';
 import '../../sass/materials.scss'
 
 const Dispatch = () => {
     const [activeTab, setActiveTab] = useState('1')
+    const [reFetch, setreFetch] = useState(false)
 
     const materialOptions = useMemo(() => getMaterialOpitons(), [])
     const vendorOptions = useMemo(() => getVendorOptions(), [])
     const childProps = useMemo(() => ({ materialOptions, vendorOptions }), [materialOptions, vendorOptions])
 
-    const handleGoToTab = useCallback((key) => setActiveTab(key), [])
+
+    const handleGoToTab = useCallback((key) => {
+        toggleRefetch()
+        setActiveTab(key)
+    }, [reFetch])
+
+    const toggleRefetch = useCallback(() => {
+        setreFetch(!reFetch)
+    }, [reFetch])
 
     return (
         <Fragment>
+            <ScrollUp dep={reFetch} />
             <Header />
             <div className='materials-content'>
                 <div className='app-tabs-container'>
@@ -33,10 +44,10 @@ const Dispatch = () => {
                             <RequestMaterial goToTab={handleGoToTab} {...childProps} />
                         </TabPane>
                         <TabPane tab="Requested Material Status" key="2">
-                            <RequestedMaterialStatus />
+                            <RequestedMaterialStatus reFetch={reFetch} />
                         </TabPane>
                         <TabPane tab="Add Received Materials" key="3">
-                            <AddMaterials />
+                            <AddMaterials onUpdate={toggleRefetch} />
                         </TabPane>
                         <TabPane tab="Received Materials" key="4">
                             <ReceivedMaterials />

@@ -42,11 +42,13 @@ export const getBase64 = (img, callback) => {
     reader.addEventListener('load', () => callback(reader.result));
     reader.readAsDataURL(img);
 }
-export const base64String = (buffer) => {
-    return "data:image/png;base64," + btoa(
+export const base64String = (buffer = []) => {
+    if (buffer.length) return "data:image/png;base64," + btoa(
         new Uint8Array(buffer)
             .reduce((data, byte) => data + String.fromCharCode(byte), '')
     );
+
+    return ''
 }
 export const getAdjustedSlideIndex = (actualIndex, slidesToShow) => {
     const centerIndex = Math.floor(slidesToShow / 2)
@@ -235,8 +237,16 @@ export const extractDeliveryDetails = (data) => {
     return clone
 }
 
-export const extractGADeliveryDetails = ({ gstNo, deliveryLocation, routingId, isActive = 0, gstProof, address, depositAmount, mobileNumber, customerName: contactPerson }) => {
+export const extractGADeliveryDetails = ({ gstNo = '', deliveryLocation, routingId, isActive = 0, gstProof = '', address, depositAmount, mobileNumber, customerName: contactPerson }) => {
     return { gstNo, gstProof, address, deliveryLocation, routingId, isActive, depositAmount, phoneNumber: mobileNumber, contactPerson }
+}
+
+export const extractCADetails = (data) => {
+    const { address: Address1 } = data
+    const clone = deepClone(data)
+    delete clone.address
+    delete clone.registeredDate
+    return { ...clone, Address1 }
 }
 
 export const extractGADetails = (data) => {
@@ -257,10 +267,10 @@ export const extractGADetails = (data) => {
 
 export const getAddressesForDB = (data) => {
     return data.map((address) => {
-        const { devDays, product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML, ...rest } = address
+        const { devDays, product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML, gstNo = '', gstProof = '', ...rest } = address
         const products = getProductsForDB({ product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML })
         const deliveryDays = getDevDaysForDB(devDays)
-        return { products, deliveryDays, ...rest }
+        return { products, deliveryDays, gstNo, gstProof, ...rest }
     })
 }
 
@@ -297,7 +307,7 @@ export const trackAccountFormOnce = () => {
 }
 export const removeFormTracker = () => {
     resetTrackForm()
-    window.removeEventListener('input', setTrackForm)
+    // window.removeEventListener('input', setTrackForm)
 }
 export const getIDInputValidationProps = (IDType) => {
     const props = {}
@@ -381,7 +391,8 @@ export const isAadharValid = (aadharNumber) => {
 }
 
 export const disableFutureDates = (current) => {
-    return current && current.valueOf() > Date.now();
+    if (!current) return false
+    return current.valueOf() > Date.now();
 }
 
 export const getStatusColor = (status) => {

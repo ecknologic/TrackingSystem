@@ -278,10 +278,8 @@ const Delivery = ({ date }) => {
                 onCancel={handleDCModalCancel}
                 title={DCFormTitleRef.current}
                 okTxt={DCFormBtnRef.current}
-                track
             >
                 <DCForm
-                    track
                     data={formData}
                     errors={formErrors}
                     driverOptions={driverOptions}

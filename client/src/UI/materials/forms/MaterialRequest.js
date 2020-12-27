@@ -1,13 +1,23 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import InputLabel from '../../../components/InputLabel';
 import CustomInput from '../../../components/CustomInput';
 import SelectInput from '../../../components/SelectInput';
 import CustomTextArea from '../../../components/CustomTextArea';
+import { removeFormTracker, resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
 
 const MaterialRequestForm = (props) => {
 
-    const { data, errors, disabled, onChange, onBlur, track, materialOptions, vendorOptions } = props
+    const { data, errors, disabled, onChange, onBlur, materialOptions, vendorOptions } = props
     const { itemName, itemCode, vendorName, itemQty, description, reorderLevel, minOrderLevel } = data
+
+    useEffect(() => {
+        resetTrackForm()
+        trackAccountFormOnce()
+
+        return () => {
+            removeFormTracker()
+        }
+    }, [])
 
     return (
         <>
@@ -15,7 +25,7 @@ const MaterialRequestForm = (props) => {
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Item Name' error={errors.itemName} mandatory />
-                        <SelectInput track={track} value={itemName} options={materialOptions}
+                        <SelectInput track value={itemName} options={materialOptions}
                             disabled={disabled} error={errors.itemName}
                             onSelect={(value) => onChange(value, 'itemName')}
                         />
@@ -60,7 +70,7 @@ const MaterialRequestForm = (props) => {
                 <div className='row'>
                     <div className='input-container stretch'>
                         <InputLabel name='Vendor' error={errors.vendorName} mandatory />
-                        <SelectInput track={track} value={vendorName} options={vendorOptions}
+                        <SelectInput track value={vendorName} options={vendorOptions}
                             disabled={disabled} error={errors.vendorName}
                             onSelect={(value) => onChange(value, 'vendorName')}
                         />

@@ -42,7 +42,6 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
         const url = `/customer/getCustomerDeliveryDetails/${accountId}`
         try {
             const { data: [data = {}] } = await http.GET(url)
-            console.log('data>>>', data)
             const { deliveryDetails } = data
             setDelivery(deliveryDetails)
             setLoading(false)
@@ -208,10 +207,8 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
                 onCancel={handleModalCancel}
                 title={`Delivery Details - ${formData.location}`}
                 okTxt={formData.isActive ? 'Close' : 'Update'}
-                track
             >
                 <DeliveryForm
-                    track
                     data={formData}
                     errors={formErrors}
                     devDays={devDays}

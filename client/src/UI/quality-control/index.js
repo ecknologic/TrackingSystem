@@ -1,22 +1,28 @@
 import { Tabs } from 'antd';
 import React, { Fragment, useState, useCallback } from 'react';
-import Header from '../../components/ContentHeader';
 import InternalQC from './tabs/InternalQC';
 import QualityCheck from './tabs/QualityCheck';
 import ProductionQC from './tabs/ProductionQC';
-import TestedBatches from './tabs/TestedBatches';
-import ReportsDropdown from '../../components/ReportsDropdown';
-import NoContent from '../../components/NoContent';
 import ProductionTB from './tabs/ProductionTB';
+import TestedBatches from './tabs/TestedBatches';
+import ScrollUp from '../../components/ScrollUp';
+import NoContent from '../../components/NoContent';
+import Header from '../../components/ContentHeader';
+import ReportsDropdown from '../../components/ReportsDropdown';
 import '../../sass/qualityControl.scss'
 
 const QualityControl = () => {
     const [activeTab, setActiveTab] = useState('1')
+    const [reFetch, setreFetch] = useState(false)
 
-    const handleGoToTab = useCallback((key) => setActiveTab(key), [])
+    const handleGoToTab = useCallback((key) => {
+        setreFetch(!reFetch)
+        setActiveTab(key)
+    }, [reFetch])
 
     return (
         <Fragment>
+            <ScrollUp dep={reFetch} />
             <Header />
             <div className='quality-check-content'>
                 <div className='app-tabs-container'>
@@ -32,13 +38,13 @@ const QualityControl = () => {
                             <QualityCheck goToTab={handleGoToTab} />
                         </TabPane>
                         <TabPane tab="Tested Batches" key="3">
-                            <TestedBatches />
+                            <TestedBatches reFetch={reFetch} />
                         </TabPane>
                         <TabPane tab="Quality Check (Production)" key="4">
                             <ProductionQC goToTab={handleGoToTab} />
                         </TabPane>
                         <TabPane tab="Tested Batches (Production)" key="5">
-                            <ProductionTB />
+                            <ProductionTB reFetch={reFetch} />
                         </TabPane>
                         <TabPane tab="Quality Control (External)" key="6">
                             <NoContent content='Design is in progress' />

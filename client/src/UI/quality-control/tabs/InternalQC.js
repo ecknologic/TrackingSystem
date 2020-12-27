@@ -1,47 +1,35 @@
 import dayjs from 'dayjs';
 import { Table } from 'antd';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../modules/http';
-import Spinner from '../../../components/Spinner';
-import QuitModal from '../../../components/CustomModal';
-import { ScheduleIcon } from '../../../components/SVG_Icons';
-import TableAction from '../../../components/TableAction';
-import SearchInput from '../../../components/SearchInput';
-import ConfirmMessage from '../../../components/ConfirmMessage';
-import { TODAYDATE, TRACKFORM } from '../../../utils/constants';
-import CustomPagination from '../../../components/CustomPagination';
-import { internalQCColumns } from '../../../assets/fixtures';
-import { disableFutureDates, getStatusColor } from '../../../utils/Functions';
-import DateValue from '../../../components/DateValue';
-import CustomDateInput from '../../../components/CustomDateInput';
 import InternalQCView from '../views/InternalQC';
+import Spinner from '../../../components/Spinner';
+import { TODAYDATE } from '../../../utils/constants';
+import DateValue from '../../../components/DateValue';
+import SearchInput from '../../../components/SearchInput';
+import TableAction from '../../../components/TableAction';
 import CustomModal from '../../../components/CustomModal';
+import { ScheduleIcon } from '../../../components/SVG_Icons';
+import { internalQCColumns } from '../../../assets/fixtures';
+import CustomDateInput from '../../../components/CustomDateInput';
+import CustomPagination from '../../../components/CustomPagination';
+import { disableFutureDates, getStatusColor } from '../../../utils/Functions';
 const DATEFORMAT = 'DD-MM-YYYY'
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 const format = 'YYYY-MM-DD'
 
 const InternalQC = () => {
     const [loading, setLoading] = useState(true)
-    const [formData, setFormData] = useState({})
     const [viewData, setViewData] = useState({})
-    const [formErrors, setFormErrors] = useState({})
     const [pageSize, setPageSize] = useState(10)
     const [totalCount, setTotalCount] = useState(null)
     const [pageNumber, setPageNumber] = useState(1)
-    const [btnDisabled, setBtnDisabled] = useState(false)
-    const [DCModal, setDCModal] = useState(false)
     const [viewModal, setViewModal] = useState(false)
     const [formTitle, setFormTitle] = useState('')
-    const [confirmModal, setConfirmModal] = useState(false)
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
-    const [shake, setShake] = useState(false)
     const [open, setOpen] = useState(false)
     const [QC, setQC] = useState([])
     const [QCClone, setQCClone] = useState([])
-
-    const customerOrderIdRef = useRef()
-    const DCFormTitleRef = useRef()
-    const DCFormBtnRef = useRef()
 
     useEffect(() => {
         getQC()
@@ -85,18 +73,6 @@ const InternalQC = () => {
         setPageNumber(number)
     }
 
-    const onModalClose = (hasSaved) => {
-        const formHasChanged = sessionStorage.getItem(TRACKFORM)
-        if (formHasChanged && !hasSaved) {
-            return setConfirmModal(true)
-        }
-        customerOrderIdRef.current = undefined
-        setDCModal(false)
-        setBtnDisabled(false)
-        setFormData({})
-        setFormErrors({})
-    }
-
     const dataSource = useMemo(() => QC.map((qc) => {
         const { productionQcId: key, batchId, phLevel, TDS,
             ozoneLevel, managerName, requestedDate, shiftType, status } = qc
@@ -114,12 +90,6 @@ const InternalQC = () => {
         }
     }), [QC])
 
-    const handleConfirmModalOk = useCallback(() => {
-        setConfirmModal(false);
-        onModalClose()
-    }, [])
-
-    const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
     const handleModalCancel = useCallback(() => setViewModal(false), [])
 
     const sliceFrom = (pageNumber - 1) * pageSize
@@ -178,15 +148,6 @@ const InternalQC = () => {
                         onPageSizeChange={handleSizeChange}
                     />)
             }
-            <QuitModal
-                visible={confirmModal}
-                onOk={handleConfirmModalOk}
-                onCancel={handleConfirmModalCancel}
-                title='Are you sure to leave?'
-                okTxt='Yes'
-            >
-                <ConfirmMessage msg='Changes you made may not be saved.' />
-            </QuitModal>
             <CustomModal
                 hideCancel
                 okTxt='Close'

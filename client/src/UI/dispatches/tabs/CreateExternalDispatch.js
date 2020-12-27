@@ -1,5 +1,5 @@
 import { message, Radio } from 'antd';
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import CustomButton from '../../../components/CustomButton';
 import FormHeader from '../../../components/FormHeader';
 import ExternalDispatchForm from '../forms/ExternalDispatch';
@@ -8,7 +8,7 @@ import { TRACKFORM } from '../../../utils/constants';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import InputLabel from '../../../components/InputLabel';
 import { http } from '../../../modules/http';
-import { extractValidProductsForDB, isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../utils/Functions';
+import { extractValidProductsForDB, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
 import { validateExternalDispatchValues, validateMobileNumber, validateNames, validateNumber } from '../../../utils/validations';
 
 const CreateExternalDispatch = ({ goToTab, driverList, ...rest }) => {
@@ -18,15 +18,6 @@ const CreateExternalDispatch = ({ goToTab, driverList, ...rest }) => {
     const [confirmModal, setConfirmModal] = useState(false)
     const [currentStock, setCurrentStock] = useState({})
     const [shake, setShake] = useState(false)
-
-    useEffect(() => {
-        resetTrackForm()
-        trackAccountFormOnce()
-
-        return () => {
-            removeFormTracker()
-        }
-    }, [])
 
     const getCurrentStock = async (batchId) => {
         const data = await http.GET(`/motherPlant/getProductByBatch/${batchId}`)

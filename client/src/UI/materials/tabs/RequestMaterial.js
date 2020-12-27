@@ -1,5 +1,5 @@
 import { message } from 'antd';
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import CustomButton from '../../../components/CustomButton';
 import FormHeader from '../../../components/FormHeader';
 import MaterialRequestForm from '../forms/MaterialRequest';
@@ -7,24 +7,15 @@ import ConfirmModal from '../../../components/CustomModal';
 import { TRACKFORM } from '../../../utils/constants';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import { http } from '../../../modules/http';
-import { isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../utils/Functions';
-import { validateRequestMaterialValues, validateNumber, validateRequired } from '../../../utils/validations';
+import { isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
+import { validateRequestMaterialValues, validateNumber } from '../../../utils/validations';
 
 const RequestMaterial = ({ goToTab, ...rest }) => {
-    const [formData, setFormData] = useState(INITIALFORMDATA)
+    const [formData, setFormData] = useState(REQUIREDVALUES)
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
     const [shake, setShake] = useState(false)
-
-    useEffect(() => {
-        resetTrackForm()
-        trackAccountFormOnce()
-
-        return () => {
-            removeFormTracker()
-        }
-    }, [])
 
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
@@ -46,15 +37,12 @@ const RequestMaterial = ({ goToTab, ...rest }) => {
     }
 
     const handleSubmit = async () => {
+        const formErrors = validateRequestMaterialValues(formData)
 
-        const required = validateRequired(formData)
-        const second = validateRequestMaterialValues(formData)
-        const errors = { ...second, ...required }
-
-        if (!isEmpty(errors)) {
+        if (!isEmpty(formErrors)) {
             setShake(true)
             setTimeout(() => setShake(false), 820)
-            setFormErrors(errors)
+            setFormErrors(formErrors)
             return
         }
 
@@ -67,10 +55,18 @@ const RequestMaterial = ({ goToTab, ...rest }) => {
             await http.POST(url, body)
             showToast('Materials', 'success')
             goToTab('2')
+            resetForm()
         } catch (error) {
             message.destroy()
             setBtnDisabled(false)
         }
+    }
+
+    const resetForm = () => {
+        setBtnDisabled(false)
+        resetTrackForm()
+        setFormData({})
+        setFormErrors({})
     }
 
     const onModalClose = (hasSaved) => {
@@ -124,9 +120,8 @@ const RequestMaterial = ({ goToTab, ...rest }) => {
     )
 }
 
-const INITIALFORMDATA = {
+const REQUIREDVALUES = {
     itemName: null,
-    itemCode: '',
     vendorName: null,
     itemQty: '',
     description: '',

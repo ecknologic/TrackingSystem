@@ -1,16 +1,26 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Divider, Checkbox } from 'antd';
 import InputLabel from '../../../../components/InputLabel';
 import CustomInput from '../../../../components/CustomInput';
 import InputValue from '../../../../components/InputValue';
 import CustomTextArea from '../../../../components/CustomTextArea';
+import { removeFormTracker, resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 
 const ArrivedStockForm = (props) => {
 
     const { data, errors, disabled, onChange } = props
 
-    const { dcNo = '', damagedDesc, isChecked, address = '', isDamaged, driverName = '', mobileNumber = '', vehicleNo = '', vehicleType = '',
+    const { dcNo = '', damagedDesc, address = '', isDamaged, driverName = '', mobileNumber = '', vehicleNo = '', vehicleType = '',
         damaged20LCans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes, total20LCans, total1LBoxes, total250MLBoxes, total500MLBoxes } = data
+
+    useEffect(() => {
+        resetTrackForm()
+        trackAccountFormOnce()
+
+        return () => {
+            removeFormTracker()
+        }
+    }, [])
 
     return (
         <>
@@ -76,7 +86,7 @@ const ArrivedStockForm = (props) => {
                 <div className='columns'>
                     <InputLabel name='Damaged Particulars' error={errors.damaged} />
                     <div className='columns-container'>
-                        <Checkbox onChange={({ target: { checked } }) => onChange(checked, 'isDamaged')} value={isChecked} />
+                        <Checkbox onChange={({ target: { checked } }) => onChange(checked, 'isDamaged')} checked={isDamaged} />
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='20 Ltrs' />
@@ -111,7 +121,7 @@ const ArrivedStockForm = (props) => {
                     <div className='input-container stretch'>
                         <InputLabel name='Damaged Details' error={errors.damagedDesc} />
                         <CustomTextArea disabled={!isDamaged || disabled} maxLength={1000} error={errors.damagedDesc} placeholder='Add Damaged Details' value={damagedDesc}
-                            minRows={3} maxRows={10} onChange={(value) => onChange(value, 'damagedDesc')}
+                            minRows={3} maxRows={5} onChange={(value) => onChange(value, 'damagedDesc')}
                         />
                     </div>
                 </div>

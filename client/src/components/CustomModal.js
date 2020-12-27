@@ -1,27 +1,10 @@
 import { Modal } from 'antd';
-import React, { useEffect } from 'react';
+import React from 'react';
 import CustomButton from './CustomButton';
 import { CrossIcon } from './SVG_Icons';
-import { removeFormTracker, resetTrackForm, trackAccountFormOnce } from '../utils/Functions';
 
 const CustomModal = (props) => {
-    const { visible, title, track, okTxt, hideCancel, cancelTxt, onCancel, onOk, onOther, btnDisabled, className, children } = props
-
-    useEffect(() => {
-        if (track) {
-            if (visible) {
-                resetTrackForm()
-                trackAccountFormOnce()
-            } else resetTrackForm()
-        }
-
-        return () => {
-            if (track) {
-                resetTrackForm()
-                removeFormTracker()
-            }
-        }
-    }, [visible])
+    const { visible, title, okTxt, hideCancel, cancelTxt, onCancel, onOk, onOther, btnDisabled, className, children } = props
 
     return (
         <Modal

@@ -19,7 +19,7 @@ import CustomDateInput from '../../../components/CustomDateInput';
 const DATEFORMAT = 'DD-MM-YYYY'
 const format = 'YYYY-MM-DD'
 
-const AddMaterials = () => {
+const AddMaterials = ({ onUpdate }) => {
     const [loading, setLoading] = useState(true)
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
@@ -134,6 +134,7 @@ const AddMaterials = () => {
             await http.PUT(otherUrl, otherBody)
             optimisticUpdate(currentRMId)
             showToast('Received Materials', 'success', 'PUT')
+            onUpdate()
             onModalClose(true)
             setBtnDisabled(false)
         } catch (error) {
@@ -279,7 +280,6 @@ const AddMaterials = () => {
                     />)
             }
             <CustomModal
-                track
                 okTxt={okTxt}
                 visible={modal}
                 title={formTitle}
@@ -290,7 +290,6 @@ const AddMaterials = () => {
                 className={`app-form-modal ${shake ? 'app-shake' : ''}`}
             >
                 <MaterialReceivedForm
-                    track
                     data={formData}
                     errors={formErrors}
                     disabled={formDisabled}

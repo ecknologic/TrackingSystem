@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import SelectInput from '../../../../components/SelectInput';
-import InputWithAddon from '../../../../components/InputWithAddon';
-import { dayOptions, WEEKDAYS } from '../../../../assets/fixtures'
 import { getBase64 } from '../../../../utils/Functions';
-import UploadPreviewer from '../../../../components/UploadPreviewer';
-import DraggerInput from '../../../../components/DraggerInput';
 import InputLabel from '../../../../components/InputLabel';
+import SelectInput from '../../../../components/SelectInput';
+import DraggerInput from '../../../../components/DraggerInput';
+import { dayOptions, WEEKDAYS } from '../../../../assets/fixtures'
+import InputWithAddon from '../../../../components/InputWithAddon';
+import UploadPreviewer from '../../../../components/UploadPreviewer';
 import { validateIDNumbers, validateMobileNumber, validateNames, validateNumber } from '../../../../utils/validations';
 import CustomInput from '../../../../components/CustomInput';
 

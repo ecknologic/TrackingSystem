@@ -204,10 +204,8 @@ const Production = () => {
                 onCancel={handleModalCancel}
                 title={formTitleRef.current}
                 okTxt='Close'
-                track
             >
                 <BatchForm
-                    track
                     disabled
                     data={formData}
                     errors={formErrors}

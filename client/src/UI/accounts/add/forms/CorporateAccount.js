@@ -4,11 +4,11 @@ import SelectInput from '../../../../components/SelectInput';
 import DraggerInput from '../../../../components/DraggerInput';
 import UploadPreviewer from '../../../../components/UploadPreviewer';
 import { invoiceOptions, idOptions, businessOptions } from '../../../../assets/fixtures'
-import { getIdProofName, getIDInputValidationProps } from '../../../../utils/Functions';
+import { getIdProofName, getIDInputValidationProps, resetTrackForm, trackAccountFormOnce, removeFormTracker } from '../../../../utils/Functions';
 import InputLabel from '../../../../components/InputLabel';
 import CustomInput from '../../../../components/CustomInput';
 
-const CorporateAccountForm = ({ data, errors, IDProofs, IDProofErrors, onChange, onBlur, onUpload, disabled, onRemove, track }) => {
+const CorporateAccountForm = ({ data, errors, IDProofs, IDProofErrors, onChange, onBlur, onUpload, disabled, onRemove }) => {
 
     const {
         gstNo, natureOfBussiness, organizationName, address, customerName,
@@ -27,6 +27,15 @@ const CorporateAccountForm = ({ data, errors, IDProofs, IDProofErrors, onChange,
         setIdProps(props)
     }, [idProofType])
 
+    useEffect(() => {
+        resetTrackForm()
+        trackAccountFormOnce()
+
+        return () => {
+            removeFormTracker()
+        }
+    }, [])
+
     const idUploadDisable = Front && Back
     const gstUploadDisable = gstProof
 
@@ -35,7 +44,7 @@ const CorporateAccountForm = ({ data, errors, IDProofs, IDProofErrors, onChange,
             <div className='app-identity-proof-container identity-proof-container'>
                 <div className='input-container'>
                     <InputLabel name='Select Id Proof' error={errors.idProofType} mandatory />
-                    <SelectInput track={track} value={idProofType} options={idOptions} disabled={disabled} error={errors.idProofType} onSelect={(value) => onChange(value, 'idProofType')} />
+                    <SelectInput track value={idProofType} options={idOptions} disabled={disabled} error={errors.idProofType} onSelect={(value) => onChange(value, 'idProofType')} />
                 </div>
                 {
                     idProofType && (
@@ -54,8 +63,8 @@ const CorporateAccountForm = ({ data, errors, IDProofs, IDProofErrors, onChange,
                 <div className='upload-container'>
                     <DraggerInput onUpload={(file) => onUpload(file, 'idProofs')} disabled={idUploadDisable || disabled} />
                     <div className='upload-preview-container'>
-                        <UploadPreviewer track={track} value={Front} title='Front' disabled={disabled} onUpload={(file) => onUpload(file, 'Front')} onRemove={() => onRemove('Front')} error={IDProofErrors.Front} />
-                        <UploadPreviewer track={track} value={Back} title='Back' disabled={disabled} onUpload={(file) => onUpload(file, 'Back')} onRemove={() => onRemove('Back')} className='last' error={IDProofErrors.Back} />
+                        <UploadPreviewer track value={Front} title='Front' disabled={disabled} onUpload={(file) => onUpload(file, 'Front')} onRemove={() => onRemove('Front')} error={IDProofErrors.Front} />
+                        <UploadPreviewer track value={Back} title='Back' disabled={disabled} onUpload={(file) => onUpload(file, 'Back')} onRemove={() => onRemove('Back')} className='last' error={IDProofErrors.Back} />
                     </div>
                 </div>
                 <div className='upload-instructions'>
@@ -77,7 +86,7 @@ const CorporateAccountForm = ({ data, errors, IDProofs, IDProofErrors, onChange,
                 <div className='input-container app-upload-file-container app-gst-upload-container'>
                     <DraggerInput onUpload={(file) => onUpload(file, 'gstProof')} disabled={gstUploadDisable || disabled} />
                     <div className='upload-preview-container'>
-                        <UploadPreviewer track={track} value={gstProof} title='GST Proof' disabled={disabled} onUpload={(file) => onUpload(file, 'gstProof')} onRemove={() => onRemove('gstProof')} className='last' error={errors.gstProof} />
+                        <UploadPreviewer track value={gstProof} title='GST Proof' disabled={disabled} onUpload={(file) => onUpload(file, 'gstProof')} onRemove={() => onRemove('gstProof')} className='last' error={errors.gstProof} />
                     </div>
                 </div>
             </div>
@@ -141,7 +150,7 @@ const CorporateAccountForm = ({ data, errors, IDProofs, IDProofErrors, onChange,
                     <SelectInput
                         value={natureOfBussiness}
                         options={businessOptions}
-                        track={track} disabled={disabled}
+                        track disabled={disabled}
                         error={errors.natureOfBussiness}
                         onSelect={(value) => onChange(value, 'natureOfBussiness')}
                     />
@@ -156,7 +165,7 @@ const CorporateAccountForm = ({ data, errors, IDProofs, IDProofErrors, onChange,
                     <InputLabel name='Invoice Type' error={errors.invoicetype} mandatory />
                     <SelectInput
                         error={errors.invoicetype}
-                        track={track} value={invoicetype}
+                        track value={invoicetype}
                         options={invoiceOptions} disabled={disabled}
                         onSelect={(value) => onChange(value, 'invoicetype')}
                     />

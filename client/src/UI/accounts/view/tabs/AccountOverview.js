@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import { message } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { http } from '../../../../modules/http';
-import { base64String, getBase64, getIdProofsForDB, isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../../utils/Functions';
+import { base64String, extractCADetails, extractGADetails, getBase64, getIdProofsForDB, isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../../utils/Functions';
 import CustomButton from '../../../../components/CustomButton';
 import CorporateAccountForm from '../../add/forms/CorporateAccount';
 import NoContent from '../../../../components/NoContent';
@@ -42,9 +42,8 @@ const AccountOverview = ({ data, routeOptions, onUpdate }) => {
     useEffect(() => {
         resetTrackForm()
         trackAccountFormOnce()
-        return () => {
-            removeFormTracker()
-        }
+
+        return () => removeFormTracker()
     }, [])
 
     const handleChange = (value, key) => {
@@ -171,19 +170,20 @@ const AccountOverview = ({ data, routeOptions, onUpdate }) => {
             return
         }
 
-        const Address1 = accountValues.address
-        const organizationName = accountValues.customerName
         const idProofs = getIdProofsForDB(IDProofs)
+        const account = customertype === 'Corporate' ? extractCADetails(accountValues) : extractGADetails(accountValues)
 
-        const body = { ...accountValues, organizationName, Address1, idProofs }
-        delete body.registeredDate
         const url = '/customer/updateCustomer'
+        const body = { ...account, idProofs }
+
+        const { Address1, organizationName } = account
 
         try {
             setBtnDisabled(true)
             showToast('Customer', 'loading', 'PUT')
             await http.POST(url, body)
             setBtnDisabled(false)
+            resetTrackForm()
             onUpdate(organizationName, Address1)
             showToast('Customer', 'success', 'PUT')
         } catch (error) {

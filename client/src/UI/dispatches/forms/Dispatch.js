@@ -1,22 +1,33 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import InputLabel from '../../../components/InputLabel';
 import CustomInput from '../../../components/CustomInput';
 import SelectInput from '../../../components/SelectInput';
+import { removeFormTracker, resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
 
 const DispatchForm = (props) => {
 
     const { data, errors, batchIdOptions, departmentOptions, vehicleOptions, disabled, driverOptions,
-        onChange, onBlur, track } = props
+        onChange, onBlur } = props
 
     const { batchId, dispatchTo, managerName, vehicleNo, driverId, mobileNumber,
         product20L, product1L, product500ML, product250ML } = data
+
+    useEffect(() => {
+        resetTrackForm()
+        trackAccountFormOnce()
+
+        return () => {
+            removeFormTracker()
+        }
+    }, [])
+
     return (
         <>
             <div className='app-form-container dispatch-form-container'>
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Batch No' error={errors.batchId} mandatory />
-                        <SelectInput track={track} value={batchId} options={batchIdOptions}
+                        <SelectInput track value={batchId} options={batchIdOptions}
                             disabled={disabled} error={errors.batchId}
                             onSelect={(value) => onChange(value, 'batchId')}
                         />
@@ -58,7 +69,7 @@ const DispatchForm = (props) => {
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Driver Name' error={errors.driverId} mandatory />
-                        <SelectInput track={track} value={driverId} options={driverOptions}
+                        <SelectInput track value={driverId} options={driverOptions}
                             disabled={disabled} error={errors.driverId}
                             onSelect={(value) => onChange(value, 'driverId')}
                         />
@@ -75,7 +86,7 @@ const DispatchForm = (props) => {
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Vehicle No' error={errors.vehicleNo} mandatory />
-                        <SelectInput track={track} value={vehicleNo} options={vehicleOptions}
+                        <SelectInput track value={vehicleNo} options={vehicleOptions}
                             disabled={disabled} error={errors.vehicleNo}
                             onSelect={(value) => onChange(value, 'vehicleNo')}
                         />
@@ -91,7 +102,7 @@ const DispatchForm = (props) => {
                 <div className='row'>
                     <div className='input-container stretch'>
                         <InputLabel name='Dispatch To' error={errors.dispatchTo} mandatory />
-                        <SelectInput track={track} value={dispatchTo} options={departmentOptions}
+                        <SelectInput track value={dispatchTo} options={departmentOptions}
                             disabled={disabled} error={errors.dispatchTo}
                             onSelect={(value) => onChange(value, 'dispatchTo')}
                         />

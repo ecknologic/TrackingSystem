@@ -3,11 +3,9 @@ import { Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { http } from '../../../modules/http';
 import Spinner from '../../../components/Spinner';
-import QuitModal from '../../../components/CustomModal';
 import { ScheduleIcon } from '../../../components/SVG_Icons';
 import TableAction from '../../../components/TableAction';
 import SearchInput from '../../../components/SearchInput';
-import ConfirmMessage from '../../../components/ConfirmMessage';
 import { TODAYDATE, TRACKFORM } from '../../../utils/constants';
 import CustomPagination from '../../../components/CustomPagination';
 import { getDispatchColumns } from '../../../assets/fixtures';
@@ -18,30 +16,24 @@ const DATEFORMAT = 'DD-MM-YYYY'
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 const format = 'YYYY-MM-DD'
 
-const Dispatches = () => {
+const Dispatches = ({ reFetch }) => {
     const [loading, setLoading] = useState(true)
-    const [formData, setFormData] = useState({})
-    const [formErrors, setFormErrors] = useState({})
+    const [viewData, setViewData] = useState({})
     const [pageSize, setPageSize] = useState(10)
     const [totalCount, setTotalCount] = useState(null)
     const [pageNumber, setPageNumber] = useState(1)
-    const [btnDisabled, setBtnDisabled] = useState(false)
-    const [DCModal, setDCModal] = useState(false)
-    const [confirmModal, setConfirmModal] = useState(false)
+    const [viewModal, setViewModal] = useState(false)
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
-    const [shake, setShake] = useState(false)
     const [open, setOpen] = useState(false)
     const [dispatches, setDispatches] = useState([])
     const [dispatchesClone, setDispatchesClone] = useState([])
 
     const dispatchColumns = useMemo(() => getDispatchColumns(), [])
-    const customerOrderIdRef = useRef()
-    const DCFormTitleRef = useRef()
-    const DCFormBtnRef = useRef()
 
     useEffect(() => {
+        setLoading(true)
         getDispatches()
-    }, [])
+    }, [reFetch])
 
     const getDispatches = async () => {
         const data = await http.GET('/motherPlant/getDispatchDetails')
@@ -66,11 +58,8 @@ const Dispatches = () => {
 
     const handleMenuSelect = (key, data) => {
         if (key === 'view') {
-            customerOrderIdRef.current = data.customerOrderId
-            DCFormTitleRef.current = `DC - ${data.customerName}`
-            DCFormBtnRef.current = 'Update'
-            setFormData(data)
-            setDCModal(true)
+            setViewData(data)
+            setViewModal(true)
         }
     }
 
@@ -81,18 +70,6 @@ const Dispatches = () => {
     const handleSizeChange = (number, size) => {
         setPageSize(size)
         setPageNumber(number)
-    }
-
-    const onModalClose = (hasSaved) => {
-        const formHasChanged = sessionStorage.getItem(TRACKFORM)
-        if (formHasChanged && !hasSaved) {
-            return setConfirmModal(true)
-        }
-        customerOrderIdRef.current = undefined
-        setDCModal(false)
-        setBtnDisabled(false)
-        setFormData({})
-        setFormErrors({})
     }
 
     const dataSource = useMemo(() => dispatches.map((dispatch) => {
@@ -111,13 +88,6 @@ const Dispatches = () => {
             action: <TableAction onSelect={({ key }) => handleMenuSelect(key, dispatch)} />
         }
     }), [dispatches])
-
-    const handleConfirmModalOk = useCallback(() => {
-        setConfirmModal(false);
-        onModalClose()
-    }, [])
-
-    const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
@@ -175,15 +145,6 @@ const Dispatches = () => {
                         onPageSizeChange={handleSizeChange}
                     />)
             }
-            <QuitModal
-                visible={confirmModal}
-                onOk={handleConfirmModalOk}
-                onCancel={handleConfirmModalCancel}
-                title='Are you sure to leave?'
-                okTxt='Yes'
-            >
-                <ConfirmMessage msg='Changes you made may not be saved.' />
-            </QuitModal>
         </div>
     )
 }

@@ -1,18 +1,32 @@
 import dayjs from 'dayjs';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import InputLabel from '../../../components/InputLabel';
+import InputValue from '../../../components/InputValue';
 import CustomInput from '../../../components/CustomInput';
 import DraggerInput from '../../../components/DraggerInput';
 import UploadPreviewer from '../../../components/UploadPreviewer';
-import InputValue from '../../../components/InputValue';
-import { disableFutureDates } from '../../../utils/Functions';
 import CustomDateInput from '../../../components/CustomDateInput';
+import { removeFormTracker, resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
 const DATEFORMAT = 'DD-MM-YYYY'
 
 const MaterialReceivedForm = (props) => {
-    const { data, errors, onUpload, onRemove, disabled, onChange, track } = props
+    const { data, errors, onUpload, onRemove, disabled, onChange } = props
     const { receiptImage, receiptNo, invoiceNo, invoiceAmount, invoiceDate, taxAmount,
         itemName, vendorName, itemCode, approvedDate, managerName, itemQty, description } = data
+
+    useEffect(() => {
+        resetTrackForm()
+        trackAccountFormOnce()
+
+        return () => {
+            removeFormTracker()
+        }
+    }, [])
+
+    const disableDates = (current) => {
+        if (!current) return false
+        return current.valueOf() > Date.now() || current.valueOf() <= dayjs(approvedDate).subtract(1, 'day')
+    }
 
     return (
         <>
@@ -66,7 +80,7 @@ const MaterialReceivedForm = (props) => {
                         <div className='app-receipt-upload-container'>
                             <DraggerInput onUpload={onUpload} disabled={disabled || receiptImage} />
                             <div className='upload-preview-container'>
-                                <UploadPreviewer value={receiptImage} track={track}
+                                <UploadPreviewer value={receiptImage} track
                                     title='Receipt' disabled={disabled} onUpload={onUpload}
                                     onRemove={onRemove} className='last' />
                             </div>
@@ -85,7 +99,7 @@ const MaterialReceivedForm = (props) => {
                         <InputLabel name='Invoice Date' error={errors.invoiceDate} mandatory />
                         <CustomDateInput
                             trackplaceholder='Select Date' track disabled={disabled}
-                            value={invoiceDate} disabledDate={disableFutureDates}
+                            value={invoiceDate} disabledDate={disableDates}
                             onChange={(value) => onChange(value, 'invoiceDate')}
                         />
                     </div>
@@ -109,7 +123,7 @@ const MaterialReceivedForm = (props) => {
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Manager Name' error={errors.managerName} mandatory />
-                        <CustomInput value={managerName} placeholder='Add Tax Amount'
+                        <CustomInput value={managerName} placeholder='Add Manager Name'
                             maxLength={20} disabled={disabled} error={errors.managerName}
                             onChange={(value) => onChange(value, 'managerName')}
                         />

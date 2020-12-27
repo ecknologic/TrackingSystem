@@ -256,6 +256,24 @@ $textColorDisabled:rgba(0,0,0,0.55);
         border: 1px solid $errorColor !important;
     }
 }
+// -------------- antd Text Area styles ------------------- //
+
+textarea {
+    &::-webkit-scrollbar {
+        width: .5em;
+        height: .5em;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: #C8C8C9;
+        border-radius: 1em;
+    }
+    
+    &::-webkit-scrollbar-corner {
+        display: none;
+    }
+}
+
 // -------------- antd Input styles ------------------- //
 
 .ant-input, .ant-input-number {
@@ -520,6 +538,7 @@ $textColorDisabled:rgba(0,0,0,0.55);
 
             .stretch {
                 width: 100%;
+                min-width: 100%;
             }
         }
 

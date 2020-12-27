@@ -1,14 +1,14 @@
 import { message } from 'antd';
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
-import CustomButton from '../../../components/CustomButton';
+import { http } from '../../../modules/http';
+import { TRACKFORM } from '../../../utils/constants';
 import ProductionQCForm from '../forms/ProductionQCForm';
 import ConfirmModal from '../../../components/CustomModal';
-import { TRACKFORM } from '../../../utils/constants';
+import CustomButton from '../../../components/CustomButton';
 import ConfirmMessage from '../../../components/ConfirmMessage';
-import { http } from '../../../modules/http';
 import { getBatchOptions, testResultOptions } from '../../../assets/fixtures';
-import { isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../utils/Functions';
 import { validateIntFloat, validateNames, validateQCcheckValues } from '../../../utils/validations';
+import { isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
 
 const ProductionQC = ({ goToTab }) => {
     const [formData, setFormData] = useState({})
@@ -23,13 +23,7 @@ const ProductionQC = ({ goToTab }) => {
     const childProps = useMemo(() => ({ batchOptions, testResultOptions }), [batchOptions, testResultOptions])
 
     useEffect(() => {
-        resetTrackForm()
-        trackAccountFormOnce()
         getBatchsList()
-
-        return () => {
-            removeFormTracker()
-        }
     }, [])
 
     const getBatchsList = async () => {
@@ -87,9 +81,9 @@ const ProductionQC = ({ goToTab }) => {
             setBtnDisabled(true)
             showToast('QC Report', 'loading')
             await http.POST(url, body)
-            // resetForm()
-            goToTab('5')
             showToast('QC Report', 'success')
+            goToTab('5')
+            resetForm()
         } catch (error) {
             message.destroy()
             setBtnDisabled(false)

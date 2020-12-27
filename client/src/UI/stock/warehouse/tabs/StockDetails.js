@@ -79,6 +79,12 @@ const StockDetails = ({ date }) => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
+        if (key === 'isDamaged') {
+            if (!value) {
+                setFormErrors(errors => ({ ...errors, damagedDesc: '', damaged: '' }))
+            }
+        }
+
         // Validations
         if (key.includes('Box') || key.includes('can')) {
             const error = validateNumber(value)
@@ -165,7 +171,6 @@ const StockDetails = ({ date }) => {
                 onCancel={handleModalCancel}
                 title='Stock Details'
                 okTxt='Confirm Stock Received'
-                track
             >
                 <ArrivedStockForm
                     data={formData}

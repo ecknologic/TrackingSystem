@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import SelectInput from '../../../../components/SelectInput';
 import InputLabel from '../../../../components/InputLabel';
 import CustomInput from '../../../../components/CustomInput';
+import { removeFormTracker, resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 
 const DCForm = (props) => {
 
@@ -10,13 +11,22 @@ const DCForm = (props) => {
     const { routeId, customerName, mobileNumber, address,
         driverId, cans20L, boxes1L, boxes500ML, boxes250ML } = data
 
+    useEffect(() => {
+        resetTrackForm()
+        trackAccountFormOnce()
+
+        return () => {
+            removeFormTracker()
+        }
+    }, [])
+
     return (
         <>
             <div className='app-form-container'>
                 <div className='row'>
                     <div className='input-container stretch'>
                         <InputLabel name='Select Route' error={errors.routeId} mandatory />
-                        <SelectInput track={track} options={routeOptions} value={routeId}
+                        <SelectInput track options={routeOptions} value={routeId}
                             error={errors.routeId}
                             onSelect={(value) => onChange(value, 'routeId')}
                         />
@@ -50,7 +60,7 @@ const DCForm = (props) => {
                 </div>
                 <div className='input-container stretch'>
                     <InputLabel name='Driver Name' error={errors.driverId} mandatory />
-                    <SelectInput track={track} options={driverOptions} value={driverId}
+                    <SelectInput track options={driverOptions} value={driverId}
                         error={errors.driverId}
                         onSelect={(value) => onChange(value, 'driverId')}
                     />

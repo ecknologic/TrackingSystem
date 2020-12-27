@@ -17,7 +17,7 @@ import RequestedMaterialStatusView from '../views/RequestedMaterialStatus';
 const DATEFORMAT = 'DD-MM-YYYY'
 const format = 'YYYY-MM-DD'
 
-const MaterialStatus = () => {
+const MaterialStatus = ({ reFetch }) => {
     const [loading, setLoading] = useState(true)
     const [viewData, setViewData] = useState({})
     const [pageSize, setPageSize] = useState(10)
@@ -33,8 +33,9 @@ const MaterialStatus = () => {
     const RMColumns = useMemo(() => getRMColumns(), [])
 
     useEffect(() => {
+        setLoading(true)
         getRM()
-    }, [])
+    }, [reFetch])
 
     const getRM = async () => {
         const data = await http.GET('/motherPlant/getRMDetails')

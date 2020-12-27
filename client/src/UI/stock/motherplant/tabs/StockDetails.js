@@ -8,7 +8,7 @@ import ConfirmModal from '../../../../components/CustomModal';
 import { getUserId } from '../../../../utils/constants';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import { shiftOptions, getBatchIdOptions } from '../../../../assets/fixtures';
-import { extractValidProductsForDB, isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../../utils/Functions';
+import { extractValidProductsForDB, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 import { validateBatchValues, validateIntFloat, validateNames, validateNumber } from '../../../../utils/validations';
 
 const StockDetails = ({ date, goToTab }) => {
@@ -25,15 +25,9 @@ const StockDetails = ({ date, goToTab }) => {
     const childProps = useMemo(() => ({ batchOptions, shiftOptions }), [batchOptions, shiftOptions])
 
     useEffect(() => {
-        resetTrackForm()
-        trackAccountFormOnce()
         resetForm()
         getBatchesList()
         getActiveStockByDate(date)
-
-        return () => {
-            removeFormTracker()
-        }
     }, [date])
 
     const getBatchesList = async () => {

@@ -248,10 +248,8 @@ const ViewAccount = () => {
                 onCancel={handleModalCancel}
                 title='Add New Delivery Address'
                 okTxt='Save'
-                track
             >
                 <DeliveryForm
-                    track
                     data={formData}
                     errors={formErrors}
                     devDays={devDays}
