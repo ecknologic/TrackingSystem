@@ -11,7 +11,7 @@ const MaterialRequestForm = (props) => {
 
     return (
         <>
-            <div className='app-form-container dispatch-form-container'>
+            <div className='app-form-container material-form-container'>
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Item Name' error={errors.itemName} mandatory />

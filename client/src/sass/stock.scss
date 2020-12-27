@@ -30,14 +30,11 @@
 }
 
 .stock-manager-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
     padding-bottom: 3em;
     background-color: #FAFAFB;
-
-    .stock-manager-tabs {
-        .ant-tabs-tabpane {
-            display: none;
-        }
-    }
 
     .date-picker-panel {
         height: 6.5em;
@@ -289,7 +286,7 @@
 }
 
 .stock-manager-content {
-    .batch-form-container, .dispatch-form-container,  .external-dispatch-form-container{
+    .batch-form-container {
         width: 60%;
         padding: 1.5em 0 0 2em;
 

@@ -120,7 +120,7 @@ const CreateExternalDispatch = ({ goToTab, driverList, ...rest }) => {
 
     return (
         <>
-            <FormHeader title='Create Dispatch DC' />
+            <FormHeader title='Create Dispatch DC (Outside)' />
             <ExternalDispatchForm
                 track
                 data={formData}

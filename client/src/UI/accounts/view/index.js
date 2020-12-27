@@ -1,12 +1,13 @@
 import { Tabs } from 'antd';
 import { useHistory, useParams } from 'react-router-dom';
-import React, { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { getRouteOptions, WEEKDAYS } from '../../../assets/fixtures';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import { DocIconWhite } from '../../../components/SVG_Icons';
 import CustomButton from '../../../components/CustomButton';
 import CustomModal from '../../../components/CustomModal';
 import QuitModal from '../../../components/CustomModal';
+import NoContent from '../../../components/NoContent';
 import DeliveryDetails from './tabs/DeliveryDetails';
 import AccountOverview from './tabs/AccountOverview';
 import { TRACKFORM } from '../../../utils/constants';
@@ -19,7 +20,6 @@ import { extractDeliveryDetails, getProductsForDB, extractProductsFromForm, isEm
 const ViewAccount = () => {
     const history = useHistory()
     const { accountId } = useParams()
-    const [activeTab, setActiveTab] = useState('1')
     const [account, setAccount] = useState({ loading: true })
     const [headerContent, setHeaderContent] = useState({ loading: true })
     const [formData, setFormData] = useState({})
@@ -33,8 +33,7 @@ const ViewAccount = () => {
     const routeOptions = useMemo(() => getRouteOptions(routes), [routes])
     const [confirmModal, setConfirmModal] = useState(false)
     const [shake, setShake] = useState(false)
-    const [backClick, setBackClick] = useState(false)
-    const clickRef = useRef('')
+    const [navigateTo, setNavigateTo] = useState('')
 
     useEffect(() => {
         getAccount()
@@ -59,37 +58,6 @@ const ViewAccount = () => {
             const data = await http.GET('/warehouse/getroutes')
             setRoutes(data)
         } catch (ex) { }
-    }
-
-    const handleCreate = async () => {
-        const deliveryErrors = validateDeliveryValues(formData)
-        const devDaysError = validateDevDays(devDays)
-
-        if (!isEmpty(deliveryErrors) || !isEmpty(devDaysError)) {
-            setShake(true)
-            setTimeout(() => setShake(false), 820)
-            setFormErrors(deliveryErrors)
-            setDevDaysError(devDaysError)
-            return
-        }
-
-        const productsUI = extractProductsFromForm(formData)
-        const products = getProductsForDB(productsUI)
-        const deliveryDays = getDevDaysForDB(devDays)
-        const formValues = extractDeliveryDetails(formData)
-        const body = [{ ...formValues, isNew: true, delete: 0, isActive: 0, products, deliveryDays, customer_Id: accountId }]
-
-        const url = '/customer/updateDeliveryDetails'
-        try {
-            setBtnDisabled(true)
-            showToast('Delivery details', 'loading')
-            let { data: [data = {}] } = await http.POST(url, body)
-            setRecentDelivery(data)
-            showToast('Delivery details', 'success')
-            onModalClose(true)
-        } catch (error) {
-            setBtnDisabled(false)
-        }
     }
 
     const handleDevDaysSelect = (value) => {
@@ -164,9 +132,49 @@ const ViewAccount = () => {
         }
     }
 
-    const handleClick = useCallback(() => {
+    const handleCreate = async () => {
+        const deliveryErrors = validateDeliveryValues(formData)
+        const devDaysError = validateDevDays(devDays)
+
+        if (!isEmpty(deliveryErrors) || !isEmpty(devDaysError)) {
+            setShake(true)
+            setTimeout(() => setShake(false), 820)
+            setFormErrors(deliveryErrors)
+            setDevDaysError(devDaysError)
+            return
+        }
+
+        const productsUI = extractProductsFromForm(formData)
+        const products = getProductsForDB(productsUI)
+        const deliveryDays = getDevDaysForDB(devDays)
+        const formValues = extractDeliveryDetails(formData)
+        const body = [{ ...formValues, isNew: true, delete: 0, isActive: 0, products, deliveryDays, customer_Id: accountId }]
+
+        const url = '/customer/updateDeliveryDetails'
+        try {
+            setBtnDisabled(true)
+            showToast('Delivery details', 'loading')
+            let { data: [data = {}] } = await http.POST(url, body)
+            setRecentDelivery(data)
+            showToast('Delivery details', 'success')
+            onModalClose(true)
+        } catch (error) {
+            setBtnDisabled(false)
+        }
+    }
+
+    const onAddNewDelivery = useCallback(() => {
         setViewModal(true)
     }, [])
+
+    const handleBack = () => {
+        const formHasChanged = sessionStorage.getItem(TRACKFORM)
+        if (formHasChanged) {
+            setConfirmModal(true)
+            setNavigateTo('back')
+        }
+        else history.push('/manage-accounts')
+    }
 
     const onModalClose = (hasSaved) => {
         const formHasChanged = sessionStorage.getItem(TRACKFORM)
@@ -179,60 +187,43 @@ const ViewAccount = () => {
         setDevDays([])
         setFormErrors({})
         setDevDaysError({})
-    }
+        resetTrackForm()
 
-    const handleTabClick = (key) => {
-        const formHasChanged = sessionStorage.getItem(TRACKFORM)
-        if (formHasChanged) {
-            clickRef.current = key
-            setConfirmModal(true)
+        if (navigateTo === 'back') {
+            history.push('/manage-accounts')
         }
-        else setActiveTab(key)
-    }
-
-    const handleBack = () => {
-        const formHasChanged = sessionStorage.getItem(TRACKFORM)
-        if (formHasChanged) {
-            setConfirmModal(true)
-            setBackClick(true)
-        }
-        else history.push('/manage-accounts')
     }
 
     const handleConfirmModalOk = useCallback(() => {
         setConfirmModal(false);
         resetTrackForm()
-        if (backClick) {
-            history.push('/manage-accounts')
-        }
-        else {
-            const value = clickRef.current
-            setActiveTab(value)
-        }
         onModalClose()
-    }, [backClick])
+    }, [navigateTo])
 
     const handleAccountUpdate = useCallback((title, address) => {
         setHeaderContent({ title, address })
     }, [])
-    const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
+
+    const handleConfirmModalCancel = useCallback(() => {
+        setConfirmModal(false)
+        setNavigateTo('')
+    }, [])
+
     const handleModalCancel = useCallback(() => onModalClose(), [])
 
     return (
         <Fragment>
             <Header data={headerContent} onClick={handleBack} />
             <div className='account-view-content'>
-                <div className='tabs-container'>
+                <div className='app-tabs-container'>
                     <Tabs
                         tabBarExtraContent={
                             <CustomButton
                                 className='extra-btn'
-                                onClick={handleClick}
+                                onClick={onAddNewDelivery}
                                 icon={<DocIconWhite />}
                                 text='Add new Delivery address' />
                         }
-                        onTabClick={handleTabClick}
-                        activeKey={activeTab}
                     >
                         <TabPane tab="Account Overview" key="1">
                             <AccountOverview data={account} routeOptions={routeOptions} onUpdate={handleAccountUpdate} />
@@ -241,10 +232,10 @@ const ViewAccount = () => {
                             <DeliveryDetails recentDelivery={recentDelivery} routeOptions={routeOptions} />
                         </TabPane>
                         <TabPane tab="Invoice" key="3">
-                            Design in progress...
+                            <NoContent content='Design in progress' />
                         </TabPane>
                         <TabPane tab="Report Log" key="4">
-                            Design in progress...
+                            <NoContent content='Design in progress' />
                         </TabPane>
                     </Tabs>
                 </div>

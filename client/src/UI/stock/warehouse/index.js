@@ -21,10 +21,10 @@ const WarehouseStock = () => {
         <Fragment>
             <Header />
             <div className='stock-manager-content'>
-                <div className='tabs-container stock-manager-tabs'>
+                <div className='app-tabs-container app-hidden-panes'>
                     <Tabs
                         tabBarExtraContent={<ReportsDropdown />}
-                        onTabClick={(key) => setActiveTab(key)}
+                        onChange={(key) => setActiveTab(key)}
                     >
                         <TabPane tab="Stock Details" key="1" />
                         <TabPane tab="Delivery" key="2" />

@@ -1,0 +1,29 @@
+.materials-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 3em;
+    background-color: #FAFAFB;
+
+    .material-form-container {
+        width: 60%;
+        padding: 1.5em 0 0 2em;
+
+        .columns {
+            width: 80%;
+        }
+    }
+
+    .app-footer-buttons-container {
+        padding-left: 2em;
+    }
+
+    .ant-tabs-tabpane {
+        padding: 0 !important;
+    }
+
+    #no-content-container {
+        min-height: calc(100vh - 22em);
+        width: 100%;
+    }
+}

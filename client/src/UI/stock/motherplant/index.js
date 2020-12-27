@@ -52,10 +52,10 @@ const MotherplantStock = () => {
         <Fragment>
             <Header />
             <div className='stock-manager-content'>
-                <div className='tabs-container stock-manager-tabs'>
+                <div className='app-tabs-container app-hidden-panes'>
                     <Tabs
                         tabBarExtraContent={<ReportsDropdown />}
-                        onTabClick={handleTabClick}
+                        onChange={handleTabClick}
                         activeKey={activeTab}
                     >
                         <TabPane tab="Stock Details" key="1" />

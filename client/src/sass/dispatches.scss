@@ -1,14 +1,50 @@
 .dispatches-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 3em;
+    background-color: #FAFAFB;
+
     .dispatch-form-container {
+        width: 60%;
+        padding: 1.5em 0 0 2em;
+
         .row {
             .stretch {
                 width: 100%;
             }
         }
+
+        .columns {
+            width: 80%;
+        }
     }
+
     .external-dispatch-form-container {
+        
+        width: 60%;
+        padding: 1.5em 0 0 2em;
+
+        .row {
+            .stretch {
+                width: 100%;
+            }
+        }
         .columns {
             width: 100%;
         }
+    }
+
+    .ant-tabs-tabpane {
+        padding: 0 !important;
+    }
+
+    .app-footer-buttons-container {
+        padding-left: 2em;
+    }
+
+    #no-content-container {
+        min-height: calc(100vh - 22em);
+        width: 100%;
     }
 }

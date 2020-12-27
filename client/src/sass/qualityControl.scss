@@ -1,4 +1,10 @@
-.qc-content {
+.quality-check-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 3em;
+    background-color: #FAFAFB;
+    
     .qc-form-container {
         width: 60%;
         padding: 1.5em 0 0 2em;
@@ -16,6 +22,19 @@
             display: flex;
             align-items: center;
         }
+    }
+
+    .ant-tabs-tabpane {
+        padding: 0 !important;
+    }
+
+    .app-footer-buttons-container {
+        padding-left: 2em;
+    }
+
+    #no-content-container {
+        min-height: calc(100vh - 22em);
+        width: 100%;
     }
 }
 
