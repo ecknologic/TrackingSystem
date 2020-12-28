@@ -67,8 +67,9 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        padding: .3em 1em;
         border-right: 1px solid #C6C6C6;
+        padding: .3em 1em;
+        position: relative;
 
         .title {
             font-family: 'PoppinsSemiBold600';
@@ -92,6 +93,14 @@
                 color: #2A2D37;
                 font-family: 'PoppinsBold700';
             }
+        }
+
+        .damaged {
+            color: #E02020;
+            font-family: 'PoppinsRegular400';
+            font-size: .75em;
+            position: absolute;
+            bottom: -1.5em;
         }
     }
 

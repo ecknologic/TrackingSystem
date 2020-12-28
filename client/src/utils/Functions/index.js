@@ -414,6 +414,9 @@ export const getStatusColor = (status) => {
         case 'Approved':
             return '#0EDD4D'
 
+        case 'Rejected':
+            return '#E02020'
+
         default:
             return '#A10101'
     }

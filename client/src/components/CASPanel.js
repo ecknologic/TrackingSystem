@@ -4,10 +4,10 @@ import CustomButton from './CustomButton';
 const CASPanel = ({ data, newStock, onConfirm, dcDetails }) => {
 
     const { total1LBoxes, total20LCans, total250MLBoxes, total500MLBoxes } = data
-    const { total20LCans: newStock20L, total1LBoxes: newStock1L, total500MLBoxes: newStock500ML, total250MLBoxes: newStock250ML } = newStock
+    const { total20LCans: newStock20L, total1LBoxes: newStock1L, total500MLBoxes: newStock500ML,
+        total250MLBoxes: newStock250ML, damaged20LCans, damaged1LBoxes, damaged250MLBoxes, damaged500MLBoxes } = newStock
 
     const isConfirmed = dcDetails.every(item => item.isConfirmed === 1)
-
     const style = {
         opacity: isConfirmed ? 1 : 0.4
     }
@@ -28,6 +28,7 @@ const CASPanel = ({ data, newStock, onConfirm, dcDetails }) => {
                     <span className='number'>{total20LCans || '--'}</span>
                     <span className='number new' style={style}>{newStock20L || '--'}</span>
                 </div>
+                <span className='damaged' style={style}>{damaged20LCans ? `Damaged - ${damaged20LCans}` : ''}</span>
             </div>
             <div className='box items'>
                 <span className='name'>Total 1 Ltr Boxes (1x12)</span>
@@ -35,6 +36,7 @@ const CASPanel = ({ data, newStock, onConfirm, dcDetails }) => {
                     <span className='number'>{total1LBoxes || '--'}</span>
                     <span className='number new' style={style}>{newStock1L || '--'}</span>
                 </div>
+                <span className='damaged' style={style}>{damaged1LBoxes ? `Damaged - ${damaged1LBoxes}` : ''}</span>
             </div>
             <div className='box items'>
                 <span className='name'>Total 500 ml Boxes (1x12)</span>
@@ -42,6 +44,7 @@ const CASPanel = ({ data, newStock, onConfirm, dcDetails }) => {
                     <span className='number'>{total500MLBoxes || '--'}</span>
                     <span className='number new' style={style}>{newStock500ML || '--'}</span>
                 </div>
+                <span className='damaged' style={style}>{damaged500MLBoxes ? `Damaged - ${damaged500MLBoxes}` : ''}</span>
             </div>
             <div className='box items last'>
                 <span className='name'>Total 250 ml Boxes (1x12)</span>
@@ -49,6 +52,7 @@ const CASPanel = ({ data, newStock, onConfirm, dcDetails }) => {
                     <span className='number'>{total250MLBoxes || '--'}</span>
                     <span className='number new' style={style}>{newStock250ML || '--'}</span>
                 </div>
+                <span className='damaged' style={style}>{damaged250MLBoxes ? `Damaged - ${damaged250MLBoxes}` : ''}</span>
             </div>
             <div className='buttons'>
                 {
