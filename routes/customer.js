@@ -48,11 +48,11 @@ const uploadImage = (req) => {
     let { idProofs } = req.body;
     if (req.body.test) {
       idProof_frontside = Buffer.from(idProofs[0], 'base64')
-      idProof_backside = Buffer.from(idProofs[1], 'base64')
+      idProof_backside = idProofs[1] ? Buffer.from(idProofs[1], 'base64') : null
       gstProof = req.body.gstProof ? Buffer.from(req.body.gstProof, 'base64') : null
     } else {
       idProof_frontside = Buffer.from(idProofs[0].replace(/^data:image\/\w+;base64,/, ""), 'base64')
-      idProof_backside = Buffer.from(idProofs[1].replace(/^data:image\/\w+;base64,/, ""), 'base64')
+      idProof_backside = idProofs[1] ? Buffer.from(idProofs[1].replace(/^data:image\/\w+;base64,/, ""), 'base64') : null
       gstProof = req.body.gstProof ? Buffer.from(req.body.gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64') : null
     }
     let insertQueryValues = [idProof_frontside, idProof_backside, gstProof]
@@ -71,11 +71,11 @@ const updateProofs = (req) => {
     var idProof_frontside, idProof_backside, gstProofData;
     if (req.body.test) {
       idProof_frontside = Buffer.from(idProofs[0], 'base64')
-      idProof_backside = Buffer.from(idProofs[1], 'base64')
+      idProof_backside = idProofs[1] ? Buffer.from(idProofs[1], 'base64') : null
       gstProofData = gstProof ? Buffer.from(gstProof, 'base64') : null
     } else {
       idProof_frontside = Buffer.from(idProofs[0].replace(/^data:image\/\w+;base64,/, ""), 'base64')
-      idProof_backside = Buffer.from(idProofs[1].replace(/^data:image\/\w+;base64,/, ""), 'base64')
+      idProof_backside = idProofs[1] ? Buffer.from(idProofs[1].replace(/^data:image\/\w+;base64,/, ""), 'base64') : null
       gstProofData = gstProof ? Buffer.from(gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64') : null
     }
     let insertQueryValues = [idProof_frontside, idProof_backside, gstProofData]
