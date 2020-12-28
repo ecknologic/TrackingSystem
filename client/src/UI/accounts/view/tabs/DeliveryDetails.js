@@ -55,38 +55,6 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
         setDelivery(clone)
     }
 
-    const handleUpdate = async () => {
-        const deliveryErrors = validateDeliveryValues(formData)
-        const devDaysError = validateDevDays(devDays)
-
-        if (!isEmpty(deliveryErrors) || !isEmpty(devDaysError)) {
-            setShake(true)
-            setTimeout(() => setShake(false), 820)
-            setFormErrors(deliveryErrors)
-            setDevDaysError(devDaysError)
-            return
-        }
-
-        const productsUI = extractProductsFromForm(formData)
-        const products = getProductsWithIdForDB(productsUI)
-        const deliveryDays = getDevDaysForDB(devDays)
-        const formValues = extractDeliveryDetails(formData)
-        const body = [{ ...formValues, isNew: false, delete: 0, isActive: 0, products, deliveryDays }]
-
-        const url = '/customer/updateDeliveryDetails'
-        try {
-            setBtnDisabled(true)
-            showToast('Delivery details', 'loading', 'PUT')
-            const { data: [data = {}] } = await http.POST(url, body)
-            optimisticUpdate(data)
-            showToast('Delivery details', 'success', 'PUT')
-            onModalClose(true)
-            setBtnDisabled(false)
-        } catch (error) {
-            setBtnDisabled(false)
-        }
-    }
-
     const handleDevDaysSelect = (value) => {
         setDevDaysError({ devDays: '' })
         if (value == 'ALL') setDevDays(WEEKDAYS)
@@ -168,6 +136,38 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
         setFormData({ ...data, gstProof: gst, deliveryLocation: location, ...productsUI })
         setViewModal(true)
     }, [])
+
+    const handleUpdate = async () => {
+        const deliveryErrors = validateDeliveryValues(formData)
+        const devDaysError = validateDevDays(devDays)
+
+        if (!isEmpty(deliveryErrors) || !isEmpty(devDaysError)) {
+            setShake(true)
+            setTimeout(() => setShake(false), 820)
+            setFormErrors(deliveryErrors)
+            setDevDaysError(devDaysError)
+            return
+        }
+
+        const productsUI = extractProductsFromForm(formData)
+        const products = getProductsWithIdForDB(productsUI)
+        const deliveryDays = getDevDaysForDB(devDays)
+        const formValues = extractDeliveryDetails(formData)
+        const body = [{ ...formValues, isNew: false, delete: 0, isActive: 0, products, deliveryDays }]
+
+        const url = '/customer/updateDeliveryDetails'
+        try {
+            setBtnDisabled(true)
+            showToast('Delivery details', 'loading', 'PUT')
+            const { data: [data = {}] } = await http.POST(url, body)
+            optimisticUpdate(data)
+            showToast('Delivery details', 'success', 'PUT')
+            onModalClose(true)
+            setBtnDisabled(false)
+        } catch (error) {
+            setBtnDisabled(false)
+        }
+    }
 
     const onModalClose = (hasUpdated) => {
         const formHasChanged = sessionStorage.getItem(TRACKFORM)

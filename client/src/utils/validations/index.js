@@ -78,7 +78,7 @@ export const validateAccountValues = (data, customerType, isInView) => {
     }
     else {
         if (!isInView) { // General account form in add account screen
-            if (!depositAmount) errors.depositAmount = text
+            if (!String(depositAmount)) errors.depositAmount = text
             else {
                 const error = validateNumber(depositAmount)
                 error && (errors.depositAmount = error)
@@ -157,7 +157,7 @@ export const validateDeliveryValues = (data) => {
         deliveryLocation, ...rest
     } = data
 
-    if (!depositAmount) errors.depositAmount = text
+    if (!String(depositAmount)) errors.depositAmount = text
     else {
         const error = validateNumber(depositAmount)
         error && (errors.depositAmount = error)
@@ -417,10 +417,10 @@ export const validateReceivedMaterialValues = (data) => {
 const validateProducts = ({ product20L, product1L, product500ML, product250ML }) => {
     let errors = {};
 
-    const noP20L = product20L == 0 || !product20L
-    const noP1L = product1L == 0 || !product1L
-    const noP500ML = product500ML == 0 || !product500ML
-    const noP250ML = product250ML == 0 || !product250ML
+    const noP20L = !Number(product20L)
+    const noP1L = !Number(product1L)
+    const noP500ML = !Number(product500ML)
+    const noP250ML = !Number(product250ML)
 
     if (noP20L && noP1L && noP500ML && noP250ML) {
         errors.products = 'Atleast 1 product is required'
@@ -439,10 +439,10 @@ const validateProducts = ({ product20L, product1L, product500ML, product250ML })
 const validateDamagedProducts = ({ damaged20LCans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes }) => {
     let errors = {};
 
-    const noP20L = damaged20LCans == 0 || !damaged20LCans
-    const noP1L = damaged1LBoxes == 0 || !damaged1LBoxes
-    const noP500ML = damaged500MLBoxes == 0 || !damaged500MLBoxes
-    const noP250ML = damaged250MLBoxes == 0 || !damaged250MLBoxes
+    const noP20L = !Number(damaged20LCans)
+    const noP1L = !Number(damaged1LBoxes)
+    const noP500ML = !Number(damaged500MLBoxes)
+    const noP250ML = !Number(damaged250MLBoxes)
 
     if (noP20L && noP1L && noP500ML && noP250ML) {
         errors.damaged = 'Atleast 1 product is required'
@@ -462,14 +462,14 @@ const validateProductNPrice = ({ product20L, price20L, product1L, price1L,
     product500ML, price500ML, product250ML, price250ML }) => {
     let errors = {};
 
-    const noP20L = product20L == 0 || !product20L
-    const nop20L = price20L == 0 || !price20L
-    const noP1L = product1L == 0 || !product1L
-    const nop1L = price1L == 0 || !price1L
-    const noP500ML = product500ML == 0 || !product500ML
-    const nop500ML = price500ML == 0 || !price500ML
-    const noP250ML = product250ML == 0 || !product250ML
-    const nop250ML = price250ML == 0 || !price250ML
+    const noP20L = !Number(product20L)
+    const nop20L = !Number(price20L)
+    const noP1L = !Number(product1L)
+    const nop1L = !Number(price1L)
+    const noP500ML = !Number(product500ML)
+    const nop500ML = !Number(price500ML)
+    const noP250ML = !Number(product250ML)
+    const nop250ML = !Number(price250ML)
 
     if (noP20L && nop20L && noP1L && nop1L && noP500ML && nop500ML && noP250ML && nop250ML) {
         errors.productNPrice = 'Atleast 1 product is required'
