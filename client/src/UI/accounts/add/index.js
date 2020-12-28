@@ -348,7 +348,9 @@ const AddAccount = () => {
     const handleCreateAccount = async () => {
         let body;
 
-        const IDProofError = validateIDProofs(IDProofs)
+        const { idProofType } = corporate ? corporateValues : generalValues
+        const IDProofError = validateIDProofs(IDProofs, idProofType)
+
         const extra = {
             customertype, createdBy: USERID, departmentId: WAREHOUSEID
         }
@@ -375,7 +377,7 @@ const AddAccount = () => {
                 setCorporateErrors(accountErrors)
                 return
             }
-            const idProofs = getIdProofsForDB(IDProofs)
+            const idProofs = getIdProofsForDB(IDProofs, idProofType)
             const delivery = getAddressesForDB(allDeliveries)
             const account = extractCADetails(corporateValues)
             body = { ...account, deliveryDetails: delivery, idProofs, ...extra }
@@ -509,7 +511,6 @@ const AddAccount = () => {
                 {
                     corporate ? (
                         <CorporateAccount
-                            track
                             data={corporateValues}
                             errors={corporateErrors}
                             IDProofs={IDProofs}
@@ -521,7 +522,6 @@ const AddAccount = () => {
                         />
                     ) : (
                             <GeneralAccount
-                                track
                                 data={generalValues}
                                 errors={generalErrors}
                                 devDays={devDays}
@@ -577,7 +577,6 @@ const AddAccount = () => {
                                 })
                             }
                             <Delivery
-                                track
                                 devDays={devDays}
                                 devDaysError={devDaysError}
                                 data={deliveryValues}

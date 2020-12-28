@@ -103,6 +103,8 @@ export const getIdProofName = (type) => {
             return 'Aadhar Number'
         case 'panNo':
             return 'PAN Number'
+        case 'voterId':
+            return 'Voter ID Number'
         case 'dlNo':
             return 'Driving License Number'
         case 'passportNo':
@@ -200,9 +202,9 @@ export const getProductsForUI = (data) => {
     return products
 }
 
-export const getIdProofsForDB = (data) => {
+export const getIdProofsForDB = (data, proofType) => {
     const { Front, Back } = data
-    const idProofs = [Front, Back]
+    const idProofs = proofType === 'panNo' ? [Front] : [Front, Back]
 
     return idProofs
 }
@@ -245,7 +247,10 @@ export const extractCADetails = (data) => {
     const { address: Address1 } = data
     const clone = deepClone(data)
     delete clone.address
+    delete clone.idProof_frontside
+    delete clone.idProof_backside
     delete clone.registeredDate
+    delete clone.loading
     return { ...clone, Address1 }
 }
 
@@ -254,6 +259,8 @@ export const extractGADetails = (data) => {
     const clone = deepClone(data)
     delete clone.address
     delete clone.registeredDate
+    delete clone.idProof_frontside
+    delete clone.idProof_backside
     delete clone.price1L
     delete clone.price20L
     delete clone.price500ML
@@ -262,6 +269,7 @@ export const extractGADetails = (data) => {
     delete clone.product20L
     delete clone.product500ML
     delete clone.product250ML
+    delete clone.loading
     return { ...clone, Address1, organizationName }
 }
 

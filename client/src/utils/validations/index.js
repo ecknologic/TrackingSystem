@@ -31,13 +31,13 @@ export const validateRequired = (data) => {
     return errors
 }
 
-export const validateIDProofs = (proofs) => {
+export const validateIDProofs = (proofs, proofType) => {
     let errors = {};
     const text = 'Required'
     if (Object.keys(proofs).length) {
         const { Front, Back } = proofs;
         if (!Front) errors.Front = text
-        if (!Back) errors.Back = text
+        if (proofType !== 'panNo' && !Back) errors.Back = text
     } else errors = { Front: text, Back: text }
 
     return errors
@@ -68,7 +68,7 @@ export const validateAccountValues = (data, customerType, isInView) => {
             const error = validateNames(organizationName)
             error && (errors.organizationName = error)
         }
-        if (!creditPeriodInDays) errors.creditPeriodInDays = text
+        if (!String(creditPeriodInDays)) errors.creditPeriodInDays = text
         else {
             const error = validateNumber(creditPeriodInDays)
             error && (errors.creditPeriodInDays = error)

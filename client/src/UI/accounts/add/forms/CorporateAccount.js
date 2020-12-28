@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import InputWithAddon from '../../../../components/InputWithAddon';
+import InputLabel from '../../../../components/InputLabel';
+import CustomInput from '../../../../components/CustomInput';
 import SelectInput from '../../../../components/SelectInput';
 import DraggerInput from '../../../../components/DraggerInput';
+import InputWithAddon from '../../../../components/InputWithAddon';
 import UploadPreviewer from '../../../../components/UploadPreviewer';
 import { invoiceOptions, idOptions, businessOptions } from '../../../../assets/fixtures'
 import { getIdProofName, getIDInputValidationProps, resetTrackForm, trackAccountFormOnce, removeFormTracker } from '../../../../utils/Functions';
-import InputLabel from '../../../../components/InputLabel';
-import CustomInput from '../../../../components/CustomInput';
 
 const CorporateAccountForm = ({ data, errors, IDProofs, IDProofErrors, onChange, onBlur, onUpload, disabled, onRemove }) => {
 
@@ -64,7 +64,10 @@ const CorporateAccountForm = ({ data, errors, IDProofs, IDProofErrors, onChange,
                     <DraggerInput onUpload={(file) => onUpload(file, 'idProofs')} disabled={idUploadDisable || disabled} />
                     <div className='upload-preview-container'>
                         <UploadPreviewer track value={Front} title='Front' disabled={disabled} onUpload={(file) => onUpload(file, 'Front')} onRemove={() => onRemove('Front')} error={IDProofErrors.Front} />
-                        <UploadPreviewer track value={Back} title='Back' disabled={disabled} onUpload={(file) => onUpload(file, 'Back')} onRemove={() => onRemove('Back')} className='last' error={IDProofErrors.Back} />
+                        {
+                            idProofType !== 'panNo' &&
+                            <UploadPreviewer track value={Back} title='Back' disabled={disabled} onUpload={(file) => onUpload(file, 'Back')} onRemove={() => onRemove('Back')} className='last' error={IDProofErrors.Back} />
+                        }
                     </div>
                 </div>
                 <div className='upload-instructions'>

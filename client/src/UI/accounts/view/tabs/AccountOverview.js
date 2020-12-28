@@ -159,7 +159,8 @@ const AccountOverview = ({ data, routeOptions, onUpdate }) => {
     }
 
     const handleAccountUpdate = async () => {
-        const IDProofError = validateIDProofs(IDProofs)
+        const { idProofType } = accountValues
+        const IDProofError = validateIDProofs(IDProofs, idProofType)
         const accountErrors = validateAccountValues(accountValues, customertype, true)
 
         if (!isEmpty(accountErrors) || !isEmpty(IDProofError)) {
@@ -169,8 +170,7 @@ const AccountOverview = ({ data, routeOptions, onUpdate }) => {
             setAccountErrors(accountErrors)
             return
         }
-
-        const idProofs = getIdProofsForDB(IDProofs)
+        const idProofs = getIdProofsForDB(IDProofs, idProofType)
         const account = customertype === 'Corporate' ? extractCADetails(accountValues) : extractGADetails(accountValues)
 
         const url = '/customer/updateCustomer'
@@ -201,7 +201,6 @@ const AccountOverview = ({ data, routeOptions, onUpdate }) => {
                         {
                             customertype === 'Corporate' ?
                                 <CorporateAccountForm
-                                    track
                                     data={accountValues}
                                     errors={accountErrors}
                                     IDProofs={IDProofs}
@@ -213,7 +212,6 @@ const AccountOverview = ({ data, routeOptions, onUpdate }) => {
                                     disabled={isActive}
                                 />
                                 : <GeneralAccountForm
-                                    track
                                     data={accountValues}
                                     errors={accountErrors}
                                     IDProofs={IDProofs}
