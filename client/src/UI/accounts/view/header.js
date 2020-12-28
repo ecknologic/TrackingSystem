@@ -1,5 +1,4 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
 import BackButton from '../../../components/BackButton';
 import Spinner from '../../../components/Spinner';
 import '../../../sass/accounts.scss'
@@ -16,8 +15,8 @@ const Header = ({ data, onClick }) => {
                         loading ? <Spinner />
                             : (
                                 <>
-                                    <span className='title'>{title}</span>
-                                    <span className='address'>{address}</span>
+                                    <span className='title clamp-1'>{title}</span>
+                                    <span className='address clamp-1'>{address}</span>
                                 </>
                             )
                     }

@@ -15,7 +15,7 @@ const AddressCard = ({ data, onClick }) => {
                 <div className={isActive ? 'inner green' : 'inner'}>
                     <FriendIconGrey className='friend icon' />
                     <div className='address-container'>
-                        <span className='title'>{location}</span>
+                        <span className='title clamp-1'>{location}</span>
                     </div>
                 </div>
             </div>

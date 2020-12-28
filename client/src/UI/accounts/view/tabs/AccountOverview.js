@@ -11,7 +11,7 @@ import { validateIDProofs, validateAccountValues, validateIDNumbers, validateMob
 import GeneralAccountForm from '../../add/forms/GeneralAccount';
 import { WEEKDAYS } from '../../../../assets/fixtures';
 
-const AccountOverview = ({ data, routeOptions, onUpdate }) => {
+const AccountOverview = ({ data, warehouseOptions, onUpdate }) => {
     const { gstProof, idProof_backside, idProof_frontside, isActive, registeredDate,
         customertype, Address1, loading } = data
 
@@ -218,7 +218,7 @@ const AccountOverview = ({ data, routeOptions, onUpdate }) => {
                                     IDProofErrors={IDProofErrors}
                                     devDays={devDays}
                                     devDaysError={devDaysError}
-                                    routeOptions={routeOptions}
+                                    warehouseOptions={warehouseOptions}
                                     onUpload={handleProofUpload}
                                     onRemove={handleProofRemove}
                                     onSelect={handleDevDaysSelect}

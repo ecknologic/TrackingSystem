@@ -14,7 +14,7 @@ import { TRACKFORM } from '../../../../utils/constants';
 import QuitModal from '../../../../components/CustomModal';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 
-const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
+const DeliveryDetails = ({ warehouseOptions, recentDelivery }) => {
     const { accountId } = useParams()
     const [delivery, setDelivery] = useState([])
     const [loading, setLoading] = useState(true)
@@ -177,6 +177,7 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
         setViewModal(false)
         setDevDaysError({})
         setFormErrors({})
+        resetTrackForm()
     }
 
     const handleConfirmModalOk = useCallback(() => {
@@ -213,7 +214,7 @@ const DeliveryDetails = ({ routeOptions, recentDelivery }) => {
                     errors={formErrors}
                     devDays={devDays}
                     devDaysError={devDaysError}
-                    routeOptions={routeOptions}
+                    warehouseOptions={warehouseOptions}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     onUpload={handleProofUpload}

@@ -9,7 +9,7 @@ import UploadPreviewer from '../../../../components/UploadPreviewer';
 import { validateIDNumbers, validateMobileNumber, validateNames, validateNumber } from '../../../../utils/validations';
 import CustomInput from '../../../../components/CustomInput';
 
-const CollapseForm = ({ data, routeOptions, uniqueId, addressesErrors }) => {
+const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => {
 
     const [deliveryValues, setDeliveryValues] = useState({})
     const [errors, setErrors] = useState({})
@@ -104,7 +104,7 @@ const CollapseForm = ({ data, routeOptions, uniqueId, addressesErrors }) => {
     }
 
     const {
-        gstNo, gstProof, depositAmount, routingId, devDays, phoneNumber, contactPerson, address,
+        gstNo, gstProof, depositAmount, departmentId, devDays, phoneNumber, contactPerson, address,
         deliveryLocation, product20L, price20L, product1L, price1L, product500ML, price500ML,
         product250ML, price250ML
     } = deliveryValues
@@ -142,10 +142,10 @@ const CollapseForm = ({ data, routeOptions, uniqueId, addressesErrors }) => {
                             onChange={(value) => onChange(value, 'deliveryLocation')} />
                     </div>
                     <div className='input-container'>
-                        <InputLabel name='Warehouse' error={errors.routingId} mandatory />
-                        <SelectInput options={routeOptions} value={routingId}
-                            error={errors.routingId}
-                            onSelect={(value) => onChange(value, 'routingId')} />
+                        <InputLabel name='Warehouse' error={errors.departmentId} mandatory />
+                        <SelectInput options={warehouseOptions} value={departmentId}
+                            error={errors.departmentId}
+                            onSelect={(value) => onChange(value, 'departmentId')} />
                     </div>
                 </div>
                 <div className='row'>

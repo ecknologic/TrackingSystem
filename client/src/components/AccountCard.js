@@ -9,6 +9,8 @@ const AccountCard = ({ customerDetails, onClick }) => {
     const names = JSON.parse(customerDetails.contactpersons)
     const contacts = names.length
 
+    const extra = contacts > 3 ? <span className='extra'>{`+${contacts - 3}`}</span> : null
+
     return (
         <div className='account-card-container'>
             <div className={isActive ? 'badge active' : 'badge'}>{isActive ? "ACTIVE" : "DRAFT"}</div>
@@ -16,8 +18,8 @@ const AccountCard = ({ customerDetails, onClick }) => {
                 <div className={isActive ? 'inner green' : 'inner'}>
                     {contacts > 1 ? <FriendsIconGrey className='friends icon' /> : <FriendIconGrey className='friend icon' />}
                     <div className='address-container'>
-                        <span className='title'>{customerDetails.organizationName || customerDetails.customerName}</span>
-                        <span className='address'>{customerDetails.address}</span>
+                        <span className='title clamp-1'>{customerDetails.organizationName || customerDetails.customerName}</span>
+                        <span className='address clamp-2'>{customerDetails.address}</span>
                     </div>
                 </div>
             </div>
@@ -26,9 +28,14 @@ const AccountCard = ({ customerDetails, onClick }) => {
                     <span className='type1'>Contact Persons</span>
                     <div className='contacts'>
                         {
-                            names.map((item, index) => index <= 2 ? <NameCard key={index} name={item} /> : null)
+                            names.map((item, index) => index <= 2
+                                ? <NameCard
+                                    key={index}
+                                    name={item}
+                                    extra={index === 2 && extra ? extra : null}
+                                />
+                                : null)
                         }
-                        {contacts > 3 ? <div className='extra'>{`+${contacts - 3}`}</div> : null}
                     </div>
                 </div>
                 <div className='business'>

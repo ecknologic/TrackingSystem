@@ -1,8 +1,7 @@
 .name-card-container {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    width: fit-content;
+    flex: 1 0 44%;
 
     .name {
         margin-left: .5em;

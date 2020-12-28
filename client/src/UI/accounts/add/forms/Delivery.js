@@ -11,10 +11,10 @@ import { removeFormTracker, resetTrackForm, trackAccountFormOnce } from '../../.
 const DeliveryForm = (props) => {
 
     const { data, errors, devDays, onBlur, devDaysError, onChange, onSelect, onDeselect,
-        routeOptions, sameAddress, onUpload, onRemove } = props
+        warehouseOptions, sameAddress, onUpload, onRemove } = props
 
     const {
-        gstNo, gstProof, depositAmount, routingId, phoneNumber, contactPerson, address, isActive,
+        gstNo, gstProof, depositAmount, departmentId, phoneNumber, contactPerson, address, isActive,
         deliveryLocation, product20L, price20L, product1L, price1L, product500ML, price500ML,
         product250ML, price250ML
     } = data
@@ -61,10 +61,10 @@ const DeliveryForm = (props) => {
                         />
                     </div>
                     <div className='input-container'>
-                        <InputLabel name='Warehouse' error={errors.routingId} mandatory />
-                        <SelectInput track options={routeOptions} value={routingId}
-                            disabled={isActive} error={errors.routingId}
-                            onSelect={(value) => onChange(value, 'routingId')}
+                        <InputLabel name='Warehouse' error={errors.departmentId} mandatory />
+                        <SelectInput track options={warehouseOptions} value={departmentId}
+                            disabled={isActive} error={errors.departmentId}
+                            onSelect={(value) => onChange(value, 'departmentId')}
                         />
                     </div>
                 </div>

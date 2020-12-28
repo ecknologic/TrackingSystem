@@ -11,12 +11,12 @@ import CustomInput from '../../../../components/CustomInput';
 const GeneralAccountForm = (props) => {
 
     const { data, errors, devDays, IDProofs, IDProofErrors, devDaysError, onChange, onBlur, onUpload, onSelect,
-        onDeselect, accountOnly, disabled, onRemove, routeOptions } = props
+        onDeselect, accountOnly, disabled, onRemove, warehouseOptions } = props
     const { Front, Back } = IDProofs
 
     const {
         gstNo, address, natureOfBussiness, depositAmount, customerName, mobileNumber, registeredDate,
-        invoicetype, EmailId, idProofType, gstProof, referredBy, routingId, deliveryLocation,
+        invoicetype, EmailId, idProofType, gstProof, referredBy, departmentId, deliveryLocation,
         product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML
     } = data
 
@@ -181,10 +181,10 @@ const GeneralAccountForm = (props) => {
                                     />
                                 </div>
                                 <div className='input-container'>
-                                    <InputLabel name='Warehouse' error={errors.routingId} mandatory />
-                                    <SelectInput track options={routeOptions}
-                                        value={routingId} disabled={disabled}
-                                        error={errors.routingId} onSelect={(value) => onChange(value, 'routingId')}
+                                    <InputLabel name='Warehouse' error={errors.departmentId} mandatory />
+                                    <SelectInput track options={warehouseOptions}
+                                        value={departmentId} disabled={disabled}
+                                        error={errors.departmentId} onSelect={(value) => onChange(value, 'departmentId')}
                                     />
                                 </div>
                             </div>

@@ -9,7 +9,6 @@ import {
     DashboardIcon, SettingIcon, FriendReqIcon, FriendReqIconLight, DocIconLight,
     DashboardIconLight, SettingIconLight, ProjectIcon, ProjectIconLight, DocIcon, FriendsIconLight, FriendsIcon,
 } from '../../components/SVG_Icons'
-const { Item } = Menu
 
 const SideMenu = () => {
     const ROLE = getRole()
@@ -127,4 +126,5 @@ const SideMenu = () => {
     )
 }
 
+const { Item } = Menu
 export default SideMenu

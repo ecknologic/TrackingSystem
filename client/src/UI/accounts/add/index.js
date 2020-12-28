@@ -16,7 +16,7 @@ import ConfirmMessage from '../../../components/ConfirmMessage';
 import SuccessMessage from '../../../components/SuccessMessage';
 import CollapseHeader from '../../../components/CollapseHeader';
 import { DDownIcon, PlusIcon } from '../../../components/SVG_Icons'
-import { getRouteOptions, WEEKDAYS } from '../../../assets/fixtures';
+import { getWarehouseOptions, WEEKDAYS } from '../../../assets/fixtures';
 import {
     getBase64, deepClone, getIdProofsForDB, getDevDaysForDB, getAddressesForDB, resetTrackForm,
     getProductsForDB, extractGADeliveryDetails, extractGADetails, isEmpty, showToast, extractCADetails
@@ -53,11 +53,11 @@ const AddAccount = () => {
     const [addresses, setAddresses] = useState([])
     const [addressesErrors, setAddressesErrors] = useState({})
     const hasExtraAddress = !!addresses.length
-    const [routes, setRoutes] = useState([])
-    const routeOptions = useMemo(() => getRouteOptions(routes), [routes])
+    const [warehouseList, setWarehouseList] = useState([])
     const [scrollDep, setScrollDep] = useState(false)
     const [createShake, setCreateShake] = useState(false)
     const [addShake, setAddShake] = useState(false)
+    const warehouseOptions = useMemo(() => getWarehouseOptions(warehouseList), [warehouseList])
 
     const customertype = corporate ? 'Corporate' : 'Individual'
     const confirmMsg = 'Changes you made may not be saved.'
@@ -67,7 +67,7 @@ const AddAccount = () => {
     const fade = { backgroundColor: '#EBEBEB', color: '#1B2125' }
 
     useEffect(() => {
-        getRoutes()
+        getWarehouseList()
         sessionStorage.removeItem('address0')
         sessionStorage.removeItem('address1')
         sessionStorage.removeItem('address2')
@@ -80,9 +80,9 @@ const AddAccount = () => {
         else resetDDForSameAddress()
     }, [sameAddress])
 
-    const getRoutes = async () => {
+    const getWarehouseList = async () => {
         const data = await http.GET('/motherPlant/getDepartmentsList?departmentType=warehouse')
-        setRoutes(data)
+        setWarehouseList(data)
     }
 
     const handleDeliveryValues = (value, key) => {
@@ -528,7 +528,7 @@ const AddAccount = () => {
                                 devDaysError={devDaysError}
                                 IDProofs={IDProofs}
                                 IDProofErrors={IDProofErrors}
-                                routeOptions={routeOptions}
+                                warehouseOptions={warehouseOptions}
                                 onUpload={handleProofUpload}
                                 onRemove={handleProofRemove}
                                 onBlur={handleGeneralBlur}
@@ -569,7 +569,7 @@ const AddAccount = () => {
                                                     uniqueId={index}
                                                     data={item}
                                                     addressesErrors={addressesErrors}
-                                                    routeOptions={routeOptions}
+                                                    warehouseOptions={warehouseOptions}
                                                 />
                                             </Panel>
                                         </Collapse>
@@ -581,7 +581,7 @@ const AddAccount = () => {
                                 devDaysError={devDaysError}
                                 data={deliveryValues}
                                 errors={deliveryErrors}
-                                routeOptions={routeOptions}
+                                warehouseOptions={warehouseOptions}
                                 sameAddress={sameAddress && !hasExtraAddress}
                                 onRemove={handleProofRemove}
                                 onUpload={handleProofUpload}

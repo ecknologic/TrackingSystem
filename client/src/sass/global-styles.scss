@@ -27,6 +27,22 @@ $textColorDisabled:rgba(0,0,0,0.55);
     }
 }
 
+// -------------- Text Overflow styles ------------------- //
+
+@mixin clamp {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.clamp-1 {
+    @include clamp;
+    -webkit-line-clamp: 1;
+}
+.clamp-2 {
+    @include clamp;
+    -webkit-line-clamp: 2;
+}
+
 // -------------- antd Divider styles ------------------- //
 
 .ant-divider-horizontal {

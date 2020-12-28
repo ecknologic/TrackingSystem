@@ -1,7 +1,7 @@
 import { Tabs } from 'antd';
 import { useHistory, useParams } from 'react-router-dom';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
-import { getRouteOptions, WEEKDAYS } from '../../../assets/fixtures';
+import { getWarehouseOptions, WEEKDAYS } from '../../../assets/fixtures';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import { DocIconWhite } from '../../../components/SVG_Icons';
 import CustomButton from '../../../components/CustomButton';
@@ -27,17 +27,17 @@ const ViewAccount = () => {
     const [viewModal, setViewModal] = useState(false)
     const [devDays, setDevDays] = useState([])
     const [devDaysError, setDevDaysError] = useState({})
-    const [routes, setRoutes] = useState([])
+    const [warehouseList, setWarehouseList] = useState([])
     const [recentDelivery, setRecentDelivery] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
-    const routeOptions = useMemo(() => getRouteOptions(routes), [routes])
+    const warehouseOptions = useMemo(() => getWarehouseOptions(warehouseList), [warehouseList])
     const [confirmModal, setConfirmModal] = useState(false)
     const [shake, setShake] = useState(false)
     const [navigateTo, setNavigateTo] = useState('')
 
     useEffect(() => {
         getAccount()
-        getRoutes()
+        getWarehouseList()
     }, [])
 
     const getAccount = async () => {
@@ -53,10 +53,10 @@ const ViewAccount = () => {
         } catch (error) { }
     }
 
-    const getRoutes = async () => {
+    const getWarehouseList = async () => {
         try {
             const data = await http.GET('/motherPlant/getDepartmentsList?departmentType=warehouse')
-            setRoutes(data)
+            setWarehouseList(data)
         } catch (ex) { }
     }
 
@@ -226,10 +226,10 @@ const ViewAccount = () => {
                         }
                     >
                         <TabPane tab="Account Overview" key="1">
-                            <AccountOverview data={account} routeOptions={routeOptions} onUpdate={handleAccountUpdate} />
+                            <AccountOverview data={account} warehouseOptions={warehouseOptions} onUpdate={handleAccountUpdate} />
                         </TabPane>
                         <TabPane tab="Delivery Details" key="2">
-                            <DeliveryDetails recentDelivery={recentDelivery} routeOptions={routeOptions} />
+                            <DeliveryDetails recentDelivery={recentDelivery} warehouseOptions={warehouseOptions} />
                         </TabPane>
                         <TabPane tab="Invoice" key="3">
                             <NoContent content='Design in progress' />
@@ -254,7 +254,7 @@ const ViewAccount = () => {
                     errors={formErrors}
                     devDays={devDays}
                     devDaysError={devDaysError}
-                    routeOptions={routeOptions}
+                    warehouseOptions={warehouseOptions}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     onUpload={handleProofUpload}
