@@ -28,7 +28,7 @@ const AddressCard = ({ data, onClick }) => {
                     </div>
                 </div>
                 <div className='business'>
-                    <span className='type1'>Assigned Route</span>
+                    <span className='type1'>Assigned Warehouse</span>
                     <span className='value'>{routeName}</span>
                 </div>
             </div>
