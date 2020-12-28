@@ -72,7 +72,7 @@ export const testResultOptions = [
 ]
 
 export const getRouteOptions = (routes = []) => {
-    return routes.map((item) => <Option key={item.RouteId} value={item.RouteId}>{item.RouteName}</Option>)
+    return routes.map((item) => <Option key={item.departmentId} value={item.departmentId}>{item.departmentName}</Option>)
 }
 export const getBatchIdOptions = (batches = []) => {
     return batches.map((item, index) => <Option key={index} value={item.batchId}>{item.batchId}</Option>)

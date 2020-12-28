@@ -6,7 +6,7 @@ import '../sass/accountCard.scss'
 import '../sass/addressCard.scss'
 
 const AddressCard = ({ data, onClick }) => {
-    const { isActive, routeName, phoneNumber, location, contactPerson } = data
+    const { isActive, departmentName, phoneNumber, location, contactPerson } = data
 
     return (
         <div className='account-card-container address-card-container'>
@@ -29,7 +29,7 @@ const AddressCard = ({ data, onClick }) => {
                 </div>
                 <div className='business'>
                     <span className='type1'>Assigned Warehouse</span>
-                    <span className='value'>{routeName}</span>
+                    <span className='value'>{departmentName}</span>
                 </div>
             </div>
             <div className='footer'>

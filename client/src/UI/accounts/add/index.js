@@ -81,7 +81,7 @@ const AddAccount = () => {
     }, [sameAddress])
 
     const getRoutes = async () => {
-        const data = await http.GET('/warehouse/getroutes')
+        const data = await http.GET('/motherPlant/getDepartmentsList?departmentType=warehouse')
         setRoutes(data)
     }
 
