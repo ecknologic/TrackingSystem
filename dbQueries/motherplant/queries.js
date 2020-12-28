@@ -95,12 +95,9 @@ motherPlantDbQueries.getPDDetailsByDate = async (input, callback) => {
     let query = "SELECT SUM(d.product20L) AS total20LCans,SUM(d.product1L) AS total1LBoxes,SUM(d.product500ML) total500MLBoxes,SUM(d.product250ML) total250MLBoxes FROM dispatches d WHERE departmentId=? AND DATE(`dispatchedDate`)<=?";
     return executeGetParamsQuery(query, [input.departmentId, input.date], callback)
 }
-motherPlantDbQueries.getNewConfirmedStockDetails = async (input, callback) => {
-    let query = "SELECT JSON_ARRAYAGG(json_object('dcNo',d.DCNO,'isConfirmed',d.isConfirmed)) as DCDetails,SUM(d.product20L) AS total20LCans,SUM(d.product1L) AS total1LBoxes,SUM(d.product500ML) total500MLBoxes,SUM(d.product250ML) total250MLBoxes,SUM(r.damaged20LCans) damaged20LCans,SUM(r.damaged1LBoxes) damaged1LBoxes,SUM(r.damaged500MLBoxes) damaged500MLBoxes,SUM(r.damaged250MLBoxes) damaged250MLBoxes FROM dispatches d INNER JOIN returnstockdetails r on d.returnStockId=r.id WHERE dispatchTo=? AND DATE(`dispatchedDate`)=?";
-    return executeGetParamsQuery(query, [input.departmentId, input.date], callback)
-}
 motherPlantDbQueries.getCurrentDispatchDetailsByDate = async (input, callback) => {
-    let query = "SELECT JSON_ARRAYAGG(json_object('dcNo',d.DCNO,'isConfirmed',d.isConfirmed)) as DCDetails,SUM(d.product20L) AS total20LCans,SUM(d.product1L) AS total1LBoxes,SUM(d.product500ML) total500MLBoxes,SUM(d.product250ML) total250MLBoxes FROM dispatches d  WHERE dispatchTo=? AND DATE(`dispatchedDate`)=?";
+    // let query = "SELECT JSON_ARRAYAGG(json_object('dcNo',d.DCNO,'isConfirmed',d.isConfirmed)) as DCDetails,SUM(d.product20L) AS total20LCans,SUM(d.product1L) AS total1LBoxes,SUM(d.product500ML) total500MLBoxes,SUM(d.product250ML) total250MLBoxes FROM dispatches d  WHERE dispatchTo=? AND DATE(`dispatchedDate`)=?";
+    let query = "SELECT JSON_ARRAYAGG(json_object('dcNo',d.DCNO,'isConfirmed',d.isConfirmed)) as DCDetails,SUM(d.product20L) AS total20LCans,SUM(d.product1L) AS total1LBoxes,SUM(d.product500ML) total500MLBoxes,SUM(d.product250ML) total250MLBoxes,SUM(r.damaged20LCans) damaged20LCans,SUM(r.damaged1LBoxes) damaged1LBoxes,SUM(r.damaged500MLBoxes) damaged500MLBoxes,SUM(r.damaged250MLBoxes) damaged250MLBoxes FROM dispatches d INNER JOIN returnstockdetails r on d.returnStockId=r.id WHERE dispatchTo=? AND DATE(`dispatchedDate`)=?";
     return executeGetParamsQuery(query, [input.departmentId, input.date], callback)
 }
 motherPlantDbQueries.getDispatchDetailsByDC = async (dcNo, callback) => {

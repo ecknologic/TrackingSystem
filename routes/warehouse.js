@@ -45,18 +45,6 @@ router.get('/getNewStockDetails/:id', (req, res) => {
     }
   });
 });
-router.get('/getConfirmedStockDetails/:id', (req, res) => {
-  let input = {
-    date: dayjs().format('YYYY-MM-DD'),
-    departmentId: req.params.id
-  }
-  motherPlantDbQueries.getNewConfirmedStockDetails(input, (err, results) => {
-    if (err) res.json(dbError(err));
-    else {
-      res.json(results.length ? results[0] : {});
-    }
-  });
-});
 
 router.get('/getDispatchDetailsByDC/:DCNO', (req, res) => {
   motherPlantDbQueries.getDispatchDetailsByDC(req.params.DCNO, (err, results) => {
