@@ -5,29 +5,19 @@ $primaryColorDisabled: #4C91FF;
 $textColorDisabled:rgba(0,0,0,0.55);
 
 #scroll-view {
+    >:first-child {
+        scroll-behavior: smooth;
+    }
+}
+
+#content {
     height: 100%;
     display: flex;
     flex-direction: column;
     background-color: #FAFAFB;
-    scroll-behavior: smooth;
-    overflow-y: scroll;
-
-    &::-webkit-scrollbar {
-        width: .5em;
-        height: .5em;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        background-color: #C8C8C9;
-        border-radius: 1em;
-    }
-    
-    &::-webkit-scrollbar-corner {
-        display: none;
-    }
 }
 
-#no-content-container {
+#no-content {
     width: 100%;
 }
 
@@ -647,7 +637,7 @@ textarea {
         min-height: calc(100vh - 14.5em);
         padding: 3em 1em 2em 2.5em;
 
-        #no-content-container {
+        #no-content {
             min-height: calc(100vh - 20em);
         }
     }

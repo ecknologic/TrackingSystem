@@ -4,7 +4,7 @@ export default function ScrollUp({ dep }) {
 
     useEffect(() => {
         let divElem, chElem, topPos;
-        divElem = document.getElementById('scroll-view');
+        divElem = document.querySelector('#content').parentNode;
 
         if (divElem) chElem = divElem;
         if (chElem) {

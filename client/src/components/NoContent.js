@@ -2,7 +2,7 @@ import React from 'react';
 
 const NoContent = ({ content }) => {
     return (
-        <div style={style} id='no-content-container'>
+        <div style={style} id='no-content'>
             {content}
         </div>
     )
