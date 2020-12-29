@@ -8,6 +8,8 @@ var NodeGeocoder = require('node-geocoder');
 const opencage = require("../config/opencage.config.js");
 const { Buffer } = require('buffer');
 const multer = require('multer');
+const customerQueries = require('../dbQueries/Customer/queries.js');
+const { customerProductDetails } = require('../utils/functions.js');
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'assests/idproofs')
@@ -139,15 +141,16 @@ router.post('/createCustomer', async (req, res) => {
     })
 });
 const saveDeliveryDetails = (customerId, customerdetails, res) => {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     if (customerdetails.deliveryDetails.length) {
       let count = 0
       for (let i of customerdetails.deliveryDetails) {
+        let latLong = await getLatLongDetails({ Address1: i.address })
         saveDeliveryDays(i.deliveryDays).then(deliveryDays => {
-          let deliveryDetailsQuery = "insert  into DeliveryDetails (gstNo,location,address,phoneNumber,contactPerson,deliverydaysid,depositAmount,customer_Id,departmentId,isActive,gstProof,registeredDate) values(?,?,?,?,?,?,?,?,?,?,?,?)";
+          let deliveryDetailsQuery = "insert  into DeliveryDetails (gstNo,location,address,phoneNumber,contactPerson,deliverydaysid,depositAmount,customer_Id,departmentId,isActive,gstProof,registeredDate,latitude,longitude) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
           var gstProof = Buffer.from(i.gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
           let registeredDate = new Date()
-          let insertQueryValues = [i.gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, deliveryDays.insertId, i.depositAmount, customerId, i.departmentId, i.isActive, gstProof, registeredDate]
+          let insertQueryValues = [i.gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, deliveryDays.insertId, i.depositAmount, customerId, i.departmentId, i.isActive, gstProof, registeredDate, latLong.latitude, latLong.longitude]
           db.query(deliveryDetailsQuery, insertQueryValues, (err, results) => {
             if (err) res.json({ status: 500, message: err.sqlMessage });
             else {
@@ -260,8 +263,7 @@ router.get("/getCustomerDetails/:creatorId", (req, res) => {
   })
 });
 router.get("/getCustomerDetailsById/:customerId", (req, res) => {
-  let customerDetailsQuery = "SELECT customerId,customerName,mobileNumber,EmailId,Address1,gstNo,panNo,adharNo,registeredDate,invoicetype,natureOfBussiness,creditPeriodInDays,referredBy,isActive,customertype,organizationName,idProofType,customer_id_proof,d.idProof_backside,d.idProof_frontside,d.gstProof from customerdetails c INNER JOIN customerDocStore d ON c.customer_id_proof=d.docId WHERE c.customerId=" + req.params.customerId
-  db.query(customerDetailsQuery, (err, results) => {
+  customerQueries.getCustomerDetails(req.params.customerId, (err, results) => {
     if (err) res.status(500).json(err);
     else {
       res.json({ status: 200, statusMessage: "Success", data: results })
@@ -339,18 +341,6 @@ const getDeliveryDetails = (customerId, deliveryDetailsId) => {
   });
 }
 
-const customerProductDetails = (deliveryDetailsId) => {
-  return new Promise((resolve, reject) => {
-    let customerProductDetailsQuery = "SELECT cp.productName,cp.productPrice,cp.noOfJarsTobePlaced,cp.id AS productId FROM customerproductdetails cp WHERE deliveryDetailsId=?";
-    db.query(customerProductDetailsQuery, [deliveryDetailsId], (err, results) => {
-      if (err) reject(err)
-      else {
-        resolve(results)
-      }
-    });
-  });
-}
-
 router.post('/updateCustomer', async (req, res) => {
   let customerdetails = req.body;
   let customerDetailsQuery = "UPDATE customerdetails SET customerName=?,mobileNumber=?,AlternatePhNo=?,EmailId=?,Address1=?,Address2=?,gstNo=?,contactperson=?,panNo=?,adharNo=?,invoicetype=?,natureOfBussiness=?,creditPeriodInDays=?,referredBy=?,departmentId=?,deliveryDaysId=?,depositamount=?,isActive=?,latitude=?,longitude=?,shippingAddress=?,shippingContactPerson=?,shippingContactNo=?,customerType=?,organizationName=?,idProofType=? WHERE customerId=" + customerdetails.customerId;
@@ -373,11 +363,12 @@ router.post('/updateDeliveryDetails', (req, res) => {
     let count = 0
     for (let i of deliveryDetails) {
       if (i.isNew == true) {
-        saveDeliveryDays(i.deliveryDays).then(deliveryDays => {
-          let deliveryDetailsQuery = "insert  into DeliveryDetails (gstNo,location,address,phoneNumber,contactPerson,deliverydaysid,depositAmount,customer_Id,departmentId,isActive,gstProof,registeredDate) values(?,?,?,?,?,?,?,?,?,?,?,?)";
+        saveDeliveryDays(i.deliveryDays).then(async (deliveryDays) => {
+          let latLong = await getLatLongDetails({ Address1: i.address })
+          let deliveryDetailsQuery = "insert  into DeliveryDetails (gstNo,location,address,phoneNumber,contactPerson,deliverydaysid,depositAmount,customer_Id,departmentId,isActive,gstProof,registeredDate,latitude,longitude) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
           var gstProof = i.gstProof ? i.test ? Buffer.from(i.gstProof, 'base64') : Buffer.from(i.gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64') : null
           let registeredDate = new Date()
-          let insertQueryValues = [i.gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, deliveryDays.insertId, i.depositAmount, i.customer_Id, i.departmentId, i.isActive, gstProof, registeredDate]
+          let insertQueryValues = [i.gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, deliveryDays.insertId, i.depositAmount, i.customer_Id, i.departmentId, i.isActive, gstProof, registeredDate, latLong.latitude, latLong.longitude]
           db.query(deliveryDetailsQuery, insertQueryValues, (err, results) => {
             if (err) res.json({ status: 500, message: err.sqlMessage });
             else {
@@ -392,10 +383,11 @@ router.post('/updateDeliveryDetails', (req, res) => {
           });
         })
       } else {
-        updateDeliveryDays(i.deliveryDays, i.deliverydaysid).then(deliveryDays => {
-          let deliveryDetailsQuery = "UPDATE DeliveryDetails SET gstNo=?,location=?,address=?,phoneNumber=?,contactPerson=?,depositAmount=?,departmentId=?,isActive=?,gstProof=? WHERE deliveryDetailsId=" + i.deliveryDetailsId;
+        updateDeliveryDays(i.deliveryDays, i.deliverydaysid).then(async (deliveryDays) => {
+          let latLong = await getLatLongDetails({ Address1: i.address })
+          let deliveryDetailsQuery = "UPDATE DeliveryDetails SET gstNo=?,location=?,address=?,phoneNumber=?,contactPerson=?,depositAmount=?,departmentId=?,isActive=?,gstProof=?,latitude=?,longitude=? WHERE deliveryDetailsId=" + i.deliveryDetailsId;
           var gstProof = i.gstProof ? i.test ? Buffer.from(i.gstProof, 'base64') : Buffer.from(i.gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64') : null
-          let updateQueryValues = [i.gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, i.depositAmount, i.departmentId, i.isActive, gstProof]
+          let updateQueryValues = [i.gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, i.depositAmount, i.departmentId, i.isActive, gstProof, latLong.latitude, latLong.longitude]
           db.query(deliveryDetailsQuery, updateQueryValues, (err, results) => {
             if (err) res.json({ status: 500, message: err.sqlMessage });
             else {

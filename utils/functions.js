@@ -41,4 +41,15 @@ const dbError = (err) => {
     }
     return errMessage;
 }
-module.exports = { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, dbError, getBatchId }
+const customerProductDetails = (deliveryDetailsId) => {
+    return new Promise((resolve, reject) => {
+        let customerProductDetailsQuery = "SELECT cp.productName,cp.productPrice,cp.noOfJarsTobePlaced,cp.id AS productId FROM customerproductdetails cp WHERE deliveryDetailsId=?";
+        db.query(customerProductDetailsQuery, [deliveryDetailsId], (err, results) => {
+            if (err) reject(err)
+            else {
+                resolve(results)
+            }
+        });
+    });
+}
+module.exports = { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, dbError, getBatchId, customerProductDetails }
