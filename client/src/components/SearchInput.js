@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { SearchIconGrey } from './SVG_Icons';
 import '../sass/searchInput.scss'
 
-const SearchInput = ({ placeholder, onSearch, width = '300px', onChange, className }) => {
+const SearchInput = ({ placeholder, onSearch = () => { }, onChange = () => { }, width = '300px', className }) => {
     const [input, setInput] = useState('')
 
     const handleChange = ({ currentTarget: { value } }) => {
@@ -19,7 +19,6 @@ const SearchInput = ({ placeholder, onSearch, width = '300px', onChange, classNa
     const handleSearch = () => {
         if (input) {
             input.trim() && onSearch(input)
-            setInput('')
         }
     }
 

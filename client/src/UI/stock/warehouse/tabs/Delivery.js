@@ -245,8 +245,6 @@ const Delivery = ({ date }) => {
                         placeholder='Search Delivery Challan'
                         className='delivery-search'
                         width='50%'
-                        onSearch={() => { }}
-                        onChange={() => { }}
                     />
                 </div>
             </div>
@@ -278,6 +276,7 @@ const Delivery = ({ date }) => {
                 onCancel={handleDCModalCancel}
                 title={DCFormTitleRef.current}
                 okTxt={DCFormBtnRef.current}
+                track
             >
                 <DCForm
                     data={formData}

@@ -24,7 +24,6 @@ const Header = ({ onClick, onSearch, onSort, onFilter }) => {
                 <div className='search-container'>
                     <SearchInput
                         placeholder='Search Accounts'
-                        onSearch={onSearch}
                         onChange={onSearch}
                         width='60%'
                     />

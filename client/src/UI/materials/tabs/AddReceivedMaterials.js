@@ -151,6 +151,7 @@ const AddMaterials = ({ onUpdate }) => {
         setBtnDisabled(false)
         setFormData({})
         setFormErrors({})
+        resetTrackForm()
     }
 
     const optimisticUpdate = (id) => {
@@ -253,8 +254,6 @@ const AddMaterials = ({ onUpdate }) => {
                         placeholder='Search Delivery Challan'
                         className='delivery-search'
                         width='50%'
-                        onSearch={() => { }}
-                        onChange={() => { }}
                     />
 
                 </div>
@@ -288,6 +287,7 @@ const AddMaterials = ({ onUpdate }) => {
                 onOk={handleUpdate}
                 onCancel={handleModalCancel}
                 className={`app-form-modal ${shake ? 'app-shake' : ''}`}
+                track
             >
                 <MaterialReceivedForm
                     data={formData}

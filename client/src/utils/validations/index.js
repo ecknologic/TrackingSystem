@@ -58,8 +58,8 @@ export const validateAccountValues = (data, customerType, isInView) => {
     const text2 = 'Incomplete'
     const {
         gstNo, panNo, adharNo, natureOfBussiness, organizationName, address, customerName,
-        mobileNumber, invoicetype, creditPeriodInDays, EmailId, referredBy, idProofType,
-        registeredDate, gstProof, depositAmount, departmentId, deliveryLocation, ...rest
+        mobileNumber, invoicetype, creditPeriodInDays = "", EmailId, referredBy, idProofType,
+        registeredDate, gstProof, depositAmount = "", departmentId, deliveryLocation, ...rest
     } = data
 
     if (customerType === 'Corporate') {
@@ -153,7 +153,7 @@ export const validateDeliveryValues = (data) => {
     const text = 'Required'
     const text2 = 'Incomplete'
     const {
-        gstNo, gstProof, depositAmount, departmentId, phoneNumber, contactPerson, address,
+        gstNo, gstProof, depositAmount = "", departmentId, phoneNumber, contactPerson, address,
         deliveryLocation, ...rest
     } = data
 

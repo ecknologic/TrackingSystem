@@ -124,8 +124,6 @@ const MaterialStatus = ({ reFetch }) => {
                         placeholder='Search Delivery Challan'
                         className='delivery-search'
                         width='50%'
-                        onSearch={() => { }}
-                        onChange={() => { }}
                     />
                 </div>
             </div>

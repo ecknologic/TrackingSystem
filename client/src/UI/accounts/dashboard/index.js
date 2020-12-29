@@ -21,6 +21,7 @@ const Accounts = () => {
     const [pageNumber, setPageNumber] = useState(1)
     const [totalCount, setTotalCount] = useState(null)
     const [filterON, setFilterON] = useState(false)
+    const [searchON, setSeachON] = useState(false)
     const [sortBy, setSortBy] = useState('NEW')
 
     const pageSizeOptions = useMemo(() => generatePageSizeOptions(), [window.innerWidth])
@@ -44,11 +45,13 @@ const Accounts = () => {
         if (value === "") {
             setTotalCount(accountsClone.length)
             setAccounts(accountsClone)
+            setSeachON(false)
             return
         }
         const result = doubleKeyComplexSearch(accountsClone, value, 'organizationName', 'customerName')
         setTotalCount(result.length)
         setAccounts(result)
+        setSeachON(true)
     }
 
     const onSort = (type) => {
@@ -134,6 +137,7 @@ const Accounts = () => {
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
+    const noPageSize = filterON || searchON
 
     return (
         <Fragment>
@@ -156,7 +160,7 @@ const Accounts = () => {
                             pageSize={pageSize}
                             current={pageNumber}
                             onChange={handlePageChange}
-                            pageSizeOptions={pageSizeOptions}
+                            pageSizeOptions={noPageSize ? [] : pageSizeOptions}
                             onPageSizeChange={handleSizeChange}
                         />)
                 }

@@ -315,7 +315,6 @@ export const trackAccountFormOnce = () => {
 }
 export const removeFormTracker = () => {
     resetTrackForm()
-    // window.removeEventListener('input', setTrackForm)
 }
 export const getIDInputValidationProps = (IDType) => {
     const props = {}

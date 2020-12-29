@@ -12,25 +12,25 @@ const OFDPanel = ({ data }) => {
             <div className='box items'>
                 <span className='name'>Total Cans (20 ltr)</span>
                 <div className='numbers-container'>
-                    <span className='number'>{total1LBoxes || '--'}</span>
+                    <span className='number'>{total20LCans || '--'}</span>
                 </div>
             </div>
             <div className='box items'>
                 <span className='name'>Total 1 Ltr Boxes (1x12)</span>
                 <div className='numbers-container'>
-                    <span className='number'>{total20LCans || '--'}</span>
+                    <span className='number'>{total1LBoxes || '--'}</span>
                 </div>
             </div>
             <div className='box items'>
                 <span className='name'>Total 500 ml Boxes (1x12)</span>
                 <div className='numbers-container'>
-                    <span className='number'>{total250MLBoxes || '--'}</span>
+                    <span className='number'>{total500MLBoxes || '--'}</span>
                 </div>
             </div>
             <div className='box items last'>
                 <span className='name'>Total 250 ml Boxes (1x12)</span>
                 <div className='numbers-container'>
-                    <span className='number'>{total500MLBoxes || '--'}</span>
+                    <span className='number'>{total250MLBoxes || '--'}</span>
                 </div>
             </div>
             <div className='buttons'>

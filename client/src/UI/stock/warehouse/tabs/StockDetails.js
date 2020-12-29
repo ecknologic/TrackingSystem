@@ -20,7 +20,7 @@ const StockDetails = ({ date }) => {
     const [OFD, setOFC] = useState({})
     const [EC, setEC] = useState({})
     const [newStock, setNewStock] = useState({})
-    const [dcDetails, setdCDetails] = useState([])
+    const [arrivedStock, setArrivedStock] = useState([])
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [confirmModal, setConfirmModal] = useState(false)
@@ -38,7 +38,10 @@ const StockDetails = ({ date }) => {
         getEC()
 
         if (isToday) getNewStock()
-        else setNewStock({})
+        else {
+            setNewStock({})
+            setArrivedStock([])
+        }
 
     }, [date])
 
@@ -64,9 +67,9 @@ const StockDetails = ({ date }) => {
         const url = `/warehouse/getNewStockDetails/1`
         const data = await http.GET(url)
         const { DCDetails } = data || {}
-        const dcDetails = JSON.parse(DCDetails || "[]")
+        const arrivedStock = JSON.parse(DCDetails || "[]")
         setNewStock(data)
-        setdCDetails(dcDetails)
+        setArrivedStock(arrivedStock)
     }
 
     const getStockDetailsByDC = async (dcNo) => {
@@ -93,7 +96,7 @@ const StockDetails = ({ date }) => {
     }
 
     const onArrivedStockConfirm = () => {
-        const dcItem = dcDetails.find(item => item.isConfirmed === 0)
+        const dcItem = arrivedStock.find(item => item.isConfirmed === 0)
         if (dcItem) {
             getStockDetailsByDC(dcItem.dcNo)
             setModal(true)
@@ -140,6 +143,7 @@ const StockDetails = ({ date }) => {
         setBtnDisabled(false)
         setFormData({})
         setFormErrors({})
+        resetTrackForm()
     }
 
     const handleConfirmModalOk = useCallback(() => {
@@ -153,7 +157,11 @@ const StockDetails = ({ date }) => {
 
     return (
         <div className='stock-details-container'>
-            <CASPanel data={CAS} newStock={newStock} onConfirm={onArrivedStockConfirm} dcDetails={dcDetails} />
+            <CASPanel data={CAS}
+                newStock={newStock}
+                arrivedStock={arrivedStock}
+                onConfirm={onArrivedStockConfirm}
+            />
             <OFDPanel data={OFD} />
             <DSPanel />
             <div className='empty-cans-header'>
@@ -171,6 +179,7 @@ const StockDetails = ({ date }) => {
                 onCancel={handleModalCancel}
                 title='Stock Details'
                 okTxt='Confirm Stock Received'
+                track
             >
                 <ArrivedStockForm
                     data={formData}

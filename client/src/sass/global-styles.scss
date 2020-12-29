@@ -27,6 +27,10 @@ $textColorDisabled:rgba(0,0,0,0.55);
     }
 }
 
+#no-content-container {
+    width: 100%;
+}
+
 // -------------- Text Overflow styles ------------------- //
 
 @mixin clamp {
@@ -645,7 +649,6 @@ textarea {
 
         #no-content-container {
             min-height: calc(100vh - 20em);
-            width: 100%;
         }
     }
 }

@@ -149,8 +149,6 @@ const Dispatches = () => {
                         placeholder='Search Delivery Challan'
                         className='delivery-search'
                         width='50%'
-                        onSearch={() => { }}
-                        onChange={() => { }}
                     />
 
                 </div>
