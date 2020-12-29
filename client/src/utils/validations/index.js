@@ -475,32 +475,32 @@ const validateProductNPrice = ({ product20L, price20L, product1L, price1L,
         errors.productNPrice = 'Atleast 1 product is required'
     }
     else {
-        if (!noP20L || !nop20L) {
-            if (noP20L) errors.productNPrice = 'Enter quantity for 20 Ltrs'
-            if (nop20L) errors.productNPrice = 'Enter price for 20 Ltrs'
-        }
-        if (!noP1L || !nop1L) {
-            if (noP1L) errors.productNPrice = 'Enter quantity for 1 Ltrs'
-            if (nop1L) errors.productNPrice = 'Enter price for 1 Ltrs'
+        if (!noP250ML || !nop250ML) {
+            if (noP250ML) errors.productNPrice = 'Enter quantity for 250 ml'
+            if (nop250ML) errors.productNPrice = 'Enter price for 250 ml'
         }
         if (!noP500ML || !nop500ML) {
             if (noP500ML) errors.productNPrice = 'Enter quantity for 500 ml'
             if (nop500ML) errors.productNPrice = 'Enter price for 500 ml'
         }
-        if (!noP250ML || !nop250ML) {
-            if (noP250ML) errors.productNPrice = 'Enter quantity for 250 ml'
-            if (nop250ML) errors.productNPrice = 'Enter price for 250 ml'
+        if (!noP1L || !nop1L) {
+            if (noP1L) errors.productNPrice = 'Enter quantity for 1 Ltrs'
+            if (nop1L) errors.productNPrice = 'Enter price for 1 Ltrs'
+        }
+        if (!noP20L || !nop20L) {
+            if (noP20L) errors.productNPrice = 'Enter quantity for 20 Ltrs'
+            if (nop20L) errors.productNPrice = 'Enter price for 20 Ltrs'
         }
     }
 
-    const error1 = validateNumber(product20L)
-    const error2 = validateNumber(price20L)
-    const error3 = validateNumber(product1L)
-    const error4 = validateNumber(price1L)
-    const error5 = validateNumber(product500ML)
-    const error6 = validateNumber(price500ML)
     const error7 = validateNumber(product250ML)
     const error8 = validateNumber(price250ML)
+    const error5 = validateNumber(product500ML)
+    const error6 = validateNumber(price500ML)
+    const error3 = validateNumber(product1L)
+    const error4 = validateNumber(price1L)
+    const error1 = validateNumber(product20L)
+    const error2 = validateNumber(price20L)
 
     if (error1 || error2 || error3 || error4 || error5 || error6 || error7 || error8)
         errors.productNPrice = error1 || error2 || error3 || error4 || error5 || error6 || error7 || error8
