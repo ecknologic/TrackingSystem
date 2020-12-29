@@ -123,6 +123,7 @@ const AccountOverview = ({ data, warehouseOptions, onUpdate }) => {
         else {
             const clone = [...devDays]
             clone.push(value)
+            if (clone.length === 7) clone.push('ALL')
             setDevDays(clone)
         }
     }

@@ -61,6 +61,7 @@ const DeliveryDetails = ({ warehouseOptions, recentDelivery }) => {
         else {
             const clone = [...devDays]
             clone.push(value)
+            if (clone.length === 7) clone.push('ALL')
             setDevDays(clone)
         }
     }

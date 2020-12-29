@@ -131,6 +131,8 @@ export const getDevDays = (data = {}) => {
     if (Number(FRI)) days.push('FRI')
     if (Number(SAT)) days.push('SAT')
 
+    if (days.length === 7) days.push('ALL')
+
     return days
 }
 export const extractValidProductsForDB = (data) => {
