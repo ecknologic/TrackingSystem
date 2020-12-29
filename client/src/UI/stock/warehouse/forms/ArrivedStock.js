@@ -18,7 +18,7 @@ const ArrivedStockForm = (props) => {
         trackAccountFormOnce()
 
         return () => {
-            removeFormTracker()
+            resetTrackForm()
         }
     }, [])
 

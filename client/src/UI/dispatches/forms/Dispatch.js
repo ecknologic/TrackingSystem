@@ -17,7 +17,7 @@ const DispatchForm = (props) => {
         trackAccountFormOnce()
 
         return () => {
-            removeFormTracker()
+            resetTrackForm()
         }
     }, [])
 

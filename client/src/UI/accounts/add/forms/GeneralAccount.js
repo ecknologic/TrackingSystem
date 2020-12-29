@@ -35,7 +35,7 @@ const GeneralAccountForm = (props) => {
         trackAccountFormOnce()
 
         return () => {
-            removeFormTracker()
+            resetTrackForm()
         }
     }, [])
 

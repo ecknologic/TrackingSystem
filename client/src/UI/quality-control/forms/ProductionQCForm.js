@@ -20,7 +20,7 @@ const ProductionQCForm = (props) => {
         trackAccountFormOnce()
 
         return () => {
-            removeFormTracker()
+            resetTrackForm()
         }
     }, [])
 

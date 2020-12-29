@@ -32,7 +32,7 @@ const CorporateAccountForm = ({ data, errors, IDProofs, IDProofErrors, onChange,
         trackAccountFormOnce()
 
         return () => {
-            removeFormTracker()
+            resetTrackForm()
         }
     }, [])
 

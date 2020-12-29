@@ -22,7 +22,7 @@ const QualityCheckForm = (props) => {
         trackAccountFormOnce()
 
         return () => {
-            removeFormTracker()
+            resetTrackForm()
         }
     }, [])
 

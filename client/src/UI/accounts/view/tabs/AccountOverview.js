@@ -43,7 +43,7 @@ const AccountOverview = ({ data, warehouseOptions, onUpdate }) => {
         resetTrackForm()
         trackAccountFormOnce()
 
-        return () => removeFormTracker()
+        return () => resetTrackForm()
     }, [])
 
     const handleChange = (value, key) => {
