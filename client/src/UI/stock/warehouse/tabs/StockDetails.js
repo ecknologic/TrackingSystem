@@ -1,18 +1,18 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import CASPanel from '../../../../components/CASPanel';
-import ConfirmMessage from '../../../../components/ConfirmMessage';
-import CustomModal from '../../../../components/CustomModal';
-import ConfirmModal from '../../../../components/CustomModal';
+import { http } from '../../../../modules/http';
+import ArrivedStockForm from '../forms/ArrivedStock';
 import DCPanel from '../../../../components/DCPanel';
 import DSPanel from '../../../../components/DSPanel';
 import ECPanel from '../../../../components/ECPanel';
 import ERCPanel from '../../../../components/ERCPanel';
 import OFDPanel from '../../../../components/OFDPanel';
-import { http } from '../../../../modules/http';
+import CASPanel from '../../../../components/CASPanel';
+import CustomModal from '../../../../components/CustomModal';
+import ConfirmModal from '../../../../components/CustomModal';
+import ConfirmMessage from '../../../../components/ConfirmMessage';
 import { getWarehoseId, TODAYDATE, TRACKFORM } from '../../../../utils/constants';
 import { getASValuesForDB, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 import { validateNumber, validateASValues } from '../../../../utils/validations';
-import ArrivedStockForm from '../forms/ArrivedStock';
 
 const StockDetails = ({ date }) => {
     const warehouseId = getWarehoseId()
@@ -29,24 +29,20 @@ const StockDetails = ({ date }) => {
     const [shake, setShake] = useState(false)
 
     useEffect(() => {
-        getCAS()
-    }, [])
-
-    useEffect(() => {
         const isToday = (date === TODAYDATE)
         getOFD()
         getEC()
+        getCAS()
 
         if (isToday) getNewStock()
         else {
             setNewStock({})
             setArrivedStock([])
         }
-
     }, [date])
 
     const getCAS = async () => {
-        const url = `warehouse/currentActiveStockDetails?warehouseId=${warehouseId}`
+        const url = `warehouse/currentActiveStockDetails/${date}?warehouseId=${warehouseId}`
         const { data: [data = {}] } = await http.GET(url)
         setCAS(data)
     }
@@ -120,12 +116,14 @@ const StockDetails = ({ date }) => {
         const body = {
             ...dcValues, motherplantId
         }
+        const options = { item: 'Stock Particulars', v1Ing: 'Confirming', v2: 'confirmed' }
+
 
         try {
             setBtnDisabled(true)
-            showToast('Stock Perticules', 'loading')
+            showToast({ ...options, action: 'loading' })
             await http.POST(url, body)
-            showToast('Stock Perticules', 'success')
+            showToast(options)
             onModalClose(true)
             getNewStock()
             getCAS()

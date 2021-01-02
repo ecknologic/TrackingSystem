@@ -2,7 +2,7 @@ import { Menu } from 'antd';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom';
 import { getRole, MARKETINGADMIN, TRACKFORM, WAREHOUSEADMIN, MOTHERPLANTADMIN } from '../../utils/constants';
-import { getSideMenuKey, resetTrackForm } from '../../utils/Functions'
+import { getSideMenuKey, resetTrackForm, getMainPathname } from '../../utils/Functions'
 import ConfirmModal from '../../components/CustomModal';
 import ConfirmMessage from '../../components/ConfirmMessage';
 import {
@@ -16,12 +16,11 @@ const SideMenu = () => {
     const history = useHistory()
     const [selected, setSelected] = useState('/')
     const [confirm, setConfirm] = useState(false)
+    const clickRef = useRef('')
 
-    const pattern = /[^\/]*\/[^\/]*/; // regex to match upto second forward slash in url pathname
-    const mainPathname = pathname.match(pattern)[0]
+    const mainPathname = getMainPathname(pathname)
 
     const menu = useMemo(() => getSideMenuKey(pathname), [mainPathname])
-    const clickRef = useRef('')
 
     useEffect(() => {
         setSelected(menu)
@@ -100,6 +99,10 @@ const SideMenu = () => {
                             <Item key='/manage-accounts' onClick={handleMenuSelect}>
                                 {selected === '/manage-accounts' ? <ProjectIcon /> : <ProjectIconLight />}
                                 <span>Manage Accounts</span>
+                            </Item>
+                            <Item key='/customers' onClick={handleMenuSelect}>
+                                {selected === '/customers' ? <ProjectIcon /> : <ProjectIconLight />}
+                                <span>Customers</span>
                             </Item>
                             <Item key='/add-customer' onClick={handleMenuSelect}>
                                 {selected === '/add-customer' ? <FriendReqIcon /> : <FriendReqIconLight />}

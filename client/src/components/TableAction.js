@@ -24,7 +24,7 @@ const TableAction = ({ onSelect }) => {
         <Dropdown
             overlay={reportsMenu}
             trigger={['click']}
-            getPopupContainer={triggerNode => triggerNode.parentNode}
+            getPopupContainer={() => document.getElementById('content')}
         >
             <MoreIconGrey className='action-dots' />
         </Dropdown>

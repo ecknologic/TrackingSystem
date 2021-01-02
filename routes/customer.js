@@ -253,7 +253,7 @@ const getLatLongDetails = (req) => {
 }
 router.post("/approveCustomer/:customerId", (req, res) => {
   const { customerId } = req.params;
-  customerQueries.approveCustomer(req.params.customerId, (err, results) => {
+  customerQueries.approveCustomer(customerId, (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
       customerQueries.approveDeliveryDetails(req.body.deliveryDetailsIds, (err, updatedDelivery) => {
@@ -262,6 +262,15 @@ router.post("/approveCustomer/:customerId", (req, res) => {
           saveToCustomerOrderDetails(customerId)
         }
       })
+    }
+  })
+});
+router.get("/approveDelivery/:deliveryDetailsId", (req, res) => {
+  const { deliveryDetailsId } = req.params;
+  customerQueries.approveDeliveryDetails([deliveryDetailsId], (err, updatedDelivery) => {
+    if (err) res.json({ status: 500, message: err.sqlMessage });
+    else {
+      res.json('Successfully Updated')
     }
   })
 });

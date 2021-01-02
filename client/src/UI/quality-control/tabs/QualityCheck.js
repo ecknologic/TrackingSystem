@@ -76,12 +76,14 @@ const QualityCheck = ({ goToTab }) => {
             ...formData, productionQcId, qcLevel: 1
         }
         const url = '/motherplant/createQualityCheck'
+        const options = { item: 'QC Report', v1Ing: 'Sending', v2: 'sent' }
+
 
         try {
             setBtnDisabled(true)
-            showToast('QC Report', 'loading')
+            showToast({ ...options, action: 'loading' })
             await http.POST(url, body)
-            showToast('QC Report', 'success')
+            showToast(options)
             goToTab('3')
             resetForm()
         } catch (error) {

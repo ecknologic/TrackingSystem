@@ -155,14 +155,14 @@ const DeliveryDetails = ({ warehouseOptions, recentDelivery }) => {
         const deliveryDays = getDevDaysForDB(devDays)
         const formValues = extractDeliveryDetails(formData)
         const body = [{ ...formValues, isNew: false, delete: 0, isActive: 0, products, deliveryDays }]
-
+        const options = { item: 'Delivery details', v1Ing: 'Updating', v2: 'updated' }
         const url = '/customer/updateDeliveryDetails'
         try {
             setBtnDisabled(true)
-            showToast('Delivery details', 'loading', 'PUT')
+            showToast({ ...options, action: 'loading' })
             const { data: [data = {}] } = await http.POST(url, body)
             optimisticUpdate(data)
-            showToast('Delivery details', 'success', 'PUT')
+            showToast(options)
             onModalClose(true)
             setBtnDisabled(false)
         } catch (error) {

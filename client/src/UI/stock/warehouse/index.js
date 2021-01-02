@@ -1,12 +1,12 @@
 import { Tabs } from 'antd';
 import React, { Fragment, useState } from 'react';
 import Header from './header';
-import StockDetails from './tabs/StockDetails';
-import ReportsDropdown from '../../../components/ReportsDropdown';
 import Delivery from './tabs/Delivery';
+import StockDetails from './tabs/StockDetails';
 import { TODAYDATE } from '../../../utils/constants';
-import DatePickerPanel from '../../../components/DatePickerPanel';
 import NoContent from '../../../components/NoContent';
+import ReportsDropdown from '../../../components/ReportsDropdown';
+import DatePickerPanel from '../../../components/DatePickerPanel';
 
 const WarehouseStock = () => {
 

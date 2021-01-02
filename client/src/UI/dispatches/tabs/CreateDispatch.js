@@ -74,13 +74,14 @@ const CreateDispatch = ({ goToTab, driverList, departmentList, ...rest }) => {
             ...formData, dispatchType: 'Internal', dispatchAddress,
             product20L, product1L, product500ML, product250ML
         }
+        const options = { item: 'Dispatch', v1Ing: 'Creating', v2: 'created' }
         const url = '/motherplant/addDispatchDetails'
 
         try {
             setBtnDisabled(true)
-            showToast('Dispatch', 'loading')
+            showToast({ ...options, action: 'loading' })
             await http.POST(url, body)
-            showToast('Dispatch', 'success')
+            showToast(options)
             goToTab('1')
             resetForm()
         } catch (error) {

@@ -1,4 +1,9 @@
 .app-collapse-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+
     .title {
         color: #0062FF;
         font-family: 'PoppinsRegular400';
@@ -8,5 +13,22 @@
     .msg {
         color: #44444F;
         font-family: 'Lato-Medium';
+    }
+
+    .extra-icons {
+        display: flex;
+        align-items: center;
+        margin: 0 1em;
+
+        span {
+            color: #5C62B0;
+            font-family: 'PoppinsSemiBold600';
+            font-size: .8em;
+        }
+
+        .trash {
+            transform: scale(.6);
+            margin-left: .5em;
+        }
     }
 }

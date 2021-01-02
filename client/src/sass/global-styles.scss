@@ -1,5 +1,6 @@
 $errorColor:  #E90614;
 $primaryColor: #0062FF;
+$secondaryColor: #5C60B6;
 $textColor:rgba(0,0,0,0.85);
 $primaryColorDisabled: #4C91FF;
 $textColorDisabled:rgba(0,0,0,0.55);
@@ -70,6 +71,12 @@ $textColorDisabled:rgba(0,0,0,0.55);
 }
 .ant-collapse-item {
     border: none !important;
+    border-radius: .6em;
+    margin-bottom: 1em;
+
+    .ant-collapse-header {
+        border-radius: .6em !important;
+    }
 }
 
 .ant-collapse-content {
@@ -107,6 +114,7 @@ $textColorDisabled:rgba(0,0,0,0.55);
 .ant-checkbox-inner {
     border-color: #C6CBD4;
 }
+
 .ant-checkbox-indeterminate .ant-checkbox-inner {
     border-color: #C6CBD4;
 }
@@ -136,7 +144,32 @@ $textColorDisabled:rgba(0,0,0,0.55);
 .ant-checkbox-indeterminate .ant-checkbox-inner::after {
     width: 70%;
     height: 70%;
-    background-color: #0062FF;
+    background-color: $primaryColor;
+}
+
+.cb-tiny {
+    .ant-checkbox-inner {
+        width: 1.3em;
+        height: 1.3em;
+    }
+    .ant-checkbox-inner::after {
+        width: 4px;
+        height: 6px;
+    }
+
+    .ant-checkbox + span {
+        padding-left: .5em;
+    }
+}
+
+.cb-secondary {
+    &.ant-checkbox-wrapper:hover .ant-checkbox-inner {
+        border-color: $secondaryColor;
+    }
+     
+    .ant-checkbox-checked .ant-checkbox-inner {
+        background-color:$secondaryColor;
+    }
 }
 
 // -------------- antd Dragger Input styles ------------------- //
@@ -721,26 +754,15 @@ textarea {
     background-color: #FCFDFE !important;
 }
 
-// -------------- Various Icons styles ------------------- //
-
-.app-svg-dropdown {
-    float: right;
-    transform: rotate(-90deg);
-    transition: all .3s;
-}
-.app-svg-cross {
-    transition: all .3s;
-}
-
 // -------------- Various Transform styles ------------------- //
-.rotate-left {
-    transform: rotate(-90deg);
+
+.rotate-180 {
+    transform: rotate(-180deg);
+    transition: all .3s;
 }
-.rotate-right {
-    transform: rotate(90deg);
-}
-.rotate-zero {
-    transform: rotate(0deg);
+
+.app-trans {
+    transition: all .3s;
 }
 // -------------- Various Button styles ------------------- //
 
@@ -1291,4 +1313,81 @@ textarea {
     height: 7px;
     border-radius: 50%;
     margin-right: .2em;
+}
+
+.app-menu-container {
+    background-color: #EAECF4;
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 3em;
+
+    .search-container {
+        flex: 1;
+        max-width: 35em;
+    }
+
+    .rest-container {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+    }
+
+    .op-container {
+        flex: 1;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        margin-left: 2em;
+
+        .fiter-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 2.8em;
+            height: 2.5em;
+            background-color: #fff;
+            border-radius: .6em;
+            margin-left: 1em;
+            cursor: pointer;
+        }
+    }
+}
+
+.app-view-info {
+    display: flex;
+    flex-direction: column;
+    padding: .5em 0;
+
+    .input-container {
+        display: flex;
+        flex-direction: column;
+        padding: .5em 0;
+    }
+
+    .half-stretch {
+        width: 50%;
+    }
+
+    .columns {
+        padding: .8em 0;
+
+        .app-input-label-name {
+            color: rgba(0,0,0,0.85);
+        }
+
+        .columns-container {
+            justify-content: flex-start;
+            align-items: center;
+
+            .app-input-label-name {
+                color: #92929D;
+            }
+            
+            .column {
+                flex: 0 1 auto;
+            }
+        }
+    }
 }

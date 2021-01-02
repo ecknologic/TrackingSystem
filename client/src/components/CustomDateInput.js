@@ -32,7 +32,7 @@ const CustomDateInput = (props) => {
             disabledDate={disabledDate}
             onOpenChange={onOpenChange}
             value={value ? dayjs(value) : ''}
-            getPopupContainer={triggerNode => triggerNode.parentNode}
+            getPopupContainer={() => document.getElementById('content')}
         />
     )
 }

@@ -125,12 +125,13 @@ const Production = () => {
         const body = {
             ...formData
         }
+        const options = { item: 'Production Batch', v1Ing: 'Updating', v2: 'updated' }
 
         try {
             setBtnDisabled(true)
-            showToast('Batch', 'loading', 'PUT')
+            showToast({ ...options, action: 'loading' })
             const data = await http.POST(url, body)
-            showToast('Batch', 'success', 'PUT')
+            showToast(options)
             optimisticUpdate(data)
             onModalClose(true)
             setBtnDisabled(false)

@@ -1,0 +1,22 @@
+$primary-color: #0062FF;
+
+.customers-header {
+    display: flex;
+    flex-direction: column;
+    height: 13.97em;
+    
+    .heading-container {
+        flex: 1.2;
+        background-color: #f1f2f7;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 3em;
+
+        .title {
+            font-size: 1.55em;
+            font-weight: 700;
+            color: $primary-color;
+        }
+    }
+}

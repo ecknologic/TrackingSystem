@@ -85,14 +85,15 @@ const StockDetails = ({ date, goToTab }) => {
             ...formData, createdBy: USERID,
             product20L, product1L, product500ML, product250ML
         }
+        const options = { item: 'Production Batch', v1Ing: 'Creating', v2: 'created' }
 
         try {
             setBtnDisabled(true)
-            showToast('Batch', 'loading')
+            showToast({ ...options, action: 'loading' })
             await http.POST(url, body)
             resetForm()
             goToTab('2')
-            showToast('Batch', 'success')
+            showToast(options)
         } catch (error) {
             setBtnDisabled(false)
         }

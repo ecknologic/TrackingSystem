@@ -45,7 +45,7 @@ const RoutesDropdown = ({ routes, onChange }) => {
         <Dropdown
             overlay={reportsMenu}
             trigger={['click']}
-            getPopupContainer={triggerNode => triggerNode.parentNode}
+            getPopupContainer={() => document.getElementById('content')}
             className='routes-filter-dropdown'
             visible={visible}
             onVisibleChange={(bool) => setVisible(bool)}

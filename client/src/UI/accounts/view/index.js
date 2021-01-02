@@ -1,5 +1,5 @@
 import { Tabs } from 'antd';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory, useLocation, useParams } from 'react-router-dom';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { getWarehouseOptions, WEEKDAYS } from '../../../assets/fixtures';
 import ConfirmMessage from '../../../components/ConfirmMessage';
@@ -15,11 +15,12 @@ import DeliveryForm from '../add/forms/Delivery';
 import { http } from '../../../modules/http';
 import Header from './header';
 import { validateDeliveryValues, validateDevDays, validateIDNumbers, validateMobileNumber, validateNames, validateNumber } from '../../../utils/validations';
-import { extractDeliveryDetails, getProductsForDB, extractProductsFromForm, isEmpty, getDevDaysForDB, getBase64, resetTrackForm, showToast } from '../../../utils/Functions';
+import { extractDeliveryDetails, getProductsForDB, extractProductsFromForm, isEmpty, getDevDaysForDB, getBase64, resetTrackForm, showToast, getMainPathname } from '../../../utils/Functions';
 
 const ViewAccount = () => {
     const history = useHistory()
     const { accountId } = useParams()
+    const { pathname } = useLocation()
     const [account, setAccount] = useState({ loading: true })
     const [headerContent, setHeaderContent] = useState({ loading: true })
     const [formData, setFormData] = useState({})
@@ -151,13 +152,15 @@ const ViewAccount = () => {
         const formValues = extractDeliveryDetails(formData)
         const body = [{ ...formValues, isNew: true, delete: 0, isActive: 0, products, deliveryDays, customer_Id: accountId }]
 
+        const options = { item: 'Delivery details', v1Ing: 'Adding', v2: 'added' }
         const url = '/customer/updateDeliveryDetails'
+
         try {
             setBtnDisabled(true)
-            showToast('Delivery details', 'loading')
+            showToast({ ...options, action: 'loading' })
             let { data: [data = {}] } = await http.POST(url, body)
             setRecentDelivery(data)
-            showToast('Delivery details', 'success')
+            showToast(options)
             onModalClose(true)
         } catch (error) {
             setBtnDisabled(false)
@@ -174,7 +177,7 @@ const ViewAccount = () => {
             setConfirmModal(true)
             setNavigateTo('back')
         }
-        else history.push('/manage-accounts')
+        else goBack()
     }
 
     const onModalClose = (hasSaved) => {
@@ -190,9 +193,7 @@ const ViewAccount = () => {
         setDevDaysError({})
         resetTrackForm()
 
-        if (navigateTo === 'back') {
-            history.push('/manage-accounts')
-        }
+        if (navigateTo === 'back') goBack()
     }
 
     const handleConfirmModalOk = useCallback(() => {
@@ -211,6 +212,10 @@ const ViewAccount = () => {
     }, [])
 
     const handleModalCancel = useCallback(() => onModalClose(), [])
+    const goBack = () => {
+        const mainPathname = getMainPathname(pathname)
+        history.push(mainPathname)
+    }
 
     return (
         <Fragment>

@@ -55,13 +55,14 @@ const InternalQC = () => {
         const body = {
             ...formData
         }
+        const options = { item: 'QC Request', v1Ing: 'Sending', v2: 'sent' }
 
         try {
             setBtnDisabled(true)
-            showToast('Quality Control', 'loading')
+            showToast({ ...options, action: 'loading' })
             await http.POST(url, body)
             resetForm()
-            showToast('Quality Control', 'success')
+            showToast(options)
         } catch (error) {
             setBtnDisabled(false)
         }

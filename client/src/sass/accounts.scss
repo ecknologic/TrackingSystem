@@ -19,46 +19,6 @@ $primary-color: #0062FF;
             color: $primary-color;
         }
     }
-    
-    .menu-container {
-        background-color: #EAECF4;
-        flex: 1;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0 3em;
-
-        .search-container {
-            flex: 1;
-            max-width: 35em;
-        }
-
-        .rest-container {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-        }
-
-        .op-container {
-            flex: 1;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            margin-left: 2em;
-
-            .fiter-container {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                width: 2.8em;
-                height: 2.5em;
-                background-color: #fff;
-                border-radius: .6em;
-                margin-left: 1em;
-                cursor: pointer;
-            }
-        }
-    }
 }
 
 .account-manager-content {
@@ -104,6 +64,26 @@ $primary-color: #0062FF;
                 font-family: 'PoppinsMedium500';
             }
         }
+
+        .title-container {
+            display: flex;
+            margin-left: 1.5em;
+            
+            .title, .account {
+                color: #171725;
+                font-family: 'PoppinsSemiBold600';
+                font-size: 1.55em;
+            }
+
+            .title {
+                flex: 1 0;
+                padding-right: .25em;
+            }
+            
+            .account {
+                white-space: nowrap;
+            }
+        }
     }
 }
 .account-add-header {
@@ -116,10 +96,10 @@ $primary-color: #0062FF;
     flex-direction: column;
 }
 
-.account-add-content {
+.account-add-content, .account-approval-content {
     display: flex;
     flex-direction: column;
-    padding: 3em 1em 2em 3em;
+    padding: 3em 1em 2em 2em;
     background-color: #FAFAFB;
 
     .header-buttons-container {
@@ -222,6 +202,78 @@ $primary-color: #0062FF;
     }
 
     
+}
+
+.account-approval-content {
+    padding: 1em 1em 2em 2.5em;
+
+    .app-view-info {
+        padding-top: 0;
+    }
+
+    .app-form-container {
+        padding-bottom: 1em;
+    }
+
+    .heading-container {
+        color: #171725;
+        padding: 1em 0;
+        
+        .heading {
+            font-family: 'PoppinsSemiBold600';
+            font-size: 1.4em;
+            font-weight: 700;
+        }
+
+        .tail {
+            color: #1B2125;
+            font-family: 'PoppinsRegular400';
+            font-size: 1.4em;
+            margin-left: .25em;
+        }
+    }
+
+    .approval-buttons-container {
+        display: flex;
+        flex-basis: 60%;
+        align-items: center;
+
+        .check-confirm {
+            display: flex;
+            align-items: center;
+            
+            .ant-checkbox-wrapper {
+                align-self: flex-start;
+            }
+
+            .text {
+                color: #333333;
+                font-family: 'PoppinsRegular400';
+                margin-left: .5em;
+                font-size: .85em;
+            }
+        }
+
+        .footer-btn {
+            font-family: 'PoppinsSemiBold600';
+            background-color: transparent;
+            border: 1px solid #0062FF;
+            color:#0062FF;
+            width: 7em;
+            margin-left: 1em;
+            border-radius: .4em;
+        }
+
+        .approve-btn {
+            background-color: #0062FF;
+            color: #FFF;
+        }
+    }
+    
+    #no-content {
+        width: 80%;
+        min-height: calc(100vh - 20em);
+    }
 }
 
 .account-view-account-overview {

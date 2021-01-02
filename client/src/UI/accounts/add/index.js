@@ -404,10 +404,11 @@ const AddAccount = () => {
             body = { ...account, idProofs, deliveryDetails: [delivery], isActive: 0, ...extra }
         }
 
+        const options = { item: 'Customer', action: 'loading', v1Ing: 'Adding' }
         const url = '/customer/createCustomer'
         try {
             setBtnDisabled(true)
-            showToast('Customer', 'loading')
+            showToast(options)
             await http.POST(url, body)
             message.destroy()
             setSucessModal(true)
@@ -552,30 +553,34 @@ const AddAccount = () => {
                                 {hasExtraAddress && <CustomButton onClick={handleAddDelivery} text='Add New' className={`app-add-new-btn ${addShake ? 'app-shake' : ''}`} icon={<PlusIcon />} />}
                             </div>
                             {
-                                hasExtraAddress && addresses.map((item, index) => {
-                                    const { deliveryLocation, address } = item
-                                    return (
-                                        <Collapse
-                                            accordion
-                                            key={index}
-                                            className='accordion-container'
-                                            expandIcon={() => <DDownIcon />}
-                                            expandIconPosition='right'
-                                        >
-                                            <Panel
-                                                header={<CollapseHeader title={deliveryLocation} msg={address} />}
-                                                forceRender
-                                            >
-                                                <CollapseForm
-                                                    uniqueId={index}
-                                                    data={item}
-                                                    addressesErrors={addressesErrors}
-                                                    warehouseOptions={warehouseOptions}
-                                                />
-                                            </Panel>
-                                        </Collapse>
-                                    )
-                                })
+                                hasExtraAddress && <Collapse
+                                    accordion
+                                    className='accordion-container'
+                                    expandIcon={({ isActive }) => isActive ? <DDownIcon className='rotate-180' /> : <DDownIcon className='app-trans' />}
+                                    expandIconPosition='right'
+                                >
+                                    {
+                                        addresses.map((item, index) => {
+                                            const { deliveryLocation, address } = item
+
+                                            return (
+                                                <Panel
+                                                    key={index}
+                                                    header={<CollapseHeader title={deliveryLocation} msg={address} />}
+                                                    forceRender
+                                                >
+                                                    <CollapseForm
+                                                        uniqueId={index}
+                                                        data={item}
+                                                        addressesErrors={addressesErrors}
+                                                        warehouseOptions={warehouseOptions}
+                                                    />
+                                                </Panel>
+                                            )
+                                        })
+                                    }
+
+                                </Collapse>
                             }
                             <Delivery
                                 devDays={devDays}
@@ -627,6 +632,7 @@ const AddAccount = () => {
                 cancelTxt='Add New'
             >
                 <SuccessMessage
+                    action={`added ${customertype === 'Corporate' ? 'a' : 'an'}`}
                     type={customertype}
                     name={organizationName || customerName}
                 />

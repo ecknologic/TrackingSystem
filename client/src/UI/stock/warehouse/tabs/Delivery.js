@@ -124,7 +124,7 @@ const Delivery = ({ date }) => {
     const handleMenuSelect = (key, data) => {
         if (key === 'view') {
             customerOrderIdRef.current = data.customerOrderId
-            DCFormTitleRef.current = `DC - ${data.customerName}`
+            DCFormTitleRef.current = data.dcNo
             DCFormBtnRef.current = 'Update'
             setFormData(data)
             setDCModal(true)
@@ -155,20 +155,26 @@ const Delivery = ({ date }) => {
 
         let url = '/warehouse/createDC'
         let method = 'POST'
+        let v1Ing = 'Creating'
+        let v2 = 'created'
+
         if (customerOrderId) {
             url = '/warehouse/updateDC'
             method = 'PUT'
+            v1Ing = 'Updating'
+            v2 = 'updated'
         }
 
         const body = {
             ...dcValues, warehouseId, customerOrderId
         }
+        const options = { item: 'DC', v1Ing, v2 }
 
         try {
             setBtnDisabled(true)
-            showToast('DC', 'loading', method)
+            showToast({ ...options, action: 'loading' })
             let { data: [data = {}] } = await http[method](url, body)
-            showToast('DC', 'success', method)
+            showToast(options)
             optimisticUpdate(data, method)
             onModalClose(true)
         } catch (error) {
@@ -198,17 +204,17 @@ const Delivery = ({ date }) => {
         setFormErrors({})
     }
 
-    const dataSource = useMemo(() => deliveries.map((delivery) => {
-        const { dcNo, address, RouteName, driverName, isDelivered } = delivery
+    const dataSource = useMemo(() => deliveries.map((dc) => {
+        const { dcNo, address, RouteName, driverName, isDelivered } = dc
         return {
             key: dcNo,
             dcnumber: dcNo,
             shopAddress: address,
             route: RouteName,
             driverName: driverName,
-            orderDetails: renderOrderDetails(delivery),
+            orderDetails: renderOrderDetails(dc),
             status: renderStatus(isDelivered),
-            action: <TableAction onSelect={({ key }) => handleMenuSelect(key, delivery)} />
+            action: <TableAction onSelect={({ key }) => handleMenuSelect(key, dc)} />
         }
     }), [deliveries])
 

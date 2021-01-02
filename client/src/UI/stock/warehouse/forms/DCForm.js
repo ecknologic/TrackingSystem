@@ -2,11 +2,11 @@ import React, { useEffect } from 'react';
 import SelectInput from '../../../../components/SelectInput';
 import InputLabel from '../../../../components/InputLabel';
 import CustomInput from '../../../../components/CustomInput';
-import { removeFormTracker, resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
+import { resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 
 const DCForm = (props) => {
 
-    const { data, errors, routeOptions, disabled, onBlur, driverOptions, onChange, track } = props
+    const { data, errors, routeOptions, disabled, onBlur, driverOptions, onChange } = props
 
     const { routeId, customerName, mobileNumber, address,
         driverId, cans20L, boxes1L, boxes500ML, boxes250ML } = data

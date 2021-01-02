@@ -50,7 +50,7 @@ const SelectInput = ({ options, mode, onSelect, onDeselect, value, disabled,
             maxTagCount={4}
             showArrow
             suffixIcon={suffixIcon}
-            getPopupContainer={triggerNode => triggerNode.parentNode}
+            getPopupContainer={() => document.getElementById('content')}
         >
             {options}
         </Select>
