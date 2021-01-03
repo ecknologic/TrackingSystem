@@ -33,7 +33,7 @@ const ApproveAccount = () => {
     const { accountId } = useParams()
     const history = useHistory()
     const [accountValues, setAccountValues] = useState({ loading: true })
-    const [headerContent, setHeaderContent] = useState({ loading: true })
+    const [headerContent, setHeaderContent] = useState({})
     const [accountLoading, setAccountLoading] = useState(true)
     const [addressesLoading, setAddressesLoading] = useState(true)
     const [addressIds, setAddressIds] = useState([])
@@ -69,7 +69,7 @@ const ApproveAccount = () => {
 
             setHeaderContent({
                 title: organizationName || customerName,
-                customertype, loading: false
+                customertype
             })
             const gst = base64String(gstProof?.data)
             const Front = base64String(idProof_frontside?.data)
@@ -159,7 +159,7 @@ const ApproveAccount = () => {
         const { idProofType } = accountValues
         const sessionAddresses = getSessionItems('address')
 
-        const accountErrors = validateAccountValues(accountValues, customertype)
+        const accountErrors = validateAccountValues(accountValues, customertype, true)
         const addressErrors = validateAddresses(sessionAddresses)
 
         if (!isEmpty(accountErrors) || !isEmpty(addressErrors)) {
@@ -170,7 +170,7 @@ const ApproveAccount = () => {
             return
         }
         const idProofs = getIdProofsForDB(IDProofs, idProofType)
-        const delivery = getAddressesForDB(sessionAddresses)
+        const delivery = getAddressesForDB(sessionAddresses, true)
         const account = { ...extractCADetails(accountValues), idProofs }
         const options = { item: 'Customer', v1Ing: 'Saving', v2: 'saved' }
 
@@ -182,6 +182,8 @@ const ApproveAccount = () => {
             await Promise.all([p1, p2])
             showToast(options)
             resetTrackForm()
+            setEditMode(false)
+            setSaveDisabled(false)
         } catch (error) {
             message.destroy()
             setSaveDisabled(false)
@@ -253,7 +255,7 @@ const ApproveAccount = () => {
     const onAccountCancel = useCallback(() => setConfirmModal(true), [])
     const handleSucessModalCancel = useCallback(() => { setSucessModal(false); goToCustomers() }, [])
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
-    const handleSuccessModalOk = useCallback(() => { setSucessModal(false); goToCustomers() }, [])
+    const handleSuccessModalOk = useCallback(() => { setSucessModal(false); history.replace('/customers') }, [])
     const handleConfirmModalOk = useCallback(() => { setConfirmModal(false); goToCustomers() }, [])
 
     const handleBack = () => {

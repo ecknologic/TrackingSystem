@@ -168,7 +168,11 @@ const Customers = () => {
                         loading ? <NoContent content={<Spinner />} />
                             : accounts.length ? accounts.slice(sliceFrom, sliceTo).map((account) => (
                                 <Col lg={{ span: 12 }} xl={{ span: 8 }} xxl={{ span: 6 }} key={account.customerId}>
-                                    <AccountCard customerDetails={account} btnTxt={cardBtnTxt} onClick={() => onCardBtnClick(account.customerId)} />
+                                    <AccountCard
+                                        customerDetails={account}
+                                        btnTxt={cardBtnTxt}
+                                        onClick={() => onCardBtnClick(account.customerId)}
+                                    />
                                 </Col>
                             )) : <NoContent content='No accounts to show' />
                     }

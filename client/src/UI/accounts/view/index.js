@@ -22,7 +22,7 @@ const ViewAccount = () => {
     const { accountId } = useParams()
     const { pathname } = useLocation()
     const [account, setAccount] = useState({ loading: true })
-    const [headerContent, setHeaderContent] = useState({ loading: true })
+    const [headerContent, setHeaderContent] = useState({})
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [viewModal, setViewModal] = useState(false)
@@ -49,7 +49,7 @@ const ViewAccount = () => {
             setAccount({ ...data, loading: false })
             setHeaderContent({
                 title: organizationName || customerName,
-                address: Address1, loading: false
+                address: Address1
             })
         } catch (error) { }
     }
@@ -237,10 +237,10 @@ const ViewAccount = () => {
                         <TabPane tab="Delivery Details" key="2">
                             <DeliveryDetails recentDelivery={recentDelivery} warehouseOptions={warehouseOptions} />
                         </TabPane>
-                        <TabPane tab="Invoice" key="3">
+                        <TabPane tab="Invoice" key="3" disabled>
                             <NoContent content='Design in progress' />
                         </TabPane>
-                        <TabPane tab="Report Log" key="4">
+                        <TabPane tab="Report Log" key="4" disabled>
                             <NoContent content='Design in progress' />
                         </TabPane>
                     </Tabs>

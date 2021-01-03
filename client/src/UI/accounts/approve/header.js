@@ -12,13 +12,12 @@ const Header = ({ data, onClick }) => {
                 <BackButton onClick={onClick} />
                 <div className='title-container'>
                     {
-                        loading ? <Spinner />
-                            : (
-                                <>
-                                    <span className='title clamp-1'>{title}</span>
-                                    <span className='account'>{`- ${customertype} Account`}</span>
-                                </>
-                            )
+                        title && (
+                            <>
+                                <span className='title clamp-1'>{title}</span>
+                                <span className='account'>{`- ${customertype} Account`}</span>
+                            </>
+                        )
                     }
                 </div>
             </div>

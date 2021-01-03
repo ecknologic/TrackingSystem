@@ -5,16 +5,19 @@ import PrimaryButton from './PrimaryButton';
 import { FriendIconGrey, MoreIconGrey } from './SVG_Icons';
 import '../sass/accountCard.scss'
 import '../sass/addressCard.scss'
+import { getRole, SUPERADMIN } from '../utils/constants';
 
-const AddressCard = ({ data, onClick }) => {
-    const { isActive, departmentName, phoneNumber, location, contactPerson } = data
+const AddressCard = ({ data, onClick, onSelect }) => {
+    const role = getRole()
+    const { isActive, departmentName, phoneNumber, location, contactPerson, deliveryDetailsId } = data
 
-    const onSelect = (value) => {
+    const handleSelect = ({ key }) => {
+        onSelect(key, deliveryDetailsId)
     }
 
     return (
         <div className='account-card-container address-card-container'>
-            <div className={isActive ? 'badge active' : 'badge'}>DRAFT</div>
+            <div className={isActive ? 'badge active' : 'badge'}>{isActive ? "ACTIVE" : "DRAFT"}</div>
             <div className='header'>
                 <div className={isActive ? 'inner green' : 'inner'}>
                     <FriendIconGrey className='friend icon' />
@@ -38,17 +41,20 @@ const AddressCard = ({ data, onClick }) => {
             </div>
             <div className='footer'>
                 <PrimaryButton text='View Details' onClick={() => onClick(data)} />
-                <Action onSelect={onSelect} />
+                {
+                    role === SUPERADMIN &&
+                    <Action onSelect={handleSelect} isActive={isActive} />
+                }
             </div>
         </div>
     )
 
 }
 
-const Action = ({ onSelect }) => {
+const Action = ({ onSelect, isActive }) => {
     const menu = (
         <Menu onClick={onSelect}>
-            <Menu.Item key="approve">
+            <Menu.Item key="approve" className={isActive ? 'disabled' : ''}>
                 Approve
           </Menu.Item>
             <Menu.Item key="delete">
