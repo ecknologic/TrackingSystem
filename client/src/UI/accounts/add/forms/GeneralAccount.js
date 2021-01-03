@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { getIDInputValidationProps, getIdProofName, removeFormTracker, resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 import SelectInput from '../../../../components/SelectInput';
 import DraggerInput from '../../../../components/DraggerInput';
 import InputWithAddon from '../../../../components/InputWithAddon';
 import UploadPreviewer from '../../../../components/UploadPreviewer';
-import { dayOptions, invoiceOptions, idOptions, businessOptions } from '../../../../assets/fixtures'
 import InputLabel from '../../../../components/InputLabel';
 import CustomInput from '../../../../components/CustomInput';
+import { dayOptions, invoiceOptions, idOptions, businessOptions } from '../../../../assets/fixtures'
+import { getIDInputValidationProps, getIdProofName, resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 
 const GeneralAccountForm = (props) => {
 
@@ -35,7 +35,7 @@ const GeneralAccountForm = (props) => {
         trackAccountFormOnce()
 
         return () => {
-            removeFormTracker()
+            resetTrackForm()
         }
     }, [])
 

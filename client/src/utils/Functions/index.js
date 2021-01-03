@@ -15,21 +15,40 @@ export const editData = (updatedItem, data, idField) => {
         } else resolve([])
     })
 }
-export const showToast = (item, action, method) => {
-    let msg = ''
-    let duration = action === 'loading' ? 0 : undefined
 
-    if (method === 'PUT') {
-        if (action === 'loading') msg = `Updating ${item}...`
-        else msg = `${item} updated successfully.`
-        message[action](msg, duration)
-    }
-    else {
-        if (action === 'loading') msg = `Adding ${item}...`
-        else msg = `${item} added successfully.`
-        message[action](msg, duration)
-    }
+export const getMainPathname = (pathname) => {
+    const pattern = /[^\/]*\/[^\/]*/; // regex to match upto second forward slash in url pathname
+    return pathname.match(pattern)[0]
 }
+
+export const getSessionItems = (matcher) => {
+    const addresses = Object.keys(sessionStorage)
+        .filter((key) => key.includes(matcher))
+        .sort()
+        .map((key) => {
+            return JSON.parse(sessionStorage.getItem(key))
+        })
+
+    return addresses
+}
+
+export const resetSessionItems = (matcher) => {
+    Object.keys(sessionStorage)
+        .map((key) => key.includes(matcher) && sessionStorage.removeItem(key))
+}
+
+export const showToast = (props) => {
+    let { item = 'Item', action = 'success',
+        v1Ing = 'Saving', v2 = 'saved', duration } = props
+    let msg = ''
+    if (action === 'loading') {
+        msg = `${v1Ing} ${item}...`
+        duration = 0
+    }
+    else msg = `${item} ${v2} successfully.`
+    message[action](msg, duration)
+}
+
 export const blobToBase64 = (blob) => {
     const content = new Uint8Array(blob);
 
@@ -37,11 +56,13 @@ export const blobToBase64 = (blob) => {
         new Blob([content.buffer], { type: 'image/png' })
     );
 }
+
 export const getBase64 = (img, callback) => {
     const reader = new FileReader();
     reader.addEventListener('load', () => callback(reader.result));
     reader.readAsDataURL(img);
 }
+
 export const base64String = (buffer = []) => {
     if (buffer.length) return "data:image/png;base64," + btoa(
         new Uint8Array(buffer)
@@ -50,11 +71,13 @@ export const base64String = (buffer = []) => {
 
     return ''
 }
+
 export const getAdjustedSlideIndex = (actualIndex, slidesToShow) => {
     const centerIndex = Math.floor(slidesToShow / 2)
     if (actualIndex <= centerIndex) return 0
     return actualIndex - centerIndex
 }
+
 export const stringToHslColor = (str) => {
     var hash = 0;
     for (var i = 0; i < str.length; i++) {
@@ -64,6 +87,7 @@ export const stringToHslColor = (str) => {
     var h = hash % 360;
     return 'hsl(' + h + ', 45%, 45%)';
 }
+
 export const getCleanObject = (data) => {
     return Object.entries(data).reduce((a, [k, v]) => (v === null ? a : (a[k] = v, a)), {})
 }
@@ -130,6 +154,8 @@ export const getDevDays = (data = {}) => {
     if (Number(THU)) days.push('THU')
     if (Number(FRI)) days.push('FRI')
     if (Number(SAT)) days.push('SAT')
+
+    if (days.length === 7) days.push('ALL')
 
     return days
 }
@@ -275,10 +301,12 @@ export const extractGADetails = (data) => {
 
 export const getAddressesForDB = (data) => {
     return data.map((address) => {
-        const { devDays, product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML, gstNo = '', gstProof = '', ...rest } = address
+        const { devDays, product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML,
+            product1LId, product20LId, product250MLId, product500MLId, price250ML, gstNo = '', gstProof = '',
+            ...rest } = address
         const products = getProductsForDB({ product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML })
         const deliveryDays = getDevDaysForDB(devDays)
-        return { products, deliveryDays, gstNo, gstProof, ...rest }
+        return { ...rest, products, deliveryDays, gstNo, gstProof }
     })
 }
 
@@ -312,10 +340,6 @@ export const resetTrackForm = () => {
 }
 export const trackAccountFormOnce = () => {
     window.addEventListener('input', setTrackForm, { once: true })
-}
-export const removeFormTracker = () => {
-    resetTrackForm()
-    // window.removeEventListener('input', setTrackForm)
 }
 export const getIDInputValidationProps = (IDType) => {
     const props = {}

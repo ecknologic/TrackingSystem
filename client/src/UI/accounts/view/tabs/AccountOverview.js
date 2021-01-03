@@ -43,7 +43,7 @@ const AccountOverview = ({ data, warehouseOptions, onUpdate }) => {
         resetTrackForm()
         trackAccountFormOnce()
 
-        return () => removeFormTracker()
+        return () => resetTrackForm()
     }, [])
 
     const handleChange = (value, key) => {
@@ -123,6 +123,7 @@ const AccountOverview = ({ data, warehouseOptions, onUpdate }) => {
         else {
             const clone = [...devDays]
             clone.push(value)
+            if (clone.length === 7) clone.push('ALL')
             setDevDays(clone)
         }
     }
@@ -175,17 +176,18 @@ const AccountOverview = ({ data, warehouseOptions, onUpdate }) => {
 
         const url = '/customer/updateCustomer'
         const body = { ...account, idProofs }
+        const options = { item: 'Customer', v1Ing: 'Updating', v2: 'updated' }
 
         const { Address1, organizationName } = account
 
         try {
             setBtnDisabled(true)
-            showToast('Customer', 'loading', 'PUT')
+            showToast({ ...options, action: 'loading' })
             await http.POST(url, body)
             setBtnDisabled(false)
             resetTrackForm()
             onUpdate(organizationName, Address1)
-            showToast('Customer', 'success', 'PUT')
+            showToast(options)
         } catch (error) {
             setBtnDisabled(false)
             message.destroy()

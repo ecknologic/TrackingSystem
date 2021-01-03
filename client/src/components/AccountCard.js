@@ -4,7 +4,7 @@ import NameCard from './NameCard';
 import PrimaryButton from './PrimaryButton';
 import { FriendsIconGrey, FriendIconGrey } from './SVG_Icons';
 
-const AccountCard = ({ customerDetails, onClick }) => {
+const AccountCard = ({ customerDetails, onClick, btnTxt = 'Manage Account' }) => {
     const isActive = customerDetails.isActive
     const names = JSON.parse(customerDetails.contactpersons)
     const contacts = names.length
@@ -44,7 +44,7 @@ const AccountCard = ({ customerDetails, onClick }) => {
                 </div>
             </div>
             <div className='footer'>
-                <PrimaryButton text='Manage Account' onClick={onClick} />
+                <PrimaryButton text={btnTxt} onClick={onClick} />
             </div>
         </div>
     )

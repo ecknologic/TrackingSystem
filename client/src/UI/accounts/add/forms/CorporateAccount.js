@@ -6,9 +6,14 @@ import DraggerInput from '../../../../components/DraggerInput';
 import InputWithAddon from '../../../../components/InputWithAddon';
 import UploadPreviewer from '../../../../components/UploadPreviewer';
 import { invoiceOptions, idOptions, businessOptions } from '../../../../assets/fixtures'
-import { getIdProofName, getIDInputValidationProps, resetTrackForm, trackAccountFormOnce, removeFormTracker } from '../../../../utils/Functions';
+import { getIdProofName, getIDInputValidationProps, resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 
-const CorporateAccountForm = ({ data, errors, IDProofs, IDProofErrors, onChange, onBlur, onUpload, disabled, onRemove }) => {
+const CorporateAccountForm = (props) => {
+    const { data, errors, IDProofs = {}, IDProofErrors, onChange, onBlur, onUpload, disabled,
+        onRemove, hiddenItems = {}, disabledItems = {} } = props
+
+    const { idHide, gstUploadHide } = hiddenItems
+    const { gstDisable, referredByDisable } = disabledItems
 
     const {
         gstNo, natureOfBussiness, organizationName, address, customerName,
@@ -32,7 +37,7 @@ const CorporateAccountForm = ({ data, errors, IDProofs, IDProofErrors, onChange,
         trackAccountFormOnce()
 
         return () => {
-            removeFormTracker()
+            resetTrackForm()
         }
     }, [])
 
@@ -41,55 +46,62 @@ const CorporateAccountForm = ({ data, errors, IDProofs, IDProofErrors, onChange,
 
     return (
         <div className='app-form-container'>
-            <div className='app-identity-proof-container identity-proof-container'>
-                <div className='input-container'>
-                    <InputLabel name='Select Id Proof' error={errors.idProofType} mandatory />
-                    <SelectInput track value={idProofType} options={idOptions} disabled={disabled} error={errors.idProofType} onSelect={(value) => onChange(value, 'idProofType')} />
-                </div>
-                {
-                    idProofType && (
-                        <div className='input-container second'>
-                            <InputLabel name={proofName} error={errors[idProofType]} mandatory />
-                            <CustomInput
-                                disabled={disabled} maxLength={maxLength} uppercase
-                                value={data[idProofType]} error={errors[idProofType]}
-                                placeholder={`Add ${proofName}`}
-                                onChange={(value) => onChange(value, idProofType)}
-                                onBlur={(value) => onBlur(value, idProofType)}
-                            />
+            {
+                idHide ? null
+                    :
+                    <div className='app-identity-proof-container identity-proof-container'>
+                        <div className='input-container'>
+                            <InputLabel name='Select Id Proof' error={errors.idProofType} mandatory />
+                            <SelectInput track value={idProofType} options={idOptions} disabled={disabled} error={errors.idProofType} onSelect={(value) => onChange(value, 'idProofType')} />
                         </div>
-                    )
-                }
-                <div className='upload-container'>
-                    <DraggerInput onUpload={(file) => onUpload(file, 'idProofs')} disabled={idUploadDisable || disabled} />
-                    <div className='upload-preview-container'>
-                        <UploadPreviewer track value={Front} title='Front' disabled={disabled} onUpload={(file) => onUpload(file, 'Front')} onRemove={() => onRemove('Front')} error={IDProofErrors.Front} />
                         {
-                            idProofType !== 'panNo' &&
-                            <UploadPreviewer track value={Back} title='Back' disabled={disabled} onUpload={(file) => onUpload(file, 'Back')} onRemove={() => onRemove('Back')} className='last' error={IDProofErrors.Back} />
+                            idProofType && (
+                                <div className='input-container second'>
+                                    <InputLabel name={proofName} error={errors[idProofType]} mandatory />
+                                    <CustomInput
+                                        disabled={disabled} maxLength={maxLength} uppercase
+                                        value={data[idProofType]} error={errors[idProofType]}
+                                        placeholder={`Add ${proofName}`}
+                                        onChange={(value) => onChange(value, idProofType)}
+                                        onBlur={(value) => onBlur(value, idProofType)}
+                                    />
+                                </div>
+                            )
                         }
+                        <div className='upload-container'>
+                            <DraggerInput onUpload={(file) => onUpload(file, 'idProofs')} disabled={idUploadDisable || disabled} />
+                            <div className='upload-preview-container'>
+                                <UploadPreviewer track value={Front} title='Front' disabled={disabled} onUpload={(file) => onUpload(file, 'Front')} onRemove={() => onRemove('Front')} error={IDProofErrors.Front} />
+                                {
+                                    idProofType !== 'panNo' &&
+                                    <UploadPreviewer track value={Back} title='Back' disabled={disabled} onUpload={(file) => onUpload(file, 'Back')} onRemove={() => onRemove('Back')} className='last' error={IDProofErrors.Back} />
+                                }
+                            </div>
+                        </div>
+                        <div className='upload-instructions'>
+                            <span className='title'>Please help us verify your identity</span>
+                            <span className='msg'>(Kindly upload the documents either in JPEG, PNG, or PDF format. The file should be less than 5MB) Need to upload front and back.</span>
+                        </div>
                     </div>
-                </div>
-                <div className='upload-instructions'>
-                    <span className='title'>Please help us verify your identity</span>
-                    <span className='msg'>(Kindly upload the documents either in JPEG, PNG, or PDF format. The file should be less than 5MB) Need to upload front and back.</span>
-                </div>
-            </div>
+            }
             <div className='row'>
                 <div className='input-container'>
                     <InputLabel name='GST Number' error={errors.gstNo} mandatory />
                     <InputWithAddon
                         maxLength={15} value={gstNo}
-                        label='VERIFY' disabled={disabled} uppercase
+                        label='VERIFY' disabled={disabled || gstDisable} uppercase
                         placeholder='GST Number' error={errors.gstNo}
                         onBlur={(value) => onBlur(value, 'gstNo')}
                         onChange={(value) => onChange(value, 'gstNo')}
                     />
                 </div>
                 <div className='input-container app-upload-file-container app-gst-upload-container'>
-                    <DraggerInput onUpload={(file) => onUpload(file, 'gstProof')} disabled={gstUploadDisable || disabled} />
+                    {
+                        gstUploadHide ? null
+                            : <DraggerInput onUpload={(file) => onUpload(file, 'gstProof')} disabled={gstUploadDisable || gstDisable || disabled} />
+                    }
                     <div className='upload-preview-container'>
-                        <UploadPreviewer track value={gstProof} title='GST Proof' disabled={disabled} onUpload={(file) => onUpload(file, 'gstProof')} onRemove={() => onRemove('gstProof')} className='last' error={errors.gstProof} />
+                        <UploadPreviewer track value={gstProof} title='GST Proof' disabled={disabled || gstDisable} onUpload={(file) => onUpload(file, 'gstProof')} onRemove={() => onRemove('gstProof')} className='last' error={errors.gstProof} />
                     </div>
                 </div>
             </div>
@@ -188,7 +200,7 @@ const CorporateAccountForm = ({ data, errors, IDProofs, IDProofErrors, onChange,
                     <InputLabel name='Referred By' error={errors.referredBy} mandatory />
                     <CustomInput
                         placeholder='Referral Name'
-                        value={referredBy} disabled={disabled}
+                        value={referredBy} disabled={disabled || referredByDisable}
                         error={errors.referredBy}
                         onChange={(value) => onChange(value, 'referredBy')}
                     />

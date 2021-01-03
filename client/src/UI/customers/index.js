@@ -2,19 +2,19 @@ import { Col, Row } from 'antd';
 import { useHistory } from 'react-router-dom';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import Header from './header';
-import AccountCard from '../../../components/AccountCard';
-import Spinner from '../../../components/Spinner';
-import NoContent from '../../../components/NoContent';
-import { getUserId } from '../../../utils/constants';
-import { complexDateSort, complexSort, doubleKeyComplexSearch } from '../../../utils/Functions'
-import CustomPagination from '../../../components/CustomPagination';
-import { http } from '../../../modules/http'
+import { http } from '../../modules/http'
+import Spinner from '../../components/Spinner';
+import NoContent from '../../components/NoContent';
+import AccountCard from '../../components/AccountCard';
+import CustomPagination from '../../components/CustomPagination';
+import { complexDateSort, complexSort, doubleKeyComplexSearch } from '../../utils/Functions'
+import '../../sass/customers.scss'
 
-const Accounts = () => {
-    const USERID = getUserId()
+const Customers = () => {
     const history = useHistory()
     const [accountsClone, setAccountsClone] = useState([])
     const [filteredClone, setFilteredClone] = useState([])
+    const [cardBtnTxt, setCardBtnTxt] = useState('Manage Account')
     const [accounts, setAccounts] = useState([])
     const [loading, setLoading] = useState(true)
     const [pageSize, setPageSize] = useState(12)
@@ -23,21 +23,31 @@ const Accounts = () => {
     const [filterON, setFilterON] = useState(false)
     const [searchON, setSeachON] = useState(false)
     const [sortBy, setSortBy] = useState('NEW')
+    const [activeTab, setActiveTab] = useState('1')
 
     const pageSizeOptions = useMemo(() => generatePageSizeOptions(), [window.innerWidth])
 
     useEffect(() => {
+        setLoading(true)
         getAccounts()
-    }, [])
+
+
+    }, [activeTab])
 
     const getAccounts = async () => {
-        const url = `/customer/getCustomerDetails/${USERID}`
+        const url = `/customer/${getUrl(activeTab)}`
 
-        const { data } = await http.GET(url)
+        const data = await http.GET(url)
         setAccountsClone(data)
         setAccounts(data)
         setTotalCount(data.length)
         setLoading(false)
+    }
+
+    const getUrl = (tab) => {
+        if (tab === '1') return `getCustomerDetailsByType/Corporate`
+        else if (tab === '2') return `getCustomerDetailsByType/Individual`
+        else if (tab === '3') return `getCustomerDetailsByStatus/0`
     }
 
     const handleSearch = (value) => {
@@ -59,7 +69,6 @@ const Accounts = () => {
     }
 
     const handleSort = (type, filterON) => {
-        // setPageNumber(1)
         const clone = [...(filterON ? filteredClone : accountsClone)]
 
         if (type === 'Z - A') {
@@ -92,6 +101,13 @@ const Accounts = () => {
         setPageSize(size)
         setPageNumber(number)
         setAccounts(clone)
+    }
+
+    const handleTabChange = (key) => {
+        setActiveTab(key)
+        if (key === '3') {
+            setCardBtnTxt('View Details')
+        } else setCardBtnTxt('Manage Account')
     }
 
     const handleFilter = (filterInfo) => {
@@ -132,8 +148,12 @@ const Accounts = () => {
         else handleFilter(data)
     }
 
-    const goToAddAccount = () => history.push('/manage-accounts/add-account')
-    const goToViewAccount = (id) => history.push(`/manage-accounts/${id}`)
+    const onCardBtnClick = (id) => {
+        if (activeTab === '3') {
+            return history.push(`/customers/approval/${id}`)
+        }
+        return history.push(`/customers/manage/${id}`)
+    }
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
@@ -141,14 +161,14 @@ const Accounts = () => {
 
     return (
         <Fragment>
-            <Header onSearch={handleSearch} onSort={onSort} onFilter={onFilterChange} onClick={goToAddAccount} />
+            <Header onSearch={handleSearch} onSort={onSort} onFilter={onFilterChange} onChange={handleTabChange} />
             <div className='account-manager-content'>
                 <Row gutter={[{ lg: 32, xl: 16 }, { lg: 32, xl: 32 }]}>
                     {
                         loading ? <NoContent content={<Spinner />} />
                             : accounts.length ? accounts.slice(sliceFrom, sliceTo).map((account) => (
                                 <Col lg={{ span: 12 }} xl={{ span: 8 }} xxl={{ span: 6 }} key={account.customerId}>
-                                    <AccountCard customerDetails={account} onClick={() => goToViewAccount(account.customerId)} />
+                                    <AccountCard customerDetails={account} btnTxt={cardBtnTxt} onClick={() => onCardBtnClick(account.customerId)} />
                                 </Col>
                             )) : <NoContent content='No accounts to show' />
                     }
@@ -175,4 +195,4 @@ const generatePageSizeOptions = () => {
     if (window.innerWidth >= 1600) return ['12', '16', '20', '24', '28']
     return ['12', '15', '18', '21', '24']
 }
-export default Accounts
+export default Customers

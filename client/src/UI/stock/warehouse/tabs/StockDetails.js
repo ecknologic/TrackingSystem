@@ -1,18 +1,18 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import CASPanel from '../../../../components/CASPanel';
-import ConfirmMessage from '../../../../components/ConfirmMessage';
-import CustomModal from '../../../../components/CustomModal';
-import ConfirmModal from '../../../../components/CustomModal';
+import { http } from '../../../../modules/http';
+import ArrivedStockForm from '../forms/ArrivedStock';
 import DCPanel from '../../../../components/DCPanel';
 import DSPanel from '../../../../components/DSPanel';
 import ECPanel from '../../../../components/ECPanel';
 import ERCPanel from '../../../../components/ERCPanel';
 import OFDPanel from '../../../../components/OFDPanel';
-import { http } from '../../../../modules/http';
+import CASPanel from '../../../../components/CASPanel';
+import CustomModal from '../../../../components/CustomModal';
+import ConfirmModal from '../../../../components/CustomModal';
+import ConfirmMessage from '../../../../components/ConfirmMessage';
 import { getWarehoseId, TODAYDATE, TRACKFORM } from '../../../../utils/constants';
 import { getASValuesForDB, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 import { validateNumber, validateASValues } from '../../../../utils/validations';
-import ArrivedStockForm from '../forms/ArrivedStock';
 
 const StockDetails = ({ date }) => {
     const warehouseId = getWarehoseId()
@@ -20,7 +20,7 @@ const StockDetails = ({ date }) => {
     const [OFD, setOFC] = useState({})
     const [EC, setEC] = useState({})
     const [newStock, setNewStock] = useState({})
-    const [dcDetails, setdCDetails] = useState([])
+    const [arrivedStock, setArrivedStock] = useState([])
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [confirmModal, setConfirmModal] = useState(false)
@@ -29,21 +29,20 @@ const StockDetails = ({ date }) => {
     const [shake, setShake] = useState(false)
 
     useEffect(() => {
-        getCAS()
-    }, [])
-
-    useEffect(() => {
         const isToday = (date === TODAYDATE)
         getOFD()
         getEC()
+        getCAS()
 
         if (isToday) getNewStock()
-        else setNewStock({})
-
+        else {
+            setNewStock({})
+            setArrivedStock([])
+        }
     }, [date])
 
     const getCAS = async () => {
-        const url = `warehouse/currentActiveStockDetails?warehouseId=${warehouseId}`
+        const url = `warehouse/currentActiveStockDetails/${date}?warehouseId=${warehouseId}`
         const { data: [data = {}] } = await http.GET(url)
         setCAS(data)
     }
@@ -64,9 +63,9 @@ const StockDetails = ({ date }) => {
         const url = `/warehouse/getNewStockDetails/1`
         const data = await http.GET(url)
         const { DCDetails } = data || {}
-        const dcDetails = JSON.parse(DCDetails || "[]")
+        const arrivedStock = JSON.parse(DCDetails || "[]")
         setNewStock(data)
-        setdCDetails(dcDetails)
+        setArrivedStock(arrivedStock)
     }
 
     const getStockDetailsByDC = async (dcNo) => {
@@ -93,7 +92,7 @@ const StockDetails = ({ date }) => {
     }
 
     const onArrivedStockConfirm = () => {
-        const dcItem = dcDetails.find(item => item.isConfirmed === 0)
+        const dcItem = arrivedStock.find(item => item.isConfirmed === 0)
         if (dcItem) {
             getStockDetailsByDC(dcItem.dcNo)
             setModal(true)
@@ -117,12 +116,14 @@ const StockDetails = ({ date }) => {
         const body = {
             ...dcValues, motherplantId
         }
+        const options = { item: 'Stock Particulars', v1Ing: 'Confirming', v2: 'confirmed' }
+
 
         try {
             setBtnDisabled(true)
-            showToast('Stock Perticules', 'loading')
+            showToast({ ...options, action: 'loading' })
             await http.POST(url, body)
-            showToast('Stock Perticules', 'success')
+            showToast(options)
             onModalClose(true)
             getNewStock()
             getCAS()
@@ -140,6 +141,7 @@ const StockDetails = ({ date }) => {
         setBtnDisabled(false)
         setFormData({})
         setFormErrors({})
+        resetTrackForm()
     }
 
     const handleConfirmModalOk = useCallback(() => {
@@ -153,7 +155,11 @@ const StockDetails = ({ date }) => {
 
     return (
         <div className='stock-details-container'>
-            <CASPanel data={CAS} newStock={newStock} onConfirm={onArrivedStockConfirm} dcDetails={dcDetails} />
+            <CASPanel data={CAS}
+                newStock={newStock}
+                arrivedStock={arrivedStock}
+                onConfirm={onArrivedStockConfirm}
+            />
             <OFDPanel data={OFD} />
             <DSPanel />
             <div className='empty-cans-header'>
@@ -171,6 +177,7 @@ const StockDetails = ({ date }) => {
                 onCancel={handleModalCancel}
                 title='Stock Details'
                 okTxt='Confirm Stock Received'
+                track
             >
                 <ArrivedStockForm
                     data={formData}

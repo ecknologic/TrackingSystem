@@ -20,7 +20,7 @@ const ProductionQCForm = (props) => {
         trackAccountFormOnce()
 
         return () => {
-            removeFormTracker()
+            resetTrackForm()
         }
     }, [])
 
@@ -36,21 +36,20 @@ const ProductionQCForm = (props) => {
                         />
                     </div>
                 </div>
-                {
-                    QCList.map((item) => {
-                        const { qcLevel, ozoneLevel, phLevel, tds, managerName, testedDate } = item
-                        const date = testedDate ? dayjs(testedDate).format('DD/MM/YYYY') : null
-                        const time = testedDate ? dayjs(testedDate).format('hh:mm A') : null
+                <Collapse
+                    accordion
+                    className='accordion-container'
+                    expandIcon={({ isActive }) => isActive ? <DDownIcon className='rotate-180' /> : <DDownIcon className='app-trans' />}
+                    expandIconPosition='right'
+                >
+                    {
+                        QCList.map((item) => {
+                            const { qcLevel, ozoneLevel, phLevel, tds, managerName, testedDate } = item
+                            const date = testedDate ? dayjs(testedDate).format('DD/MM/YYYY') : null
+                            const time = testedDate ? dayjs(testedDate).format('hh:mm A') : null
 
-                        return (
-                            <Collapse
-                                accordion
-                                key={qcLevel}
-                                className='accordion-container'
-                                expandIcon={() => <DDownIcon />}
-                                expandIconPosition='right'
-                            >
-                                <Panel header={<CollapseHeader title={`Level-${qcLevel} Test`} />}>
+                            return (
+                                <Panel key={qcLevel} header={<CollapseHeader title={`Level-${qcLevel} Test`} />}>
                                     <>
                                         <div className='row half-stretch'>
                                             <div className='input-container'>
@@ -88,11 +87,10 @@ const ProductionQCForm = (props) => {
                                         </div>
                                     </>
                                 </Panel>
-                            </Collapse>
-                        )
-                    })
-                }
-
+                            )
+                        })
+                    }
+                </Collapse>
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='PH' error={errors.phLevel} mandatory />

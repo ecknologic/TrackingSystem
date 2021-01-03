@@ -48,12 +48,14 @@ const RequestMaterial = ({ goToTab, ...rest }) => {
 
         const body = { ...formData }
         const url = '/motherPlant/createRM'
+        const options = { item: 'Material Request', v1Ing: 'Sending', v2: 'sent' }
+
 
         try {
             setBtnDisabled(true)
-            showToast('Materials', 'loading')
+            showToast({ ...options, action: 'loading' })
             await http.POST(url, body)
-            showToast('Materials', 'success')
+            showToast(options)
             goToTab('2')
             resetForm()
         } catch (error) {

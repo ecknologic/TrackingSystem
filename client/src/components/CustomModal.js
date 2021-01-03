@@ -14,6 +14,7 @@ const CustomModal = (props) => {
             onCancel={onCancel}
             closeIcon={<CrossIcon />}
             className={className}
+            destroyOnClose
             footer={(
                 <>
                     <CustomButton

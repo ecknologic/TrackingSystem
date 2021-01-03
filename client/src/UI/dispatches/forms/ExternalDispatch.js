@@ -17,7 +17,7 @@ const ExternalDispatchForm = (props) => {
         trackAccountFormOnce()
 
         return () => {
-            removeFormTracker()
+            resetTrackForm()
         }
     }, [])
     return (

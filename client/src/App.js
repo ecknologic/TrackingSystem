@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
 import { getRole, MARKETINGADMIN, MOTHERPLANTADMIN, WAREHOUSEADMIN } from './utils/constants';
+import Customers from './UI/customers';
 import { resetTrackForm } from './utils/Functions';
 import AccountsDashboard from './UI/accounts/dashboard';
 import MotherplantStock from './UI/stock/motherplant';
+import ApproveAccount from './UI/accounts/approve';
 import QualityControl from './UI/quality-control';
 import WarehouseStock from './UI/stock/warehouse';
 import NoContent from './components/NoContent';
@@ -36,6 +38,9 @@ const App = () => {
                <Route path='/manage-accounts/:accountId' render={() => requireAuth(<ViewAccount />)} />
                <Route path='/manage-accounts' render={() => requireAuth(<AccountsDashboard />)} />
                <Route path='/add-customer' render={() => requireAuth(<AddAccount />)} />
+               <Route path='/customers/approval/:accountId' render={() => requireAuth(<ApproveAccount />)} />
+               <Route path='/customers/manage/:accountId' render={() => requireAuth(<ViewAccount />)} />
+               <Route path='/customers' render={() => requireAuth(<Customers />)} />
                <Route path='/customerDashboard' render={() => requireAuth(<NoContent content='Design is in progress' />)} />
                <Route path='/manage-routes' render={() => requireAuth(<NoContent content='Design is in progress' />)} />
                <Route path='/reports' render={() => requireAuth(<NoContent content='Design is in progress' />)} />

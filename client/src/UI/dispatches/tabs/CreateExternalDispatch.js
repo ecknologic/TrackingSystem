@@ -79,13 +79,15 @@ const CreateExternalDispatch = ({ goToTab, driverList, ...rest }) => {
             ...formData, dispatchType: 'External', dispatchTo: 3, ...products
         }
         const url = '/motherPlant/addDispatchDetails'
+        const options = { item: 'Dispatch', v1Ing: 'Creating', v2: 'created' }
+
         try {
             setBtnDisabled(true)
-            showToast('Dispatch', 'loading')
+            showToast({ ...options, action: 'loading' })
             await http.POST(url, body)
             message.destroy()
             goToTab('1')
-            showToast('Dispatch', 'success')
+            showToast(options)
         } catch (error) {
             message.destroy()
             setBtnDisabled(false)

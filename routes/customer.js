@@ -9,7 +9,8 @@ const opencage = require("../config/opencage.config.js");
 const { Buffer } = require('buffer');
 const multer = require('multer');
 const customerQueries = require('../dbQueries/Customer/queries.js');
-const { customerProductDetails } = require('../utils/functions.js');
+const { customerProductDetails, dbError } = require('../utils/functions.js');
+const { saveToCustomerOrderDetails } = require('./utilities')
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'assests/idproofs')
@@ -250,8 +251,29 @@ const getLatLongDetails = (req) => {
     });
   })
 }
-
-
+router.post("/approveCustomer/:customerId", (req, res) => {
+  const { customerId } = req.params;
+  customerQueries.approveCustomer(customerId, (err, results) => {
+    if (err) res.json({ status: 500, message: err.sqlMessage });
+    else {
+      customerQueries.approveDeliveryDetails(req.body.deliveryDetailsIds, (err, updatedDelivery) => {
+        if (err) res.json({ status: 500, message: err.sqlMessage });
+        else {
+          saveToCustomerOrderDetails(customerId)
+        }
+      })
+    }
+  })
+});
+router.get("/approveDelivery/:deliveryDetailsId", (req, res) => {
+  const { deliveryDetailsId } = req.params;
+  customerQueries.approveDeliveryDetails([deliveryDetailsId], (err, updatedDelivery) => {
+    if (err) res.json({ status: 500, message: err.sqlMessage });
+    else {
+      res.json('Successfully Updated')
+    }
+  })
+});
 
 router.get("/getCustomerDetails/:creatorId", (req, res) => {
   let customerDetailsQuery = "SELECT c.organizationName,c.isActive,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.createdBy=?  GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.customerId,c.registeredDate ORDER BY c.registeredDate DESC"
@@ -262,6 +284,24 @@ router.get("/getCustomerDetails/:creatorId", (req, res) => {
     }
   })
 });
+
+router.get("/getCustomerDetailsByType/:customertype", (req, res) => {
+  customerQueries.getCustomersByCustomerType(req.params.customertype, (err, customersData) => {
+    if (err) res.json({ status: 500, message: err.sqlMessage });
+    else {
+      res.json(customersData)
+    }
+  })
+});
+router.get("/getCustomerDetailsByStatus/:approvedStatus", (req, res) => {
+  customerQueries.getCustomerDetailsByStatus(req.params.approvedStatus, (err, customersData) => {
+    if (err) res.json({ status: 500, message: err.sqlMessage });
+    else {
+      res.json(customersData)
+    }
+  })
+});
+
 router.get("/getCustomerDetailsById/:customerId", (req, res) => {
   customerQueries.getCustomerDetails(req.params.customerId, (err, results) => {
     if (err) res.status(500).json(err);
@@ -270,24 +310,15 @@ router.get("/getCustomerDetailsById/:customerId", (req, res) => {
     }
   })
 });
+
 router.get("/getCustomerDeliveryDetails/:customerId", (req, res) => {
-  // let customerDetailsQuery = "SELECT * from customerdetails c  WHERE c.customerId=?";
-  // db.query(customerDetailsQuery, [req.params.customerId], (err, results) => {
   getDeliveryDetails(req.params.customerId).then(response => {
-    // if (err) res.status(500).json(err);
-    // else {
     const customerDeliveryDetails = [{}];
     customerDeliveryDetails[0]["deliveryDetails"] = response;
-
-    //var customerDeliveryDetails = results.concat(JSON.stringify(response));
-
     res.json({ status: 200, statusMessage: "Success", data: customerDeliveryDetails })
   })
-  // });
-
-
-  // })
 });
+
 router.get("/getProductsDetails", (req, res) => {
   let productDetailsQuery = "SELECT * from productdetails"
   db.query(productDetailsQuery, (err, results) => {
@@ -317,7 +348,7 @@ const getDeliveryDetails = (customerId, deliveryDetailsId) => {
        "CASE WHEN cd.thu=1 THEN 'Thursday,' ELSE '' END,"+
        "CASE WHEN cd.fri=1 THEN 'Friday,' ELSE '' END,"+
        "CASE WHEN cd.sat=1 THEN 'Saturday,' ELSE '' END) AS 'Delivery Days'"+ */
-      "FROM DeliveryDetails d INNER JOIN customerdeliverydays cd ON cd.deliveryDaysId=d.deliverydaysid INNER JOIN departmentmaster r ON r.departmentId=d.departmentId WHERE d.customer_Id=? OR d.deliveryDetailsId=?  ORDER BY d.registeredDate DESC;";
+      "FROM DeliveryDetails d INNER JOIN customerdeliverydays cd ON cd.deliveryDaysId=d.deliverydaysid INNER JOIN departmentmaster r ON r.departmentId=d.departmentId WHERE d.deleted=0 AND (d.customer_Id=? OR d.deliveryDetailsId=?) ORDER BY d.registeredDate DESC;";
     db.query(deliveryDetailsQuery, [customerId, deliveryDetailsId], (err, results) => {
       if (err) reject(err)
       else {
@@ -357,6 +388,12 @@ router.post('/updateCustomer', async (req, res) => {
       });
     })
 });
+router.delete('/deleteDelivery/:deliveryId', (req, res) => {
+  customerQueries.deleteDeliveryAddress(req.params.deliveryId, (err, success) => {
+    if (err) res.status(500).json(dbError(err))
+    else res.json("Deleted successfully")
+  })
+})
 router.post('/updateDeliveryDetails', (req, res) => {
   var deliveryDetails = req.body
   if (deliveryDetails.length) {

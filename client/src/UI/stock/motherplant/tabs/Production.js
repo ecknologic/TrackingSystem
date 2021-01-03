@@ -13,6 +13,7 @@ import { deepClone, getStatusColor, isEmpty, resetTrackForm, showToast } from '.
 import CustomModal from '../../../../components/CustomModal';
 import { shiftOptions, productionColumns } from '../../../../assets/fixtures';
 import { validateBatchValues, validateIntFloat, validateNames, validateNumber } from '../../../../utils/validations';
+const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
 const Production = () => {
     const [loading, setLoading] = useState(true)
@@ -124,12 +125,13 @@ const Production = () => {
         const body = {
             ...formData
         }
+        const options = { item: 'Production Batch', v1Ing: 'Updating', v2: 'updated' }
 
         try {
             setBtnDisabled(true)
-            showToast('Batch', 'loading', 'PUT')
+            showToast({ ...options, action: 'loading' })
             const data = await http.POST(url, body)
-            showToast('Batch', 'success', 'PUT')
+            showToast(options)
             optimisticUpdate(data)
             onModalClose(true)
             setBtnDisabled(false)
@@ -157,7 +159,7 @@ const Production = () => {
             TDS, batchId, phLevel, ozoneLevel, managerName, shiftType,
             status: renderStatus(isDelivered),
             productionDetails: renderProductionDetails(rest),
-            dateAndTime: dayjs(productionDate).format('DD/MM/YYYY HH:mm'),
+            dateAndTime: dayjs(productionDate).format(DATEANDTIMEFORMAT),
             action: <TableAction onSelect={({ key }) => handleMenuSelect(key, product)} />
         }
     }), [products])
@@ -204,6 +206,8 @@ const Production = () => {
                 onCancel={handleModalCancel}
                 title={formTitleRef.current}
                 okTxt='Close'
+                hideCancel
+                track
             >
                 <BatchForm
                     disabled

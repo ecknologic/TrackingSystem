@@ -1,24 +1,26 @@
+import { Tabs } from 'antd';
 import React, { useState } from 'react';
-import SortBy from '../../../components/SortByDropdown';
-import SearchInput from '../../../components/SearchInput';
-import ViewsComponent from '../../../components/ViewsComponent';
-import { PlusIconGrey } from '../../../components/SVG_Icons';
-import CustomButton from '../../../components/CustomButton';
-import AccountsFilter from '../../../components/AccountsFilter';
-import '../../../sass/accounts.scss'
+import SortBy from '../../components/SortByDropdown';
+import SearchInput from '../../components/SearchInput';
+import ViewsComponent from '../../components/ViewsComponent';
+import AccountsFilter from '../../components/AccountsFilter';
 
-const Header = ({ onClick, onSearch, onSort, onFilter }) => {
+const Header = ({ onChange, onSearch, onSort, onFilter }) => {
     const [view, setView] = useState('card')
 
     return (
-        <div className='manage-accounts-header'>
+        <div className='customers-header'>
             <div className='heading-container'>
-                <span className='title'>Manage Accounts</span>
-                <CustomButton text='Create Account'
-                    onClick={onClick}
-                    className='app-create-acc-btn'
-                    icon={<PlusIconGrey />}
-                />
+                <span className='title'>Customers</span>
+            </div>
+            <div className='app-tabs-container app-hidden-panes'>
+                <Tabs
+                    onChange={onChange}
+                >
+                    <TabPane tab="Corporate Customers" key="1" />
+                    <TabPane tab="Individual Customers" key="2" />
+                    <TabPane tab="Customer Approvals" key="3" />
+                </Tabs>
             </div>
             <div className='app-menu-container'>
                 <div className='search-container'>
@@ -40,5 +42,5 @@ const Header = ({ onClick, onSearch, onSort, onFilter }) => {
     )
 
 }
-
+const { TabPane } = Tabs
 export default Header

@@ -1,5 +1,5 @@
-import { Dropdown, Menu } from 'antd';
 import React from 'react';
+import { Dropdown, Menu } from 'antd';
 import CustomButton from './CustomButton';
 import { DocIconWhite } from './SVG_Icons';
 
@@ -26,7 +26,7 @@ const ReportsDropdown = ({ onSelect }) => {
         <Dropdown
             overlay={reportsMenu}
             trigger={['click']}
-            getPopupContainer={triggerNode => triggerNode.parentNode.parentNode.parentNode}
+            getPopupContainer={() => document.getElementById('content')}
         >
             <CustomButton
                 text='Get Reports'

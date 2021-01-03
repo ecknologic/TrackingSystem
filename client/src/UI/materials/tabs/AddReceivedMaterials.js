@@ -126,14 +126,16 @@ const AddMaterials = ({ onUpdate }) => {
         const body = { ...formData, rawmaterialid: currentRMId }
         const otherUrl = '/motherPlant/updateRMStatus'
         const otherBody = { rawmaterialid: currentRMId, status: 'Confirmed' }
+        const options = { item: 'Received Materials', v1Ing: 'Adding', v2: 'added' }
 
         try {
             setBtnDisabled(true)
-            showToast('Received Materials', 'loading', 'PUT')
-            await http.POST(url, body)
-            await http.PUT(otherUrl, otherBody)
+            showToast({ ...options, action: 'loading' })
+            const p1 = http.POST(url, body)
+            const p2 = http.PUT(otherUrl, otherBody)
+            await Promise.all([p1, p2])
             optimisticUpdate(currentRMId)
-            showToast('Received Materials', 'success', 'PUT')
+            showToast(options)
             onUpdate()
             onModalClose(true)
             setBtnDisabled(false)
@@ -151,6 +153,7 @@ const AddMaterials = ({ onUpdate }) => {
         setBtnDisabled(false)
         setFormData({})
         setFormErrors({})
+        resetTrackForm()
     }
 
     const optimisticUpdate = (id) => {
@@ -253,8 +256,6 @@ const AddMaterials = ({ onUpdate }) => {
                         placeholder='Search Delivery Challan'
                         className='delivery-search'
                         width='50%'
-                        onSearch={() => { }}
-                        onChange={() => { }}
                     />
 
                 </div>
@@ -288,6 +289,7 @@ const AddMaterials = ({ onUpdate }) => {
                 onOk={handleUpdate}
                 onCancel={handleModalCancel}
                 className={`app-form-modal ${shake ? 'app-shake' : ''}`}
+                track
             >
                 <MaterialReceivedForm
                     data={formData}

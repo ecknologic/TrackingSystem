@@ -14,8 +14,8 @@ router.get('/validateQRCode', (req, res) => {
     let result = db.query(query, (err, results) => {
         if (err) res.send(err);
         else {
-            if (req.query.qrcode == String(results[0].adharNo) + String(results[0].mobileNumber)) res.send('Success')
-            else res.send('Invalid')
+            if (req.query.qrcode == String(results[0].adharNo) + String(results[0].mobileNumber))  res.json({ status: 200, statusMessage: "Success"})
+            else  res.json({ status: 200, statusMessage: "Invalid"})
         }
     });
 });
@@ -91,7 +91,10 @@ router.get("/customerOrderDetails/:orderId", (req, res) => {
                         "Address1": i.Address1,
                         "Address2": i.Address2,
                         "contactperson": i.contactperson,
-                        "orderid": i.orderid,
+                        "orderid": i.customerOrderId,
+                        "dcNo":i.dcNo,
+                        "emptyCans":i.returnEmptyCans,
+                        "damagedCans":i.damagedCount,
                         "isDelivered": i.isDelivered,
                         "transactionid": i.transactionid,
                         "deliveryDate": i.deliveryDate,

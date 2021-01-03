@@ -158,6 +158,7 @@ const LeftChevronSvgGrey = () => <LeftChevronComponent color={greyColor} />
 const ArrowSvg = () => <ArrowComponent color={primaryColor} />
 const ScheduleSvg = () => <ScheduleComponent color={primaryColor} />
 const ArrowSvgGrey = () => <ArrowComponent color={greyColor} />
+const TrashSvgLight = () => <TrashComponent color={secondaryColor} />
 const TrashSvgGrey = () => <TrashComponent color={greyColor} />
 const EditSvgGrey = () => <EditComponent color={greyColor} />
 const LinesSvgGrey = () => <LinesComponent color={greyColor} />
@@ -196,6 +197,7 @@ const ListViewSvgGrey = () => <ListViewComponent color={greyColor} />
 export const RightChevronIconGrey = ({ currentSlide, slideCount, ...props }) => <Icon component={RightChevronSvgGrey} {...props} />
 export const LeftChevronIconGrey = ({ currentSlide, slideCount, ...props }) => <Icon component={LeftChevronSvgGrey} {...props} />
 export const ScheduleIcon = props => <Icon component={ScheduleSvg} {...props} />
+export const TrashIconLight = props => <Icon component={TrashSvgLight} {...props} />
 export const TrashIconGrey = props => <Icon component={TrashSvgGrey} {...props} />
 export const EditIconGrey = props => <Icon component={EditSvgGrey} {...props} />
 export const LinesIconGrey = props => <Icon component={LinesSvgGrey} {...props} />

@@ -1,11 +1,17 @@
 import React from 'react';
 import '../sass/collapseHeader.scss';
 
-const CollapseHeader = ({ title, msg }) => {
+const CollapseHeader = ({ title, msg, extra = null }) => {
+
     return (
         <div className='app-collapse-header'>
-            <div className='title'>{title}</div>
-            <div className='msg'>{msg}</div>
+            <div className='header'>
+                <div className='title'>{title}</div>
+                <div className='msg'>{msg}</div>
+            </div>
+            {
+                extra
+            }
         </div>
     )
 }
