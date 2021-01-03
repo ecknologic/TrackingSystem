@@ -113,9 +113,9 @@ const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => 
 
     return (
         <>
-            <div className='title-container'>
+            {/* <div className='title-container'>
                 <span className='title'>Delivery Details</span>
-            </div>
+            </div> */}
             <div className='app-form-container'>
                 <div className='row'>
                     <div className='input-container'>

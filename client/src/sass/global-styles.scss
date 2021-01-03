@@ -38,6 +38,32 @@ $textColorDisabled:rgba(0,0,0,0.55);
     -webkit-line-clamp: 2;
 }
 
+// -------------- antd Popconfirm styles ------------------- //
+
+.ant-popover-inner {
+    border-radius: .6em;
+    color: #171725;
+}
+
+.ant-popover-inner-content {
+    font-family: 'PoppinsRegular400';
+}
+
+.ant-popover-buttons {
+    .ant-btn {
+        background-color: transparent;
+        border: 1px solid #0062FF;
+        color: #0062FF;
+        border-radius: .4em;
+    }
+
+    .ant-btn-primary {
+        background-color: #0091FF;
+        border: 1px solid #0091FF;
+        color: #fff;
+    }
+}
+
 // -------------- antd Divider styles ------------------- //
 
 .ant-divider-horizontal {
