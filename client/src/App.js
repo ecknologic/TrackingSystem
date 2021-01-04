@@ -1,21 +1,20 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
 import { getRole, MARKETINGADMIN, MOTHERPLANTADMIN, SUPERADMIN, WAREHOUSEADMIN } from './utils/constants';
+import Login from './UI/Login';
 import Customers from './UI/customers';
-import { resetTrackForm } from './utils/Functions';
-import AccountsDashboard from './UI/accounts/dashboard';
-import MotherplantStock from './UI/stock/motherplant';
-import ApproveAccount from './UI/accounts/approve';
+import Materials from './UI/materials';
+import Dispatches from './UI/dispatches';
+import PageLayout from './UI/page-layout';
+import AddAccount from './UI/accounts/add';
+import ViewAccount from './UI/accounts/view';
+import NoContent from './components/NoContent';
 import QualityControl from './UI/quality-control';
 import WarehouseStock from './UI/stock/warehouse';
-import NoContent from './components/NoContent';
-import ViewAccount from './UI/accounts/view';
-import AddAccount from './UI/accounts/add';
-import PageLayout from './UI/page-layout';
-import Dispatches from './UI/dispatches';
-import Materials from './UI/materials';
-import Login from './UI/Login';
-import './App.css';
+import { resetTrackForm } from './utils/Functions';
+import ApproveAccount from './UI/accounts/approve';
+import MotherplantStock from './UI/stock/motherplant';
+import AccountsDashboard from './UI/accounts/dashboard';
 
 const App = () => {
 

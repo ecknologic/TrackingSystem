@@ -1,0 +1,30 @@
+.content-header {
+    display: flex;
+    align-items: center;
+    min-height: 6.1em;
+    height: 6.1em;
+    padding: 0 3em;
+    background-color: #F1F2F7;
+
+    .heading-container {
+        display: flex;
+        align-items: center;
+    }
+
+    .titles-container {
+        display: flex;
+        flex-direction: column;
+        padding-right: 1em;
+
+        .title {
+            color: #171725;
+            font-family: 'PoppinsSemiBold600';
+            font-size: 1.55em;
+        }
+
+        .address {
+            color: #696974;
+            font-family: 'PoppinsMedium500';
+        }
+    }
+}

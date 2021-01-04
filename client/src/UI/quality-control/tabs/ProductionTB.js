@@ -10,7 +10,7 @@ import { ScheduleIcon } from '../../../components/SVG_Icons';
 import { productionTBColumns } from '../../../assets/fixtures';
 import CustomDateInput from '../../../components/CustomDateInput';
 import CustomPagination from '../../../components/CustomPagination';
-import { disableFutureDates, getStatusColor } from '../../../utils/Functions';
+import { disableFutureDates, getStatusColor, getToFixed } from '../../../utils/Functions';
 const DATEFORMAT = 'DD-MM-YYYY'
 const format = 'YYYY-MM-DD'
 
@@ -153,10 +153,11 @@ const renderStatus = (status) => {
 const renderInputs = (data) => {
     const { phLevel, ozoneLevel, tds } = data
 
-    // if (phLevel % 10 === 0) {
-    //     minified = minified.toFixed(1);
-    // }
-    return `PH - ${phLevel.toFixed(2)}, TDS - ${tds.toFixed(2)}, Ozone level - ${ozoneLevel.toFixed(2)}`
+    return `
+    PH - ${getToFixed(phLevel)}, 
+    TDS - ${getToFixed(ozoneLevel)}, 
+    Ozone level - ${getToFixed(tds)}
+    `
 }
 
 export default ProductionTB

@@ -57,6 +57,13 @@ export const blobToBase64 = (blob) => {
     );
 }
 
+export const getToFixed = (value, digits = 2) => {
+    if (value % 1 !== 0) {
+        return value.toFixed(digits);
+    }
+    return value
+}
+
 export const getBase64 = (img, callback) => {
     const reader = new FileReader();
     reader.addEventListener('load', () => callback(reader.result));

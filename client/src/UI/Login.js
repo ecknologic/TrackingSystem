@@ -1,17 +1,27 @@
 import React, { useState } from 'react'
+import { useSessionStorage } from '../utils/hooks/sessionHook';
 import { Form, Row, Col, Input, Card, Button, Checkbox, message } from 'antd'
 import image from '../assets/images/login_img.png'
 import { QuestionCircleFilled } from '@ant-design/icons';
-import './login.css'
 import { createOrUpdateAPI } from '../utils/apis';
 import { useHistory } from 'react-router-dom';
+import { http } from '../modules/http';
+import './login.css'
 
-const Login = (props) => {
+const Login = () => {
     const history = useHistory()
+    const [, setRoleInfo] = useSessionStorage('roleInfo')
     const [username, setUserName] = useState('');
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState({});
 
+    const getRoleInfo = async (role) => {
+        let id = 1
+        if (role === 'MotherPlantAdmin') id = 2
+        const url = `/warehouse/getWarehouseDetails/${id}`
+        const { data } = await http.GET(url)
+        setRoleInfo(data)
+    }
 
     const loginBtn = () => {
         let errors1 = {};
@@ -36,6 +46,7 @@ const Login = (props) => {
                             role
                         }
                         sessionStorage.setItem("user", JSON.stringify(user))
+                        getRoleInfo(role)
                         message.success("Logged in successfully.")
                         history.replace('/dashboard')
                     } else {

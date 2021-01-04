@@ -25,8 +25,11 @@ const StockDetails = ({ date, goToTab }) => {
     const childProps = useMemo(() => ({ batchOptions, shiftOptions }), [batchOptions, shiftOptions])
 
     useEffect(() => {
-        resetForm()
         getBatchesList()
+    }, [])
+
+    useEffect(() => {
+        resetForm()
         getActiveStockByDate(date)
     }, [date])
 
