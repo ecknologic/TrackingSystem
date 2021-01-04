@@ -114,14 +114,14 @@ const Customers = () => {
         const { business, status } = filterInfo
         let singleFiltered = [], bothFiltered = []
         if (business.length && status.length) {
-            bothFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && status.includes(item.isActive))
+            bothFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && status.includes(item.isApproved))
         }
         else {
             singleFiltered = accountsClone.filter((item) => {
                 if (business.length) {
                     return business.includes(item.natureOfBussiness)
                 }
-                return status.includes(item.isActive)
+                return status.includes(item.isApproved)
             })
         }
 
