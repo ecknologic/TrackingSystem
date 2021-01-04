@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
-import { getRole, MARKETINGADMIN, MOTHERPLANTADMIN, WAREHOUSEADMIN } from './utils/constants';
+import { getRole, MARKETINGADMIN, MOTHERPLANTADMIN, SUPERADMIN, WAREHOUSEADMIN } from './utils/constants';
 import Customers from './UI/customers';
 import { resetTrackForm } from './utils/Functions';
 import AccountsDashboard from './UI/accounts/dashboard';
@@ -68,9 +68,10 @@ const renderByRole = () => {
    const authenticated = JSON.parse(sessionStorage.getItem('isLogged'))
    if (authenticated) {
       const role = getRole()
-      if (role == MARKETINGADMIN) return <NoContent content='Design is in progress' />
-      else if (role == WAREHOUSEADMIN) return <NoContent content='Design is in progress' />
-      else if (role == MOTHERPLANTADMIN) return <NoContent content='Design is in progress' />
+      if (role == MARKETINGADMIN) return <Redirect to='/manage-accounts' />
+      else if (role == WAREHOUSEADMIN) return <Redirect to='/manage-stock' />
+      else if (role == MOTHERPLANTADMIN) return <Redirect to='/stock-details' />
+      else if (role == SUPERADMIN) return <Redirect to='/customers' />
       return <NoContent content='Screen Not designed for your role' />
    }
    else return <Redirect to="/" />

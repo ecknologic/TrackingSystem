@@ -46,29 +46,31 @@ const GeneralAccountForm = (props) => {
         <>
             <div className='app-form-container'>
                 <div className='app-identity-proof-container identity-proof-container'>
-                    <div className='input-container'>
-                        <InputLabel name='Select Id Proof' error={errors.idProofType} mandatory />
-                        <SelectInput
-                            track value={idProofType}
-                            options={idOptions} disabled={disabled}
-                            error={errors.idProofType}
-                            onSelect={(value) => onChange(value, 'idProofType')}
-                        />
+                    <div className='row'>
+                        <div className='input-container'>
+                            <InputLabel name='Select Id Proof' error={errors.idProofType} mandatory />
+                            <SelectInput
+                                track value={idProofType}
+                                options={idOptions} disabled={disabled}
+                                error={errors.idProofType}
+                                onSelect={(value) => onChange(value, 'idProofType')}
+                            />
+                        </div>
+                        {
+                            idProofType && (
+                                <div className='input-container'>
+                                    <InputLabel name={proofName} error={errors[idProofType]} mandatory />
+                                    <CustomInput
+                                        placeholder={`Add ${proofName}`} uppercase
+                                        maxLength={maxLength} value={data[idProofType]}
+                                        error={errors[idProofType]} disabled={disabled}
+                                        onBlur={(value) => onBlur(value, idProofType)}
+                                        onChange={(value) => onChange(value, idProofType)}
+                                    />
+                                </div>
+                            )
+                        }
                     </div>
-                    {
-                        idProofType && (
-                            <div className='input-container second'>
-                                <InputLabel name={proofName} error={errors[idProofType]} mandatory />
-                                <CustomInput
-                                    placeholder={`Add ${proofName}`} uppercase
-                                    maxLength={maxLength} value={data[idProofType]}
-                                    error={errors[idProofType]} disabled={disabled}
-                                    onBlur={(value) => onBlur(value, idProofType)}
-                                    onChange={(value) => onChange(value, idProofType)}
-                                />
-                            </div>
-                        )
-                    }
                     <div className='upload-container'>
                         <DraggerInput onUpload={(file) => onUpload(file, 'idProofs')} disabled={idUploadDisable || disabled} />
                         <div className='upload-preview-container'>

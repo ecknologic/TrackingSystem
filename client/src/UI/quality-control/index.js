@@ -46,7 +46,7 @@ const QualityControl = () => {
                         <TabPane tab="Tested Batches (Production)" key="5">
                             <ProductionTB reFetch={reFetch} />
                         </TabPane>
-                        <TabPane tab="Quality Control (External)" key="6">
+                        <TabPane tab="Quality Control (External)" key="6" disabled>
                             <NoContent content='Design is in progress' />
                         </TabPane>
                     </Tabs>

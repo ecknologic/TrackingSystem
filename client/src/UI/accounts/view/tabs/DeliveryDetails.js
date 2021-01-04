@@ -1,4 +1,4 @@
-import { Col, Row } from 'antd';
+import { Col, message, Row } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import Spinner from '../../../../components/Spinner';
 import NoContent from '../../../../components/NoContent';
@@ -52,6 +52,13 @@ const DeliveryDetails = ({ warehouseOptions, recentDelivery }) => {
         let clone = deepClone(delivery);
         const index = clone.findIndex(item => item.deliveryDetailsId === data.deliveryDetailsId)
         clone[index] = data;
+        setDelivery(clone)
+    }
+
+    const optimisticApprove = (id) => {
+        let clone = deepClone(delivery);
+        const index = clone.findIndex(item => item.deliveryDetailsId === id)
+        clone[index].isActive = 1;
         setDelivery(clone)
     }
 
@@ -138,6 +145,45 @@ const DeliveryDetails = ({ warehouseOptions, recentDelivery }) => {
         setViewModal(true)
     }, [])
 
+    const handleAddressDelete = async (id) => {
+        const options = { item: 'Delivery details', v1Ing: 'Deleting', v2: 'deleted' }
+        const url = `/customer/deleteDelivery/${id}`
+
+        try {
+            showToast({ ...options, action: 'loading' })
+            await http.DELETE(url)
+            const filtered = delivery.filter(item => item.deliveryDetailsId !== id)
+            console.log('filtered>>>', delivery, filtered)
+            setDelivery(filtered)
+            showToast(options)
+        } catch (error) {
+            message.destroy()
+        }
+    }
+
+    const handleAddressApprove = async (id) => {
+        const options = { item: 'Delivery details', v1Ing: 'Approving', v2: 'approved' }
+        const url = `/customer/approveDelivery/${id}`
+
+        try {
+            showToast({ ...options, action: 'loading' })
+            await http.GET(url)
+            optimisticApprove(id)
+            showToast(options)
+        } catch (error) {
+            message.destroy()
+        }
+    }
+
+    const handleMenuSelect = (key, id) => {
+        if (key === 'approve') {
+            handleAddressApprove(id)
+        }
+        else if (key === 'delete') {
+            handleAddressDelete(id)
+        }
+    }
+
     const handleUpdate = async () => {
         const deliveryErrors = validateDeliveryValues(formData)
         const devDaysError = validateDevDays(devDays)
@@ -196,7 +242,7 @@ const DeliveryDetails = ({ warehouseOptions, recentDelivery }) => {
                     loading ? <NoContent content={<Spinner />} />
                         : delivery.length ? delivery.map((item) => (
                             <Col lg={{ span: 12 }} xl={{ span: 8 }} xxl={{ span: 6 }} key={item.deliveryDetailsId}>
-                                <AddressCard data={item} onClick={handleClick} />
+                                <AddressCard data={item} onClick={handleClick} onSelect={handleMenuSelect} />
                             </Col>
                         )) : <NoContent content='No delivery details to show' />
                 }
@@ -205,7 +251,7 @@ const DeliveryDetails = ({ warehouseOptions, recentDelivery }) => {
                 className={`app-form-modal ${shake ? 'app-shake' : ''}`}
                 visible={viewModal}
                 btnDisabled={btnDisabled}
-                onOk={handleUpdate}
+                onOk={formData.isActive ? handleModalCancel : handleUpdate}
                 onCancel={handleModalCancel}
                 title={`Delivery Details - ${formData.location}`}
                 okTxt={formData.isActive ? 'Close' : 'Update'}

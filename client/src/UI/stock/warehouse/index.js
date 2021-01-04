@@ -28,9 +28,9 @@ const WarehouseStock = () => {
                     >
                         <TabPane tab="Stock Details" key="1" />
                         <TabPane tab="Delivery" key="2" />
-                        <TabPane tab="Orders" key="3" />
-                        <TabPane tab="Staff" key="4" />
-                        <TabPane tab="Settings" key="5" />
+                        <TabPane tab="Orders" key="3" disabled />
+                        <TabPane tab="Staff" key="4" disabled />
+                        <TabPane tab="Settings" key="5" disabled />
                     </Tabs>
                 </div>
                 <div className='date-picker-panel'>

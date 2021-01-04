@@ -243,7 +243,7 @@ $textColorDisabled:rgba(0,0,0,0.55);
 
 .ant-select {
     width: 100%;
-    margin-top: .5em;
+    margin-top: .1em;
 }
 
 .ant-select-selector {
@@ -352,7 +352,7 @@ textarea {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: .5em;
+    margin-top: .1em;
     border: 1px solid #E2E2EA;
     
     &:hover, &:focus {
@@ -375,7 +375,7 @@ textarea {
 }
 
 .ant-input-group-wrapper {
-    margin-top: .5em ;
+    margin-top: .1em ;
 
     .ant-input {
         margin-top: 0;
@@ -448,7 +448,7 @@ textarea {
 // -------------- antd Date Picker styles ------------------- //
 
 .ant-picker {
-    margin-top: .5em;
+    margin-top: .1em;
     height: 3.1em;
     width: 100%;
     border-radius: .6em;
@@ -552,7 +552,7 @@ textarea {
         width: 100%;
         display: flex;
         justify-content: space-between;
-        padding: .5em 0;
+        padding: 1em 0;
 
         .input-container {
             width: 48%;
@@ -760,7 +760,7 @@ textarea {
     font-family: 'PoppinsMedium500';
     font-size: 12px;
 }
-.label-mandatory::before {
+.label-mandatory::after {
     content:'*';
     color:  $errorColor;
 }
@@ -932,7 +932,7 @@ textarea {
         width: 100%;
         display: flex;
         justify-content: space-between;
-        padding: .5em 0;
+        padding: 1em 0;
 
         .input-container {
             width: 48%;
@@ -953,10 +953,6 @@ textarea {
             display: flex;
             flex-direction: column;
             width: 48%;
-        }
-
-        .second {
-            margin-top: 1em;
         }
 
         .upload-container {
@@ -996,7 +992,7 @@ textarea {
 .app-receipt-upload-container {
     display: flex;
     justify-content: flex-start;
-    margin-top: .5em;
+    margin-top: .1em;
 }
 
 // -------------- Various Pagination styles ------------------- //

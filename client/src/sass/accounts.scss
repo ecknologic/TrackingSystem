@@ -145,7 +145,7 @@ $primary-color: #0062FF;
         width: 100%;
         display: flex;
         justify-content: space-between;
-        padding: .5em 0;
+        padding: 1em 0;
 
         .input-container {
             width: 48%;
@@ -181,6 +181,7 @@ $primary-color: #0062FF;
         height: 5em;
         display: flex;
         align-items: center;
+        margin-top: 2em;
 
         .title {
             color: #1B2125;

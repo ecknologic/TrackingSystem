@@ -52,7 +52,7 @@ const Dispatch = () => {
                         <TabPane tab="Received Materials" key="4">
                             <ReceivedMaterials />
                         </TabPane>
-                        <TabPane tab="Current Stock" key="5">
+                        <TabPane tab="Current Stock" key="5" disabled>
                             <NoContent content='Design is in progress' />
                         </TabPane>
                     </Tabs>

@@ -1,13 +1,13 @@
 import { Menu } from 'antd';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom';
-import { getRole, MARKETINGADMIN, TRACKFORM, WAREHOUSEADMIN, MOTHERPLANTADMIN } from '../../utils/constants';
+import { getRole, MARKETINGADMIN, TRACKFORM, WAREHOUSEADMIN, MOTHERPLANTADMIN, SUPERADMIN } from '../../utils/constants';
 import { getSideMenuKey, resetTrackForm, getMainPathname } from '../../utils/Functions'
 import ConfirmModal from '../../components/CustomModal';
 import ConfirmMessage from '../../components/ConfirmMessage';
 import {
-    DashboardIcon, SettingIcon, FriendReqIcon, FriendReqIconLight, DocIconLight,
-    DashboardIconLight, SettingIconLight, ProjectIcon, ProjectIconLight, DocIcon, FriendsIconLight, FriendsIcon,
+    DashboardIcon, SettingIcon, FriendReqIcon, FriendReqIconLight, DocIconLight, FriendIcon,
+    DashboardIconLight, SettingIconLight, ProjectIcon, ProjectIconLight, DocIcon, FriendsIconLight, FriendsIcon, FriendIconLight,
 } from '../../components/SVG_Icons'
 
 const SideMenu = () => {
@@ -49,7 +49,7 @@ const SideMenu = () => {
                 mode="inline"
                 selectedKeys={selected}
             >
-                <Item key='/dashboard' onClick={handleMenuSelect}>
+                <Item key='/dashboard' onClick={handleMenuSelect} style={{ pointerEvents: 'none' }}>
                     {selected === '/dashboard' ? <DashboardIcon /> : <DashboardIconLight />}
                     <span>Dashboard</span>
                 </Item>
@@ -82,11 +82,11 @@ const SideMenu = () => {
                                 {selected === '/manage-stock' ? <ProjectIcon /> : <ProjectIconLight />}
                                 <span>Manage Stock</span>
                             </Item>
-                            <Item key='/manage-routes' onClick={handleMenuSelect}>
+                            <Item key='/manage-routes' onClick={handleMenuSelect} style={{ pointerEvents: 'none' }}>
                                 {selected === '/manage-routes' ? <FriendsIcon /> : <FriendsIconLight />}
                                 <span>Manage Routes</span>
                             </Item>
-                            <Item key='/reports' onClick={handleMenuSelect}>
+                            <Item key='/reports' onClick={handleMenuSelect} style={{ pointerEvents: 'none' }}>
                                 {selected === '/reports' ? <DocIcon /> : <DocIconLight />}
                                 <span>Reports</span>
                             </Item>
@@ -100,16 +100,42 @@ const SideMenu = () => {
                                 {selected === '/manage-accounts' ? <ProjectIcon /> : <ProjectIconLight />}
                                 <span>Manage Accounts</span>
                             </Item>
-                            <Item key='/customers' onClick={handleMenuSelect}>
-                                {selected === '/customers' ? <ProjectIcon /> : <ProjectIconLight />}
-                                <span>Customers</span>
-                            </Item>
                             <Item key='/add-customer' onClick={handleMenuSelect}>
                                 {selected === '/add-customer' ? <FriendReqIcon /> : <FriendReqIconLight />}
                                 <span>Add Customer</span>
                             </Item>
-                            <Item key='/customerDashboard' onClick={handleMenuSelect}>
+                            <Item key='/customerDashboard' onClick={handleMenuSelect} style={{ pointerEvents: 'none' }}>
                                 {selected === '/customerDashboard' ? <SettingIcon /> : <SettingIconLight />}
+                                <span>Settings</span>
+                            </Item>
+                        </>
+                        : null
+                }
+                {
+                    ROLE === SUPERADMIN ?
+                        <>
+                            <Item key='/customers' onClick={handleMenuSelect}>
+                                {selected === '/customers' ? <FriendIcon /> : <FriendIconLight />}
+                                <span>Customers</span>
+                            </Item>
+                            <Item key='/warehouses' onClick={handleMenuSelect} style={{ pointerEvents: 'none' }}>
+                                {selected === '/warehouses' ? <FriendIcon /> : <FriendIconLight />}
+                                <span>Warehouses</span>
+                            </Item>
+                            <Item key='/motherplants' onClick={handleMenuSelect} style={{ pointerEvents: 'none' }}>
+                                {selected === '/motherplants' ? <SettingIcon /> : <SettingIconLight />}
+                                <span>Mother Plants</span>
+                            </Item>
+                            <Item key='/staff' onClick={handleMenuSelect} style={{ pointerEvents: 'none' }}>
+                                {selected === '/staff' ? <FriendsIcon /> : <FriendsIconLight />}
+                                <span>Staff</span>
+                            </Item>
+                            <Item key='/invoice' onClick={handleMenuSelect} style={{ pointerEvents: 'none' }}>
+                                {selected === '/invoice' ? <DocIcon /> : <DocIconLight />}
+                                <span>Invoice</span>
+                            </Item>
+                            <Item key='/settings' onClick={handleMenuSelect} style={{ pointerEvents: 'none' }}>
+                                {selected === '/settings' ? <SettingIcon /> : <SettingIconLight />}
                                 <span>Settings</span>
                             </Item>
                         </>

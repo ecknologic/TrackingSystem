@@ -4,6 +4,7 @@ export const TRACKFORM = 'trackForm'
 export const MANDATORY = "Mandatory Field";
 export const MARKETINGADMIN = 'SalesAndMarketing'
 export const WAREHOUSEADMIN = 'WarehouseAdmin'
+export const SUPERADMIN = 'SuperAdmin'
 export const MOTHERPLANTADMIN = 'MotherPlantAdmin'
 export const TODAYDATE = dayjs().format('YYYY-MM-DD')
 

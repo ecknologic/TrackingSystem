@@ -13,7 +13,7 @@ router.use(function timeLog(req, res, next) {
 var days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 
-const insertToCustomerOrderDetails = async (result, res) => {
+const insertToCustomerOrderDetails = async (result, res, sendResponse) => {
   var seqNo = "";
   const { deliveryDetailsId } = result
   customerQueries.getsqlNo("customerorderdetails", (err, results) => {
@@ -49,7 +49,7 @@ const insertToCustomerOrderDetails = async (result, res) => {
                 if(err) throw err;
                 else 
             });*/
-            console.log('record inserted');
+            sendResponse && res.json('Success')
           }
         });
       }).catch(err => {
@@ -63,7 +63,7 @@ cron.schedule('0 0 2 * * *', function () {
   saveToCustomerOrderDetails()
 });
 
-function saveToCustomerOrderDetails(customerId) {
+function saveToCustomerOrderDetails(customerId, res) {
   var day = days[new Date().getDay()];
 
   let customerDeliveryDaysQuery = "SELECT c.deliveryDetailsId,c.customer_Id,c.phoneNumber,c.address,c.contactPerson,c.departmentId,c.routeId,c.driverId,c.latitude,c.longitude FROM DeliveryDetails c INNER JOIN  customerdeliverydays cd ON cd.deliveryDaysId=c.deliverydaysid  WHERE c.deleted=0 AND c.isActive=1 AND " + day + "=1";
@@ -73,9 +73,9 @@ function saveToCustomerOrderDetails(customerId) {
   db.query(customerDeliveryDaysQuery, (err, results) => {
     if (err) throw err;
     if (results.length > 0) {
-      results.forEach(result => {
+      results.forEach((result, index, array) => {
         // var warehouseName=result.shortName+"-";
-        insertToCustomerOrderDetails(result)
+        insertToCustomerOrderDetails(result, res, index === array.length - 1)
       });
     }
   });

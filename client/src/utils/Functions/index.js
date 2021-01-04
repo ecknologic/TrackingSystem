@@ -299,12 +299,12 @@ export const extractGADetails = (data) => {
     return { ...clone, Address1, organizationName }
 }
 
-export const getAddressesForDB = (data) => {
+export const getAddressesForDB = (data, isUpdate) => {
     return data.map((address) => {
-        const { devDays, product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML,
-            product1LId, product20LId, product250MLId, product500MLId, price250ML, gstNo = '', gstProof = '',
+        const { devDays, gstNo = '', gstProof = '',
             ...rest } = address
-        const products = getProductsForDB({ product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML })
+
+        const products = isUpdate ? getProductsWithIdForDB(rest) : getProductsForDB(rest)
         const deliveryDays = getDevDaysForDB(devDays)
         return { ...rest, products, deliveryDays, gstNo, gstProof }
     })
