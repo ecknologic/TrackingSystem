@@ -2,18 +2,20 @@ import dayjs from 'dayjs';
 import { message } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { http } from '../../../../modules/http';
-import { base64String, extractCADetails, extractGADetails, getBase64, getIdProofsForDB, isEmpty, removeFormTracker, resetTrackForm, showToast, trackAccountFormOnce } from '../../../../utils/Functions';
-import CustomButton from '../../../../components/CustomButton';
-import CorporateAccountForm from '../../add/forms/CorporateAccount';
-import NoContent from '../../../../components/NoContent';
 import Spinner from '../../../../components/Spinner';
-import { validateIDProofs, validateAccountValues, validateIDNumbers, validateMobileNumber, validateNames, validateEmailId, validateNumber } from '../../../../utils/validations';
-import GeneralAccountForm from '../../add/forms/GeneralAccount';
 import { WEEKDAYS } from '../../../../assets/fixtures';
+import NoContent from '../../../../components/NoContent';
+import CustomButton from '../../../../components/CustomButton';
+import GeneralAccountForm from '../../add/forms/GeneralAccount';
+import CorporateAccountForm from '../../add/forms/CorporateAccount';
+import { base64String, extractCADetails, extractGADetails, getBase64, getIdProofsForDB, isEmpty, resetTrackForm, showToast, trackAccountFormOnce } from '../../../../utils/Functions';
+import { validateIDProofs, validateAccountValues, validateIDNumbers, validateMobileNumber, validateNames, validateEmailId, validateNumber } from '../../../../utils/validations';
 
 const AccountOverview = ({ data, warehouseOptions, onUpdate }) => {
-    const { gstProof, idProof_backside, idProof_frontside, isActive, registeredDate,
+    const { gstProof, idProof_backside, idProof_frontside, isApproved, registeredDate,
         customertype, Address1, loading } = data
+
+    console.log('isApproved>>>', isApproved)
 
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [accountValues, setAccountValues] = useState({})
@@ -211,7 +213,7 @@ const AccountOverview = ({ data, warehouseOptions, onUpdate }) => {
                                     onRemove={handleProofRemove}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
-                                    disabled={isActive}
+                                    disabled={isApproved}
                                 />
                                 : <GeneralAccountForm
                                     data={accountValues}
@@ -227,12 +229,12 @@ const AccountOverview = ({ data, warehouseOptions, onUpdate }) => {
                                     onDeselect={handleDevDaysDeselect}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
-                                    disabled={isActive}
+                                    disabled={isApproved}
                                     accountOnly
                                 />
                         }
                         {
-                            !isActive && renderFooter()
+                            !isApproved && renderFooter()
                         }
                     </>
             }

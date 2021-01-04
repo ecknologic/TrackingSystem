@@ -9,7 +9,7 @@ import { getRole, SUPERADMIN } from '../utils/constants';
 
 const AddressCard = ({ data, onClick, onSelect }) => {
     const role = getRole()
-    const { isActive, departmentName, phoneNumber, location, contactPerson, deliveryDetailsId } = data
+    const { isApproved, departmentName, phoneNumber, location, contactPerson, deliveryDetailsId } = data
 
     const handleSelect = ({ key }) => {
         onSelect(key, deliveryDetailsId)
@@ -17,9 +17,9 @@ const AddressCard = ({ data, onClick, onSelect }) => {
 
     return (
         <div className='account-card-container address-card-container'>
-            <div className={isActive ? 'badge active' : 'badge'}>{isActive ? "ACTIVE" : "DRAFT"}</div>
+            <div className={isApproved ? 'badge active' : 'badge'}>{isApproved ? "ACTIVE" : "DRAFT"}</div>
             <div className='header'>
-                <div className={isActive ? 'inner green' : 'inner'}>
+                <div className={isApproved ? 'inner green' : 'inner'}>
                     <FriendIconGrey className='friend icon' />
                     <div className='address-container'>
                         <span className='title clamp-1'>{location}</span>
@@ -43,7 +43,7 @@ const AddressCard = ({ data, onClick, onSelect }) => {
                 <PrimaryButton text='View Details' onClick={() => onClick(data)} />
                 {
                     role === SUPERADMIN &&
-                    <Action onSelect={handleSelect} isActive={isActive} />
+                    <Action onSelect={handleSelect} isApproved={isApproved} />
                 }
             </div>
         </div>
@@ -51,10 +51,10 @@ const AddressCard = ({ data, onClick, onSelect }) => {
 
 }
 
-const Action = ({ onSelect, isActive }) => {
+const Action = ({ onSelect, isApproved }) => {
     const menu = (
         <Menu onClick={onSelect}>
-            <Menu.Item key="approve" className={isActive ? 'disabled' : ''}>
+            <Menu.Item key="approve" className={isApproved ? 'disabled' : ''}>
                 Approve
           </Menu.Item>
             <Menu.Item key="delete">

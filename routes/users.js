@@ -52,7 +52,6 @@ router.post('/updateUser', (req, res) => {
         let privilegeQuery = "UPDATE userPrivilegesMaster SET privilegeActions=? where privilegeId=? AND userId=?";
         let queryValues = [i.privilegeActions.join(), i.privilegeId, userDetails.userId]
         db.query(privilegeQuery, queryValues, (err, results) => {
-          console.log(queryValues);
           if (err) res.send(err);
           else {
             res.send("record updated")

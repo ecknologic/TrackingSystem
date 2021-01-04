@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import React, { useCallback, useEffect, useState } from 'react';
 import { http } from '../../../../modules/http';
 import ArrivedStockForm from '../forms/ArrivedStock';
@@ -29,7 +30,7 @@ const StockDetails = ({ date }) => {
     const [shake, setShake] = useState(false)
 
     useEffect(() => {
-        const isToday = (date === TODAYDATE)
+        const isToday = dayjs(date).isSame(dayjs(TODAYDATE))
         getOFD()
         getEC()
         getCAS()

@@ -401,7 +401,7 @@ const AddAccount = () => {
             const products = getProductsForDB(generalValues)
             const delivery = { ...extractGADeliveryDetails(generalValues), deliveryDays, products }
             const account = extractGADetails(generalValues)
-            body = { ...account, idProofs, deliveryDetails: [delivery], isActive: 0, ...extra }
+            body = { ...account, idProofs, deliveryDetails: [delivery], isApproved: 0, ...extra }
         }
 
         const options = { item: 'Customer', action: 'loading', v1Ing: 'Adding' }
@@ -556,7 +556,7 @@ const AddAccount = () => {
                                 hasExtraAddress && <Collapse
                                     accordion
                                     className='accordion-container'
-                                    expandIcon={({ isActive }) => isActive ? <DDownIcon className='rotate-180' /> : <DDownIcon className='app-trans' />}
+                                    expandIcon={({ isApproved }) => isApproved ? <DDownIcon className='rotate-180' /> : <DDownIcon className='app-trans' />}
                                     expandIconPosition='right'
                                 >
                                     {

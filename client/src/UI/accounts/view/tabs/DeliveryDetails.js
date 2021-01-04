@@ -58,7 +58,7 @@ const DeliveryDetails = ({ warehouseOptions, recentDelivery }) => {
     const optimisticApprove = (id) => {
         let clone = deepClone(delivery);
         const index = clone.findIndex(item => item.deliveryDetailsId === id)
-        clone[index].isActive = 1;
+        clone[index].isApproved = 1;
         setDelivery(clone)
     }
 
@@ -200,7 +200,7 @@ const DeliveryDetails = ({ warehouseOptions, recentDelivery }) => {
         const products = getProductsWithIdForDB(productsUI)
         const deliveryDays = getDevDaysForDB(devDays)
         const formValues = extractDeliveryDetails(formData)
-        const body = [{ ...formValues, isNew: false, delete: 0, isActive: 0, products, deliveryDays }]
+        const body = [{ ...formValues, isNew: false, delete: 0, isApproved: 0, products, deliveryDays }]
         const options = { item: 'Delivery details', v1Ing: 'Updating', v2: 'updated' }
         const url = '/customer/updateDeliveryDetails'
         try {
@@ -251,10 +251,10 @@ const DeliveryDetails = ({ warehouseOptions, recentDelivery }) => {
                 className={`app-form-modal ${shake ? 'app-shake' : ''}`}
                 visible={viewModal}
                 btnDisabled={btnDisabled}
-                onOk={formData.isActive ? handleModalCancel : handleUpdate}
+                onOk={formData.isApproved ? handleModalCancel : handleUpdate}
                 onCancel={handleModalCancel}
                 title={`Delivery Details - ${formData.location}`}
-                okTxt={formData.isActive ? 'Close' : 'Update'}
+                okTxt={formData.isApproved ? 'Close' : 'Update'}
             >
                 <DeliveryForm
                     data={formData}

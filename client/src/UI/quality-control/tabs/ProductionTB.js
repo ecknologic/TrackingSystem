@@ -152,7 +152,11 @@ const renderStatus = (status) => {
 
 const renderInputs = (data) => {
     const { phLevel, ozoneLevel, tds } = data
-    return `PH - ${phLevel}, TDS - ${tds}, Ozone level - ${ozoneLevel}`
+
+    // if (phLevel % 10 === 0) {
+    //     minified = minified.toFixed(1);
+    // }
+    return `PH - ${phLevel.toFixed(2)}, TDS - ${tds.toFixed(2)}, Ozone level - ${ozoneLevel.toFixed(2)}`
 }
 
 export default ProductionTB
