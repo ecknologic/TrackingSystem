@@ -5,7 +5,7 @@ import PrimaryButton from './PrimaryButton';
 import { FriendsIconGrey, FriendIconGrey } from './SVG_Icons';
 
 const AccountCard = ({ customerDetails, onClick, btnTxt = 'Manage Account' }) => {
-    const isActive = customerDetails.isActive
+    const isActive = customerDetails.isApproved
     const names = JSON.parse(customerDetails.contactpersons)
     const contacts = names.length
 
