@@ -270,7 +270,8 @@ router.get("/approveDelivery/:deliveryDetailsId", (req, res) => {
   customerQueries.approveDeliveryDetails([deliveryDetailsId], (err, data) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
-      res.json('Delivery Details Approved Successfully')
+      saveToCustomerOrderDetails(null, res, deliveryDetailsId)
+      // res.json('Delivery Details Approved Successfully')
     }
   })
 });

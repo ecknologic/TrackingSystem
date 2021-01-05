@@ -130,17 +130,17 @@ router.post('/confirmStockRecieved', (req, res) => {
 
 router.get('/deliveryDetails/:date', (req, res) => {
   var date = req.params.date;
-  let deliveryDetailsQuery = "select c.customerOrderId,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS cans20L,c.1LBoxes AS boxes1L,c.500MLBoxes AS boxes500ML,c.250MLBoxes AS boxes250ML,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid INNER JOIN driverdetails d ON c.driverId=d.driverid  WHERE DATE(`deliveryDate`) ='" + date + "'";
-  db.query(deliveryDetailsQuery, (err, results) => {
+  let deliveryDetailsQuery = "select c.customerOrderId,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS cans20L,c.1LBoxes AS boxes1L,c.500MLBoxes AS boxes500ML,c.250MLBoxes AS boxes250ML,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid INNER JOIN driverdetails d ON c.driverId=d.driverid  WHERE DATE(`deliveryDate`) = ? AND warehouseId=?";
+  db.query(deliveryDetailsQuery, [date, departmentId], (err, results) => {
     if (err) res.status(500).json(err.sqlMessage);
     res.send(JSON.stringify(results));
   });
 });
 
 router.get('/currentActiveStockDetails/:date', (req, res) => {
-  let  deliveryDate = req.params.date;
+  let deliveryDate = req.params.date;
   let { warehouseId } = req.query;
-  let currentActiveStockQuery = "SELECT * FROM customerActiveStock WHERE DATE(deliveryDate)='"+deliveryDate+"' and warehouseId="+ warehouseId;
+  let currentActiveStockQuery = "SELECT * FROM customerActiveStock WHERE DATE(deliveryDate)='" + deliveryDate + "' and warehouseId=" + warehouseId;
   db.query(currentActiveStockQuery, (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else res.json({ status: 200, message: 'Success', data: results });
