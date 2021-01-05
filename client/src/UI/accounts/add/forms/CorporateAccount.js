@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import InputLabel from '../../../../components/InputLabel';
 import CustomInput from '../../../../components/CustomInput';
@@ -7,6 +8,7 @@ import InputWithAddon from '../../../../components/InputWithAddon';
 import UploadPreviewer from '../../../../components/UploadPreviewer';
 import { invoiceOptions, idOptions, businessOptions } from '../../../../assets/fixtures'
 import { getIdProofName, getIDInputValidationProps, resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
+const DATEFORMAT = 'DD/MM/YYYY'
 
 const CorporateAccountForm = (props) => {
     const { data, errors, IDProofs = {}, IDProofErrors, onChange, onBlur, onUpload, disabled,
@@ -175,8 +177,8 @@ const CorporateAccountForm = (props) => {
             </div>
             <div className='row'>
                 <div className='input-container'>
-                    <InputLabel name='Registered Date' error={errors.registeredDate} mandatory />
-                    <CustomInput value={registeredDate} placeholder='Registered Date' disabled />
+                    <InputLabel name='Registered Date' error={errors.registeredDate} />
+                    <CustomInput value={dayjs(registeredDate).format(DATEFORMAT)} placeholder='Registered Date' disabled />
                 </div>
                 <div className='input-container'>
                     <InputLabel name='Invoice Type' error={errors.invoicetype} mandatory />
@@ -199,7 +201,7 @@ const CorporateAccountForm = (props) => {
                     />
                 </div>
                 <div className='input-container'>
-                    <InputLabel name='Referred By' error={errors.referredBy} mandatory />
+                    <InputLabel name='Referred By' error={errors.referredBy} />
                     <CustomInput
                         placeholder='Referral Name'
                         value={referredBy} disabled={disabled || referredByDisable}

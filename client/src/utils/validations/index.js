@@ -106,8 +106,7 @@ export const validateAccountValues = (data, customerType, isInView) => {
         const error = validateNames(customerName)
         error && (errors.customerName = error)
     }
-    if (!referredBy) errors.referredBy = text
-    else {
+    if (referredBy) {
         const error = validateNames(referredBy)
         error && (errors.referredBy = error)
     }

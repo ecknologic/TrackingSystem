@@ -180,6 +180,7 @@ const ApproveAccount = () => {
             const p1 = updateCustomer(account)
             const p2 = updateAddresses(delivery)
             await Promise.all([p1, p2])
+            setAddresses(sessionAddresses)
             showToast(options)
             resetTrackForm()
             setEditMode(false)

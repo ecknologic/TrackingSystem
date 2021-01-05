@@ -84,7 +84,7 @@ motherPlantDbQueries.getQCTestedBatches = async (departmentId, callback) => {
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getProdQCTestedBatches = async (departmentId, callback) => {
-    let query = `SELECT JSON_ARRAYAGG(json_object('phLevel',q.phLevel,'tds',q.TDS,'ozoneLevel',q.ozoneLevel,'qcLevel',q.qcLevel,'testResult',q.testResult,'managerName',q.managerName )) levels,p.batchId batchId FROM qualitycheck q INNER JOIN productionQC p on q.productionQcId=p.productionQcId where q.departmentId=${departmentId} GROUP BY q.productionQcId`;
+    let query = `SELECT JSON_ARRAYAGG(JSON_OBJECT('phLevel',ROUND(q.phLevel,1),'tds',ROUND(q.TDS,1),'ozoneLevel',ROUND(q.ozoneLevel,1),'qcLevel',q.qcLevel,'testResult',q.testResult,'managerName',q.managerName,'testingDate',q.testedDate)) levels,p.batchId batchId FROM qualitycheck q INNER JOIN productionQC p ON q.productionQcId=p.productionQcId WHERE q.departmentId=${departmentId} GROUP BY q.productionQcId`;
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getCurrentProductionDetailsByDate = async (input, callback) => {
@@ -106,7 +106,7 @@ motherPlantDbQueries.getDispatchDetailsByDC = async (dcNo, callback) => {
     return executeGetParamsQuery(query, [dcNo], callback)
 }
 motherPlantDbQueries.getQCLevelsDetails = async (productionQcId, callback) => {
-    let query = "SELECT JSON_ARRAYAGG(json_object('testedDate',q.testedDate,'phLevel',q.phLevel,'tds',q.TDS,'ozoneLevel',q.ozoneLevel,'testResult',q.testResult,'managerName',q.managerName,'description',q.description,'testType',q.testType,'qcLevel',q.qcLevel)) as QCDetails FROM qualitycheck q  WHERE productionQcId=?";
+    let query = "SELECT JSON_ARRAYAGG(JSON_OBJECT('testedDate',DATE_FORMAT(q.testedDate, '%Y-%c-%d %H:%i:%s'),'phLevel',ROUND(q.phLevel,1),'tds',ROUND(q.TDS,1),'ozoneLevel',ROUND(q.ozoneLevel,1),'testResult',q.testResult,'managerName',q.managerName,'description',q.description,'testType',q.testType,'qcLevel',q.qcLevel)) AS QCDetails FROM qualitycheck q  WHERE productionQcId=?";
     return executeGetParamsQuery(query, [productionQcId], callback)
 }
 //POST Request Methods

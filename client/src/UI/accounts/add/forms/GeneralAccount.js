@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import SelectInput from '../../../../components/SelectInput';
 import DraggerInput from '../../../../components/DraggerInput';
@@ -7,6 +8,7 @@ import InputLabel from '../../../../components/InputLabel';
 import CustomInput from '../../../../components/CustomInput';
 import { dayOptions, invoiceOptions, idOptions, businessOptions } from '../../../../assets/fixtures'
 import { getIDInputValidationProps, getIdProofName, resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
+const DATEFORMAT = 'DD/MM/YYYY'
 
 const GeneralAccountForm = (props) => {
 
@@ -112,6 +114,13 @@ const GeneralAccountForm = (props) => {
                             onChange={(value) => onChange(value, 'customerName')}
                         />
                     </div>
+                    <div className='input-container'>
+                        <InputLabel name='Delivery Location' error={errors.deliveryLocation} mandatory />
+                        <CustomInput value={deliveryLocation} placeholder='Add Location'
+                            disabled={disabled} error={errors.deliveryLocation}
+                            onChange={(value) => onChange(value, 'deliveryLocation')}
+                        />
+                    </div>
                 </div>
                 <div className='row'>
                     <div className='input-container stretch'>
@@ -143,8 +152,8 @@ const GeneralAccountForm = (props) => {
                 </div>
                 <div className='row'>
                     <div className='input-container'>
-                        <InputLabel name='Registered Date' error={errors.registeredDate} mandatory />
-                        <CustomInput value={registeredDate} placeholder='Registered Date' disabled />
+                        <InputLabel name='Registered Date' error={errors.registeredDate} />
+                        <CustomInput value={dayjs(registeredDate).format(DATEFORMAT)} placeholder='Registered Date' disabled />
                     </div>
                     <div className='input-container'>
                         <InputLabel name='Nature Of Business' error={errors.natureOfBussiness} mandatory />
@@ -175,13 +184,6 @@ const GeneralAccountForm = (props) => {
                                 </div>
                             </div>
                             <div className='row'>
-                                <div className='input-container'>
-                                    <InputLabel name='Delivery Location' error={errors.deliveryLocation} mandatory />
-                                    <CustomInput value={deliveryLocation} placeholder='Add Location'
-                                        disabled={disabled} error={errors.deliveryLocation}
-                                        onChange={(value) => onChange(value, 'deliveryLocation')}
-                                    />
-                                </div>
                                 <div className='input-container'>
                                     <InputLabel name='Warehouse' error={errors.departmentId} mandatory />
                                     <SelectInput track options={warehouseOptions}
@@ -263,7 +265,7 @@ const GeneralAccountForm = (props) => {
                         />
                     </div>
                     <div className='input-container'>
-                        <InputLabel name='Referred By' error={errors.referredBy} mandatory />
+                        <InputLabel name='Referred By' error={errors.referredBy} />
                         <CustomInput value={referredBy} disabled={disabled}
                             placeholder='Referral Name' error={errors.referredBy}
                             onChange={(value) => onChange(value, 'referredBy')}

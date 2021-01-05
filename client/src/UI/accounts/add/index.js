@@ -149,7 +149,7 @@ const AddAccount = () => {
             const error = validateNumber(value)
             setGeneralErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key === 'deliveryLocation') {
+        else if (key === 'deliveryLocation' || key === 'referredBy') {
             const error = validateNames(value)
             setGeneralErrors(errors => ({ ...errors, [key]: error }))
         }

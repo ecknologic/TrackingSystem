@@ -95,6 +95,18 @@ export const stringToHslColor = (str) => {
     return 'hsl(' + h + ', 45%, 45%)';
 }
 
+export const getSelectName = (value) => {
+    switch (value) {
+        case 'complimentary':
+            return 'Complimentary'
+        case 'nonComplimentary':
+            return 'Non Complimentary'
+
+        default:
+            return 'Select'
+    }
+}
+
 export const getCleanObject = (data) => {
     return Object.entries(data).reduce((a, [k, v]) => (v === null ? a : (a[k] = v, a)), {})
 }

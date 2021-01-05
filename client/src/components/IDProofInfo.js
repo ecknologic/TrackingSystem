@@ -17,7 +17,7 @@ const IDProofInfo = ({ data }) => {
             <div className='input-container'>
                 <InputValue size='smaller' value='ID Proof' />
                 <div className='upload-preview-container'>
-                    <UploadPreviewer value={Front} disabled title='Front' />
+                    <UploadPreviewer value={Front} disabled title={idProofType !== 'panNo' && 'Front'} />
                     {
                         idProofType !== 'panNo' &&
                         <UploadPreviewer value={Back} disabled title='Back' className='last' />
