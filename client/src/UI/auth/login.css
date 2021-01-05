@@ -25,7 +25,7 @@
 }
 .login_btn {
     float: right;
-    background-color: #0091ff !important;
+    background-color: #0062FF !important;
     border: 0px !important;
     padding: 10px 25px !important;
     height: 100% !important;
@@ -39,17 +39,14 @@
     font-family: "Lato-Regular";
 }
 .forgotpasswordLink {
-    color: #1aa5df;
+    color: #0062FF;
     font-size: 12px;
     vertical-align: middle;
 }
 .forgotpasswordLinktext {
     text-decoration: underline;
 }
-.forgotpasswordLink {
-    color: #1aa5df;
-    font-size: 12px;
-}
+
 .forgotpasswordLinkicon {
     display: inline-block;
     vertical-align: middle;
@@ -66,6 +63,7 @@
     color: #b3b3b3;
 }
 .loginmenu {
+    display: flex;
     float: right;
     float: right;
     padding: 0px;
@@ -95,7 +93,7 @@
     margin-bottom: 30px;
 }
 .login_bibo_text {
-    color: #0062ff;
+    color: #0062FF;
 }
 .login_footer {
     padding-top: 31px;

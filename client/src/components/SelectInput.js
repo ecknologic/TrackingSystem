@@ -30,7 +30,7 @@ const SelectInput = ({ options, mode, onSelect, onDeselect, value, disabled,
 
         if (label === 'ALL') return null
         return (
-            <Tag color='#0091FF' closable={closable} onClose={onClose} style={{ marginRight: 3 }}>
+            <Tag color='#0062FF' closable={closable} onClose={onClose} style={{ marginRight: 3 }}>
                 {label}
             </Tag>
         );

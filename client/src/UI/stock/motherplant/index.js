@@ -1,16 +1,16 @@
 import { Tabs } from 'antd';
 import React, { Fragment, useMemo, useRef, useCallback, useState } from 'react';
-import Header from '../../../components/ContentHeader';
-import StockDetails from './tabs/StockDetails';
 import Production from './tabs/Production';
-import ReportsDropdown from '../../../components/ReportsDropdown';
+import InternalQC from './tabs/InternalQC';
+import StockDetails from './tabs/StockDetails';
+import NoContent from '../../../components/NoContent';
+import Header from '../../../components/ContentHeader';
+import { resetTrackForm } from '../../../utils/Functions';
 import ConfirmModal from '../../../components/CustomModal';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import { TODAYDATE, TRACKFORM } from '../../../utils/constants';
 import DatePickerPanel from '../../../components/DatePickerPanel';
-import { resetTrackForm } from '../../../utils/Functions';
-import NoContent from '../../../components/NoContent';
-import InternalQC from './tabs/InternalQC';
+import ReportsDropdown from '../../../components/ReportsDropdown';
 
 const MotherplantStock = () => {
 

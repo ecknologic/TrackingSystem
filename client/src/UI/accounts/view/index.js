@@ -35,6 +35,7 @@ const ViewAccount = () => {
     const [confirmModal, setConfirmModal] = useState(false)
     const [shake, setShake] = useState(false)
     const [navigateTo, setNavigateTo] = useState('')
+    const [activeTab, setActiveTab] = useState('1')
 
     useEffect(() => {
         getAccount()
@@ -150,7 +151,7 @@ const ViewAccount = () => {
         const products = getProductsForDB(productsUI)
         const deliveryDays = getDevDaysForDB(devDays)
         const formValues = extractDeliveryDetails(formData)
-        const body = [{ ...formValues, isNew: true, delete: 0, isActive: 0, products, deliveryDays, customer_Id: accountId }]
+        const body = [{ ...formValues, isNew: true, delete: 0, isApproved: 0, products, deliveryDays, customer_Id: accountId }]
 
         const options = { item: 'Delivery details', v1Ing: 'Adding', v2: 'added' }
         const url = '/customer/updateDeliveryDetails'
@@ -223,7 +224,9 @@ const ViewAccount = () => {
             <div className='account-view-content'>
                 <div className='app-tabs-container'>
                     <Tabs
+                        onChange={(key) => setActiveTab(key)}
                         tabBarExtraContent={
+                            activeTab === '2' &&
                             <CustomButton
                                 className='extra-btn'
                                 onClick={onAddNewDelivery}

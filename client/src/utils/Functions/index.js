@@ -57,6 +57,13 @@ export const blobToBase64 = (blob) => {
     );
 }
 
+export const getToFixed = (value, digits = 2) => {
+    if (value % 1 !== 0) {
+        return value.toFixed(digits);
+    }
+    return value
+}
+
 export const getBase64 = (img, callback) => {
     const reader = new FileReader();
     reader.addEventListener('load', () => callback(reader.result));
@@ -265,8 +272,8 @@ export const extractDeliveryDetails = (data) => {
     return clone
 }
 
-export const extractGADeliveryDetails = ({ gstNo = '', deliveryLocation, departmentId, isActive = 0, gstProof = '', address, depositAmount, mobileNumber, customerName: contactPerson }) => {
-    return { gstNo, gstProof, address, deliveryLocation, departmentId, isActive, depositAmount, phoneNumber: mobileNumber, contactPerson }
+export const extractGADeliveryDetails = ({ gstNo = '', deliveryLocation, departmentId, isApproved = 0, gstProof = '', address, depositAmount, mobileNumber, customerName: contactPerson }) => {
+    return { gstNo, gstProof, address, deliveryLocation, departmentId, isApproved, depositAmount, phoneNumber: mobileNumber, contactPerson }
 }
 
 export const extractCADetails = (data) => {

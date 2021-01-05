@@ -5,7 +5,7 @@ import PrimaryButton from './PrimaryButton';
 import { FriendsIconGrey, FriendIconGrey } from './SVG_Icons';
 
 const AccountCard = ({ customerDetails, onClick, btnTxt = 'Manage Account' }) => {
-    const isActive = customerDetails.isApproved
+    const isApproved = customerDetails.isApproved
     const names = JSON.parse(customerDetails.contactpersons)
     const contacts = names.length
 
@@ -13,9 +13,9 @@ const AccountCard = ({ customerDetails, onClick, btnTxt = 'Manage Account' }) =>
 
     return (
         <div className='account-card-container'>
-            <div className={isActive ? 'badge active' : 'badge'}>{isActive ? "ACTIVE" : "DRAFT"}</div>
+            <div className={isApproved ? 'badge active' : 'badge'}>{isApproved ? "ACTIVE" : "DRAFT"}</div>
             <div className='header'>
-                <div className={isActive ? 'inner green' : 'inner'}>
+                <div className={isApproved ? 'inner green' : 'inner'}>
                     {contacts > 1 ? <FriendsIconGrey className='friends icon' /> : <FriendIconGrey className='friend icon' />}
                     <div className='address-container'>
                         <span className='title clamp-1'>{customerDetails.organizationName || customerDetails.customerName}</span>
