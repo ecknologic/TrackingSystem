@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
-import { useSessionStorage } from '../utils/hooks/sessionHook';
+import { useSessionStorage } from '../../utils/hooks/sessionHook';
 import { Form, Row, Col, Input, Card, Button, Checkbox, message } from 'antd'
-import image from '../assets/images/login_img.png'
+import image from '../../assets/images/login_img.png'
 import { QuestionCircleFilled } from '@ant-design/icons';
-import { createOrUpdateAPI } from '../utils/apis';
+import { createOrUpdateAPI } from '../../utils/apis';
 import { useHistory } from 'react-router-dom';
-import { http } from '../modules/http';
+import { http } from '../../modules/http';
 import './login.css'
 
 const Login = () => {
@@ -127,13 +127,9 @@ const Login = () => {
                                     <p>© 2020. Bibo water</p>
                                 </Col>
                                 <Col span={12}>
-                                    <ul className="loginmenu list-inline">
-                                        <li>
-                                            <p>Privacy Policy</p>
-                                        </li>
-                                        <li>
-                                            <p>Terms of Use</p>
-                                        </li>
+                                    <ul className="loginmenu">
+                                        <p>Privacy Policy</p>
+                                        <p>Terms of Use</p>
                                     </ul>
                                 </Col>
 

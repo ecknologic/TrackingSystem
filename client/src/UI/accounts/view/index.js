@@ -35,6 +35,7 @@ const ViewAccount = () => {
     const [confirmModal, setConfirmModal] = useState(false)
     const [shake, setShake] = useState(false)
     const [navigateTo, setNavigateTo] = useState('')
+    const [activeTab, setActiveTab] = useState('1')
 
     useEffect(() => {
         getAccount()
@@ -223,7 +224,9 @@ const ViewAccount = () => {
             <div className='account-view-content'>
                 <div className='app-tabs-container'>
                     <Tabs
+                        onChange={(key) => setActiveTab(key)}
                         tabBarExtraContent={
+                            activeTab === '2' &&
                             <CustomButton
                                 className='extra-btn'
                                 onClick={onAddNewDelivery}

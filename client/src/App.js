@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
 import { getRole, MARKETINGADMIN, MOTHERPLANTADMIN, SUPERADMIN, WAREHOUSEADMIN } from './utils/constants';
-import Login from './UI/Login';
+import Login from './UI/auth/Login';
 import Customers from './UI/customers';
 import Materials from './UI/materials';
 import Dispatches from './UI/dispatches';
