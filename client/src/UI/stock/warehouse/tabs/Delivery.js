@@ -308,7 +308,7 @@ const Delivery = ({ date }) => {
 
 const renderStatus = (status) => {
     const color = getStatusColor(status)
-    const text = status === 'Inprogress' ? 'Pending' : 'Delivered'
+    const text = status === 'Completed' ? 'Delivered' : status === 'Postponed' ? status : 'Pending'
     return (
         <div className='status'>
             <span className='app-dot' style={{ background: color }}></span>

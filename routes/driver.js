@@ -14,8 +14,8 @@ router.get('/validateQRCode', (req, res) => {
     let result = db.query(query, (err, results) => {
         if (err) res.send(err);
         else {
-            if (req.query.qrcode == String(results[0].adharNo) + String(results[0].mobileNumber))  res.json({ status: 200, statusMessage: "Success"})
-            else  res.json({ status: 200, statusMessage: "Invalid"})
+            if (req.query.qrcode == String(results[0].adharNo) + String(results[0].mobileNumber)) res.json({ status: 200, statusMessage: "Success" })
+            else res.json({ status: 200, statusMessage: "Invalid" })
         }
     });
 });
@@ -24,8 +24,8 @@ router.get('/getOrderDetails/:date', (req, res) => {
     console.log(date);
 
     // let query = "SELECT c.customerOrderId,c.damagedCount,c.isDelivered,c.dcNo,c.returnEmptyCans,c.deliveryDate,cd.customerName,cd.Address1,cd.Address2,cd.latitude,cd.longitude,cd.mobileNumber FROM customerorderdetails c INNER JOIN customerdetails cd ON c.existingCustomerId = cd.customerId WHERE DATE(`deliveryDate`) ='" + date + "'"
-    let query = "SELECT c.customerOrderId,c.damagedCount,c.isDelivered,c.dcNo,c.returnEmptyCans,c.deliveryDate,c.customerName,c.address,c.latitude,c.longitude,c.phoneNumber FROM customerorderdetails c  WHERE DATE(`deliveryDate`) ='" + date + "'"
-    let result = db.query(query, (err, results) => {
+    let query = "SELECT c.customerOrderId,c.damagedCount,c.isDelivered,c.dcNo,c.returnEmptyCans,c.deliveryDate,c.customerName,c.address,c.latitude,c.longitude,c.phoneNumber FROM customerorderdetails c  WHERE DATE(`deliveryDate`) =? AND c.warehouseId=? AND routeId != 'NULL' AND driverId != 'NULL'"
+    let result = db.query(query, [date, req.query.warehouseId], (err, results) => {
 
         if (err) res.send(err);
 
@@ -92,9 +92,9 @@ router.get("/customerOrderDetails/:orderId", (req, res) => {
                         "Address2": i.Address2,
                         "contactperson": i.contactperson,
                         "orderid": i.customerOrderId,
-                        "dcNo":i.dcNo,
-                        "emptyCans":i.returnEmptyCans,
-                        "damagedCans":i.damagedCount,
+                        "dcNo": i.dcNo,
+                        "emptyCans": i.returnEmptyCans,
+                        "damagedCans": i.damagedCount,
                         "isDelivered": i.isDelivered,
                         "transactionid": i.transactionid,
                         "deliveryDate": i.deliveryDate,
