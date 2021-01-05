@@ -270,7 +270,8 @@ router.get("/approveDelivery/:deliveryDetailsId", (req, res) => {
   customerQueries.approveDeliveryDetails([deliveryDetailsId], (err, data) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
-      res.json('Delivery Details Approved Successfully')
+      saveToCustomerOrderDetails(null, res, deliveryDetailsId)
+      // res.json('Delivery Details Approved Successfully')
     }
   })
 });
@@ -340,7 +341,7 @@ const getAddedDeliveryDetails = (deliveryDetailsId) => {
 // })
 const getDeliveryDetails = (customerId, deliveryDetailsId) => {
   return new Promise((resolve, reject) => {
-    let deliveryDetailsQuery = "SELECT d.*,d.location AS deliveryLocation,r.departmentName,json_object('SUN',cd.SUN,'MON',cd.MON,'TUE',cd.TUE,'WED',cd.WED,'THU',cd.THU,'FRI',cd.FRI,'SAT',cd.SAT) as 'deliveryDays' " +
+    let deliveryDetailsQuery = "SELECT d.*,d.isActive as isApproved,d.location AS deliveryLocation,r.departmentName,json_object('SUN',cd.SUN,'MON',cd.MON,'TUE',cd.TUE,'WED',cd.WED,'THU',cd.THU,'FRI',cd.FRI,'SAT',cd.SAT) as 'deliveryDays' " +
       /*  "concat(CASE WHEN cd.sun=1 THEN 'Sunday,' ELSE '' END,"+
        "CASE WHEN cd.mon=1 THEN 'Monday,' ELSE '' END,"+
        "CASE WHEN cd.tue=1 THEN 'Tuesday,' ELSE '' END,"+

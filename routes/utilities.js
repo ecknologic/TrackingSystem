@@ -63,13 +63,18 @@ cron.schedule('0 0 2 * * *', function () {
   saveToCustomerOrderDetails()
 });
 
-function saveToCustomerOrderDetails(customerId, res) {
+function saveToCustomerOrderDetails(customerId, res, deliveryDetailsId) {
   var day = days[new Date().getDay()];
 
   let customerDeliveryDaysQuery = "SELECT c.deliveryDetailsId,c.customer_Id,c.phoneNumber,c.address,c.contactPerson,c.departmentId,c.routeId,c.driverId,c.latitude,c.longitude FROM DeliveryDetails c INNER JOIN  customerdeliverydays cd ON cd.deliveryDaysId=c.deliverydaysid  WHERE c.deleted=0 AND c.isActive=1 AND " + day + "=1";
+
+  if (deliveryDetailsId) {
+    customerDeliveryDaysQuery = "SELECT c.deliveryDetailsId,c.customer_Id,c.phoneNumber,c.address,c.contactPerson,c.departmentId,c.routeId,c.driverId,c.latitude,c.longitude FROM DeliveryDetails c INNER JOIN  customerdeliverydays cd ON cd.deliveryDaysId=c.deliverydaysid  WHERE c.deleted=0 AND c.isActive=1 AND c.deliveryDetailsId=" + deliveryDetailsId + " AND " + day + "=1";
+  }
   if (customerId) {
     customerDeliveryDaysQuery += ' AND customer_Id=' + customerId
   }
+  console.log('customerDeliveryDaysQuery<<<', customerDeliveryDaysQuery)
   db.query(customerDeliveryDaysQuery, (err, results) => {
     if (err) throw err;
     if (results.length > 0) {
