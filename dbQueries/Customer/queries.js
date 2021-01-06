@@ -6,7 +6,7 @@ customerQueries.getCustomerDetails = (customerId, callback) => {
     executeGetQuery(query, callback)
 }
 customerQueries.getCustomersByCustomerType = (customerType, callback) => {
-    let query = "SELECT c.organizationName,c.isActive,c.isApproved,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.customertype=? and c.isApproved=1 and d.deleted=0  GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.isApproved,c.customerId,c.registeredDate ORDER BY c.registeredDate DESC"
+    let query = "SELECT c.organizationName,c.isActive,c.isApproved,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.approvedDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.customertype=? and c.isApproved=1 and d.deleted=0  GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.isApproved,c.customerId,c.registeredDate,c.approvedDate ORDER BY c.approvedDate DESC"
     executeGetParamsQuery(query, [customerType], callback)
 }
 customerQueries.getCustomerDetailsByStatus = (status, callback) => {
@@ -26,8 +26,8 @@ customerQueries.saveCustomerOrderDetails = (input, callback) => {
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 customerQueries.approveCustomer = (customerId, callback) => {
-    let query = `UPDATE customerdetails set isApproved=1 where customerId=?`
-    executePostOrUpdateQuery(query, [customerId], callback)
+    let query = `UPDATE customerdetails set isApproved=1,approvedDate=? where customerId=?`
+    executePostOrUpdateQuery(query, [new Date(), customerId], callback)
 }
 customerQueries.approveDeliveryDetails = (ids, callback) => {
     let query = 'UPDATE DeliveryDetails set isActive=1 where deliveryDetailsId IN (?)'

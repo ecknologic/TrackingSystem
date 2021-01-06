@@ -27,7 +27,7 @@ const DCForm = (props) => {
                     <div className='input-container stretch'>
                         <InputLabel name='Select Route' error={errors.routeId} mandatory />
                         <SelectInput track options={routeOptions} value={routeId}
-                            error={errors.routeId}
+                            error={errors.routeId} disabled={disabled}
                             onSelect={(value) => onChange(value, 'routeId')}
                         />
                     </div>
@@ -61,7 +61,7 @@ const DCForm = (props) => {
                 <div className='input-container stretch'>
                     <InputLabel name='Driver Name' error={errors.driverId} mandatory />
                     <SelectInput track options={driverOptions} value={driverId}
-                        error={errors.driverId}
+                        error={errors.driverId} disabled={disabled}
                         onSelect={(value) => onChange(value, 'driverId')}
                     />
                 </div>

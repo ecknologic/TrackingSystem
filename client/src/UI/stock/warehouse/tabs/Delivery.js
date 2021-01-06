@@ -205,12 +205,13 @@ const Delivery = ({ date }) => {
     }
 
     const dataSource = useMemo(() => deliveries.map((dc) => {
-        const { dcNo, address, RouteName, driverName, isDelivered } = dc
+        const { dcNo, customerOrderId, address, RouteName, driverName, customerName, isDelivered } = dc
         return {
-            key: dcNo,
+            key: customerOrderId || dcNo,
             dcnumber: dcNo,
             shopAddress: address,
             route: RouteName,
+            name: customerName,
             driverName: driverName,
             orderDetails: renderOrderDetails(dc),
             status: renderStatus(isDelivered),
@@ -278,14 +279,16 @@ const Delivery = ({ date }) => {
                 className={`app-form-modal ${shake ? 'app-shake' : ''}`}
                 visible={DCModal}
                 btnDisabled={btnDisabled}
-                onOk={handleSubmit}
+                onOk={handleDCModalCancel}
                 onCancel={handleDCModalCancel}
                 title={DCFormTitleRef.current}
-                okTxt={DCFormBtnRef.current}
+                okTxt='Close'
+                hideCancel
                 track
             >
                 <DCForm
                     data={formData}
+                    disabled
                     errors={formErrors}
                     driverOptions={driverOptions}
                     routeOptions={routeOptions}
