@@ -1,20 +1,20 @@
 import { Col, message, Row } from 'antd';
-import React, { useCallback, useEffect, useState } from 'react';
-import Spinner from '../../../../components/Spinner';
-import NoContent from '../../../../components/NoContent';
-import AddressCard from '../../../../components/AddressCard';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { http } from '../../../../modules/http';
+import DeliveryForm from '../../add/forms/Delivery';
+import Spinner from '../../../../components/Spinner';
+import { TRACKFORM } from '../../../../utils/constants';
+import NoContent from '../../../../components/NoContent';
+import QuitModal from '../../../../components/CustomModal';
+import CustomModal from '../../../../components/CustomModal';
+import AddressCard from '../../../../components/AddressCard';
+import ConfirmMessage from '../../../../components/ConfirmMessage';
+import { getRouteOptions, WEEKDAYS } from '../../../../assets/fixtures';
 import { getDevDays, getProductsWithIdForDB, getProductsForUI, isEmpty, extractDeliveryDetails, extractProductsFromForm, deepClone, getBase64, getDevDaysForDB, base64String, resetTrackForm, showToast } from '../../../../utils/Functions';
 import { validateDeliveryValues, validateDevDays, validateIDNumbers, validateMobileNumber, validateNames, validateNumber } from '../../../../utils/validations';
-import DeliveryForm from '../../add/forms/Delivery';
-import CustomModal from '../../../../components/CustomModal';
-import { WEEKDAYS } from '../../../../assets/fixtures';
-import { TRACKFORM } from '../../../../utils/constants';
-import QuitModal from '../../../../components/CustomModal';
-import ConfirmMessage from '../../../../components/ConfirmMessage';
 
-const DeliveryDetails = ({ warehouseOptions, recentDelivery }) => {
+const DeliveryDetails = ({ recentDelivery, ...rest }) => {
     const { accountId } = useParams()
     const [delivery, setDelivery] = useState([])
     const [loading, setLoading] = useState(true)
@@ -22,10 +22,14 @@ const DeliveryDetails = ({ warehouseOptions, recentDelivery }) => {
     const [formErrors, setFormErrors] = useState({})
     const [viewModal, setViewModal] = useState(false)
     const [devDays, setDevDays] = useState([])
+    const [routeList, setRouteList] = useState([])
     const [devDaysError, setDevDaysError] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
     const [shake, setShake] = useState(false)
+
+    const routeOptions = useMemo(() => getRouteOptions(routeList), [routeList])
+
 
     useEffect(() => {
         getDeliveryDetails()
@@ -46,6 +50,11 @@ const DeliveryDetails = ({ warehouseOptions, recentDelivery }) => {
             setDelivery(deliveryDetails)
             setLoading(false)
         } catch (error) { }
+    }
+
+    const getRouteList = async (departmentId) => {
+        const data = await http.GET(`/customer/getRoutes/${departmentId}`)
+        setRouteList(data)
     }
 
     const optimisticUpdate = (data) => {
@@ -84,6 +93,12 @@ const DeliveryDetails = ({ warehouseOptions, recentDelivery }) => {
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
+
+        if (key === 'departmentId') {
+            setFormData(data => ({ ...data, routingId: null }))
+            setRouteList([])
+            getRouteList(value)
+        }
 
         // Validations
         if (key === 'gstNo') {
@@ -136,11 +151,12 @@ const DeliveryDetails = ({ warehouseOptions, recentDelivery }) => {
     }
 
     const handleClick = useCallback((data) => {
-        const { location, products, deliveryDays, gstProof } = data
+        const { location, products, deliveryDays, gstProof, departmentId } = data
         const gst = base64String(gstProof?.data)
         const devDays = getDevDays(deliveryDays)
         const productsUI = getProductsForUI(products)
         setDevDays(devDays)
+        getRouteList(departmentId)
         setFormData({ ...data, gstProof: gst, deliveryLocation: location, ...productsUI })
         setViewModal(true)
     }, [])
@@ -261,13 +277,14 @@ const DeliveryDetails = ({ warehouseOptions, recentDelivery }) => {
                     errors={formErrors}
                     devDays={devDays}
                     devDaysError={devDaysError}
-                    warehouseOptions={warehouseOptions}
+                    routeOptions={routeOptions}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     onUpload={handleProofUpload}
                     onRemove={handleProofRemove}
                     onSelect={handleDevDaysSelect}
                     onDeselect={handleDevDaysDeselect}
+                    {...rest}
                 />
             </CustomModal>
             <QuitModal

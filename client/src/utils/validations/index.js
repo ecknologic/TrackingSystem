@@ -59,7 +59,7 @@ export const validateAccountValues = (data, customerType, isInView) => {
     const {
         gstNo, panNo, adharNo, natureOfBussiness, organizationName, address, customerName,
         mobileNumber, invoicetype, creditPeriodInDays = "", EmailId, referredBy, idProofType,
-        registeredDate, gstProof, depositAmount = "", departmentId, deliveryLocation, ...rest
+        registeredDate, gstProof, depositAmount = "", departmentId, routingId, deliveryLocation, ...rest
     } = data
 
     if (customerType === 'Corporate') {
@@ -84,6 +84,7 @@ export const validateAccountValues = (data, customerType, isInView) => {
                 error && (errors.depositAmount = error)
             }
             if (!departmentId) errors.departmentId = text
+            if (!routingId) errors.routingId = text
             if (!deliveryLocation) errors.deliveryLocation = text
             else {
                 const error = validateNames(deliveryLocation)
@@ -152,7 +153,7 @@ export const validateDeliveryValues = (data) => {
     const text = 'Required'
     const text2 = 'Incomplete'
     const {
-        gstNo, gstProof, depositAmount = "", departmentId, phoneNumber, contactPerson, address,
+        gstNo, gstProof, depositAmount = "", departmentId, routingId, phoneNumber, contactPerson, address,
         deliveryLocation, ...rest
     } = data
 
@@ -162,6 +163,7 @@ export const validateDeliveryValues = (data) => {
         error && (errors.depositAmount = error)
     }
     if (!departmentId) errors.departmentId = text
+    if (!routingId) errors.routingId = text
     if (!address) errors.address = text
     if (gstNo && !gstProof) errors.gstProof = text
     if (!gstNo && gstProof) errors.gstNo = text

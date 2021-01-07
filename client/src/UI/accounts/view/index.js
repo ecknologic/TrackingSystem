@@ -1,7 +1,7 @@
 import { Tabs } from 'antd';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
-import { getWarehouseOptions, WEEKDAYS } from '../../../assets/fixtures';
+import { getRouteOptions, getWarehouseOptions, WEEKDAYS } from '../../../assets/fixtures';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import { DocIconWhite } from '../../../components/SVG_Icons';
 import CustomButton from '../../../components/CustomButton';
@@ -29,13 +29,16 @@ const ViewAccount = () => {
     const [devDays, setDevDays] = useState([])
     const [devDaysError, setDevDaysError] = useState({})
     const [warehouseList, setWarehouseList] = useState([])
+    const [routeList, setRouteList] = useState([])
     const [recentDelivery, setRecentDelivery] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
-    const warehouseOptions = useMemo(() => getWarehouseOptions(warehouseList), [warehouseList])
     const [confirmModal, setConfirmModal] = useState(false)
     const [shake, setShake] = useState(false)
     const [navigateTo, setNavigateTo] = useState('')
     const [activeTab, setActiveTab] = useState('1')
+
+    const routeOptions = useMemo(() => getRouteOptions(routeList), [routeList])
+    const warehouseOptions = useMemo(() => getWarehouseOptions(warehouseList), [warehouseList])
 
     useEffect(() => {
         getAccount()
@@ -60,6 +63,11 @@ const ViewAccount = () => {
             const data = await http.GET('/motherPlant/getDepartmentsList?departmentType=warehouse')
             setWarehouseList(data)
         } catch (ex) { }
+    }
+
+    const getRouteList = async (departmentId) => {
+        const data = await http.GET(`/customer/getRoutes/${departmentId}`)
+        setRouteList(data)
     }
 
     const handleDevDaysSelect = (value) => {
@@ -95,6 +103,12 @@ const ViewAccount = () => {
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
+
+        if (key === 'departmentId') {
+            setFormData(data => ({ ...data, routingId: null }))
+            setRouteList([])
+            getRouteList(value)
+        }
 
         // Validations
         if (key === 'gstNo') {
@@ -263,6 +277,7 @@ const ViewAccount = () => {
                     errors={formErrors}
                     devDays={devDays}
                     devDaysError={devDaysError}
+                    routeOptions={routeOptions}
                     warehouseOptions={warehouseOptions}
                     onChange={handleChange}
                     onBlur={handleBlur}

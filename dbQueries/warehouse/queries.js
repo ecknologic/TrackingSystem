@@ -4,8 +4,11 @@ let warehouseQueries = {}
 
 //POST Request Methods
 warehouseQueries.saveWarehouseStockDetails = (input, callback) => {
+    const { isDamaged, departmentId, total20LCans, total1LBoxes, total250MLBoxes, total500MLBoxes, damaged500MLBoxes, damaged250MLBoxes, damaged20LCans, damaged1LBoxes, deliveryDate } = input
     let query = "insert into warehousestockdetails (warehouseId,20LCans,1LBoxes,500MLBoxes,250MLBoxes,damaged20LCans,damaged1LBoxes,damaged500MLBoxes,damaged250MLBoxes,deliveryDate,isConfirmed) values(?,?,?,?,?,?,?,?,?,?,?)";
-    let requestBody = [input.departmentId, input.total20LCans, input.total1LBoxes, input.total500MLBoxes, input.total250MLBoxes, input.damaged20LCans, input.damaged1LBoxes, input.damaged500MLBoxes, input.damaged250MLBoxes, input.deliveryDate, '1']
+    let requestBody = [departmentId, total20LCans, total1LBoxes, total500MLBoxes, total250MLBoxes, damaged20LCans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes, deliveryDate, '1']
+
+    if (isDamaged) requestBody = [departmentId, total20LCans - damaged20LCans, total1LBoxes - damaged1LBoxes, total500MLBoxes - damaged500MLBoxes, total250MLBoxes - damaged250MLBoxes, damaged20LCans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes, deliveryDate, '1']
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 warehouseQueries.insertReturnStockDetails = (input, callback) => {

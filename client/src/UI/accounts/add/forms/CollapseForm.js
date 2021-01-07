@@ -1,21 +1,28 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { http } from '../../../../modules/http';
 import { getBase64 } from '../../../../utils/Functions';
 import InputLabel from '../../../../components/InputLabel';
 import SelectInput from '../../../../components/SelectInput';
 import DraggerInput from '../../../../components/DraggerInput';
-import { dayOptions, WEEKDAYS } from '../../../../assets/fixtures'
+import CustomInput from '../../../../components/CustomInput';
 import InputWithAddon from '../../../../components/InputWithAddon';
 import UploadPreviewer from '../../../../components/UploadPreviewer';
+import { dayOptions, getRouteOptions, WEEKDAYS } from '../../../../assets/fixtures'
 import { validateIDNumbers, validateMobileNumber, validateNames, validateNumber } from '../../../../utils/validations';
-import CustomInput from '../../../../components/CustomInput';
 
 const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => {
 
     const [deliveryValues, setDeliveryValues] = useState({})
     const [errors, setErrors] = useState({})
+    const [routeList, setRouteList] = useState([])
+
+    const routeOptions = useMemo(() => getRouteOptions(routeList), [routeList])
 
     useEffect(() => { // To pre-fill the form
         setDeliveryValues(data)
+
+        const { departmentId } = data
+        getRouteList(departmentId)
     }, [])
 
     useEffect(() => { // To pre-fill errors
@@ -33,9 +40,20 @@ const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => 
         sessionStorage.setItem(`address${uniqueId}`, JSON.stringify(data))
     }
 
+    const getRouteList = async (departmentId) => {
+        const data = await http.GET(`/customer/getRoutes/${departmentId}`)
+        setRouteList(data)
+    }
+
     const onChange = (value, key) => {
         setDeliveryValues(data => ({ ...data, [key]: value }))
         setErrors(errors => ({ ...errors, [key]: '' }))
+
+        if (key === 'departmentId') {
+            setDeliveryValues(data => ({ ...data, routingId: null }))
+            setRouteList([])
+            getRouteList(value)
+        }
 
         // Validations
         if (key === 'gstNo') {
@@ -104,7 +122,7 @@ const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => 
     }
 
     const {
-        gstNo, gstProof, depositAmount, departmentId, devDays, phoneNumber, contactPerson, address,
+        gstNo, gstProof, depositAmount, departmentId, routingId, devDays, phoneNumber, contactPerson, address,
         deliveryLocation, product20L, price20L, product1L, price1L, product500ML, price500ML,
         product250ML, price250ML
     } = deliveryValues
@@ -135,18 +153,19 @@ const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => 
                 </div>
                 <div className='row'>
                     <div className='input-container'>
+                        <InputLabel name='Contact Person' error={errors.contactPerson} mandatory />
+                        <CustomInput value={contactPerson}
+                            placeholder='Add Name' error={errors.contactPerson}
+                            onChange={(value) => onChange(value, 'contactPerson')} />
+                    </div>
+                    <div className='input-container'>
                         <InputLabel name='Delivery Location' error={errors.deliveryLocation} mandatory />
                         <CustomInput
                             value={deliveryLocation} placeholder='Add Location'
                             error={errors.deliveryLocation}
                             onChange={(value) => onChange(value, 'deliveryLocation')} />
                     </div>
-                    <div className='input-container'>
-                        <InputLabel name='Warehouse' error={errors.departmentId} mandatory />
-                        <SelectInput options={warehouseOptions} value={departmentId}
-                            error={errors.departmentId}
-                            onSelect={(value) => onChange(value, 'departmentId')} />
-                    </div>
+
                 </div>
                 <div className='row'>
                     <div className='input-container stretch'>
@@ -159,17 +178,26 @@ const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => 
                 </div>
                 <div className='row'>
                     <div className='input-container'>
+                        <InputLabel name='Warehouse' error={errors.departmentId} mandatory />
+                        <SelectInput options={warehouseOptions} value={departmentId}
+                            error={errors.departmentId}
+                            onSelect={(value) => onChange(value, 'departmentId')} />
+                    </div>
+                    <div className='input-container'>
+                        <InputLabel name='Route' error={errors.routingId} mandatory />
+                        <SelectInput track options={routeOptions}
+                            value={routingId} error={errors.routingId}
+                            onSelect={(value) => onChange(value, 'routingId')}
+                        />
+                    </div>
+                </div>
+                <div className='row'>
+                    <div className='input-container'>
                         <InputLabel name='Phone Number' error={errors.phoneNumber} mandatory />
                         <CustomInput value={phoneNumber} placeholder='Phone Number'
                             className={`${errors.phoneNumber && 'app-input-error'}`} maxLength={10}
                             onBlur={({ target: { value } }) => onBlur(value, 'phoneNumber')}
                             onChange={(value) => onChange(value, 'phoneNumber')} />
-                    </div>
-                    <div className='input-container'>
-                        <InputLabel name='Contact Person' error={errors.contactPerson} mandatory />
-                        <CustomInput value={contactPerson}
-                            placeholder='Add Name' error={errors.contactPerson}
-                            onChange={(value) => onChange(value, 'contactPerson')} />
                     </div>
                 </div>
                 <div className='columns'>

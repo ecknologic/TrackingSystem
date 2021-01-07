@@ -43,7 +43,7 @@ const CorporateAccountForm = (props) => {
         }
     }, [])
 
-    const idUploadDisable = Front && Back
+    const idUploadDisable = idProofType !== 'panNo' ? Front && Back : Front
     const gstUploadDisable = gstProof
 
     return (

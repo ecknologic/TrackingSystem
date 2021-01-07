@@ -13,12 +13,12 @@ const DATEFORMAT = 'DD/MM/YYYY'
 const GeneralAccountForm = (props) => {
 
     const { data, errors, devDays, IDProofs, IDProofErrors, devDaysError, onChange, onBlur, onUpload, onSelect,
-        onDeselect, accountOnly, disabled, onRemove, warehouseOptions } = props
+        onDeselect, accountOnly, disabled, onRemove, routeOptions, warehouseOptions } = props
     const { Front, Back } = IDProofs
 
     const {
         gstNo, address, natureOfBussiness, depositAmount, customerName, mobileNumber, registeredDate,
-        invoicetype, EmailId, idProofType, gstProof, referredBy, departmentId, deliveryLocation,
+        invoicetype, EmailId, idProofType, gstProof, referredBy, routingId, departmentId, deliveryLocation,
         product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML
     } = data
 
@@ -41,7 +41,7 @@ const GeneralAccountForm = (props) => {
         }
     }, [])
 
-    const idUploadDisable = Front && Back
+    const idUploadDisable = idProofType !== 'panNo' ? Front && Back : Front
     const gstUploadDisable = gstProof
 
     return (
@@ -189,6 +189,13 @@ const GeneralAccountForm = (props) => {
                                     <SelectInput track options={warehouseOptions}
                                         value={departmentId} disabled={disabled}
                                         error={errors.departmentId} onSelect={(value) => onChange(value, 'departmentId')}
+                                    />
+                                </div>
+                                <div className='input-container'>
+                                    <InputLabel name='Route' error={errors.routingId} mandatory />
+                                    <SelectInput track options={routeOptions}
+                                        value={routingId} disabled={disabled}
+                                        error={errors.routingId} onSelect={(value) => onChange(value, 'routingId')}
                                     />
                                 </div>
                             </div>

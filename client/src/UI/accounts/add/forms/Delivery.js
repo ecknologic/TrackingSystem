@@ -11,10 +11,10 @@ import { resetTrackForm, trackAccountFormOnce } from '../../../../utils/Function
 const DeliveryForm = (props) => {
 
     const { data, errors, devDays, onBlur, devDaysError, onChange, onSelect, onDeselect,
-        warehouseOptions, sameAddress, onUpload, onRemove } = props
+        warehouseOptions, routeOptions, sameAddress, onUpload, onRemove } = props
 
     const {
-        gstNo, gstProof, depositAmount, departmentId, phoneNumber, contactPerson, address, isApproved,
+        gstNo, gstProof, depositAmount, departmentId, routingId, phoneNumber, contactPerson, address, isApproved,
         deliveryLocation, product20L, price20L, product1L, price1L, product500ML, price500ML,
         product250ML, price250ML
     } = data
@@ -54,19 +54,20 @@ const DeliveryForm = (props) => {
                 </div>
                 <div className='row'>
                     <div className='input-container'>
+                        <InputLabel name='Contact Person' error={errors.contactPerson} mandatory />
+                        <CustomInput value={contactPerson} placeholder='Add Name'
+                            disabled={isApproved} error={errors.contactPerson}
+                            onChange={(value) => onChange(value, 'contactPerson')}
+                        />
+                    </div>
+                    <div className='input-container'>
                         <InputLabel name='Delivery Location' error={errors.deliveryLocation} mandatory />
                         <CustomInput value={deliveryLocation} placeholder='Add Location'
                             disabled={isApproved} error={errors.deliveryLocation}
                             onChange={(value) => onChange(value, 'deliveryLocation')}
                         />
                     </div>
-                    <div className='input-container'>
-                        <InputLabel name='Warehouse' error={errors.departmentId} mandatory />
-                        <SelectInput track options={warehouseOptions} value={departmentId}
-                            disabled={isApproved} error={errors.departmentId}
-                            onSelect={(value) => onChange(value, 'departmentId')}
-                        />
-                    </div>
+
                 </div>
                 <div className='row'>
                     <div className='input-container stretch'>
@@ -79,18 +80,27 @@ const DeliveryForm = (props) => {
                 </div>
                 <div className='row'>
                     <div className='input-container'>
+                        <InputLabel name='Warehouse' error={errors.departmentId} mandatory />
+                        <SelectInput track options={warehouseOptions} value={departmentId}
+                            disabled={isApproved} error={errors.departmentId}
+                            onSelect={(value) => onChange(value, 'departmentId')}
+                        />
+                    </div>
+                    <div className='input-container'>
+                        <InputLabel name='Route' error={errors.routingId} mandatory />
+                        <SelectInput track options={routeOptions}
+                            value={routingId} disabled={isApproved}
+                            error={errors.routingId} onSelect={(value) => onChange(value, 'routingId')}
+                        />
+                    </div>
+                </div>
+                <div className='row'>
+                    <div className='input-container'>
                         <InputLabel name='Phone Number' error={errors.phoneNumber} mandatory />
                         <CustomInput maxLength={10} value={phoneNumber} disabled={isApproved}
                             placeholder='Phone Number' error={errors.phoneNumber}
                             onBlur={(value) => onBlur(value, 'phoneNumber')}
                             onChange={(value) => onChange(value, 'phoneNumber')}
-                        />
-                    </div>
-                    <div className='input-container'>
-                        <InputLabel name='Contact Person' error={errors.contactPerson} mandatory />
-                        <CustomInput value={contactPerson} placeholder='Add Name'
-                            disabled={isApproved} error={errors.contactPerson}
-                            onChange={(value) => onChange(value, 'contactPerson')}
                         />
                     </div>
                 </div>

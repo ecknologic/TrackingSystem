@@ -286,6 +286,15 @@ router.get("/getCustomerDetails/:creatorId", (req, res) => {
   })
 });
 
+router.get("/getRoutes/:departmentId", (req, res) => {
+  customerQueries.getRoutesByDepartmentId(req.params.departmentId, (err, results) => {
+    if (err) res.json({ status: 500, message: err.sqlMessage });
+    else {
+      res.json(results)
+    }
+  })
+});
+
 router.get("/getCustomerDetailsByType/:customertype", (req, res) => {
   customerQueries.getCustomersByCustomerType(req.params.customertype, (err, customersData) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });

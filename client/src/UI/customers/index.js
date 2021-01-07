@@ -1,5 +1,5 @@
 import { Col, Row } from 'antd';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import Header from './header';
 import { http } from '../../modules/http'
@@ -30,8 +30,6 @@ const Customers = () => {
     useEffect(() => {
         setLoading(true)
         getAccounts()
-
-
     }, [activeTab])
 
     const getAccounts = async () => {
@@ -78,10 +76,10 @@ const Customers = () => {
             complexSort(clone, 'organizationName')
         }
         else if (type === 'OLD') {
-            complexDateSort(clone, 'registeredDate')
+            complexDateSort(clone, 'approvedDate')
         }
         else {
-            complexDateSort(clone, 'registeredDate', 'desc')
+            complexDateSort(clone, 'approvedDate', 'desc')
         }
 
         filterON ? setFilteredClone(clone) : setAccountsClone(clone)

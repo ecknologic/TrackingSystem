@@ -16,7 +16,7 @@ import ConfirmMessage from '../../../components/ConfirmMessage';
 import SuccessMessage from '../../../components/SuccessMessage';
 import CollapseHeader from '../../../components/CollapseHeader';
 import { DDownIcon, PlusIcon } from '../../../components/SVG_Icons'
-import { getWarehouseOptions, WEEKDAYS } from '../../../assets/fixtures';
+import { getRouteOptions, getWarehouseOptions, WEEKDAYS } from '../../../assets/fixtures';
 import {
     getBase64, deepClone, getIdProofsForDB, getDevDaysForDB, getAddressesForDB, resetTrackForm,
     getProductsForDB, extractGADeliveryDetails, extractGADetails, isEmpty, showToast, extractCADetails
@@ -54,10 +54,12 @@ const AddAccount = () => {
     const [addressesErrors, setAddressesErrors] = useState({})
     const hasExtraAddress = !!addresses.length
     const [warehouseList, setWarehouseList] = useState([])
+    const [routeList, setRouteList] = useState([])
     const [scrollDep, setScrollDep] = useState(false)
     const [createShake, setCreateShake] = useState(false)
     const [addShake, setAddShake] = useState(false)
     const warehouseOptions = useMemo(() => getWarehouseOptions(warehouseList), [warehouseList])
+    const routeOptions = useMemo(() => getRouteOptions(routeList), [routeList])
 
     const customertype = corporate ? 'Corporate' : 'Individual'
     const confirmMsg = 'Changes you made may not be saved.'
@@ -85,9 +87,20 @@ const AddAccount = () => {
         setWarehouseList(data)
     }
 
+    const getRouteList = async (departmentId) => {
+        const data = await http.GET(`/customer/getRoutes/${departmentId}`)
+        setRouteList(data)
+    }
+
     const handleDeliveryValues = (value, key) => {
         setDeliveryValues(data => ({ ...data, [key]: value }))
         setDeliveryErrors(errors => ({ ...errors, [key]: '' }))
+
+        if (key === 'departmentId') {
+            setDeliveryValues(data => ({ ...data, routingId: null }))
+            setRouteList([])
+            getRouteList(value)
+        }
 
         // Validations
         if (key === 'gstNo') {
@@ -134,6 +147,12 @@ const AddAccount = () => {
         if (value === 'adharNo' || value === 'panNo') {
             setGeneralValues(data => ({ ...data, [value]: '' }))
             setGeneralErrors(errors => ({ ...errors, [value]: '' }))
+        }
+
+        if (key === 'departmentId') {
+            setGeneralValues(data => ({ ...data, routingId: null }))
+            setRouteList([])
+            getRouteList(value)
         }
 
         // Validations
@@ -480,6 +499,7 @@ const AddAccount = () => {
         resetDeliveryValues()
         setDeliveryErrors({})
         setDevDaysError({})
+        setRouteList([])
         resetTrackForm()
     }, [corporate])
 
@@ -530,6 +550,7 @@ const AddAccount = () => {
                                 devDaysError={devDaysError}
                                 IDProofs={IDProofs}
                                 IDProofErrors={IDProofErrors}
+                                routeOptions={routeOptions}
                                 warehouseOptions={warehouseOptions}
                                 onUpload={handleProofUpload}
                                 onRemove={handleProofRemove}
@@ -587,6 +608,7 @@ const AddAccount = () => {
                                 devDaysError={devDaysError}
                                 data={deliveryValues}
                                 errors={deliveryErrors}
+                                routeOptions={routeOptions}
                                 warehouseOptions={warehouseOptions}
                                 sameAddress={sameAddress && !hasExtraAddress}
                                 onRemove={handleProofRemove}
