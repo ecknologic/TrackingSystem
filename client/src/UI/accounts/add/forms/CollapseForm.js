@@ -50,8 +50,7 @@ const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => 
         setErrors(errors => ({ ...errors, [key]: '' }))
 
         if (key === 'departmentId') {
-            setDeliveryValues(data => ({ ...data, routingId: null }))
-            setRouteList([])
+            setDeliveryValues(data => ({ ...data, routeId: null }))
             getRouteList(value)
         }
 
@@ -122,7 +121,7 @@ const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => 
     }
 
     const {
-        gstNo, gstProof, depositAmount, departmentId, routingId, devDays, phoneNumber, contactPerson, address,
+        gstNo, gstProof, depositAmount, departmentId, routeId, devDays, phoneNumber, contactPerson, address,
         deliveryLocation, product20L, price20L, product1L, price1L, product500ML, price500ML,
         product250ML, price250ML
     } = deliveryValues
@@ -184,10 +183,10 @@ const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => 
                             onSelect={(value) => onChange(value, 'departmentId')} />
                     </div>
                     <div className='input-container'>
-                        <InputLabel name='Route' error={errors.routingId} mandatory />
+                        <InputLabel name='Route' error={errors.routeId} mandatory />
                         <SelectInput track options={routeOptions}
-                            value={routingId} error={errors.routingId}
-                            onSelect={(value) => onChange(value, 'routingId')}
+                            value={routeId} error={errors.routeId}
+                            onSelect={(value) => onChange(value, 'routeId')}
                         />
                     </div>
                 </div>

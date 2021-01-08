@@ -15,8 +15,6 @@ const AccountOverview = ({ data, warehouseOptions, onUpdate }) => {
     const { gstProof, idProof_backside, idProof_frontside, isApproved, registeredDate,
         customertype, Address1, loading } = data
 
-    console.log('isApproved>>>', isApproved)
-
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [accountValues, setAccountValues] = useState({})
     const [accountErrors, setAccountErrors] = useState({})

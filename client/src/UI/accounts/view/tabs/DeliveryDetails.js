@@ -23,6 +23,7 @@ const DeliveryDetails = ({ recentDelivery, ...rest }) => {
     const [viewModal, setViewModal] = useState(false)
     const [devDays, setDevDays] = useState([])
     const [routeList, setRouteList] = useState([])
+    const [currentDepId, setCurrentDepId] = useState('')
     const [devDaysError, setDevDaysError] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
@@ -55,6 +56,7 @@ const DeliveryDetails = ({ recentDelivery, ...rest }) => {
     const getRouteList = async (departmentId) => {
         const data = await http.GET(`/customer/getRoutes/${departmentId}`)
         setRouteList(data)
+        setCurrentDepId(departmentId)
     }
 
     const optimisticUpdate = (data) => {
@@ -95,9 +97,9 @@ const DeliveryDetails = ({ recentDelivery, ...rest }) => {
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
         if (key === 'departmentId') {
-            setFormData(data => ({ ...data, routingId: null }))
-            setRouteList([])
-            getRouteList(value)
+            setFormData(data => ({ ...data, routeId: null }))
+            handleGetNewRouteList(value)
+
         }
 
         // Validations
@@ -146,6 +148,12 @@ const DeliveryDetails = ({ recentDelivery, ...rest }) => {
         })
     }
 
+    const handleGetNewRouteList = (depId) => {
+        if (currentDepId !== depId) {
+            getRouteList(depId)
+        }
+    }
+
     const handleProofRemove = (name) => {
         setFormData(data => ({ ...data, [name]: '' }))
     }
@@ -156,10 +164,10 @@ const DeliveryDetails = ({ recentDelivery, ...rest }) => {
         const devDays = getDevDays(deliveryDays)
         const productsUI = getProductsForUI(products)
         setDevDays(devDays)
-        getRouteList(departmentId)
+        handleGetNewRouteList(departmentId)
         setFormData({ ...data, gstProof: gst, deliveryLocation: location, ...productsUI })
         setViewModal(true)
-    }, [])
+    }, [currentDepId])
 
     const handleAddressDelete = async (id) => {
         const options = { item: 'Delivery details', v1Ing: 'Deleting', v2: 'deleted' }
@@ -169,7 +177,6 @@ const DeliveryDetails = ({ recentDelivery, ...rest }) => {
             showToast({ ...options, action: 'loading' })
             await http.DELETE(url)
             const filtered = delivery.filter(item => item.deliveryDetailsId !== id)
-            console.log('filtered>>>', delivery, filtered)
             setDelivery(filtered)
             showToast(options)
         } catch (error) {

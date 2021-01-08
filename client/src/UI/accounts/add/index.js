@@ -58,6 +58,7 @@ const AddAccount = () => {
     const [scrollDep, setScrollDep] = useState(false)
     const [createShake, setCreateShake] = useState(false)
     const [addShake, setAddShake] = useState(false)
+    const [currentDepId, setCurrentDepId] = useState('')
     const warehouseOptions = useMemo(() => getWarehouseOptions(warehouseList), [warehouseList])
     const routeOptions = useMemo(() => getRouteOptions(routeList), [routeList])
 
@@ -90,6 +91,7 @@ const AddAccount = () => {
     const getRouteList = async (departmentId) => {
         const data = await http.GET(`/customer/getRoutes/${departmentId}`)
         setRouteList(data)
+        setCurrentDepId(departmentId)
     }
 
     const handleDeliveryValues = (value, key) => {
@@ -97,9 +99,8 @@ const AddAccount = () => {
         setDeliveryErrors(errors => ({ ...errors, [key]: '' }))
 
         if (key === 'departmentId') {
-            setDeliveryValues(data => ({ ...data, routingId: null }))
-            setRouteList([])
-            getRouteList(value)
+            setDeliveryValues(data => ({ ...data, routeId: null }))
+            handleGetNewRouteList(value)
         }
 
         // Validations
@@ -150,9 +151,8 @@ const AddAccount = () => {
         }
 
         if (key === 'departmentId') {
-            setGeneralValues(data => ({ ...data, routingId: null }))
-            setRouteList([])
-            getRouteList(value)
+            setGeneralValues(data => ({ ...data, routeId: null }))
+            handleGetNewRouteList(value)
         }
 
         // Validations
@@ -308,6 +308,12 @@ const AddAccount = () => {
         }
         else if (name === 'Front') setIDProofs(data => ({ ...data, Front: '' }))
         else if (name === 'Back') setIDProofs(data => ({ ...data, Back: '' }))
+    }
+
+    const handleGetNewRouteList = (depId) => {
+        if (currentDepId !== depId) {
+            getRouteList(depId)
+        }
     }
 
     const handleAddDelivery = () => {
@@ -499,7 +505,6 @@ const AddAccount = () => {
         resetDeliveryValues()
         setDeliveryErrors({})
         setDevDaysError({})
-        setRouteList([])
         resetTrackForm()
     }, [corporate])
 

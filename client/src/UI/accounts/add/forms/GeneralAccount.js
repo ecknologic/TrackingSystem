@@ -18,7 +18,7 @@ const GeneralAccountForm = (props) => {
 
     const {
         gstNo, address, natureOfBussiness, depositAmount, customerName, mobileNumber, registeredDate,
-        invoicetype, EmailId, idProofType, gstProof, referredBy, routingId, departmentId, deliveryLocation,
+        invoicetype, EmailId, idProofType, gstProof, referredBy, routeId, departmentId, deliveryLocation,
         product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML
     } = data
 
@@ -192,10 +192,10 @@ const GeneralAccountForm = (props) => {
                                     />
                                 </div>
                                 <div className='input-container'>
-                                    <InputLabel name='Route' error={errors.routingId} mandatory />
+                                    <InputLabel name='Route' error={errors.routeId} mandatory />
                                     <SelectInput track options={routeOptions}
-                                        value={routingId} disabled={disabled}
-                                        error={errors.routingId} onSelect={(value) => onChange(value, 'routingId')}
+                                        value={routeId} disabled={disabled}
+                                        error={errors.routeId} onSelect={(value) => onChange(value, 'routeId')}
                                     />
                                 </div>
                             </div>

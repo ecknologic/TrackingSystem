@@ -14,7 +14,7 @@ const DeliveryForm = (props) => {
         warehouseOptions, routeOptions, sameAddress, onUpload, onRemove } = props
 
     const {
-        gstNo, gstProof, depositAmount, departmentId, routingId, phoneNumber, contactPerson, address, isApproved,
+        gstNo, gstProof, depositAmount, departmentId, routeId, phoneNumber, contactPerson, address, isApproved,
         deliveryLocation, product20L, price20L, product1L, price1L, product500ML, price500ML,
         product250ML, price250ML
     } = data
@@ -87,10 +87,10 @@ const DeliveryForm = (props) => {
                         />
                     </div>
                     <div className='input-container'>
-                        <InputLabel name='Route' error={errors.routingId} mandatory />
+                        <InputLabel name='Route' error={errors.routeId} mandatory />
                         <SelectInput track options={routeOptions}
-                            value={routingId} disabled={isApproved}
-                            error={errors.routingId} onSelect={(value) => onChange(value, 'routingId')}
+                            value={routeId} disabled={isApproved}
+                            error={errors.routeId} onSelect={(value) => onChange(value, 'routeId')}
                         />
                     </div>
                 </div>

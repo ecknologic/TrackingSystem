@@ -33,6 +33,7 @@ const ViewAccount = () => {
     const [recentDelivery, setRecentDelivery] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
+    const [currentDepId, setCurrentDepId] = useState('')
     const [shake, setShake] = useState(false)
     const [navigateTo, setNavigateTo] = useState('')
     const [activeTab, setActiveTab] = useState('1')
@@ -68,6 +69,7 @@ const ViewAccount = () => {
     const getRouteList = async (departmentId) => {
         const data = await http.GET(`/customer/getRoutes/${departmentId}`)
         setRouteList(data)
+        setCurrentDepId(departmentId)
     }
 
     const handleDevDaysSelect = (value) => {
@@ -105,9 +107,8 @@ const ViewAccount = () => {
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
         if (key === 'departmentId') {
-            setFormData(data => ({ ...data, routingId: null }))
-            setRouteList([])
-            getRouteList(value)
+            setFormData(data => ({ ...data, routeId: null }))
+            handleGetNewRouteList(value)
         }
 
         // Validations
@@ -146,6 +147,12 @@ const ViewAccount = () => {
         else if (key === 'phoneNumber') {
             const error = validateMobileNumber(value, true)
             setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+    }
+
+    const handleGetNewRouteList = (depId) => {
+        if (currentDepId !== depId) {
+            getRouteList(depId)
         }
     }
 
