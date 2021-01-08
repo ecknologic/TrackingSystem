@@ -81,14 +81,18 @@ const StockDetails = ({ date }) => {
 
         if (key === 'isDamaged') {
             if (!value) {
+                let damaged20LCans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes, damagedDesc;
+                setFormData(data => ({
+                    ...data, damaged20LCans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes, damagedDesc
+                }))
                 setFormErrors(errors => ({ ...errors, damagedDesc: '', damaged: '' }))
             }
         }
 
         // Validations
-        if (key.includes('Box') || key.includes('can')) {
+        if (key.includes('Box') || key.includes('Can')) {
             const error = validateNumber(value)
-            setFormErrors(errors => ({ ...errors, stockDetails: error }))
+            setFormErrors(errors => ({ ...errors, damaged: error }))
         }
     }
 

@@ -536,6 +536,32 @@ export const validateProductsInStock = (inStock, products, key) => {
     return errors
 }
 
+export const validateDamagedWithArrived = (data, key) => {
+    let errors = {};
+    let textArray = []
+    const { total20LCans = 1, total1LBoxes = 1, total250MLBoxes = 1, total500MLBoxes = 1,
+        damaged20LCans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes } = data
+
+    if (Number(damaged20LCans) > total20LCans) {
+        textArray.push('20 Ltrs')
+    }
+    if (Number(damaged1LBoxes) > total1LBoxes) {
+        textArray.push('1 Ltrs')
+    }
+    if (Number(damaged500MLBoxes) > total500MLBoxes) {
+        textArray.push('500 Ml')
+    }
+    if (Number(damaged250MLBoxes) > total250MLBoxes) {
+        textArray.push('250 Ml')
+    }
+
+    if (textArray.length) {
+        errors[key] = `${textArray.join(',')} qty exceeds arrived stock`
+    }
+
+    return errors
+}
+
 export const validateDCValues = (data) => {
     let errors = {};
     const text = 'Required'
@@ -582,6 +608,10 @@ export const validateASValues = (data) => {
     if (isDamaged) {
         if (!damagedDesc) errors.damagedDesc = text
         productErrors = validateDamagedProducts(rest)
+
+        if (isEmpty(productErrors)) {
+            productErrors = validateDamagedWithArrived(rest, 'damaged')
+        }
     }
 
     return { ...errors, ...productErrors }
