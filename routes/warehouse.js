@@ -55,7 +55,24 @@ router.get('/getDispatchDetailsByDC/:DCNO', (req, res) => {
   });
 });
 
-
+router.get('/getWarehouseList', (req, res) => {
+  warehouseQueries.getWarehouseList((err, results) => {
+    if (err) res.status(500).json(dbError(err));
+    else res.json(results);
+  });
+});
+router.get('/getWarehouseById/:warehouseId', (req, res) => {
+  warehouseQueries.getWarehouseById(warehouseId, (err, results) => {
+    if (err) res.status(500).json(dbError(err));
+    else res.json(results);
+  });
+});
+router.post('/createWarehouse', (req, res) => {
+  warehouseQueries.createWarehouse(req.body, (err, results) => {
+    if (err) res.status(500).json(dbError(err));
+    else res.json(results);
+  });
+});
 
 router.post('/createDC', (req, res) => {
   let dcCreateQuery = "insert into customerorderdetails (customerName,phoneNumber,address,routeId,driverId,20LCans,1LBoxes,500MLBoxes,250MLBoxes,warehouseId) values(?,?,?,?,?,?,?,?,?,?)";

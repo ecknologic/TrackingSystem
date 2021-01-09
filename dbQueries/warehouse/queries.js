@@ -1,6 +1,14 @@
 const { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery } = require('../../utils/functions.js');
 let warehouseQueries = {}
 
+warehouseQueries.getWarehouseList = async (callback) => {
+    let query = `select d.departmentName,d.address,d.state,d.city,d.isActive,u.userName from departmentmaster d INNER JOIN usermaster u on d.adminId=u.userId WHERE departmentType='Warehouse' ORDER BY createdDateTime DESC`;
+    return executeGetQuery(query, callback)
+}
+warehouseQueries.getWarehouseById = async (warehouseId, callback) => {
+    let query = `select d.*,u.userName,u.mobileNumber,u.emailid from departmentmaster d INNER JOIN usermaster u on d.adminId=u.userId WHERE departmentId=${warehouseId}`;
+    return executeGetQuery(query, callback)
+}
 
 //POST Request Methods
 warehouseQueries.saveWarehouseStockDetails = (input, callback) => {
@@ -15,6 +23,13 @@ warehouseQueries.insertReturnStockDetails = (input, callback) => {
     let query = "insert into returnstockdetails (damaged20LCans,damaged1LBoxes,damaged500MLBoxes,damaged250MLBoxes,damagedDesc,departmentId,motherplantId) values(?,?,?,?,?,?,?)";
     let requestBody = [input.damaged20LCans, input.damaged1LBoxes, input.damaged500MLBoxes, input.damaged250MLBoxes, input.damagedDesc, input.departmentId, input.motherplantId]
     executePostOrUpdateQuery(query, requestBody, callback)
+}
+warehouseQueries.createWarehouse = async (input, callback) => {
+    const { address, departmentName, city, state, pinCode, adminId } = input
+    let query = "insert into departmentmaster (departmentName,departmentType,gstNo,gstProof,address,city,state,pinCode,adminId) values(?,?,?,?,?,?,?,?,?)";
+    let gstProof = input.gstProof && Buffer.from(input.gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+    let requestBody = [departmentName, 'Warehouse', input.gstNo, gstProof, address, city, state, pinCode, adminId]
+    return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
 

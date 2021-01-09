@@ -2,6 +2,14 @@ const { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery } = req
 const dayjs = require('dayjs');
 
 var motherPlantDbQueries = {}
+motherPlantDbQueries.getMotherPlantsList = async (callback) => {
+    let query = `select d.departmentName,d.address,d.state,d.city,d.isActive,u.userName from departmentmaster d INNER JOIN usermaster u on d.adminId=u.userId WHERE departmentType='MotherPlant' ORDER BY createdDateTime DESC`;
+    return executeGetQuery(query, callback)
+}
+motherPlantDbQueries.getMotherPlantById = async (motherPlantId, callback) => {
+    let query = `select d.*,u.userName,u.mobileNumber,u.emailid from departmentmaster d INNER JOIN usermaster u on d.adminId=u.userId WHERE departmentId=${motherPlantId}`;
+    return executeGetQuery(query, callback)
+}
 motherPlantDbQueries.getProductionDetails = async (departmentId, callback) => {
     let query = `select * from production WHERE departmentId=${departmentId} ORDER BY productionDate DESC`;
     return executeGetQuery(query, callback)
@@ -84,7 +92,7 @@ motherPlantDbQueries.getDepartmentsList = async (deptType, callback) => {
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getQCTestedBatches = async (departmentId, callback) => {
-    let query = `select q.phLevel,q.TDS,q.ozoneLevel,q.managerName,q.testResult,q.testedDate,p.batchId,p.phLevel as ph,p.TDS as tds,p.ozoneLevel as oz,p.requestedDate from qualitycheck q INNER JOIN productionQC p on q.productionQcId=p.productionQcId  where q.departmentId=${departmentId} ORDER BY q.testedDate DESC`
+    let query = `select q.phLevel,q.TDS,q.ozoneLevel,q.managerName,q.testResult,q.testedDate,p.batchId,p.phLevel as ph,p.TDS as tds,p.ozoneLevel as oz,p.requestedDate from qualitycheck q INNER JOIN productionQC p on q.productionQcId=p.productionQcId  where q.departmentId=${departmentId} AND q.qcLevel='1' ORDER BY q.testedDate DESC`
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getProdQCTestedBatches = async (departmentId, callback) => {
@@ -118,6 +126,13 @@ motherPlantDbQueries.createQC = async (input, callback) => {
     let query = "insert into qualitycontrol (reportdate,batchId,testType,reportImage,description) values(?,?,?,?,?)";
     let reportImage = Buffer.from(input.reportImage.replace(/^data:image\/\w+;base64,/, ""), 'base64')
     let requestBody = [input.reportdate, input.batchId, input.testType, reportImage, input.description]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+motherPlantDbQueries.createMotherPlant = async (input, callback) => {
+    const { address, departmentName, city, state, pinCode, adminId } = input
+    let query = "insert into departmentmaster (departmentName,departmentType,gstNo,gstProof,address,city,state,pinCode,adminId) values(?,?,?,?,?,?,?,?,?)";
+    let gstProof = input.gstProof && Buffer.from(input.gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+    let requestBody = [departmentName, 'MotherPlant', input.gstNo, gstProof, address, city, state, pinCode, adminId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.createProductionQC = async (input, callback) => {

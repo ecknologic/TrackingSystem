@@ -72,7 +72,7 @@ router.post('/updateDeliveryStatus/:orderId', (req, res) => {
 router.get("/customerOrderDetails/:orderId", (req, res) => {
     var orderId = req.params.orderId;
 
-    let customerOrderDetailsQuery = "SELECT cd.*,c.customerOrderId,c.*,GROUP_CONCAT(cp.productName,':',cp.noOfJarsTobePlaced SEPARATOR ';') AS customerproducts " +
+    let customerOrderDetailsQuery = "SELECT cd.customerId,cd.customerName as ownerName,c.customerOrderId,c.*,GROUP_CONCAT(cp.productName,':',cp.noOfJarsTobePlaced SEPARATOR ';') AS customerproducts " +
         " FROM customerdetails  cd INNER JOIN customerproductdetails cp ON cd.customerId=cp.customerId INNER JOIN" +
         "  customerorderdetails c ON c.existingCustomerId=cp.customerId WHERE c.customerOrderId=?";
 
@@ -84,13 +84,13 @@ router.get("/customerOrderDetails/:orderId", (req, res) => {
                 for (let i of results) {
                     let obj = {
                         "customerId": i.customerId,
-                        "customerName": i.customerName,
-                        "mobileNumber": i.mobileNumber,
-                        "AlternatePhNo": i.AlternatePhNo,
+                        "customerName": i.ownerName,
+                        "mobileNumber": i.phoneNumber,
+                        // "AlternatePhNo": i.AlternatePhNo,
                         "EmailId": i.EmailId,
-                        "Address1": i.Address1,
-                        "Address2": i.Address2,
-                        "contactperson": i.contactperson,
+                        // "Address1": i.Address1,
+                        // "Address2": i.Address2,
+                        "contactperson": i.customerName,
                         "orderid": i.customerOrderId,
                         "dcNo": i.dcNo,
                         "emptyCans": i.returnEmptyCans,
@@ -98,7 +98,12 @@ router.get("/customerOrderDetails/:orderId", (req, res) => {
                         "isDelivered": i.isDelivered,
                         "transactionid": i.transactionid,
                         "deliveryDate": i.deliveryDate,
-                        "customerproducts": i.customerproducts
+                        "customerproducts": i.customerproducts,
+                        address: i.address,
+                        deliveryLocation: i.deliveryLocation,
+                        latitude: i.latitude || null,
+                        longitude: i.longitude || null,
+                        customerproducts: `20L:${i["20LCans"]};1L:${i["1LBoxes"]};500ML:${i["500MLBoxes"]};250ML:${i["250MLBoxes"]}`
                     }
                     arr.push(obj)
                 }

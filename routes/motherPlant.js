@@ -58,6 +58,25 @@ router.get('/getQCTestedBatches', (req, res) => {
         else res.json(results);
     });
 });
+
+router.get('/getMotherPlantsList', (req, res) => {
+    motherPlantDbQueries.getMotherPlantsList((err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.json(results);
+    });
+});
+router.get('/getMotherPlantById/:motherplantId', (req, res) => {
+    motherPlantDbQueries.getMotherPlantById(motherplantId, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.json(results);
+    });
+});
+router.post('/createMotherPlant', (req, res) => {
+    motherPlantDbQueries.createMotherPlant(req.body, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.json(results);
+    });
+});
 router.get('/getProdQCTestedBatches', (req, res) => {
     motherPlantDbQueries.getProdQCTestedBatches(departmentId, (err, results) => {
         if (err) res.status(500).json(dbError(err));
