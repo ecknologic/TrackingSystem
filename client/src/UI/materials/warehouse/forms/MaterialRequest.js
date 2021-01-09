@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
-import InputLabel from '../../../components/InputLabel';
-import CustomInput from '../../../components/CustomInput';
-import SelectInput from '../../../components/SelectInput';
-import CustomTextArea from '../../../components/CustomTextArea';
-import { removeFormTracker, resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
+import InputLabel from '../../../../components/InputLabel';
+import CustomInput from '../../../../components/CustomInput';
+import SelectInput from '../../../../components/SelectInput';
+import CustomTextArea from '../../../../components/CustomTextArea';
+import { removeFormTracker, resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 
 const MaterialRequestForm = (props) => {
 

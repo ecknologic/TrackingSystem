@@ -1,7 +1,7 @@
 import React from 'react';
 import { Divider } from 'antd';
-import InputLabel from '../../../components/InputLabel';
-import InputValue from '../../../components/InputValue';
+import InputLabel from '../../../../components/InputLabel';
+import InputValue from '../../../../components/InputValue';
 import dayjs from 'dayjs';
 const DATEFORMAT = 'DD/MM/YYYY'
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'

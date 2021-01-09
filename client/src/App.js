@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-d
 import { getRole, MARKETINGADMIN, MOTHERPLANTADMIN, SUPERADMIN, WAREHOUSEADMIN } from './utils/constants';
 import Login from './UI/auth/Login';
 import Customers from './UI/customers';
-import Materials from './UI/materials';
 import Dispatches from './UI/dispatches';
 import PageLayout from './UI/page-layout';
 import AddAccount from './UI/accounts/add';
@@ -15,6 +14,8 @@ import { resetTrackForm } from './utils/Functions';
 import ApproveAccount from './UI/accounts/approve';
 import MotherplantStock from './UI/stock/motherplant';
 import AccountsDashboard from './UI/accounts/dashboard';
+import WarehouseMaterials from './UI/materials/warehouse';
+import MotherplantMaterials from './UI/materials/motherplant';
 
 const App = () => {
 
@@ -27,44 +28,50 @@ const App = () => {
          <Route exact path='/' component={Login} />
          <PageLayout>
             <Switch>
-               <Route path='/quality-control' render={() => requireAuth(<QualityControl />)} />
-               <Route path='/stock-details' render={() => requireAuth(<MotherplantStock />)} />
-               <Route path='/dispatches' render={() => requireAuth(<Dispatches />)} />
-               <Route path='/materials' render={() => requireAuth(<Materials />)} />
-               <Route path='/quality-control' render={() => requireAuth(<NoContent content='Design is in progress' />)} />
-               <Route path='/manage-stock' render={() => requireAuth(<WarehouseStock />)} />
-               <Route path='/manage-accounts/add-account' render={() => requireAuth(<AddAccount />)} />
-               <Route path='/manage-accounts/:accountId' render={() => requireAuth(<ViewAccount />)} />
-               <Route path='/manage-accounts' render={() => requireAuth(<AccountsDashboard />)} />
-               <Route path='/add-customer' render={() => requireAuth(<AddAccount />)} />
-               <Route path='/customers/add-account' render={() => requireAuth(<AddAccount />)} />
-               <Route path='/customers/approval/:accountId' render={() => requireAuth(<ApproveAccount />)} />
-               <Route path='/customers/manage/:accountId' render={() => requireAuth(<ViewAccount />)} />
-               <Route path='/customers' render={() => requireAuth(<Customers />)} />
-               <Route path='/customerDashboard' render={() => requireAuth(<NoContent content='Design is in progress' />)} />
-               <Route path='/manage-routes' render={() => requireAuth(<NoContent content='Design is in progress' />)} />
-               <Route path='/reports' render={() => requireAuth(<NoContent content='Design is in progress' />)} />
-               <Route path='/dashboard' render={() => renderByRole()} />
-               <Route path='/*' render={() => redirectAuth()} />
+               <Route path='/quality-control' render={requireAuth(<QualityControl />)} />
+               <Route path='/stock-details' render={requireAuth(<MotherplantStock />)} />
+               <Route path='/dispatches' render={requireAuth(<Dispatches />)} />
+               {/* <Route path='/materials' render={requireAuth(<MotherplantMaterials />)} /> */}
+               <Route path='/materials' render={requireAuth(<WarehouseMaterials />)} />
+               <Route path='/quality-control' render={requireAuth(<NoContent content='Design is in progress' />)} />
+               <Route path='/manage-stock' render={requireAuth(<WarehouseStock />)} />
+               <Route path='/manage-accounts/add-account' render={requireAuth(<AddAccount />)} />
+               <Route path='/manage-accounts/:accountId' render={requireAuth(<ViewAccount />)} />
+               <Route path='/manage-accounts' render={requireAuth(<AccountsDashboard />)} />
+               <Route path='/add-customer' render={requireAuth(<AddAccount />)} />
+               <Route path='/customers/add-account' render={requireAuth(<AddAccount />)} />
+               <Route path='/customers/approval/:accountId' render={requireAuth(<ApproveAccount />)} />
+               <Route path='/customers/manage/:accountId' render={requireAuth(<ViewAccount />)} />
+               <Route path='/customers' render={requireAuth(<Customers />)} />
+               <Route path='/customerDashboard' render={requireAuth(<NoContent content='Design is in progress' />)} />
+               <Route path='/manage-routes' render={requireAuth(<NoContent content='Design is in progress' />)} />
+               <Route path='/reports' render={requireAuth(<NoContent content='Design is in progress' />)} />
+               <Route path='/dashboard' render={renderByRole()} />
+               <Route path='/*' render={redirectAuth()} />
             </Switch>
          </PageLayout>
       </Router>
    );
 }
 
-const requireAuth = (Component) => {
-   const authenticated = JSON.parse(sessionStorage.getItem('isLogged'))
-   if (authenticated) return Component
-   else return <Redirect to="/" />
-};
+const requireAuth = (Component) => (props) => {
+   const isLogged = JSON.parse(sessionStorage.getItem('isLogged'))
+   if (!isLogged) return <Redirect to="/" />
+   else {
+      const { match: { path } } = props
+      // console.log('path>>>', path)
+      const role = getRole()
+      return Component
+   }
+}
 
-const redirectAuth = () => {
+const redirectAuth = (Component) => (props) => {
    const authenticated = JSON.parse(sessionStorage.getItem('isLogged'))
    if (authenticated) return <Redirect to="/dashboard" />
    else return <Redirect to="/" />
 }
 
-const renderByRole = () => {
+const renderByRole = (Component) => (props) => {
    const authenticated = JSON.parse(sessionStorage.getItem('isLogged'))
    if (authenticated) {
       const role = getRole()

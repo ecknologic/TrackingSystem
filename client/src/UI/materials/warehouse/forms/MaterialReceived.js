@@ -1,12 +1,12 @@
 import dayjs from 'dayjs';
 import React, { useEffect } from 'react';
-import InputLabel from '../../../components/InputLabel';
-import InputValue from '../../../components/InputValue';
-import CustomInput from '../../../components/CustomInput';
-import DraggerInput from '../../../components/DraggerInput';
-import UploadPreviewer from '../../../components/UploadPreviewer';
-import CustomDateInput from '../../../components/CustomDateInput';
-import { removeFormTracker, resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
+import InputLabel from '../../../../components/InputLabel';
+import InputValue from '../../../../components/InputValue';
+import CustomInput from '../../../../components/CustomInput';
+import DraggerInput from '../../../../components/DraggerInput';
+import UploadPreviewer from '../../../../components/UploadPreviewer';
+import CustomDateInput from '../../../../components/CustomDateInput';
+import { removeFormTracker, resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 const DATEFORMAT = 'DD-MM-YYYY'
 
 const MaterialReceivedForm = (props) => {

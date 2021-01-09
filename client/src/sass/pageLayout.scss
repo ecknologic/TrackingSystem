@@ -47,10 +47,26 @@
 
         .app-sider {
             z-index: 1;
+            overflow-y: auto;
+            background-color: #FFF;
+            box-shadow: 0 2px 4px 0 rgba(0,0,0,0.05);
             
+            &::-webkit-scrollbar {
+                width: .3em;
+                height: .3em;
+            }
+        
+            &::-webkit-scrollbar-thumb {
+                background-color:#C8C8C9;
+                border-radius: 1em;
+            }
+        
+            &::-webkit-scrollbar-corner {
+                display: none;
+            }
+
             #app-side-menu {
                 height: 100%;
-                box-shadow: 0 2px 4px 0 rgba(0,0,0,0.05);
                 border: none;
 
                 .ant-menu-item {
@@ -59,7 +75,7 @@
                     align-items: center;
                     width: 100%;
                     margin: 0;
-                    margin-top: 1.5em;
+                    margin-top: 1.2em;
                     padding: 0 1em !important;
                     font-family: "PoppinsMedium500";
                     background-color: #fff;

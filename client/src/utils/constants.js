@@ -28,3 +28,13 @@ export const getWarehoseId = () => {
     if (user) return user.wareHouse
     return 1
 }
+
+export const getRoutesByRole = (role) => {
+    switch (role) {
+        case MARKETINGADMIN:
+            return ['']
+
+        default:
+            break;
+    }
+}
