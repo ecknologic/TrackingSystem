@@ -4,14 +4,21 @@ import SortBy from '../../components/SortByDropdown';
 import SearchInput from '../../components/SearchInput';
 import ViewsComponent from '../../components/ViewsComponent';
 import AccountsFilter from '../../components/AccountsFilter';
+import { PlusIconGrey } from '../../components/SVG_Icons';
+import CustomButton from '../../components/CustomButton';
 
-const Header = ({ onChange, onSearch, onSort, onFilter }) => {
+const Header = ({ onChange, onSearch, onSort, onFilter, onClick }) => {
     const [view, setView] = useState('card')
 
     return (
         <div className='customers-header'>
             <div className='heading-container'>
                 <span className='title'>Customers</span>
+                <CustomButton text='Create Account'
+                    onClick={onClick}
+                    className='app-create-acc-btn'
+                    icon={<PlusIconGrey />}
+                />
             </div>
             <div className='app-tabs-container app-hidden-panes'>
                 <Tabs

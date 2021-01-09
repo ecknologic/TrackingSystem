@@ -1,4 +1,4 @@
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { Divider, Checkbox, Collapse, message } from 'antd';
 import React, { Fragment, useEffect, useMemo, useState, useCallback } from 'react';
 import Header from './header';
@@ -19,7 +19,7 @@ import { DDownIcon, PlusIcon } from '../../../components/SVG_Icons'
 import { getRouteOptions, getWarehouseOptions, WEEKDAYS } from '../../../assets/fixtures';
 import {
     getBase64, deepClone, getIdProofsForDB, getDevDaysForDB, getAddressesForDB, resetTrackForm,
-    getProductsForDB, extractGADeliveryDetails, extractGADetails, isEmpty, showToast, extractCADetails
+    getProductsForDB, extractGADeliveryDetails, extractGADetails, isEmpty, showToast, extractCADetails, getMainPathname
 } from '../../../utils/Functions';
 import { TRACKFORM, getUserId, getUsername, getWarehoseId, TODAYDATE } from '../../../utils/constants';
 import {
@@ -32,6 +32,7 @@ const AddAccount = () => {
     const USERNAME = getUsername()
     const WAREHOUSEID = getWarehoseId()
     const history = useHistory()
+    const { pathname } = useLocation()
     const defaultValues = useMemo(() => ({ referredBy: USERNAME, registeredDate: TODAYDATE }), [])
 
     const [confirmModal, setConfirmModal] = useState(false)
@@ -489,11 +490,11 @@ const AddAccount = () => {
     }
 
     const onAccountCancel = useCallback(() => setConfirmModal(true), [])
-    const handleSucessModalCancel = useCallback(() => { setSucessModal(false); goToManageAccounts() }, [])
+    const handleSucessModalCancel = useCallback(() => { setSucessModal(false); goBack() }, [])
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
     const handleSwitchModalCancel = useCallback(() => setSwitchModal(false), [])
-    const handleSuccessModalOk = useCallback(() => { setSucessModal(false); goToManageAccounts() }, [])
-    const handleConfirmModalOk = useCallback(() => { setConfirmModal(false); goToManageAccounts() }, [])
+    const handleSuccessModalOk = useCallback(() => { setSucessModal(false); goBack() }, [])
+    const handleConfirmModalOk = useCallback(() => { setConfirmModal(false); goBack() }, [])
     const handleSwitchModalOk = useCallback(() => {
         setCorporate(!corporate)
         setSwitchModal(false)
@@ -513,10 +514,13 @@ const AddAccount = () => {
         if (formHasChanged) {
             setConfirmModal(true)
         }
-        else goToManageAccounts()
+        else goBack()
     }
 
-    const goToManageAccounts = () => history.push('/manage-accounts')
+    const goBack = () => {
+        const mainPathname = getMainPathname(pathname)
+        history.push(mainPathname)
+    }
 
     return (
         <Fragment>

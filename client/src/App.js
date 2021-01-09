@@ -37,6 +37,7 @@ const App = () => {
                <Route path='/manage-accounts/:accountId' render={() => requireAuth(<ViewAccount />)} />
                <Route path='/manage-accounts' render={() => requireAuth(<AccountsDashboard />)} />
                <Route path='/add-customer' render={() => requireAuth(<AddAccount />)} />
+               <Route path='/customers/add-account' render={() => requireAuth(<AddAccount />)} />
                <Route path='/customers/approval/:accountId' render={() => requireAuth(<ApproveAccount />)} />
                <Route path='/customers/manage/:accountId' render={() => requireAuth(<ViewAccount />)} />
                <Route path='/customers' render={() => requireAuth(<Customers />)} />
