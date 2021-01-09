@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
-import { getRole, MARKETINGADMIN, MOTHERPLANTADMIN, SUPERADMIN, WAREHOUSEADMIN } from './utils/constants';
+import { isLogged, getRole, getRoutesByRole, MARKETINGADMIN, MOTHERPLANTADMIN, SUPERADMIN, WAREHOUSEADMIN } from './utils/constants';
+import { getMainPathname, resetTrackForm } from './utils/Functions';
 import Login from './UI/auth/Login';
 import Customers from './UI/customers';
 import Dispatches from './UI/dispatches';
@@ -10,7 +11,6 @@ import ViewAccount from './UI/accounts/view';
 import NoContent from './components/NoContent';
 import QualityControl from './UI/quality-control';
 import WarehouseStock from './UI/stock/warehouse';
-import { resetTrackForm } from './utils/Functions';
 import ApproveAccount from './UI/accounts/approve';
 import MotherplantStock from './UI/stock/motherplant';
 import AccountsDashboard from './UI/accounts/dashboard';
@@ -23,65 +23,77 @@ const App = () => {
       resetTrackForm()
    }, [])
 
+   const byRole = (Component) => (props) => {
+      const isUser = isLogged()
+      if (!isUser) return <Login />
+      else {
+         const { match: { path } } = props
+         const mainPath = getMainPathname(path)
+         const role = getRole()
+         const routes = getRoutesByRole(role)
+         const pass = routes.includes(mainPath)
+         if (!pass)
+            return <Redirect to="/unauthorized" />
+         return Component
+      }
+   }
+
+   const redirectTo = (props) => {
+      const isUser = isLogged()
+      if (!isUser) return <Login />
+      else {
+         const role = getRole()
+         if (role === MARKETINGADMIN) return <Redirect to='/manage-accounts' />
+         else if (role === WAREHOUSEADMIN) return <Redirect to='/manage-stock' />
+         else if (role === MOTHERPLANTADMIN) return <Redirect to='/manage-production' />
+         else if (role === SUPERADMIN) return <Redirect to='/customers' />
+         return <NoContent content='Screen Not designed for your role' />
+      }
+   }
+
+   const isUser = isLogged()
+
    return (
       <Router>
-         <Route exact path='/' component={Login} />
-         <PageLayout>
-            <Switch>
-               <Route path='/quality-control' render={requireAuth(<QualityControl />)} />
-               <Route path='/stock-details' render={requireAuth(<MotherplantStock />)} />
-               <Route path='/dispatches' render={requireAuth(<Dispatches />)} />
-               {/* <Route path='/materials' render={requireAuth(<MotherplantMaterials />)} /> */}
-               <Route path='/materials' render={requireAuth(<WarehouseMaterials />)} />
-               <Route path='/quality-control' render={requireAuth(<NoContent content='Design is in progress' />)} />
-               <Route path='/manage-stock' render={requireAuth(<WarehouseStock />)} />
-               <Route path='/manage-accounts/add-account' render={requireAuth(<AddAccount />)} />
-               <Route path='/manage-accounts/:accountId' render={requireAuth(<ViewAccount />)} />
-               <Route path='/manage-accounts' render={requireAuth(<AccountsDashboard />)} />
-               <Route path='/add-customer' render={requireAuth(<AddAccount />)} />
-               <Route path='/customers/add-account' render={requireAuth(<AddAccount />)} />
-               <Route path='/customers/approval/:accountId' render={requireAuth(<ApproveAccount />)} />
-               <Route path='/customers/manage/:accountId' render={requireAuth(<ViewAccount />)} />
-               <Route path='/customers' render={requireAuth(<Customers />)} />
-               <Route path='/customerDashboard' render={requireAuth(<NoContent content='Design is in progress' />)} />
-               <Route path='/manage-routes' render={requireAuth(<NoContent content='Design is in progress' />)} />
-               <Route path='/reports' render={requireAuth(<NoContent content='Design is in progress' />)} />
-               <Route path='/dashboard' render={renderByRole()} />
-               <Route path='/*' render={redirectAuth()} />
-            </Switch>
-         </PageLayout>
+         <Switch>
+            <Route exact
+               path='/'
+               render={() => isUser ? <Redirect to='/dashboard' /> : <Login />}
+            />
+            <PageLayout>
+               <Switch>
+                  <Route path='/dashboard' render={redirectTo} />
+                  <Route path='/manage-accounts/add-account' render={byRole(<AddAccount />)} />
+                  <Route path='/manage-accounts/:accountId' render={byRole(<ViewAccount />)} />
+                  <Route path='/manage-accounts' render={byRole(<AccountsDashboard />)} />
+                  <Route path='/add-customer' render={byRole(<AddAccount />)} />
+                  <Route path='/manage-qc' render={byRole(<QualityControl />)} />
+                  <Route path='/manage-production' render={byRole(<MotherplantStock />)} />
+                  <Route path='/manage-dispatches' render={byRole(<Dispatches />)} />
+                  <Route path='/manage-materials' render={byRole(<WarehouseMaterials />)} />
+                  <Route path='/manage-stock' render={byRole(<WarehouseStock />)} />
+                  <Route path='/materials' render={byRole(<MotherplantMaterials />)} />
+                  <Route path='/customers/add-account' render={byRole(<AddAccount />)} />
+                  <Route path='/customers/approval/:accountId' render={byRole(<ApproveAccount />)} />
+                  <Route path='/customers/manage/:accountId' render={byRole(<ViewAccount />)} />
+                  <Route path='/customers' render={byRole(<Customers />)} />
+                  <Route path='/customerDashboard' render={byRole(<NoContent content='Design is in progress' />)} />
+                  <Route path='/manage-routes' render={byRole(<NoContent content='Design is in progress' />)} />
+                  <Route path='/reports' render={byRole(<NoContent content='Design is in progress' />)} />
+                  <Route path='/unauthorized' component={Unauthorized} />
+                  <Route component={NoMatch} />
+               </Switch>
+            </PageLayout>
+         </Switch>
       </Router>
    );
 }
 
-const requireAuth = (Component) => (props) => {
-   const isLogged = JSON.parse(sessionStorage.getItem('isLogged'))
-   if (!isLogged) return <Redirect to="/" />
-   else {
-      const { match: { path } } = props
-      // console.log('path>>>', path)
-      const role = getRole()
-      return Component
-   }
+const NoMatch = () => {
+   return <NoContent content='Page Not found' />
 }
 
-const redirectAuth = (Component) => (props) => {
-   const authenticated = JSON.parse(sessionStorage.getItem('isLogged'))
-   if (authenticated) return <Redirect to="/dashboard" />
-   else return <Redirect to="/" />
+const Unauthorized = () => {
+   return <NoContent content='Screen not designed for you role' />
 }
-
-const renderByRole = (Component) => (props) => {
-   const authenticated = JSON.parse(sessionStorage.getItem('isLogged'))
-   if (authenticated) {
-      const role = getRole()
-      if (role == MARKETINGADMIN) return <Redirect to='/manage-accounts' />
-      else if (role == WAREHOUSEADMIN) return <Redirect to='/manage-stock' />
-      else if (role == MOTHERPLANTADMIN) return <Redirect to='/stock-details' />
-      else if (role == SUPERADMIN) return <Redirect to='/customers' />
-      return <NoContent content='Screen Not designed for your role' />
-   }
-   else return <Redirect to="/" />
-}
-
 export default App;

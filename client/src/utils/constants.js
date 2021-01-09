@@ -29,12 +29,25 @@ export const getWarehoseId = () => {
     return 1
 }
 
+export const isLogged = () => {
+    return JSON.parse(sessionStorage.getItem('isLogged'))
+}
+
 export const getRoutesByRole = (role) => {
     switch (role) {
         case MARKETINGADMIN:
-            return ['']
+            return ['/add-customer', '/manage-accounts']
+
+        case SUPERADMIN:
+            return ['/customers', '/materials']
+
+        case WAREHOUSEADMIN:
+            return ['/manage-stock']
+
+        case MOTHERPLANTADMIN:
+            return ['/manage-production', '/manage-dispatches', '/manage-materials', '/manage-qc']
 
         default:
-            break;
+            return ['']
     }
 }

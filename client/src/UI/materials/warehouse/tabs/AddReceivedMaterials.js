@@ -18,8 +18,9 @@ import DateValue from '../../../../components/DateValue';
 import CustomDateInput from '../../../../components/CustomDateInput';
 const DATEFORMAT = 'DD-MM-YYYY'
 const format = 'YYYY-MM-DD'
+const fn = () => { }
 
-const AddMaterials = ({ onUpdate }) => {
+const AddMaterials = ({ onUpdate = fn }) => {
     const [loading, setLoading] = useState(true)
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
