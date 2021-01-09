@@ -1,5 +1,5 @@
 import { Tabs } from 'antd';
-import React, { Fragment, useState } from 'react';
+import React, { Fragment } from 'react';
 import Header from './header';
 import AddMaterials from '../warehouse/tabs/AddReceivedMaterials';
 import ReportsDropdown from '../../../components/ReportsDropdown';
@@ -7,7 +7,6 @@ import RequestedMaterialStatus from '../warehouse/tabs/RequestedMaterialStatus';
 import '../../../sass/materials.scss'
 
 const MotherplantMaterials = () => {
-    const [activeTab, setActiveTab] = useState('1')
 
     return (
         <Fragment>
@@ -16,8 +15,6 @@ const MotherplantMaterials = () => {
                 <div className='app-tabs-container'>
                     <Tabs
                         tabBarExtraContent={<ReportsDropdown />}
-                        activeKey={activeTab}
-                        onChange={(key) => setActiveTab(key)}
                     >
                         <TabPane tab="Requested Materials" key="1">
                             <RequestedMaterialStatus />

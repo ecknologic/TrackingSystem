@@ -2,12 +2,16 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
 import { isLogged, getRole, getRoutesByRole, MARKETINGADMIN, MOTHERPLANTADMIN, SUPERADMIN, WAREHOUSEADMIN } from './utils/constants';
 import { getMainPathname, resetTrackForm } from './utils/Functions';
+import Staff from './UI/staff';
+import Drivers from './UI/drivers';
 import Login from './UI/auth/Login';
 import Customers from './UI/customers';
 import Dispatches from './UI/dispatches';
 import PageLayout from './UI/page-layout';
+import Warehouses from './UI/warehouses';
 import AddAccount from './UI/accounts/add';
 import ViewAccount from './UI/accounts/view';
+import Motherplants from './UI/motherplants';
 import NoContent from './components/NoContent';
 import QualityControl from './UI/quality-control';
 import WarehouseStock from './UI/stock/warehouse';
@@ -73,6 +77,10 @@ const App = () => {
                   <Route path='/manage-materials' render={byRole(<WarehouseMaterials />)} />
                   <Route path='/manage-stock' render={byRole(<WarehouseStock />)} />
                   <Route path='/materials' render={byRole(<MotherplantMaterials />)} />
+                  <Route path='/staff' render={byRole(<Staff />)} />
+                  <Route path='/drivers' render={byRole(<Drivers />)} />
+                  <Route path='/motherplants' render={byRole(<Motherplants />)} />
+                  <Route path='/warehouses' render={byRole(<Warehouses />)} />
                   <Route path='/customers/add-account' render={byRole(<AddAccount />)} />
                   <Route path='/customers/approval/:accountId' render={byRole(<ApproveAccount />)} />
                   <Route path='/customers/manage/:accountId' render={byRole(<ViewAccount />)} />

@@ -118,18 +118,6 @@ const SideMenu = () => {
                                 {selected === '/customers' ? <FriendIcon /> : <FriendIconLight />}
                                 <span>Customers</span>
                             </Item>
-                            <Item key='/staff' onClick={handleMenuSelect}>
-                                {selected === '/staff' ? <FriendsIcon /> : <FriendsIconLight />}
-                                <span>Staff</span>
-                            </Item>
-                            <Item key='/drivers' onClick={handleMenuSelect}>
-                                {selected === '/drivers' ? <FriendsIcon /> : <FriendsIconLight />}
-                                <span>Drivers</span>
-                            </Item>
-                            <Item key='/materials' onClick={handleMenuSelect}>
-                                {selected === '/materials' ? <FriendsIcon /> : <FriendsIconLight />}
-                                <span>Materials</span>
-                            </Item>
                             <Item key='/warehouses' onClick={handleMenuSelect}>
                                 {selected === '/warehouses' ? <FriendsIcon /> : <FriendsIconLight />}
                                 <span>Warehouses</span>
@@ -137,6 +125,18 @@ const SideMenu = () => {
                             <Item key='/motherplants' onClick={handleMenuSelect}>
                                 {selected === '/motherplants' ? <SettingIcon /> : <SettingIconLight />}
                                 <span>Mother Plants</span>
+                            </Item>
+                            <Item key='/materials' onClick={handleMenuSelect}>
+                                {selected === '/materials' ? <FriendsIcon /> : <FriendsIconLight />}
+                                <span>Materials</span>
+                            </Item>
+                            <Item key='/staff' onClick={handleMenuSelect}>
+                                {selected === '/staff' ? <FriendsIcon /> : <FriendsIconLight />}
+                                <span>Staff</span>
+                            </Item>
+                            <Item key='/drivers' onClick={handleMenuSelect}>
+                                {selected === '/drivers' ? <FriendsIcon /> : <FriendsIconLight />}
+                                <span>Drivers</span>
                             </Item>
                             <Item key='/invoice' onClick={handleMenuSelect} style={{ pointerEvents: 'none' }}>
                                 {selected === '/invoice' ? <DocIcon /> : <DocIconLight />}
