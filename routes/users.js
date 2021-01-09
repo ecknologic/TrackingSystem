@@ -8,9 +8,9 @@ router.post('/createUser', (req, res) => {
   var createHash = function (password) {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(10), null);
   }
-  let query = "insert into usermaster (userName,roleId,emailid,password,departmentId) values(?,?,?,?,?)";
+  let query = "insert into usermaster (userName,roleId,emailid,password,departmentId,mobileNumber) values(?,?,?,?,?,?)";
   let userDetails = req.body;
-  let insertQueryValues = [userDetails.userName, userDetails.roleId, userDetails.emailid, createHash(userDetails.password), userDetails.departmentId]
+  let insertQueryValues = [userDetails.userName, userDetails.roleId, userDetails.emailid, createHash(userDetails.password), userDetails.departmentId, userDetails.mobileNumber]
   db.query(query, insertQueryValues, (err, results) => {
     if (err) res.json({ status: 200, message: err });
     else {
@@ -34,13 +34,19 @@ router.post('/createUser', (req, res) => {
   });
 });
 router.get('/getUsers', (req, res) => {
-  let query = "SELECT userId,userName,RoleId from usermaster";
+  let query = "SELECT userId,userName,RoleId,emailid,mobileNumber from usermaster ORDER BY createdDateTime DESC";
   db.query(query, (err, results) => {
     if (err) res.json(err);
     else res.json(results)
   })
 })
-
+router.get('/getUser/:userId', (req, res) => {
+  let query = "SELECT userId,userName,RoleId,emailid,mobileNumber from usermaster where userId=" + req.params.userId;
+  db.query(query, (err, results) => {
+    if (err) res.json(err);
+    else res.json(results)
+  })
+})
 router.post('/updateUser', (req, res) => {
   let query = "UPDATE usermaster SET userName=?,roleId=?,emailid=? where userId=?";
   let userDetails = req.body;
