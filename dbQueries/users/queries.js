@@ -2,7 +2,7 @@ const { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery } = req
 let usersQueries = {}
 
 usersQueries.getUsers = async (callback) => {
-    let query = "SELECT userId,userName,RoleId,emailid,mobileNumber from usermaster ORDER BY createdDateTime DESC";
+    let query = "SELECT userId,userName,address,RoleId,isActive,emailid,mobileNumber from usermaster ORDER BY createdDateTime DESC";
     return executeGetQuery(query, callback)
 }
 usersQueries.getUsersBydepartmentType = async (departmentType, callback) => {

@@ -1,11 +1,11 @@
 import { Tabs } from 'antd';
 import React, { Fragment, useState } from 'react';
-import Dashboard from '../tabs/Dashboard';
-import Header from '../../../components/SimpleHeader';
-import CreateNewPlant from '../tabs/CreateNewPlant';
-import '../../../sass/plants.scss';
+import Dashboard from './tabs/Dashboard';
+import Header from '../../components/SimpleHeader';
+import CreateNewPlant from './tabs/CreatePlant';
+import '../../sass/plants.scss';
 
-const Motherplants = () => {
+const Warehouses = () => {
 
     const [activeTab, setActiveTab] = useState('1')
     const [reFetch, setreFetch] = useState(false)
@@ -21,17 +21,17 @@ const Motherplants = () => {
 
     return (
         <Fragment>
-            <Header title='Mother Plants' />
-            <div className='plantcontent'>
+            <Header title='Warehouses' />
+            <div className='plant-content'>
                 <div className='app-tabs-container'>
                     <Tabs
                         onChange={handleTabClick}
                         activeKey={activeTab}
                     >
-                        <TabPane tab="Mother Plants" key="1">
+                        <TabPane tab="Warehouses" key="1">
                             <Dashboard reFetch={reFetch} />
                         </TabPane>
-                        <TabPane tab="Create New Plant" key="2">
+                        <TabPane tab="Create New Warehouse" key="2">
                             <CreateNewPlant goToTab={handleGoToTab} />
                         </TabPane>
                     </Tabs>
@@ -41,4 +41,4 @@ const Motherplants = () => {
     )
 }
 const { TabPane } = Tabs;
-export default Motherplants
+export default Warehouses

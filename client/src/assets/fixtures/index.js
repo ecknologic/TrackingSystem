@@ -6,7 +6,7 @@ export const idOptions = [
     <Option key='1' value="adharNo">Aadhar</Option>,
     <Option key='2' value="panNo">PAN</Option>,
     <Option key='3' value="voterId">Voter ID</Option>,
-    <Option key='4' value="dlNo">Driving License</Option>,
+    <Option key='4' value="licenseNo">Driving License</Option>,
     <Option key='5' value="passportNo">Passport</Option>
 ]
 export const businessOptions = [
@@ -17,7 +17,12 @@ export const businessOptions = [
 ]
 export const statusOptions = [
     <Option key='1' value={1}>Active</Option>,
-    <Option key='2' value={0}>Draft</Option>,
+    <Option key='2' value={0}>Draft</Option>
+]
+export const genderOptions = [
+    <Option key='1' value='Male'>Male</Option>,
+    <Option key='2' value='Female'>Female</Option>,
+    <Option key='2' value='TransGender'>TransGender</Option>
 ]
 export const statusFilterOptions = [
     { value: 0, option: 'Draft' },
@@ -82,6 +87,9 @@ export const getBatchIdOptions = (batches = []) => {
 }
 export const getStaffOptions = (staff = []) => {
     return staff.map((item) => <Option key={item.userId} value={item.userId}>{item.userName}</Option>)
+}
+export const getRoleOptions = (roles = []) => {
+    return roles.map((item) => <Option key={item.RoleId} value={item.RoleId}>{item.RoleName}</Option>)
 }
 export const getBatchOptions = (batches = []) => {
     return batches.map((item) => <Option key={item.productionQcId} value={item.productionQcId}>{item.batchId}</Option>)

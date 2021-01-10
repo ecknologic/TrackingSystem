@@ -5,7 +5,7 @@ import { setTrackForm } from '../utils/Functions';
 
 const CustomDateInput = (props) => {
 
-    const { disabled, value, placeholder, track, onChange, format = 'DD/MM/YYYY',
+    const { disabled, value, placeholder = 'Select Date', track, onChange, format = 'DD/MM/YYYY',
         disabledDate, open, onOpenChange, style, className } = props
 
     const [hasTracked, setHasTracked] = useState(false)

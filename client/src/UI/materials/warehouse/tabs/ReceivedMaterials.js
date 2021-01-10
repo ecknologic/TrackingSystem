@@ -108,7 +108,6 @@ const ReceivedMaterials = () => {
                             open={open}
                             style={{ left: 0 }}
                             value={selectedDate}
-                            placeholder='Select Date'
                             className='date-panel-picker'
                             onChange={handleDateSelect}
                             onOpenChange={datePickerStatus}

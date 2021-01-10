@@ -8,17 +8,17 @@ driverQueries.getDrivers = async (callback) => {
 
 //POST Request Methods
 driverQueries.createDriver = async (input, callback) => {
-    const { userName, emailid, departmentId, mobileNumber, joinedDate, parentName, gender, dob, aadharNo, address, permanentAddress, licenseNo } = input;
-    let query = "insert into driverdetails (driverName,emailid,departmentId,mobileNumber,joinedDate,parentName,gender,dob,aadharNo,address,permanentAddress,licenseNo) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-    let requestBody = [userName, emailid, departmentId, mobileNumber, joinedDate, parentName, gender, dob, aadharNo, address, permanentAddress, licenseNo]
+    const { userName, emailid, departmentId = 1, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, licenseNo } = input;
+    let query = "insert into driverdetails (driverName,emailid,departmentId,mobileNumber,joinedDate,parentName,gender,dob,adharNo,address,permanentAddress,licenseNo) values(?,?,?,?,?,?,?,?,?,?,?,?)";
+    let requestBody = [userName, emailid, departmentId, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, licenseNo]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
 
 driverQueries.updateDriver = async (input, callback) => {
-    const { userName, emailid, departmentId, mobileNumber, joinedDate, parentName, gender, dob, aadharNo, address, permanentAddress, licenseNo, driverId } = input;
-    let query = "update driverdetails set driverName=?,emailid=?,departmentId=?,mobileNumber=?,joinedDate=?,parentName=?,gender=?,dob=?,aadharNo=?,address=?,permanentAddress=?,licenseNo=? where driverId=?";
-    let requestBody = [userName, emailid, departmentId, mobileNumber, joinedDate, parentName, gender, dob, aadharNo, address, permanentAddress, licenseNo, driverId]
+    const { userName, emailid, departmentId, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, licenseNo, driverId } = input;
+    let query = "update driverdetails set driverName=?,emailid=?,departmentId=?,mobileNumber=?,joinedDate=?,parentName=?,gender=?,dob=?,adharNo=?,address=?,permanentAddress=?,licenseNo=? where driverId=?";
+    let requestBody = [userName, emailid, departmentId, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, licenseNo, driverId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 

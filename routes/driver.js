@@ -124,7 +124,7 @@ router.get('/getDrivers', (req, res) => {
 })
 router.post('/createDriver', (req, res) => {
     driverQueries.createDriver(req.body, (err, results) => {
-        if (err) res.json(dbError(err))
+        if (err) res.status(500).json(dbError(err))
         else res.json(results)
     })
 })

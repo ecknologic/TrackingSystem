@@ -1,6 +1,6 @@
 import {
     isStrictDigit, isAadharValid, isPANValid, isEmpty, isGSTValid, isAlphaOnly,
-    isIndMobileNum, isAlphaNumOnly, isEmail, isStrictIntFloat, isIntFloat
+    isIndMobileNum, isAlphaNumOnly, isEmail, isStrictIntFloat, isIntFloat, isDLValid, isAlphaNum
 } from "../Functions"
 
 export const checkValidation = (stateValues) => {
@@ -57,7 +57,7 @@ export const validateAccountValues = (data, customerType, isInView) => {
     const text = 'Required'
     const text2 = 'Incomplete'
     const {
-        gstNo, panNo, adharNo, natureOfBussiness, organizationName, address, customerName,
+        gstNo, panNo, adharNo, licenseNo, natureOfBussiness, organizationName, address, customerName,
         mobileNumber, invoicetype, creditPeriodInDays = "", EmailId, referredBy, idProofType,
         registeredDate, gstProof, depositAmount = "", departmentId, routeId, deliveryLocation, ...rest
     } = data
@@ -136,6 +136,13 @@ export const validateAccountValues = (data, customerType, isInView) => {
         else {
             const error = validateIDNumbers('adharNo', adharNo)
             error && (errors.adharNo = error)
+        }
+    }
+    if (licenseNo) {
+        if (String(licenseNo).length < 16) errors.licenseNo = text2
+        else {
+            const error = validateIDNumbers('licenseNo', licenseNo)
+            error && (errors.licenseNo = error)
         }
     }
     if (gstNo) {
@@ -269,6 +276,47 @@ export const validatePlantValues = (data) => {
     else {
         const error = validatePinCode(pinCode)
         error && (errors.pinCode = error)
+    }
+
+    return errors
+}
+
+export const validateEmployeeValues = (data, employeeType) => {
+    let errors = {};
+    const text = 'Required'
+    const text2 = 'Incomplete'
+    const { userName, adharNo, parentName, gender, dob, mobileNumber, address,
+        joinedDate, permanentAddress, roleId, licenseNo } = data
+
+    if (!dob) errors.dob = text
+    if (!joinedDate) errors.joinedDate = text
+    if (!permanentAddress) errors.permanentAddress = text
+    if (employeeType === 'Staff' && !roleId) errors.roleId = text
+    if (employeeType === 'Driver' && !licenseNo) errors.licenseNo = text
+    if (!address) errors.address = text
+    if (!gender) errors.gender = text
+    if (!userName) errors.userName = text
+    else {
+        const error = validateNames(userName)
+        error && (errors.userName = error)
+    }
+    if (!parentName) errors.parentName = text
+    else {
+        const error = validateNames(parentName)
+        error && (errors.parentName = error)
+    }
+    if (!mobileNumber) errors.mobileNumber = text
+    if (mobileNumber) {
+        const error = validateMobileNumber(mobileNumber)
+        error && (errors.mobileNumber = error)
+    }
+    if (!adharNo) errors.adharNo = text
+    else {
+        if (String(adharNo).length < 12) errors.adharNo = text2
+        else {
+            const error = validateIDNumbers('adharNo', adharNo)
+            error && (errors.adharNo = error)
+        }
     }
 
     return errors
@@ -723,6 +771,22 @@ export const validateIDNumbers = (key, value, isBlur) => {
         }
         if (String(value).length === 15) {
             const isValid = isGSTValid(value)
+            if (!isValid) return 'Invalid'
+        }
+    }
+    else if (key === 'licenseNo') {
+        if (isBlur && value) {
+            const isValid = isAlphaNum(value)
+            if (!isValid) return 'Invalid'
+        }
+        if (isBlur && value && String(value).length < 16) {
+            return 'Incomplete'
+        }
+        if (!isAlphaNum(value)) {
+            return 'Enter aphanumeric only'
+        }
+        if (String(value).length === 16) {
+            const isValid = isDLValid(value)
             if (!isValid) return 'Invalid'
         }
     }

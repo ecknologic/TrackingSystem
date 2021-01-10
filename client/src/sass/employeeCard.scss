@@ -1,4 +1,4 @@
-.plant-card-container {
+.employee-card-container {
     height: 20.6em;
 
     .header {
@@ -8,5 +8,9 @@
 
     .body {
         height: 7em;
+
+        .contacts {
+            flex-direction: column;
+        }
     }
 }

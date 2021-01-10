@@ -114,13 +114,13 @@ const ApproveAccount = () => {
         setAccountValues(data => ({ ...data, [key]: value }))
         setAccountErrors(errors => ({ ...errors, [key]: '' }))
 
-        if (value === 'adharNo' || value === 'panNo') {
+        if (value === 'adharNo' || value === 'panNo' || value === 'licenseNo') {
             setAccountValues(data => ({ ...data, [value]: '' }))
             setAccountErrors(errors => ({ ...errors, [value]: '' }))
         }
 
         // Validations
-        if (key === 'adharNo' || key === 'panNo' || key === 'gstNo') {
+        if (key === 'adharNo' || key === 'panNo' || key === 'gstNo' || key === 'licenseNo') {
             const error = validateIDNumbers(key, value)
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -145,7 +145,7 @@ const ApproveAccount = () => {
     const handleBlur = (value, key) => {
 
         // Validations
-        if (key === 'adharNo' || key === 'panNo' || key === 'gstNo') {
+        if (key === 'adharNo' || key === 'panNo' || key === 'gstNo' || key === 'licenseNo') {
             const error = validateIDNumbers(key, value, true)
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }

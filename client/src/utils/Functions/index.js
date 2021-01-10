@@ -148,7 +148,7 @@ export const getIdProofName = (type) => {
             return 'PAN Number'
         case 'voterId':
             return 'Voter ID Number'
-        case 'dlNo':
+        case 'licenseNo':
             return 'Driving License Number'
         case 'passportNo':
             return 'Passport Number'
@@ -156,11 +156,11 @@ export const getIdProofName = (type) => {
 }
 
 export const getIdProofKey = (data) => {
-    const { panNo, adharNo, dlNo, passportNo } = data
+    const { panNo, adharNo, licenseNo, passportNo } = data
 
     if (panNo) return 'panNo'
     if (adharNo) return 'adharNo'
-    if (dlNo) return 'dlNo'
+    if (licenseNo) return 'licenseNo'
     if (passportNo) return 'passportNo'
 }
 export const getDevDays = (data = {}) => {
@@ -385,6 +385,9 @@ export const isIndMobileNum = (number) => {
 export const isAlphaNumOnly = (string) => {
     return String(string).match(/^[a-z0-9]*$/i)
 }
+export const isAlphaNum = (string) => {
+    return String(string).match(/^[a-z0-9-\s]*$/i)
+}
 export const isAlphaOnly = (string) => {
     return String(string).match(/^[a-zA-Z\s]*$/)
 }
@@ -396,6 +399,9 @@ export const isPANValid = (PANNumber) => {
 }
 export const isGSTValid = (gstNumber) => {
     return String(gstNumber).match(/(0[0-9]|1[1-9]|2[0-9]|3[0-7])[A-Z]{3}[CPHFATBLJG]{1}[A-Z]{1}\d{4}[A-Z]{1}\d{1}[A-Z0-9]{2}/g)
+}
+export const isDLValid = (gstNumber) => {
+    return String(gstNumber).match(/^(([A-Z]{2}[0-9]{2})( )|([A-Z]{2}[0-9]{3})|([A-Z]{2}-[0-9]{2}))((19|20)[0-9][0-9])[0-9]{7}$/)
 }
 export const isStrictDigit = (number) => {
     return String(number).match(/^(\d+)$/)

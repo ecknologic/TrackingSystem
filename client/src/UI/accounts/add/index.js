@@ -146,7 +146,7 @@ const AddAccount = () => {
         setGeneralValues(data => ({ ...data, [key]: value }))
         setGeneralErrors(errors => ({ ...errors, [key]: '' }))
 
-        if (value === 'adharNo' || value === 'panNo') {
+        if (value === 'adharNo' || value === 'panNo' || value === 'licenseNo') {
             setGeneralValues(data => ({ ...data, [value]: '' }))
             setGeneralErrors(errors => ({ ...errors, [value]: '' }))
         }
@@ -157,7 +157,7 @@ const AddAccount = () => {
         }
 
         // Validations
-        if (key === 'adharNo' || key === 'panNo' || (key === 'gstNo')) {
+        if (key === 'adharNo' || key === 'panNo' || (key === 'gstNo' || key === 'licenseNo')) {
             const error = validateIDNumbers(key, value)
             setGeneralErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -186,7 +186,7 @@ const AddAccount = () => {
     const handleGeneralBlur = (value, key) => {
 
         // Validations
-        if (key === 'adharNo' || key === 'panNo' || key === 'gstNo') {
+        if (key === 'adharNo' || key === 'panNo' || key === 'gstNo' || key === 'licenseNo') {
             const error = validateIDNumbers(key, value, true)
             setGeneralErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -202,7 +202,7 @@ const AddAccount = () => {
         setCorporateErrors(errors => ({ ...errors, [key]: '' }))
         if (sameAddress) preFillDDForm(value, key)
 
-        if (value === 'adharNo' || value === 'panNo') {
+        if (value === 'adharNo' || value === 'panNo' || value === 'licenseNo') {
             setCorporateValues(data => ({ ...data, [value]: '' }))
             setCorporateErrors(errors => ({ ...errors, [value]: '' }))
         }
@@ -233,7 +233,7 @@ const AddAccount = () => {
     const handleCorporateBlur = (value, key) => {
 
         // Validations
-        if (key === 'adharNo' || key === 'panNo' || key === 'gstNo') {
+        if (key === 'adharNo' || key === 'panNo' || key === 'gstNo' || key === 'licenseNo') {
             const error = validateIDNumbers(key, value, true)
             setCorporateErrors(errors => ({ ...errors, [key]: error }))
         }

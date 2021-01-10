@@ -1,35 +1,41 @@
 import { message } from 'antd';
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
+import React, { useState, useEffect, useMemo } from 'react';
 import { http } from '../../../modules/http';
-import { TRACKFORM } from '../../../utils/constants';
-import CreateNewWHForm from '../../motherplant/forms/CreateNewPlant';
-import ConfirmModal from '../../../components/CustomModal';
+import CreateNewPlantForm from '../forms/CreatePlant';
 import { getStaffOptions } from '../../../assets/fixtures';
 import CustomButton from '../../../components/CustomButton';
-import ConfirmMessage from '../../../components/ConfirmMessage';
-import { getBase64, getMPValuesForDB, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
-import { validateIDNumbers, validateMobileNumber, validateNames, validateMPValues, validatePinCode } from '../../../utils/validations';
+import { getBase64, getMainPathname, getPlantValuesForDB, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
+import { validateIDNumbers, validateMobileNumber, validateNames, validatePlantValues, validatePinCode } from '../../../utils/validations';
 
-const CreateNewWarehouse = ({ goToTab }) => {
+const CreateNewPlant = ({ goToTab }) => {
+    const { pathname } = useLocation()
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
-    const [confirmModal, setConfirmModal] = useState(false)
     const [staffList, setStaffList] = useState([])
     const [shake, setShake] = useState(false)
     const [admin, setAdmin] = useState({})
+    const [plantType, setPlantType] = useState('')
 
+    const mainUrl = useMemo(() => getMainPathname(pathname), [pathname])
     const staffOptions = useMemo(() => getStaffOptions(staffList), [staffList])
 
     useEffect(() => {
-        getStaffList()
+        const type = getPlantType()
+        getStaffList(type)
     }, [])
 
-    const getStaffList = async () => {
-        const data = await http.GET(`/users/getUsersBydepartmentType/MotherPlant`)
+    const getStaffList = async (type) => {
+        const data = await http.GET(`/users/getUsersBydepartmentType/${type}`)
         setStaffList(data)
     }
 
+    const getPlantType = () => {
+        const type = mainUrl === '/warehouses' ? 'Warehouse' : 'MotherPlant'
+        setPlantType(type)
+        return type
+    }
 
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
@@ -86,7 +92,7 @@ const CreateNewWarehouse = ({ goToTab }) => {
     const handleRemove = () => setFormData(data => ({ ...data, gstProof: '' }))
 
     const handleSubmit = async () => {
-        const formErrors = validateMPValues(formData)
+        const formErrors = validatePlantValues(formData)
 
         if (!isEmpty(formErrors)) {
             setShake(true)
@@ -95,12 +101,12 @@ const CreateNewWarehouse = ({ goToTab }) => {
             return
         }
 
-        const motherplant = getMPValuesForDB(formData)
+        const motherplant = getPlantValuesForDB(formData)
         let body = {
             ...motherplant
         }
-        const url = '/motherplant/createMotherPlant'
-        const options = { item: 'Mother Plant', v1Ing: 'Adding', v2: 'added' }
+        const url = `${mainUrl.slice(0, -1)}/create${plantType}`
+        const options = { item: plantType, v1Ing: 'Adding', v2: 'added' }
 
 
         try {
@@ -124,26 +130,10 @@ const CreateNewWarehouse = ({ goToTab }) => {
         setFormErrors({})
     }
 
-    const onModalClose = (hasSaved) => {
-        const formHasChanged = sessionStorage.getItem(TRACKFORM)
-        if (formHasChanged && !hasSaved) {
-            return setConfirmModal(true)
-        }
-        setBtnDisabled(false)
-        setFormData({})
-        setFormErrors({})
-    }
-
-    const handleConfirmModalOk = useCallback(() => {
-        setConfirmModal(false);
-        resetTrackForm()
-        onModalClose()
-    }, [])
-    const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
-
     return (
         <>
-            <CreateNewWHForm
+            <CreateNewPlantForm
+                title={plantType}
                 data={formData}
                 admin={admin}
                 errors={formErrors}
@@ -163,17 +153,8 @@ const CreateNewWarehouse = ({ goToTab }) => {
                     text='Create'
                 />
             </div>
-            <ConfirmModal
-                visible={confirmModal}
-                onOk={handleConfirmModalOk}
-                onCancel={handleConfirmModalCancel}
-                title='Are you sure to leave?'
-                okTxt='Yes'
-            >
-                <ConfirmMessage msg='Changes you made may not be saved.' />
-            </ConfirmModal>
         </>
     )
 }
 
-export default CreateNewWarehouse
+export default CreateNewPlant

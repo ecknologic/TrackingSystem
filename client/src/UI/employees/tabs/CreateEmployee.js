@@ -2,97 +2,77 @@ import { message } from 'antd';
 import { useLocation } from 'react-router-dom';
 import React, { useState, useEffect, useMemo } from 'react';
 import { http } from '../../../modules/http';
-import CreateNewPlantForm from '../forms/CreateNewPlant';
-import { getStaffOptions } from '../../../assets/fixtures';
+import CreateEmployeeForm from '../forms/CreateEmployee';
+import { getRoleOptions } from '../../../assets/fixtures';
 import CustomButton from '../../../components/CustomButton';
-import { getBase64, getMainPathname, getPlantValuesForDB, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
-import { validateIDNumbers, validateMobileNumber, validateNames, validatePlantValues, validatePinCode } from '../../../utils/validations';
+import { getMainPathname, getPlantValuesForDB, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
+import { validateIDNumbers, validateMobileNumber, validateNames, validateEmployeeValues } from '../../../utils/validations';
+import dayjs from 'dayjs';
 
-const CreateNewPlant = ({ goToTab }) => {
+const CreateEmployee = ({ goToTab }) => {
     const { pathname } = useLocation()
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
-    const [staffList, setStaffList] = useState([])
+    const [roleList, setRoleList] = useState([])
     const [shake, setShake] = useState(false)
     const [admin, setAdmin] = useState({})
-    const [plantType, setPlantType] = useState('')
+    const [employeeType, setEmployeeType] = useState('')
 
     const mainUrl = useMemo(() => getMainPathname(pathname), [pathname])
-    const staffOptions = useMemo(() => getStaffOptions(staffList), [staffList])
+    const roleOptions = useMemo(() => getRoleOptions(roleList), [roleList])
 
     useEffect(() => {
-        const type = getPlantType()
-        getStaffList(type)
+        getEmployeeType(mainUrl)
+        getRoles()
     }, [])
 
-    const getStaffList = async (type) => {
-        const data = await http.GET(`/users/getUsersBydepartmentType/${type}`)
-        setStaffList(data)
-    }
+    const getRoles = async () => {
+        const url = '/roles/getRoles'
 
-    const getPlantType = () => {
-        const type = mainUrl === '/warehouses' ? 'Warehouse' : 'MotherPlant'
-        setPlantType(type)
-        return type
+        const data = await http.GET(url)
+        setRoleList(data)
     }
 
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
-        if (key === 'adminId') {
-            const admin = staffList.find(staff => staff.userId === value)
-            setAdmin(admin)
-        }
-
         // Validations
-        if (key === 'gstNo') {
+        if (key === 'adharNo' || key === 'licenseNo') {
             const error = validateIDNumbers(key, value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key === 'departmentName' || key === 'city' || key === 'state') {
+        else if (key === 'userName' || key === 'parentName') {
             const error = validateNames(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key === 'pinCode') {
-            const error = validatePinCode(value)
-            setFormErrors(errors => ({ ...errors, [key]: error }))
-        }
-        else if (key === 'phoneNumber') {
+        else if (key === 'mobileNumber') {
             const error = validateMobileNumber(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
     }
 
     const handleBlur = (value, key) => {
-        // Validations
 
-        if (key === 'gstNo') {
+        // Validations
+        if (key === 'adharNo' || key === 'licenseNo') {
             const error = validateIDNumbers(key, value, true)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key === 'pinCode') {
-            const error = validatePinCode(value, true)
-            setFormErrors(errors => ({ ...errors, [key]: error }))
-        }
-        else if (key === 'phoneNumber') {
+        else if (key === 'mobileNumber') {
             const error = validateMobileNumber(value, true)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
     }
 
-    const handleUpload = (file) => {
-        getBase64(file, async (buffer) => {
-            setFormData(data => ({ ...data, gstProof: buffer }))
-            setFormErrors(errors => ({ ...errors, gstProof: '' }))
-        })
+    const getEmployeeType = (url) => {
+        const type = url === '/staff' ? 'Staff' : 'Driver'
+        setEmployeeType(type)
     }
 
-    const handleRemove = () => setFormData(data => ({ ...data, gstProof: '' }))
-
     const handleSubmit = async () => {
-        const formErrors = validatePlantValues(formData)
+        const formErrors = validateEmployeeValues(formData, employeeType)
 
         if (!isEmpty(formErrors)) {
             setShake(true)
@@ -101,12 +81,11 @@ const CreateNewPlant = ({ goToTab }) => {
             return
         }
 
-        const motherplant = getPlantValuesForDB(formData)
         let body = {
-            ...motherplant
+            ...formData
         }
-        const url = `${mainUrl.slice(0, -1)}/create${plantType}`
-        const options = { item: plantType, v1Ing: 'Adding', v2: 'added' }
+        const url = getUrl(mainUrl)
+        const options = { item: employeeType, v1Ing: 'Adding', v2: 'added' }
 
 
         try {
@@ -132,16 +111,14 @@ const CreateNewPlant = ({ goToTab }) => {
 
     return (
         <>
-            <CreateNewPlantForm
-                title={plantType}
+            <CreateEmployeeForm
+                title={employeeType}
                 data={formData}
                 admin={admin}
                 errors={formErrors}
                 onBlur={handleBlur}
                 onChange={handleChange}
-                onUpload={handleUpload}
-                onRemove={handleRemove}
-                staffOptions={staffOptions}
+                roleOptions={roleOptions}
             />
             <div className='app-footer-buttons-container'>
                 <CustomButton
@@ -157,4 +134,12 @@ const CreateNewPlant = ({ goToTab }) => {
     )
 }
 
-export default CreateNewPlant
+const getUrl = (url) => {
+    const staffUrl = '/users/createWebUser'
+    const driverUrl = '/driver/createDriver'
+
+    if (url === '/staff') return staffUrl
+    return driverUrl
+}
+
+export default CreateEmployee

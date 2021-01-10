@@ -3,17 +3,18 @@ var router = express.Router();
 const db = require('../config/db.js')
 var bcrypt = require("bcryptjs");
 const usersQueries = require('../dbQueries/users/queries.js');
+const { dbError } = require('../utils/functions.js');
 
 router.post('/createWebUser', (req, res) => {
   // Generates hash using bCrypt
   var createHash = function (password) {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(10), null);
   }
-  let query = "insert into usermaster (userName,roleId,emailid,password,departmentId,mobileNumber,joinedDate,parentName,gender,dob,aadharNo,address,permanentAddress) values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
-  const { userName, roleId, emailid, password = "Bibo@123", privilegeDetails = [], departmentId, mobileNumber, joinedDate, parentName, gender, dob, aadharNo, address, permanentAddress } = req.body
-  let insertQueryValues = [userName, roleId, emailid, createHash(password), departmentId, mobileNumber, joinedDate, parentName, gender, dob, aadharNo, address, permanentAddress]
+  let query = "insert into usermaster (userName,roleId,emailid,password,departmentId,mobileNumber,joinedDate,parentName,gender,dob,adharNo,address,permanentAddress) values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+  const { userName, roleId, emailid, password = "Bibo@123", privilegeDetails = [], departmentId, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress } = req.body
+  let insertQueryValues = [userName, roleId, emailid, createHash(password), departmentId, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress]
   db.query(query, insertQueryValues, (err, results) => {
-    if (err) res.json({ status: 200, message: err });
+    if (err) res.status(500).json(dbError(err));
     else {
       let updateQuery = 'UPDATE usermaster SET loginId=? WHERE userId=?';
       let idValue = userName.substring(0, 3) + results.insertId
@@ -26,7 +27,7 @@ router.post('/createWebUser', (req, res) => {
           let privilegeQuery = "insert into userPrivilegesMaster (privilegeId,privilegeActions,userId) values(?,?,?)";
           let queryValues = [i.privilegeId, i.privilegeActions.join(), results.insertId]
           db.query(privilegeQuery, queryValues, (privilegeErr, results) => {
-            if (privilegeErr) res.json({ status: 500, message: privilegeErr });
+            if (privilegeErr) res.status(500).json(dbError(privilegeErr));
             else {
               res.json({ status: 200, message: "User Added Successfully" });
             }
@@ -55,10 +56,10 @@ router.get('/getUser/:userId', (req, res) => {
   })
 })
 router.post('/updateWebUser', (req, res) => {
-  let query = "UPDATE usermaster SET userName=?,roleId=?,emailid=?, mobileNumber=?, joinedDate=?, parentName=?, gender=?, dob=?, aadharNo=?, address=?, permanentAddress=?  where userId=?";
+  let query = "UPDATE usermaster SET userName=?,roleId=?,emailid=?, mobileNumber=?, joinedDate=?, parentName=?, gender=?, dob=?, adharNo=?, address=?, permanentAddress=?  where userId=?";
   let userDetails = req.body;
-  const { userName, roleId, emailid, mobileNumber, userId, joinedDate, parentName, gender, dob, aadharNo, address, permanentAddress } = req.body
-  let insertQueryValues = [userName, roleId, emailid, mobileNumber, joinedDate, parentName, gender, dob, aadharNo, address, permanentAddress, userId]
+  const { userName, roleId, emailid, mobileNumber, userId, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress } = req.body
+  let insertQueryValues = [userName, roleId, emailid, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, userId]
   db.query(query, insertQueryValues, (err, results) => {
     if (err) res.send(err);
     else {
