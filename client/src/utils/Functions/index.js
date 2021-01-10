@@ -467,3 +467,7 @@ export const getStatusColor = (status) => {
             return '#A10101'
     }
 }
+
+export const renderRoute = () => {
+
+}

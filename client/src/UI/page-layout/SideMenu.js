@@ -56,20 +56,20 @@ const SideMenu = () => {
                 {
                     ROLE === MOTHERPLANTADMIN ?
                         <>
-                            <Item key='/stock-details' onClick={handleMenuSelect}>
-                                {selected === '/stock-details' ? <ProjectIcon /> : <ProjectIconLight />}
+                            <Item key='/manage-production' onClick={handleMenuSelect}>
+                                {selected === '/manage-production' ? <ProjectIcon /> : <ProjectIconLight />}
                                 <span>Stock Details</span>
                             </Item>
-                            <Item key='/dispatches' onClick={handleMenuSelect}>
-                                {selected === '/dispatches' ? <ProjectIcon /> : <ProjectIconLight />}
+                            <Item key='/manage-dispatches' onClick={handleMenuSelect}>
+                                {selected === '/manage-dispatches' ? <ProjectIcon /> : <ProjectIconLight />}
                                 <span>Dispatches</span>
                             </Item>
-                            <Item key='/materials' onClick={handleMenuSelect}>
-                                {selected === '/materials' ? <ProjectIcon /> : <ProjectIconLight />}
+                            <Item key='/manage-materials' onClick={handleMenuSelect}>
+                                {selected === '/manage-materials' ? <ProjectIcon /> : <ProjectIconLight />}
                                 <span>Materials</span>
                             </Item>
-                            <Item key='/quality-control' onClick={handleMenuSelect}>
-                                {selected === '/quality-control' ? <ProjectIcon /> : <ProjectIconLight />}
+                            <Item key='/manage-qc' onClick={handleMenuSelect}>
+                                {selected === '/manage-qc' ? <ProjectIcon /> : <ProjectIconLight />}
                                 <span>Quality Control</span>
                             </Item>
                         </>
@@ -118,17 +118,25 @@ const SideMenu = () => {
                                 {selected === '/customers' ? <FriendIcon /> : <FriendIconLight />}
                                 <span>Customers</span>
                             </Item>
-                            <Item key='/warehouses' onClick={handleMenuSelect} style={{ pointerEvents: 'none' }}>
-                                {selected === '/warehouses' ? <FriendIcon /> : <FriendIconLight />}
+                            <Item key='/warehouses' onClick={handleMenuSelect}>
+                                {selected === '/warehouses' ? <FriendsIcon /> : <FriendsIconLight />}
                                 <span>Warehouses</span>
                             </Item>
-                            <Item key='/motherplants' onClick={handleMenuSelect} style={{ pointerEvents: 'none' }}>
+                            <Item key='/motherplants' onClick={handleMenuSelect}>
                                 {selected === '/motherplants' ? <SettingIcon /> : <SettingIconLight />}
                                 <span>Mother Plants</span>
                             </Item>
-                            <Item key='/staff' onClick={handleMenuSelect} style={{ pointerEvents: 'none' }}>
+                            <Item key='/materials' onClick={handleMenuSelect}>
+                                {selected === '/materials' ? <FriendsIcon /> : <FriendsIconLight />}
+                                <span>Materials</span>
+                            </Item>
+                            <Item key='/staff' onClick={handleMenuSelect}>
                                 {selected === '/staff' ? <FriendsIcon /> : <FriendsIconLight />}
                                 <span>Staff</span>
+                            </Item>
+                            <Item key='/drivers' onClick={handleMenuSelect}>
+                                {selected === '/drivers' ? <FriendsIcon /> : <FriendsIconLight />}
+                                <span>Drivers</span>
                             </Item>
                             <Item key='/invoice' onClick={handleMenuSelect} style={{ pointerEvents: 'none' }}>
                                 {selected === '/invoice' ? <DocIcon /> : <DocIconLight />}

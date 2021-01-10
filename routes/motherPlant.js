@@ -33,6 +33,12 @@ router.get('/getProductionBatchIds', (req, res) => {
         else res.json(results);
     });
 });
+router.get('/getPostProductionBatchIds', (req, res) => {
+    motherPlantDbQueries.getPostProductionBatchIds(departmentId, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.json(results);
+    });
+});
 
 router.get('/getQCDetailsByBatch/:batchId', (req, res) => {
     motherPlantDbQueries.getQCDetailsByBatch(req.params.batchId, (err, results) => {

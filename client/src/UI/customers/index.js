@@ -153,13 +153,14 @@ const Customers = () => {
         return history.push(`/customers/manage/${id}`)
     }
 
+    const goToAddAccount = () => history.push('/customers/add-account')
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
     const noPageSize = filterON || searchON
 
     return (
         <Fragment>
-            <Header onSearch={handleSearch} onSort={onSort} onFilter={onFilterChange} onChange={handleTabChange} />
+            <Header onSearch={handleSearch} onSort={onSort} onFilter={onFilterChange} onChange={handleTabChange} onClick={goToAddAccount} />
             <div className='account-manager-content'>
                 <Row gutter={[{ lg: 32, xl: 16 }, { lg: 32, xl: 32 }]}>
                     {

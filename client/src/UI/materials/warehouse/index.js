@@ -1,17 +1,17 @@
 import { Tabs } from 'antd';
-import ScrollUp from '../../components/ScrollUp';
-import NoContent from '../../components/NoContent';
-import Header from '../../components/ContentHeader';
+import ScrollUp from '../../../components/ScrollUp';
+import NoContent from '../../../components/NoContent';
+import Header from '../../../components/ContentHeader';
 import RequestMaterial from './tabs/RequestMaterial';
 import AddMaterials from './tabs/AddReceivedMaterials';
 import ReceivedMaterials from './tabs/ReceivedMaterials';
-import ReportsDropdown from '../../components/ReportsDropdown';
+import ReportsDropdown from '../../../components/ReportsDropdown';
 import RequestedMaterialStatus from './tabs/RequestedMaterialStatus';
 import React, { Fragment, useState, useCallback, useMemo } from 'react';
-import { getMaterialOpitons, getVendorOptions } from '../../assets/fixtures';
-import '../../sass/materials.scss'
+import { getMaterialOpitons, getVendorOptions } from '../../../assets/fixtures';
+import '../../../sass/materials.scss'
 
-const Dispatch = () => {
+const WarehouseMaterials = () => {
     const [activeTab, setActiveTab] = useState('1')
     const [reFetch, setreFetch] = useState(false)
 
@@ -62,4 +62,4 @@ const Dispatch = () => {
     )
 }
 const { TabPane } = Tabs;
-export default Dispatch
+export default WarehouseMaterials

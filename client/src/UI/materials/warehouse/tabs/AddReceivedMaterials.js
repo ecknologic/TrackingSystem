@@ -1,25 +1,26 @@
 import dayjs from 'dayjs';
 import { Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { http } from '../../../modules/http';
-import Spinner from '../../../components/Spinner';
-import ConfirmModal from '../../../components/CustomModal';
-import { EyeIconGrey, ScheduleIcon } from '../../../components/SVG_Icons';
-import SearchInput from '../../../components/SearchInput';
-import ConfirmMessage from '../../../components/ConfirmMessage';
-import { TODAYDATE, TRACKFORM } from '../../../utils/constants';
-import CustomPagination from '../../../components/CustomPagination';
-import { getRMColumns } from '../../../assets/fixtures';
-import { base64String, deepClone, disableFutureDates, getBase64, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
-import CustomModal from '../../../components/CustomModal';
+import { http } from '../../../../modules/http';
+import Spinner from '../../../../components/Spinner';
+import ConfirmModal from '../../../../components/CustomModal';
+import { EyeIconGrey, ScheduleIcon } from '../../../../components/SVG_Icons';
+import SearchInput from '../../../../components/SearchInput';
+import ConfirmMessage from '../../../../components/ConfirmMessage';
+import { TODAYDATE, TRACKFORM } from '../../../../utils/constants';
+import CustomPagination from '../../../../components/CustomPagination';
+import { getRMColumns } from '../../../../assets/fixtures';
+import { base64String, deepClone, disableFutureDates, getBase64, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
+import CustomModal from '../../../../components/CustomModal';
 import MaterialReceivedForm from '../forms/MaterialReceived';
-import { validateNames, validateNumber, validateReceivedMaterialValues } from '../../../utils/validations';
-import DateValue from '../../../components/DateValue';
-import CustomDateInput from '../../../components/CustomDateInput';
+import { validateNames, validateNumber, validateReceivedMaterialValues } from '../../../../utils/validations';
+import DateValue from '../../../../components/DateValue';
+import CustomDateInput from '../../../../components/CustomDateInput';
 const DATEFORMAT = 'DD-MM-YYYY'
 const format = 'YYYY-MM-DD'
+const fn = () => { }
 
-const AddMaterials = ({ onUpdate }) => {
+const AddMaterials = ({ onUpdate = fn }) => {
     const [loading, setLoading] = useState(true)
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})

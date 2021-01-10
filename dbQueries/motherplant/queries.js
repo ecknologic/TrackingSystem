@@ -55,6 +55,10 @@ motherPlantDbQueries.getProductionBatchIds = async (departmentId, callback) => {
     let query = "select productionQcId,batchId from productionQC where departmentId=? AND status=? ORDER BY requestedDate DESC";
     return executeGetParamsQuery(query, [departmentId, "Approved"], callback)
 }
+motherPlantDbQueries.getPostProductionBatchIds = async (departmentId, callback) => {
+    let query = "select q.productionQcId,p.batchId from qualitycheck q INNER JOIN productionQC p ON q.productionQcId=p.productionQcId where q.departmentId=? AND q.testResult=? AND p.status='Approved' AND q.qcLevel != '1' ORDER BY q.testedDate DESC";
+    return executeGetParamsQuery(query, [departmentId, "Approved"], callback)
+}
 motherPlantDbQueries.getQCDetailsByBatch = async (batchId, callback) => {
     let query = `select * from productionQC where batchId=?`;
     return executeGetParamsQuery(query, [batchId], callback)
