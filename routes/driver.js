@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 const db = require('../config/db.js');
+const driverQueries = require('../dbQueries/driver/queries.js');
+const { dbError } = require('../utils/functions.js');
 
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -114,4 +116,22 @@ router.get("/customerOrderDetails/:orderId", (req, res) => {
         }
     });
 });
+router.get('/getDrivers', (req, res) => {
+    driverQueries.getDrivers((err, results) => {
+        if (err) res.json(dbError(err))
+        else res.json(results)
+    })
+})
+router.post('/createDriver', (req, res) => {
+    driverQueries.createDriver(req.body, (err, results) => {
+        if (err) res.json(dbError(err))
+        else res.json(results)
+    })
+})
+router.post('/updateDriver', (req, res) => {
+    driverQueries.updateDriver(req.body, (err, results) => {
+        if (err) res.json(dbError(err))
+        else res.json(results)
+    })
+})
 module.exports = router;

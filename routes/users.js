@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const db = require('../config/db.js')
 var bcrypt = require("bcryptjs");
+const usersQueries = require('../dbQueries/users/queries.js');
 
 router.post('/createWebUser', (req, res) => {
   // Generates hash using bCrypt
@@ -9,7 +10,6 @@ router.post('/createWebUser', (req, res) => {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(10), null);
   }
   let query = "insert into usermaster (userName,roleId,emailid,password,departmentId,mobileNumber,joinedDate,parentName,gender,dob,aadharNo,address,permanentAddress) values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
-  let userDetails = req.body;
   const { userName, roleId, emailid, password = "Bibo@123", privilegeDetails = [], departmentId, mobileNumber, joinedDate, parentName, gender, dob, aadharNo, address, permanentAddress } = req.body
   let insertQueryValues = [userName, roleId, emailid, createHash(password), departmentId, mobileNumber, joinedDate, parentName, gender, dob, aadharNo, address, permanentAddress]
   db.query(query, insertQueryValues, (err, results) => {
@@ -37,22 +37,19 @@ router.post('/createWebUser', (req, res) => {
   });
 });
 router.get('/getUsers', (req, res) => {
-  let query = "SELECT userId,userName,RoleId,emailid,mobileNumber from usermaster ORDER BY createdDateTime DESC";
-  db.query(query, (err, results) => {
+  usersQueries.getUsers((err, results) => {
     if (err) res.json(err);
     else res.json(results)
   })
 })
 router.get('/getUsersBydepartmentType/:departmentType', (req, res) => {
-  let query = "SELECT u.userId,u.userName,u.emailid,u.mobileNumber,r.RoleName as role from usermaster u INNER JOIN rolemaster r on u.RoleId=r.RoleId ORDER BY createdDateTime DESC";
-  db.query(query, (err, results) => {
+  usersQueries.getUsersBydepartmentType(req.params.departmentType, (err, results) => {
     if (err) res.json(err);
     else res.json(results)
   })
 })
 router.get('/getUser/:userId', (req, res) => {
-  let query = "SELECT userId,userName,RoleId,emailid,mobileNumber from usermaster where userId=" + req.params.userId;
-  db.query(query, (err, results) => {
+  usersQueries.getUsersById(req.params.userId, (err, results) => {
     if (err) res.json(err);
     else res.json(results)
   })
@@ -61,7 +58,7 @@ router.post('/updateWebUser', (req, res) => {
   let query = "UPDATE usermaster SET userName=?,roleId=?,emailid=?, mobileNumber=?, joinedDate=?, parentName=?, gender=?, dob=?, aadharNo=?, address=?, permanentAddress=?  where userId=?";
   let userDetails = req.body;
   const { userName, roleId, emailid, mobileNumber, userId, joinedDate, parentName, gender, dob, aadharNo, address, permanentAddress } = req.body
-  let insertQueryValues = [userName, roleId, emailid, mobileNumber, joinedDate, parentName, gender, dob, aadharNo, address, permanentAddress,userId]
+  let insertQueryValues = [userName, roleId, emailid, mobileNumber, joinedDate, parentName, gender, dob, aadharNo, address, permanentAddress, userId]
   db.query(query, insertQueryValues, (err, results) => {
     if (err) res.send(err);
     else {
