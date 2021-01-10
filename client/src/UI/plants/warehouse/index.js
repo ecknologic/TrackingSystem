@@ -8,9 +8,11 @@ import '../../../sass/plants.scss';
 const Warehouses = () => {
 
     const [activeTab, setActiveTab] = useState('1')
+    const [reFetch, setreFetch] = useState(false)
 
     const handleGoToTab = (key) => {
         setActiveTab(key)
+        setreFetch(!reFetch)
     }
 
     const handleTabClick = (key) => {
@@ -27,7 +29,7 @@ const Warehouses = () => {
                         activeKey={activeTab}
                     >
                         <TabPane tab="Warehouses" key="1">
-                            <Dashboard />
+                            <Dashboard reFetch={reFetch} />
                         </TabPane>
                         <TabPane tab="Create New Warehouse" key="2">
                             <CreateNewPlant goToTab={handleGoToTab} />

@@ -31,7 +31,7 @@ const CreateNewPlantForm = (props) => {
             </div>
             <div className='row'>
                 <div className='input-container stretch'>
-                    <InputLabel name='Plant Name' error={errors.departmentName} mandatory />
+                    <InputLabel name='Name' error={errors.departmentName} mandatory />
                     <CustomInput value={departmentName} placeholder='Add Name'
                         error={errors.departmentName}
                         onChange={(value) => onChange(value, 'departmentName')}
