@@ -3,6 +3,7 @@ var express = require('express');
 var router = express.Router();
 const db = require('../config/db.js');
 const motherPlantDbQueries = require('../dbQueries/motherplant/queries.js');
+const usersQueries = require('../dbQueries/users/queries.js');
 const warehouseQueries = require('../dbQueries/warehouse/queries.js');
 const { DATEFORMAT, INSERTMESSAGE } = require('../utils/constants.js');
 const { dbError } = require('../utils/functions.js');
@@ -54,6 +55,12 @@ router.get('/getDispatchDetailsByDC/:DCNO', (req, res) => {
     }
   });
 });
+router.get('/getOrderDetailsByDepartment/:departmentId', (req, res) => {
+  warehouseQueries.getOrderDetailsByDepartment(req.params.departmentId, (err, results) => {
+    if (err) res.status(500).json(dbError(err));
+    else res.json(results);
+  });
+});
 
 router.get('/getWarehouseList', (req, res) => {
   warehouseQueries.getWarehouseList((err, results) => {
@@ -70,7 +77,14 @@ router.get('/getWarehouseById/:warehouseId', (req, res) => {
 router.post('/createWarehouse', (req, res) => {
   warehouseQueries.createWarehouse(req.body, (err, results) => {
     if (err) res.status(500).json(dbError(err));
-    else res.json(results);
+    else {
+      usersQueries.updateUserDepartment({ departmentId: results.insertId, userId: req.body.adminId }, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else {
+          res.json(results);
+        }
+      })
+    }
   });
 });
 

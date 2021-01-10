@@ -3,7 +3,7 @@ const dayjs = require('dayjs');
 
 var motherPlantDbQueries = {}
 motherPlantDbQueries.getMotherPlantsList = async (callback) => {
-    let query = `select d.departmentName,d.address,d.state,d.city,d.isActive,u.userName from departmentmaster d INNER JOIN usermaster u on d.adminId=u.userId WHERE departmentType='MotherPlant' ORDER BY createdDateTime DESC`;
+    let query = `select d.departmentName,d.address,d.state,d.city,d.isApproved,u.userName as adminName from departmentmaster d INNER JOIN usermaster u on d.adminId=u.userId WHERE d.departmentType='MotherPlant' ORDER BY d.createdDateTime DESC`;
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getMotherPlantById = async (motherPlantId, callback) => {
@@ -125,10 +125,10 @@ motherPlantDbQueries.createQC = async (input, callback) => {
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.createMotherPlant = async (input, callback) => {
-    const { address, departmentName, city, state, pinCode, adminId } = input
-    let query = "insert into departmentmaster (departmentName,departmentType,gstNo,gstProof,address,city,state,pinCode,adminId) values(?,?,?,?,?,?,?,?,?)";
+    const { address, departmentName, city, state, pinCode, adminId,phoneNumber } = input
+    let query = "insert into departmentmaster (departmentName,departmentType,gstNo,gstProof,address,city,state,pinCode,adminId,phoneNumber) values(?,?,?,?,?,?,?,?,?,?)";
     let gstProof = input.gstProof && Buffer.from(input.gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-    let requestBody = [departmentName, 'MotherPlant', input.gstNo, gstProof, address, city, state, pinCode, adminId]
+    let requestBody = [departmentName, 'MotherPlant', input.gstNo, gstProof, address, city, state, pinCode, adminId,phoneNumber]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.createProductionQC = async (input, callback) => {

@@ -2,12 +2,16 @@ const { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery } = req
 let warehouseQueries = {}
 
 warehouseQueries.getWarehouseList = async (callback) => {
-    let query = `select d.departmentName,d.address,d.state,d.city,d.isActive,u.userName from departmentmaster d INNER JOIN usermaster u on d.adminId=u.userId WHERE departmentType='Warehouse' ORDER BY createdDateTime DESC`;
+    let query = `select d.departmentName,d.address,d.state,d.city,d.isActive,u.userName as adminName from departmentmaster d INNER JOIN usermaster u on d.adminId=u.userId WHERE d.departmentType='Warehouse' ORDER BY d.createdDateTime DESC`;
     return executeGetQuery(query, callback)
 }
 warehouseQueries.getWarehouseById = async (warehouseId, callback) => {
     let query = `select d.*,u.userName,u.mobileNumber,u.emailid from departmentmaster d INNER JOIN usermaster u on d.adminId=u.userId WHERE departmentId=${warehouseId}`;
     return executeGetQuery(query, callback)
+}
+warehouseQueries.getOrderDetailsByDepartment = async (departmentId,callback) => {
+    let query = `select d.deliveryDetailsId,d.address,r.RouteName from DeliveryDetails d INNER JOIN routes r ON d.routeId=r.routeId WHERE d.departmentId=? AND d.deleted=0 AND d.isActive=1`;
+    return executeGetParamsQuery(query, [departmentId],callback)
 }
 
 //POST Request Methods
@@ -25,10 +29,10 @@ warehouseQueries.insertReturnStockDetails = (input, callback) => {
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 warehouseQueries.createWarehouse = async (input, callback) => {
-    const { address, departmentName, city, state, pinCode, adminId } = input
-    let query = "insert into departmentmaster (departmentName,departmentType,gstNo,gstProof,address,city,state,pinCode,adminId) values(?,?,?,?,?,?,?,?,?)";
+    const { address, departmentName, city, state, pinCode, adminId,phoneNumber } = input
+    let query = "insert into departmentmaster (departmentName,departmentType,gstNo,gstProof,address,city,state,pinCode,adminId,phoneNumber) values(?,?,?,?,?,?,?,?,?,?)";
     let gstProof = input.gstProof && Buffer.from(input.gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-    let requestBody = [departmentName, 'Warehouse', input.gstNo, gstProof, address, city, state, pinCode, adminId]
+    let requestBody = [departmentName, 'Warehouse', input.gstNo, gstProof, address, city, state, pinCode, adminId,phoneNumber]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 

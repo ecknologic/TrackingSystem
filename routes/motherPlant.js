@@ -4,6 +4,7 @@ const motherPlantDbQueries = require('../dbQueries/motherplant/queries');
 const { dbError, getBatchId } = require('../utils/functions');
 const { INSERTMESSAGE, UPDATEMESSAGE } = require('../utils/constants');
 const dayjs = require('dayjs');
+const usersQueries = require('../dbQueries/users/queries');
 let departmentId;
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -68,7 +69,14 @@ router.get('/getMotherPlantById/:motherplantId', (req, res) => {
 router.post('/createMotherPlant', (req, res) => {
     motherPlantDbQueries.createMotherPlant(req.body, (err, results) => {
         if (err) res.status(500).json(dbError(err));
-        else res.json(results);
+        else {
+            usersQueries.updateUserDepartment({ departmentId: results.insertId, userId: req.body.adminId }, (err, userResults) => {
+                if (err) res.status(500).json(dbError(err));
+                else {
+                    res.json(userResults);
+                }
+            })
+        }
     });
 });
 router.get('/getProdQCTestedBatches', (req, res) => {
