@@ -78,7 +78,10 @@ export const getRouteOptions = (routes = []) => {
     return routes.map((item) => <Option key={item.RouteId} value={item.RouteId}>{item.RouteName}</Option>)
 }
 export const getBatchIdOptions = (batches = []) => {
-    return batches.map((item, index) => <Option key={index} value={item.batchId}>{item.batchId}</Option>)
+    return batches.map((item) => <Option key={item.batchId} value={item.batchId}>{item.batchId}</Option>)
+}
+export const getStaffOptions = (staff = []) => {
+    return staff.map((item) => <Option key={item.userId} value={item.userId}>{item.userName}</Option>)
 }
 export const getBatchOptions = (batches = []) => {
     return batches.map((item) => <Option key={item.productionQcId} value={item.productionQcId}>{item.batchId}</Option>)

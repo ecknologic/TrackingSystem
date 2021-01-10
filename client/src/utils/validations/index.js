@@ -229,6 +229,51 @@ export const validateBatchValues = (data) => {
     return { ...errors, ...productErrors }
 }
 
+export const validatePlantValues = (data) => {
+    let errors = {};
+    const text = 'Required'
+    const text2 = 'Incomplete'
+    const { gstNo, gstProof, departmentName, address, adminId, phoneNumber, city, state, pinCode } = data
+
+    if (!adminId) errors.adminId = text
+    if (!address) errors.address = text
+    if (gstNo && !gstProof) errors.gstProof = text
+    if (!gstNo && gstProof) errors.gstNo = text
+    if (gstNo) {
+        if (String(gstNo).length < 15) errors.gstNo = text2
+        else {
+            const error = validateIDNumbers('gstNo', gstNo)
+            error && (errors.gstNo = error)
+        }
+    }
+    if (phoneNumber) {
+        const error = validateMobileNumber(phoneNumber)
+        error && (errors.phoneNumber = error)
+    }
+    if (!departmentName) errors.departmentName = text
+    else {
+        const error = validateNames(departmentName)
+        error && (errors.departmentName = error)
+    }
+    if (!city) errors.city = text
+    else {
+        const error = validateNames(city)
+        error && (errors.city = error)
+    }
+    if (!state) errors.state = text
+    else {
+        const error = validateNames(state)
+        error && (errors.state = error)
+    }
+    if (!pinCode) errors.pinCode = text
+    else {
+        const error = validatePinCode(pinCode)
+        error && (errors.pinCode = error)
+    }
+
+    return errors
+}
+
 export const validateQCValues = (data) => {
     let errors = {};
     const text = 'Required'
@@ -722,6 +767,20 @@ export const validateMobileNumber = (value, isBlur) => {
     if (String(value).length === 10) {
         const isValid = isIndMobileNum(value)
         if (!isValid) return 'Invalid'
+    }
+    return ''
+}
+
+export const validatePinCode = (value, isBlur) => {
+    if (isBlur && value) {
+        const isValid = isStrictDigit(value)
+        if (!isValid) return 'Invalid'
+    }
+    if (isBlur && value && String(value).length < 6) {
+        return 'Incomplete'
+    }
+    if (value && !isStrictDigit(value)) {
+        return 'Enter digits only'
     }
     return ''
 }

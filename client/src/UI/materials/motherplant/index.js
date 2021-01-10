@@ -1,6 +1,6 @@
 import { Tabs } from 'antd';
 import React, { Fragment } from 'react';
-import Header from './header';
+import Header from '../../../components/SimpleHeader';
 import AddMaterials from '../warehouse/tabs/AddReceivedMaterials';
 import ReportsDropdown from '../../../components/ReportsDropdown';
 import RequestedMaterialStatus from '../warehouse/tabs/RequestedMaterialStatus';
@@ -10,7 +10,7 @@ const MotherplantMaterials = () => {
 
     return (
         <Fragment>
-            <Header />
+            <Header title='Materials' />
             <div className='materials-content'>
                 <div className='app-tabs-container'>
                     <Tabs

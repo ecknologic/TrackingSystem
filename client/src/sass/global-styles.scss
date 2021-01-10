@@ -1417,3 +1417,18 @@ textarea {
         }
     }
 }
+
+.app-simple-header {
+    display: flex;
+    align-items: center;
+    height: 5.45em;
+    min-height: 5.45em;
+    background-color: #f1f2f7;
+    padding: 0 3em;
+    
+    .title {
+        font-size: 1.55em;
+        font-weight: 700;
+        color: $primaryColor;
+    }
+}

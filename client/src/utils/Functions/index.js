@@ -288,6 +288,10 @@ export const extractGADeliveryDetails = ({ gstNo = '', deliveryLocation, departm
     return { gstNo, gstProof, address, deliveryLocation, departmentId, isApproved, depositAmount, phoneNumber: mobileNumber, contactPerson }
 }
 
+export const getPlantValuesForDB = ({ gstNo = '', gstProof = '', phoneNumber = '', ...rest }) => {
+    return { gstNo, gstProof, phoneNumber, ...rest }
+}
+
 export const extractCADetails = (data) => {
     const { address: Address1 } = data
     const clone = deepClone(data)

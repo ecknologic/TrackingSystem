@@ -60,7 +60,7 @@ router.get('/getQCTestedBatches', (req, res) => {
     });
 });
 
-router.get('/getMotherPlantsList', (req, res) => {
+router.get('/getMotherPlantList', (req, res) => {
     motherPlantDbQueries.getMotherPlantsList((err, results) => {
         if (err) res.status(500).json(dbError(err));
         else res.json(results);

@@ -4,9 +4,11 @@ import NameCard from './NameCard';
 import PrimaryButton from './PrimaryButton';
 import { FriendsIconGrey, FriendIconGrey } from './SVG_Icons';
 
-const AccountCard = ({ customerDetails, onClick, btnTxt = 'Manage Account' }) => {
-    const isApproved = customerDetails.isApproved
-    const names = JSON.parse(customerDetails.contactpersons)
+const AccountCard = ({ data, onClick, btnTxt = 'Manage Account' }) => {
+
+    const { isApproved, contactpersons, customerName, organizationName, address, natureOfBussiness } = data
+
+    const names = JSON.parse(contactpersons)
     const contacts = names.length
 
     const extra = contacts > 3 ? <span className='extra'>{`+${contacts - 3}`}</span> : null
@@ -18,8 +20,8 @@ const AccountCard = ({ customerDetails, onClick, btnTxt = 'Manage Account' }) =>
                 <div className={isApproved ? 'inner green' : 'inner'}>
                     {contacts > 1 ? <FriendsIconGrey className='friends icon' /> : <FriendIconGrey className='friend icon' />}
                     <div className='address-container'>
-                        <span className='title clamp-1'>{customerDetails.organizationName || customerDetails.customerName}</span>
-                        <span className='address clamp-2'>{customerDetails.address}</span>
+                        <span className='title clamp-1'>{organizationName || customerName}</span>
+                        <span className='address clamp-2'>{address}</span>
                     </div>
                 </div>
             </div>
@@ -40,7 +42,7 @@ const AccountCard = ({ customerDetails, onClick, btnTxt = 'Manage Account' }) =>
                 </div>
                 <div className='business'>
                     <span className='type1'>Business Type</span>
-                    <span className='value'>{customerDetails.natureOfBussiness}</span>
+                    <span className='value'>{natureOfBussiness}</span>
                 </div>
             </div>
             <div className='footer'>

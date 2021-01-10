@@ -1,17 +1,13 @@
-.address-card-container {
-    height: 21.5em;
+.plant-card-container {
+    height: 20.6em;
 
     .header {
-        height: 6em;
+        height: 9em;
+        padding-bottom: 0;
     }
 
     .body {
-        height: 10.5em;
-
-        .contacts {
-            flex-direction: column;
-            flex-wrap: nowrap;
-        }
+        height: 7em;
 
         .mobile {
             color: #535353;

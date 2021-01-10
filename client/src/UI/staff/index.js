@@ -1,12 +1,12 @@
 import { Tabs } from 'antd';
 import React, { Fragment } from 'react';
-import Header from './header';
+import Header from '../../components/SimpleHeader';
 
 const Staff = () => {
 
     return (
         <Fragment>
-            <Header />
+            <Header title='Staff' />
             <div className='materials-content'>
                 <div className='app-tabs-container'>
                     <Tabs>

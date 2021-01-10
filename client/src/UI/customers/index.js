@@ -168,7 +168,7 @@ const Customers = () => {
                             : accounts.length ? accounts.slice(sliceFrom, sliceTo).map((account) => (
                                 <Col lg={{ span: 12 }} xl={{ span: 8 }} xxl={{ span: 6 }} key={account.customerId}>
                                     <AccountCard
-                                        customerDetails={account}
+                                        data={account}
                                         btnTxt={cardBtnTxt}
                                         onClick={() => onCardBtnClick(account.customerId)}
                                     />

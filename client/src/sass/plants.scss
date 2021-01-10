@@ -1,0 +1,62 @@
+.plantcontent {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 3em;
+    background-color: #FAFAFB;
+
+    .plantform-container {
+        width: 80%;
+        padding: 1em 0 0 2em;
+
+        .columns {
+            width: 80%;
+        }
+
+        .title-container {
+            height: 5em;
+            display: flex;
+            align-items: center;
+            padding-top: 1em;
+    
+            .title {
+                color: #1B2125;
+                font-family: 'PoppinsRegular400';
+                font-size: 1.4em;
+                margin-right: 1em;
+            }
+        }
+
+        .form-divider {
+            margin-top: 3em;
+            margin-bottom: 1em;
+        }
+    }
+
+    .app-footer-buttons-container {
+        justify-content: flex-end;
+        padding-left: 2em;
+    }
+
+    .ant-tabs-tabpane {
+        padding: 0 !important;
+    }
+
+    #no-content {
+        min-height: calc(100vh - 22em);
+    }
+
+    .plantmanager-content {
+        padding: 3em 1em 0 2.5em;
+        padding-top: 3em;
+        background-color: #FAFAFB;
+    
+        #no-content {
+            height: calc(100vh - 20em);
+        }
+    
+        .app-pagination {
+            padding-right: 1em;
+        }
+    }
+}
