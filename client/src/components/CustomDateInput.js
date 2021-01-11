@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
 import dayjs from 'dayjs';
+import React, { useState } from 'react';
 import DatePicker from './DatePicker';
+import { ScheduleIconGrey } from './SVG_Icons';
 import { setTrackForm } from '../utils/Functions';
 
 const CustomDateInput = (props) => {
 
-    const { disabled, value, placeholder = 'Select Date', track, onChange, format = 'DD/MM/YYYY',
-        disabledDate, open, onOpenChange, style, className } = props
+    const { disabled, value, placeholder = 'Select Date', track, onChange, error, format = 'DD/MM/YYYY',
+        disabledDate, open, onOpenChange, style, className, suffixIcon = <ScheduleIconGrey /> } = props
 
     const [hasTracked, setHasTracked] = useState(false)
 
@@ -27,11 +28,13 @@ const CustomDateInput = (props) => {
             format={format}
             disabled={disabled}
             className={className}
+            suffixIcon={suffixIcon}
             onChange={handleChange}
             placeholder={placeholder}
             disabledDate={disabledDate}
             onOpenChange={onOpenChange}
             value={value ? dayjs(value) : ''}
+            className={error && 'app-input-error'}
             getPopupContainer={() => document.getElementById('content')}
         />
     )

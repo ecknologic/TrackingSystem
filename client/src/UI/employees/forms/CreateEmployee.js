@@ -7,12 +7,16 @@ import CustomDateInput from '../../../components/CustomDateInput';
 import SelectInput from '../../../components/SelectInput';
 import { genderOptions } from '../../../assets/fixtures'
 import { disableFutureDates, resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
+import UploadPreviewer from '../../../components/UploadPreviewer';
+import DraggerInput from '../../../components/DraggerInput';
 
 const CreateEmployeeForm = (props) => {
 
-    const { data, title, errors, roleOptions, onChange, onBlur } = props
+    const { data, title, errors, roleOptions, onChange, onUpload, onRemove, disabled, onBlur,
+        adharProof, adharProofErrors, licenseProof, licenseProofErrors } = props
     const { userName, adharNo, licenseNo, parentName, gender, dob, mobileNumber, address,
-        joinedDate, permanentAddress, roleId } = data
+        joinedDate, permanentAddress, roleId, emailid } = data
+
 
     useEffect(() => {
         resetTrackForm()
@@ -28,6 +32,49 @@ const CreateEmployeeForm = (props) => {
             <div className='title-container'>
                 <span className='title'>New {title} Details</span>
             </div>
+            <div className='app-identity-proof-container identity-proof-container'>
+                <div className='row'>
+                    <div className='input-container'>
+                        <InputLabel name='Aadhar Number' error={errors.adharNo} mandatory />
+                        <InputWithAddon maxLength={12} label='VERIFY' uppercase
+                            value={adharNo} placeholder='Aadhar Number'
+                            error={errors.adharNo} onBlur={(value) => onBlur(value, 'adharNo')}
+                            onChange={(value) => onChange(value, 'adharNo')}
+                        />
+                    </div>
+                </div>
+                <div className='upload-container'>
+                    <DraggerInput onUpload={(file) => onUpload(file, 'any', 'adharProof')} />
+                    <div className='upload-preview-container'>
+                        <UploadPreviewer track value={adharProof.Front} title='Front' disabled={disabled} onUpload={(file) => onUpload(file, 'Front', 'adharProof')} onRemove={() => onRemove('Front', 'adharProof')} error={adharProofErrors.Front} />
+                        <UploadPreviewer track value={adharProof.Back} title='Back' disabled={disabled} onUpload={(file) => onUpload(file, 'Back', 'adharProof')} onRemove={() => onRemove('Back', 'adharProof')} className='last' error={adharProofErrors.Back} />
+                    </div>
+                </div>
+            </div>
+            {
+                title === 'Driver'
+                    ? <div className='app-identity-proof-container identity-proof-container'>
+                        <div className='row'>
+                            <div className='input-container'>
+                                <InputLabel name='Driving License Number' error={errors.licenseNo} mandatory />
+                                <InputWithAddon maxLength={16} label='VERIFY' uppercase
+                                    value={licenseNo} placeholder='Driving License Number'
+                                    error={errors.licenseNo} onBlur={(value) => onBlur(value, 'licenseNo')}
+                                    onChange={(value) => onChange(value, 'licenseNo')}
+                                />
+                            </div>
+
+                        </div>
+                        <div className='upload-container'>
+                            <DraggerInput onUpload={(file) => onUpload(file, 'any', 'licenseProof')} />
+                            <div className='upload-preview-container'>
+                                <UploadPreviewer track value={licenseProof.Front} title='Front' disabled={disabled} onUpload={(file) => onUpload(file, 'Front', 'licenseProof')} onRemove={() => onRemove('Front', 'licenseProof')} error={licenseProofErrors.Front} />
+                                <UploadPreviewer track value={licenseProof.Back} title='Back' disabled={disabled} onUpload={(file) => onUpload(file, 'Back', 'licenseProof')} onRemove={() => onRemove('Back', 'licenseProof')} className='last' error={licenseProofErrors.Back} />
+                            </div>
+                        </div>
+                    </div>
+                    : null
+            }
             <div className='row'>
                 <div className='input-container'>
                     <InputLabel name='Name as per Aadhar' error={errors.userName} mandatory />
@@ -55,7 +102,7 @@ const CreateEmployeeForm = (props) => {
                 <div className='input-container'>
                     <InputLabel name='Date of Birth as per Aadhar' error={errors.dob} mandatory />
                     <CustomDateInput
-                        track value={dob} disabledDate={disableFutureDates}
+                        track value={dob} disabledDate={disableFutureDates} error={errors.dob}
                         onChange={(value) => onChange(dayjs(value).format('YYYY-MM-DD'), 'dob')}
                     />
                 </div>
@@ -69,11 +116,10 @@ const CreateEmployeeForm = (props) => {
                     />
                 </div>
                 <div className='input-container'>
-                    <InputLabel name='Aadhar Number' error={errors.adharNo} mandatory />
-                    <InputWithAddon maxLength={12} label='VERIFY' uppercase
-                        value={adharNo} placeholder='Aadhar Number'
-                        error={errors.adharNo} onBlur={(value) => onBlur(value, 'adharNo')}
-                        onChange={(value) => onChange(value, 'adharNo')}
+                    <InputLabel name='Email' error={errors.emailid} mandatory />
+                    <CustomInput value={emailid} placeholder='Email'
+                        error={errors.emailid} onBlur={(value) => onBlur(value, 'emailid')}
+                        onChange={(value) => onChange(value, 'emailid')}
                     />
                 </div>
             </div>
@@ -81,20 +127,13 @@ const CreateEmployeeForm = (props) => {
                 <div className='input-container'>
                     <InputLabel name='Date of Joining' error={errors.joinedDate} mandatory />
                     <CustomDateInput
-                        track value={joinedDate} disabledDate={disableFutureDates}
+                        track value={joinedDate} disabledDate={disableFutureDates} error={errors.joinedDate}
                         onChange={(value) => onChange(dayjs(value).format('YYYY-MM-DD'), 'joinedDate')}
                     />
                 </div>
                 {
                     title === 'Driver'
-                        ? <div className='input-container'>
-                            <InputLabel name='Driving License Number' error={errors.licenseNo} mandatory />
-                            <InputWithAddon maxLength={16} label='VERIFY' uppercase
-                                value={licenseNo} placeholder='Driving License Number'
-                                error={errors.licenseNo} onBlur={(value) => onBlur(value, 'licenseNo')}
-                                onChange={(value) => onChange(value, 'licenseNo')}
-                            />
-                        </div>
+                        ? null
                         :
                         <div className='input-container'>
                             <InputLabel name='Role' error={errors.roleId} mandatory />

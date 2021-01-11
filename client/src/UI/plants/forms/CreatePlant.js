@@ -49,17 +49,17 @@ const CreateNewPlantForm = (props) => {
             </div>
             <div className='row'>
                 <div className='input-container'>
-                    <InputLabel name='City' error={errors.city} mandatory />
-                    <CustomInput value={city} placeholder='Add City'
-                        error={errors.city}
-                        onChange={(value) => onChange(value, 'city')}
-                    />
-                </div>
-                <div className='input-container'>
                     <InputLabel name='State' error={errors.state} mandatory />
                     <CustomInput value={state} placeholder='Add State'
                         error={errors.state}
                         onChange={(value) => onChange(value, 'state')}
+                    />
+                </div>
+                <div className='input-container'>
+                    <InputLabel name='City' error={errors.city} mandatory />
+                    <CustomInput value={city} placeholder='Add City'
+                        error={errors.city}
+                        onChange={(value) => onChange(value, 'city')}
                     />
                 </div>
             </div>

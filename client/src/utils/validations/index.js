@@ -286,7 +286,7 @@ export const validateEmployeeValues = (data, employeeType) => {
     const text = 'Required'
     const text2 = 'Incomplete'
     const { userName, adharNo, parentName, gender, dob, mobileNumber, address,
-        joinedDate, permanentAddress, roleId, licenseNo } = data
+        joinedDate, permanentAddress, roleId, licenseNo, emailid } = data
 
     if (!dob) errors.dob = text
     if (!joinedDate) errors.joinedDate = text
@@ -295,6 +295,11 @@ export const validateEmployeeValues = (data, employeeType) => {
     if (employeeType === 'Driver' && !licenseNo) errors.licenseNo = text
     if (!address) errors.address = text
     if (!gender) errors.gender = text
+    if (!emailid) errors.emailid = text
+    else {
+        const error = validateEmailId(emailid)
+        error && (errors.emailid = error)
+    }
     if (!userName) errors.userName = text
     else {
         const error = validateNames(userName)

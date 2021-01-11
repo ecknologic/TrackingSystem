@@ -10,10 +10,11 @@ router.post('/createWebUser', (req, res) => {
   var createHash = function (password) {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(10), null);
   }
-  let query = "insert into usermaster (userName,roleId,emailid,password,departmentId,mobileNumber,joinedDate,parentName,gender,dob,adharNo,address,permanentAddress) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+  let query = "insert into usermaster (userName,roleId,emailid,password,departmentId,mobileNumber,joinedDate,parentName,gender,dob,adharNo,address,permanentAddress,adhar_frontside,adhar_backside) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
   const { userName, roleId, emailid, password = "Bibo@123", privilegeDetails = [], departmentId, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, adharProof } = req.body
-  let aadhar = Buffer.from(adharProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-  let insertQueryValues = [userName, roleId, emailid, createHash(password), departmentId, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, aadhar]
+  let adhar_frontside = Buffer.from(adharProof.Front.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+  let adhar_backside = Buffer.from(adharProof.Back.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+  let insertQueryValues = [userName, roleId, emailid, createHash(password), departmentId, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, adhar_frontside, adhar_backside]
   db.query(query, insertQueryValues, (err, results) => {
     if (err) res.status(500).json(dbError(err));
     else {

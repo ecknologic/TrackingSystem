@@ -173,10 +173,6 @@ const AddAccount = () => {
             const error = validateNames(value)
             setGeneralErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key === 'EmailId') {
-            const error = validateEmailId(value)
-            setGeneralErrors(errors => ({ ...errors, [key]: error }))
-        }
         else if (key.includes('price') || key.includes('product')) {
             const error = validateNumber(value)
             setGeneralErrors(errors => ({ ...errors, productNPrice: error }))
@@ -192,6 +188,10 @@ const AddAccount = () => {
         }
         else if (key === 'mobileNumber') {
             const error = validateMobileNumber(value, true)
+            setGeneralErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'EmailId') {
+            const error = validateEmailId(value)
             setGeneralErrors(errors => ({ ...errors, [key]: error }))
         }
     }
@@ -224,10 +224,6 @@ const AddAccount = () => {
             const error = validateNumber(value)
             setCorporateErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key === 'EmailId') {
-            const error = validateEmailId(value)
-            setCorporateErrors(errors => ({ ...errors, [key]: error }))
-        }
     }
 
     const handleCorporateBlur = (value, key) => {
@@ -239,6 +235,10 @@ const AddAccount = () => {
         }
         else if (key === 'mobileNumber') {
             const error = validateMobileNumber(value, true)
+            setCorporateErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'EmailId') {
+            const error = validateEmailId(value)
             setCorporateErrors(errors => ({ ...errors, [key]: error }))
         }
     }

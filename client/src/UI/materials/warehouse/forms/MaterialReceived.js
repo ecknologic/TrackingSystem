@@ -98,7 +98,7 @@ const MaterialReceivedForm = (props) => {
                     <div className='input-container'>
                         <InputLabel name='Invoice Date' error={errors.invoiceDate} mandatory />
                         <CustomDateInput
-                            track disabled={disabled}
+                            track disabled={disabled} error={errors.invoiceDate}
                             value={invoiceDate} disabledDate={disableDates}
                             onChange={(value) => onChange(value, 'invoiceDate')}
                         />

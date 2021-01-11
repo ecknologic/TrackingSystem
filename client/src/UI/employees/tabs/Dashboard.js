@@ -21,6 +21,7 @@ const Dashboard = ({ reFetch }) => {
     const pageSizeOptions = useMemo(() => generatePageSizeOptions(), [window.innerWidth])
 
     useEffect(() => {
+        setLoading(true)
         getEmployees()
     }, [reFetch])
 

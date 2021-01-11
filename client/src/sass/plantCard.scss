@@ -1,9 +1,13 @@
 .plant-card-container {
-    height: 20.6em;
+    height: 19.6em;
 
     .header {
-        height: 9em;
+        height: 8em;
         padding-bottom: 0;
+
+        .address-container {
+            padding-top: .5em;
+        }
     }
 
     .body {

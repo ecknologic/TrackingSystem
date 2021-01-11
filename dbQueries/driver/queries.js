@@ -9,10 +9,13 @@ driverQueries.getDrivers = async (callback) => {
 //POST Request Methods
 driverQueries.createDriver = async (input, callback) => {
     const { userName, emailid, departmentId = 1, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, licenseNo, adharProof, licenseProof } = input;
-    let query = "insert into driverdetails (driverName,emailid,departmentId,mobileNumber,joinedDate,parentName,gender,dob,adharNo,address,permanentAddress,licenseNo,adharProof,licenseProof) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-    let aadhar = Buffer.from(adharProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-    let license = Buffer.from(licenseProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-    let requestBody = [userName, emailid, departmentId, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, licenseNo, aadhar, license]
+    let query = "insert into driverdetails (driverName,emailid,departmentId,mobileNumber,joinedDate,parentName,gender,dob,adharNo,address,permanentAddress,licenseNo,adhar_frontside, adhar_backside, license_frontside, license_backside) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    let adhar_frontside = Buffer.from(adharProof.Front.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+    let adhar_backside = Buffer.from(adharProof.Back.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+    let license_frontside = Buffer.from(licenseProof.Front.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+    let license_backside = Buffer.from(licenseProof.Back.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+
+    let requestBody = [userName, emailid, departmentId, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, licenseNo, adhar_frontside, adhar_backside, license_frontside, license_backside]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 

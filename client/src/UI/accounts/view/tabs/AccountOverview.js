@@ -72,10 +72,6 @@ const AccountOverview = ({ data, warehouseOptions, onUpdate }) => {
             const error = validateNumber(value)
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key === 'EmailId') {
-            const error = validateEmailId(value)
-            setAccountErrors(errors => ({ ...errors, [key]: error }))
-        }
     }
     const handleBlur = (value, key) => {
         // Validations
@@ -85,6 +81,10 @@ const AccountOverview = ({ data, warehouseOptions, onUpdate }) => {
         }
         else if (key === 'mobileNumber') {
             const error = validateMobileNumber(value, true)
+            setAccountErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'EmailId') {
+            const error = validateEmailId(value)
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }
     }
