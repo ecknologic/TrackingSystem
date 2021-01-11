@@ -1,14 +1,14 @@
 import dayjs from 'dayjs';
 import React, { useEffect } from 'react';
 import InputLabel from '../../../components/InputLabel';
-import CustomInput from '../../../components/CustomInput';
-import InputWithAddon from '../../../components/InputWithAddon';
-import CustomDateInput from '../../../components/CustomDateInput';
-import SelectInput from '../../../components/SelectInput';
 import { genderOptions } from '../../../assets/fixtures'
-import { disableFutureDates, resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
-import UploadPreviewer from '../../../components/UploadPreviewer';
+import CustomInput from '../../../components/CustomInput';
+import SelectInput from '../../../components/SelectInput';
 import DraggerInput from '../../../components/DraggerInput';
+import InputWithAddon from '../../../components/InputWithAddon';
+import UploadPreviewer from '../../../components/UploadPreviewer';
+import CustomDateInput from '../../../components/CustomDateInput';
+import { disableFutureDates, resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
 
 const CreateEmployeeForm = (props) => {
 
@@ -27,6 +27,9 @@ const CreateEmployeeForm = (props) => {
         }
     }, [])
 
+    const adharProofDisabled = adharProof.Front && adharProof.Back
+    const licenseProofDisabled = licenseProof.Front && licenseProof.Back
+
     return (
         <div className='app-form-container plantform-container'>
             <div className='title-container'>
@@ -44,7 +47,7 @@ const CreateEmployeeForm = (props) => {
                     </div>
                 </div>
                 <div className='upload-container'>
-                    <DraggerInput onUpload={(file) => onUpload(file, 'any', 'adharProof')} />
+                    <DraggerInput onUpload={(file) => onUpload(file, 'any', 'adharProof')} disabled={adharProofDisabled} />
                     <div className='upload-preview-container'>
                         <UploadPreviewer track value={adharProof.Front} title='Front' disabled={disabled} onUpload={(file) => onUpload(file, 'Front', 'adharProof')} onRemove={() => onRemove('Front', 'adharProof')} error={adharProofErrors.Front} />
                         <UploadPreviewer track value={adharProof.Back} title='Back' disabled={disabled} onUpload={(file) => onUpload(file, 'Back', 'adharProof')} onRemove={() => onRemove('Back', 'adharProof')} className='last' error={adharProofErrors.Back} />
@@ -66,7 +69,7 @@ const CreateEmployeeForm = (props) => {
 
                         </div>
                         <div className='upload-container'>
-                            <DraggerInput onUpload={(file) => onUpload(file, 'any', 'licenseProof')} />
+                            <DraggerInput onUpload={(file) => onUpload(file, 'any', 'licenseProof')} disabled={licenseProofDisabled} />
                             <div className='upload-preview-container'>
                                 <UploadPreviewer track value={licenseProof.Front} title='Front' disabled={disabled} onUpload={(file) => onUpload(file, 'Front', 'licenseProof')} onRemove={() => onRemove('Front', 'licenseProof')} error={licenseProofErrors.Front} />
                                 <UploadPreviewer track value={licenseProof.Back} title='Back' disabled={disabled} onUpload={(file) => onUpload(file, 'Back', 'licenseProof')} onRemove={() => onRemove('Back', 'licenseProof')} className='last' error={licenseProofErrors.Back} />
