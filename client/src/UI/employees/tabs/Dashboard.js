@@ -1,5 +1,5 @@
 import { Col, Row } from 'antd';
-import { useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../modules/http'
 import Spinner from '../../../components/Spinner';
@@ -9,6 +9,7 @@ import { getMainPathname } from '../../../utils/Functions';
 import CustomPagination from '../../../components/CustomPagination';
 
 const Dashboard = ({ reFetch }) => {
+    const history = useHistory()
     const { pathname } = useLocation()
     const [employees, setEmployees] = useState([])
     const [loading, setLoading] = useState(true)
@@ -19,6 +20,7 @@ const Dashboard = ({ reFetch }) => {
     const mainUrl = useMemo(() => getMainPathname(pathname), [pathname])
     const [employeeType] = useState(() => getEmployeeType(mainUrl))
     const pageSizeOptions = useMemo(() => generatePageSizeOptions(), [window.innerWidth])
+    const idKey = useMemo(() => getKey(mainUrl), [])
 
     useEffect(() => {
         setLoading(true)
@@ -43,7 +45,7 @@ const Dashboard = ({ reFetch }) => {
         setPageNumber(number)
     }
 
-    const goToViewAccount = (id) => { }
+    const goToManageEmployee = (id) => history.push(`${mainUrl}/manage/${id}`)
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
@@ -55,8 +57,8 @@ const Dashboard = ({ reFetch }) => {
                     {
                         loading ? <NoContent content={<Spinner />} />
                             : employees.length ? employees.slice(sliceFrom, sliceTo).map((employee) => (
-                                <Col lg={{ span: 12 }} xl={{ span: 8 }} xxl={{ span: 6 }} key={employee.departmentId}>
-                                    <EmployeeCard data={employee} onClick={() => goToViewAccount(employee.departmentId)} />
+                                <Col lg={{ span: 12 }} xl={{ span: 8 }} xxl={{ span: 6 }} key={employee[idKey]}>
+                                    <EmployeeCard data={employee} onClick={() => goToManageEmployee(employee[idKey])} />
                                 </Col>
                             )) : <NoContent content={`No ${employeeType}s to show`} />
                     }
@@ -83,6 +85,11 @@ const getUrl = (url) => {
 
     if (url === '/staff') return staffUrl
     return driverUrl
+}
+
+const getKey = (url) => {
+    const type = url === '/staff' ? 'userId' : 'driverId'
+    return type
 }
 
 const getEmployeeType = (url) => {

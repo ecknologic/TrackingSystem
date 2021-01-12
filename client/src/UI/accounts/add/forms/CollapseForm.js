@@ -194,7 +194,7 @@ const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => 
                     <div className='input-container'>
                         <InputLabel name='Phone Number' error={errors.phoneNumber} mandatory />
                         <CustomInput value={phoneNumber} placeholder='Phone Number'
-                            className={`${errors.phoneNumber && 'app-input-error'}`} maxLength={10}
+                            error={errors.phoneNumber} maxLength={10}
                             onBlur={({ target: { value } }) => onBlur(value, 'phoneNumber')}
                             onChange={(value) => onChange(value, 'phoneNumber')} />
                     </div>

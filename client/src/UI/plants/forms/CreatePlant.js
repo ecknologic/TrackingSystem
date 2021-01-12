@@ -25,7 +25,7 @@ const CreateNewPlantForm = (props) => {
     }, [])
 
     return (
-        <div className='app-form-container plantform-container'>
+        <div className='app-form-container plant-form-container'>
             <div className='title-container'>
                 <span className='title'>New {title} Details</span>
             </div>

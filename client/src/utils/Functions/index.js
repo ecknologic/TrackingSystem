@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import { message } from 'antd'
 import { TRACKFORM } from "../constants"
 
@@ -14,6 +15,10 @@ export const editData = (updatedItem, data, idField) => {
             resolve(updatedData)
         } else resolve([])
     })
+}
+
+export const getValidDate = (value, format) => {
+    return dayjs(value || undefined).format(format)
 }
 
 export const getMainPathname = (pathname) => {
@@ -102,8 +107,23 @@ export const getSelectName = (value) => {
         case 'nonComplimentary':
             return 'Non Complimentary'
 
+        case 'SuperAdmin':
+            return 'Super Admin'
+
+        case 'MotherPlantAdmin':
+            return 'Mother Plant Admin'
+
+        case 'WarehouseAdmin':
+            return 'Warehouse Admin'
+
+        case 'Accounts':
+            return 'Accounts'
+
+        case 'SalesAndMarketing':
+            return 'Sales & Marketing'
+
         default:
-            return 'Select'
+            return 'Key not matched'
     }
 }
 

@@ -34,8 +34,7 @@ const ApproveAccount = () => {
     const history = useHistory()
     const [accountValues, setAccountValues] = useState({ loading: true })
     const [headerContent, setHeaderContent] = useState({})
-    const [accountLoading, setAccountLoading] = useState(true)
-    const [addressesLoading, setAddressesLoading] = useState(true)
+    const [loading, setLoading] = useState(true)
     const [addressIds, setAddressIds] = useState([])
     const [confirmModal, setConfirmModal] = useState(false)
     const [successModal, setSucessModal] = useState(false)
@@ -56,8 +55,9 @@ const ApproveAccount = () => {
 
     useEffect(() => {
         resetSessionItems('address')
-        getAccount()
-        getAddresses()
+        const p1 = getAccount()
+        const p2 = getAddresses()
+        Promise.all([p1, p2]).then(() => setLoading(false))
     }, [])
 
     const getAccount = async () => {
@@ -81,7 +81,7 @@ const ApproveAccount = () => {
             }
             setIDProofs({ Front, Back, idProofType, adharNo, panNo })
             setAccountValues(newData)
-            setAccountLoading(false)
+            return Promise.resolve()
         } catch (error) { }
     }
 
@@ -100,8 +100,8 @@ const ApproveAccount = () => {
                 return { ...item, devDays, gstProof: gst, ...productList }
             })
             setAddresses(deliveries)
-            setAddressesLoading(false)
             setAddressIds(addressIds)
+            return Promise.resolve()
         } catch (error) { }
     }
 
@@ -289,13 +289,13 @@ const ApproveAccount = () => {
     return (
         <Fragment>
             <Header data={headerContent} onClick={handleBack} />
-            <div className='account-approval-content'>
-                <div className='heading-container'>
-                    <span className='heading'>Business Information</span>
-                </div>
+            <div className='app-manage-content'>
                 {
-                    accountLoading ? <NoContent content={<Spinner />} />
+                    loading ? <NoContent content={<Spinner />} />
                         : <>
+                            <div className='heading-container'>
+                                <span className='heading'>Business Information</span>
+                            </div>
                             <IDProofInfo data={IDProofs} />
                             {
                                 editMode ? (
@@ -309,18 +309,11 @@ const ApproveAccount = () => {
                                     />
                                 ) : <AccountView data={accountValues} />
                             }
-                        </>
-                }
-                <div className='heading-container'>
-                    <span className='heading'>Delivery Details</span>
-                    {
-                        !addressesLoading &&
-                        <span className='tail'>{`(${addresses.length} Locations)`}</span>
-                    }
-                </div>
-                {
-                    addressesLoading ? <NoContent content={<Spinner />} />
-                        : <>
+
+                            <div className='heading-container'>
+                                <span className='heading'>Delivery Details</span>
+                                <span className='tail'>{`(${addresses.length} Locations)`}</span>
+                            </div>
                             <Collapse
                                 accordion
                                 className='accordion-container'
@@ -356,53 +349,47 @@ const ApproveAccount = () => {
                                     })
                                 }
                             </Collapse>
-                        </>
-                }
-                {
-                    !accountLoading &&
-                    !addressesLoading &&
-                    (
-                        <div className='app-footer-buttons-container'>
-                            <CustomButton
-                                onClick={onAccountCancel}
-                                className='app-cancel-btn footer-btn'
-                                text='Cancel'
-                            />
-                            {
-                                editMode ? (
-                                    <CustomButton
-                                        onClick={handleAccountSave}
-                                        className={`
+                            <div className='app-footer-buttons-container'>
+                                <CustomButton
+                                    onClick={onAccountCancel}
+                                    className='app-cancel-btn footer-btn'
+                                    text='Cancel'
+                                />
+                                {
+                                    editMode ? (
+                                        <CustomButton
+                                            onClick={handleAccountSave}
+                                            className={`
                                         app-create-btn footer-btn ${saveDisabled && 'disabled'}
                                         ${shake && 'app-shake'}
                                     `}
-                                        text='Save'
-                                    />
-                                ) : (
-                                        <div className='approval-buttons-container'>
-                                            <div className='check-confirm'>
-                                                <Checkbox onChange={({ target: { checked } }) => setIsReviewed(checked)} checked={isReviewed} />
-                                                <span className='text'>I reviewed the above details for customer onboarding.</span>
-                                            </div>
-                                            <CustomButton
-                                                onClick={handleAccountEdit}
-                                                className={`
+                                            text='Save'
+                                        />
+                                    ) : (
+                                            <div className='multi-buttons-container'>
+                                                <div className='check-confirm'>
+                                                    <Checkbox onChange={({ target: { checked } }) => setIsReviewed(checked)} checked={isReviewed} />
+                                                    <span className='text'>I reviewed the above details for customer onboarding.</span>
+                                                </div>
+                                                <CustomButton
+                                                    onClick={handleAccountEdit}
+                                                    className={`
                                                 footer-btn ${btnDisabled && 'disabled'}
                                             `}
-                                                text='Edit'
-                                            />
-                                            <CustomButton
-                                                onClick={onAccountApprove}
-                                                className={`
+                                                    text='Edit'
+                                                />
+                                                <CustomButton
+                                                    onClick={onAccountApprove}
+                                                    className={`
                                                 approve-btn footer-btn ${(!isReviewed || btnDisabled) && 'disabled'}
                                             `}
-                                                text='Approve'
-                                            />
-                                        </div>
-                                    )
-                            }
-                        </div>
-                    )
+                                                    text='Approve'
+                                                />
+                                            </div>
+                                        )
+                                }
+                            </div>
+                        </>
                 }
             </div>
             <SuccessModal

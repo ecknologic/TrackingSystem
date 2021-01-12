@@ -10,7 +10,7 @@ import UploadPreviewer from '../../../components/UploadPreviewer';
 import CustomDateInput from '../../../components/CustomDateInput';
 import { disableFutureDates, resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
 
-const CreateEmployeeForm = (props) => {
+const EmployeeForm = (props) => {
 
     const { data, title, errors, roleOptions, onChange, onUpload, onRemove, disabled, onBlur,
         adharProof, adharProofErrors, licenseProof, licenseProofErrors } = props
@@ -31,10 +31,7 @@ const CreateEmployeeForm = (props) => {
     const licenseProofDisabled = licenseProof.Front && licenseProof.Back
 
     return (
-        <div className='app-form-container plantform-container'>
-            <div className='title-container'>
-                <span className='title'>New {title} Details</span>
-            </div>
+        <div className='app-form-container plant-form-container'>
             <div className='app-identity-proof-container identity-proof-container'>
                 <div className='row'>
                     <div className='input-container'>
@@ -168,4 +165,4 @@ const CreateEmployeeForm = (props) => {
         </div>
     )
 }
-export default CreateEmployeeForm
+export default EmployeeForm

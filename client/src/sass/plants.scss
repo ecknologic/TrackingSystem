@@ -5,26 +5,27 @@
     padding-bottom: 3em;
     background-color: #FAFAFB;
 
-    .plantform-container {
+    .title-container {
+        height: 5em;
+        display: flex;
+        align-items: center;
+        padding-top: 1em;
+        padding-left: 2em;
+
+        .title {
+            color: #1B2125;
+            font-family: 'PoppinsRegular400';
+            font-size: 1.4em;
+            margin-right: 1em;
+        }
+    }
+
+    .plant-form-container {
         width: 80%;
-        padding: 1em 0 0 2em;
+        padding-left: 2em;
 
         .columns {
             width: 80%;
-        }
-
-        .title-container {
-            height: 5em;
-            display: flex;
-            align-items: center;
-            padding-top: 1em;
-    
-            .title {
-                color: #1B2125;
-                font-family: 'PoppinsRegular400';
-                font-size: 1.4em;
-                margin-right: 1em;
-            }
         }
 
         .form-divider {

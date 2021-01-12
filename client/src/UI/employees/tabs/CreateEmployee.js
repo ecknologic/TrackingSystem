@@ -2,7 +2,7 @@ import { message } from 'antd';
 import { useLocation } from 'react-router-dom';
 import React, { useState, useEffect, useMemo } from 'react';
 import { http } from '../../../modules/http';
-import CreateEmployeeForm from '../forms/CreateEmployee';
+import EmployeeForm from '../forms/Employee';
 import { getRoleOptions } from '../../../assets/fixtures';
 import CustomButton from '../../../components/CustomButton';
 import { getBase64, getMainPathname, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
@@ -19,7 +19,6 @@ const CreateEmployee = ({ goToTab }) => {
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [roleList, setRoleList] = useState([])
     const [shake, setShake] = useState(false)
-    const [admin, setAdmin] = useState({})
     const [employeeType, setEmployeeType] = useState('')
 
     const mainUrl = useMemo(() => getMainPathname(pathname), [pathname])
@@ -178,13 +177,14 @@ const CreateEmployee = ({ goToTab }) => {
         setAdharProof({})
         setLicenseProof({})
         setFormErrors({})
-        setAdmin({})
     }
 
     return (
         <>
-            <CreateEmployeeForm
-                admin={admin}
+            <div className='title-container'>
+                <span className='title'>New {employeeType} Details</span>
+            </div>
+            <EmployeeForm
                 data={formData}
                 errors={formErrors}
                 title={employeeType}

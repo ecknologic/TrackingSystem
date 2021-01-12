@@ -58,24 +58,25 @@ router.get('/getUser/:userId', (req, res) => {
   })
 })
 router.post('/updateWebUser', (req, res) => {
-  let query = "UPDATE usermaster SET userName=?,roleId=?,emailid=?, mobileNumber=?, joinedDate=?, parentName=?, gender=?, dob=?, adharNo=?, address=?, permanentAddress=?,adharProof=?  where userId=?";
+  let query = "UPDATE usermaster SET userName=?,roleId=?,emailid=?, mobileNumber=?, joinedDate=?, parentName=?, gender=?, dob=?, adharNo=?, address=?, permanentAddress=?,adhar_frontside=?,adhar_backside=?  where userId=?";
   let userDetails = req.body;
-  const { userName, roleId, emailid, mobileNumber, userId, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress } = req.body
-  let aadhar = Buffer.from(adharProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-  let insertQueryValues = [userName, roleId, emailid, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, aadhar, userId]
+  const { userName, roleId, emailid, mobileNumber, userId, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, adharProof } = req.body
+  let adhar_frontside = Buffer.from(adharProof.Front.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+  let adhar_backside = Buffer.from(adharProof.Back.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+  let insertQueryValues = [userName, roleId, emailid, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, adhar_frontside, adhar_backside, userId]
   db.query(query, insertQueryValues, (err, results) => {
     if (err) res.send(err);
     else {
-      for (let i of userDetails.privilegeDetails) {
-        let privilegeQuery = "UPDATE userPrivilegesMaster SET privilegeActions=? where privilegeId=? AND userId=?";
-        let queryValues = [i.privilegeActions.join(), i.privilegeId, userDetails.userId]
-        db.query(privilegeQuery, queryValues, (err, results) => {
-          if (err) res.send(err);
-          else {
-            res.send("record updated")
-          }
-        })
-      }
+      // for (let i of userDetails.privilegeDetails) {
+      //   let privilegeQuery = "UPDATE userPrivilegesMaster SET privilegeActions=? where privilegeId=? AND userId=?";
+      //   let queryValues = [i.privilegeActions.join(), i.privilegeId, userDetails.userId]
+      //   db.query(privilegeQuery, queryValues, (err, results) => {
+      //     if (err) res.send(err);
+      //     else {
+      res.send("record updated")
+      // }
+      // })
+      // }
     }
   });
 });

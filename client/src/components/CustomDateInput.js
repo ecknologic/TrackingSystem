@@ -6,7 +6,7 @@ import { setTrackForm } from '../utils/Functions';
 
 const CustomDateInput = (props) => {
 
-    const { disabled, value, placeholder = 'Select Date', track, onChange, error, format = 'DD/MM/YYYY',
+    const { disabled, allowClear, value, placeholder = 'Select Date', track, onChange, error, format = 'DD/MM/YYYY',
         disabledDate, open, onOpenChange, style, className, suffixIcon = <ScheduleIconGrey /> } = props
 
     const [hasTracked, setHasTracked] = useState(false)
@@ -27,14 +27,14 @@ const CustomDateInput = (props) => {
             style={style}
             format={format}
             disabled={disabled}
-            className={className}
             suffixIcon={suffixIcon}
             onChange={handleChange}
             placeholder={placeholder}
             disabledDate={disabledDate}
             onOpenChange={onOpenChange}
-            value={value ? dayjs(value) : ''}
-            className={error && 'app-input-error'}
+            value={value ? dayjs(value) : dayjs()}
+            allowClear={allowClear}
+            className={`${className} ${error && 'app-input-error'}`}
             getPopupContainer={() => document.getElementById('content')}
         />
     )

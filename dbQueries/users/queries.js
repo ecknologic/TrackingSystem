@@ -10,7 +10,7 @@ usersQueries.getUsersBydepartmentType = async (departmentType, callback) => {
     return executeGetParamsQuery(query, [departmentType == "MotherPlant" ? '2' : '3'], callback)
 }
 usersQueries.getUsersById = async (userId, callback) => {
-    let query = "SELECT userId,userName,RoleId,emailid,mobileNumber from usermaster where userId=" + userId;
+    let query = "SELECT * from usermaster where userId=" + userId;
     return executeGetQuery(query, callback)
 }
 //Update Request Methods
