@@ -67,7 +67,7 @@ router.get('/getMotherPlantList', (req, res) => {
     });
 });
 router.get('/getMotherPlantById/:motherplantId', (req, res) => {
-    motherPlantDbQueries.getMotherPlantById(motherplantId, (err, results) => {
+    motherPlantDbQueries.getMotherPlantById(req.params.motherplantId, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else res.json(results);
     });

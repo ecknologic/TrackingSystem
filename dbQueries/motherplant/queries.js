@@ -7,7 +7,7 @@ motherPlantDbQueries.getMotherPlantsList = async (callback) => {
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getMotherPlantById = async (motherPlantId, callback) => {
-    let query = `select d.*,u.userName,u.mobileNumber,u.emailid from departmentmaster d INNER JOIN usermaster u on d.adminId=u.userId WHERE departmentId=${motherPlantId}`;
+    let query = `select d.*,u.userName,u.mobileNumber,u.emailid from departmentmaster d INNER JOIN usermaster u on d.adminId=u.userId WHERE d.departmentId=${motherPlantId}`;
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getProductionDetails = async (departmentId, callback) => {

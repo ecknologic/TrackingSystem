@@ -1,5 +1,5 @@
 import { Col, Row } from 'antd';
-import { useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../modules/http'
 import Spinner from '../../../components/Spinner';
@@ -9,6 +9,7 @@ import CustomPagination from '../../../components/CustomPagination';
 import { getMainPathname } from '../../../utils/Functions';
 
 const Dashboard = ({ reFetch }) => {
+    const history=useHistory()
     const { pathname } = useLocation()
     const [plants, setPlants] = useState([])
     const [loading, setLoading] = useState(true)
@@ -49,7 +50,9 @@ const Dashboard = ({ reFetch }) => {
         setPageNumber(number)
     }
 
-    const goToViewAccount = (id) => { }
+    const goToViewAccount = (id) => {
+       return history.push(`/motherplant/${id}`)
+    }
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize

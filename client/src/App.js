@@ -15,6 +15,7 @@ import NoContent from './components/NoContent';
 import QualityControl from './UI/quality-control';
 import WarehouseStock from './UI/stock/warehouse';
 import Motherplants from './UI/plants/Motherplants';
+import DepartmentView from './UI/plants/view';
 import ApproveAccount from './UI/accounts/approve';
 import MotherplantStock from './UI/stock/motherplant';
 import AccountsDashboard from './UI/accounts/dashboard';
@@ -79,7 +80,8 @@ const App = () => {
                   <Route path='/materials' render={byRole(<MotherplantMaterials />)} />
                   <Route path='/staff' render={byRole(<Staff />)} />
                   <Route path='/drivers' render={byRole(<Drivers />)} />
-                  <Route path='/motherplants' render={byRole(<Motherplants />)} />
+                  <Route path='/motherplants' exact render={byRole(<Motherplants />)} />
+                  <Route path='/:departmentType/:departmentId' render={byRole(<DepartmentView />)} />
                   <Route path='/warehouses' render={byRole(<Warehouses />)} />
                   <Route path='/customers/add-account' render={byRole(<AddAccount />)} />
                   <Route path='/customers/approval/:accountId' render={byRole(<ApproveAccount />)} />
