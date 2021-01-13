@@ -31,7 +31,7 @@ const App = () => {
 
    const byRole = (Component) => (props) => {
       const isUser = isLogged()
-      if (!isUser) return <Login />
+      if (!isUser) return <Redirect to='/' />
       else {
          const { match: { path } } = props
          const mainPath = getMainPathname(path)
@@ -46,7 +46,7 @@ const App = () => {
 
    const redirectTo = (props) => {
       const isUser = isLogged()
-      if (!isUser) return <Login />
+      if (!isUser) return <Redirect to='/' />
       else {
          const role = getRole()
          if (role === MARKETINGADMIN) return <Redirect to='/manage-accounts' />
@@ -57,14 +57,19 @@ const App = () => {
       }
    }
 
-   const isUser = isLogged()
+
+   const NoMatch = () => {
+      const isUser = isLogged()
+      if (!isUser) return <Redirect to='/' />
+      return <NoContent content='Page Not found' />
+   }
 
    return (
       <Router>
          <Switch>
             <Route exact
                path='/'
-               render={() => isUser ? <Redirect to='/dashboard' /> : <Login />}
+               component={Login}
             />
             <PageLayout>
                <Switch>
@@ -91,9 +96,6 @@ const App = () => {
                   <Route path='/customers/approval/:accountId' render={byRole(<ApproveAccount />)} />
                   <Route path='/customers/manage/:accountId' render={byRole(<ViewAccount />)} />
                   <Route path='/customers' render={byRole(<Customers />)} />
-                  <Route path='/customerDashboard' render={byRole(<NoContent content='Design is in progress' />)} />
-                  <Route path='/manage-routes' render={byRole(<NoContent content='Design is in progress' />)} />
-                  <Route path='/reports' render={byRole(<NoContent content='Design is in progress' />)} />
                   <Route path='/unauthorized' component={Unauthorized} />
                   <Route component={NoMatch} />
                </Switch>
@@ -103,11 +105,7 @@ const App = () => {
    );
 }
 
-const NoMatch = () => {
-   return <NoContent content='Page Not found' />
-}
-
 const Unauthorized = () => {
-   return <NoContent content='Screen not designed for you role' />
+   return <NoContent content="Access denied." />
 }
 export default App;
