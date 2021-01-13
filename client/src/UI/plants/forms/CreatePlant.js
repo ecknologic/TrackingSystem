@@ -8,9 +8,9 @@ import InputWithAddon from '../../../components/InputWithAddon';
 import UploadPreviewer from '../../../components/UploadPreviewer';
 import { resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
 
-const CreateNewPlantForm = (props) => {
+const PlantForm = (props) => {
 
-    const { data, admin, title, errors, onUpload, onChange, staffOptions, onRemove, onBlur } = props
+    const { data, admin, errors, onUpload, onChange, staffOptions, onRemove, onBlur } = props
 
     const { gstNo, gstProof, departmentName, address, phoneNumber, adminId, city, state, pinCode } = data
     const { role, emailid, mobileNumber } = admin
@@ -26,9 +26,6 @@ const CreateNewPlantForm = (props) => {
 
     return (
         <div className='app-form-container plant-form-container'>
-            <div className='title-container'>
-                <span className='title'>New {title} Details</span>
-            </div>
             <div className='row'>
                 <div className='input-container stretch'>
                     <InputLabel name='Name' error={errors.departmentName} mandatory />
@@ -99,7 +96,7 @@ const CreateNewPlantForm = (props) => {
                 </div>
             </div>
             <Divider className='form-divider' />
-            <div className='title-container'>
+            <div className='plant-title-container inner'>
                 <span className='title'>Admin Details</span>
             </div>
             <div className='row'>
@@ -128,4 +125,4 @@ const CreateNewPlantForm = (props) => {
         </div>
     )
 }
-export default CreateNewPlantForm
+export default PlantForm

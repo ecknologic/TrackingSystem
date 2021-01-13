@@ -2,7 +2,7 @@ import { message } from 'antd';
 import { useLocation } from 'react-router-dom';
 import React, { useState, useEffect, useMemo } from 'react';
 import { http } from '../../../modules/http';
-import CreateNewPlantForm from '../forms/CreatePlant';
+import PlantForm from '../forms/CreatePlant';
 import { getStaffOptions } from '../../../assets/fixtures';
 import CustomButton from '../../../components/CustomButton';
 import { getBase64, getMainPathname, getPlantValuesForDB, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
@@ -132,8 +132,10 @@ const CreateNewPlant = ({ goToTab }) => {
 
     return (
         <>
-            <CreateNewPlantForm
-                title={plantType}
+            <div className='plant-title-container'>
+                <span className='title'>New {plantType} Details</span>
+            </div>
+            <PlantForm
                 data={formData}
                 admin={admin}
                 errors={formErrors}

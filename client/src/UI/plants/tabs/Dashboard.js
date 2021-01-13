@@ -9,7 +9,7 @@ import CustomPagination from '../../../components/CustomPagination';
 import { getMainPathname } from '../../../utils/Functions';
 
 const Dashboard = ({ reFetch }) => {
-    const history=useHistory()
+    const history = useHistory()
     const { pathname } = useLocation()
     const [plants, setPlants] = useState([])
     const [loading, setLoading] = useState(true)
@@ -22,6 +22,7 @@ const Dashboard = ({ reFetch }) => {
     const pageSizeOptions = useMemo(() => generatePageSizeOptions(), [window.innerWidth])
 
     useEffect(() => {
+        setLoading(true)
         const type = getPlantType()
         getPlants(type)
     }, [reFetch])
@@ -50,22 +51,20 @@ const Dashboard = ({ reFetch }) => {
         setPageNumber(number)
     }
 
-    const goToViewAccount = (id) => {
-       return history.push(`/motherplant/${id}`)
-    }
+    const goToManageEmployee = (id) => history.push(`${mainUrl}/manage/${id}`)
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
 
     return (
         <Fragment>
-            <div className='plantmanager-content'>
+            <div className='plant-manager-content'>
                 <Row gutter={[{ lg: 32, xl: 16 }, { lg: 32, xl: 32 }]}>
                     {
                         loading ? <NoContent content={<Spinner />} />
                             : plants.length ? plants.slice(sliceFrom, sliceTo).map((plant) => (
                                 <Col lg={{ span: 12 }} xl={{ span: 8 }} xxl={{ span: 6 }} key={plant.departmentId}>
-                                    <MotherplantCard data={plant} onClick={() => goToViewAccount(plant.departmentId)} />
+                                    <MotherplantCard data={plant} onClick={() => goToManageEmployee(plant.departmentId)} />
                                 </Col>
                             )) : <NoContent content={`No ${plantType}s to show`} />
                     }

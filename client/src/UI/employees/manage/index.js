@@ -217,7 +217,7 @@ const ManageEmployee = () => {
         setEditMode(true)
     }
 
-    const onAccountCancel = useCallback(() => setConfirmModal(true), [])
+    const onAccountCancel = useCallback(() => goBack(), [])
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
     const handleConfirmModalOk = useCallback(() => { setConfirmModal(false); goBack() }, [])
 
@@ -237,21 +237,14 @@ const ManageEmployee = () => {
             <Header data={headerContent} onClick={handleBack} />
             <div className='app-manage-content employee-manage-content'>
                 {
-                    loading ? <NoContent content={<Spinner />} />
+                    loading
+                        ? <NoContent content={<Spinner />} />
                         : <>
-                            {
-                                !editMode && (
-                                    <>
-                                        <IDProofInfo data={adharProof} />
-                                        {
-                                            isDriver ? <IDProofInfo data={licenseProof} /> : null
-                                        }
-                                    </>
-                                )
-                            }
+                            <div className='employee-title-container'>
+                                <span className='title'>{employeeType} Details</span>
+                            </div>
                             {
                                 editMode ? (
-
                                     <EmployeeForm
                                         data={accountValues}
                                         errors={accountErrors}
@@ -263,45 +256,25 @@ const ManageEmployee = () => {
                                         {...childProps}
                                     />
                                 ) :
-                                    <AccountView
-                                        data={accountValues}
-                                    />
+                                    <>
+                                        <IDProofInfo data={adharProof} />
+                                        {isDriver && <IDProofInfo data={licenseProof} />}
+                                        <AccountView data={accountValues} />
+                                    </>
                             }
+                            <div className={`app-footer-buttons-container ${editMode ? 'edit' : 'view'}`}>
+                                <CustomButton onClick={onAccountCancel} className='app-cancel-btn footer-btn' text='Cancel' />
+                                {
+                                    editMode
+                                        ? <CustomButton onClick={handleUpdate} className={`app-create-btn footer-btn ${btnDisabled && 'disabled'} ${shake && 'app-shake'} `} text='Update' />
+                                        : (
+                                            <div className='multi-buttons-container'>
+                                                <CustomButton onClick={handleEdit} className='footer-btn' text='Edit' />
+                                            </div>
+                                        )
+                                }
+                            </div>
                         </>
-                }
-                {
-                    !loading &&
-                    (
-                        <div className={`app-footer-buttons-container ${editMode ? 'edit' : 'view'}`}>
-                            <CustomButton
-                                onClick={onAccountCancel}
-                                className='app-cancel-btn footer-btn'
-                                text='Cancel'
-                            />
-                            {
-                                editMode ? (
-
-                                    <CustomButton
-                                        onClick={handleUpdate}
-                                        className={`
-                                            app-create-btn footer-btn ${btnDisabled && 'disabled'}
-                                            ${shake && 'app-shake'}
-                                            `}
-                                        text='Update'
-                                    />
-                                ) : (
-                                        <div className='multi-buttons-container'>
-                                            <CustomButton
-                                                onClick={handleEdit}
-                                                className='footer-btn'
-                                                text='Edit'
-                                            />
-                                        </div>
-                                    )
-                            }
-
-                        </div>
-                    )
                 }
             </div>
             <QuitModal

@@ -2,15 +2,62 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    padding-bottom: 3em;
     background-color: #FAFAFB;
 
-    .title-container {
-        height: 5em;
-        display: flex;
-        align-items: center;
-        padding-top: 1em;
+    .plant-title-container {
+        height: 3em;
+        align-items: flex-start;
+    }
+
+    .plant-title-container.inner {
+        padding-left: 0;
+    }
+
+    .app-footer-buttons-container {
+        justify-content: flex-end;
         padding-left: 2em;
+    }
+
+    #no-content {
+        min-height: calc(100vh - 22em);
+    }
+
+}
+
+.plant-manage-content {
+
+    .plant-title-container {
+        height: 4em;
+        align-items: center;
+    }
+
+    .plant-title-container.inner {
+        height: 3em;
+        align-items: flex-start;
+    }
+
+    .app-footer-buttons-container.view {
+        width: 60%;
+    }
+
+    .multi-buttons-container {
+        flex: 1;
+        justify-content: flex-end;
+    }
+
+    .multi-buttons-container-view {
+        width: 60%;
+    }
+
+    #no-content {
+        min-height: calc(100vh);
+    }
+}
+
+.plant-content, .plant-manage-content {
+
+    .plant-title-container {
+        display: flex;
 
         .title {
             color: #1B2125;
@@ -22,42 +69,13 @@
 
     .plant-form-container {
         width: 80%;
-        padding-left: 2em;
 
         .columns {
             width: 80%;
         }
-
-        .form-divider {
-            margin-top: 3em;
-            margin-bottom: 1em;
-        }
     }
 
-    .app-footer-buttons-container {
-        justify-content: flex-end;
-        padding-left: 2em;
-    }
-
-    .ant-tabs-tabpane {
-        padding: 0 !important;
-    }
-
-    #no-content {
-        min-height: calc(100vh - 22em);
-    }
-
-    .plantmanager-content {
-        padding: 3em 1em 0 2.5em;
-        padding-top: 3em;
-        background-color: #FAFAFB;
-    
-        #no-content {
-            height: calc(100vh - 20em);
-        }
-    
-        .app-pagination {
-            padding-right: 1em;
-        }
+    .form-divider {
+        margin: 3em 0;
     }
 }

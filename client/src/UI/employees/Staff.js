@@ -22,7 +22,7 @@ const Staff = () => {
     return (
         <Fragment>
             <Header title='Staff' />
-            <div className='plant-content'>
+            <div className='employee-content'>
                 <div className='app-tabs-container'>
                     <Tabs
                         onChange={handleTabClick}

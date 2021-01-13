@@ -1,4 +1,40 @@
+.employee-content {
+    
+    .employee-title-container {
+        height: 3em;
+        align-items: flex-start;
+    }
+
+    .employee-form-container {
+        width: 80%;
+
+        .columns {
+            width: 80%;
+        }
+
+        .form-divider {
+            margin-top: 3em;
+            margin-bottom: 1em;
+        }
+    }
+
+    .app-footer-buttons-container {
+        justify-content: flex-end;
+        padding-left: 2em;
+    }
+
+
+    #no-content {
+        min-height: calc(100vh - 22em);
+    }
+}
+
 .employee-manage-content {
+    
+    .employee-title-container {
+        height: 4em;
+        align-items: center;
+    }
 
     .app-footer-buttons-container.view {
         width: 60%;
@@ -15,5 +51,19 @@
 
     #no-content {
         min-height: calc(100vh);
+    }
+}
+
+.employee-content, .employee-manage-content {
+
+    .employee-title-container {
+        display: flex;
+
+        .title {
+            color: #1B2125;
+            font-family: 'PoppinsRegular400';
+            font-size: 1.4em;
+            margin-right: 1em;
+        }
     }
 }

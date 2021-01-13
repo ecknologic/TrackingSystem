@@ -52,7 +52,7 @@ const Dashboard = ({ reFetch }) => {
 
     return (
         <Fragment>
-            <div className='plantmanager-content'>
+            <div className='plant-manager-content'>
                 <Row gutter={[{ lg: 32, xl: 16 }, { lg: 32, xl: 32 }]}>
                     {
                         loading ? <NoContent content={<Spinner />} />

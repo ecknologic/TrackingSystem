@@ -22,7 +22,7 @@ const Drivers = () => {
     return (
         <Fragment>
             <Header title='Drivers' />
-            <div className='plant-content'>
+            <div className='employee-content'>
                 <div className='app-tabs-container'>
                     <Tabs
                         onChange={handleTabClick}

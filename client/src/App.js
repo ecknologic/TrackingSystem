@@ -9,8 +9,8 @@ import PageLayout from './UI/page-layout';
 import Staff from './UI/employees/Staff';
 import AddAccount from './UI/accounts/add';
 import ViewAccount from './UI/accounts/view';
+import ManagePlant from './UI/plants/manage';
 import Drivers from './UI/employees/Drivers';
-import DepartmentView from './UI/plants/view';
 import Warehouses from './UI/plants/Warehouses';
 import NoContent from './components/NoContent';
 import QualityControl from './UI/quality-control';
@@ -81,10 +81,11 @@ const App = () => {
                   <Route path='/materials' render={byRole(<MotherplantMaterials />)} />
                   <Route path='/staff/manage/:employeeId' render={byRole(<ManageEmployee />)} />
                   <Route path='/drivers/manage/:employeeId' render={byRole(<ManageEmployee />)} />
+                  <Route path='/motherplants/manage/:plantId' render={byRole(<ManagePlant />)} />
+                  <Route path='/warehouses/manage/:plantId' render={byRole(<ManagePlant />)} />
                   <Route path='/staff' render={byRole(<Staff />)} />
                   <Route path='/drivers' render={byRole(<Drivers />)} />
                   <Route path='/motherplants' exact render={byRole(<Motherplants />)} />
-                  <Route path='/:departmentType/:departmentId' render={byRole(<DepartmentView />)} />
                   <Route path='/warehouses' render={byRole(<Warehouses />)} />
                   <Route path='/customers/add-account' render={byRole(<AddAccount />)} />
                   <Route path='/customers/approval/:accountId' render={byRole(<ApproveAccount />)} />

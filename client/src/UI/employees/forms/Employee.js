@@ -31,7 +31,7 @@ const EmployeeForm = (props) => {
     const licenseProofDisabled = licenseProof.Front && licenseProof.Back
 
     return (
-        <div className='app-form-container plant-form-container'>
+        <div className='app-form-container employee-form-container'>
             <div className='app-identity-proof-container identity-proof-container'>
                 <div className='row'>
                     <div className='input-container'>

@@ -162,6 +162,8 @@ export const doubleKeyComplexSearch = (data, matcher, key1, key2) => {
 
 export const getIdProofName = (type) => {
     switch (type) {
+        case 'gstNo':
+            return 'GST Number'
         case 'adharNo':
             return 'Aadhar Number'
         case 'panNo':

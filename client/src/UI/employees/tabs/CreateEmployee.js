@@ -181,7 +181,7 @@ const CreateEmployee = ({ goToTab }) => {
 
     return (
         <>
-            <div className='title-container'>
+            <div className='employee-title-container'>
                 <span className='title'>New {employeeType} Details</span>
             </div>
             <EmployeeForm

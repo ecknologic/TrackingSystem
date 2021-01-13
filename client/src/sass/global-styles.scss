@@ -713,7 +713,7 @@ textarea {
 
     .ant-tabs-tabpane {
         min-height: calc(100vh - 14.5em);
-        padding: 3em 1em 2em 2.5em;
+        padding: 3em 1em 2em 2em;
 
         #no-content {
             min-height: calc(100vh - 20em);
@@ -1400,6 +1400,7 @@ textarea {
     display: flex;
     flex-direction: column;
     padding: .5em 0;
+    width: 60%;
 
     .input-container {
         display: flex;
@@ -1412,7 +1413,7 @@ textarea {
     }
 
     .half-stretch {
-        width: 50%;
+        width: 75%;
     }
 
     .columns {
@@ -1453,7 +1454,7 @@ textarea {
 }
 
 .app-manage-content {
-    padding: 1em 1em 2em 2.5em;
+    padding: 1em 1em 2em 2em;
 
     .app-view-info {
         padding-top: 0;
