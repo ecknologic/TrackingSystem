@@ -32,7 +32,7 @@ const CustomDateInput = (props) => {
             placeholder={placeholder}
             disabledDate={disabledDate}
             onOpenChange={onOpenChange}
-            value={value ? dayjs(value) : dayjs()}
+            value={value ? dayjs(value) : null}
             allowClear={allowClear}
             className={`${className} ${error && 'app-input-error'}`}
             getPopupContainer={() => document.getElementById('content')}
