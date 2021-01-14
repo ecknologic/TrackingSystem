@@ -302,6 +302,13 @@ router.get('/getDepartmentsList', (req, res) => {
     });
 });
 
+router.get('/getAllDepartmentsList', (req, res) => {
+    motherPlantDbQueries.getAllDepartmentsList(req.query.departmentType, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        res.json((results));
+    });
+});
+
 router.get('/getProductionDetails', (req, res) => {
     motherPlantDbQueries.getProductionDetails(departmentId, (err, results) => {
         if (err) res.status(500).json(dbError(err));

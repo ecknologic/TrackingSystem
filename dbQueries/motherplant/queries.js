@@ -99,6 +99,10 @@ motherPlantDbQueries.getDepartmentsList = async (deptType, callback) => {
     let query = `select * from departmentmaster where departmentType="${deptType}"`
     return executeGetQuery(query, callback)
 }
+motherPlantDbQueries.getAllDepartmentsList = async (deptType, callback) => {
+    let query = `select * from departmentmaster`
+    return executeGetQuery(query, callback)
+}
 motherPlantDbQueries.getQCTestedBatches = async (departmentId, callback) => {
     let query = `select q.phLevel,q.TDS,q.ozoneLevel,q.managerName,q.testResult,q.testedDate,p.batchId,p.phLevel as ph,p.TDS as tds,p.ozoneLevel as oz,p.requestedDate from qualitycheck q INNER JOIN productionQC p on q.productionQcId=p.productionQcId  where q.departmentId=${departmentId} AND q.qcLevel='1' ORDER BY q.testedDate DESC`
     return executeGetQuery(query, callback)
