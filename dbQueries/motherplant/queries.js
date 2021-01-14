@@ -73,12 +73,20 @@ motherPlantDbQueries.getNatureOfBussiness = async (callback) => {
 }
 motherPlantDbQueries.getRMDetails = async (input, callback) => {
     let query = `select * from requiredrawmaterial WHERE departmentId=? ORDER BY requestedDate DESC`;
-    if (input.status) query = `select * from requiredrawmaterial WHERE departmentId=? AND (status="Approved" or status="Confirmed") ORDER BY requestedDate DESC`
-    return executeGetParamsQuery(query, [input.departmentId], callback)
+    if (input.isSuperAdmin) {
+        query = `select * from requiredrawmaterial ORDER BY requestedDate DESC`
+        return executeGetQuery(query, callback)
+    } else {
+        if (input.status) query = `select * from requiredrawmaterial WHERE departmentId=? AND (status="Approved" or status="Confirmed") ORDER BY requestedDate DESC`
+        return executeGetParamsQuery(query, [input.departmentId], callback)
+    }
 }
-motherPlantDbQueries.getRMReceiptDetails = async (departmentId, callback) => {
+motherPlantDbQueries.getRMReceiptDetails = async (input, callback) => {
+    const { isSuperAdmin, departmentId } = input
     let query = `select rmr.receiptDate,rmr.receiptNo,rmr.invoiceNo,rmr.taxAmount,rmr.invoiceAmount,rmr.rawmaterialId,rmr.invoiceDate,rmr.managerName,rmr.receiptImage,rm.itemName,rm.itemCode,rm.itemQty,rm.vendorName,rm.requestedDate,rm.approvedDate,rm.description,rm.orderId from rawmaterialreceipt rmr INNER JOIN requiredrawmaterial rm on rmr.rawmaterialId=rm.rawmaterialid WHERE rmr.departmentId=${departmentId} ORDER BY receiptDate DESC`;
-    // let query = `select * from rawmaterialreceipt WHERE departmentId=${departmentId}`;
+    if (isSuperAdmin) {
+        query = `select rmr.receiptDate,rmr.receiptNo,rmr.invoiceNo,rmr.taxAmount,rmr.invoiceAmount,rmr.rawmaterialId,rmr.invoiceDate,rmr.managerName,rmr.receiptImage,rm.itemName,rm.itemCode,rm.itemQty,rm.vendorName,rm.requestedDate,rm.approvedDate,rm.description,rm.orderId from rawmaterialreceipt rmr INNER JOIN requiredrawmaterial rm on rmr.rawmaterialId=rm.rawmaterialid ORDER BY receiptDate DESC`;
+    }
     return executeGetQuery(query, callback)
 }
 

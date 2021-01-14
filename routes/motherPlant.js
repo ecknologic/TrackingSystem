@@ -185,13 +185,15 @@ router.post('/createInternalQC', (req, res) => {
 })
 
 router.get('/getRMDetails', (req, res) => {
+    const { status, isSuperAdmin = false } = req.query
     let input = {
-        status: req.query.status,
-        departmentId
+        status,
+        departmentId,
+        isSuperAdmin
     }
     motherPlantDbQueries.getRMDetails(input, (err, results) => {
         if (err) res.status(500).json(dbError(err));
-        res.json(results);
+        else res.json(results);
     });
 });
 
@@ -229,7 +231,12 @@ router.put('/updateRMStatus', (req, res) => {
 })
 
 router.get('/getRMReceiptDetails', (req, res) => {
-    motherPlantDbQueries.getRMReceiptDetails(departmentId, (err, results) => {
+    const { isSuperAdmin = false } = req.query
+    let input = {
+        departmentId,
+        isSuperAdmin
+    }
+    motherPlantDbQueries.getRMReceiptDetails(input, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else res.json(results);
     });
