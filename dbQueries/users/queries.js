@@ -10,7 +10,7 @@ usersQueries.getUsersBydepartmentType = async (departmentType, callback) => {
     return executeGetParamsQuery(query, [departmentType == "MotherPlant" ? '2' : '3'], callback)
 }
 usersQueries.getUsersById = async (userId, callback) => {
-    let query = "SELECT * from usermaster where userId=" + userId;
+    let query = "SELECT u.*,r.RoleName as roleId from usermaster u INNER JOIN rolemaster r on u.roleId=r.RoleId where u.userId=" + userId;
     return executeGetQuery(query, callback)
 }
 //Update Request Methods
