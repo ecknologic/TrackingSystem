@@ -54,14 +54,14 @@ const ManagePlant = () => {
         const url = `${getUrl(mainUrl)}/${plantId}`
 
         const [data] = await http.GET(url)
-        const { gstProof: gst, userName, mobileNumber, emailid, ...rest } = data
+        const { gstProof: gst, userName, mobileNumber, emailid, roleId, ...rest } = data
         const { departmentName, gstNo } = rest
         const gstProof = base64String(gst?.data)
 
         setGstProof({ Front: gstProof, idProofType: 'gstNo', gstNo })
         setHeaderContent({ title: departmentName })
         setAccountValues(rest)
-        setAdmin({ userName, mobileNumber, emailid })
+        setAdmin({ userName, mobileNumber, emailid, roleId })
         setLoading(false)
     }
 
@@ -144,8 +144,8 @@ const ManagePlant = () => {
         let body = {
             ...motherplant
         }
-        const url = `${mainUrl.slice(0, -1)}/create${plantType}`
-        const options = { item: plantType, v1Ing: 'Adding', v2: 'added' }
+        const url = updateUrl(mainUrl)
+        const options = { item: plantType, v1Ing: 'Updating', v2: 'updated' }
 
 
         try {
@@ -251,11 +251,11 @@ const getUrl = (url) => {
 }
 
 const updateUrl = (url) => {
-    const staffUrl = '/users/updateWebUser'
-    const driverUrl = '/driver/updateDriver'
+    const mpUrl = '/motherPlant/updateMotherPlant'
+    const whUrl = '/warehouse/updateWarehouse'
 
-    if (url === '/staff') return staffUrl
-    return driverUrl
+    if (url === '/motherplants') return mpUrl
+    return whUrl
 }
 
 export default ManagePlant

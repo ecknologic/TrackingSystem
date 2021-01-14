@@ -259,7 +259,7 @@ const ManageEmployee = () => {
                                     <>
                                         <IDProofInfo data={adharProof} />
                                         {isDriver && <IDProofInfo data={licenseProof} />}
-                                        <AccountView data={accountValues} />
+                                        <AccountView isDriver={isDriver} data={accountValues} />
                                     </>
                             }
                             <div className={`app-footer-buttons-container ${editMode ? 'edit' : 'view'}`}>

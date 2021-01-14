@@ -1,14 +1,12 @@
 import React from 'react';
-import dayjs from 'dayjs';
-import InputValue from '../../../components/InputValue';
-import { getSelectName } from '../../../utils/Functions';
 import { Divider } from 'antd';
-const DATEFORMAT = 'DD/MM/YYYY'
+import InputValue from '../../../components/InputValue';
+import { getRoleLabel } from '../../../utils/Functions';
 
 const AccountView = ({ data, admin }) => {
 
     const { departmentName, address, phoneNumber, city, state, pinCode } = data
-    const { role, emailid, mobileNumber, userName } = admin
+    const { roleId, emailid, mobileNumber, userName } = admin
 
     return (
         <div className='app-view-info'>
@@ -63,7 +61,7 @@ const AccountView = ({ data, admin }) => {
                 </div>
                 <div className='input-container'>
                     <InputValue size='smaller' value='Administrator Type' />
-                    <InputValue size='large' value={role} />
+                    <InputValue size='large' value={getRoleLabel(roleId)} />
                 </div>
             </div>
         </div>

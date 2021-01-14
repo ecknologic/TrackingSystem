@@ -89,7 +89,7 @@ export const getStaffOptions = (staff = []) => {
     return staff.map((item) => <Option key={item.userId} value={item.userId}>{item.userName}</Option>)
 }
 export const getRoleOptions = (roles = []) => {
-    return roles.map((item) => <Option key={item.RoleId} value={item.RoleId}>{item.RoleName}</Option>)
+    return roles.map((item) => <Option key={item.RoleId} value={item.RoleId}>{item.RoleLabel}</Option>)
 }
 export const getBatchOptions = (batches = []) => {
     return batches.map((item) => <Option key={item.productionQcId} value={item.productionQcId}>{item.batchId}</Option>)

@@ -2,7 +2,7 @@ import React from 'react';
 import dayjs from 'dayjs';
 import InputValue from '../../../../components/InputValue';
 import UploadPreviewer from '../../../../components/UploadPreviewer';
-import { getSelectName } from '../../../../utils/Functions';
+import { getInvoiceLabel } from '../../../../utils/Functions';
 const DATEFORMAT = 'DD/MM/YYYY'
 
 const AccountView = ({ data }) => {
@@ -58,7 +58,7 @@ const AccountView = ({ data }) => {
                     </div>
                     <div className='input-container'>
                         <InputValue size='smaller' value='Invoice Type' />
-                        <InputValue size='large' value={getSelectName(invoicetype)} />
+                        <InputValue size='large' value={getInvoiceLabel(invoicetype)} />
                     </div>
                 </div>
                 <div className='input-container'>

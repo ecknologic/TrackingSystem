@@ -1,10 +1,10 @@
 import React from 'react';
 import dayjs from 'dayjs';
 import InputValue from '../../../components/InputValue';
-import { getSelectName } from '../../../utils/Functions';
+import { getRoleLabel } from '../../../utils/Functions';
 const DATEFORMAT = 'DD/MM/YYYY'
 
-const AccountView = ({ data }) => {
+const AccountView = ({ data, isDriver }) => {
 
     const {
         userName, parentName, gender, dob, mobileNumber, address, joinedDate, permanentAddress,
@@ -48,10 +48,14 @@ const AccountView = ({ data }) => {
                     <InputValue size='smaller' value='Date of Joining' />
                     <InputValue size='large' value={dayjs(joinedDate).format(DATEFORMAT)} />
                 </div>
-                <div className='input-container'>
-                    <InputValue size='smaller' value='Administrator Role' />
-                    <InputValue size='large' value={getSelectName(roleId)} />
-                </div>
+                {
+                    !isDriver && (
+                        <div className='input-container'>
+                            <InputValue size='smaller' value='Administrator Role' />
+                            <InputValue size='large' value={getRoleLabel(roleId)} />
+                        </div>
+                    )
+                }
             </div>
             <div className='input-container half-stretch'>
                 <InputValue size='smaller' value='Address of Communtication' />

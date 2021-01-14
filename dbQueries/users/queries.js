@@ -6,7 +6,7 @@ usersQueries.getUsers = async (callback) => {
     return executeGetQuery(query, callback)
 }
 usersQueries.getUsersBydepartmentType = async (departmentType, callback) => {
-    let query = "SELECT u.userId,u.userName,u.emailid,u.mobileNumber,r.RoleName as role from usermaster u INNER JOIN rolemaster r on u.RoleId=r.RoleId where u.RoleId=? ORDER BY createdDateTime DESC";
+    let query = "SELECT u.userId,u.userName,u.emailid,u.mobileNumber,r.RoleId as roleId from usermaster u INNER JOIN rolemaster r on u.RoleId=r.RoleId where u.RoleId=? ORDER BY createdDateTime DESC";
     return executeGetParamsQuery(query, [departmentType == "MotherPlant" ? '2' : '3'], callback)
 }
 usersQueries.getUsersById = async (userId, callback) => {

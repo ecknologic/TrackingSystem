@@ -6,14 +6,14 @@ import SelectInput from '../../../components/SelectInput';
 import DraggerInput from '../../../components/DraggerInput';
 import InputWithAddon from '../../../components/InputWithAddon';
 import UploadPreviewer from '../../../components/UploadPreviewer';
-import { resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
+import { getRoleLabel, resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
 
 const PlantForm = (props) => {
 
     const { data, admin, errors, onUpload, onChange, staffOptions, onRemove, onBlur } = props
 
     const { gstNo, gstProof, departmentName, address, phoneNumber, adminId, city, state, pinCode } = data
-    const { role, emailid, mobileNumber } = admin
+    const { roleId, emailid, mobileNumber } = admin
 
     useEffect(() => {
         resetTrackForm()
@@ -108,8 +108,8 @@ const PlantForm = (props) => {
                     />
                 </div>
                 <div className='input-container'>
-                    <InputLabel name='Administrator Type' error={errors.role} />
-                    <CustomInput value={role} placeholder='Administrator Type' disabled />
+                    <InputLabel name='Administrator Type' error={errors.roleId} />
+                    <CustomInput value={getRoleLabel(roleId)} placeholder='Administrator Type' disabled />
                 </div>
             </div>
             <div className='row'>

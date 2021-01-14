@@ -6,7 +6,7 @@ warehouseQueries.getWarehouseList = async (callback) => {
     return executeGetQuery(query, callback)
 }
 warehouseQueries.getWarehouseById = async (warehouseId, callback) => {
-    let query = `select d.*,u.userName,u.mobileNumber,u.emailid from departmentmaster d INNER JOIN usermaster u on d.adminId=u.userId WHERE departmentId=${warehouseId}`;
+    let query = `select d.*,u.userName,u.mobileNumber,u.emailid,u.RoleId as roleId from departmentmaster d INNER JOIN usermaster u on d.adminId=u.userId WHERE departmentId=${warehouseId}`;
     return executeGetQuery(query, callback)
 }
 warehouseQueries.getOrderDetailsByDepartment = async (departmentId, callback) => {

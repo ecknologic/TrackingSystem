@@ -100,27 +100,33 @@ export const stringToHslColor = (str) => {
     return 'hsl(' + h + ', 45%, 45%)';
 }
 
-export const getSelectName = (value) => {
+export const getRoleLabel = (id) => {
+    switch (id) {
+        case 1:
+            return 'Super Admin'
+
+        case 2:
+            return 'Mother Plant Admin'
+
+        case 3:
+            return 'Warehouse Admin'
+
+        case 4:
+            return 'Accounts Admin'
+
+        case 5:
+            return 'Sales & Marketing Admin'
+
+        default:
+            return null
+    }
+}
+export const getInvoiceLabel = (value) => {
     switch (value) {
         case 'complimentary':
             return 'Complimentary'
         case 'nonComplimentary':
             return 'Non Complimentary'
-
-        case 'SuperAdmin':
-            return 'Super Admin'
-
-        case 'MotherPlantAdmin':
-            return 'Mother Plant Admin'
-
-        case 'WarehouseAdmin':
-            return 'Warehouse Admin'
-
-        case 'Accounts':
-            return 'Accounts'
-
-        case 'SalesAndMarketing':
-            return 'Sales & Marketing'
 
         default:
             return 'Key not matched'
