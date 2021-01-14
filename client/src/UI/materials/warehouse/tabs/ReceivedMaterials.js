@@ -1,10 +1,10 @@
 import dayjs from 'dayjs';
-import { Table } from 'antd';
+import { Menu, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
 import Spinner from '../../../../components/Spinner';
-import { ScheduleIcon } from '../../../../components/SVG_Icons';
-import TableAction from '../../../../components/TableAction';
+import { EditIconGrey, ScheduleIcon } from '../../../../components/SVG_Icons';
+import Actions from '../../../../components/Actions';
 import SearchInput from '../../../../components/SearchInput';
 import { TODAYDATE } from '../../../../utils/constants';
 import CustomPagination from '../../../../components/CustomPagination';
@@ -73,7 +73,9 @@ const ReceivedMaterials = () => {
     }
 
     const dataSource = useMemo(() => RM.map((item) => {
-        const { rawmaterialid: key, itemName, orderId, itemQty, invoiceNo, vendorName, invoiceAmount, invoiceDate, taxAmount } = item
+        const { rawmaterialid: key, itemName, orderId, itemQty, invoiceNo, vendorName, invoiceAmount,
+            invoiceDate, taxAmount } = item
+
         return {
             key,
             itemName,
@@ -85,7 +87,7 @@ const ReceivedMaterials = () => {
             invoiceAmount,
             dateAndTime: dayjs(invoiceDate).format('DD/MM/YYYY'),
             status: renderStatus('Delivered'),
-            action: <TableAction onSelect={({ key }) => handleMenuSelect(key, item)} />
+            action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, item)} />
         }
     }), [RM])
 
@@ -170,5 +172,5 @@ const renderStatus = (status) => {
         </div>
     )
 }
-
+const options = [<Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>]
 export default ReceivedMaterials

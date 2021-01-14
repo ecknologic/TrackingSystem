@@ -1,10 +1,10 @@
 import dayjs from 'dayjs';
-import { Table } from 'antd';
+import { Menu, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
 import Spinner from '../../../../components/Spinner';
-import { ScheduleIcon } from '../../../../components/SVG_Icons';
-import TableAction from '../../../../components/TableAction';
+import { BlockIconGrey, EditIconGrey, ScheduleIcon, ProjectIconGrey } from '../../../../components/SVG_Icons';
+import Actions from '../../../../components/Actions';
 import SearchInput from '../../../../components/SearchInput';
 import { TODAYDATE } from '../../../../utils/constants';
 import CustomPagination from '../../../../components/CustomPagination';
@@ -12,12 +12,12 @@ import { getRMColumns } from '../../../../assets/fixtures';
 import DateValue from '../../../../components/DateValue';
 import CustomDateInput from '../../../../components/CustomDateInput';
 import CustomModal from '../../../../components/CustomModal';
-import { disableFutureDates, getStatusColor } from '../../../../utils/Functions';
+import { deepClone, disableFutureDates, getStatusColor, showToast } from '../../../../utils/Functions';
 import RequestedMaterialStatusView from '../views/RequestedMaterialStatus';
 const DATEFORMAT = 'DD-MM-YYYY'
 const format = 'YYYY-MM-DD'
 
-const MaterialStatus = ({ reFetch }) => {
+const MaterialStatus = ({ reFetch, isSuperAdmin }) => {
     const [loading, setLoading] = useState(true)
     const [viewData, setViewData] = useState({})
     const [pageSize, setPageSize] = useState(10)
@@ -38,7 +38,7 @@ const MaterialStatus = ({ reFetch }) => {
     }, [reFetch])
 
     const getRM = async () => {
-        const data = await http.GET('/motherPlant/getRMDetails')
+        const data = await http.GET(`/motherPlant/getRMDetails?isSuperAdmin=${isSuperAdmin}`)
         setRM(data)
         setRMClone(data)
         setTotalCount(data.length)
@@ -64,6 +64,12 @@ const MaterialStatus = ({ reFetch }) => {
             setViewData(data)
             setViewModal(true)
         }
+        else if (key === 'approve') {
+            updateRMStatus(data.rawmaterialid, 'Approved')
+        }
+        else if (key === 'reject') {
+            updateRMStatus(data.rawmaterialid, 'Rejected')
+        }
     }
 
     const handlePageChange = (number) => {
@@ -75,9 +81,34 @@ const MaterialStatus = ({ reFetch }) => {
         setPageNumber(number)
     }
 
+    const updateRMStatus = async (rawmaterialid, status) => {
+        const url = '/motherPlant/updateRMStatus'
+        const body = { rawmaterialid, status }
+        const options = { item: 'Order', v1Ing: status === 'Approved' ? 'Approving' : 'Rejecting', v2: status }
+
+        try {
+            showToast({ ...options, action: 'loading' })
+            await http.PUT(url, body)
+            showToast(options)
+            optimisticUpdate(rawmaterialid, status)
+        } catch (error) { }
+    }
+
+    const optimisticUpdate = (id, status) => {
+        let clone = deepClone(RM);
+        const index = clone.findIndex(item => item.rawmaterialid === id)
+        clone[index].status = status;
+        setRM(clone)
+    }
+
     const dataSource = useMemo(() => RM.map((dispatch) => {
         const { rawmaterialid: key, orderId, itemName, requestedDate, reorderLevel,
             minOrderLevel, vendorName, itemQty, status } = dispatch
+        const operations = {
+            canApprove: status === 'Rejected' || status === 'Pending',
+            canReject: status === 'Approved' || status === 'Pending'
+        }
+        const options = getActionOptions(isSuperAdmin, operations)
         return {
             key,
             orderId,
@@ -88,7 +119,7 @@ const MaterialStatus = ({ reFetch }) => {
             itemName,
             dateAndTime: dayjs(requestedDate).format('DD/MM/YYYY'),
             status: renderStatus(status),
-            action: <TableAction onSelect={({ key }) => handleMenuSelect(key, dispatch)} />
+            action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, dispatch)} />
         }
     }), [RM])
 
@@ -165,13 +196,21 @@ const MaterialStatus = ({ reFetch }) => {
 
 const renderStatus = (status) => {
     const color = getStatusColor(status)
-    const text = status === 'Pending' ? status : 'Approved'
     return (
         <div className='status'>
             <span className='app-dot' style={{ background: color }}></span>
-            <span className='status-text'>{text}</span>
+            <span className='status-text'>{status}</span>
         </div>
     )
+}
+
+const getActionOptions = (isSuperAdmin, { canApprove, canReject }) => {
+    if (isSuperAdmin) return [
+        <Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>,
+        <Menu.Item key="approve" className={canApprove ? '' : 'disabled'} icon={<ProjectIconGrey />}>Approve</Menu.Item>,
+        <Menu.Item key="reject" className={canReject ? '' : 'disabled'} icon={<BlockIconGrey />}>Reject</Menu.Item>
+    ]
+    return [<Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>]
 }
 
 export default MaterialStatus

@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { Table } from 'antd';
+import { Menu, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../modules/http';
 import InternalQCView from '../views/InternalQC';
@@ -7,9 +7,9 @@ import Spinner from '../../../components/Spinner';
 import { TODAYDATE } from '../../../utils/constants';
 import DateValue from '../../../components/DateValue';
 import SearchInput from '../../../components/SearchInput';
-import TableAction from '../../../components/TableAction';
+import Actions from '../../../components/Actions';
 import CustomModal from '../../../components/CustomModal';
-import { ScheduleIcon } from '../../../components/SVG_Icons';
+import { EditIconGrey, ScheduleIcon } from '../../../components/SVG_Icons';
 import { internalQCColumns } from '../../../assets/fixtures';
 import CustomDateInput from '../../../components/CustomDateInput';
 import CustomPagination from '../../../components/CustomPagination';
@@ -86,7 +86,7 @@ const InternalQC = () => {
             shiftType,
             dateAndTime: dayjs(requestedDate).format(DATEANDTIMEFORMAT),
             status: renderStatus(status),
-            action: <TableAction onSelect={({ key }) => handleMenuSelect(key, qc)} />
+            action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, qc)} />
         }
     }), [QC])
 
@@ -172,5 +172,5 @@ const renderStatus = (status) => {
         </div>
     )
 }
-
+const options = [<Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>]
 export default InternalQC

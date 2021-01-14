@@ -1,11 +1,11 @@
 import dayjs from 'dayjs';
-import { Table } from 'antd';
+import { Menu, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import BatchForm from '../forms/Batch';
 import { http } from '../../../../modules/http';
 import Spinner from '../../../../components/Spinner';
 import QuitModal from '../../../../components/CustomModal';
-import TableAction from '../../../../components/TableAction';
+import Actions from '../../../../components/Actions';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import { TRACKFORM } from '../../../../utils/constants';
 import CustomPagination from '../../../../components/CustomPagination';
@@ -13,6 +13,7 @@ import { deepClone, getStatusColor, isEmpty, resetTrackForm, showToast } from '.
 import CustomModal from '../../../../components/CustomModal';
 import { shiftOptions, productionColumns } from '../../../../assets/fixtures';
 import { validateBatchValues, validateIntFloat, validateNames, validateNumber } from '../../../../utils/validations';
+import { EditIconGrey } from '../../../../components/SVG_Icons';
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
 const Production = () => {
@@ -160,7 +161,7 @@ const Production = () => {
             status: renderStatus(isDelivered),
             productionDetails: renderProductionDetails(rest),
             dateAndTime: dayjs(productionDate).format(DATEANDTIMEFORMAT),
-            action: <TableAction onSelect={({ key }) => handleMenuSelect(key, product)} />
+            action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, product)} />
         }
     }), [products])
 
@@ -248,4 +249,5 @@ const renderProductionDetails = ({ product20L, product1L, product500ML, product2
     500 ml - ${product500ML}, 250 ml - ${product250ML}
     `
 }
+const options = [<Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>]
 export default Production

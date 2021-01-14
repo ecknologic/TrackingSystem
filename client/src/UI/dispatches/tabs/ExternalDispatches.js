@@ -1,11 +1,11 @@
 import dayjs from 'dayjs';
-import { Table } from 'antd';
+import { Menu, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { http } from '../../../modules/http';
 import Spinner from '../../../components/Spinner';
 import QuitModal from '../../../components/CustomModal';
-import { ScheduleIcon } from '../../../components/SVG_Icons';
-import TableAction from '../../../components/TableAction';
+import { EditIconGrey, ScheduleIcon } from '../../../components/SVG_Icons';
+import Actions from '../../../components/Actions';
 import SearchInput from '../../../components/SearchInput';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import { TODAYDATE, TRACKFORM } from '../../../utils/constants';
@@ -108,7 +108,7 @@ const Dispatches = () => {
             dateAndTime: dayjs(dispatchedDate).format(DATEANDTIMEFORMAT),
             productionDetails: renderOrderDetails(dispatch),
             status: renderStatus(status),
-            action: <TableAction onSelect={({ key }) => handleMenuSelect(key, dispatch)} />
+            action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, dispatch)} />
         }
     }), [dispatches])
 
@@ -202,4 +202,5 @@ const renderOrderDetails = ({ product20L, product1L, product500ML, product250ML 
     500 ml - ${product500ML ? product500ML : 0} boxes, 250 ml - ${product250ML ? product250ML : 0} boxes
     `
 }
+const options = [<Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>]
 export default Dispatches

@@ -17,7 +17,7 @@ const MotherplantMaterials = () => {
                         tabBarExtraContent={<ReportsDropdown />}
                     >
                         <TabPane tab="Requested Materials" key="1">
-                            <RequestedMaterialStatus />
+                            <RequestedMaterialStatus isSuperAdmin />
                         </TabPane>
                         <TabPane tab="Received Materials" key="2">
                             <AddMaterials />

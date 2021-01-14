@@ -1,9 +1,9 @@
+import dayjs from 'dayjs';
 import React from 'react';
 import { Divider } from 'antd';
 import InputLabel from '../../../../components/InputLabel';
 import InputValue from '../../../../components/InputValue';
 import { getStatusColor } from '../../../../utils/Functions';
-import dayjs from 'dayjs';
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
 const RequestedMaterialStatusView = ({ data }) => {

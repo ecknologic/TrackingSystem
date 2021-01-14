@@ -1,11 +1,12 @@
 import React from 'react';
-import { Dropdown, Menu } from 'antd';
+import { Menu } from 'antd';
 import NameCard from './NameCard';
 import PrimaryButton from './PrimaryButton';
-import { FriendIconGrey, MoreIconGrey } from './SVG_Icons';
+import { FriendIconGrey } from './SVG_Icons';
+import { getRole, SUPERADMIN } from '../utils/constants';
+import Actions from '../components/Actions'
 import '../sass/accountCard.scss'
 import '../sass/addressCard.scss'
-import { getRole, SUPERADMIN } from '../utils/constants';
 
 const AddressCard = ({ data, onClick, onSelect }) => {
     const role = getRole()
@@ -14,6 +15,11 @@ const AddressCard = ({ data, onClick, onSelect }) => {
     const handleSelect = ({ key }) => {
         onSelect(key, deliveryDetailsId)
     }
+
+    const options = [
+        <Menu.Item key="approve" className={isApproved ? 'disabled' : ''}>Approve</Menu.Item>,
+        <Menu.Item key="delete">Delete</Menu.Item>
+    ]
 
     return (
         <div className='account-card-container address-card-container'>
@@ -43,34 +49,10 @@ const AddressCard = ({ data, onClick, onSelect }) => {
                 <PrimaryButton text='View Details' onClick={() => onClick(data)} />
                 {
                     role === SUPERADMIN &&
-                    <Action onSelect={handleSelect} isApproved={isApproved} />
+                    <Actions options={options} onSelect={handleSelect} />
                 }
             </div>
         </div>
-    )
-
-}
-
-const Action = ({ onSelect, isApproved }) => {
-    const menu = (
-        <Menu onClick={onSelect}>
-            <Menu.Item key="approve" className={isApproved ? 'disabled' : ''}>
-                Approve
-          </Menu.Item>
-            <Menu.Item key="delete">
-                Delete
-          </Menu.Item>
-        </Menu>
-    );
-
-    return (
-        <Dropdown
-            overlay={menu}
-            trigger={['click']}
-            getPopupContainer={() => document.getElementById('content')}
-        >
-            <MoreIconGrey className='action-dots' />
-        </Dropdown>
     )
 }
 

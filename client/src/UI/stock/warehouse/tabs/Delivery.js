@@ -1,11 +1,11 @@
-import { Table } from 'antd';
+import { Menu, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import DCForm from '../forms/DCForm';
 import { http } from '../../../../modules/http';
 import Spinner from '../../../../components/Spinner';
 import QuitModal from '../../../../components/CustomModal';
-import { PlusIcon } from '../../../../components/SVG_Icons';
-import TableAction from '../../../../components/TableAction';
+import { EditIconGrey, PlusIcon } from '../../../../components/SVG_Icons';
+import Actions from '../../../../components/Actions';
 import SearchInput from '../../../../components/SearchInput';
 import CustomModal from '../../../../components/CustomModal';
 import CustomButton from '../../../../components/CustomButton';
@@ -215,7 +215,7 @@ const Delivery = ({ date }) => {
             driverName: driverName,
             orderDetails: renderOrderDetails(dc),
             status: renderStatus(isDelivered),
-            action: <TableAction onSelect={({ key }) => handleMenuSelect(key, dc)} />
+            action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, dc)} />
         }
     }), [deliveries])
 
@@ -326,4 +326,5 @@ const renderOrderDetails = ({ cans20L, boxes1L, boxes500ML, boxes250ML }) => {
     500 ml - ${boxes500ML} boxes, 250 ml - ${boxes250ML} boxes
     `
 }
+const options = [<Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>]
 export default Delivery

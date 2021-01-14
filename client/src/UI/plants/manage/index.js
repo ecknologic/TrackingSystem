@@ -12,17 +12,13 @@ import QuitModal from '../../../components/CustomModal';
 import IDProofInfo from '../../../components/IDProofInfo';
 import CustomButton from '../../../components/CustomButton';
 import ConfirmMessage from '../../../components/ConfirmMessage';
-import { getRoleOptions, getStaffOptions } from '../../../assets/fixtures';
-import { isEmpty, showToast, base64String, getMainPathname, getBase64, getValidDate, getPlantValuesForDB } from '../../../utils/Functions';
+import { getStaffOptions } from '../../../assets/fixtures';
+import { isEmpty, showToast, base64String, getMainPathname, getBase64, getPlantValuesForDB } from '../../../utils/Functions';
 import { TRACKFORM } from '../../../utils/constants';
 import {
-    validateIDNumbers, validateNames, validateMobileNumber, validateEmailId, validateIDProofs,
-    validateEmployeeValues,
-    validatePinCode,
-    validatePlantValues
+    validateIDNumbers, validateNames, validateMobileNumber, validatePinCode, validatePlantValues
 } from '../../../utils/validations';
 import '../../../sass/plants.scss'
-const DATEFORMAT = 'YYYY-MM-DD'
 
 const ManagePlant = () => {
     const { plantId } = useParams()
@@ -40,8 +36,8 @@ const ManagePlant = () => {
     const [plantType, setPlantType] = useState('')
     const [staffList, setStaffList] = useState([])
     const [admin, setAdmin] = useState({})
+    const [prevAdminId, setPrevAdminId] = useState('')
 
-    const isDriver = plantType === 'Driver'
     const mainUrl = useMemo(() => getMainPathname(pathname), [pathname])
     const staffOptions = useMemo(() => getStaffOptions(staffList), [staffList])
 
@@ -55,12 +51,13 @@ const ManagePlant = () => {
 
         const [data] = await http.GET(url)
         const { gstProof: gst, userName, mobileNumber, emailid, roleId, ...rest } = data
-        const { departmentName, gstNo } = rest
+        const { departmentName, gstNo, adminId } = rest
         const gstProof = base64String(gst?.data)
 
         setGstProof({ Front: gstProof, idProofType: 'gstNo', gstNo })
         setHeaderContent({ title: departmentName })
         setAccountValues(rest)
+        setPrevAdminId(adminId)
         setAdmin({ userName, mobileNumber, emailid, roleId })
         setLoading(false)
     }
@@ -141,10 +138,14 @@ const ManagePlant = () => {
         }
 
         const motherplant = getPlantValuesForDB(accountValues)
-        let body = {
-            ...motherplant
+        let removedAdminId;
+
+        if (motherplant.adminId !== prevAdminId) {
+            removedAdminId = prevAdminId
         }
+
         const url = updateUrl(mainUrl)
+        let body = { ...motherplant, removedAdminId }
         const options = { item: plantType, v1Ing: 'Updating', v2: 'updated' }
 
 
