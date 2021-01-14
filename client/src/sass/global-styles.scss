@@ -85,11 +85,11 @@ $textColorDisabled:rgba(0,0,0,0.55);
     height: 5em;
     border: 1px solid #E2E2EA !important;
     background-color: #FFFFFF;
-
-    .anticon {
-        top: 2.5em !important;
-        right: 2em !important;
-    }
+}
+.ant-collapse > .ant-collapse-item > .ant-collapse-header .ant-collapse-arrow {
+    padding: 0;
+    top: 45%;
+    right: 2em;
 }
 .ant-collapse-item-active .ant-collapse-header {
     border-bottom-left-radius: none !important;

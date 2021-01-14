@@ -129,7 +129,7 @@ export const getInvoiceLabel = (value) => {
             return 'Non Complimentary'
 
         default:
-            return 'Key not matched'
+            return ''
     }
 }
 

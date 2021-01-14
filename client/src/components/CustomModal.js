@@ -1,7 +1,7 @@
 import { Modal } from 'antd';
 import React from 'react';
 import CustomButton from './CustomButton';
-import { CrossIcon } from './SVG_Icons';
+import { CrossIconDark } from './SVG_Icons';
 
 const CustomModal = (props) => {
     const { visible, title, okTxt, hideCancel, cancelTxt, onCancel, onOk, onOther, btnDisabled, className, children } = props
@@ -12,7 +12,7 @@ const CustomModal = (props) => {
             title={title}
             visible={visible}
             onCancel={onCancel}
-            closeIcon={<CrossIcon />}
+            closeIcon={<CrossIconDark />}
             className={className}
             destroyOnClose
             footer={(

@@ -20,7 +20,7 @@ const MotherplantMaterials = () => {
                             <RequestedMaterialStatus isSuperAdmin />
                         </TabPane>
                         <TabPane tab="Received Materials" key="2">
-                            <AddMaterials />
+                            <AddMaterials isSuperAdmin />
                         </TabPane>
                     </Tabs>
                 </div>

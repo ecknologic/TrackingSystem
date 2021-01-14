@@ -3,6 +3,7 @@ import Icon from '@ant-design/icons'
 const primaryColor = '#0062FF'
 const secondaryColor = '#5C63AB'
 const greyColor = '#92929D'
+const darkColor = '#4A4A4A'
 const whiteColor = '#FFFFFF'
 
 
@@ -167,7 +168,7 @@ const ScheduleSvgGrey = () => <ScheduleComponent color={greyColor} />
 const ArrowSvgGrey = () => <ArrowComponent color={greyColor} />
 const TrashSvgLight = () => <TrashComponent color={secondaryColor} />
 const TrashSvgGrey = () => <TrashComponent color={greyColor} />
-const CrossSvg = () => <CrossComponent color={primaryColor} />
+const CrossSvgDark = () => <CrossComponent color={darkColor} />
 const EditSvgGrey = () => <EditComponent color={greyColor} />
 const LinesSvgGrey = () => <LinesComponent color={greyColor} />
 const NotificationSvgGrey = () => <NotificationComponent color={greyColor} />
@@ -229,7 +230,7 @@ export const CardViewIcon = props => <Icon component={CardViewSvg} {...props} />
 export const CardViewIconGrey = props => <Icon component={CardViewSvgGrey} {...props} />
 export const ArrowIconGrey = props => <Icon component={ArrowSvgGrey} {...props} />
 export const ArrowIcon = props => <Icon component={ArrowSvg} {...props} />
-export const CrossIcon = props => <Icon component={CrossSvg} {...props} />
+export const CrossIconDark = props => <Icon component={CrossSvgDark} {...props} />
 export const BlockIconGrey = props => <Icon component={BlockSvgGrey} {...props} />
 export const PlusIcon = props => <Icon component={PlusSvg} {...props} />
 export const PlusIconGrey = props => <Icon component={PlusSvgGrey} {...props} />

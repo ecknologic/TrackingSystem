@@ -1,32 +1,18 @@
 import React from 'react';
 import dayjs from 'dayjs';
 import InputValue from '../../../../components/InputValue';
-import UploadPreviewer from '../../../../components/UploadPreviewer';
 import { getInvoiceLabel } from '../../../../utils/Functions';
 const DATEFORMAT = 'DD/MM/YYYY'
 
 const AccountView = ({ data }) => {
 
     const {
-        gstNo, natureOfBussiness, address, customerName, mobileNumber, invoicetype, creditPeriodInDays, EmailId,
-        registeredDate, gstProof
+        natureOfBussiness, address, customerName, mobileNumber, invoicetype, creditPeriodInDays, EmailId, registeredDate
     } = data
 
     return (
         <>
             <div className='app-view-info'>
-                <div className='row half-stretch'>
-                    <div className='input-container'>
-                        <InputValue size='smaller' value='GST Number' />
-                        <InputValue size='large' value={gstNo} />
-                    </div>
-                    <div className='input-container'>
-                        <InputValue size='smaller' value='GST Proof' />
-                        <div className='upload-preview-container'>
-                            <UploadPreviewer value={gstProof} disabled />
-                        </div>
-                    </div>
-                </div>
                 <div className='input-container half-stretch'>
                     <InputValue size='smaller' value='Address' />
                     <InputValue size='large' value={address} />

@@ -40,6 +40,7 @@ const ApproveAccount = () => {
     const [successModal, setSucessModal] = useState(false)
     const [accountErrors, setAccountErrors] = useState({})
     const [IDProofs, setIDProofs] = useState({})
+    const [gstProof, setGstProof] = useState({})
     const [addresses, setAddresses] = useState([])
     const [addressesErrors, setAddressesErrors] = useState({})
     const [editMode, setEditMode] = useState(false)
@@ -64,8 +65,8 @@ const ApproveAccount = () => {
         const url = `/customer/getCustomerDetailsById/${accountId}`
         try {
             const { data: [data = {}] } = await http.GET(url)
-            const { customerName, organizationName, customertype, gstProof, adharNo, panNo,
-                idProof_frontside, idProof_backside, idProofType, Address1, registeredDate } = data
+            const { gstProof, idProof_frontside, idProof_backside, Address1, registeredDate, ...rest } = data
+            const { customerName, organizationName, customertype, gstNo, adharNo, panNo, idProofType } = rest
 
             setHeaderContent({
                 title: organizationName || customerName,
@@ -76,10 +77,11 @@ const ApproveAccount = () => {
             const Back = base64String(idProof_backside?.data)
 
             const newData = {
-                ...data, gstProof: gst, address: Address1,
+                ...rest, gstProof: gst, address: Address1,
                 registeredDate: dayjs(registeredDate).format('YYYY-MM-DD'),
             }
             setIDProofs({ Front, Back, idProofType, adharNo, panNo })
+            setGstProof({ Front: gst, idProofType: 'gstNo', gstNo })
             setAccountValues(newData)
             return Promise.resolve()
         } catch (error) { }
@@ -297,6 +299,7 @@ const ApproveAccount = () => {
                                 <span className='heading'>Business Information</span>
                             </div>
                             <IDProofInfo data={IDProofs} />
+                            <IDProofInfo data={gstProof} />
                             {
                                 editMode ? (
                                     <AccountForm

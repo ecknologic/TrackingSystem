@@ -72,7 +72,7 @@ const CreateEmployee = ({ goToTab }) => {
         }
     }
 
-    const handleProofUpload = (file, name, proofType) => {
+    const handleUpload = (file, name, proofType) => {
         getBase64(file, async (buffer) => {
             if (proofType === 'adharProof') {
                 if (name === 'any') {
@@ -88,7 +88,7 @@ const CreateEmployee = ({ goToTab }) => {
                     }
                     setAdharProof(clone)
                 }
-                else if (name === 'Front' || name === 'Back') {
+                else {
                     setAdharProofErrors(errors => ({ ...errors, [name]: '' }))
                     const clone = { ...adharProof }
                     clone[name] = buffer
@@ -109,9 +109,9 @@ const CreateEmployee = ({ goToTab }) => {
                     }
                     setLicenseProof(clone)
                 }
-                else if (name === 'Front' || name === 'Back') {
+                else {
                     setLicenseProofErrors(errors => ({ ...errors, [name]: '' }))
-                    const clone = { ...adharProof }
+                    const clone = { ...licenseProof }
                     clone[name] = buffer
                     setLicenseProof(clone)
                 }
@@ -119,7 +119,7 @@ const CreateEmployee = ({ goToTab }) => {
         })
     }
 
-    const handleProofRemove = (name, proofType) => {
+    const handleRemove = (name, proofType) => {
         if (proofType === 'adharProof') {
             if (name === 'Front') setAdharProof(data => ({ ...data, Front: '' }))
             else if (name === 'Back') setAdharProof(data => ({ ...data, Back: '' }))
@@ -128,7 +128,6 @@ const CreateEmployee = ({ goToTab }) => {
             if (name === 'Front') setLicenseProof(data => ({ ...data, Front: '' }))
             else if (name === 'Back') setLicenseProof(data => ({ ...data, Back: '' }))
         }
-
     }
 
     const getEmployeeType = (url) => {
@@ -195,8 +194,8 @@ const CreateEmployee = ({ goToTab }) => {
                 licenseProofErrors={licenseProofErrors}
                 onBlur={handleBlur}
                 onChange={handleChange}
-                onUpload={handleProofUpload}
-                onRemove={handleProofRemove}
+                onUpload={handleUpload}
+                onRemove={handleRemove}
             />
             <div className='app-footer-buttons-container'>
                 <CustomButton
