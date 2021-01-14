@@ -85,6 +85,20 @@ router.post('/createMotherPlant', (req, res) => {
         }
     });
 });
+router.post('/updateMotherPlant', (req, res) => {
+    const { departmentId, adminId: userId, removedAdminId } = req.body
+    motherPlantDbQueries.updateMotherPlant(req.body, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else {
+            usersQueries.updateUserDepartment({ departmentId, userId, removedAdminId }, (err, userResults) => {
+                if (err) res.status(500).json(dbError(err));
+                else {
+                    res.json(userResults);
+                }
+            })
+        }
+    });
+});
 router.get('/getProdQCTestedBatches', (req, res) => {
     motherPlantDbQueries.getProdQCTestedBatches(departmentId, (err, results) => {
         if (err) res.status(500).json(dbError(err));

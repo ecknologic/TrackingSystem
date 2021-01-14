@@ -135,6 +135,13 @@ motherPlantDbQueries.createMotherPlant = async (input, callback) => {
     let requestBody = [departmentName, 'MotherPlant', input.gstNo, gstProof, address, city, state, pinCode, adminId, phoneNumber]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
+motherPlantDbQueries.updateMotherPlant = async (input, callback) => {
+    const { address, departmentName, city, state, pinCode, adminId, phoneNumber, departmentId } = input
+    let query = "update departmentmaster set departmentName=?,departmentType=?,gstNo=?,gstProof=?,address=?,city=?,state=?,pinCode=?,adminId=?,phoneNumber=? where departmentId=?";
+    let gstProof = input.gstProof && Buffer.from(input.gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+    let requestBody = [departmentName, 'MotherPlant', input.gstNo, gstProof, address, city, state, pinCode, adminId, phoneNumber, departmentId]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
 motherPlantDbQueries.createProductionQC = async (input, callback) => {
     const { phLevel, TDS, ozoneLevel, managerName, shiftType, departmentId } = input
     let query = "insert into productionQC (requestedDate,phLevel,TDS,ozoneLevel,managerName,shiftType,departmentId) values(?,?,?,?,?,?,?)";

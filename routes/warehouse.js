@@ -87,6 +87,20 @@ router.post('/createWarehouse', (req, res) => {
     }
   });
 });
+router.post('/updateWarehouse', (req, res) => {
+  const { departmentId, adminId: userId, removedAdminId } = req.body
+  warehouseQueries.updateWarehouse(req.body, (err, results) => {
+    if (err) res.status(500).json(dbError(err));
+    else {
+      usersQueries.updateUserDepartment({ departmentId, userId, removedAdminId }, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else {
+          res.json(results);
+        }
+      })
+    }
+  });
+});
 
 router.post('/createDC', (req, res) => {
   let dcCreateQuery = "insert into customerorderdetails (customerName,phoneNumber,address,routeId,driverId,20LCans,1LBoxes,500MLBoxes,250MLBoxes,warehouseId) values(?,?,?,?,?,?,?,?,?,?)";

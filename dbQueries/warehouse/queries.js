@@ -43,4 +43,12 @@ warehouseQueries.confirmDispatchDetails = (input, callback) => {
     let requestBody = [input.returnStockId ? input.returnStockId : '0', 1, 'Delivered', input.dcNo];
     executePostOrUpdateQuery(query, requestBody, callback)
 }
+warehouseQueries.updateWarehouse = async (input, callback) => {
+    const { address, departmentName, city, state, pinCode, adminId, phoneNumber, departmentId } = input
+    let query = "update departmentmaster set departmentName=?,departmentType=?,gstNo=?,gstProof=?,address=?,city=?,state=?,pinCode=?,adminId=?,phoneNumber=? where departmentId=?";
+    let gstProof = input.gstProof && Buffer.from(input.gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+    let requestBody = [departmentName, 'Warehouse', input.gstNo, gstProof, address, city, state, pinCode, adminId, phoneNumber, departmentId]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+
 module.exports = warehouseQueries

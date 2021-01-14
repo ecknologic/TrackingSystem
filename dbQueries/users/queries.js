@@ -15,9 +15,13 @@ usersQueries.getUsersById = async (userId, callback) => {
 }
 //Update Request Methods
 usersQueries.updateUserDepartment = (input, callback) => {
-    const { departmentId, userId } = input
+    const { departmentId, userId, removedAdminId } = input
+    if (removedAdminId) {
+        let query1 = "update usermaster set departmentId=? where userId=?";
+        executePostOrUpdateQuery(query1, ["Null", removedAdminId])
+    }
     let query = "update usermaster set departmentId=? where userId=?";
     let requestBody = [departmentId, userId];
-    executePostOrUpdateQuery(query, requestBody, callback)
+    return executePostOrUpdateQuery(query, requestBody, callback)
 }
 module.exports = usersQueries
