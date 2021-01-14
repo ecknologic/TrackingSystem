@@ -217,8 +217,13 @@ motherPlantDbQueries.updateRMDetails = async (input, callback) => {
 }
 
 motherPlantDbQueries.updateRMStatus = async (input, callback) => {
-    let query = `update requiredrawmaterial set status=? where rawmaterialid=${input.rawmaterialid}`;
-    let requestBody = [input.status]
+    const { status, rawmaterialid } = input
+    let query = `update requiredrawmaterial set status=? where rawmaterialid=${rawmaterialid}`;
+    let requestBody = [status]
+    if (status == "Approved" || status == "Rejected") {
+        query = `update requiredrawmaterial set status=?,approvedDate=? where rawmaterialid=${rawmaterialid}`
+        requestBody = [status, new Date()]
+    }
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 

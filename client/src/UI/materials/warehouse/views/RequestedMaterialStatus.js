@@ -11,7 +11,7 @@ const RequestedMaterialStatusView = ({ data }) => {
     const { orderId, status, itemName, itemCode, itemQty, description, vendorName, requestedDate, approvedDate } = data
 
     const color = getStatusColor(status)
-    const text = status === 'Pending' ? status : 'Approved'
+    const text = status === 'Pending' || status === 'Rejected' ? status : 'Approved'
 
     return (
         <>
@@ -58,7 +58,7 @@ const RequestedMaterialStatusView = ({ data }) => {
                     {
                         approvedDate && (
                             <div className='input-container'>
-                                <InputLabel name='Approved On' />
+                                <InputLabel name={`${text} On`} />
                                 <InputValue size='smaller' value={dayjs(approvedDate).format(DATEANDTIMEFORMAT)} />
                             </div>
                         )
