@@ -7,8 +7,11 @@ const DATEFORMAT = 'DD/MM/YYYY'
 const AccountView = ({ data }) => {
 
     const {
-        natureOfBussiness, address, customerName, mobileNumber, invoicetype, creditPeriodInDays, EmailId, registeredDate
+        natureOfBussiness, address, customerName, mobileNumber, invoicetype, creditPeriodInDays,
+        customertype, EmailId, registeredDate
     } = data
+
+    const isCorporate = customertype === 'Corporate'
 
     return (
         <>
@@ -47,10 +50,13 @@ const AccountView = ({ data }) => {
                         <InputValue size='large' value={getInvoiceLabel(invoicetype)} />
                     </div>
                 </div>
-                <div className='input-container'>
-                    <InputValue size='smaller' value='Credit Period in Days' />
-                    <InputValue size='large' value={creditPeriodInDays} />
-                </div>
+                {
+                    isCorporate ? <div className='input-container'>
+                        <InputValue size='smaller' value='Credit Period in Days' />
+                        <InputValue size='large' value={creditPeriodInDays} />
+                    </div> : null
+                }
+
             </div>
         </>
     )

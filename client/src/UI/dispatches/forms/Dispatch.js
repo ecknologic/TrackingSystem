@@ -6,7 +6,7 @@ import { removeFormTracker, resetTrackForm, trackAccountFormOnce } from '../../.
 
 const DispatchForm = (props) => {
 
-    const { data, errors, batchIdOptions, departmentOptions, vehicleOptions, disabled, driverOptions,
+    const { data, errors, batchIdOptions, warehouseOptions, vehicleOptions, disabled, driverOptions,
         onChange, onBlur } = props
 
     const { batchId, dispatchTo, managerName, vehicleNo, driverId, mobileNumber,
@@ -102,7 +102,7 @@ const DispatchForm = (props) => {
                 <div className='row'>
                     <div className='input-container stretch'>
                         <InputLabel name='Dispatch To' error={errors.dispatchTo} mandatory />
-                        <SelectInput track value={dispatchTo} options={departmentOptions}
+                        <SelectInput track value={dispatchTo} options={warehouseOptions}
                             disabled={disabled} error={errors.dispatchTo}
                             onSelect={(value) => onChange(value, 'dispatchTo')}
                         />

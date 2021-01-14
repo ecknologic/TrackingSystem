@@ -9,7 +9,7 @@ import { getWarehoseId } from '../../utils/constants';
 // import ExternalDispatches from './tabs/ExternalDispatches';
 import ReportsDropdown from '../../components/ReportsDropdown';
 // import CreateExternalDispatch from './tabs/CreateExternalDispatch';
-import { getBatchIdOptions, getDepartmentOptions, getDriverOptions, getVehicleOptions } from '../../assets/fixtures';
+import { getBatchIdOptions, getWarehouseOptions, getDriverOptions, getVehicleOptions } from '../../assets/fixtures';
 import '../../sass/dispatches.scss'
 
 const Dispatche = () => {
@@ -18,21 +18,21 @@ const Dispatche = () => {
     const [reFetch, setreFetch] = useState(false)
     const [batchList, setBatchList] = useState([])
     const [driverList, setDrivers] = useState([])
-    const [departmentList, setDepartmentsList] = useState([])
+    const [warehouseList, setWarehouseList] = useState([])
     const [vehiclesList, setVehiclesList] = useState([])
 
     const batchIdOptions = useMemo(() => getBatchIdOptions(batchList), [batchList])
     const driverOptions = useMemo(() => getDriverOptions(driverList), [driverList])
     const vehicleOptions = useMemo(() => getVehicleOptions(vehiclesList), [vehiclesList])
-    const departmentOptions = useMemo(() => getDepartmentOptions(departmentList), [departmentList])
-    const childProps = useMemo(() => ({ driverList, batchIdOptions, departmentList, driverOptions, departmentOptions, vehicleOptions }),
-        [batchIdOptions, driverOptions, departmentOptions, vehicleOptions])
+    const warehouseOptions = useMemo(() => getWarehouseOptions(warehouseList), [warehouseList])
+    const childProps = useMemo(() => ({ driverList, batchIdOptions, warehouseList, driverOptions, warehouseOptions, vehicleOptions }),
+        [batchIdOptions, driverOptions, warehouseOptions, vehicleOptions])
 
     useEffect(() => {
         getBatchsList()
         getDriverList()
         getVehicleDetails()
-        getDepartmentsList()
+        getWarehouseList()
     }, [])
 
     const getBatchsList = async () => {
@@ -45,9 +45,9 @@ const Dispatche = () => {
         setDrivers(data)
     }
 
-    const getDepartmentsList = async () => {
+    const getWarehouseList = async () => {
         const data = await http.GET('/motherPlant/getDepartmentsList?departmentType=warehouse')
-        setDepartmentsList(data)
+        setWarehouseList(data)
     }
 
     const getVehicleDetails = async () => {

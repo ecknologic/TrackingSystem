@@ -6,10 +6,11 @@ import Header from './header';
 import AccountView from './views/Account';
 import DeliveryView from './views/Delivery';
 import { http } from '../../../modules/http'
+import ApprovalForm from './forms/ApprovalForm';
 import Spinner from '../../../components/Spinner';
+import ScrollUp from '../../../components/ScrollUp';
 import CollapseForm from '../add/forms/CollapseForm';
 import NoContent from '../../../components/NoContent';
-import AccountForm from '../add/forms/CorporateAccount';
 import QuitModal from '../../../components/CustomModal';
 import IDProofInfo from '../../../components/IDProofInfo';
 import SuccessModal from '../../../components/CustomModal';
@@ -35,7 +36,8 @@ const ApproveAccount = () => {
     const [accountValues, setAccountValues] = useState({ loading: true })
     const [headerContent, setHeaderContent] = useState({})
     const [loading, setLoading] = useState(true)
-    const [addressIds, setAddressIds] = useState([])
+    const [activeAddressIds, setActiveAddressIds] = useState([])
+    const [removedAddressIds, setRemovedAddressIds] = useState([])
     const [confirmModal, setConfirmModal] = useState(false)
     const [successModal, setSucessModal] = useState(false)
     const [accountErrors, setAccountErrors] = useState({})
@@ -49,6 +51,7 @@ const ApproveAccount = () => {
     const [saveDisabled, setSaveDisabled] = useState(false)
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [isReviewed, setIsReviewed] = useState(false)
+    const [activeKey, setActiveKey] = useState()
     const warehouseOptions = useMemo(() => getWarehouseOptions(warehouseList), [warehouseList])
 
     const confirmMsg = 'Changes you made may not be saved.'
@@ -102,7 +105,7 @@ const ApproveAccount = () => {
                 return { ...item, devDays, gstProof: gst, ...productList }
             })
             setAddresses(deliveries)
-            setAddressIds(addressIds)
+            setActiveAddressIds(addressIds)
             return Promise.resolve()
         } catch (error) { }
     }
@@ -166,7 +169,11 @@ const ApproveAccount = () => {
 
         if (!isEmpty(accountErrors) || !isEmpty(addressErrors)) {
             setShake(true)
-            setTimeout(() => setShake(false), 820)
+            setTimeout(() => {
+                setShake(false)
+                const { key } = addressErrors
+                if (key) setActiveKey(key) // opens accordion on error
+            }, 820)
             setAddressesErrors(addressErrors)
             setAccountErrors(accountErrors)
             return
@@ -181,66 +188,100 @@ const ApproveAccount = () => {
             showToast({ ...options, action: 'loading' })
             const p1 = updateCustomer(account)
             const p2 = updateAddresses(delivery)
-            await Promise.all([p1, p2])
+            const p3 = deleteAddresses()
+            await Promise.all([p1, p2, p3])
             setAddresses(sessionAddresses)
             showToast(options)
-            resetTrackForm()
-            setEditMode(false)
-            setSaveDisabled(false)
+            postAccountSave()
         } catch (error) {
             message.destroy()
             setSaveDisabled(false)
         }
     }
 
+    const postAccountSave = () => {
+        resetTrackForm()
+        setEditMode(false)
+        setSaveDisabled(false)
+        setRemovedAddressIds([])
+    }
+
     const updateCustomer = async (body) => {
-        const url = '/customer/updateCustomer'
-        return http.POST(url, body)
+        try {
+            const url = '/customer/updateCustomer'
+            await http.POST(url, body)
+            return Promise.resolve()
+        } catch (error) {
+            Promise.reject()
+        }
     }
 
     const updateAddresses = async (body) => {
-        const url = '/customer/updateDeliveryDetails'
-        return http.POST(url, body)
+        try {
+            const url = '/customer/updateDeliveryDetails'
+            if (body.length) {
+                await http.POST(url, body)
+            }
+            return Promise.resolve()
+        } catch (error) {
+            return Promise.reject()
+        }
+    }
+
+    const deleteAddresses = async () => {
+        try {
+            const promises = []
+            const total = removedAddressIds.length
+            for (let index = 0; index < total; index++) {
+                const id = removedAddressIds[index]
+                const url = `/customer/deleteDelivery/${id}`
+                promises.push(http.DELETE(url))
+            }
+            await Promise.all(promises)
+            return Promise.resolve()
+        } catch (error) {
+            return Promise.reject()
+        }
     }
 
     const handleAccountEdit = () => {
         getWarehouseList()
+        const filtered = addresses.filter(item => item.isApproved === 1)
+        setActiveAddressIds(filtered)
         setEditMode(true)
     }
 
     const handleAddressDraft = (isDraft, id) => {
         if (isDraft) {
-            const ids = addressIds.filter((item) => item !== id)
-            setAddressIds(ids)
+            const ids = activeAddressIds.filter((item) => item !== id)
+            setActiveAddressIds(ids)
         } else {
-            const ids = [...addressIds]
+            const ids = [...activeAddressIds]
             ids.push(id)
-            setAddressIds(ids)
+            setActiveAddressIds(ids)
         }
+        const sessionAddresses = getSessionItems('address')
+        const index = sessionAddresses.findIndex((item) => item.deliveryDetailsId === id)
+        const address = sessionAddresses[index]
+        address.isApproved = Number(!isDraft)
+        setAddresses(sessionAddresses)
+        sessionStorage.setItem(`address${index}`, JSON.stringify(address))
     }
 
-    const handleAddressDelete = async (id) => {
-        const options = { item: 'Delivery details', v1Ing: 'Deleting', v2: 'deleted' }
-        const url = `/customer/deleteDelivery/${id}`
-
-        try {
-            showToast({ ...options, action: 'loading' })
-            await http.DELETE(url)
-            const filtered = addresses.filter(item => item.deliveryDetailsId !== id)
-            const ids = addressIds.filter((item) => item !== id)
-            setAddressIds(ids)
-            setAddresses(filtered)
-            showToast(options)
-        } catch (error) {
-            message.destroy()
-        }
+    const onAddressDelete = (id, index) => {
+        const filtered = addresses.filter(item => item.deliveryDetailsId !== id)
+        const ids = activeAddressIds.filter((item) => item !== id)
+        setActiveAddressIds(ids)
+        setRemovedAddressIds(ids => ([...ids, id]))
+        setAddresses(filtered)
+        sessionStorage.removeItem(`address${index}`)
     }
 
     const onAccountApprove = async () => {
         const options = { item: 'Customer', action: 'loading', v1Ing: 'Approving' }
         const url = `/customer/approveCustomer/${customerId}`
         const body = {
-            deliveryDetailsIds: addressIds
+            deliveryDetailsIds: activeAddressIds
         }
         try {
             setBtnDisabled(true)
@@ -269,14 +310,14 @@ const ApproveAccount = () => {
         else goToCustomers()
     }
 
-    const genExtra = (id) => (
+    const genExtra = (id, isApproved, index) => (
         editMode ? (
             <div className='extra-icons' onClick={e => e.stopPropagation()}>
-                <Checkbox onChange={({ target: { checked } }) => handleAddressDraft(checked, id)}
+                <Checkbox checked={!isApproved} onChange={({ target: { checked } }) => handleAddressDraft(checked, id)}
                     className='cb-tiny cb-secondary'>
                     Draft
                     </Checkbox>
-                <Popconfirm onConfirm={() => handleAddressDelete(id)}
+                <Popconfirm onConfirm={() => onAddressDelete(id, index)}
                     title='Sure to delete?'
                     getTooltipContainer={() => document.getElementById('content')}
                 >
@@ -290,6 +331,7 @@ const ApproveAccount = () => {
 
     return (
         <Fragment>
+            <ScrollUp dep={editMode} />
             <Header data={headerContent} onClick={handleBack} />
             <div className='app-manage-content'>
                 {
@@ -298,21 +340,21 @@ const ApproveAccount = () => {
                             <div className='heading-container'>
                                 <span className='heading'>Business Information</span>
                             </div>
-                            <IDProofInfo data={IDProofs} />
-                            <IDProofInfo data={gstProof} />
                             {
                                 editMode ? (
-                                    <AccountForm
+                                    <ApprovalForm
                                         data={accountValues}
                                         errors={accountErrors}
                                         onChange={handleChange}
                                         onBlur={handleBlur}
-                                        hiddenItems={{ idHide: true, gstUploadHide: true }}
-                                        disabledItems={{ gstDisable: true, referredByDisable: true }}
+                                        disabledItems={{ gstDisable: gstProof.Front }}
                                     />
-                                ) : <AccountView data={accountValues} />
+                                ) : <>
+                                        <IDProofInfo data={IDProofs} />
+                                        <IDProofInfo data={gstProof} />
+                                        <AccountView data={accountValues} />
+                                    </>
                             }
-
                             <div className='heading-container'>
                                 <span className='heading'>Delivery Details</span>
                                 <span className='tail'>{`(${addresses.length} Locations)`}</span>
@@ -322,19 +364,20 @@ const ApproveAccount = () => {
                                 className='accordion-container'
                                 expandIcon={({ isActive }) => isActive ? <DDownIcon className='rotate-180' /> : <DDownIcon className='app-trans' />}
                                 expandIconPosition='right'
+                                activeKey={activeKey}
+                                onChange={(key) => setActiveKey(key)}
                             >
                                 {
                                     addresses.map((item, index) => {
-                                        const { deliveryLocation, address, deliveryDetailsId } = item
-
+                                        const { deliveryLocation, address, isApproved, deliveryDetailsId: id } = item
                                         return (
                                             <Panel
                                                 header={<CollapseHeader
                                                     title={deliveryLocation}
                                                     msg={address}
-                                                    extra={genExtra(deliveryDetailsId)}
+                                                    extra={genExtra(id, isApproved, index)}
                                                 />}
-                                                key={deliveryDetailsId}
+                                                key={String(index)}
                                                 forceRender
                                             >
                                                 {

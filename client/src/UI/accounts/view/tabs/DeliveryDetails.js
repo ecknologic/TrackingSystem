@@ -223,7 +223,7 @@ const DeliveryDetails = ({ recentDelivery, ...rest }) => {
         const products = getProductsWithIdForDB(productsUI)
         const deliveryDays = getDevDaysForDB(devDays)
         const formValues = extractDeliveryDetails(formData)
-        const body = [{ ...formValues, isNew: false, delete: 0, isActive: 0, products, deliveryDays }]
+        const body = [{ ...formValues, isNew: false, delete: 0, isApproved: 0, products, deliveryDays }]
         const options = { item: 'Delivery details', v1Ing: 'Updating', v2: 'updated' }
         const url = '/customer/updateDeliveryDetails'
         try {

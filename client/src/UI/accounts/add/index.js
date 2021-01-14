@@ -62,9 +62,11 @@ const AddAccount = () => {
     const [currentDepId, setCurrentDepId] = useState('')
     const warehouseOptions = useMemo(() => getWarehouseOptions(warehouseList), [warehouseList])
     const routeOptions = useMemo(() => getRouteOptions(routeList), [routeList])
+    const mainUrl = useMemo(() => getMainPathname(pathname), [pathname])
 
     const customertype = corporate ? 'Corporate' : 'Individual'
     const confirmMsg = 'Changes you made may not be saved.'
+    const hideBack = mainUrl === '/add-customer'
     const { organizationName } = corporateValues
     const { customerName } = generalValues
     const highlight = { backgroundColor: '#5C63AB', color: '#fff' }
@@ -517,15 +519,12 @@ const AddAccount = () => {
         else goBack()
     }
 
-    const goBack = () => {
-        const mainPathname = getMainPathname(pathname)
-        history.push(mainPathname)
-    }
+    const goBack = () => history.push(mainUrl)
 
     return (
         <Fragment>
             <ScrollUp dep={scrollDep} />
-            <Header onClick={handleBack} />
+            <Header onClick={handleBack} hideBack={hideBack} />
             <div className='account-add-content'>
                 <div className='header-buttons-container'>
                     <CustomButton

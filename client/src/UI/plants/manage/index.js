@@ -166,7 +166,7 @@ const ManagePlant = () => {
         setEditMode(true)
     }
 
-    const onAccountCancel = useCallback(() => goBack(), [])
+    const onAccountCancel = useCallback(() => handleBack(), [])
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
     const handleConfirmModalOk = useCallback(() => { setConfirmModal(false); goBack() }, [])
 

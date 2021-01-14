@@ -3,11 +3,11 @@ import BackButton from '../../../components/BackButton';
 import '../../../sass/accounts.scss'
 
 
-const Header = ({ onClick }) => {
+const Header = ({ onClick, hideBack }) => {
     return (
         <div className='account-add-header'>
             <div className='heading-container'>
-                <BackButton onClick={onClick} />
+                {!hideBack && <BackButton onClick={onClick} />}
                 <div className='titles-container'>
                     <span className='title'>Create Account</span>
                 </div>

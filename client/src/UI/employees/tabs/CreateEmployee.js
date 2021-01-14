@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import React, { useState, useEffect, useMemo } from 'react';
 import { http } from '../../../modules/http';
 import EmployeeForm from '../forms/Employee';
-import { getRoleOptions } from '../../../assets/fixtures';
+import { getDepartmentOptions, getRoleOptions } from '../../../assets/fixtures';
 import CustomButton from '../../../components/CustomButton';
 import { getBase64, getMainPathname, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
 import { validateIDNumbers, validateMobileNumber, validateNames, validateEmployeeValues, validateEmailId, validateIDProofs } from '../../../utils/validations';
@@ -18,22 +18,34 @@ const CreateEmployee = ({ goToTab }) => {
     const [licenseProofErrors, setLicenseProofErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [roleList, setRoleList] = useState([])
+    const [departmentList, setDepartmentList] = useState([])
     const [shake, setShake] = useState(false)
     const [employeeType, setEmployeeType] = useState('')
 
     const mainUrl = useMemo(() => getMainPathname(pathname), [pathname])
     const roleOptions = useMemo(() => getRoleOptions(roleList), [roleList])
+    const departmentOptions = useMemo(() => getDepartmentOptions(departmentList), [departmentList])
+    const childProps = useMemo(() => ({ roleOptions, departmentOptions }),
+        [roleOptions, departmentOptions])
 
     useEffect(() => {
         getEmployeeType(mainUrl)
-        getRoles()
+        getDepartmentList()
+        getRoleList()
     }, [])
 
-    const getRoles = async () => {
+    const getRoleList = async () => {
         const url = '/roles/getRoles'
 
         const data = await http.GET(url)
         setRoleList(data)
+    }
+
+    const getDepartmentList = async () => {
+        const url = '/motherplant/getAllDepartmentsList'
+
+        const data = await http.GET(url)
+        setDepartmentList(data)
     }
 
     const handleChange = (value, key) => {
@@ -139,7 +151,7 @@ const CreateEmployee = ({ goToTab }) => {
         const adharProofErrors = validateIDProofs(adharProof)
         const licenseProofErrors = employeeType === 'Driver' ? validateIDProofs(licenseProof) : {}
         const formErrors = validateEmployeeValues(formData, employeeType)
-
+        console.log('form errors.>>>', formErrors)
         if (!isEmpty(formErrors) || !isEmpty(adharProofErrors) || !isEmpty(licenseProofErrors)) {
             setShake(true)
             setTimeout(() => setShake(false), 820)
@@ -188,7 +200,6 @@ const CreateEmployee = ({ goToTab }) => {
                 errors={formErrors}
                 title={employeeType}
                 adharProof={adharProof}
-                roleOptions={roleOptions}
                 licenseProof={licenseProof}
                 adharProofErrors={adharProofErrors}
                 licenseProofErrors={licenseProofErrors}
@@ -196,6 +207,7 @@ const CreateEmployee = ({ goToTab }) => {
                 onChange={handleChange}
                 onUpload={handleUpload}
                 onRemove={handleRemove}
+                {...childProps}
             />
             <div className='app-footer-buttons-container'>
                 <CustomButton

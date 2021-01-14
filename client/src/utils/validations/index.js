@@ -286,13 +286,14 @@ export const validateEmployeeValues = (data, employeeType) => {
     const text = 'Required'
     const text2 = 'Incomplete'
     const { userName, adharNo, parentName, gender, dob, mobileNumber, address,
-        joinedDate, permanentAddress, roleId, licenseNo, emailid } = data
+        joinedDate, permanentAddress, roleId, departmentId, licenseNo, emailid } = data
 
     if (!dob) errors.dob = text
     if (!joinedDate) errors.joinedDate = text
     if (!permanentAddress) errors.permanentAddress = text
     if (employeeType === 'Staff' && !roleId) errors.roleId = text
     if (employeeType === 'Driver' && !licenseNo) errors.licenseNo = text
+    if (!departmentId) errors.departmentId = text
     if (!address) errors.address = text
     if (!gender) errors.gender = text
     if (!emailid) errors.emailid = text
@@ -723,6 +724,7 @@ export const validateAddresses = (data) => {
         const devDaysError = validateDevDays(data[index]['devDays'])
         if (!isEmpty(error) || !isEmpty(devDaysError)) {
             errors[`address${index}`] = { ...error, ...devDaysError }
+            errors.key = String(index)
             break;
         }
     }

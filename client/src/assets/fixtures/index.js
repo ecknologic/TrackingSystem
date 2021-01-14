@@ -22,7 +22,7 @@ export const statusOptions = [
 export const genderOptions = [
     <Option key='1' value='Male'>Male</Option>,
     <Option key='2' value='Female'>Female</Option>,
-    <Option key='2' value='TransGender'>TransGender</Option>
+    <Option key='3' value='TransGender'>TransGender</Option>
 ]
 export const statusFilterOptions = [
     { value: 0, option: 'Draft' },
@@ -104,7 +104,7 @@ export const getDriverOptions = (drivers = []) => {
     return drivers.map((item) => <Option key={item.driverId} value={item.driverId}>{item.driverName}</Option>)
 }
 export const getDepartmentOptions = (departments = []) => {
-    return departments.map((item) => <Option key={item.departmentId} value={item.departmentId}>{item.departmentName}</Option>)
+    return departments.map((item, index) => <Option key={index} value={item.departmentId}>{item.departmentName}</Option>)
 }
 export const getVehicleOptions = (vehicles = []) => {
     return vehicles.map((item) => <Option key={item.vehicleId} value={item.vehicleId}>{item.vehicleNo}</Option>)

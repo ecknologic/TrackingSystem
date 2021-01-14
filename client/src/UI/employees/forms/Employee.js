@@ -12,10 +12,10 @@ import { disableFutureDates, resetTrackForm, trackAccountFormOnce } from '../../
 
 const EmployeeForm = (props) => {
 
-    const { data, title, errors, roleOptions, onChange, onUpload, onRemove, disabled, onBlur,
+    const { data, title, errors, roleOptions, departmentOptions, onChange, onUpload, onRemove, disabled, onBlur,
         adharProof, adharProofErrors, licenseProof, licenseProofErrors } = props
     const { userName, adharNo, licenseNo, parentName, gender, dob, mobileNumber, address,
-        joinedDate, permanentAddress, roleId, emailid } = data
+        joinedDate, permanentAddress, roleId, emailid, departmentId } = data
 
 
     useEffect(() => {
@@ -131,10 +131,17 @@ const EmployeeForm = (props) => {
                         onChange={(value) => onChange(dayjs(value).format('YYYY-MM-DD'), 'joinedDate')}
                     />
                 </div>
-                {
-                    title === 'Driver'
-                        ? null
-                        :
+                <div className='input-container'>
+                    <InputLabel name='Department' error={errors.departmentId} mandatory />
+                    <SelectInput track
+                        options={departmentOptions} value={departmentId}
+                        error={errors.departmentId} onSelect={(value) => onChange(value, 'departmentId')}
+                    />
+                </div>
+            </div>
+            {
+                title === 'Staff' ?
+                    <div className='row'>
                         <div className='input-container'>
                             <InputLabel name='Role' error={errors.roleId} mandatory />
                             <SelectInput track
@@ -142,8 +149,8 @@ const EmployeeForm = (props) => {
                                 error={errors.roleId} onSelect={(value) => onChange(value, 'roleId')}
                             />
                         </div>
-                }
-            </div>
+                    </div> : null
+            }
             <div className='row'>
                 <div className='input-container stretch'>
                     <InputLabel name='Address of Communication' error={errors.address} mandatory />

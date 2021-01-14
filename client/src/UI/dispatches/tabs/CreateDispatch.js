@@ -10,7 +10,7 @@ import ConfirmMessage from '../../../components/ConfirmMessage';
 import { extractValidProductsForDB, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
 import { validateDispatchValues, validateMobileNumber, validateNames, validateNumber } from '../../../utils/validations';
 
-const CreateDispatch = ({ goToTab, driverList, departmentList, ...rest }) => {
+const CreateDispatch = ({ goToTab, driverList, warehouseList, ...rest }) => {
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
@@ -68,7 +68,7 @@ const CreateDispatch = ({ goToTab, driverList, departmentList, ...rest }) => {
             return
         }
 
-        let { departmentName: dispatchAddress } = departmentList.find(dep => dep.departmentId === formData.dispatchTo)
+        let { departmentName: dispatchAddress } = warehouseList.find(dep => dep.departmentId === formData.dispatchTo)
         const { product20L, product1L, product500ML, product250ML } = extractValidProductsForDB(formData)
         let body = {
             ...formData, dispatchType: 'Internal', dispatchAddress,
