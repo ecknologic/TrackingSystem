@@ -51,6 +51,12 @@ router.get('/getUsersBydepartmentType/:departmentType', (req, res) => {
     else res.json(results)
   })
 })
+router.get('/getUsersByRole/:roleName', (req, res) => {
+  usersQueries.getUsersByRole(req.params.roleName, (err, results) => {
+    if (err) res.json(err);
+    else res.json(results)
+  })
+})
 router.get('/getUser/:userId', (req, res) => {
   usersQueries.getUsersById(req.params.userId, (err, results) => {
     if (err) res.json(err);
