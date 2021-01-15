@@ -1,7 +1,7 @@
 import { Tabs } from 'antd';
 import React, { Fragment } from 'react';
 import Header from '../../../components/SimpleHeader';
-import AddMaterials from '../warehouse/tabs/AddReceivedMaterials';
+import ReceivedMaterials from '../warehouse/tabs/ReceivedMaterials';
 import ReportsDropdown from '../../../components/ReportsDropdown';
 import RequestedMaterialStatus from '../warehouse/tabs/RequestedMaterialStatus';
 import '../../../sass/materials.scss'
@@ -20,7 +20,7 @@ const MotherplantMaterials = () => {
                             <RequestedMaterialStatus isSuperAdmin />
                         </TabPane>
                         <TabPane tab="Received Materials" key="2">
-                            <AddMaterials isSuperAdmin />
+                            <ReceivedMaterials isSuperAdmin />
                         </TabPane>
                     </Tabs>
                 </div>

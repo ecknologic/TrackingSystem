@@ -17,7 +17,7 @@ import ReceivedMaterialView from '../views/ReceivedMaterials';
 const DATEFORMAT = 'DD-MM-YYYY'
 const format = 'YYYY-MM-DD'
 
-const ReceivedMaterials = () => {
+const ReceivedMaterials = ({ isSuperAdmin = false }) => {
     const [loading, setLoading] = useState(true)
     const [viewData, setViewData] = useState({})
     const [pageSize, setPageSize] = useState(10)
@@ -35,7 +35,7 @@ const ReceivedMaterials = () => {
     }, [])
 
     const getRM = async () => {
-        const data = await http.GET('/motherPlant/getRMReceiptDetails')
+        const data = await http.GET(`/motherPlant/getRMReceiptDetails?isSuperAdmin=${isSuperAdmin}`)
         setRM(data)
         setRMClone(data)
         setTotalCount(data.length)
