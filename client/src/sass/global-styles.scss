@@ -512,12 +512,21 @@ textarea {
         justify-content: space-between;
         align-items: center;
         padding: 10px 24px;
+
+        .twin-btns {
+            display: flex;
+        }
         
-        .right-btn {
+        .right-btn,.twin-btn {
             height: 2.7em;
             min-width: 8em;
             border-radius: .7em;
-            background-color: #007AFF;
+            background-color: $primaryColor;
+        }
+
+        .twin-btn {
+            margin-right: 1em;
+            background-color: $secondaryColor;
         }
     }
 

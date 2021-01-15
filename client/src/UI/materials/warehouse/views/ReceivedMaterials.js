@@ -3,13 +3,14 @@ import { Divider } from 'antd';
 import InputLabel from '../../../../components/InputLabel';
 import InputValue from '../../../../components/InputValue';
 import dayjs from 'dayjs';
+import UploadPreviewer from '../../../../components/UploadPreviewer';
 const DATEFORMAT = 'DD/MM/YYYY'
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
 const ReceivedMaterialView = ({ data }) => {
 
     const { orderId, itemName, itemCode, itemQty, receiptNo, receiptDate, description, vendorName,
-        invoiceDate, invoiceNo, requestedDate, approvedDate, taxAmount, invoiceAmount } = data
+        invoiceDate, invoiceNo, requestedDate, approvedDate, taxAmount, invoiceAmount, receiptImage } = data
 
     return (
         <>
@@ -100,6 +101,12 @@ const ReceivedMaterialView = ({ data }) => {
                     <div className='input-container'>
                         <InputLabel name='Vendor' />
                         <InputValue size='smaller' value={vendorName} />
+                    </div>
+                    <div className='input-container'>
+                        <InputLabel name='Receipt' />
+                        <div className='upload-preview-container'>
+                            <UploadPreviewer value={receiptImage} disabled />
+                        </div>
                     </div>
                 </div>
             </div>

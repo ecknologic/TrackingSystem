@@ -1,10 +1,12 @@
-import { message } from 'antd';
+import { Divider, message } from 'antd';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import React, { Fragment, useEffect, useMemo, useState, useCallback } from 'react';
 import Header from './header';
 import AccountView from '../views/Account';
 import { http } from '../../../modules/http'
 import EmployeeForm from '../forms/Employee';
+import DependentForm from '../forms/Dependent';
+import DependentView from '../views/Dependent';
 import Spinner from '../../../components/Spinner';
 import ScrollUp from '../../../components/ScrollUp';
 import NoContent from '../../../components/NoContent';
@@ -17,11 +19,9 @@ import { isEmpty, showToast, base64String, getMainPathname, getBase64, getValidD
 import { TRACKFORM } from '../../../utils/constants';
 import {
     validateIDNumbers, validateNames, validateMobileNumber, validateEmailId, validateIDProofs,
-    validateEmployeeValues,
-    validateDependentValues
+    validateEmployeeValues, validateDependentValues, validateNumber, validateIFSCCode
 } from '../../../utils/validations';
 import '../../../sass/employees.scss'
-import DependentForm from '../forms/Dependent';
 const DATEFORMAT = 'YYYY-MM-DD'
 
 const ManageEmployee = () => {
@@ -64,24 +64,24 @@ const ManageEmployee = () => {
         const url = `${getUrl(mainUrl)}/${employeeId}`
 
         const [data] = await http.GET(url)
-        const { adhar_frontside, adhar_backside, dependentDetails: dep, license_frontside, license_backside, ...rest } = data
+        const { adhar_frontside, adhar_backside, dependentAdharNo, dependentDetails: dep, license_frontside,
+            dependentFrontProof, dependentBackProof, license_backside, ...rest } = data
         const { userName, adharNo, licenseNo } = rest
-        const { adhar_frontside: adhar_front, adhar_backside: adhar_back, ...depRest } = JSON.parse(dep)
         const adharFront = base64String(adhar_frontside?.data)
         const adharBack = base64String(adhar_backside?.data)
-        const depAdharFront = base64String(adhar_front?.data)
-        const depAdharBack = base64String(adhar_back?.data)
+        const depAdharFront = base64String(dependentFrontProof?.data)
+        const depAdharBack = base64String(dependentBackProof?.data)
         const licenseFront = base64String(license_frontside?.data)
         const licenseBack = base64String(license_backside?.data)
         const dob = getValidDate(rest.dob, DATEFORMAT)
         const joinedDate = getValidDate(rest.joinedDate, DATEFORMAT)
 
         setAdharProof({ Front: adharFront, Back: adharBack, idProofType: 'adharNo', adharNo })
-        setDepAdharProof({ Front: depAdharFront, Back: depAdharBack, idProofType: 'adharNo', adharNo: dep?.adharNo })
+        setDepAdharProof({ Front: depAdharFront, Back: depAdharBack, idProofType: 'adharNo', adharNo: dependentAdharNo })
         setLicenseProof({ Front: licenseFront, Back: licenseBack, idProofType: 'licenseNo', licenseNo })
         setHeaderContent({ title: userName })
         setAccountValues({ ...rest, dob, joinedDate })
-        setDepValues(depRest)
+        setDepValues({ ...JSON.parse(dep), adharNo: dependentAdharNo })
         setLoading(false)
     }
 
@@ -113,8 +113,17 @@ const ManageEmployee = () => {
             const error = validateIDNumbers(key, value)
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key === 'userName' || key === 'parentName') {
+        else if (key === 'userName' || key === 'parentName' || key === 'branchName'
+            || key === 'recruitedBy' || key === 'recommendedBy' || key === 'bankName') {
             const error = validateNames(value)
+            setAccountErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'accountNo') {
+            const error = validateNumber(value)
+            setAccountErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'ifscCode') {
+            const error = validateIFSCCode(value)
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }
         else if (key === 'mobileNumber') {
@@ -147,6 +156,10 @@ const ManageEmployee = () => {
         // Validations
         if (key === 'adharNo' || key === 'licenseNo') {
             const error = validateIDNumbers(key, value, true)
+            setAccountErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'ifscCode') {
+            const error = validateIFSCCode(value, true)
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }
         else if (key === 'emailid') {
@@ -260,7 +273,6 @@ const ManageEmployee = () => {
         else if (name === 'Back') setDepAdharProof(data => ({ ...data, Back: '' }))
     }
 
-
     const handleUpdate = async () => {
         const adharProofErrors = validateIDProofs(adharProof)
         const depAdharProofErrors = validateIDProofs(depAdharProof)
@@ -364,6 +376,12 @@ const ManageEmployee = () => {
                                         <IDProofInfo data={adharProof} />
                                         {isDriver && <IDProofInfo data={licenseProof} />}
                                         <AccountView isDriver={isDriver} data={accountValues} />
+                                        <Divider className='form-divider half-line' />
+                                        <div className='employee-title-container inner'>
+                                            <span className='title'>Dependent Details</span>
+                                        </div>
+                                        <IDProofInfo data={depAdharProof} />
+                                        <DependentView data={depValues} />
                                     </>
                             }
                             <div className={`app-footer-buttons-container ${editMode ? 'edit' : 'view'}`}>

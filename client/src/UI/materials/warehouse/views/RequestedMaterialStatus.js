@@ -1,14 +1,25 @@
 import dayjs from 'dayjs';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Divider } from 'antd';
 import InputLabel from '../../../../components/InputLabel';
 import InputValue from '../../../../components/InputValue';
-import { getStatusColor } from '../../../../utils/Functions';
+import CustomTextArea from '../../../../components/CustomTextArea';
+import { getStatusColor, resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
-const RequestedMaterialStatusView = ({ data }) => {
+const RequestedMaterialStatusView = ({ data, formData, errors, isSuperAdmin, onChange }) => {
 
     const { orderId, status, itemName, itemCode, itemQty, description, vendorName, requestedDate, approvedDate } = data
+    const { reason } = formData
+
+    useEffect(() => {
+        resetTrackForm()
+        trackAccountFormOnce()
+
+        return () => {
+            resetTrackForm()
+        }
+    }, [])
 
     const color = getStatusColor(status)
     const text = status === 'Pending' || status === 'Rejected' ? status : 'Approved'
@@ -71,6 +82,20 @@ const RequestedMaterialStatusView = ({ data }) => {
                         <InputValue size='smaller' value={vendorName} />
                     </div>
                 </div>
+                {
+                    isSuperAdmin &&
+                    <>
+                        <Divider />
+                        <div className='row'>
+                            <div className='input-container stretch'>
+                                <InputLabel name='Description' error={errors.reason} />
+                                <CustomTextArea maxLength={256} error={errors.reason} placeholder='Add Description'
+                                    value={reason} maxRows={4} onChange={(value) => onChange(value, 'reason')}
+                                />
+                            </div>
+                        </div>
+                    </>
+                }
             </div>
         </>
     )

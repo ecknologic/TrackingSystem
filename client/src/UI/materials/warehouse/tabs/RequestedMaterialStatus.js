@@ -3,28 +3,34 @@ import { Menu, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
 import Spinner from '../../../../components/Spinner';
-import { BlockIconGrey, EditIconGrey, ScheduleIcon, ProjectIconGrey } from '../../../../components/SVG_Icons';
 import Actions from '../../../../components/Actions';
-import SearchInput from '../../../../components/SearchInput';
-import { TODAYDATE } from '../../../../utils/constants';
-import CustomPagination from '../../../../components/CustomPagination';
-import { getRMColumns } from '../../../../assets/fixtures';
 import DateValue from '../../../../components/DateValue';
-import CustomDateInput from '../../../../components/CustomDateInput';
+import { getRMColumns } from '../../../../assets/fixtures';
+import SearchInput from '../../../../components/SearchInput';
 import CustomModal from '../../../../components/CustomModal';
-import { deepClone, disableFutureDates, getStatusColor, showToast } from '../../../../utils/Functions';
+import ConfirmModal from '../../../../components/CustomModal';
+import { TODAYDATE, TRACKFORM } from '../../../../utils/constants';
+import ConfirmMessage from '../../../../components/ConfirmMessage';
+import CustomDateInput from '../../../../components/CustomDateInput';
+import CustomPagination from '../../../../components/CustomPagination';
 import RequestedMaterialStatusView from '../views/RequestedMaterialStatus';
+import { EditIconGrey, ScheduleIcon } from '../../../../components/SVG_Icons';
+import { deepClone, disableFutureDates, getStatusColor, resetTrackForm, showToast } from '../../../../utils/Functions';
 const DATEFORMAT = 'DD-MM-YYYY'
 const format = 'YYYY-MM-DD'
 
-const MaterialStatus = ({ reFetch, isSuperAdmin }) => {
+const MaterialStatus = ({ reFetch, isSuperAdmin = false }) => {
     const [loading, setLoading] = useState(true)
     const [viewData, setViewData] = useState({})
     const [pageSize, setPageSize] = useState(10)
     const [totalCount, setTotalCount] = useState(null)
     const [pageNumber, setPageNumber] = useState(1)
+    const [formData, setFormData] = useState({})
+    const [formErrors, setFormErrors] = useState({})
     const [viewModal, setViewModal] = useState(false)
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
+    const [confirmModal, setConfirmModal] = useState(false)
+    const [btnDisabled, setBtnDisabled] = useState(false)
     const [open, setOpen] = useState(false)
     const [RM, setRM] = useState([])
     const [RMClone, setRMClone] = useState([])
@@ -72,6 +78,23 @@ const MaterialStatus = ({ reFetch, isSuperAdmin }) => {
         }
     }
 
+    const handleApprove = () => {
+        const { rawmaterialid: id } = viewData
+        updateRMStatus(id, 'Approved')
+    }
+
+    const handleReject = () => {
+        const { rawmaterialid: id } = viewData
+        const { reason = '' } = formData
+        if (!reason.trim()) return setFormErrors({ reason: 'Reason is required on Reject ' })
+        updateRMStatus(id, 'Rejected')
+    }
+
+    const handleChange = (value, key) => {
+        setFormData(data => ({ ...data, [key]: value }))
+        setFormErrors(errors => ({ ...errors, [key]: '' }))
+    }
+
     const handlePageChange = (number) => {
         setPageNumber(number)
     }
@@ -87,11 +110,15 @@ const MaterialStatus = ({ reFetch, isSuperAdmin }) => {
         const options = { item: 'Order', v1Ing: status === 'Approved' ? 'Approving' : 'Rejecting', v2: status }
 
         try {
+            setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
             await http.PUT(url, body)
             showToast(options)
             optimisticUpdate(rawmaterialid, status)
-        } catch (error) { }
+            onModalClose(true)
+        } catch (error) {
+            setBtnDisabled(false)
+        }
     }
 
     const optimisticUpdate = (id, status) => {
@@ -104,11 +131,7 @@ const MaterialStatus = ({ reFetch, isSuperAdmin }) => {
     const dataSource = useMemo(() => RM.map((dispatch) => {
         const { rawmaterialid: key, orderId, itemName, requestedDate, reorderLevel,
             minOrderLevel, vendorName, itemQty, status } = dispatch
-        const operations = {
-            canApprove: status === 'Rejected' || status === 'Pending',
-            canReject: status === 'Approved' || status === 'Pending'
-        }
-        const options = getActionOptions(isSuperAdmin, operations)
+
         return {
             key,
             orderId,
@@ -123,10 +146,30 @@ const MaterialStatus = ({ reFetch, isSuperAdmin }) => {
         }
     }), [RM])
 
-    const handleModalCancel = useCallback(() => setViewModal(false), [])
+    const onModalClose = (hasSaved) => {
+        const formHasChanged = sessionStorage.getItem(TRACKFORM)
+        if (formHasChanged && !hasSaved) {
+            return setConfirmModal(true)
+        }
+        setViewModal(false)
+        setBtnDisabled(false)
+        setFormData({})
+        setFormErrors({})
+    }
+
+    const handleConfirmModalOk = useCallback(() => {
+        setConfirmModal(false);
+        resetTrackForm()
+        onModalClose()
+    }, [])
+    const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
+    const handleModalCancel = useCallback(() => onModalClose(), [])
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
+
+    const canApprove = viewData.status === 'Rejected' || viewData.status === 'Pending'
+    const canReject = viewData.status === 'Approved' || viewData.status === 'Pending'
 
     return (
         <div className='stock-delivery-container'>
@@ -179,17 +222,36 @@ const MaterialStatus = ({ reFetch, isSuperAdmin }) => {
             }
             <CustomModal
                 hideCancel
-                okTxt='Close'
+                bothDisabled={btnDisabled}
+                showTwinBtn={isSuperAdmin}
+                twinDisabled={!canReject}
+                btnDisabled={isSuperAdmin && !canApprove}
+                twinTxt='Reject'
+                okTxt={isSuperAdmin ? 'Approve' : 'Close'}
                 visible={viewModal}
                 title={formTitle}
-                onOk={handleModalCancel}
+                onOk={isSuperAdmin ? handleApprove : handleModalCancel}
+                onTwin={handleReject}
                 onCancel={handleModalCancel}
                 className='app-form-modal app-view-modal'
             >
                 <RequestedMaterialStatusView
                     data={viewData}
+                    formData={formData}
+                    errors={formErrors}
+                    onChange={handleChange}
+                    isSuperAdmin={isSuperAdmin}
                 />
             </CustomModal>
+            <ConfirmModal
+                visible={confirmModal}
+                onOk={handleConfirmModalOk}
+                onCancel={handleConfirmModalCancel}
+                title='Are you sure to leave?'
+                okTxt='Yes'
+            >
+                <ConfirmMessage msg='Changes you made may not be saved.' />
+            </ConfirmModal>
         </div>
     )
 }
@@ -204,13 +266,6 @@ const renderStatus = (status) => {
     )
 }
 
-const getActionOptions = (isSuperAdmin, { canApprove, canReject }) => {
-    if (isSuperAdmin) return [
-        <Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>,
-        <Menu.Item key="approve" className={canApprove ? '' : 'disabled'} icon={<ProjectIconGrey />}>Approve</Menu.Item>,
-        <Menu.Item key="reject" className={canReject ? '' : 'disabled'} icon={<BlockIconGrey />}>Reject</Menu.Item>
-    ]
-    return [<Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>]
-}
+const options = [<Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>]
 
 export default MaterialStatus
