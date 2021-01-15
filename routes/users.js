@@ -10,11 +10,11 @@ router.post('/createWebUser', (req, res) => {
   var createHash = function (password) {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(10), null);
   }
-  let query = "insert into usermaster (userName,roleId,emailid,password,departmentId,mobileNumber,joinedDate,parentName,gender,dob,adharNo,address,permanentAddress,adhar_frontside,adhar_backside) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-  const { userName, roleId, emailid, password = "Bibo@123", privilegeDetails = [], departmentId, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, adharProof } = req.body
+  let query = "insert into usermaster (userName,roleId,emailid,password,departmentId,mobileNumber,joinedDate,parentName,gender,dob,adharNo,address,permanentAddress,adhar_frontside,adhar_backside,accountNo,bankName,branchName,ifscCode,recommendedBy,recruitedBy) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+  const { userName, roleId, emailid, password = "Bibo@123", privilegeDetails = [], departmentId, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, adharProof, accountNo, bankName, branchName, ifscCode, recommendedBy, recruitedBy, dependentDetails } = req.body
   let adhar_frontside = Buffer.from(adharProof.Front.replace(/^data:image\/\w+;base64,/, ""), 'base64')
   let adhar_backside = Buffer.from(adharProof.Back.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-  let insertQueryValues = [userName, roleId, emailid, createHash(password), departmentId, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, adhar_frontside, adhar_backside]
+  let insertQueryValues = [userName, roleId, emailid, createHash(password), departmentId, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, adhar_frontside, adhar_backside, accountNo, bankName, branchName, ifscCode, recommendedBy, recruitedBy, dependentDetails]
   db.query(query, insertQueryValues, (err, results) => {
     if (err) res.status(500).json(dbError(err));
     else {
@@ -23,6 +23,10 @@ router.post('/createWebUser', (req, res) => {
       let updateValues = [idValue, results.insertId];
       db.query(updateQuery, updateValues, (updateErr, updateResults) => {
         if (updateErr) console.log(updateErr);
+      })
+      let obj = { ...dependentDetails, userId: results.insertId }
+      usersQueries.saveDependentDetails(obj, "staffDependentDetails", (err, success) => {
+        if (err) console.log("Staff Dependent Err", err)
       })
       if (privilegeDetails.length) {
         for (let i of privilegeDetails) {
@@ -64,15 +68,17 @@ router.get('/getUser/:userId', (req, res) => {
   })
 })
 router.post('/updateWebUser', (req, res) => {
-  let query = "UPDATE usermaster SET userName=?,roleId=?,emailid=?, mobileNumber=?, joinedDate=?, parentName=?, gender=?, dob=?, adharNo=?, address=?, permanentAddress=?,adhar_frontside=?,adhar_backside=?  where userId=?";
-  let userDetails = req.body;
-  const { userName, roleId, emailid, mobileNumber, userId, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, adharProof } = req.body
+  let query = "UPDATE usermaster SET userName=?,roleId=?,emailid=?, mobileNumber=?, joinedDate=?, parentName=?, gender=?, dob=?, adharNo=?, address=?, permanentAddress=?,adhar_frontside=?,adhar_backside=?,accountNo=?,bankName=?,branchName=?,ifscCode=?,recommendedBy=?,recruitedBy=?  where userId=?";
+  const { userName, roleId, emailid, mobileNumber, userId, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, adharProof, dependentDetails } = req.body
   let adhar_frontside = Buffer.from(adharProof.Front.replace(/^data:image\/\w+;base64,/, ""), 'base64')
   let adhar_backside = Buffer.from(adharProof.Back.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-  let insertQueryValues = [userName, roleId, emailid, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, adhar_frontside, adhar_backside, userId]
+  let insertQueryValues = [userName, roleId, emailid, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, adhar_frontside, adhar_backside, accountNo, bankName, branchName, ifscCode, recommendedBy, recruitedBy, userId]
   db.query(query, insertQueryValues, (err, results) => {
     if (err) res.send(err);
     else {
+      usersQueries.updateDependentDetails(dependentDetails, "staffDependentDetails", (err, success) => {
+        if (err) console.log("Update Staff Dependent Err", err)
+      })
       // for (let i of userDetails.privilegeDetails) {
       //   let privilegeQuery = "UPDATE userPrivilegesMaster SET privilegeActions=? where privilegeId=? AND userId=?";
       //   let queryValues = [i.privilegeActions.join(), i.privilegeId, userDetails.userId]

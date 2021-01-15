@@ -14,8 +14,24 @@ usersQueries.getUsersByRole = async (roleName, callback) => {
     return executeGetParamsQuery(query, [roleName], callback)
 }
 usersQueries.getUsersById = async (userId, callback) => {
-    let query = "SELECT * from usermaster where userId=" + userId;
+    let query = "SELECT u.*,JSON_OBJECT('name',s.name,'dob',s.dob,'gender',s.gender,'adhar_frontside',s.adhar_frontside,'adhar_backside',s.adhar_backside,'mobileNumber',s.mobileNumber,'relation',s.relation,'dependentId',s.dependentId) dependentDetails from usermaster u INNER JOIN staffDependentDetails s on u.userId=s.userId where u.userId=" + userId;
     return executeGetQuery(query, callback)
+}
+usersQueries.saveDependentDetails = (input, tableName, callback) => {
+    let query = `insert into ${tableName} (name,dob,gender,adhar_frontside,adhar_backside,mobileNumber,relation,userId,createdDateTime) values(?,?,?,?,?,?,?,?,?)`;
+    const { name, dob, gender, adhar_frontside, adhar_backside, mobileNumber, relation, userId } = input
+    let adhar_front = Buffer.from(adhar_frontside.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+    let adhar_back = Buffer.from(adhar_backside.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+    let requestBody = [name, dob, gender, adhar_front, adhar_back, mobileNumber, relation, userId, new Date()]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+usersQueries.updateDependentDetails = (input, tableName, callback) => {
+    let query = `update ${tableName} set name=?,dob=?,gender=?,adhar_frontside=?,adhar_backside=?,mobileNumber=?,relation=?,userId=? where dependentId=?`;
+    const { name, dob, gender, adhar_frontside, adhar_backside, mobileNumber, relation, userId, dependentId } = input
+    let adhar_front = Buffer.from(adhar_frontside.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+    let adhar_back = Buffer.from(adhar_backside.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+    let requestBody = [name, dob, gender, adhar_front, adhar_back, mobileNumber, relation, userId, dependentId]
+    return executePostOrUpdateQuery(query, requestBody, callback)
 }
 //Update Request Methods
 usersQueries.updateUserDepartment = (input, callback) => {

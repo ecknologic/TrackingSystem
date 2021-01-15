@@ -6,7 +6,7 @@ driverQueries.getDrivers = async (callback) => {
     return executeGetQuery(query, callback)
 }
 driverQueries.getDriverById = async (driverId, callback) => {
-    let query = "SELECT d.*,d.driverName as userName from driverdetails d where driverId=" + driverId;
+    let query = "SELECT d.*,d.driverName as userName,JSON_OBJECT('name',s.name,'dob',s.dob,'gender',s.gender,'adhar_frontside',s.adhar_frontside,'adhar_backside',s.adhar_backside,'mobileNumber',s.mobileNumber,'relation',s.relation,'dependentId',s.dependentId) dependentDetails from driverdetails d INNER JOIN driverDependentDetails s on d.driverId=s.userId where d.driverId=" + driverId;
     return executeGetQuery(query, callback)
 }
 

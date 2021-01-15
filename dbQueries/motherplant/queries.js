@@ -100,7 +100,7 @@ motherPlantDbQueries.getDepartmentsList = async (deptType, callback) => {
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getAllDepartmentsList = async (deptType, callback) => {
-    let query = `select * from departmentmaster`
+    let query = `select * from departmentmaster ORDER BY createdDateTime DESC`
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getQCTestedBatches = async (departmentId, callback) => {
