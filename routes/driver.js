@@ -136,9 +136,9 @@ router.post('/createDriver', (req, res) => {
         if (err) res.status(500).json(dbError(err))
         else {
             let obj = { ...req.body.dependentDetails, userId: results.insertId }
-            // usersQueries.saveDependentDetails(obj, "driverDependentDetails", (err, success) => {
-            //     if (err) console.log("Driver Dependent Err", err)
-            // })
+            usersQueries.saveDependentDetails(obj, "driverDependentDetails", (err, success) => {
+                if (err) console.log("Driver Dependent Err", err)
+            })
             driverQueries.updateDriverLoginId({ driverName: req.body.userName, driverId: results.insertId }, (err, updated) => {
                 if (err) console.log("Driver update Err", err)
             })
