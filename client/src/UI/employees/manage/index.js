@@ -17,9 +17,11 @@ import { isEmpty, showToast, base64String, getMainPathname, getBase64, getValidD
 import { TRACKFORM } from '../../../utils/constants';
 import {
     validateIDNumbers, validateNames, validateMobileNumber, validateEmailId, validateIDProofs,
-    validateEmployeeValues
+    validateEmployeeValues,
+    validateDependentValues
 } from '../../../utils/validations';
 import '../../../sass/employees.scss'
+import DependentForm from '../forms/Dependent';
 const DATEFORMAT = 'YYYY-MM-DD'
 
 const ManageEmployee = () => {
@@ -28,9 +30,13 @@ const ManageEmployee = () => {
     const { pathname } = useLocation()
     const [accountValues, setAccountValues] = useState({ loading: true })
     const [headerContent, setHeaderContent] = useState({})
+    const [depValues, setDepValues] = useState({})
+    const [depErrors, setDepErrors] = useState({})
     const [loading, setLoading] = useState(true)
     const [adharProof, setAdharProof] = useState({})
     const [licenseProof, setLicenseProof] = useState({})
+    const [depAdharProof, setDepAdharProof] = useState({})
+    const [depAdharProofErrors, setDepAdharProofErrors] = useState({})
     const [adharProofErrors, setAdharProofErrors] = useState({})
     const [licenseProofErrors, setLicenseProofErrors] = useState({})
     const [confirmModal, setConfirmModal] = useState(false)
@@ -58,19 +64,24 @@ const ManageEmployee = () => {
         const url = `${getUrl(mainUrl)}/${employeeId}`
 
         const [data] = await http.GET(url)
-        const { adhar_frontside, adhar_backside, license_frontside, license_backside, ...rest } = data
+        const { adhar_frontside, adhar_backside, dependentDetails: dep, license_frontside, license_backside, ...rest } = data
         const { userName, adharNo, licenseNo } = rest
+        const { adhar_frontside: adhar_front, adhar_backside: adhar_back, ...depRest } = JSON.parse(dep)
         const adharFront = base64String(adhar_frontside?.data)
         const adharBack = base64String(adhar_backside?.data)
+        const depAdharFront = base64String(adhar_front?.data)
+        const depAdharBack = base64String(adhar_back?.data)
         const licenseFront = base64String(license_frontside?.data)
         const licenseBack = base64String(license_backside?.data)
         const dob = getValidDate(rest.dob, DATEFORMAT)
         const joinedDate = getValidDate(rest.joinedDate, DATEFORMAT)
 
         setAdharProof({ Front: adharFront, Back: adharBack, idProofType: 'adharNo', adharNo })
+        setDepAdharProof({ Front: depAdharFront, Back: depAdharBack, idProofType: 'adharNo', adharNo: dep?.adharNo })
         setLicenseProof({ Front: licenseFront, Back: licenseBack, idProofType: 'licenseNo', licenseNo })
         setHeaderContent({ title: userName })
         setAccountValues({ ...rest, dob, joinedDate })
+        setDepValues(depRest)
         setLoading(false)
     }
 
@@ -112,6 +123,25 @@ const ManageEmployee = () => {
         }
     }
 
+    const handleDepChange = (value, key) => {
+        setDepValues(data => ({ ...data, [key]: value }))
+        setDepErrors(errors => ({ ...errors, [key]: '' }))
+
+        // Validations
+        if (key === 'adharNo') {
+            const error = validateIDNumbers(key, value)
+            setDepErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'name' || key === 'relation') {
+            const error = validateNames(value)
+            setDepErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'mobileNumber') {
+            const error = validateMobileNumber(value)
+            setDepErrors(errors => ({ ...errors, [key]: error }))
+        }
+    }
+
     const handleBlur = (value, key) => {
 
         // Validations
@@ -129,7 +159,20 @@ const ManageEmployee = () => {
         }
     }
 
-    const handleProofUpload = (file, name, proofType) => {
+    const handleDepBlur = (value, key) => {
+
+        // Validations
+        if (key === 'adharNo') {
+            const error = validateIDNumbers(key, value, true)
+            setDepErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'mobileNumber') {
+            const error = validateMobileNumber(value, true)
+            setDepErrors(errors => ({ ...errors, [key]: error }))
+        }
+    }
+
+    const handleUpload = (file, name, proofType) => {
         getBase64(file, async (buffer) => {
             if (proofType === 'adharProof') {
                 if (name === 'any') {
@@ -176,7 +219,31 @@ const ManageEmployee = () => {
         })
     }
 
-    const handleProofRemove = (name, proofType) => {
+    const handleDepUpload = (file, name) => {
+        getBase64(file, async (buffer) => {
+            if (name === 'any') {
+                const clone = { ...depAdharProof }
+                const { Front } = clone
+                if (Front) {
+                    clone.Back = buffer
+                    setDepAdharProofErrors(errors => ({ ...errors, Back: '' }))
+                }
+                else {
+                    clone.Front = buffer
+                    setDepAdharProofErrors(errors => ({ ...errors, Front: '' }))
+                }
+                setDepAdharProof(clone)
+            }
+            else {
+                setDepAdharProofErrors(errors => ({ ...errors, [name]: '' }))
+                const clone = { ...depAdharProof }
+                clone[name] = buffer
+                setDepAdharProof(clone)
+            }
+        })
+    }
+
+    const handleRemove = (name, proofType) => {
         if (proofType === 'adharProof') {
             if (name === 'Front') setAdharProof(data => ({ ...data, Front: '' }))
             else if (name === 'Back') setAdharProof(data => ({ ...data, Back: '' }))
@@ -188,22 +255,35 @@ const ManageEmployee = () => {
 
     }
 
+    const handleDepRemove = (name) => {
+        if (name === 'Front') setDepAdharProof(data => ({ ...data, Front: '' }))
+        else if (name === 'Back') setDepAdharProof(data => ({ ...data, Back: '' }))
+    }
+
+
     const handleUpdate = async () => {
         const adharProofErrors = validateIDProofs(adharProof)
+        const depAdharProofErrors = validateIDProofs(depAdharProof)
         const licenseProofErrors = isDriver ? validateIDProofs(licenseProof) : {}
         const accountErrors = validateEmployeeValues(accountValues, employeeType)
+        const depErrors = validateDependentValues(depValues)
 
-        if (!isEmpty(accountErrors) || !isEmpty(adharProofErrors) || !isEmpty(licenseProofErrors)) {
+        if (!isEmpty(accountErrors) || !isEmpty(adharProofErrors) || !isEmpty(licenseProofErrors)
+            || !isEmpty(depErrors) || !isEmpty(depAdharProofErrors)) {
             setShake(true)
             setTimeout(() => setShake(false), 820)
+            setDepErrors(depErrors)
             setAccountErrors(accountErrors)
             setAdharProofErrors(adharProofErrors)
             setLicenseProofErrors(licenseProofErrors)
+            setDepAdharProofErrors(depAdharProofErrors)
             return
         }
 
+        const dependentDetails = { ...depValues, adharProof: depAdharProof }
+
         let body = {
-            ...accountValues, adharProof, licenseProof
+            ...accountValues, adharProof, licenseProof, dependentDetails
         }
         const url = updateUrl(mainUrl)
         const options = { item: employeeType, v1Ing: 'Updating', v2: 'updated' }
@@ -257,16 +337,28 @@ const ManageEmployee = () => {
                             </div>
                             {
                                 editMode ? (
-                                    <EmployeeForm
-                                        data={accountValues}
-                                        errors={accountErrors}
-                                        title={employeeType}
-                                        onBlur={handleBlur}
-                                        onChange={handleChange}
-                                        onUpload={handleProofUpload}
-                                        onRemove={handleProofRemove}
-                                        {...childProps}
-                                    />
+                                    <>
+                                        <EmployeeForm
+                                            data={accountValues}
+                                            errors={accountErrors}
+                                            title={employeeType}
+                                            onBlur={handleBlur}
+                                            onChange={handleChange}
+                                            onUpload={handleUpload}
+                                            onRemove={handleRemove}
+                                            {...childProps}
+                                        />
+                                        <DependentForm
+                                            data={depValues}
+                                            errors={depErrors}
+                                            adharProof={depAdharProof}
+                                            adharProofErrors={depAdharProofErrors}
+                                            onBlur={handleDepBlur}
+                                            onChange={handleDepChange}
+                                            onUpload={handleDepUpload}
+                                            onRemove={handleDepRemove}
+                                        />
+                                    </>
                                 ) :
                                     <>
                                         <IDProofInfo data={adharProof} />

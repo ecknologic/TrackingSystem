@@ -5,6 +5,10 @@
         align-items: flex-start;
     }
 
+    .employee-title-container.inner {
+        padding-left: 0;
+    }
+
     .employee-form-container {
         width: 80%;
 
@@ -13,8 +17,7 @@
         }
 
         .form-divider {
-            margin-top: 3em;
-            margin-bottom: 1em;
+            margin: 3em 0;
         }
     }
 
@@ -34,6 +37,15 @@
     .employee-title-container {
         height: 4em;
         align-items: center;
+    }
+    
+    .employee-title-container.inner {
+        padding-left: 0;
+        align-items: flex-start;
+    }
+
+    .form-divider {
+        margin: 3em 0;
     }
 
     .app-footer-buttons-container.view {

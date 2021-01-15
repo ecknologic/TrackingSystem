@@ -3,18 +3,26 @@ import { useLocation } from 'react-router-dom';
 import React, { useState, useEffect, useMemo } from 'react';
 import { http } from '../../../modules/http';
 import EmployeeForm from '../forms/Employee';
-import { getDepartmentOptions, getRoleOptions } from '../../../assets/fixtures';
+import DependentForm from '../forms/Dependent';
 import CustomButton from '../../../components/CustomButton';
+import { getDepartmentOptions, getRoleOptions } from '../../../assets/fixtures';
 import { getBase64, getMainPathname, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
-import { validateIDNumbers, validateMobileNumber, validateNames, validateEmployeeValues, validateEmailId, validateIDProofs } from '../../../utils/validations';
+import {
+    validateIDNumbers, validateMobileNumber, validateNames, validateEmployeeValues, validateEmailId,
+    validateIFSCCode, validateIDProofs, validateNumber, validateDependentValues
+} from '../../../utils/validations';
 
 const CreateEmployee = ({ goToTab }) => {
     const { pathname } = useLocation()
     const [formData, setFormData] = useState({})
+    const [depValues, setDepValues] = useState({})
+    const [depErrors, setDepErrors] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [adharProof, setAdharProof] = useState({})
     const [licenseProof, setLicenseProof] = useState({})
     const [adharProofErrors, setAdharProofErrors] = useState({})
+    const [depAdharProof, setDepAdharProof] = useState({})
+    const [depAdharProofErrors, setDepAdharProofErrors] = useState({})
     const [licenseProofErrors, setLicenseProofErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [roleList, setRoleList] = useState([])
@@ -57,13 +65,41 @@ const CreateEmployee = ({ goToTab }) => {
             const error = validateIDNumbers(key, value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key === 'userName' || key === 'parentName') {
+        else if (key === 'userName' || key === 'parentName' || key === 'branchName'
+            || key === 'recruitedBy' || key === 'recommendedBy' || key === 'bankName') {
             const error = validateNames(value)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'accountNo') {
+            const error = validateNumber(value)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'ifscCode') {
+            const error = validateIFSCCode(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
         else if (key === 'mobileNumber') {
             const error = validateMobileNumber(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+    }
+
+    const handleDepChange = (value, key) => {
+        setDepValues(data => ({ ...data, [key]: value }))
+        setDepErrors(errors => ({ ...errors, [key]: '' }))
+
+        // Validations
+        if (key === 'adharNo') {
+            const error = validateIDNumbers(key, value)
+            setDepErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'name' || key === 'relation') {
+            const error = validateNames(value)
+            setDepErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'mobileNumber') {
+            const error = validateMobileNumber(value)
+            setDepErrors(errors => ({ ...errors, [key]: error }))
         }
     }
 
@@ -74,6 +110,10 @@ const CreateEmployee = ({ goToTab }) => {
             const error = validateIDNumbers(key, value, true)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
+        else if (key === 'ifscCode') {
+            const error = validateIFSCCode(value, true)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
         else if (key === 'emailid') {
             const error = validateEmailId(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
@@ -81,6 +121,19 @@ const CreateEmployee = ({ goToTab }) => {
         else if (key === 'mobileNumber') {
             const error = validateMobileNumber(value, true)
             setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+    }
+
+    const handleDepBlur = (value, key) => {
+
+        // Validations
+        if (key === 'adharNo') {
+            const error = validateIDNumbers(key, value, true)
+            setDepErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'mobileNumber') {
+            const error = validateMobileNumber(value, true)
+            setDepErrors(errors => ({ ...errors, [key]: error }))
         }
     }
 
@@ -130,6 +183,29 @@ const CreateEmployee = ({ goToTab }) => {
             }
         })
     }
+    const handleDepUpload = (file, name) => {
+        getBase64(file, async (buffer) => {
+            if (name === 'any') {
+                const clone = { ...depAdharProof }
+                const { Front } = clone
+                if (Front) {
+                    clone.Back = buffer
+                    setDepAdharProofErrors(errors => ({ ...errors, Back: '' }))
+                }
+                else {
+                    clone.Front = buffer
+                    setDepAdharProofErrors(errors => ({ ...errors, Front: '' }))
+                }
+                setDepAdharProof(clone)
+            }
+            else {
+                setDepAdharProofErrors(errors => ({ ...errors, [name]: '' }))
+                const clone = { ...depAdharProof }
+                clone[name] = buffer
+                setDepAdharProof(clone)
+            }
+        })
+    }
 
     const handleRemove = (name, proofType) => {
         if (proofType === 'adharProof') {
@@ -142,6 +218,11 @@ const CreateEmployee = ({ goToTab }) => {
         }
     }
 
+    const handleDepRemove = (name) => {
+        if (name === 'Front') setDepAdharProof(data => ({ ...data, Front: '' }))
+        else if (name === 'Back') setDepAdharProof(data => ({ ...data, Back: '' }))
+    }
+
     const getEmployeeType = (url) => {
         const type = url === '/staff' ? 'Staff' : 'Driver'
         setEmployeeType(type)
@@ -149,24 +230,29 @@ const CreateEmployee = ({ goToTab }) => {
 
     const handleSubmit = async () => {
         const adharProofErrors = validateIDProofs(adharProof)
+        const depAdharProofErrors = validateIDProofs(depAdharProof)
         const licenseProofErrors = employeeType === 'Driver' ? validateIDProofs(licenseProof) : {}
         const formErrors = validateEmployeeValues(formData, employeeType)
-        console.log('form errors.>>>', formErrors)
-        if (!isEmpty(formErrors) || !isEmpty(adharProofErrors) || !isEmpty(licenseProofErrors)) {
+        const depErrors = validateDependentValues(depValues)
+
+        if (!isEmpty(formErrors) || !isEmpty(adharProofErrors) || !isEmpty(licenseProofErrors)
+            || !isEmpty(depErrors) || !isEmpty(depAdharProofErrors)) {
             setShake(true)
             setTimeout(() => setShake(false), 820)
             setFormErrors(formErrors)
+            setDepErrors(depErrors)
             setAdharProofErrors(adharProofErrors)
             setLicenseProofErrors(licenseProofErrors)
+            setDepAdharProofErrors(depAdharProofErrors)
             return
         }
 
+        const dependentDetails = { ...depValues, adharProof: depAdharProof }
         let body = {
-            ...formData, adharProof, licenseProof
+            ...formData, adharProof, licenseProof, dependentDetails
         }
         const url = getUrl(mainUrl)
         const options = { item: employeeType, v1Ing: 'Adding', v2: 'added' }
-
 
         try {
             setBtnDisabled(true)
@@ -208,6 +294,16 @@ const CreateEmployee = ({ goToTab }) => {
                 onUpload={handleUpload}
                 onRemove={handleRemove}
                 {...childProps}
+            />
+            <DependentForm
+                data={depValues}
+                errors={depErrors}
+                adharProof={depAdharProof}
+                adharProofErrors={depAdharProofErrors}
+                onBlur={handleDepBlur}
+                onChange={handleDepChange}
+                onUpload={handleDepUpload}
+                onRemove={handleDepRemove}
             />
             <div className='app-footer-buttons-container'>
                 <CustomButton
