@@ -20,7 +20,7 @@ const DATEFORMAT = 'DD-MM-YYYY'
 const format = 'YYYY-MM-DD'
 const fn = () => { }
 
-const AddMaterials = ({ onUpdate = fn, isSuperAdmin }) => {
+const AddMaterials = ({ onUpdate = fn }) => {
     const [loading, setLoading] = useState(true)
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
@@ -48,8 +48,7 @@ const AddMaterials = ({ onUpdate = fn, isSuperAdmin }) => {
     }, [])
 
     const getRM = async () => {
-        const status = isSuperAdmin ? 'Confirmed' : 'Approved'
-        const data = await http.GET(`/motherPlant/getRMDetails?status=${status}`)
+        const data = await http.GET(`/motherPlant/getRMDetails?status=Approved`)
         setRM(data)
         setRMClone(data)
         setTotalCount(data.length)
