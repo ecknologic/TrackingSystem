@@ -44,7 +44,7 @@ const App = () => {
       }
    }
 
-   const redirectTo = (props) => {
+   const dashboardAuth = (props) => {
       const isUser = isLogged()
       if (!isUser) return <Redirect to='/' />
       else {
@@ -57,23 +57,27 @@ const App = () => {
       }
    }
 
+   const loginAuth = (props) => {
+      const isUser = isLogged()
+      if (!isUser) return <Login />
+      else return <Redirect to='/dashboard' />
+   }
 
-   const NoMatch = () => {
+   const noMatchAuth = () => {
       const isUser = isLogged()
       if (!isUser) return <Redirect to='/' />
       return <NoContent content='Page Not found' />
    }
 
+   const isUser = isLogged()
+
    return (
       <Router>
          <Switch>
-            <Route exact
-               path='/'
-               component={Login}
-            />
+            <Route exact path='/' render={loginAuth} />
             <PageLayout>
                <Switch>
-                  <Route path='/dashboard' render={redirectTo} />
+                  <Route path='/dashboard' render={dashboardAuth} />
                   <Route path='/manage-accounts/add-account' render={byRole(<AddAccount />)} />
                   <Route path='/manage-accounts/:accountId' render={byRole(<ViewAccount />)} />
                   <Route path='/manage-accounts' render={byRole(<AccountsDashboard />)} />
@@ -97,7 +101,7 @@ const App = () => {
                   <Route path='/customers/manage/:accountId' render={byRole(<ViewAccount />)} />
                   <Route path='/customers' render={byRole(<Customers />)} />
                   <Route path='/unauthorized' component={Unauthorized} />
-                  <Route component={NoMatch} />
+                  <Route render={noMatchAuth} />
                </Switch>
             </PageLayout>
          </Switch>

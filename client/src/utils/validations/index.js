@@ -1,5 +1,5 @@
 import {
-    isStrictDigit, isAadharValid, isPANValid, isEmpty, isGSTValid, isAlphaOnly,
+    isStrictDigit, isAadharValid, isPANValid, isEmpty, isGSTValid, isAlphaOnly, isIFSCValid,
     isIndMobileNum, isAlphaNumOnly, isEmail, isStrictIntFloat, isIntFloat, isDLValid, isAlphaNum
 } from "../Functions"
 
@@ -285,8 +285,8 @@ export const validateEmployeeValues = (data, employeeType) => {
     let errors = {};
     const text = 'Required'
     const text2 = 'Incomplete'
-    const { userName, adharNo, parentName, gender, dob, mobileNumber, address,
-        joinedDate, permanentAddress, roleId, licenseNo, emailid } = data
+    const { userName, adharNo, parentName, gender, dob, mobileNumber, address, joinedDate, permanentAddress,
+        accountNo, branchName, bankName, ifscCode, recruitedBy, recommendedBy, roleId, licenseNo, emailid } = data
 
     if (!dob) errors.dob = text
     if (!joinedDate) errors.joinedDate = text
@@ -300,15 +300,82 @@ export const validateEmployeeValues = (data, employeeType) => {
         const error = validateEmailId(emailid)
         error && (errors.emailid = error)
     }
+    if (!branchName) errors.branchName = text
+    else {
+        const error = validateNames(branchName)
+        error && (errors.branchName = error)
+    }
+    if (!bankName) errors.bankName = text
+    else {
+        const error = validateNames(bankName)
+        error && (errors.bankName = error)
+    }
+    if (!recruitedBy) errors.recruitedBy = text
+    else {
+        const error = validateNames(recruitedBy)
+        error && (errors.recruitedBy = error)
+    }
+    if (!recommendedBy) errors.recommendedBy = text
+    else {
+        const error = validateNames(recommendedBy)
+        error && (errors.recommendedBy = error)
+    }
     if (!userName) errors.userName = text
     else {
         const error = validateNames(userName)
         error && (errors.userName = error)
     }
+    if (!accountNo) errors.accountNo = text
+    else {
+        const error = validateNumber(accountNo)
+        error && (errors.accountNo = error)
+    }
     if (!parentName) errors.parentName = text
     else {
         const error = validateNames(parentName)
         error && (errors.parentName = error)
+    }
+    if (!mobileNumber) errors.mobileNumber = text
+    if (mobileNumber) {
+        const error = validateMobileNumber(mobileNumber)
+        error && (errors.mobileNumber = error)
+    }
+    if (!ifscCode) errors.ifscCode = text
+    else {
+        if (String(ifscCode).length < 11) errors.ifscCode = text2
+        else {
+            const error = validateIFSCCode(ifscCode)
+            error && (errors.ifscCode = error)
+        }
+    }
+    if (!adharNo) errors.adharNo = text
+    else {
+        if (String(adharNo).length < 12) errors.adharNo = text2
+        else {
+            const error = validateIDNumbers('adharNo', adharNo)
+            error && (errors.adharNo = error)
+        }
+    }
+
+    return errors
+}
+export const validateDependentValues = (data) => {
+    let errors = {};
+    const text = 'Required'
+    const text2 = 'Incomplete'
+    const { name, adharNo, gender, dob, relation, mobileNumber } = data
+
+    if (!dob) errors.dob = text
+    if (!gender) errors.gender = text
+    if (!relation) errors.relation = text
+    else {
+        const error = validateNames(relation)
+        error && (errors.relation = error)
+    }
+    if (!name) errors.name = text
+    else {
+        const error = validateNames(name)
+        error && (errors.name = error)
     }
     if (!mobileNumber) errors.mobileNumber = text
     if (mobileNumber) {
@@ -853,6 +920,23 @@ export const validatePinCode = (value, isBlur) => {
         return 'Enter digits only'
     }
     return ''
+}
+
+export const validateIFSCCode = (value, isBlur) => {
+    if (isBlur && value) {
+        const isValid = isAlphaNum(value)
+        if (!isValid) return 'Invalid'
+    }
+    if (isBlur && value && String(value).length < 11) {
+        return 'Incomplete'
+    }
+    if (!isAlphaNum(value)) {
+        return 'Enter aphanumeric only'
+    }
+    if (String(value).length === 11) {
+        const isValid = isIFSCValid(value)
+        if (!isValid) return 'Invalid'
+    }
 }
 
 export const validateIntFloat = (value, isBlur) => {

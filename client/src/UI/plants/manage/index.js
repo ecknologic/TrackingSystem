@@ -2,9 +2,9 @@ import { message } from 'antd';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import React, { Fragment, useEffect, useMemo, useState, useCallback } from 'react';
 import Header from './header';
+import PlantForm from '../forms/Plant';
 import AccountView from '../views/Account';
 import { http } from '../../../modules/http'
-import PlantForm from '../forms/CreatePlant';
 import Spinner from '../../../components/Spinner';
 import ScrollUp from '../../../components/ScrollUp';
 import NoContent from '../../../components/NoContent';
