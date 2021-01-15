@@ -26,8 +26,8 @@ usersQueries.saveDependentDetails = (input, tableName, callback) => {
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 usersQueries.updateDependentDetails = (input, tableName, callback) => {
-    let query = `update ${tableName} set name=?,dob=?,gender=?,adhar_frontside=?,adhar_backside=?,mobileNumber=?,relation=?,userId=?,adharNo=? where dependentId=?`;
-    const { name, dob, gender, adharProof, mobileNumber, relation, userId, dependentId, adharNo } = input
+    let query = `update ${tableName} set name=?,dob=?,gender=?,adhar_frontside=?,adhar_backside=?,mobileNumber=?,relation=?,adharNo=? where dependentId=?`;
+    const { name, dob, gender, adharProof, mobileNumber, relation, dependentId, adharNo } = input
     let adhar_front = Buffer.from(adharProof.Front.replace(/^data:image\/\w+;base64,/, ""), 'base64')
     let adhar_back = Buffer.from(adharProof.Back.replace(/^data:image\/\w+;base64,/, ""), 'base64')
     let requestBody = [name, dob, gender, adhar_front, adhar_back, mobileNumber, relation, userId, adharNo, dependentId]
