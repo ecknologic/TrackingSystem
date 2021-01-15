@@ -30,7 +30,7 @@ usersQueries.updateDependentDetails = (input, tableName, callback) => {
     const { name, dob, gender, adharProof, mobileNumber, relation, dependentId, adharNo } = input
     let adhar_front = Buffer.from(adharProof.Front.replace(/^data:image\/\w+;base64,/, ""), 'base64')
     let adhar_back = Buffer.from(adharProof.Back.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-    let requestBody = [name, dob, gender, adhar_front, adhar_back, mobileNumber, relation, userId, adharNo, dependentId]
+    let requestBody = [name, dob, gender, adhar_front, adhar_back, mobileNumber, relation, adharNo, dependentId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 //Update Request Methods
