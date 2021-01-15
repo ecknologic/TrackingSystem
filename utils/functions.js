@@ -1,5 +1,6 @@
 const db = require('../config/db.js');
 var dayjs = require('dayjs');
+var bcrypt = require("bcryptjs");
 
 const format = 'DDMM-YY'
 const getBatchId = (shiftType) => {
@@ -52,4 +53,7 @@ const customerProductDetails = (deliveryDetailsId) => {
         });
     });
 }
-module.exports = { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, dbError, getBatchId, customerProductDetails }
+var createHash = function (password) {
+    return bcrypt.hashSync(password, bcrypt.genSaltSync(10), null);
+}
+module.exports = { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, dbError, getBatchId, customerProductDetails, createHash }

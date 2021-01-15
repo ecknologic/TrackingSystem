@@ -3,13 +3,11 @@ var router = express.Router();
 const db = require('../config/db.js')
 var bcrypt = require("bcryptjs");
 const usersQueries = require('../dbQueries/users/queries.js');
-const { dbError } = require('../utils/functions.js');
+const { dbError, createHash } = require('../utils/functions.js');
 
 router.post('/createWebUser', (req, res) => {
   // Generates hash using bCrypt
-  var createHash = function (password) {
-    return bcrypt.hashSync(password, bcrypt.genSaltSync(10), null);
-  }
+  
   let query = "insert into usermaster (userName,roleId,emailid,password,departmentId,mobileNumber,joinedDate,parentName,gender,dob,adharNo,address,permanentAddress,adhar_frontside,adhar_backside,accountNo,bankName,branchName,ifscCode,recommendedBy,recruitedBy) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
   const { userName, roleId, emailid, password = "Bibo@123", privilegeDetails = [], departmentId, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, adharProof, accountNo, bankName, branchName, ifscCode, recommendedBy, recruitedBy, dependentDetails } = req.body
   let adhar_frontside = Buffer.from(adharProof.Front.replace(/^data:image\/\w+;base64,/, ""), 'base64')
@@ -25,9 +23,9 @@ router.post('/createWebUser', (req, res) => {
         if (updateErr) console.log(updateErr);
       })
       let obj = { ...dependentDetails, userId: results.insertId }
-      usersQueries.saveDependentDetails(obj, "staffDependentDetails", (err, success) => {
-        if (err) console.log("Staff Dependent Err", err)
-      })
+      // usersQueries.saveDependentDetails(obj, "staffDependentDetails", (err, success) => {
+      //   if (err) console.log("Staff Dependent Err", err)
+      // })
       if (privilegeDetails.length) {
         for (let i of privilegeDetails) {
           let privilegeQuery = "insert into userPrivilegesMaster (privilegeId,privilegeActions,userId) values(?,?,?)";

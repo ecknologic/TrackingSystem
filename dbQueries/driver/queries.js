@@ -12,14 +12,14 @@ driverQueries.getDriverById = async (driverId, callback) => {
 
 //POST Request Methods
 driverQueries.createDriver = async (input, callback) => {
-    const { userName, emailid, departmentId, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, licenseNo, adharProof, licenseProof } = input;
-    let query = "insert into driverdetails (driverName,emailid,departmentId,mobileNumber,joinedDate,parentName,gender,dob,adharNo,address,permanentAddress,licenseNo,adhar_frontside, adhar_backside, license_frontside, license_backside) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    const { userName, emailid, departmentId, mobileNumber, password, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, licenseNo, adharProof, licenseProof } = input;
+    let query = "insert into driverdetails (driverName,emailid,password,departmentId,mobileNumber,joinedDate,parentName,gender,dob,adharNo,address,permanentAddress,licenseNo,adhar_frontside, adhar_backside, license_frontside, license_backside) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     let adhar_frontside = Buffer.from(adharProof.Front.replace(/^data:image\/\w+;base64,/, ""), 'base64')
     let adhar_backside = Buffer.from(adharProof.Back.replace(/^data:image\/\w+;base64,/, ""), 'base64')
     let license_frontside = Buffer.from(licenseProof.Front.replace(/^data:image\/\w+;base64,/, ""), 'base64')
     let license_backside = Buffer.from(licenseProof.Back.replace(/^data:image\/\w+;base64,/, ""), 'base64')
 
-    let requestBody = [userName, emailid, departmentId, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, licenseNo, adhar_frontside, adhar_backside, license_frontside, license_backside]
+    let requestBody = [userName, emailid, password, departmentId, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, licenseNo, adhar_frontside, adhar_backside, license_frontside, license_backside]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
@@ -32,6 +32,13 @@ driverQueries.updateDriver = async (input, callback) => {
     let license_frontside = Buffer.from(licenseProof.Front.replace(/^data:image\/\w+;base64,/, ""), 'base64')
     let license_backside = Buffer.from(licenseProof.Back.replace(/^data:image\/\w+;base64,/, ""), 'base64')
     let requestBody = [userName, emailid, departmentId, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, licenseNo, adhar_frontside, adhar_backside, license_frontside, license_backside, driverId]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+driverQueries.updateDriverLoginId = (input, callback) => {
+    const { driverName, driverId } = input
+    let query = 'UPDATE driverdetails SET loginId=? WHERE driverId=?';
+    let idValue = driverName.substring(0, 3) + driverId
+    let requestBody = [idValue, driverId];
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
