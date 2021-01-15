@@ -23,9 +23,9 @@ router.post('/createWebUser', (req, res) => {
         if (updateErr) console.log(updateErr);
       })
       let obj = { ...dependentDetails, userId: results.insertId }
-      // usersQueries.saveDependentDetails(obj, "staffDependentDetails", (err, success) => {
-      //   if (err) console.log("Staff Dependent Err", err)
-      // })
+      usersQueries.saveDependentDetails(obj, "staffDependentDetails", (err, success) => {
+        if (err) console.log("Staff Dependent Err", err)
+      })
       if (privilegeDetails.length) {
         for (let i of privilegeDetails) {
           let privilegeQuery = "insert into userPrivilegesMaster (privilegeId,privilegeActions,userId) values(?,?,?)";

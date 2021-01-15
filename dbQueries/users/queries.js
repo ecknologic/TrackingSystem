@@ -14,7 +14,7 @@ usersQueries.getUsersByRole = async (roleName, callback) => {
     return executeGetParamsQuery(query, [roleName], callback)
 }
 usersQueries.getUsersById = async (userId, callback) => {
-    let query = "SELECT s.adhar_frontside as dependentFrontProof,s.adhar_backside as dependentBackProof,JSON_OBJECT('name',s.name,'dob',s.dob,'gender',s.gender,'mobileNumber',s.mobileNumber,'relation',s.relation,'dependentId',s.dependentId) dependentDetails from usermaster u INNER JOIN staffDependentDetails s on u.userId=s.userId where u.userId=" + userId;
+    let query = "SELECT u.*,s.adhar_frontside as dependentFrontProof,s.adhar_backside as dependentBackProof,JSON_OBJECT('name',s.name,'dob',s.dob,'gender',s.gender,'mobileNumber',s.mobileNumber,'relation',s.relation,'dependentId',s.dependentId) dependentDetails from usermaster u INNER JOIN staffDependentDetails s on u.userId=s.userId where u.userId=" + userId;
     return executeGetQuery(query, callback)
 }
 usersQueries.saveDependentDetails = (input, tableName, callback) => {
