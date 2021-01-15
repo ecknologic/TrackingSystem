@@ -12,7 +12,7 @@ import QuitModal from '../../../components/CustomModal';
 import IDProofInfo from '../../../components/IDProofInfo';
 import CustomButton from '../../../components/CustomButton';
 import ConfirmMessage from '../../../components/ConfirmMessage';
-import { getRoleOptions } from '../../../assets/fixtures';
+import { getDepartmentOptions, getRoleOptions } from '../../../assets/fixtures';
 import { isEmpty, showToast, base64String, getMainPathname, getBase64, getValidDate } from '../../../utils/Functions';
 import { TRACKFORM } from '../../../utils/constants';
 import {
@@ -40,12 +40,14 @@ const ManageEmployee = () => {
     const [shake, setShake] = useState(false)
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [employeeType, setEmployeeType] = useState('')
+    const [departmentList, setDepartmentList] = useState([])
 
     const isDriver = employeeType === 'Driver'
     const roleOptions = useMemo(() => getRoleOptions(roleList), [roleList])
     const mainUrl = useMemo(() => getMainPathname(pathname), [pathname])
-    const childProps = useMemo(() => ({ adharProof, licenseProof, adharProofErrors, licenseProofErrors, roleOptions }),
-        [adharProof, licenseProof, adharProofErrors, licenseProofErrors, roleOptions])
+    const departmentOptions = useMemo(() => getDepartmentOptions(departmentList), [departmentList])
+    const childProps = useMemo(() => ({ adharProof, licenseProof, adharProofErrors, licenseProofErrors, roleOptions, departmentOptions }),
+        [adharProof, licenseProof, adharProofErrors, licenseProofErrors, roleOptions, departmentOptions])
 
     useEffect(() => {
         getEmployeeType(mainUrl)
@@ -82,6 +84,13 @@ const ManageEmployee = () => {
 
         const data = await http.GET(url)
         setRoleList(data)
+    }
+
+    const getDepartmentList = async () => {
+        const url = '/motherplant/getAllDepartmentsList'
+
+        const data = await http.GET(url)
+        setDepartmentList(data)
     }
 
     const handleChange = (value, key) => {
@@ -213,7 +222,10 @@ const ManageEmployee = () => {
     }
 
     const handleEdit = () => {
-        getRoleList()
+        if (!isDriver) {
+            getRoleList()
+        }
+        getDepartmentList()
         setEditMode(true)
     }
 
