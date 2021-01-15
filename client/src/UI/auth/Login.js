@@ -15,9 +15,7 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState({});
 
-    const getRoleInfo = async (role) => {
-        let id = 1
-        if (role === 'MotherPlantAdmin') id = 2
+    const getRoleInfo = async (id) => {
         const url = `/warehouse/getWarehouseDetails/${id}`
         const { data } = await http.GET(url)
         setRoleInfo(data)
@@ -46,7 +44,7 @@ const Login = () => {
                             role
                         }
                         sessionStorage.setItem("user", JSON.stringify(user))
-                        getRoleInfo(role)
+                        getRoleInfo(warehouseId)
                         message.success("Logged in successfully.")
                         history.replace('/dashboard')
                     } else {

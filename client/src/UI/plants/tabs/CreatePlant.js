@@ -22,19 +22,23 @@ const CreateNewPlant = ({ goToTab }) => {
     const staffOptions = useMemo(() => getStaffOptions(staffList), [staffList])
 
     useEffect(() => {
-        const type = getPlantType()
-        getStaffList(type)
+        getPlantType()
+        getStaffList()
     }, [])
 
-    const getStaffList = async (type) => {
-        const data = await http.GET(`/users/getUsersBydepartmentType/${type}`)
+    const getStaffList = async () => {
+        const roleName = getRoleName()
+        const data = await http.GET(`/users/getUsersByRole/${roleName}`)
         setStaffList(data)
     }
 
     const getPlantType = () => {
         const type = mainUrl === '/warehouses' ? 'Warehouse' : 'MotherPlant'
         setPlantType(type)
-        return type
+    }
+
+    const getRoleName = () => {
+        return mainUrl === '/warehouses' ? 'WarehouseAdmin' : 'MotherPlantAdmin'
     }
 
     const handleChange = (value, key) => {

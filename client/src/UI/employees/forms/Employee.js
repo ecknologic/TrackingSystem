@@ -132,7 +132,7 @@ const EmployeeForm = (props) => {
                     />
                 </div>
                 <div className='input-container'>
-                    <InputLabel name='Department' error={errors.departmentId} mandatory />
+                    <InputLabel name='Department' error={errors.departmentId} />
                     <SelectInput track
                         options={departmentOptions} value={departmentId}
                         error={errors.departmentId} onSelect={(value) => onChange(value, 'departmentId')}
