@@ -24,7 +24,7 @@ const insertToCustomerOrderDetails = (result, res, sendResponse) => {
     // requestBody.dcNo = "DC-" + results[0].orderId
     requestBody.departmentId = result.departmentId || 1
     requestBody.customerType = 'Internal'
-    requestBody.phoneNumber = "9985758537"
+    requestBody.phoneNumber = result.phoneNumber
     customerProductDetails(deliveryDetailsId).then(products => {
       products.map(product => {
         if (product.productName == '20L') {
@@ -81,7 +81,6 @@ function saveToCustomerOrderDetails(customerId, res, deliveryDetailsId) {
     customerDeliveryDaysQuery += ' AND customer_Id=' + customerId
   }
   db.query(customerDeliveryDaysQuery, async (err, results) => {
-    console.log("results.length", results.length)
     if (err) throw err;
     if (results.length > 0) {
       const length = results.length

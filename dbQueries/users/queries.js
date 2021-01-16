@@ -14,8 +14,24 @@ usersQueries.getUsersByRole = async (roleName, callback) => {
     return executeGetParamsQuery(query, [roleName], callback)
 }
 usersQueries.getUsersById = async (userId, callback) => {
-    let query = "SELECT * from usermaster where userId=" + userId;
+    let query = "SELECT u.*,s.adharNo as dependentAdharNo,s.adhar_frontside as dependentFrontProof,s.adhar_backside as dependentBackProof,JSON_OBJECT('name',s.name,'userId',s.userId,'dob',s.dob,'gender',s.gender,'mobileNumber',s.mobileNumber,'relation',s.relation,'dependentId',s.dependentId) dependentDetails from usermaster u INNER JOIN staffDependentDetails s on u.userId=s.userId where u.userId=" + userId;
     return executeGetQuery(query, callback)
+}
+usersQueries.saveDependentDetails = (input, tableName, callback) => {
+    let query = `insert into ${tableName} (name,dob,gender,adhar_frontside,adhar_backside,mobileNumber,relation,userId,createdDateTime,adharNo) values(?,?,?,?,?,?,?,?,?,?)`;
+    const { name, dob, gender, adharProof, adharNo, mobileNumber, relation, userId } = input
+    let adhar_front = Buffer.from(adharProof.Front.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+    let adhar_back = Buffer.from(adharProof.Back.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+    let requestBody = [name, dob, gender, adhar_front, adhar_back, mobileNumber, relation, userId, new Date(), adharNo]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+usersQueries.updateDependentDetails = (input, tableName, callback) => {
+    let query = `update ${tableName} set name=?,dob=?,gender=?,adhar_frontside=?,adhar_backside=?,mobileNumber=?,relation=?,adharNo=? where dependentId=?`;
+    const { name, dob, gender, adharProof, mobileNumber, relation, dependentId, adharNo } = input
+    let adhar_front = Buffer.from(adharProof.Front.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+    let adhar_back = Buffer.from(adharProof.Back.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+    let requestBody = [name, dob, gender, adhar_front, adhar_back, mobileNumber, relation, adharNo, dependentId]
+    return executePostOrUpdateQuery(query, requestBody, callback)
 }
 //Update Request Methods
 usersQueries.updateUserDepartment = (input, callback) => {

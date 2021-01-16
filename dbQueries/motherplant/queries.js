@@ -73,8 +73,8 @@ motherPlantDbQueries.getNatureOfBussiness = async (callback) => {
 }
 motherPlantDbQueries.getRMDetails = async (input, callback) => {
     let query = `select * from requiredrawmaterial WHERE departmentId=? ORDER BY requestedDate DESC`;
-    if (input.isSuperAdmin) {
-        query = `select * from requiredrawmaterial ORDER BY requestedDate DESC`
+    if (input.isSuperAdmin == true) {
+        query = `select r.*,d.departmentName from requiredrawmaterial r INNER JOIN departmentmaster d ON r.departmentId=d.departmentId ORDER BY r.requestedDate DESC`
         return executeGetQuery(query, callback)
     } else {
         if (input.status) query = `select * from requiredrawmaterial WHERE departmentId=? AND (status="Approved" or status="Confirmed") ORDER BY requestedDate DESC`
@@ -84,7 +84,7 @@ motherPlantDbQueries.getRMDetails = async (input, callback) => {
 motherPlantDbQueries.getRMReceiptDetails = async (input, callback) => {
     const { isSuperAdmin, departmentId } = input
     let query = `select rmr.receiptDate,rmr.receiptNo,rmr.invoiceNo,rmr.taxAmount,rmr.invoiceAmount,rmr.rawmaterialId,rmr.invoiceDate,rmr.managerName,rmr.receiptImage,rm.itemName,rm.itemCode,rm.itemQty,rm.vendorName,rm.requestedDate,rm.approvedDate,rm.description,rm.orderId from rawmaterialreceipt rmr INNER JOIN requiredrawmaterial rm on rmr.rawmaterialId=rm.rawmaterialid WHERE rmr.departmentId=${departmentId} ORDER BY receiptDate DESC`;
-    if (isSuperAdmin) {
+    if (isSuperAdmin == true) {
         query = `select rmr.receiptDate,rmr.receiptNo,rmr.invoiceNo,rmr.taxAmount,rmr.invoiceAmount,rmr.rawmaterialId,rmr.invoiceDate,rmr.managerName,rmr.receiptImage,rm.itemName,rm.itemCode,rm.itemQty,rm.vendorName,rm.requestedDate,rm.approvedDate,rm.description,rm.orderId from rawmaterialreceipt rmr INNER JOIN requiredrawmaterial rm on rmr.rawmaterialId=rm.rawmaterialid ORDER BY receiptDate DESC`;
     }
     return executeGetQuery(query, callback)
@@ -100,7 +100,7 @@ motherPlantDbQueries.getDepartmentsList = async (deptType, callback) => {
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getAllDepartmentsList = async (deptType, callback) => {
-    let query = `select * from departmentmaster`
+    let query = `select * from departmentmaster ORDER BY createdDateTime DESC`
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getQCTestedBatches = async (departmentId, callback) => {
@@ -221,12 +221,12 @@ motherPlantDbQueries.updateRMDetails = async (input, callback) => {
 }
 
 motherPlantDbQueries.updateRMStatus = async (input, callback) => {
-    const { status, rawmaterialid } = input
+    const { status, rawmaterialid, reason } = input
     let query = `update requiredrawmaterial set status=? where rawmaterialid=${rawmaterialid}`;
     let requestBody = [status]
     if (status == "Approved" || status == "Rejected") {
-        query = `update requiredrawmaterial set status=?,approvedDate=? where rawmaterialid=${rawmaterialid}`
-        requestBody = [status, new Date()]
+        query = `update requiredrawmaterial set status=?,approvedDate=?,reason=? where rawmaterialid=${rawmaterialid}`
+        requestBody = [status, new Date(), reason]
     }
     return executePostOrUpdateQuery(query, requestBody, callback)
 }

@@ -5,6 +5,10 @@
         align-items: flex-start;
     }
 
+    .employee-title-container.inner {
+        padding-left: 0;
+    }
+
     .employee-form-container {
         width: 80%;
 
@@ -13,8 +17,7 @@
         }
 
         .form-divider {
-            margin-top: 3em;
-            margin-bottom: 1em;
+            margin: 3em 0;
         }
     }
 
@@ -34,6 +37,20 @@
     .employee-title-container {
         height: 4em;
         align-items: center;
+    }
+    
+    .employee-title-container.inner {
+        padding-left: 0;
+        height: 3em;
+        align-items: flex-start;
+    }
+
+    .form-divider {
+        margin: 3em 0;
+    }
+
+    .form-divider.inner {
+        margin-top: 2.5em;
     }
 
     .app-footer-buttons-container.view {
@@ -65,5 +82,10 @@
             font-size: 1.4em;
             margin-right: 1em;
         }
+    }
+
+    .half-line {
+        min-width: 60%;
+        max-width: 60%;
     }
 }

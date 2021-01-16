@@ -2,7 +2,7 @@ import { message } from 'antd';
 import { useLocation } from 'react-router-dom';
 import React, { useState, useEffect, useMemo } from 'react';
 import { http } from '../../../modules/http';
-import PlantForm from '../forms/CreatePlant';
+import PlantForm from '../forms/Plant';
 import { getStaffOptions } from '../../../assets/fixtures';
 import CustomButton from '../../../components/CustomButton';
 import { getBase64, getMainPathname, getPlantValuesForDB, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';

@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { Divider } from 'antd';
 import React, { useEffect } from 'react';
 import InputLabel from '../../../components/InputLabel';
 import { genderOptions } from '../../../assets/fixtures'
@@ -15,7 +16,8 @@ const EmployeeForm = (props) => {
     const { data, title, errors, roleOptions, departmentOptions, onChange, onUpload, onRemove, disabled, onBlur,
         adharProof, adharProofErrors, licenseProof, licenseProofErrors } = props
     const { userName, adharNo, licenseNo, parentName, gender, dob, mobileNumber, address,
-        joinedDate, permanentAddress, roleId, emailid, departmentId } = data
+        joinedDate, permanentAddress, roleId, emailid, departmentId, accountNo, branchName, bankName,
+        ifscCode, recruitedBy, recommendedBy } = data
 
 
     useEffect(() => {
@@ -152,6 +154,22 @@ const EmployeeForm = (props) => {
                     </div> : null
             }
             <div className='row'>
+                <div className='input-container'>
+                    <InputLabel name='Recruited by' error={errors.recruitedBy} mandatory />
+                    <CustomInput value={recruitedBy} placeholder='Recruited By'
+                        error={errors.recruitedBy} onBlur={(value) => onBlur(value, 'recruitedBy')}
+                        onChange={(value) => onChange(value, 'recruitedBy')}
+                    />
+                </div>
+                <div className='input-container'>
+                    <InputLabel name='Recommended By' error={errors.recommendedBy} />
+                    <CustomInput value={recommendedBy} placeholder='Recommended By'
+                        error={errors.recommendedBy} onBlur={(value) => onBlur(value, 'recommendedBy')}
+                        onChange={(value) => onChange(value, 'recommendedBy')}
+                    />
+                </div>
+            </div>
+            <div className='row'>
                 <div className='input-container stretch'>
                     <InputLabel name='Address of Communication' error={errors.address} mandatory />
                     <CustomInput value={address} placeholder='Add Current Address'
@@ -166,6 +184,42 @@ const EmployeeForm = (props) => {
                     <CustomInput value={permanentAddress} placeholder='Add Permanent Address'
                         error={errors.permanentAddress} onBlur={(value) => onBlur(value, 'permanentAddress')}
                         onChange={(value) => onChange(value, 'permanentAddress')}
+                    />
+                </div>
+            </div>
+            <Divider className='form-divider' />
+            <div className='employee-title-container inner'>
+                <span className='title'>Bank Account Details</span>
+            </div>
+            <div className='row'>
+                <div className='input-container'>
+                    <InputLabel name='Account Number' error={errors.accountNo} mandatory />
+                    <CustomInput value={accountNo} placeholder='Account Number' maxLength={18}
+                        error={errors.accountNo} onBlur={(value) => onBlur(value, 'accountNo')}
+                        onChange={(value) => onChange(value, 'accountNo')}
+                    />
+                </div>
+                <div className='input-container'>
+                    <InputLabel name='Bank Name' error={errors.bankName} mandatory />
+                    <CustomInput value={bankName}
+                        error={errors.bankName} placeholder='Bank Name'
+                        onChange={(value) => onChange(value, 'bankName')}
+                    />
+                </div>
+            </div>
+            <div className='row'>
+                <div className='input-container'>
+                    <InputLabel name='Branch Name' error={errors.branchName} mandatory />
+                    <CustomInput value={branchName}
+                        error={errors.branchName} placeholder='Branch Name'
+                        onChange={(value) => onChange(value, 'branchName')}
+                    />
+                </div>
+                <div className='input-container'>
+                    <InputLabel name='IFSC Code' error={errors.ifscCode} mandatory />
+                    <CustomInput value={ifscCode} placeholder='IFSC Code' maxLength={11} uppercase
+                        error={errors.ifscCode} onBlur={(value) => onBlur(value, 'ifscCode')}
+                        onChange={(value) => onChange(value, 'ifscCode')}
                     />
                 </div>
             </div>

@@ -2,7 +2,8 @@ var express = require('express');
 var router = express.Router();
 const db = require('../config/db.js');
 const driverQueries = require('../dbQueries/driver/queries.js');
-const { dbError } = require('../utils/functions.js');
+const usersQueries = require('../dbQueries/users/queries.js');
+const { dbError, createHash } = require('../utils/functions.js');
 
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -129,15 +130,31 @@ router.get('/getDriver/:driverId', (req, res) => {
     })
 })
 router.post('/createDriver', (req, res) => {
-    driverQueries.createDriver(req.body, (err, results) => {
+    let input = req.body;
+    input.password = createHash("Bibo@123")
+    driverQueries.createDriver(input, (err, results) => {
         if (err) res.status(500).json(dbError(err))
-        else res.json(results)
+        else {
+            let obj = { ...req.body.dependentDetails, userId: results.insertId }
+            usersQueries.saveDependentDetails(obj, "driverDependentDetails", (err, success) => {
+                if (err) console.log("Driver Dependent Err", err)
+            })
+            driverQueries.updateDriverLoginId({ driverName: req.body.userName, driverId: results.insertId }, (err, updated) => {
+                if (err) console.log("Driver update Err", err)
+            })
+            res.json(results)
+        }
     })
 })
 router.post('/updateDriver', (req, res) => {
     driverQueries.updateDriver(req.body, (err, results) => {
         if (err) res.json(dbError(err))
-        else res.json(results)
+        else {
+            usersQueries.updateDependentDetails(req.body.dependentDetails, "driverDependentDetails", (err, success) => {
+                if (err) console.log("Driver Dependent Err", err)
+            })
+            res.json(results)
+        }
     })
 })
 module.exports = router;
