@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-d
 import { isLogged, getRole, getRoutesByRole, MARKETINGADMIN, MOTHERPLANTADMIN, SUPERADMIN, WAREHOUSEADMIN } from './utils/constants';
 import { getMainPathname, resetTrackForm } from './utils/Functions';
 import Login from './UI/auth/Login';
+import Products from './UI/products';
 import Customers from './UI/customers';
 import Dispatches from './UI/dispatches';
 import PageLayout from './UI/page-layout';
@@ -94,6 +95,7 @@ const App = () => {
                   <Route path='/warehouses/manage/:plantId' render={byRole(<ManagePlant />)} />
                   <Route path='/staff' render={byRole(<Staff />)} />
                   <Route path='/drivers' render={byRole(<Drivers />)} />
+                  <Route path='/products' render={byRole(<Products />)} />
                   <Route path='/motherplants' exact render={byRole(<Motherplants />)} />
                   <Route path='/warehouses' render={byRole(<Warehouses />)} />
                   <Route path='/customers/add-account' render={byRole(<AddAccount />)} />

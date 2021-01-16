@@ -49,6 +49,9 @@ app.use("/roles", require('./routes/rolesAndPermissions'));
 //Users Rest Services
 app.use("/users", require('./routes/users'));
 
+//Products Rest Services
+app.use("/products", require('./routes/products'));
+
 
 app.use("/bibo", require('./routes/loginAuthentication.js'));
 

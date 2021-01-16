@@ -38,18 +38,18 @@ const SelectInput = ({ options, mode, onSelect, onDeselect, value, disabled,
 
     return (
         <Select
-            value={value}
-            mode={mode}
-            className={`${className} ${error && 'app-select-error'}`}
-            size='large'
-            placeholder={placeholder}
-            tagRender={tagRender}
-            onSelect={handleSelect}
-            onDeselect={handleDeselect}
-            disabled={disabled}
-            maxTagCount={4}
             showArrow
+            mode={mode}
+            size='large'
+            value={value}
+            maxTagCount={4}
+            disabled={disabled}
+            tagRender={tagRender}
             suffixIcon={suffixIcon}
+            onSelect={handleSelect}
+            placeholder={placeholder}
+            onDeselect={handleDeselect}
+            className={`${className} ${error && 'app-select-error'}`}
             getPopupContainer={() => document.getElementById('content')}
         >
             {options}

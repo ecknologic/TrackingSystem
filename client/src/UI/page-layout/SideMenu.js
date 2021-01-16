@@ -118,6 +118,10 @@ const SideMenu = () => {
                                 {selected === '/customers' ? <FriendIcon /> : <FriendIconLight />}
                                 <span>Customers</span>
                             </Item>
+                            <Item key='/products' onClick={handleMenuSelect}>
+                                {selected === '/products' ? <FriendsIcon /> : <FriendsIconLight />}
+                                <span>Products</span>
+                            </Item>
                             <Item key='/staff' onClick={handleMenuSelect}>
                                 {selected === '/staff' ? <FriendsIcon /> : <FriendsIconLight />}
                                 <span>Staff</span>

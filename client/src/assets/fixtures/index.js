@@ -110,6 +110,23 @@ export const getVehicleOptions = (vehicles = []) => {
     return vehicles.map((item) => <Option key={item.vehicleId} value={item.vehicleId}>{item.vehicleNo}</Option>)
 }
 
+export const productColumns = [
+    {
+        title: 'Product Name',
+        dataIndex: 'productName',
+        key: 'productName',
+    },
+    {
+        title: 'Price',
+        dataIndex: 'price',
+        key: 'price',
+    },
+    {
+        title: 'Actions',
+        dataIndex: 'action',
+        key: 'action'
+    },
+]
 export const deliveryColumns = [
     {
         title: 'DC Number',
@@ -146,7 +163,6 @@ export const deliveryColumns = [
         dataIndex: 'status',
         key: 'status',
     },
-
     {
         title: 'Actions',
         dataIndex: 'action',
