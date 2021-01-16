@@ -2,7 +2,7 @@ const { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery } = req
 let driverQueries = {}
 
 driverQueries.getDrivers = async (callback) => {
-    let query = `select d.*,d.driverName as userName from driverdetails d ORDER BY d.createdDateTime DESC`;
+    let query = `select d.driverId,d.driverName as userName,d.address,d.emailid,d.mobileNumber,d.isActive,dep.departmentName from driverdetails d INNER JOIN departmentmaster dep on d.departmentId=dep.departmentId ORDER BY d.createdDateTime DESC`;
     return executeGetQuery(query, callback)
 }
 driverQueries.getDriverById = async (driverId, callback) => {

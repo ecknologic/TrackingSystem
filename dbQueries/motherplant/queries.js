@@ -74,7 +74,7 @@ motherPlantDbQueries.getNatureOfBussiness = async (callback) => {
 motherPlantDbQueries.getRMDetails = async (input, callback) => {
     let query = `select * from requiredrawmaterial WHERE departmentId=? ORDER BY requestedDate DESC`;
     if (input.isSuperAdmin == true) {
-        query = `select * from requiredrawmaterial ORDER BY requestedDate DESC`
+        query = `select r.*,d.departmentName from requiredrawmaterial r INNER JOIN departmentmaster d ON r.departmentId=d.departmentId ORDER BY r.requestedDate DESC`
         return executeGetQuery(query, callback)
     } else {
         if (input.status) query = `select * from requiredrawmaterial WHERE departmentId=? AND (status="Approved" or status="Confirmed") ORDER BY requestedDate DESC`
@@ -221,12 +221,12 @@ motherPlantDbQueries.updateRMDetails = async (input, callback) => {
 }
 
 motherPlantDbQueries.updateRMStatus = async (input, callback) => {
-    const { status, rawmaterialid } = input
+    const { status, rawmaterialid, reason } = input
     let query = `update requiredrawmaterial set status=? where rawmaterialid=${rawmaterialid}`;
     let requestBody = [status]
     if (status == "Approved" || status == "Rejected") {
-        query = `update requiredrawmaterial set status=?,approvedDate=? where rawmaterialid=${rawmaterialid}`
-        requestBody = [status, new Date()]
+        query = `update requiredrawmaterial set status=?,approvedDate=?,reason=? where rawmaterialid=${rawmaterialid}`
+        requestBody = [status, new Date(), reason]
     }
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
