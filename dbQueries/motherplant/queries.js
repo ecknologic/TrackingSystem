@@ -179,8 +179,15 @@ motherPlantDbQueries.addProductionDetails = async (input, callback) => {
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.addVehicleDetails = async (input, callback) => {
-    let query = "insert into VehicleDetails (vehicleNo,vehicleType) values(?,?)";
-    let requestBody = [input.vehicleNo, input.vehicleType]
+    const { vehicleNo, vehicleType, vehicleName } = input
+    let query = "insert into VehicleDetails (vehicleNo,vehicleType,vehicleName) values(?,?,?)";
+    let requestBody = [vehicleNo, vehicleType, vehicleName]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+motherPlantDbQueries.updateVehicleDetails = async (input, callback) => {
+    const { vehicleNo, vehicleType, vehicleName,vehicleId } = input
+    let query = "update VehicleDetails set vehicleNo=?,vehicleType=?,vehicleName=? where vehicleId=?";
+    let requestBody = [vehicleNo, vehicleType, vehicleName,vehicleId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.addDispatchDetails = async (input, callback) => {

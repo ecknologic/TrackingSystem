@@ -393,12 +393,20 @@ router.get('/getVehicleDetails', (req, res) => {
     });
 });
 
-router.post('/addVehicleDetails', (req, res) => {
+router.post('/createVehicle', (req, res) => {
     let input = req.body;
     motherPlantDbQueries.addVehicleDetails(input, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else
             res.json(INSERTMESSAGE);
+    });
+})
+router.post('/updateVehicle', (req, res) => {
+    let input = req.body;
+    motherPlantDbQueries.updateVehicleDetails(input, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else
+            res.json(UPDATEMESSAGE);
     });
 })
 
