@@ -13,7 +13,7 @@ import { disableFutureDates, resetTrackForm, trackAccountFormOnce } from '../../
 
 const EmployeeForm = (props) => {
 
-    const { data, title, errors, roleOptions, departmentOptions, onChange, onUpload, onRemove, disabled, onBlur,
+    const { data, errors, roleOptions, departmentOptions, onChange, onUpload, onRemove, disabled, onBlur,
         adharProof, adharProofErrors, licenseProof, licenseProofErrors } = props
     const { userName, adharNo, licenseNo, parentName, gender, dob, mobileNumber, address,
         joinedDate, permanentAddress, roleId, emailid, departmentId, accountNo, branchName, bankName,
@@ -53,30 +53,6 @@ const EmployeeForm = (props) => {
                     </div>
                 </div>
             </div>
-            {
-                title === 'Driver'
-                    ? <div className='app-identity-proof-container identity-proof-container'>
-                        <div className='row'>
-                            <div className='input-container'>
-                                <InputLabel name='Driving License Number' error={errors.licenseNo} mandatory />
-                                <InputWithAddon maxLength={16} label='VERIFY' uppercase
-                                    value={licenseNo} placeholder='Driving License Number'
-                                    error={errors.licenseNo} onBlur={(value) => onBlur(value, 'licenseNo')}
-                                    onChange={(value) => onChange(value, 'licenseNo')}
-                                />
-                            </div>
-
-                        </div>
-                        <div className='upload-container'>
-                            <DraggerInput onUpload={(file) => onUpload(file, 'any', 'licenseProof')} disabled={licenseProofDisabled} />
-                            <div className='upload-preview-container'>
-                                <UploadPreviewer track value={licenseProof.Front} title='Front' disabled={disabled} onUpload={(file) => onUpload(file, 'Front', 'licenseProof')} onRemove={() => onRemove('Front', 'licenseProof')} error={licenseProofErrors.Front} />
-                                <UploadPreviewer track value={licenseProof.Back} title='Back' disabled={disabled} onUpload={(file) => onUpload(file, 'Back', 'licenseProof')} onRemove={() => onRemove('Back', 'licenseProof')} className='last' error={licenseProofErrors.Back} />
-                            </div>
-                        </div>
-                    </div>
-                    : null
-            }
             <div className='row'>
                 <div className='input-container'>
                     <InputLabel name='Name as per Aadhar' error={errors.userName} mandatory />
@@ -102,7 +78,7 @@ const EmployeeForm = (props) => {
                     />
                 </div>
                 <div className='input-container'>
-                    <InputLabel name='Date of Birth as per Aadhar' error={errors.dob} mandatory />
+                    <InputLabel name='Date of Birth' error={errors.dob} mandatory />
                     <CustomDateInput
                         track value={dob} disabledDate={disableFutureDates} error={errors.dob}
                         onChange={(value) => onChange(dayjs(value).format('YYYY-MM-DD'), 'dob')}
@@ -111,7 +87,7 @@ const EmployeeForm = (props) => {
             </div>
             <div className='row'>
                 <div className='input-container'>
-                    <InputLabel name='Mobile No Linked to Aadhar' error={errors.mobileNumber} mandatory />
+                    <InputLabel name='Mobile Number' error={errors.mobileNumber} mandatory />
                     <CustomInput value={mobileNumber} placeholder='Phone Number'
                         error={errors.mobileNumber} onBlur={(value) => onBlur(value, 'mobileNumber')}
                         onChange={(value) => onChange(value, 'mobileNumber')} maxLength={10}
@@ -141,17 +117,38 @@ const EmployeeForm = (props) => {
                     />
                 </div>
             </div>
+            <div className='row'>
+                <div className='input-container'>
+                    <InputLabel name='Role' error={errors.roleId} mandatory />
+                    <SelectInput track
+                        options={roleOptions} value={roleId}
+                        error={errors.roleId} onSelect={(value) => onChange(value, 'roleId')}
+                    />
+                </div>
+            </div>
             {
-                title === 'Staff' ?
-                    <div className='row'>
-                        <div className='input-container'>
-                            <InputLabel name='Role' error={errors.roleId} mandatory />
-                            <SelectInput track
-                                options={roleOptions} value={roleId}
-                                error={errors.roleId} onSelect={(value) => onChange(value, 'roleId')}
-                            />
+                roleId === 6
+                    ? <div className='app-identity-proof-container identity-proof-container'>
+                        <div className='row'>
+                            <div className='input-container'>
+                                <InputLabel name='Driving License Number' error={errors.licenseNo} mandatory />
+                                <InputWithAddon maxLength={16} label='VERIFY' uppercase
+                                    value={licenseNo} placeholder='Driving License Number'
+                                    error={errors.licenseNo} onBlur={(value) => onBlur(value, 'licenseNo')}
+                                    onChange={(value) => onChange(value, 'licenseNo')}
+                                />
+                            </div>
+
                         </div>
-                    </div> : null
+                        <div className='upload-container'>
+                            <DraggerInput onUpload={(file) => onUpload(file, 'any', 'licenseProof')} disabled={licenseProofDisabled} />
+                            <div className='upload-preview-container'>
+                                <UploadPreviewer track value={licenseProof.Front} title='Front' disabled={disabled} onUpload={(file) => onUpload(file, 'Front', 'licenseProof')} onRemove={() => onRemove('Front', 'licenseProof')} error={licenseProofErrors.Front} />
+                                <UploadPreviewer track value={licenseProof.Back} title='Back' disabled={disabled} onUpload={(file) => onUpload(file, 'Back', 'licenseProof')} onRemove={() => onRemove('Back', 'licenseProof')} className='last' error={licenseProofErrors.Back} />
+                            </div>
+                        </div>
+                    </div>
+                    : null
             }
             <div className='row'>
                 <div className='input-container'>
@@ -171,8 +168,8 @@ const EmployeeForm = (props) => {
             </div>
             <div className='row'>
                 <div className='input-container stretch'>
-                    <InputLabel name='Address of Communication' error={errors.address} mandatory />
-                    <CustomInput value={address} placeholder='Add Current Address'
+                    <InputLabel name='Present Address' error={errors.address} mandatory />
+                    <CustomInput value={address} placeholder='Add Present Address'
                         error={errors.address} onBlur={(value) => onBlur(value, 'address')}
                         onChange={(value) => onChange(value, 'address')}
                     />

@@ -10,15 +10,17 @@ productQueries.getProductById = async (productId, callback) => {
     return executeGetQuery(query, callback)
 }
 productQueries.saveProduct = (input, callback) => {
-    let query = `insert into productdetails (productName,price) values(?,?)`;
-    const { productName, price } = input
-    let requestBody = [productName, price]
+    let query = `insert into productdetails (productName,price,tax,totalAmount) values(?,?,?,?)`;
+    const { productName, price, tax } = input
+    let totalAmount = (price * tax / 100) + price
+    let requestBody = [productName, price, tax, totalAmount]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 productQueries.updateProducts = (input, callback) => {
-    const { productName, price, productId } = input
-    let query = `update productdetails set productName=?,price=? where productId=${productId}`;
-    let requestBody = [productName, price]
+    const { productName, price, productId, tax } = input
+    let totalAmount = (price * tax / 100) + price
+    let query = `update productdetails set productName=?,price=?,tax=?,totalAmount=? where productId=${productId}`;
+    let requestBody = [productName, price, tax, totalAmount]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 module.exports = productQueries

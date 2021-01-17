@@ -1,5 +1,5 @@
 .employee-card-container {
-    height: 19.6em;
+    height: 22.1em;
 
     .header {
         height: 8em;
@@ -10,10 +10,14 @@
     }
 
     .body {
-        height: 7em;
+        height: 9.5em;
 
         .contacts {
             flex-direction: column;
+        }
+
+        .role {
+            padding-top: .5em;
         }
     }
 }

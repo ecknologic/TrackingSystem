@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Select, Tag } from 'antd';
 import { DDownIcon } from './SVG_Icons';
 import { setTrackForm } from '../utils/Functions';
+import Scrollbars from 'react-custom-scrollbars-2';
 
 const SelectInput = ({ options, mode, onSelect, onDeselect, value, disabled,
     placeholder = 'Select', track, error = '', className, suffixIcon = <DDownIcon /> }) => {
@@ -36,20 +37,23 @@ const SelectInput = ({ options, mode, onSelect, onDeselect, value, disabled,
         );
     }
 
+    const showScroll = options.length > 8
+
     return (
         <Select
-            value={value}
-            mode={mode}
-            className={`${className} ${error && 'app-select-error'}`}
-            size='large'
-            placeholder={placeholder}
-            tagRender={tagRender}
-            onSelect={handleSelect}
-            onDeselect={handleDeselect}
-            disabled={disabled}
-            maxTagCount={4}
             showArrow
+            mode={mode}
+            size='large'
+            value={value}
+            maxTagCount={4}
+            disabled={disabled}
+            tagRender={tagRender}
             suffixIcon={suffixIcon}
+            onSelect={handleSelect}
+            placeholder={placeholder}
+            onDeselect={handleDeselect}
+            dropdownClassName={showScroll && 'select-dropdown-overflow'}
+            className={`${className} ${error && 'app-select-error'}`}
             getPopupContainer={() => document.getElementById('content')}
         >
             {options}

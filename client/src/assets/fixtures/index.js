@@ -110,6 +110,33 @@ export const getVehicleOptions = (vehicles = []) => {
     return vehicles.map((item) => <Option key={item.vehicleId} value={item.vehicleId}>{item.vehicleNo}</Option>)
 }
 
+export const productColumns = [
+    {
+        title: 'Product Name',
+        dataIndex: 'productName',
+        key: 'productName',
+    },
+    {
+        title: 'Price',
+        dataIndex: 'price',
+        key: 'price',
+    },
+    {
+        title: 'Tax Percentage',
+        dataIndex: 'tax',
+        key: 'tax',
+    },
+    {
+        title: 'Total Amount',
+        dataIndex: 'totalAmount',
+        key: 'totalAmount',
+    },
+    {
+        title: 'Actions',
+        dataIndex: 'action',
+        key: 'action'
+    },
+]
 export const deliveryColumns = [
     {
         title: 'DC Number',
@@ -146,7 +173,6 @@ export const deliveryColumns = [
         dataIndex: 'status',
         key: 'status',
     },
-
     {
         title: 'Actions',
         dataIndex: 'action',
@@ -260,58 +286,71 @@ export const getDispatchColumns = (type) => {
 
 }
 
-export const ReceivedMColumns = [
-    {
-        title: 'Order Id',
-        dataIndex: 'orderId',
-        key: 'orderId',
-    },
-    {
-        title: 'Invoice No',
-        dataIndex: 'invoiceNo',
-        key: 'invoiceNo',
-    },
-    {
-        title: 'Date of Invoice',
-        dataIndex: 'dateAndTime',
-        key: 'dateAndTime',
-    },
-    {
-        title: 'Quantity',
-        dataIndex: 'itemQty',
-        key: 'itemQty',
-    },
-    {
-        title: 'Product Details',
-        dataIndex: 'itemName',
-        key: 'itemName',
-    },
-    {
-        title: 'Vendor Name',
-        dataIndex: 'vendorName',
-        key: 'vendorName',
-    },
-    {
-        title: 'Invoice Value',
-        key: 'invoiceAmount',
-        dataIndex: 'invoiceAmount',
-    },
-    {
-        title: 'Tax Amount',
-        dataIndex: 'taxAmount',
-        key: 'taxAmount',
-    },
-    {
-        title: 'Status',
-        dataIndex: 'status',
-        key: 'status'
-    },
-    {
-        title: 'Actions',
-        dataIndex: 'action',
-        key: 'action'
+export const getReceivedRMColumns = (isSuperAdmin) => {
+
+    const columns = [
+        {
+            title: 'Order Id',
+            dataIndex: 'orderId',
+            key: 'orderId',
+        },
+        {
+            title: 'Invoice No',
+            dataIndex: 'invoiceNo',
+            key: 'invoiceNo',
+        },
+        {
+            title: 'Date of Invoice',
+            dataIndex: 'dateAndTime',
+            key: 'dateAndTime',
+        },
+        {
+            title: 'Quantity',
+            dataIndex: 'itemQty',
+            key: 'itemQty',
+        },
+        {
+            title: 'Product Details',
+            dataIndex: 'itemName',
+            key: 'itemName',
+        },
+        {
+            title: 'Vendor Name',
+            dataIndex: 'vendorName',
+            key: 'vendorName',
+        },
+        {
+            title: 'Invoice Value',
+            key: 'invoiceAmount',
+            dataIndex: 'invoiceAmount',
+        },
+        {
+            title: 'Tax Amount',
+            dataIndex: 'taxAmount',
+            key: 'taxAmount',
+        },
+        {
+            title: 'Status',
+            dataIndex: 'status',
+            key: 'status'
+        },
+        {
+            title: 'Actions',
+            dataIndex: 'action',
+            key: 'action'
+        }
+    ]
+
+    if (isSuperAdmin) {
+        columns.splice(7, 1, {
+            title: 'Warehouse',
+            dataIndex: 'departmentName',
+            key: 'departmentName'
+        })
     }
-]
+
+    return columns
+}
 
 export const internalQCColumns = [
     {
@@ -437,7 +476,7 @@ export const productionTBColumns = [
     }
 ]
 
-export const getRMColumns = (type) => {
+export const getRMColumns = (type, isSuperAdmin) => {
 
     let statusText = 'Approval Status'
     let dateText = 'Date'
@@ -495,6 +534,13 @@ export const getRMColumns = (type) => {
         },
     ]
 
+    if (isSuperAdmin) {
+        columns.splice(5, 2, {
+            title: 'Warehouse',
+            dataIndex: 'departmentName',
+            key: 'departmentName'
+        })
+    }
     if (type === 'add') {
         columns.pop()
     }

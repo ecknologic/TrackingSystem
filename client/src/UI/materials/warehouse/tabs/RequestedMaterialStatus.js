@@ -36,7 +36,7 @@ const MaterialStatus = ({ reFetch, isSuperAdmin = false }) => {
     const [RMClone, setRMClone] = useState([])
     const [formTitle, setFormTitle] = useState('')
 
-    const RMColumns = useMemo(() => getRMColumns(), [])
+    const RMColumns = useMemo(() => getRMColumns(null, isSuperAdmin), [])
 
     useEffect(() => {
         setLoading(true)
@@ -68,6 +68,7 @@ const MaterialStatus = ({ reFetch, isSuperAdmin = false }) => {
         if (key === 'view') {
             setFormTitle(`Requested Material Details - ${data.orderId}`)
             setViewData(data)
+            setFormData({ reason: data.reason || '' })
             setViewModal(true)
         }
         else if (key === 'approve') {
@@ -80,14 +81,15 @@ const MaterialStatus = ({ reFetch, isSuperAdmin = false }) => {
 
     const handleApprove = () => {
         const { rawmaterialid: id } = viewData
-        updateRMStatus(id, 'Approved')
+        const { reason } = formData
+        updateRMStatus(id, 'Approved', reason)
     }
 
     const handleReject = () => {
         const { rawmaterialid: id } = viewData
-        const { reason = '' } = formData
+        const { reason } = formData
         if (!reason.trim()) return setFormErrors({ reason: 'Reason is required on Reject ' })
-        updateRMStatus(id, 'Rejected')
+        updateRMStatus(id, 'Rejected', reason)
     }
 
     const handleChange = (value, key) => {
@@ -104,9 +106,9 @@ const MaterialStatus = ({ reFetch, isSuperAdmin = false }) => {
         setPageNumber(number)
     }
 
-    const updateRMStatus = async (rawmaterialid, status) => {
+    const updateRMStatus = async (rawmaterialid, status, reason) => {
         const url = '/motherPlant/updateRMStatus'
-        const body = { rawmaterialid, status }
+        const body = { rawmaterialid, status, reason }
         const options = { item: 'Order', v1Ing: status === 'Approved' ? 'Approving' : 'Rejecting', v2: status }
 
         try {
@@ -114,23 +116,24 @@ const MaterialStatus = ({ reFetch, isSuperAdmin = false }) => {
             showToast({ ...options, action: 'loading' })
             await http.PUT(url, body)
             showToast(options)
-            optimisticUpdate(rawmaterialid, status)
+            optimisticUpdate(rawmaterialid, status, reason)
             onModalClose(true)
         } catch (error) {
             setBtnDisabled(false)
         }
     }
 
-    const optimisticUpdate = (id, status) => {
+    const optimisticUpdate = (id, status, reason) => {
         let clone = deepClone(RM);
         const index = clone.findIndex(item => item.rawmaterialid === id)
         clone[index].status = status;
+        clone[index].reason = reason;
         setRM(clone)
     }
 
     const dataSource = useMemo(() => RM.map((dispatch) => {
         const { rawmaterialid: key, orderId, itemName, requestedDate, reorderLevel,
-            minOrderLevel, vendorName, itemQty, status } = dispatch
+            minOrderLevel, vendorName, itemQty, status, departmentName } = dispatch
 
         return {
             key,
@@ -139,6 +142,7 @@ const MaterialStatus = ({ reFetch, isSuperAdmin = false }) => {
             reorderLevel,
             vendorName,
             minOrderLevel,
+            departmentName,
             itemName,
             dateAndTime: dayjs(requestedDate).format('DD/MM/YYYY'),
             status: renderStatus(status),

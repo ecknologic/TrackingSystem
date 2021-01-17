@@ -9,11 +9,11 @@ import DateValue from '../../../../components/DateValue';
 import SearchInput from '../../../../components/SearchInput';
 import CustomModal from '../../../../components/CustomModal';
 import ReceivedMaterialView from '../views/ReceivedMaterials';
-import { ReceivedMColumns } from '../../../../assets/fixtures';
+import { getReceivedRMColumns } from '../../../../assets/fixtures';
 import CustomDateInput from '../../../../components/CustomDateInput';
 import CustomPagination from '../../../../components/CustomPagination';
 import { EditIconGrey, ScheduleIcon } from '../../../../components/SVG_Icons';
-import { disableFutureDates, getStatusColor } from '../../../../utils/Functions';
+import { base64String, disableFutureDates, getStatusColor } from '../../../../utils/Functions';
 const DATEFORMAT = 'DD-MM-YYYY'
 const format = 'YYYY-MM-DD'
 
@@ -30,6 +30,8 @@ const ReceivedMaterials = ({ isSuperAdmin = false }) => {
     const [RM, setRM] = useState([])
     const [RMClone, setRMClone] = useState([])
 
+    const ReceivedMColumns = useMemo(() => getReceivedRMColumns(isSuperAdmin), [])
+
     useEffect(() => {
         getRM()
     }, [])
@@ -40,6 +42,12 @@ const ReceivedMaterials = ({ isSuperAdmin = false }) => {
         setRMClone(data)
         setTotalCount(data.length)
         setLoading(false)
+    }
+
+    const getRMById = async (id) => {
+        const [data] = await http.GET(`/motherPlant/getReceiptDetails/${id}`)
+        const receiptImage = base64String(data?.receiptImage?.data)
+        setViewData(data => ({ ...data, receiptImage }))
     }
 
     const datePickerStatus = (status) => {
@@ -59,6 +67,7 @@ const ReceivedMaterials = ({ isSuperAdmin = false }) => {
         if (key === 'view') {
             setFormTitle(`Received Material Details - ${data.orderId}`)
             setViewData(data)
+            getRMById(data.rawmaterialId)
             setViewModal(true)
         }
     }
@@ -74,7 +83,7 @@ const ReceivedMaterials = ({ isSuperAdmin = false }) => {
 
     const dataSource = useMemo(() => RM.map((item) => {
         const { rawmaterialid: key, itemName, orderId, itemQty, invoiceNo, vendorName, invoiceAmount,
-            invoiceDate, taxAmount } = item
+            invoiceDate, taxAmount, departmentName } = item
 
         return {
             key,
@@ -85,6 +94,7 @@ const ReceivedMaterials = ({ isSuperAdmin = false }) => {
             orderId,
             vendorName,
             invoiceAmount,
+            departmentName,
             dateAndTime: dayjs(invoiceDate).format('DD/MM/YYYY'),
             status: renderStatus('Delivered'),
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, item)} />

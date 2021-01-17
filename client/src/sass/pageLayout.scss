@@ -51,19 +51,19 @@
             background-color: #FFF;
             box-shadow: 0 2px 4px 0 rgba(0,0,0,0.05);
             
-            &::-webkit-scrollbar {
-                width: .3em;
-                height: .3em;
-            }
+            // &::-webkit-scrollbar {
+            //     width: .3em;
+            //     height: .3em;
+            // }
         
-            &::-webkit-scrollbar-thumb {
-                background-color:#C8C8C9;
-                border-radius: 1em;
-            }
+            // &::-webkit-scrollbar-thumb {
+            //     background-color:#C8C8C9;
+            //     border-radius: 1em;
+            // }
         
-            &::-webkit-scrollbar-corner {
-                display: none;
-            }
+            // &::-webkit-scrollbar-corner {
+            //     display: none;
+            // }
 
             #app-side-menu {
                 height: 100%;
@@ -83,6 +83,10 @@
 
                    &:hover {
                         color: #0062FF;
+                    }
+
+                    &::after {
+                        border-right: .2em solid #0062FF;
                     }
 
                     img {

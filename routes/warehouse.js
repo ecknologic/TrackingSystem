@@ -5,7 +5,7 @@ const db = require('../config/db.js');
 const motherPlantDbQueries = require('../dbQueries/motherplant/queries.js');
 const usersQueries = require('../dbQueries/users/queries.js');
 const warehouseQueries = require('../dbQueries/warehouse/queries.js');
-const { DATEFORMAT, INSERTMESSAGE } = require('../utils/constants.js');
+const { DATEFORMAT, INSERTMESSAGE, UPDATEMESSAGE } = require('../utils/constants.js');
 const { dbError } = require('../utils/functions.js');
 var departmentId;
 //Middle ware that is specific to this router
@@ -17,12 +17,29 @@ router.use(function timeLog(req, res, next) {
 
 
 router.get('/getroutes', (req, res) => {
-  let query = "select * from routes";
+  let query = "select routeName, routeDescription, departmentId,routeId from routes";
   db.query(query, (err, results) => {
     if (err) res.status(500).json(err.sqlMessage);
     res.send(JSON.stringify(results));
   });
 });
+
+router.post('/createRoute', (req, res) => {
+  let input = req.body;
+  warehouseQueries.createRoute(input, (err, results) => {
+    if (err) res.status(500).json(dbError(err));
+    else
+      res.json(INSERTMESSAGE);
+  });
+})
+router.post('/updateRoute', (req, res) => {
+  let input = req.body;
+  warehouseQueries.updateRoute(input, (err, results) => {
+    if (err) res.status(500).json(dbError(err));
+    else
+      res.json(UPDATEMESSAGE);
+  });
+})
 
 
 router.get('/getdriverDetails/:warehouseId', (req, res) => {

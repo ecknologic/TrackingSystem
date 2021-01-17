@@ -35,7 +35,12 @@ warehouseQueries.createWarehouse = async (input, callback) => {
     let requestBody = [departmentName, 'Warehouse', input.gstNo, gstProof, address, city, state, pinCode, adminId, phoneNumber]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
-
+warehouseQueries.createRoute = async (input, callback) => {
+    const { routeName, routeDescription, departmentId } = input
+    let query = "insert into routes (RouteName, RouteDescription, departmentId) values(?,?,?)";
+    let requestBody = [routeName, routeDescription, departmentId]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
 
 //Update Request Methods
 warehouseQueries.confirmDispatchDetails = (input, callback) => {
@@ -51,4 +56,10 @@ warehouseQueries.updateWarehouse = async (input, callback) => {
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
+warehouseQueries.updateRoute = async (input, callback) => {
+    const { routeName, routeDescription, departmentId,routeId } = input
+    let query = "update routes set RouteName=?, RouteDescription=?, departmentId=? where RouteId=?";
+    let requestBody = [routeName, routeDescription, departmentId,routeId]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
 module.exports = warehouseQueries
