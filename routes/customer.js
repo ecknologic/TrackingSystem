@@ -268,6 +268,14 @@ router.post("/approveCustomer/:customerId", (req, res) => {
     }
   })
 });
+router.post("/createOrderDelivery", (req, res) => {
+  customerQueries.updateOrderDelivery(req.body, (err, results) => {
+    if (err) res.json({ status: 500, message: err.sqlMessage });
+    else {
+      res.json("success")
+    }
+  })
+});
 router.get("/approveDelivery/:deliveryDetailsId", (req, res) => {
   const { deliveryDetailsId } = req.params;
   customerQueries.approveDeliveryDetails([deliveryDetailsId], (err, data) => {

@@ -49,4 +49,9 @@ customerQueries.deleteDeliveryAddress = (deliveryId, callback) => {
     let query = "update DeliveryDetails set deleted=1 where deliveryDetailsId=?"
     executePostOrUpdateQuery(query, [deliveryId], callback)
 }
+customerQueries.updateOrderDelivery = (input, callback) => {
+    const { driverId, routeId, vehicleId, deliveryDetailsId } = input
+    let query = "update DeliveryDetails set driverId=?,routeId=?,vehicleId=? where deliveryDetailsId=?"
+    executePostOrUpdateQuery(query, [driverId, routeId, vehicleId, deliveryDetailsId], callback)
+}
 module.exports = customerQueries
