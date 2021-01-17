@@ -1,29 +1,27 @@
 import { Menu, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import DCForm from '../forms/DCForm';
+import DeliveryForm from '../forms/Delivery';
 import { http } from '../../../../modules/http';
 import Spinner from '../../../../components/Spinner';
 import QuitModal from '../../../../components/CustomModal';
-import { EditIconGrey, PlusIcon } from '../../../../components/SVG_Icons';
+import { EditIconGrey } from '../../../../components/SVG_Icons';
 import Actions from '../../../../components/Actions';
 import SearchInput from '../../../../components/SearchInput';
 import CustomModal from '../../../../components/CustomModal';
-import CustomButton from '../../../../components/CustomButton';
-import RoutesFilter from '../../../../components/RoutesFilter';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import { getWarehoseId, TRACKFORM } from '../../../../utils/constants';
 import CustomPagination from '../../../../components/CustomPagination';
-import { deliveryColumns, getRouteOptions, getDriverOptions } from '../../../../assets/fixtures';
+import { orderColumns, getRouteOptions, getDriverOptions, getVehicleOptions } from '../../../../assets/fixtures';
 import { validateMobileNumber, validateNames, validateNumber, validateDCValues } from '../../../../utils/validations';
-import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone, getStatusColor } from '../../../../utils/Functions';
+import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone, getStatusColor, getProductsForUI } from '../../../../utils/Functions';
 
-const Delivery = ({ date }) => {
+const Orders = () => {
     const warehouseId = getWarehoseId()
     const [routes, setRoutes] = useState([])
     const [drivers, setDrivers] = useState([])
+    const [vehicles, setVehicles] = useState([])
     const [loading, setLoading] = useState(true)
-    const [deliveriesClone, setDeliveriesClone] = useState([])
-    const [deliveries, setDeliveries] = useState([])
+    const [orders, setOrders] = useState([])
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [pageSize, setPageSize] = useState(10)
@@ -32,24 +30,28 @@ const Delivery = ({ date }) => {
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [DCModal, setDCModal] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
-    const [filterInfo, setFilterInfo] = useState([])
+    const [fetchList, setFetchList] = useState(false)
     const [shake, setShake] = useState(false)
 
     const routeOptions = useMemo(() => getRouteOptions(routes), [routes])
     const driverOptions = useMemo(() => getDriverOptions(drivers), [drivers])
+    const vehicleOptions = useMemo(() => getVehicleOptions(vehicles), [vehicles])
 
     const customerOrderIdRef = useRef()
     const DCFormTitleRef = useRef()
     const DCFormBtnRef = useRef()
 
     useEffect(() => {
-        getRoutes()
-        getDrivers()
-    }, [])
+        if (fetchList) {
+            getRoutes()
+            getDrivers()
+            getVehicles()
+        }
+    }, [fetchList])
 
     useEffect(() => {
-        getDeliveries()
-    }, [date])
+        getOrders()
+    }, [])
 
     const getRoutes = async () => {
         const data = await http.GET('/warehouse/getroutes')
@@ -62,70 +64,47 @@ const Delivery = ({ date }) => {
         setDrivers(data)
     }
 
-    const getDeliveries = async () => {
+    const getVehicles = async () => {
+        const url = `/motherPlant/getVehicleDetails`
+        const data = await http.GET(url)
+        setVehicles(data)
+    }
+
+    const getOrders = async () => {
         setLoading(true)
-        const url = `/warehouse/deliveryDetails/${date}`
+        const url = `/customer/getOrders`
         const data = await http.GET(url)
         setPageNumber(1)
-        setDeliveriesClone(data)
         setLoading(false)
-        if (filterInfo.length) {
-            generateFiltered(data, filterInfo)
-        }
-        else {
-            setTotalCount(data.length)
-            setDeliveries(data)
-        }
+        setTotalCount(data.length)
+        setOrders(data)
     }
 
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
-        // Validations
-        if (key === 'customerName') {
-            const error = validateNames(value)
-            setFormErrors(errors => ({ ...errors, [key]: error }))
-        }
-        else if (key === 'mobileNumber') {
-            const error = validateMobileNumber(value)
-            setFormErrors(errors => ({ ...errors, [key]: error }))
-        }
-        else if (key.includes('box') || key.includes('can')) {
-            const error = validateNumber(value)
-            setFormErrors(errors => ({ ...errors, stockDetails: error }))
+        if (key === 'driverId') {
+            let selectedDriver = drivers.find(driver => driver.driverId === Number(value))
+            let { mobileNumber = null } = selectedDriver || {}
+            setFormData(data => ({ ...data, mobileNumber }))
+            setFormErrors(errors => ({ ...errors, mobileNumber: '' }))
         }
     }
 
     const handleBlur = (value, key) => {
         // Validations
-        if (key === 'mobileNumber') {
-            const error = validateMobileNumber(value, true)
-            setFormErrors(errors => ({ ...errors, [key]: error }))
-        }
-    }
-
-    const onFilterChange = (data) => {
-        setPageNumber(1)
-        setFilterInfo(data)
-        if (!data.length) {
-            setDeliveries(deliveriesClone)
-            setTotalCount(deliveriesClone.length)
-        }
-        else generateFiltered(deliveriesClone, data)
-    }
-
-    const generateFiltered = (original, filterInfo) => {
-        const filtered = original.filter((item) => filterInfo.includes(item.RouteId))
-        setDeliveries(filtered)
-        setTotalCount(filtered.length)
+        // if (key === 'mobileNumber') {
+        //     const error = validateMobileNumber(value, true)
+        //     setFormErrors(errors => ({ ...errors, [key]: error }))
+        // }
     }
 
     const handleMenuSelect = (key, data) => {
+        setFetchList(true)
         if (key === 'view') {
-            customerOrderIdRef.current = data.customerOrderId
-            DCFormTitleRef.current = data.dcNo
-            DCFormBtnRef.current = 'Update'
+        }
+        else if (key === 'create-delivery') {
             setFormData(data)
             setDCModal(true)
         }
@@ -141,7 +120,10 @@ const Delivery = ({ date }) => {
     }
 
     const handleSubmit = async () => {
-        const formErrors = validateDCValues(formData)
+        const formErrors = {}
+        const { driverId, vehicleId } = formData
+        if (!driverId) formErrors.driverId = 'Required'
+        if (!vehicleId) formErrors.vehicleId = 'Required'
 
         if (!isEmpty(formErrors)) {
             setShake(true)
@@ -150,46 +132,27 @@ const Delivery = ({ date }) => {
             return
         }
 
-        const dcValues = getDCValuesForDB(formData)
-        const customerOrderId = customerOrderIdRef.current
-
-        let url = '/warehouse/createDC'
-        let method = 'POST'
-        let v1Ing = 'Creating'
-        let v2 = 'created'
-
-        if (customerOrderId) {
-            url = '/warehouse/updateDC'
-            method = 'PUT'
-            v1Ing = 'Updating'
-            v2 = 'updated'
-        }
-
-        const body = {
-            ...dcValues, warehouseId, customerOrderId
-        }
-        const options = { item: 'DC', v1Ing, v2 }
+        let url = '/customer/createOrderDelivery'
+        const body = { ...formData }
+        const options = { item: 'Delivery', v1Ing: 'Creating', v2: 'created' }
 
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
-            let { data: [data = {}] } = await http[method](url, body)
+            await http.POST(url, body)
             showToast(options)
-            optimisticUpdate(data, method)
+            optimisticUpdate(formData)
             onModalClose(true)
         } catch (error) {
             setBtnDisabled(false)
         }
     }
 
-    const optimisticUpdate = (data, method) => {
-        if (method === 'PUT') {
-            const clone = deepClone(deliveries)
-            const index = clone.findIndex(dc => dc.dcNo === data.dcNo)
-            clone[index] = data
-            setDeliveries(clone)
-        }
-        else setDeliveries([data, ...deliveries])
+    const optimisticUpdate = (data) => {
+        const clone = deepClone(orders)
+        const index = clone.findIndex(dc => dc.deliveryDetailsId === data.deliveryDetailsId)
+        clone[index] = data
+        setOrders(clone)
     }
 
     const onModalClose = (hasSaved) => {
@@ -197,38 +160,28 @@ const Delivery = ({ date }) => {
         if (formHasChanged && !hasSaved) {
             return setConfirmModal(true)
         }
-        customerOrderIdRef.current = undefined
         setDCModal(false)
         setBtnDisabled(false)
         setFormData({})
         setFormErrors({})
     }
 
-    const dataSource = useMemo(() => deliveries.map((dc) => {
-        const { dcNo, customerOrderId, address, RouteName, driverName, customerName, isDelivered } = dc
+    const dataSource = useMemo(() => orders.map((order) => {
+        const { deliveryDetailsId: key, contactPerson, location, routeName, products } = order
         return {
-            key: customerOrderId || dcNo,
-            dcnumber: dcNo,
-            shopAddress: address,
-            route: RouteName,
-            name: customerName,
-            driverName: driverName || 'Not Assigned',
-            orderDetails: renderOrderDetails(dc),
-            status: renderStatus(isDelivered),
-            action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, dc)} />
+            key,
+            address: location,
+            route: routeName,
+            contactPerson,
+            orderDetails: renderOrderDetails(getProductsForUI(products)),
+            action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, order)} />
         }
-    }), [deliveries])
+    }), [orders])
 
     const handleConfirmModalOk = useCallback(() => {
         setConfirmModal(false);
         resetTrackForm()
         onModalClose()
-    }, [])
-
-    const onCreateDC = useCallback(() => {
-        DCFormTitleRef.current = 'Add New DC'
-        DCFormBtnRef.current = 'Save'
-        setDCModal(true)
     }, [])
 
     const handleDCModalCancel = useCallback(() => onModalClose(), [])
@@ -240,13 +193,7 @@ const Delivery = ({ date }) => {
     return (
         <div className='stock-delivery-container'>
             <div className='header'>
-                <div className='left'>
-                    <RoutesFilter
-                        routes={routes}
-                        onChange={onFilterChange}
-                    />
-                    <CustomButton text='Create New DC' onClick={onCreateDC} className='app-add-new-btn' icon={<PlusIcon />} />
-                </div>
+                <div></div>
                 <div className='right'>
                     <SearchInput
                         placeholder='Search Delivery Challan'
@@ -259,7 +206,7 @@ const Delivery = ({ date }) => {
                 <Table
                     loading={{ spinning: loading, indicator: <Spinner /> }}
                     dataSource={dataSource.slice(sliceFrom, sliceTo)}
-                    columns={deliveryColumns}
+                    columns={orderColumns}
                     pagination={false}
                     scroll={{ x: true }}
                 />
@@ -279,19 +226,17 @@ const Delivery = ({ date }) => {
                 className={`app-form-modal ${shake ? 'app-shake' : ''}`}
                 visible={DCModal}
                 btnDisabled={btnDisabled}
-                onOk={handleDCModalCancel}
+                onOk={handleSubmit}
                 onCancel={handleDCModalCancel}
-                title={DCFormTitleRef.current}
-                okTxt='Close'
-                hideCancel
-                track
+                title='Create Delivery'
+                okTxt='Create'
             >
-                <DCForm
+                <DeliveryForm
                     data={formData}
-                    disabled
                     errors={formErrors}
                     driverOptions={driverOptions}
                     routeOptions={routeOptions}
+                    vehicleOptions={vehicleOptions}
                     onChange={handleChange}
                     onBlur={handleBlur}
                 />
@@ -309,22 +254,14 @@ const Delivery = ({ date }) => {
     )
 }
 
-const renderStatus = (status) => {
-    const color = getStatusColor(status)
-    const text = status === 'Completed' ? 'Delivered' : status === 'Postponed' ? status : 'Pending'
-    return (
-        <div className='status'>
-            <span className='app-dot' style={{ background: color }}></span>
-            <span className='status-text'>{text}</span>
-        </div>
-    )
-}
-
-const renderOrderDetails = ({ cans20L, boxes1L, boxes500ML, boxes250ML }) => {
+const renderOrderDetails = ({ product20L, product1L, product500ML, product250ML }) => {
     return `
-    20 lts - ${cans20L}, 1 ltr - ${boxes1L} boxes, 
-    500 ml - ${boxes500ML} boxes, 250 ml - ${boxes250ML} boxes
+    20 lts - ${product20L}, 1 ltr - ${product1L} boxes, 
+    500 ml - ${product500ML} boxes, 250 ml - ${product250ML} boxes
     `
 }
-const options = [<Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>]
-export default Delivery
+const options = [
+    <Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>,
+    <Menu.Item key="create-delivery" icon={<EditIconGrey />}>Create Delivery</Menu.Item>
+]
+export default Orders

@@ -1,18 +1,31 @@
 import { Tabs } from 'antd';
-import React, { Fragment, useState } from 'react';
-import Dashboard from './tabs/Dashboard';
+import React, { Fragment, useEffect, useMemo, useState } from 'react';
+import Dashboard from './tabs/Routes';
+import { http } from '../../modules/http';
+import CreateRoute from './tabs/CreateRoute';
 import Header from '../../components/SimpleHeader';
-import CreateProduct from './tabs/CreateProduct';
-import '../../sass/plants.scss';
+import { getDepartmentOptions } from '../../assets/fixtures';
+import '../../sass/products.scss';
 
-const Products = () => {
+const Transport = () => {
 
     const [activeTab, setActiveTab] = useState('1')
-    const [reFetch, setreFetch] = useState(false)
+    const [departmentList, setDepartmentList] = useState([])
+    const departmentOptions = useMemo(() => getDepartmentOptions(departmentList), [departmentList])
+
+    useEffect(() => {
+        getDepartmentList()
+    }, [])
+
+    const getDepartmentList = async () => {
+        const url = '/motherplant/getAllDepartmentsList'
+
+        const data = await http.GET(url)
+        setDepartmentList(data)
+    }
 
     const handleGoToTab = (key) => {
         setActiveTab(key)
-        setreFetch(!reFetch)
     }
 
     const handleTabClick = (key) => {
@@ -21,18 +34,18 @@ const Products = () => {
 
     return (
         <Fragment>
-            <Header title='Products' />
+            <Header title='Routes' />
             <div className='employee-content'>
                 <div className='app-tabs-container'>
                     <Tabs
                         onChange={handleTabClick}
                         activeKey={activeTab}
                     >
-                        <TabPane tab="Products" key="1">
-                            <Dashboard reFetch={reFetch} />
+                        <TabPane tab="Routes" key="1">
+                            <Dashboard departmentOptions={departmentOptions} />
                         </TabPane>
-                        <TabPane tab="Create New Product" key="2">
-                            <CreateProduct goToTab={handleGoToTab} />
+                        <TabPane tab="Create New Route" key="2">
+                            <CreateRoute departmentOptions={departmentOptions} goToTab={handleGoToTab} />
                         </TabPane>
                     </Tabs>
                 </div>
@@ -41,4 +54,4 @@ const Products = () => {
     )
 }
 const { TabPane } = Tabs;
-export default Products
+export default Transport

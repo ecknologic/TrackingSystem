@@ -105,7 +105,7 @@ const EmployeeForm = (props) => {
                 <div className='input-container'>
                     <InputLabel name='Date of Joining' error={errors.joinedDate} mandatory />
                     <CustomDateInput
-                        track value={joinedDate} disabledDate={disableFutureDates} error={errors.joinedDate}
+                        track value={joinedDate} error={errors.joinedDate}
                         onChange={(value) => onChange(dayjs(value).format('YYYY-MM-DD'), 'joinedDate')}
                     />
                 </div>

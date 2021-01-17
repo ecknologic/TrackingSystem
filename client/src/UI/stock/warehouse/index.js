@@ -8,6 +8,7 @@ import Header from '../../../components/ContentHeader';
 import ReportsDropdown from '../../../components/ReportsDropdown';
 import DatePickerPanel from '../../../components/DatePickerPanel';
 import '../../../sass/stock.scss'
+import Orders from './tabs/Orders';
 
 const WarehouseStock = () => {
 
@@ -29,18 +30,22 @@ const WarehouseStock = () => {
                     >
                         <TabPane tab="Stock Details" key="1" />
                         <TabPane tab="Delivery" key="2" />
-                        <TabPane tab="Orders" key="3" disabled />
+                        <TabPane tab="Orders" key="3" />
                         <TabPane tab="Staff" key="4" disabled />
                         <TabPane tab="Settings" key="5" disabled />
                     </Tabs>
                 </div>
-                <div className='date-picker-panel'>
-                    <DatePickerPanel onChange={handleDateChange} />
-                </div>
+                {
+                    activeTab === '3' ? null
+                        : <div className='date-picker-panel'>
+                            <DatePickerPanel onChange={handleDateChange} />
+                        </div>
+                }
                 {
                     activeTab === '1' ? <StockDetails date={selectedDate} />
                         : activeTab === '2' ? <Delivery date={selectedDate} />
-                            : <NoContent content='Design is in progress' />
+                            : activeTab === '3' ? <Orders />
+                                : <NoContent content='Design is in progress' />
                 }
             </div>
         </Fragment>
