@@ -38,6 +38,25 @@ $textColorDisabled:rgba(0,0,0,0.55);
     -webkit-line-clamp: 2;
 }
 
+// -------------- Overflow Scroll styles ------------------- //
+
+.select-dropdown-overflow {
+    .rc-virtual-list:hover {
+        .rc-virtual-list-scrollbar {
+            display: block !important;
+        }
+    }
+}
+.rc-virtual-list-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2) !important;
+    cursor: default !important;
+}
+.thumb-vertical {
+    width: 8px !important;
+    border-radius: 99px;
+    background-color: rgba(0, 0, 0, 0.2) !important;
+}
+
 // -------------- antd Popconfirm styles ------------------- //
 
 .ant-popover-inner {
@@ -1532,16 +1551,3 @@ textarea {
         min-height: calc(100vh - 13.8em);
     }
 }
-
-// .rc-virtual-list-scrollbar {
-//     // display: block !important;
-// }
-// .ant-tree-list-scrollbar {
-//     display: none;
-// }
-
-// .rc-virtual-list:hover {
-//     .rc-virtual-list-scrollbar {
-//         display: block !important;
-//     }
-// }

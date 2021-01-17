@@ -62,7 +62,7 @@ const DependentForm = (props) => {
                     />
                 </div>
                 <div className='input-container'>
-                    <InputLabel name='Date of Birth as per Aadhar' error={errors.dob} mandatory />
+                    <InputLabel name='Date of Birth' error={errors.dob} mandatory />
                     <CustomDateInput
                         track value={dob} disabledDate={disableFutureDates} error={errors.dob}
                         onChange={(value) => onChange(dayjs(value).format('YYYY-MM-DD'), 'dob')}

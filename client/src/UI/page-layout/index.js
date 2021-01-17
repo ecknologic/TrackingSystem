@@ -24,10 +24,12 @@ const PageLayout = ({ children }) => {
             </Header>
             <Layout id='app-content'>
                 <Sider width='16em' className='app-sider'>
-                    <SideMenu />
+                    <Scrollbars autoHide renderThumbVertical={Thumb}>
+                        <SideMenu />
+                    </Scrollbars>
                 </Sider>
                 <Content key={pathname}>
-                    <Scrollbars autoHide id='scroll-view'>
+                    <Scrollbars autoHide id='scroll-view' renderThumbVertical={Thumb}>
                         <div id='content'>{children}</div>
                     </Scrollbars>
                 </Content>
@@ -36,5 +38,6 @@ const PageLayout = ({ children }) => {
     );
 }
 
+const Thumb = (props) => <div {...props} className="thumb-vertical" />
 const { Header, Content, Sider } = Layout;
 export default PageLayout;

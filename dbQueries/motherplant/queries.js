@@ -73,7 +73,7 @@ motherPlantDbQueries.getNatureOfBussiness = async (callback) => {
 }
 motherPlantDbQueries.getRMDetails = async (input, callback) => {
     let query = `select * from requiredrawmaterial WHERE departmentId=? ORDER BY requestedDate DESC`;
-    if (input.isSuperAdmin == true) {
+    if (input.isSuperAdmin == 'true') {
         query = `select r.*,d.departmentName from requiredrawmaterial r INNER JOIN departmentmaster d ON r.departmentId=d.departmentId ORDER BY r.requestedDate DESC`
         return executeGetQuery(query, callback)
     } else {
@@ -83,16 +83,16 @@ motherPlantDbQueries.getRMDetails = async (input, callback) => {
 }
 motherPlantDbQueries.getRMReceiptDetails = async (input, callback) => {
     const { isSuperAdmin, departmentId } = input
-    let query = `select rmr.receiptDate,rmr.receiptNo,rmr.invoiceNo,rmr.taxAmount,rmr.invoiceAmount,rmr.rawmaterialId,rmr.invoiceDate,rmr.managerName,rmr.receiptImage,rm.itemName,rm.itemCode,rm.itemQty,rm.vendorName,rm.requestedDate,rm.approvedDate,rm.description,rm.orderId from rawmaterialreceipt rmr INNER JOIN requiredrawmaterial rm on rmr.rawmaterialId=rm.rawmaterialid WHERE rmr.departmentId=${departmentId} ORDER BY receiptDate DESC`;
-    if (isSuperAdmin == true) {
-        query = `select rmr.receiptDate,rmr.receiptNo,rmr.invoiceNo,rmr.taxAmount,rmr.invoiceAmount,rmr.rawmaterialId,rmr.invoiceDate,rmr.managerName,rmr.receiptImage,rm.itemName,rm.itemCode,rm.itemQty,rm.vendorName,rm.requestedDate,rm.approvedDate,rm.description,rm.orderId from rawmaterialreceipt rmr INNER JOIN requiredrawmaterial rm on rmr.rawmaterialId=rm.rawmaterialid ORDER BY receiptDate DESC`;
+    let query = `select rmr.receiptDate,rmr.receiptNo,rmr.invoiceNo,rmr.taxAmount,rmr.invoiceAmount,rmr.rawmaterialId,rmr.invoiceDate,rmr.managerName,rm.itemName,rm.itemCode,rm.itemQty,rm.vendorName,rm.requestedDate,rm.approvedDate,rm.description,rm.orderId from rawmaterialreceipt rmr INNER JOIN requiredrawmaterial rm on rmr.rawmaterialId=rm.rawmaterialid WHERE rmr.departmentId=${departmentId} ORDER BY receiptDate DESC`;
+    if (isSuperAdmin == 'true') {
+        query = `select rmr.taxAmount,rmr.receiptDate,rmr.receiptNo,rmr.invoiceNo,rmr.invoiceAmount,rmr.rawmaterialId,rmr.invoiceDate,rmr.managerName,rm.itemName,rm.itemCode,rm.itemQty,rm.vendorName,rm.requestedDate,rm.approvedDate,rm.description,rm.orderId,d.departmentName from rawmaterialreceipt rmr INNER JOIN requiredrawmaterial rm on rmr.rawmaterialId=rm.rawmaterialid INNER JOIN departmentmaster d ON rmr.departmentId=d.departmentId ORDER BY receiptDate DESC`;
     }
     return executeGetQuery(query, callback)
 }
 
 motherPlantDbQueries.getReceiptDetailsByRMId = async (input, callback) => {
-    let query = `select rmr.receiptDate,rmr.receiptNo,rmr.invoiceNo,rmr.taxAmount,rmr.invoiceAmount,rmr.rawmaterialId,rmr.invoiceDate,rmr.managerName,rmr.receiptImage,rm.itemName,rm.itemCode,rm.vendorName,rm.requestedDate,rm.approvedDate,rm.description from rawmaterialreceipt rmr INNER JOIN requiredrawmaterial rm on rmr.rawmaterialId=rm.rawmaterialid WHERE rmr.departmentId=? AND rmr.rawmaterialId=?`;
-    return executeGetParamsQuery(query, [input.departmentId, input.rmId], callback)
+    let query = `select rmr.receiptImage from rawmaterialreceipt rmr WHERE rmr.rawmaterialId=?`;
+    return executeGetParamsQuery(query, [input.rmId], callback)
 }
 
 motherPlantDbQueries.getDepartmentsList = async (deptType, callback) => {
@@ -185,9 +185,9 @@ motherPlantDbQueries.addVehicleDetails = async (input, callback) => {
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.updateVehicleDetails = async (input, callback) => {
-    const { vehicleNo, vehicleType, vehicleName,vehicleId } = input
+    const { vehicleNo, vehicleType, vehicleName, vehicleId } = input
     let query = "update VehicleDetails set vehicleNo=?,vehicleType=?,vehicleName=? where vehicleId=?";
-    let requestBody = [vehicleNo, vehicleType, vehicleName,vehicleId]
+    let requestBody = [vehicleNo, vehicleType, vehicleName, vehicleId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.addDispatchDetails = async (input, callback) => {

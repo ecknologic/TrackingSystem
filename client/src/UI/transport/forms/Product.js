@@ -5,7 +5,7 @@ import { resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
 
 const ProductForm = ({ data, errors, onChange }) => {
 
-    const { productName, price, tax } = data
+    const { productName, price } = data
 
     useEffect(() => {
         resetTrackForm()
@@ -31,15 +31,6 @@ const ProductForm = ({ data, errors, onChange }) => {
                     <CustomInput value={price}
                         error={errors.price} placeholder="Unit Price"
                         onChange={(value) => onChange(value, 'price')}
-                    />
-                </div>
-            </div>
-            <div className='row'>
-                <div className='input-container'>
-                    <InputLabel name='Tax Percentage' error={errors.tax} mandatory />
-                    <CustomInput value={tax} maxLength={2}
-                        error={errors.tax} placeholder='Tax Percentage'
-                        onChange={(value) => onChange(value, 'tax')}
                     />
                 </div>
             </div>

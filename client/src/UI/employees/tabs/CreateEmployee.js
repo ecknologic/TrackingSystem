@@ -1,5 +1,5 @@
 import { message } from 'antd';
-import { useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import React, { useState, useEffect, useMemo } from 'react';
 import { http } from '../../../modules/http';
 import EmployeeForm from '../forms/Employee';
@@ -14,6 +14,7 @@ import {
 
 const CreateEmployee = ({ goToTab }) => {
     const { pathname } = useLocation()
+    const history = useHistory()
     const [formData, setFormData] = useState({})
     const [depValues, setDepValues] = useState({})
     const [depErrors, setDepErrors] = useState({})
@@ -28,7 +29,7 @@ const CreateEmployee = ({ goToTab }) => {
     const [roleList, setRoleList] = useState([])
     const [departmentList, setDepartmentList] = useState([])
     const [shake, setShake] = useState(false)
-    const [employeeType, setEmployeeType] = useState('')
+    const [employeeType, setEmployeeType] = useState('Staff')
 
     const mainUrl = useMemo(() => getMainPathname(pathname), [pathname])
     const roleOptions = useMemo(() => getRoleOptions(roleList), [roleList])
@@ -59,6 +60,11 @@ const CreateEmployee = ({ goToTab }) => {
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
+
+        if (key === 'roleId') { // Driver role Id is 6 in DB
+            if (value === 6) setEmployeeType('Driver')
+            else setEmployeeType('Staff')
+        }
 
         // Validations
         if (key === 'adharNo' || key === 'licenseNo') {
@@ -251,7 +257,7 @@ const CreateEmployee = ({ goToTab }) => {
         let body = {
             ...formData, adharProof, licenseProof, dependentDetails
         }
-        const url = getUrl(mainUrl)
+        const url = getUrl(employeeType)
         const options = { item: employeeType, v1Ing: 'Adding', v2: 'added' }
 
         try {
@@ -259,12 +265,17 @@ const CreateEmployee = ({ goToTab }) => {
             showToast({ ...options, action: 'loading' })
             await http.POST(url, body)
             showToast(options)
-            goToTab('1')
+            postCreation(employeeType)
             resetForm()
         } catch (error) {
             message.destroy()
             setBtnDisabled(false)
         }
+    }
+
+    const postCreation = (type) => {
+        if (type === 'Staff') goToTab('1')
+        else history.push('/drivers')
     }
 
     const resetForm = () => {
@@ -284,7 +295,6 @@ const CreateEmployee = ({ goToTab }) => {
             <EmployeeForm
                 data={formData}
                 errors={formErrors}
-                title={employeeType}
                 adharProof={adharProof}
                 licenseProof={licenseProof}
                 adharProofErrors={adharProofErrors}
@@ -319,11 +329,11 @@ const CreateEmployee = ({ goToTab }) => {
     )
 }
 
-const getUrl = (url) => {
+const getUrl = (type) => {
     const staffUrl = '/users/createWebUser'
     const driverUrl = '/driver/createDriver'
 
-    if (url === '/staff') return staffUrl
+    if (type === 'Staff') return staffUrl
     return driverUrl
 }
 

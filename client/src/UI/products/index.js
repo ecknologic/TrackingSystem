@@ -3,7 +3,7 @@ import React, { Fragment, useState } from 'react';
 import Dashboard from './tabs/Dashboard';
 import Header from '../../components/SimpleHeader';
 import CreateProduct from './tabs/CreateProduct';
-import '../../sass/plants.scss';
+import '../../sass/products.scss';
 
 const Products = () => {
 

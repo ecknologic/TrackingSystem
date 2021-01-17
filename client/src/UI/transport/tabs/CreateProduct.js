@@ -21,7 +21,7 @@ const CreateProduct = ({ goToTab }) => {
             const isValid = isAlphaNum(value)
             if (!isValid) setFormErrors(errors => ({ ...errors, [key]: 'Enter aphanumeric only' }))
         }
-        else if (key === 'price' || key === 'tax') {
+        else if (key === 'price') {
             const error = validateNumber(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -29,16 +29,11 @@ const CreateProduct = ({ goToTab }) => {
 
     const handleSubmit = async () => {
         const formErrors = {}
-        const { productName, price, tax } = formData
+        const { productName, price } = formData
         if (!price) formErrors.price = 'Required'
         else {
             const error = validateNumber(price)
             if (error) formErrors.price = error
-        }
-        if (!tax) formErrors.tax = 'Required'
-        else {
-            const error = validateNumber(tax)
-            if (error) formErrors.tax = error
         }
         if (!productName) formErrors.productName = 'Required'
         else {

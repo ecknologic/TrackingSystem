@@ -125,22 +125,17 @@ const Dashboard = ({ reFetch }) => {
     const optimisticUpdate = (data) => {
         let clone = deepClone(products);
         const index = clone.findIndex(item => item.productId === data.productId)
-        const { price, tax } = data
-        const totalAmount = (price * tax / 100) + price
-        data.totalAmount = totalAmount
         clone[index] = data;
         setProducts(clone)
     }
 
     const dataSource = useMemo(() => products.map((product) => {
-        const { productId: key, productName, price, tax, totalAmount } = product
+        const { productId: key, productName, price } = product
 
         return {
             key,
             productName,
             price,
-            tax,
-            totalAmount,
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, product)} />
         }
     }), [products])
@@ -157,7 +152,7 @@ const Dashboard = ({ reFetch }) => {
     const sliceTo = sliceFrom + pageSize
 
     return (
-        <div className='product-container'>
+        <div className='stock-delivery-container'>
             <div className='app-table dispatch-table'>
                 <Table
                     loading={{ spinning: loading, indicator: <Spinner /> }}

@@ -1,0 +1,9 @@
+.product-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+    .app-pagination {
+        padding-top: 3em;
+    }
+}
