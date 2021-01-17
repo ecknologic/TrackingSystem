@@ -11,6 +11,8 @@ const multer = require('multer');
 const customerQueries = require('../dbQueries/Customer/queries.js');
 const { customerProductDetails, dbError } = require('../utils/functions.js');
 const { saveToCustomerOrderDetails } = require('./utilities')
+let departmentId;
+
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'assests/idproofs')
@@ -29,6 +31,7 @@ var geocoder = NodeGeocoder({
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
   console.log('Time: ', Date.now());
+  departmentId = req.headers['departmentid'] || 1
   next();
 });
 // router.post('/uploadphoto', (req, res) => {
@@ -289,6 +292,28 @@ router.get("/getCustomerDetails/:creatorId", (req, res) => {
 router.get("/getRoutes/:departmentId", (req, res) => {
   customerQueries.getRoutesByDepartmentId(req.params.departmentId, (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
+    else {
+      res.json(results)
+    }
+  })
+});
+router.get("/getOrders", (req, res) => {
+  customerQueries.getOrdersByDepartmentId(departmentId, (err, results) => {
+    if (err) res.json({ status: 500, message: err.sqlMessage });
+    else if (results.length) {
+      let arr = [], count = 0;
+      for (let result of results) {
+        customerProductDetails(result.deliveryDetailsId).then(response => {
+          count++
+          if (err) console.log(err);
+          else {
+            result["products"] = response;
+            arr.push(result)
+          }
+          if (count == results.length) res.json(arr);
+        });
+      }
+    }
     else {
       res.json(results)
     }
