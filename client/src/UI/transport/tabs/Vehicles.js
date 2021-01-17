@@ -1,21 +1,21 @@
 import { Menu, message, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import ProductForm from '../forms/Product';
+import VehicleForm from '../forms/Vehicle';
 import { http } from '../../../modules/http'
 import Actions from '../../../components/Actions';
 import Spinner from '../../../components/Spinner';
+import { TRACKFORM } from '../../../utils/constants';
 import CustomModal from '../../../components/CustomModal';
-import { productColumns } from '../../../assets/fixtures';
+import { vehicleColumns } from '../../../assets/fixtures';
 import { EditIconGrey } from '../../../components/SVG_Icons';
 import ConfirmModal from '../../../components/CustomModal';
+import { validateNames } from '../../../utils/validations';
+import ConfirmMessage from '../../../components/ConfirmMessage';
 import CustomPagination from '../../../components/CustomPagination';
 import { deepClone, isAlphaNum, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
-import { validateNumber } from '../../../utils/validations';
-import ConfirmMessage from '../../../components/ConfirmMessage';
-import { TRACKFORM } from '../../../utils/constants';
 
-const Dashboard = ({ reFetch }) => {
-    const [products, setProducts] = useState([])
+const VehiclesDashboard = () => {
+    const [vehicles, setVehicles] = useState([])
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [loading, setLoading] = useState(true)
@@ -29,14 +29,14 @@ const Dashboard = ({ reFetch }) => {
 
     useEffect(() => {
         setLoading(true)
-        getProducts()
-    }, [reFetch])
+        getVehicles()
+    }, [])
 
-    const getProducts = async () => {
-        const url = '/products/getProducts'
+    const getVehicles = async () => {
+        const url = '/motherPlant/getVehicleDetails'
 
         const data = await http.GET(url)
-        setProducts(data)
+        setVehicles(data)
         setTotalCount(data.length)
         setLoading(false)
     }
@@ -62,28 +62,34 @@ const Dashboard = ({ reFetch }) => {
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
         // Validations
-        if (key === 'productName') {
+        if (key === 'vehicleName' || key === 'vehicleType') {
+            const error = validateNames(value)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'vehicleNo') {
             const isValid = isAlphaNum(value)
             if (!isValid) setFormErrors(errors => ({ ...errors, [key]: 'Enter aphanumeric only' }))
-        }
-        else if (key === 'price') {
-            const error = validateNumber(value)
-            setFormErrors(errors => ({ ...errors, [key]: error }))
         }
     }
 
     const handleSubmit = async () => {
         const formErrors = {}
-        const { productName, price } = formData
-        if (!price) formErrors.price = 'Required'
+        const { vehicleName, vehicleType, vehicleNo } = formData
+
+        if (!vehicleType) formErrors.vehicleType = 'Required'
         else {
-            const error = validateNumber(price)
-            if (error) formErrors.price = error
+            const error = validateNames(vehicleType)
+            if (error) formErrors.vehicleType = error
         }
-        if (!productName) formErrors.productName = 'Required'
+        if (!vehicleName) formErrors.vehicleName = 'Required'
         else {
-            const isValid = isAlphaNum(productName)
-            if (!isValid) formErrors.productName = 'Enter aphanumeric only'
+            const error = validateNames(vehicleName)
+            if (error) formErrors.vehicleName = error
+        }
+        if (!vehicleNo) formErrors.vehicleNo = 'Required'
+        else {
+            const isValid = isAlphaNum(vehicleNo)
+            if (!isValid) formErrors.vehicleNo = 'Enter aphanumeric only'
         }
 
         if (!isEmpty(formErrors)) {
@@ -94,8 +100,8 @@ const Dashboard = ({ reFetch }) => {
         }
 
         let body = { ...formData }
-        const url = '/products/updateProduct'
-        const options = { item: 'Product', v1Ing: 'Updating', v2: 'updated' }
+        const url = '/motherPlant/updateVehicle'
+        const options = { item: 'Vehicle', v1Ing: 'Updating', v2: 'updated' }
 
         try {
             setBtnDisabled(true)
@@ -123,27 +129,23 @@ const Dashboard = ({ reFetch }) => {
     }
 
     const optimisticUpdate = (data) => {
-        let clone = deepClone(products);
-        const index = clone.findIndex(item => item.productId === data.productId)
-        const { price, tax } = data
-        const totalAmount = (price * tax) / 100 + Number(price)
-        data.totalAmount = totalAmount
+        let clone = deepClone(vehicles);
+        const index = clone.findIndex(item => item.vehicleId === data.vehicleId)
         clone[index] = data;
-        setProducts(clone)
+        setVehicles(clone)
     }
 
-    const dataSource = useMemo(() => products.map((product) => {
-        const { productId: key, productName, price, tax, totalAmount } = product
+    const dataSource = useMemo(() => vehicles.map((transport) => {
+        const { vehicleId: key, vehicleName, vehicleNo, vehicleType } = transport
 
         return {
             key,
-            productName,
-            price,
-            tax,
-            totalAmount,
-            action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, product)} />
+            vehicleName,
+            vehicleNo,
+            vehicleType,
+            action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, transport)} />
         }
-    }), [products])
+    }), [vehicles])
 
     const handleConfirmModalOk = useCallback(() => {
         setConfirmModal(false)
@@ -162,7 +164,7 @@ const Dashboard = ({ reFetch }) => {
                 <Table
                     loading={{ spinning: loading, indicator: <Spinner /> }}
                     dataSource={dataSource.slice(sliceFrom, sliceTo)}
-                    columns={productColumns}
+                    columns={vehicleColumns}
                     pagination={false}
                     scroll={{ x: true }}
                 />
@@ -180,14 +182,14 @@ const Dashboard = ({ reFetch }) => {
             }
             <CustomModal
                 okTxt='Update'
-                title='Product Details'
+                title='Vehicle Details'
                 visible={editModal}
                 btnDisabled={btnDisabled}
                 onOk={handleSubmit}
                 onCancel={handleModalCancel}
                 className={`app-form-modal ${shake ? 'app-shake' : ''}`}
             >
-                <ProductForm
+                <VehicleForm
                     data={formData}
                     errors={formErrors}
                     onChange={handleChange}
@@ -207,4 +209,4 @@ const Dashboard = ({ reFetch }) => {
 }
 
 const options = [<Menu.Item key="edit" icon={<EditIconGrey />}>Edit</Menu.Item>]
-export default Dashboard
+export default VehiclesDashboard

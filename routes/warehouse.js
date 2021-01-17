@@ -17,7 +17,7 @@ router.use(function timeLog(req, res, next) {
 
 
 router.get('/getroutes', (req, res) => {
-  let query = "select routeName, routeDescription, departmentId,routeId from routes";
+  let query = "select r.*,d.departmentName from routes r INNER JOIN departmentmaster d ON r.departmentId=d.departmentId ORDER BY r.createdDateTime DESC";
   db.query(query, (err, results) => {
     if (err) res.status(500).json(err.sqlMessage);
     res.send(JSON.stringify(results));
@@ -192,7 +192,7 @@ router.post('/confirmStockRecieved', (req, res) => {
 
 router.get('/deliveryDetails/:date', (req, res) => {
   var date = req.params.date;
-  let deliveryDetailsQuery = "select c.customerOrderId,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS cans20L,c.1LBoxes AS boxes1L,c.500MLBoxes AS boxes500ML,c.250MLBoxes AS boxes250ML,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid INNER JOIN driverdetails d ON c.driverId=d.driverid  WHERE DATE(`deliveryDate`) = ? AND warehouseId=? ORDER BY c.dcNo DESC";
+  let deliveryDetailsQuery = "select c.customerOrderId,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS cans20L,c.1LBoxes AS boxes1L,c.500MLBoxes AS boxes500ML,c.250MLBoxes AS boxes250ML,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE DATE(`deliveryDate`) = ? AND warehouseId=? ORDER BY c.dcNo DESC";
   db.query(deliveryDetailsQuery, [date, departmentId], (err, results) => {
     if (err) res.status(500).json(err.sqlMessage);
     res.send(JSON.stringify(results));

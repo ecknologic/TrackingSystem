@@ -1,12 +1,12 @@
 import { message } from 'antd';
 import React, { useState } from 'react';
-import ProductForm from '../forms/Product';
+import RouteForm from '../forms/Route';
 import { http } from '../../../modules/http';
-import { validateNumber } from '../../../utils/validations';
+import { validateNames } from '../../../utils/validations';
 import CustomButton from '../../../components/CustomButton';
-import { isAlphaNum, isAlphaNumOnly, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
+import { isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
 
-const CreateProduct = ({ goToTab }) => {
+const CreateRoute = ({ goToTab, departmentOptions }) => {
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
@@ -15,31 +15,14 @@ const CreateProduct = ({ goToTab }) => {
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
-
-        // Validations
-        if (key === 'productName') {
-            const isValid = isAlphaNum(value)
-            if (!isValid) setFormErrors(errors => ({ ...errors, [key]: 'Enter aphanumeric only' }))
-        }
-        else if (key === 'price') {
-            const error = validateNumber(value)
-            setFormErrors(errors => ({ ...errors, [key]: error }))
-        }
     }
 
     const handleSubmit = async () => {
         const formErrors = {}
-        const { productName, price } = formData
-        if (!price) formErrors.price = 'Required'
-        else {
-            const error = validateNumber(price)
-            if (error) formErrors.price = error
-        }
-        if (!productName) formErrors.productName = 'Required'
-        else {
-            const isValid = isAlphaNum(productName)
-            if (!isValid) formErrors.productName = 'Enter aphanumeric only'
-        }
+        const { RouteName, RouteDescription, departmentId } = formData
+        if (!departmentId) formErrors.departmentId = 'Required'
+        if (!RouteName) formErrors.RouteName = 'Required'
+        if (!RouteDescription) formErrors.RouteDescription = 'Required'
 
         if (!isEmpty(formErrors)) {
             setShake(true)
@@ -49,8 +32,8 @@ const CreateProduct = ({ goToTab }) => {
         }
 
         let body = { ...formData }
-        const url = '/products/createProduct'
-        const options = { item: 'Product', v1Ing: 'Adding', v2: 'added' }
+        const url = '/warehouse/createRoute'
+        const options = { item: 'Route', v1Ing: 'Adding', v2: 'added' }
 
         try {
             setBtnDisabled(true)
@@ -75,12 +58,13 @@ const CreateProduct = ({ goToTab }) => {
     return (
         <>
             <div className='employee-title-container'>
-                <span className='title'>New Product Details</span>
+                <span className='title'>New Route Details</span>
             </div>
-            <ProductForm
+            <RouteForm
                 data={formData}
                 errors={formErrors}
                 onChange={handleChange}
+                departmentOptions={departmentOptions}
             />
             <div className='app-footer-buttons-container'>
                 <CustomButton
@@ -96,4 +80,4 @@ const CreateProduct = ({ goToTab }) => {
     )
 }
 
-export default CreateProduct
+export default CreateRoute

@@ -2,17 +2,16 @@ import { Tabs } from 'antd';
 import React, { Fragment, useState } from 'react';
 import Dashboard from './tabs/Dashboard';
 import Header from '../../components/SimpleHeader';
-import CreateEmployee from './tabs/CreateEmployee';
+import Vehicles from '../transport/tabs/Vehicles';
+import CreateVehicle from '../transport/tabs/CreateVehicle';
 import '../../sass/plants.scss';
 
 const Drivers = () => {
 
     const [activeTab, setActiveTab] = useState('1')
-    const [reFetch, setreFetch] = useState(false)
 
     const handleGoToTab = (key) => {
         setActiveTab(key)
-        setreFetch(!reFetch)
     }
 
     const handleTabClick = (key) => {
@@ -29,13 +28,13 @@ const Drivers = () => {
                         activeKey={activeTab}
                     >
                         <TabPane tab="Drivers" key="1">
-                            <Dashboard reFetch={reFetch} />
+                            <Dashboard />
                         </TabPane>
                         <TabPane tab="Vehicles" key="2">
-                            {/* <Dashboard reFetch={reFetch} /> */}
+                            <Vehicles />
                         </TabPane>
                         <TabPane tab="Create New Vehicle" key="3">
-                            {/* <CreateEmployee goToTab={handleGoToTab} /> */}
+                            <CreateVehicle goToTab={handleGoToTab} />
                         </TabPane>
                     </Tabs>
                 </div>

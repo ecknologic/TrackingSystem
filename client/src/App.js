@@ -5,6 +5,7 @@ import { getMainPathname, resetTrackForm } from './utils/Functions';
 import Login from './UI/auth/Login';
 import Products from './UI/products';
 import Customers from './UI/customers';
+import Transport from './UI/transport';
 import Dispatches from './UI/dispatches';
 import PageLayout from './UI/page-layout';
 import Staff from './UI/employees/Staff';
@@ -94,6 +95,7 @@ const App = () => {
                   <Route path='/motherplants/manage/:plantId' render={byRole(<ManagePlant />)} />
                   <Route path='/warehouses/manage/:plantId' render={byRole(<ManagePlant />)} />
                   <Route path='/staff' render={byRole(<Staff />)} />
+                  <Route path='/routes' render={byRole(<Transport />)} />
                   <Route path='/drivers' render={byRole(<Drivers />)} />
                   <Route path='/products' render={byRole(<Products />)} />
                   <Route path='/motherplants' exact render={byRole(<Motherplants />)} />

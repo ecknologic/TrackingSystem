@@ -27,6 +27,7 @@ const DeliveryDetails = ({ recentDelivery, ...rest }) => {
     const [devDaysError, setDevDaysError] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
+    const [viewedArr, setViewedArr] = useState([])
     const [shake, setShake] = useState(false)
 
     const routeOptions = useMemo(() => getRouteOptions(routeList), [routeList])
@@ -158,16 +159,32 @@ const DeliveryDetails = ({ recentDelivery, ...rest }) => {
         setFormData(data => ({ ...data, [name]: '' }))
     }
 
-    const handleClick = useCallback((data) => {
-        const { location, products, deliveryDays, gstProof, departmentId } = data
-        const gst = base64String(gstProof?.data)
-        const devDays = getDevDays(deliveryDays)
-        const productsUI = getProductsForUI(products)
-        setDevDays(devDays)
-        handleGetNewRouteList(departmentId)
-        setFormData({ ...data, gstProof: gst, deliveryLocation: location, ...productsUI })
-        setViewModal(true)
-    }, [currentDepId])
+    const handleClick = async ({ deliveryDetailsId }) => {
+        const options = { item: 'Delivery details', v1Ing: 'Fetching', v2: 'fetched' }
+        let filterViewedArr = viewedArr.filter(item => item.deliveryDetailsId == deliveryDetailsId)
+        if (filterViewedArr.length) {
+            handleGetNewRouteList(filterViewedArr[0].departmentId)
+            setFormData(filterViewedArr[0])
+            setViewModal(true)
+        } else {
+            try {
+                showToast({ ...options, action: 'loading' })
+                let { data: [data] } = await http.GET(`/customer/getDeliveryDetails/${deliveryDetailsId}`)
+                const { location, products, deliveryDays, gstProof, departmentId } = data
+                const gst = base64String(gstProof?.data)
+                const devDays = getDevDays(deliveryDays)
+                const productsUI = getProductsForUI(products)
+                setDevDays(devDays)
+                handleGetNewRouteList(departmentId)
+                setFormData({ ...data, gstProof: gst, deliveryLocation: location, ...productsUI })
+                setViewModal(true)
+                setViewedArr([...viewedArr, { ...data, gstProof: gst, deliveryLocation: location, ...productsUI }])
+                showToast(options)
+            } catch (error) {
+                message.destroy()
+            }
+        }
+    }
 
     const handleAddressDelete = async (id) => {
         const options = { item: 'Delivery details', v1Ing: 'Deleting', v2: 'deleted' }
@@ -234,6 +251,7 @@ const DeliveryDetails = ({ recentDelivery, ...rest }) => {
             showToast(options)
             onModalClose(true)
             setBtnDisabled(false)
+            setViewedArr([])
         } catch (error) {
             setBtnDisabled(false)
         }

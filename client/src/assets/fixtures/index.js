@@ -110,6 +110,51 @@ export const getVehicleOptions = (vehicles = []) => {
     return vehicles.map((item) => <Option key={item.vehicleId} value={item.vehicleId}>{item.vehicleNo}</Option>)
 }
 
+export const vehicleColumns = [
+    {
+        title: 'Vehicle Number',
+        dataIndex: 'vehicleNo',
+        key: 'vehicleNo',
+    },
+    {
+        title: 'Vehicle Name',
+        dataIndex: 'vehicleName',
+        key: 'vehicleName',
+    },
+    {
+        title: 'Vehicle Type',
+        dataIndex: 'vehicleType',
+        key: 'vehicleType',
+    },
+    {
+        title: 'Actions',
+        dataIndex: 'action',
+        key: 'action'
+    },
+]
+
+export const routeColumns = [
+    {
+        title: 'Route Name',
+        dataIndex: 'RouteName',
+        key: 'RouteName',
+    },
+    {
+        title: 'Route Description',
+        dataIndex: 'RouteDescription',
+        key: 'RouteDescription',
+    },
+    {
+        title: 'Department',
+        dataIndex: 'departmentName',
+        key: 'departmentName',
+    },
+    {
+        title: 'Actions',
+        dataIndex: 'action',
+        key: 'action'
+    },
+]
 export const productColumns = [
     {
         title: 'Product Name',
@@ -172,6 +217,33 @@ export const deliveryColumns = [
         title: 'Status',
         dataIndex: 'status',
         key: 'status',
+    },
+    {
+        title: 'Actions',
+        dataIndex: 'action',
+        key: 'action'
+    },
+]
+export const orderColumns = [
+    {
+        title: 'Contact Person',
+        dataIndex: 'contactPerson',
+        key: 'contactPerson',
+    },
+    {
+        title: 'Address',
+        dataIndex: 'address',
+        key: 'address',
+    },
+    {
+        title: 'Order Details',
+        dataIndex: 'orderDetails',
+        key: 'orderDetails',
+    },
+    {
+        title: 'Route',
+        dataIndex: 'route',
+        key: 'route',
     },
     {
         title: 'Actions',

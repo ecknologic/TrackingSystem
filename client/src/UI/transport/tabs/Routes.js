@@ -1,21 +1,20 @@
 import { Menu, message, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import ProductForm from '../forms/Product';
+import RouteForm from '../forms/Route';
 import { http } from '../../../modules/http'
 import Actions from '../../../components/Actions';
 import Spinner from '../../../components/Spinner';
+import { TRACKFORM } from '../../../utils/constants';
 import CustomModal from '../../../components/CustomModal';
-import { productColumns } from '../../../assets/fixtures';
+import { routeColumns } from '../../../assets/fixtures';
 import { EditIconGrey } from '../../../components/SVG_Icons';
 import ConfirmModal from '../../../components/CustomModal';
-import CustomPagination from '../../../components/CustomPagination';
-import { deepClone, isAlphaNum, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
-import { validateNumber } from '../../../utils/validations';
 import ConfirmMessage from '../../../components/ConfirmMessage';
-import { TRACKFORM } from '../../../utils/constants';
+import CustomPagination from '../../../components/CustomPagination';
+import { deepClone, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
 
-const Dashboard = ({ reFetch }) => {
-    const [products, setProducts] = useState([])
+const RoutesDashboard = ({ departmentOptions }) => {
+    const [routes, setRoutes] = useState([])
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [loading, setLoading] = useState(true)
@@ -29,14 +28,14 @@ const Dashboard = ({ reFetch }) => {
 
     useEffect(() => {
         setLoading(true)
-        getProducts()
-    }, [reFetch])
+        getRoutes()
+    }, [])
 
-    const getProducts = async () => {
-        const url = '/products/getProducts'
+    const getRoutes = async () => {
+        const url = '/warehouse/getroutes'
 
         const data = await http.GET(url)
-        setProducts(data)
+        setRoutes(data)
         setTotalCount(data.length)
         setLoading(false)
     }
@@ -60,31 +59,14 @@ const Dashboard = ({ reFetch }) => {
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
-
-        // Validations
-        if (key === 'productName') {
-            const isValid = isAlphaNum(value)
-            if (!isValid) setFormErrors(errors => ({ ...errors, [key]: 'Enter aphanumeric only' }))
-        }
-        else if (key === 'price') {
-            const error = validateNumber(value)
-            setFormErrors(errors => ({ ...errors, [key]: error }))
-        }
     }
 
     const handleSubmit = async () => {
         const formErrors = {}
-        const { productName, price } = formData
-        if (!price) formErrors.price = 'Required'
-        else {
-            const error = validateNumber(price)
-            if (error) formErrors.price = error
-        }
-        if (!productName) formErrors.productName = 'Required'
-        else {
-            const isValid = isAlphaNum(productName)
-            if (!isValid) formErrors.productName = 'Enter aphanumeric only'
-        }
+        const { RouteName, RouteDescription, departmentId } = formData
+        if (!departmentId) formErrors.departmentId = 'Required'
+        if (!RouteName) formErrors.RouteName = 'Required'
+        if (!RouteDescription) formErrors.RouteDescription = 'Required'
 
         if (!isEmpty(formErrors)) {
             setShake(true)
@@ -94,8 +76,8 @@ const Dashboard = ({ reFetch }) => {
         }
 
         let body = { ...formData }
-        const url = '/products/updateProduct'
-        const options = { item: 'Product', v1Ing: 'Updating', v2: 'updated' }
+        const url = '/warehouse/updateRoute'
+        const options = { item: 'Route', v1Ing: 'Updating', v2: 'updated' }
 
         try {
             setBtnDisabled(true)
@@ -123,22 +105,23 @@ const Dashboard = ({ reFetch }) => {
     }
 
     const optimisticUpdate = (data) => {
-        let clone = deepClone(products);
-        const index = clone.findIndex(item => item.productId === data.productId)
+        let clone = deepClone(routes);
+        const index = clone.findIndex(item => item.routeId === data.routeId)
         clone[index] = data;
-        setProducts(clone)
+        setRoutes(clone)
     }
 
-    const dataSource = useMemo(() => products.map((product) => {
-        const { productId: key, productName, price } = product
+    const dataSource = useMemo(() => routes.map((route) => {
+        const { routeId: key, RouteName, RouteDescription, departmentName } = route
 
         return {
             key,
-            productName,
-            price,
-            action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, product)} />
+            RouteName,
+            RouteDescription,
+            departmentName,
+            action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, route)} />
         }
-    }), [products])
+    }), [routes])
 
     const handleConfirmModalOk = useCallback(() => {
         setConfirmModal(false)
@@ -152,12 +135,12 @@ const Dashboard = ({ reFetch }) => {
     const sliceTo = sliceFrom + pageSize
 
     return (
-        <div className='stock-delivery-container'>
+        <div className='product-container'>
             <div className='app-table dispatch-table'>
                 <Table
                     loading={{ spinning: loading, indicator: <Spinner /> }}
                     dataSource={dataSource.slice(sliceFrom, sliceTo)}
-                    columns={productColumns}
+                    columns={routeColumns}
                     pagination={false}
                     scroll={{ x: true }}
                 />
@@ -175,17 +158,18 @@ const Dashboard = ({ reFetch }) => {
             }
             <CustomModal
                 okTxt='Update'
-                title='Product Details'
+                title='Route Details'
                 visible={editModal}
                 btnDisabled={btnDisabled}
                 onOk={handleSubmit}
                 onCancel={handleModalCancel}
                 className={`app-form-modal ${shake ? 'app-shake' : ''}`}
             >
-                <ProductForm
+                <RouteForm
                     data={formData}
                     errors={formErrors}
                     onChange={handleChange}
+                    departmentOptions={departmentOptions}
                 />
             </CustomModal>
             <ConfirmModal
@@ -202,4 +186,4 @@ const Dashboard = ({ reFetch }) => {
 }
 
 const options = [<Menu.Item key="edit" icon={<EditIconGrey />}>Edit</Menu.Item>]
-export default Dashboard
+export default RoutesDashboard

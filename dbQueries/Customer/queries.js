@@ -5,6 +5,10 @@ customerQueries.getCustomerDetails = (customerId, callback) => {
     let query = "SELECT customerId,customerName,mobileNumber,EmailId,Address1,gstNo,panNo,adharNo,registeredDate,invoicetype,natureOfBussiness,creditPeriodInDays,referredBy,isApproved,customertype,organizationName,idProofType,customer_id_proof,d.idProof_backside,d.idProof_frontside,d.gstProof from customerdetails c INNER JOIN customerDocStore d ON c.customer_id_proof=d.docId WHERE c.customerId=" + customerId
     executeGetQuery(query, callback)
 }
+customerQueries.getOrdersByDepartmentId = (departmentId, callback) => {
+    let query = "SELECT d.location,d.contactPerson,d.deliveryDetailsId,d.isActive as isApproved,r.routeName,r.routeId FROM DeliveryDetails d INNER JOIN routes r ON d.routeId=r.routeId WHERE d.deleted=0 AND d.departmentId=? ORDER BY d.registeredDate DESC";
+    executeGetParamsQuery(query, [departmentId], callback)
+}
 customerQueries.getRoutesByDepartmentId = (departmentId, callback) => {
     let query = "SELECT RouteId,RouteName from routes WHERE departmentId=" + departmentId
     executeGetQuery(query, callback)
@@ -44,5 +48,10 @@ customerQueries.updateDCNo = (insertedId, callback) => {
 customerQueries.deleteDeliveryAddress = (deliveryId, callback) => {
     let query = "update DeliveryDetails set deleted=1 where deliveryDetailsId=?"
     executePostOrUpdateQuery(query, [deliveryId], callback)
+}
+customerQueries.updateOrderDelivery = (input, callback) => {
+    const { driverId, routeId, vehicleId, deliveryDetailsId } = input
+    let query = "update DeliveryDetails set driverId=?,routeId=?,vehicleId=? where deliveryDetailsId=?"
+    executePostOrUpdateQuery(query, [driverId, routeId, vehicleId, deliveryDetailsId], callback)
 }
 module.exports = customerQueries

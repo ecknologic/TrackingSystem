@@ -312,8 +312,8 @@ export const extractDeliveryDetails = (data) => {
     return clone
 }
 
-export const extractGADeliveryDetails = ({ gstNo = '', deliveryLocation, departmentId, isApproved = 0, gstProof = '', address, depositAmount, mobileNumber, customerName: contactPerson }) => {
-    return { gstNo, gstProof, address, deliveryLocation, departmentId, isApproved, depositAmount, phoneNumber: mobileNumber, contactPerson }
+export const extractGADeliveryDetails = ({ gstNo = '', deliveryLocation, departmentId, isApproved = 0, gstProof = '', address, depositAmount, routeId, mobileNumber, customerName: contactPerson }) => {
+    return { gstNo, gstProof, address, deliveryLocation, departmentId, isApproved, depositAmount, phoneNumber: mobileNumber, routeId, contactPerson }
 }
 
 export const getPlantValuesForDB = ({ gstNo = '', gstProof = '', phoneNumber = '', ...rest }) => {

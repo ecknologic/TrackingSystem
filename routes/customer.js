@@ -11,6 +11,8 @@ const multer = require('multer');
 const customerQueries = require('../dbQueries/Customer/queries.js');
 const { customerProductDetails, dbError } = require('../utils/functions.js');
 const { saveToCustomerOrderDetails } = require('./utilities')
+let departmentId;
+
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'assests/idproofs')
@@ -29,6 +31,7 @@ var geocoder = NodeGeocoder({
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
   console.log('Time: ', Date.now());
+  departmentId = req.headers['departmentid'] || 1
   next();
 });
 // router.post('/uploadphoto', (req, res) => {
@@ -265,6 +268,14 @@ router.post("/approveCustomer/:customerId", (req, res) => {
     }
   })
 });
+router.post("/createOrderDelivery", (req, res) => {
+  customerQueries.updateOrderDelivery(req.body, (err, results) => {
+    if (err) res.json({ status: 500, message: err.sqlMessage });
+    else {
+      res.json("success")
+    }
+  })
+});
 router.get("/approveDelivery/:deliveryDetailsId", (req, res) => {
   const { deliveryDetailsId } = req.params;
   customerQueries.approveDeliveryDetails([deliveryDetailsId], (err, data) => {
@@ -289,6 +300,28 @@ router.get("/getCustomerDetails/:creatorId", (req, res) => {
 router.get("/getRoutes/:departmentId", (req, res) => {
   customerQueries.getRoutesByDepartmentId(req.params.departmentId, (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
+    else {
+      res.json(results)
+    }
+  })
+});
+router.get("/getOrders", (req, res) => {
+  customerQueries.getOrdersByDepartmentId(departmentId, (err, results) => {
+    if (err) res.json({ status: 500, message: err.sqlMessage });
+    else if (results.length) {
+      let arr = [], count = 0;
+      for (let result of results) {
+        customerProductDetails(result.deliveryDetailsId).then(response => {
+          count++
+          if (err) console.log(err);
+          else {
+            result["products"] = response;
+            arr.push(result)
+          }
+          if (count == results.length) res.json(arr);
+        });
+      }
+    }
     else {
       res.json(results)
     }
@@ -322,7 +355,9 @@ router.get("/getCustomerDetailsById/:customerId", (req, res) => {
 });
 
 router.get("/getCustomerDeliveryDetails/:customerId", (req, res) => {
-  getDeliveryDetails(req.params.customerId).then(response => {
+  const { customerId } = req.params
+  const { isSuperAdmin = 'false' } = req.query;
+  getDeliveryDetails({ customerId, isSuperAdmin }).then(response => {
     const customerDeliveryDetails = [{}];
     customerDeliveryDetails[0]["deliveryDetails"] = response;
     res.json({ status: 200, statusMessage: "Success", data: customerDeliveryDetails })
@@ -338,6 +373,11 @@ router.get("/getProductsDetails", (req, res) => {
     }
   })
 });
+router.get("/getDeliveryDetails/:deliveryDetailsId", async (req, res) => {
+  const { deliveryDetailsId } = req.params;
+  let data = await getDeliveryDetails({ deliveryDetailsId, isSuperAdmin: 'true' })
+  res.json({ status: 200, statusMessage: "Success", data })
+});
 // router.get("/getLongitudeandLatitude/:address", (req, response) => {
 //   geocoder.geocode(req.params.address, function (err, res) {
 //     response.send("lattitue:::" + res[0].latitude + "longitude:::" + res[0].longitude);
@@ -345,37 +385,42 @@ router.get("/getProductsDetails", (req, res) => {
 // });
 // router.get('/test', (req, res) => {
 const getAddedDeliveryDetails = (deliveryDetailsId) => {
-  return getDeliveryDetails(null, deliveryDetailsId)
+  return getDeliveryDetails({ deliveryDetailsId })
 }
 // })
-const getDeliveryDetails = (customerId, deliveryDetailsId) => {
+const getDeliveryDetails = ({ customerId, deliveryDetailsId, isSuperAdmin }) => {
   return new Promise((resolve, reject) => {
-    let deliveryDetailsQuery = "SELECT d.*,d.isActive as isApproved,d.location AS deliveryLocation,r.departmentName,json_object('SUN',cd.SUN,'MON',cd.MON,'TUE',cd.TUE,'WED',cd.WED,'THU',cd.THU,'FRI',cd.FRI,'SAT',cd.SAT) as 'deliveryDays' " +
-      /*  "concat(CASE WHEN cd.sun=1 THEN 'Sunday,' ELSE '' END,"+
-       "CASE WHEN cd.mon=1 THEN 'Monday,' ELSE '' END,"+
-       "CASE WHEN cd.tue=1 THEN 'Tuesday,' ELSE '' END,"+
-       "CASE WHEN cd.wed=1 THEN 'Wednesday,' ELSE '' END,"+
-       "CASE WHEN cd.thu=1 THEN 'Thursday,' ELSE '' END,"+
-       "CASE WHEN cd.fri=1 THEN 'Friday,' ELSE '' END,"+
-       "CASE WHEN cd.sat=1 THEN 'Saturday,' ELSE '' END) AS 'Delivery Days'"+ */
-      "FROM DeliveryDetails d INNER JOIN customerdeliverydays cd ON cd.deliveryDaysId=d.deliverydaysid INNER JOIN departmentmaster r ON r.departmentId=d.departmentId WHERE d.deleted=0 AND (d.customer_Id=? OR d.deliveryDetailsId=?) ORDER BY d.registeredDate DESC;";
+    let deliveryDetailsQuery = "SELECT d.location,d.contactPerson,d.customer_Id,d.deliveryDetailsId,d.phoneNumber,d.isActive as isApproved,d.location AS deliveryLocation,r.departmentName FROM DeliveryDetails d INNER JOIN departmentmaster r ON r.departmentId=d.departmentId WHERE d.deleted=0 AND (d.customer_Id=? OR d.deliveryDetailsId=?) ORDER BY d.registeredDate DESC";
+    if (isSuperAdmin == 'true') {
+      deliveryDetailsQuery = "SELECT d.*,d.isActive as isApproved,d.location AS deliveryLocation,r.departmentName,json_object('SUN',cd.SUN,'MON',cd.MON,'TUE',cd.TUE,'WED',cd.WED,'THU',cd.THU,'FRI',cd.FRI,'SAT',cd.SAT) as 'deliveryDays' " +
+        /*  "concat(CASE WHEN cd.sun=1 THEN 'Sunday,' ELSE '' END,"+
+         "CASE WHEN cd.mon=1 THEN 'Monday,' ELSE '' END,"+
+         "CASE WHEN cd.tue=1 THEN 'Tuesday,' ELSE '' END,"+
+         "CASE WHEN cd.wed=1 THEN 'Wednesday,' ELSE '' END,"+
+         "CASE WHEN cd.thu=1 THEN 'Thursday,' ELSE '' END,"+
+         "CASE WHEN cd.fri=1 THEN 'Friday,' ELSE '' END,"+
+         "CASE WHEN cd.sat=1 THEN 'Saturday,' ELSE '' END) AS 'Delivery Days'"+ */
+        "FROM DeliveryDetails d INNER JOIN customerdeliverydays cd ON cd.deliveryDaysId=d.deliverydaysid INNER JOIN departmentmaster r ON r.departmentId=d.departmentId WHERE d.deleted=0 AND (d.customer_Id=? OR d.deliveryDetailsId=?) ORDER BY d.registeredDate DESC;";
+    }
     db.query(deliveryDetailsQuery, [customerId, deliveryDetailsId], (err, results) => {
       if (err) reject(err)
       else {
         if (results.length) {
-          let arr = [], count = 0;
-          for (let result of results) {
-            customerProductDetails(result.deliveryDetailsId).then(response => {
-              count++
-              if (err) reject(err);
-              else {
-                result['deliveryDays'] = JSON.parse(result.deliveryDays)
-                result["products"] = response;
-                arr.push(result)
-              }
-              if (count == results.length) resolve(arr);
-            });
-          }
+          if (isSuperAdmin == 'true') {
+            let arr = [], count = 0;
+            for (let result of results) {
+              customerProductDetails(result.deliveryDetailsId).then(response => {
+                count++
+                if (err) reject(err);
+                else {
+                  result['deliveryDays'] = JSON.parse(result.deliveryDays)
+                  result["products"] = response;
+                  arr.push(result)
+                }
+                if (count == results.length) resolve(arr);
+              });
+            }
+          } else resolve(results)
         } else resolve([])
       }
     });

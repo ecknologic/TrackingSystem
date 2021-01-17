@@ -31,7 +31,7 @@ motherPlantDbQueries.getProducedBatchNumbers = async (departmentId, callback) =>
 }
 
 motherPlantDbQueries.getVehicleDetails = async (callback) => {
-    let query = "select * from VehicleDetails";
+    let query = "select * from VehicleDetails ORDER BY createdDateTime DESC";
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getDispatchDetails = async (departmentId, callback) => {
