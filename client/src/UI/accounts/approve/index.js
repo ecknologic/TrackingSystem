@@ -91,7 +91,7 @@ const ApproveAccount = () => {
     }
 
     const getAddresses = async () => {
-        const url = `/customer/getCustomerDeliveryDetails/${accountId}`
+        const url = `/customer/getCustomerDeliveryDetails/${accountId}?isSuperAdmin=true`
         try {
             const { data: [data = {}] } = await http.GET(url)
             const { deliveryDetails = [] } = data

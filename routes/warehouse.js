@@ -17,7 +17,7 @@ router.use(function timeLog(req, res, next) {
 
 
 router.get('/getroutes', (req, res) => {
-  let query = "select routeName, routeDescription, departmentId,routeId from routes";
+  let query = "select routeName, routeDescription, departmentId,routeId from routes ORDER BY createdDateTime DESC";
   db.query(query, (err, results) => {
     if (err) res.status(500).json(err.sqlMessage);
     res.send(JSON.stringify(results));
