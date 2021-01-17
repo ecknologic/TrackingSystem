@@ -126,7 +126,7 @@ const Dashboard = ({ reFetch }) => {
         let clone = deepClone(products);
         const index = clone.findIndex(item => item.productId === data.productId)
         const { price, tax } = data
-        const totalAmount = (price * tax / 100) + price
+        const totalAmount = (price * tax) / 100 + Number(price)
         data.totalAmount = totalAmount
         clone[index] = data;
         setProducts(clone)
