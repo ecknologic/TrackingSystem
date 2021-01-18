@@ -226,6 +226,11 @@ export const deliveryColumns = [
 ]
 export const orderColumns = [
     {
+        title: 'Id',
+        dataIndex: 'id',
+        key: 'id',
+    },
+    {
         title: 'Contact Person',
         dataIndex: 'contactPerson',
         key: 'contactPerson',
@@ -244,6 +249,11 @@ export const orderColumns = [
         title: 'Route',
         dataIndex: 'route',
         key: 'route',
+    },
+    {
+        title: 'Driver',
+        dataIndex: 'driverName',
+        key: 'driverName',
     },
     {
         title: 'Actions',

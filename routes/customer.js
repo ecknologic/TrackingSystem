@@ -318,7 +318,10 @@ router.get("/getOrders", (req, res) => {
             result["products"] = response;
             arr.push(result)
           }
-          if (count == results.length) res.json(arr);
+          if (count == results.length) {
+            let sortedData = arr.sort((a, b) => b.registeredDate - a.registeredDate)
+            res.json(sortedData);
+          }
         });
       }
     }

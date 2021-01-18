@@ -54,7 +54,7 @@ const Orders = () => {
     }, [])
 
     const getRoutes = async () => {
-        const data = await http.GET('/warehouse/getroutes')
+        const data = await http.GET(`/customer/getRoutes/${warehouseId}`)
         setRoutes(data)
     }
 
@@ -167,14 +167,16 @@ const Orders = () => {
     }
 
     const dataSource = useMemo(() => orders.map((order) => {
-        const { deliveryDetailsId: key, contactPerson, location, routeName, products } = order
+        const { deliveryDetailsId: key, contactPerson, location, routeName, driverName, products } = order
         return {
             key,
+            id: `${key}`,
             address: location,
             route: routeName,
             contactPerson,
+            driverName: driverName || "Not Assigned",
             orderDetails: renderOrderDetails(getProductsForUI(products)),
-            action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, order)} />
+            action: <Actions options={getActions(driverName)} onSelect={({ key }) => handleMenuSelect(key, order)} />
         }
     }), [orders])
 
@@ -260,8 +262,8 @@ const renderOrderDetails = ({ product20L, product1L, product500ML, product250ML 
     500 ml - ${product500ML} boxes, 250 ml - ${product250ML} boxes
     `
 }
-const options = [
-    <Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>,
-    <Menu.Item key="create-delivery" icon={<EditIconGrey />}>Create Delivery</Menu.Item>
-]
+const getActions = (driverName) => {
+    return [<Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>,
+    <Menu.Item key="create-delivery" icon={<EditIconGrey />}>{`${driverName ? "Update Delivery" : "Create Delivery"}`}</Menu.Item>]
+}
 export default Orders
