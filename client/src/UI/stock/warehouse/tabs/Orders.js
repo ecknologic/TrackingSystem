@@ -32,6 +32,7 @@ const Orders = () => {
     const [confirmModal, setConfirmModal] = useState(false)
     const [fetchList, setFetchList] = useState(false)
     const [shake, setShake] = useState(false)
+    const [label, setLabel] = useState('Create')
 
     const routeOptions = useMemo(() => getRouteOptions(routes), [routes])
     const driverOptions = useMemo(() => getDriverOptions(drivers), [drivers])
@@ -105,6 +106,7 @@ const Orders = () => {
         if (key === 'view') {
         }
         else if (key === 'create-delivery') {
+            if (data.driverName) setLabel("Update")
             setFormData(data)
             setDCModal(true)
         }
@@ -164,6 +166,7 @@ const Orders = () => {
         setBtnDisabled(false)
         setFormData({})
         setFormErrors({})
+        setLabel("Create")
     }
 
     const dataSource = useMemo(() => orders.map((order) => {
@@ -230,8 +233,8 @@ const Orders = () => {
                 btnDisabled={btnDisabled}
                 onOk={handleSubmit}
                 onCancel={handleDCModalCancel}
-                title='Create Delivery'
-                okTxt='Create'
+                title={`${label} Delivery`}
+                okTxt={label}
             >
                 <DeliveryForm
                     data={formData}

@@ -452,6 +452,12 @@ router.delete('/deleteDelivery/:deliveryId', (req, res) => {
     else res.json("Deleted successfully")
   })
 })
+router.put('/updateCustomerOderDetails', (req, res) => {
+  customerQueries.updateOrderDetails(req.body, (err, success) => {
+    if (err) res.status(500).json(dbError(err))
+    else res.json("Update successfully")
+  })
+})
 router.post('/updateDeliveryDetails', (req, res) => {
   var deliveryDetails = req.body
   if (deliveryDetails.length) {

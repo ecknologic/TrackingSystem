@@ -45,6 +45,12 @@ customerQueries.updateDCNo = (insertedId, callback) => {
     let query = "UPDATE customerorderdetails SET DCNO=? WHERE customerOrderId=?"
     executePostOrUpdateQuery(query, [`DC-${insertedId}`, insertedId], callback)
 }
+customerQueries.updateOrderDetails = (input, callback) => {
+    let { routeId, driverId, customerOrderId } = input
+    let query = `update customerorderdetails SET routeId=?,driverId=? where customerOrderId=${customerOrderId}`;
+    let requestBody = [routeId, driverId]
+    executePostOrUpdateQuery(query, requestBody, callback)
+}
 customerQueries.deleteDeliveryAddress = (deliveryId, callback) => {
     let query = "update DeliveryDetails set deleted=1 where deliveryDetailsId=?"
     executePostOrUpdateQuery(query, [deliveryId], callback)
