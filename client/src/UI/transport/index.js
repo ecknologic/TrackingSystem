@@ -1,5 +1,5 @@
 import { Tabs } from 'antd';
-import React, { Fragment, useEffect, useMemo, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import Dashboard from './tabs/Routes';
 import { http } from '../../modules/http';
 import CreateRoute from './tabs/CreateRoute';
@@ -10,6 +10,7 @@ import '../../sass/products.scss';
 const Transport = () => {
 
     const [activeTab, setActiveTab] = useState('1')
+    const [reFetch, setreFetch] = useState(false)
     const [departmentList, setDepartmentList] = useState([])
     const departmentOptions = useMemo(() => getDepartmentOptions(departmentList), [departmentList])
 
@@ -24,9 +25,10 @@ const Transport = () => {
         setDepartmentList(data)
     }
 
-    const handleGoToTab = (key) => {
+    const handleGoToTab = useCallback((key) => {
+        setreFetch(!reFetch)
         setActiveTab(key)
-    }
+    }, [reFetch])
 
     const handleTabClick = (key) => {
         setActiveTab(key)
@@ -42,7 +44,7 @@ const Transport = () => {
                         activeKey={activeTab}
                     >
                         <TabPane tab="Routes" key="1">
-                            <Dashboard departmentOptions={departmentOptions} />
+                            <Dashboard departmentOptions={departmentOptions} reFetch={reFetch} />
                         </TabPane>
                         <TabPane tab="Create New Route" key="2">
                             <CreateRoute departmentOptions={departmentOptions} goToTab={handleGoToTab} />

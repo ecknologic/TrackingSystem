@@ -11,7 +11,7 @@ customerQueries.getOrdersByDepartmentId = (departmentId, callback) => {
     executeGetParamsQuery(query, [departmentId], callback)
 }
 customerQueries.getRoutesByDepartmentId = (departmentId, callback) => {
-    let query = "SELECT RouteId,RouteName from routes WHERE departmentId=" + departmentId
+    let query = `SELECT r.RouteId,r.RouteName,r.RouteDescription,d.departmentName from routes r INNER JOIN departmentmaster d ON d.departmentId=r.departmentId WHERE r.departmentId=${departmentId} ORDER BY r.createdDateTime DESC`
     executeGetQuery(query, callback)
 }
 customerQueries.getCustomersByCustomerType = (customerType, callback) => {
@@ -50,8 +50,9 @@ customerQueries.updateOrderDetails = (input, callback) => {
     let { routeId, driverId, customerOrderId } = input
     let query = `update customerorderdetails SET routeId=?,driverId=? where customerOrderId=${customerOrderId}`;
     let requestBody = [routeId, driverId]
-    executePostOrUpdateQuery(query, requestBody)
-    return getDeliverysByCustomerOrderId(customerOrderId, callback)
+    executePostOrUpdateQuery(query, requestBody, () => {
+        return getDeliverysByCustomerOrderId(customerOrderId, callback)
+    })
 }
 customerQueries.deleteDeliveryAddress = (deliveryId, callback) => {
     let query = "update DeliveryDetails set deleted=1 where deliveryDetailsId=?"

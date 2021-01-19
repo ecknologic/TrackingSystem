@@ -4,7 +4,7 @@ import RouteForm from '../forms/Route';
 import { http } from '../../../modules/http'
 import Actions from '../../../components/Actions';
 import Spinner from '../../../components/Spinner';
-import { TRACKFORM } from '../../../utils/constants';
+import { getRole, getWarehoseId, TRACKFORM } from '../../../utils/constants';
 import CustomModal from '../../../components/CustomModal';
 import { routeColumns } from '../../../assets/fixtures';
 import { EditIconGrey } from '../../../components/SVG_Icons';
@@ -13,7 +13,8 @@ import ConfirmMessage from '../../../components/ConfirmMessage';
 import CustomPagination from '../../../components/CustomPagination';
 import { deepClone, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
 
-const RoutesDashboard = ({ departmentOptions }) => {
+const RoutesDashboard = ({ reFetch, departmentOptions }) => {
+    const role = getRole()
     const [routes, setRoutes] = useState([])
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
@@ -26,13 +27,16 @@ const RoutesDashboard = ({ departmentOptions }) => {
     const [confirmModal, setConfirmModal] = useState(false)
     const [shake, setShake] = useState(false)
 
+    const isWHAdmin = useMemo(() => role === 'WarehouseAdmin', [role])
+
     useEffect(() => {
         setLoading(true)
         getRoutes()
-    }, [])
+    }, [reFetch])
 
     const getRoutes = async () => {
-        const url = '/warehouse/getroutes'
+        const depId = getWarehoseId()
+        const url = getUrl(isWHAdmin, depId)
 
         const data = await http.GET(url)
         setRoutes(data)
@@ -63,8 +67,8 @@ const RoutesDashboard = ({ departmentOptions }) => {
 
     const handleSubmit = async () => {
         const formErrors = {}
-        const { RouteName, RouteDescription, departmentId } = formData
-        if (!departmentId) formErrors.departmentId = 'Required'
+        let { RouteName, RouteDescription, departmentId } = formData
+        if (!isWHAdmin && !departmentId) formErrors.departmentId = 'Required'
         if (!RouteName) formErrors.RouteName = 'Required'
         if (!RouteDescription) formErrors.RouteDescription = 'Required'
 
@@ -74,8 +78,8 @@ const RoutesDashboard = ({ departmentOptions }) => {
             setFormErrors(formErrors)
             return
         }
-
-        let body = { ...formData }
+        departmentId = isWHAdmin ? getWarehoseId() : departmentId
+        let body = { ...formData, departmentId }
         const url = '/warehouse/updateRoute'
         const options = { item: 'Route', v1Ing: 'Updating', v2: 'updated' }
 
@@ -106,13 +110,13 @@ const RoutesDashboard = ({ departmentOptions }) => {
 
     const optimisticUpdate = (data) => {
         let clone = deepClone(routes);
-        const index = clone.findIndex(item => item.routeId === data.routeId)
+        const index = clone.findIndex(item => item.RouteId === data.RouteId)
         clone[index] = data;
         setRoutes(clone)
     }
 
     const dataSource = useMemo(() => routes.map((route) => {
-        const { routeId: key, RouteName, RouteDescription, departmentName } = route
+        const { RouteId: key, RouteName, RouteDescription, departmentName } = route
 
         return {
             key,
@@ -167,6 +171,7 @@ const RoutesDashboard = ({ departmentOptions }) => {
             >
                 <RouteForm
                     data={formData}
+                    isWHAdmin={isWHAdmin}
                     errors={formErrors}
                     onChange={handleChange}
                     departmentOptions={departmentOptions}
@@ -183,6 +188,11 @@ const RoutesDashboard = ({ departmentOptions }) => {
             </ConfirmModal>
         </div>
     )
+}
+
+const getUrl = (isWHAdmin, id) => {
+    if (isWHAdmin) return `/customer/getRoutes/${id}`
+    return '/warehouse/getroutes'
 }
 
 const options = [<Menu.Item key="edit" icon={<EditIconGrey />}>Edit</Menu.Item>]

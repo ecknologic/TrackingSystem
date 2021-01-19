@@ -4,7 +4,7 @@ import CustomInput from '../../../components/CustomInput';
 import SelectInput from '../../../components/SelectInput';
 import { resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
 
-const RouteForm = ({ data, errors, onChange, departmentOptions }) => {
+const RouteForm = ({ data, errors, onChange, departmentOptions, isWHAdmin }) => {
 
     const { RouteName, RouteDescription, departmentId } = data
 
@@ -35,15 +35,19 @@ const RouteForm = ({ data, errors, onChange, departmentOptions }) => {
                     />
                 </div>
             </div>
-            <div className='row'>
-                <div className='input-container'>
-                    <InputLabel name="Department" error={errors.departmentId} mandatory />
-                    <SelectInput track
-                        options={departmentOptions} value={departmentId}
-                        error={errors.departmentId} onSelect={(value) => onChange(value, 'departmentId')}
-                    />
-                </div>
-            </div>
+            {
+                isWHAdmin ? null
+                    :
+                    <div className='row'>
+                        <div className='input-container'>
+                            <InputLabel name="Department" error={errors.departmentId} mandatory />
+                            <SelectInput track
+                                options={departmentOptions} value={departmentId}
+                                error={errors.departmentId} onSelect={(value) => onChange(value, 'departmentId')}
+                            />
+                        </div>
+                    </div>
+            }
         </div>
     )
 }

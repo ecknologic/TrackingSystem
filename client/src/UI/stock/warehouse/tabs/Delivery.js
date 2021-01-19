@@ -174,7 +174,7 @@ const Delivery = ({ date }) => {
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
-            let { data: [data = {}] } = await http[method](url, body)
+            let [data = {}] = await http[method](url, body)
             showToast(options)
             optimisticUpdate(data, method)
             onModalClose(true)
@@ -186,7 +186,7 @@ const Delivery = ({ date }) => {
     const optimisticUpdate = (data, method) => {
         if (method === 'PUT') {
             const clone = deepClone(deliveries)
-            const index = clone.findIndex(dc => dc.dcNo === data.dcNo)
+            const index = clone.findIndex(dc => dc.customerOrderId === data.customerOrderId)
             clone[index] = data
             setDeliveries(clone)
         }

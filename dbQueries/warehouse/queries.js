@@ -45,9 +45,9 @@ warehouseQueries.createWarehouse = async (input, callback) => {
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 warehouseQueries.createRoute = async (input, callback) => {
-    const { routeName, routeDescription, departmentId } = input
+    const { RouteName, RouteDescription, departmentId } = input
     let query = "insert into routes (RouteName, RouteDescription, departmentId) values(?,?,?)";
-    let requestBody = [routeName, routeDescription, departmentId]
+    let requestBody = [RouteName, RouteDescription, departmentId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
@@ -66,9 +66,10 @@ warehouseQueries.updateWarehouse = async (input, callback) => {
 }
 
 warehouseQueries.updateRoute = async (input, callback) => {
-    const { routeName, routeDescription, departmentId, routeId } = input
+    const { RouteName, RouteDescription, departmentId, RouteId } = input
+    console.log('adfsfsadfs', input)
     let query = "update routes set RouteName=?, RouteDescription=?, departmentId=? where RouteId=?";
-    let requestBody = [routeName, routeDescription, departmentId, routeId]
+    let requestBody = [RouteName, RouteDescription, departmentId, RouteId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 module.exports = warehouseQueries

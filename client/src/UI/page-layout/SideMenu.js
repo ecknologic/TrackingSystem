@@ -82,9 +82,9 @@ const SideMenu = () => {
                                 {selected === '/manage-stock' ? <ProjectIcon /> : <ProjectIconLight />}
                                 <span>Manage Stock</span>
                             </Item>
-                            <Item key='/manage-routes' onClick={handleMenuSelect} style={{ pointerEvents: 'none' }}>
+                            <Item key='/manage-routes' onClick={handleMenuSelect}>
                                 {selected === '/manage-routes' ? <FriendsIcon /> : <FriendsIconLight />}
-                                <span>Manage Routes</span>
+                                <span>Routes</span>
                             </Item>
                             <Item key='/reports' onClick={handleMenuSelect} style={{ pointerEvents: 'none' }}>
                                 {selected === '/reports' ? <DocIcon /> : <DocIconLight />}

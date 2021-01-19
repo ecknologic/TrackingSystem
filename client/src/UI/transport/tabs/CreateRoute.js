@@ -1,16 +1,19 @@
 import { message } from 'antd';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import RouteForm from '../forms/Route';
 import { http } from '../../../modules/http';
-import { validateNames } from '../../../utils/validations';
+import { getRole, getWarehoseId } from '../../../utils/constants';
 import CustomButton from '../../../components/CustomButton';
 import { isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
 
 const CreateRoute = ({ goToTab, departmentOptions }) => {
+    const role = getRole()
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [shake, setShake] = useState(false)
+
+    const isWHAdmin = useMemo(() => role === 'WarehouseAdmin', [role])
 
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
@@ -19,8 +22,8 @@ const CreateRoute = ({ goToTab, departmentOptions }) => {
 
     const handleSubmit = async () => {
         const formErrors = {}
-        const { RouteName, RouteDescription, departmentId } = formData
-        if (!departmentId) formErrors.departmentId = 'Required'
+        let { RouteName, RouteDescription, departmentId } = formData
+        if (!isWHAdmin && !departmentId) formErrors.departmentId = 'Required'
         if (!RouteName) formErrors.RouteName = 'Required'
         if (!RouteDescription) formErrors.RouteDescription = 'Required'
 
@@ -31,7 +34,8 @@ const CreateRoute = ({ goToTab, departmentOptions }) => {
             return
         }
 
-        let body = { ...formData }
+        departmentId = isWHAdmin ? getWarehoseId() : departmentId
+        let body = { ...formData, departmentId }
         const url = '/warehouse/createRoute'
         const options = { item: 'Route', v1Ing: 'Adding', v2: 'added' }
 
@@ -63,6 +67,7 @@ const CreateRoute = ({ goToTab, departmentOptions }) => {
             <RouteForm
                 data={formData}
                 errors={formErrors}
+                isWHAdmin={isWHAdmin}
                 onChange={handleChange}
                 departmentOptions={departmentOptions}
             />
