@@ -204,6 +204,8 @@ const ApproveAccount = () => {
         setEditMode(false)
         setSaveDisabled(false)
         setRemovedAddressIds([])
+        setAddressesErrors({})
+        setAccountErrors({})
     }
 
     const updateCustomer = async (body) => {
@@ -216,7 +218,12 @@ const ApproveAccount = () => {
         }
     }
 
-    const updateAddresses = async (body) => {
+    const updateAddresses = async (deliveries) => {
+        const body = deliveries.map(item => {
+            delete item.isApproved //should not send isApproved while update
+            return item
+        })
+
         try {
             const url = '/customer/updateDeliveryDetails'
             if (body.length) {
@@ -263,7 +270,7 @@ const ApproveAccount = () => {
         const sessionAddresses = getSessionItems('address')
         const index = sessionAddresses.findIndex((item) => item.deliveryDetailsId === id)
         const address = sessionAddresses[index]
-        address.isApproved = Number(!isDraft)
+        address.isApproved = Number(isDraft)
         setAddresses(sessionAddresses)
         sessionStorage.setItem(`address${index}`, JSON.stringify(address))
     }
@@ -313,7 +320,7 @@ const ApproveAccount = () => {
     const genExtra = (id, isApproved, index) => (
         editMode ? (
             <div className='extra-icons' onClick={e => e.stopPropagation()}>
-                <Checkbox checked={!isApproved} onChange={({ target: { checked } }) => handleAddressDraft(checked, id)}
+                <Checkbox checked={isApproved} onChange={({ target: { checked } }) => handleAddressDraft(checked, id)}
                     className='cb-tiny cb-secondary'>
                     Draft
                     </Checkbox>
@@ -370,12 +377,13 @@ const ApproveAccount = () => {
                                 {
                                     addresses.map((item, index) => {
                                         const { deliveryLocation, address, isApproved, deliveryDetailsId: id } = item
+                                        console.log('isApproved...', isApproved)
                                         return (
                                             <Panel
                                                 header={<CollapseHeader
                                                     title={deliveryLocation}
                                                     msg={address}
-                                                    extra={genExtra(id, isApproved, index)}
+                                                    extra={genExtra(id, Boolean(isApproved), index)}
                                                 />}
                                                 key={String(index)}
                                                 forceRender

@@ -131,7 +131,9 @@ $textColorDisabled:rgba(0,0,0,0.55);
     border-bottom-left-radius: .6em !important;
     border-bottom-right-radius: .6em !important;
 }
-
+.ant-collapse-content-box > .app-view-info {
+    width: 70%;
+}
 // -------------- antd Message styles ------------------- //
 
 .ant-message-notice-content {
@@ -1428,7 +1430,7 @@ textarea {
     display: flex;
     flex-direction: column;
     padding: .5em 0;
-    width: 70%;
+    width: 60%;
 
     .input-container {
         display: flex;

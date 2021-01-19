@@ -51,20 +51,6 @@
             background-color: #FFF;
             box-shadow: 0 2px 4px 0 rgba(0,0,0,0.05);
             
-            // &::-webkit-scrollbar {
-            //     width: .3em;
-            //     height: .3em;
-            // }
-        
-            // &::-webkit-scrollbar-thumb {
-            //     background-color:#C8C8C9;
-            //     border-radius: 1em;
-            // }
-        
-            // &::-webkit-scrollbar-corner {
-            //     display: none;
-            // }
-
             #app-side-menu {
                 height: 100%;
                 border: none;
@@ -94,6 +80,28 @@
                     }
                 }
                 .ant-menu-item-selected {
+                    color: #0062FF;
+                }
+
+                .ant-menu-submenu {
+                    width: 100%;
+                    margin: 0;
+                    margin-top: 1.2em;
+                    font-family: "PoppinsMedium500";
+                    color: #171725;
+
+                    .ant-menu-submenu-title {
+                        margin: 0;
+                        padding: 0 1em !important;
+                        background-color: #fff;
+
+                        &:hover {
+                            color: #0062FF;
+                        }
+                    }
+                }
+
+                .ant-menu-submenu-selected {
                     color: #0062FF;
                 }
             }

@@ -38,10 +38,6 @@ const Orders = () => {
     const driverOptions = useMemo(() => getDriverOptions(drivers), [drivers])
     const vehicleOptions = useMemo(() => getVehicleOptions(vehicles), [vehicles])
 
-    const customerOrderIdRef = useRef()
-    const DCFormTitleRef = useRef()
-    const DCFormBtnRef = useRef()
-
     useEffect(() => {
         if (fetchList) {
             getRoutes()

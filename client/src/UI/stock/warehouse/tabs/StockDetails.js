@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import EmptyCansForm from '../forms/EmptyCans';
 import { http } from '../../../../modules/http';
 import ArrivedStockForm from '../forms/ArrivedStock';
 import DCPanel from '../../../../components/DCPanel';
@@ -11,15 +12,19 @@ import CASPanel from '../../../../components/CASPanel';
 import CustomModal from '../../../../components/CustomModal';
 import ConfirmModal from '../../../../components/CustomModal';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
+import { validateNumber, validateASValues } from '../../../../utils/validations';
 import { getWarehoseId, TODAYDATE, TRACKFORM } from '../../../../utils/constants';
 import { getASValuesForDB, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
-import { validateNumber, validateASValues } from '../../../../utils/validations';
+import { getDriverOptions, getWarehouseOptions, getVehicleOptions } from '../../../../assets/fixtures';
 
 const StockDetails = ({ date }) => {
     const warehouseId = getWarehoseId()
     const [CAS, setCAS] = useState({})
     const [OFD, setOFC] = useState({})
     const [EC, setEC] = useState({})
+    const [motherplantList, setMotherplantList] = useState([])
+    const [driverList, setDriverList] = useState([])
+    const [vehicleList, setVehicleList] = useState([])
     const [newStock, setNewStock] = useState({})
     const [arrivedStock, setArrivedStock] = useState([])
     const [formData, setFormData] = useState({})
@@ -27,7 +32,13 @@ const StockDetails = ({ date }) => {
     const [confirmModal, setConfirmModal] = useState(false)
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [modal, setModal] = useState(false)
+    const [addModal, setAddModal] = useState(false)
+    const [fetchList, setFetchList] = useState(false)
     const [shake, setShake] = useState(false)
+
+    const motherplantOptions = useMemo(() => getWarehouseOptions(motherplantList), [motherplantList])
+    const driverOptions = useMemo(() => getDriverOptions(driverList), [driverList])
+    const vehicleOptions = useMemo(() => getVehicleOptions(vehicleList), [vehicleList])
 
     useEffect(() => {
         const isToday = dayjs(date).isSame(dayjs(TODAYDATE))
@@ -41,6 +52,31 @@ const StockDetails = ({ date }) => {
             setArrivedStock([])
         }
     }, [date])
+
+    useEffect(() => {
+        if (fetchList) {
+            getMotherplantList()
+            getDriverList()
+            getVehicleList()
+        }
+    }, [fetchList])
+
+    const getMotherplantList = async () => {
+        const data = await http.GET('/motherPlant/getDepartmentsList?departmentType=MotherPlant')
+        setMotherplantList(data)
+    }
+
+    const getDriverList = async () => {
+        const url = `/warehouse/getdriverDetails/${warehouseId}`
+        const data = await http.GET(url)
+        setDriverList(data)
+    }
+
+    const getVehicleList = async () => {
+        const url = `/motherPlant/getVehicleDetails`
+        const data = await http.GET(url)
+        setVehicleList(data)
+    }
 
     const getCAS = async () => {
         const url = `warehouse/currentActiveStockDetails/${date}?warehouseId=${warehouseId}`
@@ -79,6 +115,13 @@ const StockDetails = ({ date }) => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
+        if (key === 'driverId') {
+            let selectedDriver = driverList.find(driver => driver.driverId === Number(value))
+            let { mobileNumber = null } = selectedDriver || {}
+            setFormData(data => ({ ...data, mobileNumber }))
+            setFormErrors(errors => ({ ...errors, mobileNumber: '' }))
+        }
+
         if (key === 'isDamaged') {
             if (!value) {
                 let damaged20LCans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes, damagedDesc;
@@ -102,6 +145,11 @@ const StockDetails = ({ date }) => {
             getStockDetailsByDC(dcItem.dcNo)
             setModal(true)
         }
+    }
+
+    const onAddEmptyCans = () => {
+        setFetchList(true)
+        setAddModal(true)
     }
 
     const handleArrivedStockConfirm = async () => {
@@ -143,6 +191,7 @@ const StockDetails = ({ date }) => {
             return setConfirmModal(true)
         }
         setModal(false)
+        setAddModal(false)
         setBtnDisabled(false)
         setFormData({})
         setFormErrors({})
@@ -171,7 +220,7 @@ const StockDetails = ({ date }) => {
                 <span className='title'>Empty Cans details</span>
                 <span className='msg'>Empty and damaged cans are not included in correct stock details</span>
             </div>
-            <ECPanel data={EC} />
+            <ECPanel data={EC} onAdd={onAddEmptyCans} />
             <ERCPanel />
             <DCPanel />
             <CustomModal
@@ -187,6 +236,25 @@ const StockDetails = ({ date }) => {
                 <ArrivedStockForm
                     data={formData}
                     errors={formErrors}
+                    onChange={handleChange}
+                />
+            </CustomModal>
+            <CustomModal
+                className={`app-form-modal app-view-modal stock-details-modal ${shake ? 'app-shake' : ''}`}
+                visible={addModal}
+                btnDisabled={btnDisabled}
+                onOk={handleArrivedStockConfirm}
+                onCancel={handleModalCancel}
+                title='Empty Cans Return to Mother Plant'
+                okTxt='Return Cans'
+                track
+            >
+                <EmptyCansForm
+                    data={formData}
+                    errors={formErrors}
+                    driverOptions={driverOptions}
+                    vehicleOptions={vehicleOptions}
+                    motherplantOptions={motherplantOptions}
                     onChange={handleChange}
                 />
             </CustomModal>
