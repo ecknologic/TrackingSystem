@@ -226,7 +226,7 @@ export const deliveryColumns = [
 ]
 export const orderColumns = [
     {
-        title: 'Id',
+        title: 'ID',
         dataIndex: 'id',
         key: 'id',
     },

@@ -54,6 +54,29 @@ const DeliveryDetails = ({ recentDelivery, ...rest }) => {
         } catch (error) { }
     }
 
+    const fetchDelivery = async (id) => {
+        const url = `/customer/getDeliveryDetails/${id}`
+        const options = { item: 'Delivery details', v1Ing: 'Fetching', v2: 'fetched' }
+
+        try {
+            showToast({ ...options, action: 'loading' })
+            let { data: [data] } = await http.GET(url)
+            const { location, products, deliveryDays, gstProof, departmentId } = data
+            const gst = base64String(gstProof?.data)
+            const devDays = getDevDays(deliveryDays)
+            const productsUI = getProductsForUI(products)
+            const formData = { ...data, gstProof: gst, deliveryLocation: location, ...productsUI }
+            setDevDays(devDays)
+            handleGetNewRouteList(departmentId)
+            setFormData(formData)
+            setViewedArr([...viewedArr, formData])
+            setViewModal(true)
+            showToast(options)
+        } catch (error) {
+            message.destroy()
+        }
+    }
+
     const getRouteList = async (departmentId) => {
         const data = await http.GET(`/customer/getRoutes/${departmentId}`)
         setRouteList(data)
@@ -159,31 +182,16 @@ const DeliveryDetails = ({ recentDelivery, ...rest }) => {
         setFormData(data => ({ ...data, [name]: '' }))
     }
 
-    const handleClick = async ({ deliveryDetailsId }) => {
-        const options = { item: 'Delivery details', v1Ing: 'Fetching', v2: 'fetched' }
-        let filterViewedArr = viewedArr.filter(item => item.deliveryDetailsId == deliveryDetailsId)
-        if (filterViewedArr.length) {
-            handleGetNewRouteList(filterViewedArr[0].departmentId)
-            setFormData(filterViewedArr[0])
+    const handleClick = async (id) => {
+        const delivery = viewedArr.find(item => item.deliveryDetailsId === id)
+
+        if (delivery) {
+            const { departmentId } = delivery
+            handleGetNewRouteList(departmentId)
+            setFormData(delivery)
             setViewModal(true)
-        } else {
-            try {
-                showToast({ ...options, action: 'loading' })
-                let { data: [data] } = await http.GET(`/customer/getDeliveryDetails/${deliveryDetailsId}`)
-                const { location, products, deliveryDays, gstProof, departmentId } = data
-                const gst = base64String(gstProof?.data)
-                const devDays = getDevDays(deliveryDays)
-                const productsUI = getProductsForUI(products)
-                setDevDays(devDays)
-                handleGetNewRouteList(departmentId)
-                setFormData({ ...data, gstProof: gst, deliveryLocation: location, ...productsUI })
-                setViewModal(true)
-                setViewedArr([...viewedArr, { ...data, gstProof: gst, deliveryLocation: location, ...productsUI }])
-                showToast(options)
-            } catch (error) {
-                message.destroy()
-            }
         }
+        else fetchDelivery(id)
     }
 
     const handleAddressDelete = async (id) => {

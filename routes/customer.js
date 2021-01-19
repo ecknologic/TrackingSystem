@@ -306,7 +306,7 @@ router.get("/getRoutes/:departmentId", (req, res) => {
   })
 });
 router.get("/getOrders", (req, res) => {
-  customerQueries.getOrdersByDepartmentId(departmentId, (err, results) => {
+  customerQueries.getOrdersByDepartmentId(1, (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else if (results.length) {
       let arr = [], count = 0;

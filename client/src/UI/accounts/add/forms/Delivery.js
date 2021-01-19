@@ -10,7 +10,7 @@ import { resetTrackForm, trackAccountFormOnce } from '../../../../utils/Function
 
 const DeliveryForm = (props) => {
 
-    const { data, errors, devDays, onBlur, devDaysError, onChange, onSelect, onDeselect,
+    const { data, errors, devDays, onBlur, devDaysError = {}, disabled, onChange, onSelect, onDeselect,
         warehouseOptions, routeOptions, sameAddress, onUpload, onRemove } = props
 
     const {
@@ -20,6 +20,7 @@ const DeliveryForm = (props) => {
     } = data
 
     const gstUploadDisable = gstProof
+    const isDisabled = disabled || isApproved
 
     useEffect(() => {
         resetTrackForm()
@@ -37,16 +38,16 @@ const DeliveryForm = (props) => {
                     <div className='input-container'>
                         <InputLabel name='GST Number' error={errors.gstNo} />
                         <InputWithAddon maxLength={15} label='VERIFY' uppercase
-                            value={gstNo} placeholder='GST Number' disabled={sameAddress || isApproved}
+                            value={gstNo} placeholder='GST Number' disabled={sameAddress || isDisabled}
                             error={errors.gstNo} onBlur={(value) => onBlur(value, 'gstNo')}
                             onChange={(value) => onChange(value, 'gstNo')}
                         />
                     </div>
                     <div className='input-container app-upload-file-container app-gst-upload-container'>
-                        <DraggerInput onUpload={(file) => onUpload(file, 'gstProof', 'delivery')} disabled={sameAddress || gstUploadDisable || isApproved} />
+                        <DraggerInput onUpload={(file) => onUpload(file, 'gstProof', 'delivery')} disabled={sameAddress || gstUploadDisable || isDisabled} />
                         <div className='upload-preview-container'>
                             <UploadPreviewer value={gstProof} track
-                                title='GST Proof' disabled={sameAddress || isApproved} error={errors.gstProof}
+                                title='GST Proof' disabled={sameAddress || isDisabled} error={errors.gstProof}
                                 onUpload={(file) => onUpload(file, 'gstProof', 'delivery')}
                                 onRemove={() => onRemove('gstProof', 'delivery')} className='last' />
                         </div>
@@ -56,14 +57,14 @@ const DeliveryForm = (props) => {
                     <div className='input-container'>
                         <InputLabel name='Contact Person' error={errors.contactPerson} mandatory />
                         <CustomInput value={contactPerson} placeholder='Add Name'
-                            disabled={isApproved} error={errors.contactPerson}
+                            disabled={isDisabled} error={errors.contactPerson}
                             onChange={(value) => onChange(value, 'contactPerson')}
                         />
                     </div>
                     <div className='input-container'>
                         <InputLabel name='Delivery Location' error={errors.deliveryLocation} mandatory />
                         <CustomInput value={deliveryLocation} placeholder='Add Location'
-                            disabled={isApproved} error={errors.deliveryLocation}
+                            disabled={isDisabled} error={errors.deliveryLocation}
                             onChange={(value) => onChange(value, 'deliveryLocation')}
                         />
                     </div>
@@ -73,7 +74,7 @@ const DeliveryForm = (props) => {
                     <div className='input-container stretch'>
                         <InputLabel name='Address' error={errors.address} mandatory />
                         <CustomInput value={address} placeholder='Add Address'
-                            disabled={sameAddress || isApproved} error={errors.address}
+                            disabled={sameAddress || isDisabled} error={errors.address}
                             onChange={(value) => onChange(value, 'address')}
                         />
                     </div>
@@ -82,14 +83,14 @@ const DeliveryForm = (props) => {
                     <div className='input-container'>
                         <InputLabel name='Warehouse' error={errors.departmentId} mandatory />
                         <SelectInput track options={warehouseOptions} value={departmentId}
-                            disabled={isApproved} error={errors.departmentId}
+                            disabled={isDisabled} error={errors.departmentId}
                             onSelect={(value) => onChange(value, 'departmentId')}
                         />
                     </div>
                     <div className='input-container'>
                         <InputLabel name='Route' error={errors.routeId} mandatory />
                         <SelectInput track options={routeOptions}
-                            value={routeId} disabled={isApproved}
+                            value={routeId} disabled={isDisabled}
                             error={errors.routeId} onSelect={(value) => onChange(value, 'routeId')}
                         />
                     </div>
@@ -97,7 +98,7 @@ const DeliveryForm = (props) => {
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Phone Number' error={errors.phoneNumber} mandatory />
-                        <CustomInput maxLength={10} value={phoneNumber} disabled={isApproved}
+                        <CustomInput maxLength={10} value={phoneNumber} disabled={isDisabled}
                             placeholder='Phone Number' error={errors.phoneNumber}
                             onBlur={(value) => onBlur(value, 'phoneNumber')}
                             onChange={(value) => onChange(value, 'phoneNumber')}
@@ -110,48 +111,48 @@ const DeliveryForm = (props) => {
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='20 Ltrs' />
-                                <CustomInput value={product20L} disabled={isApproved}
+                                <CustomInput value={product20L} disabled={isDisabled}
                                     placeholder='Add' onChange={(value) => onChange(value, 'product20L')} />
                             </div>
                             <div className='input-container'>
                                 <InputLabel name='Price' />
-                                <CustomInput value={price20L} disabled={isApproved}
+                                <CustomInput value={price20L} disabled={isDisabled}
                                     placeholder='Rs' onChange={(value) => onChange(value, 'price20L')} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='1 Ltrs' />
-                                <CustomInput value={product1L} disabled={isApproved}
+                                <CustomInput value={product1L} disabled={isDisabled}
                                     placeholder='Add' onChange={(value) => onChange(value, 'product1L')} />
                             </div>
                             <div className='input-container'>
                                 <InputLabel name='Price' />
-                                <CustomInput value={price1L} disabled={isApproved}
+                                <CustomInput value={price1L} disabled={isDisabled}
                                     placeholder='Rs' onChange={(value) => onChange(value, 'price1L')} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='500 Ml' />
-                                <CustomInput value={product500ML} disabled={isApproved}
+                                <CustomInput value={product500ML} disabled={isDisabled}
                                     placeholder='Add' onChange={(value) => onChange(value, 'product500ML')} />
                             </div>
                             <div className='input-container'>
                                 <InputLabel name='Price' />
-                                <CustomInput value={price500ML} disabled={isApproved}
+                                <CustomInput value={price500ML} disabled={isDisabled}
                                     placeholder='Rs' onChange={(value) => onChange(value, 'price500ML')} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='250 Ml' />
-                                <CustomInput value={product250ML} disabled={isApproved}
+                                <CustomInput value={product250ML} disabled={isDisabled}
                                     placeholder='Add' onChange={(value) => onChange(value, 'product250ML')} />
                             </div>
                             <div className='input-container'>
                                 <InputLabel name='Price' />
-                                <CustomInput value={price250ML} disabled={isApproved}
+                                <CustomInput value={price250ML} disabled={isDisabled}
                                     placeholder='Rs' onChange={(value) => onChange(value, 'price250ML')} />
                             </div>
                         </div>
@@ -162,7 +163,7 @@ const DeliveryForm = (props) => {
                         <InputLabel name='Delivery Days' error={devDaysError.devDays} mandatory />
                         <SelectInput
                             track
-                            mode='multiple' disabled={isApproved}
+                            mode='multiple' disabled={isDisabled}
                             value={devDays} options={dayOptions}
                             error={devDaysError.devDays} onSelect={onSelect} onDeselect={onDeselect}
                         />
@@ -170,7 +171,7 @@ const DeliveryForm = (props) => {
                     <div className='input-container'>
                         <InputLabel name='Deposit Amount' error={errors.depositAmount} mandatory />
                         <CustomInput value={depositAmount}
-                            disabled={isApproved} placeholder='Deposit Amount'
+                            disabled={isDisabled} placeholder='Deposit Amount'
                             error={errors.depositAmount}
                             onChange={(value) => onChange(value, 'depositAmount')}
                         />

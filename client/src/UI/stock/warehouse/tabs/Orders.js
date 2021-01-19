@@ -1,19 +1,19 @@
-import { Menu, Table } from 'antd';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import DeliveryForm from '../forms/Delivery';
+import { Menu, message, Table } from 'antd';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import CreateDelivery from '../forms/Delivery';
 import { http } from '../../../../modules/http';
 import Spinner from '../../../../components/Spinner';
+import Actions from '../../../../components/Actions';
 import QuitModal from '../../../../components/CustomModal';
 import { EditIconGrey } from '../../../../components/SVG_Icons';
-import Actions from '../../../../components/Actions';
 import SearchInput from '../../../../components/SearchInput';
 import CustomModal from '../../../../components/CustomModal';
+import DeliveryForm from '../../../accounts/add/forms/Delivery';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import { getWarehoseId, TRACKFORM } from '../../../../utils/constants';
 import CustomPagination from '../../../../components/CustomPagination';
-import { orderColumns, getRouteOptions, getDriverOptions, getVehicleOptions } from '../../../../assets/fixtures';
-import { validateMobileNumber, validateNames, validateNumber, validateDCValues } from '../../../../utils/validations';
-import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone, getStatusColor, getProductsForUI } from '../../../../utils/Functions';
+import { orderColumns, getRouteOptions, getDriverOptions, getVehicleOptions, getWarehouseOptions } from '../../../../assets/fixtures';
+import { isEmpty, resetTrackForm, showToast, deepClone, getProductsForUI, base64String, getDevDays } from '../../../../utils/Functions';
 
 const Orders = () => {
     const warehouseId = getWarehoseId()
@@ -29,42 +29,80 @@ const Orders = () => {
     const [pageNumber, setPageNumber] = useState(1)
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [DCModal, setDCModal] = useState(false)
+    const [viewModal, setViewModal] = useState(false)
+    const [currentDepId, setCurrentDepId] = useState('')
+    const [warehouseList, setWarehouseList] = useState([])
     const [confirmModal, setConfirmModal] = useState(false)
     const [fetchList, setFetchList] = useState(false)
+    const [devDays, setDevDays] = useState([])
     const [shake, setShake] = useState(false)
     const [label, setLabel] = useState('Create')
+    const [viewedArr, setViewedArr] = useState([])
 
     const routeOptions = useMemo(() => getRouteOptions(routes), [routes])
     const driverOptions = useMemo(() => getDriverOptions(drivers), [drivers])
     const vehicleOptions = useMemo(() => getVehicleOptions(vehicles), [vehicles])
-
-    useEffect(() => {
-        if (fetchList) {
-            getRoutes()
-            getDrivers()
-            getVehicles()
-        }
-    }, [fetchList])
+    const warehouseOptions = useMemo(() => getWarehouseOptions(warehouseList), [warehouseList])
 
     useEffect(() => {
         getOrders()
     }, [])
 
-    const getRoutes = async () => {
-        const data = await http.GET(`/customer/getRoutes/${warehouseId}`)
+    useEffect(() => {
+        if (fetchList) {
+            getRouteList(warehouseId)
+            getDriverList()
+            getVehicleList()
+            getWarehouseList()
+        }
+    }, [fetchList])
+
+    const getRouteList = async (depId) => {
+        const data = await http.GET(`/customer/getRoutes/${depId}`)
         setRoutes(data)
+        setCurrentDepId(depId)
     }
 
-    const getDrivers = async () => {
+    const getDriverList = async () => {
         const url = `/warehouse/getdriverDetails/${warehouseId}`
         const data = await http.GET(url)
         setDrivers(data)
     }
 
-    const getVehicles = async () => {
+    const getVehicleList = async () => {
         const url = `/motherPlant/getVehicleDetails`
         const data = await http.GET(url)
         setVehicles(data)
+    }
+
+    const getWarehouseList = async () => {
+        try {
+            const data = await http.GET('/motherPlant/getDepartmentsList?departmentType=warehouse')
+            setWarehouseList(data)
+        } catch (ex) { }
+    }
+
+    const fetchDelivery = async (id) => {
+        const url = `/customer/getDeliveryDetails/${id}`
+        const options = { item: 'Delivery details', v1Ing: 'Fetching', v2: 'fetched' }
+
+        try {
+            showToast({ ...options, action: 'loading' })
+            let { data: [data] } = await http.GET(url)
+            const { location, products, deliveryDays, gstProof, departmentId } = data
+            const gst = base64String(gstProof?.data)
+            const devDays = getDevDays(deliveryDays)
+            const productsUI = getProductsForUI(products)
+            const formData = { ...data, gstProof: gst, deliveryLocation: location, ...productsUI }
+            setDevDays(devDays)
+            handleGetNewRouteList(departmentId)
+            setFormData(formData)
+            setViewedArr([...viewedArr, formData])
+            setViewModal(true)
+            showToast(options)
+        } catch (error) {
+            message.destroy()
+        }
     }
 
     const getOrders = async () => {
@@ -100,6 +138,7 @@ const Orders = () => {
     const handleMenuSelect = (key, data) => {
         setFetchList(true)
         if (key === 'view') {
+            handleView(data.deliveryDetailsId)
         }
         else if (key === 'create-delivery') {
             if (data.driverName) setLabel("Update")
@@ -112,9 +151,27 @@ const Orders = () => {
         setPageNumber(number)
     }
 
+    const handleGetNewRouteList = (depId) => {
+        if (currentDepId !== depId) {
+            getRouteList(depId)
+        }
+    }
+
     const handleSizeChange = (number, size) => {
         setPageSize(size)
         setPageNumber(number)
+    }
+
+    const handleView = async (id) => {
+        const delivery = viewedArr.find(item => item.deliveryDetailsId === id)
+
+        if (delivery) {
+            const { departmentId } = delivery
+            handleGetNewRouteList(departmentId)
+            setFormData(delivery)
+            setViewModal(true)
+        }
+        else fetchDelivery(id)
     }
 
     const handleSubmit = async () => {
@@ -159,6 +216,7 @@ const Orders = () => {
             return setConfirmModal(true)
         }
         setDCModal(false)
+        setViewModal(false)
         setBtnDisabled(false)
         setFormData({})
         setFormErrors({})
@@ -177,7 +235,7 @@ const Orders = () => {
             orderDetails: renderOrderDetails(getProductsForUI(products)),
             action: <Actions options={getActions(driverName)} onSelect={({ key }) => handleMenuSelect(key, order)} />
         }
-    }), [orders])
+    }), [orders, viewModal])
 
     const handleConfirmModalOk = useCallback(() => {
         setConfirmModal(false);
@@ -186,6 +244,7 @@ const Orders = () => {
     }, [])
 
     const handleDCModalCancel = useCallback(() => onModalClose(), [])
+    const handleViewModalCancel = useCallback(() => onModalClose(), [])
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
 
     const sliceFrom = (pageNumber - 1) * pageSize
@@ -232,7 +291,7 @@ const Orders = () => {
                 title={`${label} Delivery`}
                 okTxt={label}
             >
-                <DeliveryForm
+                <CreateDelivery
                     data={formData}
                     errors={formErrors}
                     driverOptions={driverOptions}
@@ -240,6 +299,25 @@ const Orders = () => {
                     vehicleOptions={vehicleOptions}
                     onChange={handleChange}
                     onBlur={handleBlur}
+                />
+            </CustomModal>
+            <CustomModal
+                className={`app-form-modal ${shake ? 'app-shake' : ''}`}
+                visible={viewModal}
+                btnDisabled={btnDisabled}
+                onOk={handleViewModalCancel}
+                onCancel={handleViewModalCancel}
+                title='Delivery Details'
+                hideCancel
+                okTxt='Close'
+            >
+                <DeliveryForm
+                    disabled
+                    data={formData}
+                    errors={formErrors}
+                    devDays={devDays}
+                    routeOptions={routeOptions}
+                    warehouseOptions={warehouseOptions}
                 />
             </CustomModal>
             <QuitModal
