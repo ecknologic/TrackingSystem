@@ -5,6 +5,15 @@ warehouseQueries.getWarehouseList = async (callback) => {
     let query = `select d.departmentId,d.departmentName,d.address,d.state,d.city,d.isApproved,u.userName as adminName from departmentmaster d INNER JOIN usermaster u on d.adminId=u.userId WHERE d.departmentType='Warehouse' ORDER BY d.createdDateTime DESC`;
     return executeGetQuery(query, callback)
 }
+warehouseQueries.getDeliveryDetails = (input, callback) => {
+    const { date, departmentId } = input
+    let query = "select c.customerOrderId,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS cans20L,c.1LBoxes AS boxes1L,c.500MLBoxes AS boxes500ML,c.250MLBoxes AS boxes250ML,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE DATE(`deliveryDate`) = ? AND warehouseId=? ORDER BY c.dcNo DESC";
+    return executeGetParamsQuery(query, [date, departmentId], callback)
+}
+warehouseQueries.getDeliverysByCustomerOrderId = (customerOrderId, callback) => {
+    let query = "select c.customerOrderId,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS cans20L,c.1LBoxes AS boxes1L,c.500MLBoxes AS boxes500ML,c.250MLBoxes AS boxes250ML,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE customerOrderId=" + customerOrderId;
+    return executeGetQuery(query, callback)
+}
 warehouseQueries.getWarehouseById = async (warehouseId, callback) => {
     let query = `select d.*,u.userName,u.mobileNumber,u.emailid,u.RoleId as roleId from departmentmaster d INNER JOIN usermaster u on d.adminId=u.userId WHERE d.departmentId=${warehouseId}`;
     return executeGetQuery(query, callback)
@@ -57,9 +66,9 @@ warehouseQueries.updateWarehouse = async (input, callback) => {
 }
 
 warehouseQueries.updateRoute = async (input, callback) => {
-    const { routeName, routeDescription, departmentId,routeId } = input
+    const { routeName, routeDescription, departmentId, routeId } = input
     let query = "update routes set RouteName=?, RouteDescription=?, departmentId=? where RouteId=?";
-    let requestBody = [routeName, routeDescription, departmentId,routeId]
+    let requestBody = [routeName, routeDescription, departmentId, routeId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 module.exports = warehouseQueries

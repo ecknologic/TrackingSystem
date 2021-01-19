@@ -1,4 +1,5 @@
 const { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery } = require('../../utils/functions.js');
+const { getDeliverysByCustomerOrderId } = require('../warehouse/queries.js');
 let customerQueries = {}
 
 customerQueries.getCustomerDetails = (customerId, callback) => {
@@ -49,7 +50,8 @@ customerQueries.updateOrderDetails = (input, callback) => {
     let { routeId, driverId, customerOrderId } = input
     let query = `update customerorderdetails SET routeId=?,driverId=? where customerOrderId=${customerOrderId}`;
     let requestBody = [routeId, driverId]
-    executePostOrUpdateQuery(query, requestBody, callback)
+    executePostOrUpdateQuery(query, requestBody)
+    return getDeliverysByCustomerOrderId(customerOrderId, callback)
 }
 customerQueries.deleteDeliveryAddress = (deliveryId, callback) => {
     let query = "update DeliveryDetails set deleted=1 where deliveryDetailsId=?"
