@@ -43,8 +43,14 @@ warehouseQueries.insertReturnStockDetails = (input, callback) => {
 }
 warehouseQueries.returnEmptyCansToMotherplant = (input, callback) => {
     const { motherplantId, warehouseId, driverId, vehicleId, emptycans_count, details, isConfirmed = 0 } = input
-    let query = "insert into EmptyCanDetails ( motherplantId, warehouseId, driverId, vehicleId, emptycans_count, details, isConfirmed) values(?,?,?,?,?,?,?)";
+    let query = "insert into EmptyCanDetails (motherplantId,warehouseId,driverId,vehicleId,emptycans_count,details,isConfirmed) values(?,?,?,?,?,?,?)";
     let requestBody = [motherplantId, warehouseId, driverId, vehicleId, emptycans_count, details, isConfirmed]
+    executePostOrUpdateQuery(query, requestBody, callback)
+}
+warehouseQueries.updateMotherplantReturnEmptyCans = (input, callback) => {
+    const { motherplantId, warehouseId, driverId, vehicleId, emptycans_count, details, isConfirmed = 0, id } = input
+    let query = "update EmptyCanDetails set motherplantId=?, warehouseId=?, driverId=?, vehicleId=?, emptycans_count=?, details=?, isConfirmed=? where id=?";
+    let requestBody = [motherplantId, warehouseId, driverId, vehicleId, emptycans_count, details, isConfirmed, id]
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 warehouseQueries.createWarehouse = async (input, callback) => {

@@ -239,11 +239,18 @@ router.get('/getReturnedEmptyCans/:warehouseId', (req, res) => {
     else res.json(results);
   });
 });
-router.get('/returnEmptyCans', (req, res) => {
+router.post('/returnEmptyCans', (req, res) => {
   warehouseQueries.returnEmptyCansToMotherplant(req.body, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else res.json(results);
   });
 });
+router.put('/updateReturnEmptyCans', (req, res) => {
+  warehouseQueries.updateMotherplantReturnEmptyCans(req.body, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.json(results);
+  });
+});
+
 
 module.exports = router;
