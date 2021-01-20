@@ -1,7 +1,7 @@
 import { Menu } from 'antd';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom';
-import { getRole, MARKETINGADMIN, TRACKFORM, WAREHOUSEADMIN, MOTHERPLANTADMIN, SUPERADMIN } from '../../utils/constants';
+import { getRole, MARKETINGADMIN, TRACKFORM, WAREHOUSEADMIN, MOTHERPLANTADMIN, SUPERADMIN, ACCOUNTSADMIN } from '../../utils/constants';
 import { getSideMenuKey, resetTrackForm, getMainPathname } from '../../utils/Functions'
 import ConfirmModal from '../../components/CustomModal';
 import ConfirmMessage from '../../components/ConfirmMessage';
@@ -152,6 +152,24 @@ const SideMenu = () => {
                             <Item key='/materials' onClick={handleMenuSelect}>
                                 {selected === '/materials' ? <FriendsIcon /> : <FriendsIconLight />}
                                 <span>Materials</span>
+                            </Item>
+                            <Item key='/invoice' onClick={handleMenuSelect} style={{ pointerEvents: 'none' }}>
+                                {selected === '/invoice' ? <DocIcon /> : <DocIconLight />}
+                                <span>Invoice</span>
+                            </Item>
+                            <Item key='/settings' onClick={handleMenuSelect} style={{ pointerEvents: 'none' }}>
+                                {selected === '/settings' ? <SettingIcon /> : <SettingIconLight />}
+                                <span>Settings</span>
+                            </Item>
+                        </>
+                        : null
+                }
+                {
+                    ROLE === ACCOUNTSADMIN ?
+                        <>
+                            <Item key='/customers' onClick={handleMenuSelect}>
+                                {selected === '/customers' ? <FriendIcon /> : <FriendIconLight />}
+                                <span>Customers</span>
                             </Item>
                             <Item key='/invoice' onClick={handleMenuSelect} style={{ pointerEvents: 'none' }}>
                                 {selected === '/invoice' ? <DocIcon /> : <DocIconLight />}

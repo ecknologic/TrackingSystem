@@ -36,19 +36,19 @@
 
             .cross {
                 position: absolute;
-                right: -5px;
-                top: -5px;
+                right: -3px;
+                top: -8px;
                 width: 1em;
                 height: 1em;
+                z-index: 1;
                 cursor: pointer;
                 transition: all .3s;
-                z-index: 1;
-                transform: scale(.8);
+                transform: scale(.5);
             }
 
             &:hover {
                 .cross {
-                    transform: scale(1.2);
+                    transform: scale(.75);
                 }
                 .eye {
                     opacity: .9;

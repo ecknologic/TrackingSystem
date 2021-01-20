@@ -5,6 +5,7 @@ export const MANDATORY = "Mandatory Field";
 export const MARKETINGADMIN = 'SalesAndMarketing'
 export const WAREHOUSEADMIN = 'WarehouseAdmin'
 export const SUPERADMIN = 'SuperAdmin'
+export const ACCOUNTSADMIN = 'Accounts'
 export const MOTHERPLANTADMIN = 'MotherPlantAdmin'
 export const TODAYDATE = dayjs().format('YYYY-MM-DD')
 
@@ -41,6 +42,9 @@ export const getRoutesByRole = (role) => {
         case SUPERADMIN:
             return ['/customers', '/materials', '/motherplants', '/:departmentType',
                 '/warehouses', '/staff', '/drivers', '/products', '/routes']
+
+        case ACCOUNTSADMIN:
+            return ['/customers']
 
         case WAREHOUSEADMIN:
             return ['/manage-stock', '/manage-routes']

@@ -8,7 +8,7 @@ import EmployeeCard from '../../../components/EmployeeCard';
 import { getMainPathname } from '../../../utils/Functions';
 import CustomPagination from '../../../components/CustomPagination';
 
-const Dashboard = () => {
+const Dashboard = ({ reFetch }) => {
     const history = useHistory()
     const { pathname } = useLocation()
     const [employees, setEmployees] = useState([])
@@ -25,7 +25,7 @@ const Dashboard = () => {
     useEffect(() => {
         setLoading(true)
         getEmployees()
-    }, [])
+    }, [reFetch])
 
     const getEmployees = async () => {
         const url = getUrl(mainUrl)

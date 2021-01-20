@@ -226,7 +226,7 @@ router.get('/getWarehouseDetails/:warehouseId', (req, res) => {
 
 router.get('/getConfirmedEmptyCans/:warehouseId', (req, res) => {
   let { warehouseId } = req.params;
-  let warehouseQuery = "SELECT (SELECT SUM(c.returnemptycans) FROM customerorderdetails c WHERE c.warehouseid=?)-(SELECT SUM(e.emptycans_count)  FROM EmptyCanDetails e  WHERE e.isconfirmed=1 AND e.warehouse_id=?) AS emptycans";
+  let warehouseQuery = "SELECT (SELECT SUM(c.returnemptycans) FROM customerorderdetails c WHERE c.warehouseid=?)-(SELECT SUM(e.emptycans_count)  FROM EmptyCanDetails e  WHERE e.isconfirmed=1 AND e.warehouseId=?) AS emptycans";
   db.query(warehouseQuery, [warehouseId, warehouseId], (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else res.json(results);
