@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import Remove from '../assets/color/ic_Decline Fill.svg'
-import '../sass/uploadPreviewer.scss'
 import PreviewModal from './PreviewModal';
-import { EyeIconWhite } from '../components/SVG_Icons';
-import { setTrackForm } from '../utils/Functions';
 import UploadInput from './UploadInput';
+import { setTrackForm } from '../utils/Functions';
+import { EyeIconWhite, CloseIconRed } from '../components/SVG_Icons';
+import '../sass/uploadPreviewer.scss'
 
 const UploadPreviewer = ({ title, value, onUpload, onRemove, disabled, className = '', track, error = '' }) => {
 
@@ -21,7 +20,7 @@ const UploadPreviewer = ({ title, value, onUpload, onRemove, disabled, className
             {
                 value ? <div className='img-container'>
                     <img src={value} alt='' />
-                    {!disabled && <img className='cross' src={Remove} onClick={handleRemove} alt='' />}
+                    {!disabled && <CloseIconRed className='cross' onClick={handleRemove} />}
                     <EyeIconWhite className='eye' onClick={() => setModal(true)} />
                     <div className='image-shadow'></div>
                 </div>
