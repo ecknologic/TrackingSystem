@@ -10,7 +10,8 @@ const { Buffer } = require('buffer');
 const multer = require('multer');
 const customerQueries = require('../dbQueries/Customer/queries.js');
 const { customerProductDetails, dbError } = require('../utils/functions.js');
-const { saveToCustomerOrderDetails } = require('./utilities')
+const { saveToCustomerOrderDetails } = require('./utilities');
+const { createInvoice } = require('./Invoice/createInvoice.js');
 let departmentId;
 
 var storage = multer.diskStorage({
@@ -456,6 +457,26 @@ router.put('/updateCustomerOrderDetails', (req, res) => {
   customerQueries.updateOrderDetails(req.body, (err, data) => {
     if (err) res.status(500).json(dbError(err))
     else res.json(data)
+  })
+})
+router.get('/generatePDF', (req, res) => {
+  customerQueries.generatePDF("186",(err, items) => {
+    if (err) res.status(500).json(dbError(err))
+    else {
+      let invoice = {
+        shipping: {
+          name: "John Doe",
+          address: "1234 Main Street",
+          city: "San Francisco",
+          state: "CA",
+          country: "US",
+          postal_code: 94111
+        },
+        items
+      }
+      createInvoice(invoice, "invoice.pdf");
+      res.json(items)
+    }
   })
 })
 router.post('/updateDeliveryDetails', (req, res) => {

@@ -54,6 +54,11 @@ customerQueries.updateOrderDetails = (input, callback) => {
         return getDeliverysByCustomerOrderId(customerOrderId, callback)
     })
 }
+customerQueries.generatePDF = (input, callback) => {
+    const { customerId = 186, fromDate = '2021-01-01', toDate = '2021-01-17' } = input
+    let query = "SELECT c.customerId,c.customerName,c.organizationName,c.address1,d.address,c.gstNo,co.20LCans,co.price20L,co.1LBoxes,co.price1L, co.500MLBoxes,co.price500ML,co.250MLBoxes,co.price250ML FROM customerdetails c INNER JOIN  customerorderdetails co ON c.customerId=co.existingCustomerId INNER JOIN DeliveryDetails d ON d.customer_Id=c.customerId  WHERE c.customerId=?  AND co.isDelivered='Completed' AND( DATE(co.deliveryDate) BETWEEN ? AND ?)"
+    return executeGetParamsQuery(query, [customerId, fromDate, toDate], callback)
+}
 customerQueries.deleteDeliveryAddress = (deliveryId, callback) => {
     let query = "update DeliveryDetails set deleted=1 where deliveryDetailsId=?"
     executePostOrUpdateQuery(query, [deliveryId], callback)
