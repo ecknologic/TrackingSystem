@@ -727,18 +727,18 @@ export const validateDCValues = (data) => {
     const text = 'Required'
     const text2 = 'Incomplete'
 
-    const { routeId, customerName, mobileNumber, address,
+    const { routeId, customerName, phoneNumber, address,
         driverId, twentyLCans, OneLBoxes, fiveHLBoxes, twofiftyLBoxes } = data
 
     if (!routeId) errors.routeId = text
     if (!driverId) errors.driverId = text
     if (!address) errors.address = text
-    if (!mobileNumber) errors.mobileNumber = text
+    if (!phoneNumber) errors.phoneNumber = text
     else {
-        if (String(mobileNumber).length < 10) errors.mobileNumber = text2
+        if (String(phoneNumber).length < 10) errors.phoneNumber = text2
         else {
-            const error = validateMobileNumber(mobileNumber)
-            error && (errors.mobileNumber = error)
+            const error = validateMobileNumber(phoneNumber)
+            error && (errors.phoneNumber = error)
         }
     }
     if (!customerName) errors.customerName = text

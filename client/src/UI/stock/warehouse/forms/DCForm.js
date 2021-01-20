@@ -8,7 +8,7 @@ const DCForm = (props) => {
 
     const { data, errors, routeOptions, disabledItems, onBlur, driverOptions, onChange } = props
 
-    const { routeId, customerName, mobileNumber, address,
+    const { routeId, customerName, phoneNumber, address,
         driverId, cans20L, boxes1L, boxes500ML, boxes250ML } = data
 
     const disableAll = disabledItems === 'ALL' && disabledItems !== 'NONE'
@@ -44,11 +44,11 @@ const DCForm = (props) => {
                         />
                     </div>
                     <div className='input-container'>
-                        <InputLabel name='Phone Number' error={errors.mobileNumber} mandatory />
-                        <CustomInput maxLength={10} value={mobileNumber} disabled={disableAll || disableFew}
-                            placeholder='Phone Number' error={errors.mobileNumber}
-                            onBlur={(value) => onBlur(value, 'mobileNumber')}
-                            onChange={(value) => onChange(value, 'mobileNumber')}
+                        <InputLabel name='Phone Number' error={errors.phoneNumber} mandatory />
+                        <CustomInput maxLength={10} value={phoneNumber} disabled={disableAll || disableFew}
+                            placeholder='Phone Number' error={errors.phoneNumber}
+                            onBlur={(value) => onBlur(value, 'phoneNumber')}
+                            onChange={(value) => onChange(value, 'phoneNumber')}
                         />
                     </div>
                 </div>
