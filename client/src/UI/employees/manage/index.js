@@ -314,9 +314,7 @@ const ManageEmployee = () => {
     }
 
     const handleEdit = () => {
-        if (!isDriver) {
-            getRoleList()
-        }
+        getRoleList()
         getDepartmentList()
         setEditMode(true)
     }
