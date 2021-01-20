@@ -132,10 +132,9 @@ router.post('/createDC', (req, res) => {
       db.query(updateQuery, updateQueryValues, (err1, results1) => {
         if (err1) res.json({ status: 500, message: err.sqlMessage });
         else {
-          let deliveryDetailsQuery = "select c.customerOrderId,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS cans20L,c.1LBoxes AS boxes1L,c.500MLBoxes AS boxes500ML,c.250MLBoxes AS boxes250ML,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid INNER JOIN driverdetails d  ON c.driverId=d.driverid  WHERE customerOrderId =?";
-          db.query(deliveryDetailsQuery, [inserted_id], (deliveryErr, deliveryDetails) => {
+          warehouseQueries.getDeliverysByCustomerOrderId(inserted_id, (deliveryErr, deliveryDetails) => {
             if (deliveryErr) res.json({ status: 500, message: deliveryErr.sqlMessage });
-            else res.json({ status: 200, message: "DC created successfully", data: deliveryDetails })
+            else res.json(deliveryDetails)
           })
         }
       });
@@ -192,8 +191,7 @@ router.post('/confirmStockRecieved', (req, res) => {
 
 router.get('/deliveryDetails/:date', (req, res) => {
   var date = req.params.date;
-  let deliveryDetailsQuery = "select c.customerOrderId,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS cans20L,c.1LBoxes AS boxes1L,c.500MLBoxes AS boxes500ML,c.250MLBoxes AS boxes250ML,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE DATE(`deliveryDate`) = ? AND warehouseId=? ORDER BY c.dcNo DESC";
-  db.query(deliveryDetailsQuery, [date, departmentId], (err, results) => {
+  warehouseQueries.getDeliveryDetails({ date, departmentId }, (err, results) => {
     if (err) res.status(500).json(err.sqlMessage);
     res.send(JSON.stringify(results));
   });

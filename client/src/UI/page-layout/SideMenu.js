@@ -82,9 +82,9 @@ const SideMenu = () => {
                                 {selected === '/manage-stock' ? <ProjectIcon /> : <ProjectIconLight />}
                                 <span>Manage Stock</span>
                             </Item>
-                            <Item key='/manage-routes' onClick={handleMenuSelect} style={{ pointerEvents: 'none' }}>
+                            <Item key='/manage-routes' onClick={handleMenuSelect}>
                                 {selected === '/manage-routes' ? <FriendsIcon /> : <FriendsIconLight />}
-                                <span>Manage Routes</span>
+                                <span>Routes</span>
                             </Item>
                             <Item key='/reports' onClick={handleMenuSelect} style={{ pointerEvents: 'none' }}>
                                 {selected === '/reports' ? <DocIcon /> : <DocIconLight />}
@@ -114,35 +114,41 @@ const SideMenu = () => {
                 {
                     ROLE === SUPERADMIN ?
                         <>
-                            <Item key='/customers' onClick={handleMenuSelect}>
-                                {selected === '/customers' ? <FriendIcon /> : <FriendIconLight />}
-                                <span>Customers</span>
-                            </Item>
-                            <Item key='/products' onClick={handleMenuSelect}>
-                                {selected === '/products' ? <FriendsIcon /> : <FriendsIconLight />}
-                                <span>Products</span>
-                            </Item>
-                            <Item key='/staff' onClick={handleMenuSelect}>
-                                {selected === '/staff' ? <FriendsIcon /> : <FriendsIconLight />}
-                                <span>Staff</span>
-                            </Item>
-                            <Item key='/drivers' onClick={handleMenuSelect}>
-                                {selected === '/drivers' ? <FriendsIcon /> : <FriendsIconLight />}
-                                <span>Drivers</span>
-                            </Item>
-                            <Item key='/routes' onClick={handleMenuSelect}>
-                                {selected === '/routes' ? <FriendsIcon /> : <FriendsIconLight />}
-                                <span>Routes</span>
-                            </Item>
-                            <Item key='/motherplants' onClick={handleMenuSelect}>
-                                {selected === '/motherplants' ? <SettingIcon /> : <SettingIconLight />}
-                                <span>Mother Plants</span>
-                            </Item>
-                            <Item key='/warehouses' onClick={handleMenuSelect}>
-                                {selected === '/warehouses' ? <FriendsIcon /> : <FriendsIconLight />}
-                                <span>Warehouses</span>
-                            </Item>
-
+                            <SubMenu title={
+                                <span>
+                                    {selected === '/invoice' ? <DocIcon /> : <DocIconLight />}
+                                    <span>Create</span>
+                                </span>
+                            }>
+                                <Item key='/customers' onClick={handleMenuSelect}>
+                                    {selected === '/customers' ? <FriendIcon /> : <FriendIconLight />}
+                                    <span>Customers</span>
+                                </Item>
+                                <Item key='/products' onClick={handleMenuSelect}>
+                                    {selected === '/products' ? <FriendsIcon /> : <FriendsIconLight />}
+                                    <span>Products</span>
+                                </Item>
+                                <Item key='/staff' onClick={handleMenuSelect}>
+                                    {selected === '/staff' ? <FriendsIcon /> : <FriendsIconLight />}
+                                    <span>Staff</span>
+                                </Item>
+                                <Item key='/drivers' onClick={handleMenuSelect}>
+                                    {selected === '/drivers' ? <FriendsIcon /> : <FriendsIconLight />}
+                                    <span>Drivers</span>
+                                </Item>
+                                <Item key='/routes' onClick={handleMenuSelect}>
+                                    {selected === '/routes' ? <FriendsIcon /> : <FriendsIconLight />}
+                                    <span>Routes</span>
+                                </Item>
+                                <Item key='/motherplants' onClick={handleMenuSelect}>
+                                    {selected === '/motherplants' ? <SettingIcon /> : <SettingIconLight />}
+                                    <span>Mother Plants</span>
+                                </Item>
+                                <Item key='/warehouses' onClick={handleMenuSelect}>
+                                    {selected === '/warehouses' ? <FriendsIcon /> : <FriendsIconLight />}
+                                    <span>Warehouses</span>
+                                </Item>
+                            </SubMenu>
                             <Item key='/materials' onClick={handleMenuSelect}>
                                 {selected === '/materials' ? <FriendsIcon /> : <FriendsIconLight />}
                                 <span>Materials</span>
@@ -172,5 +178,5 @@ const SideMenu = () => {
     )
 }
 
-const { Item } = Menu
+const { Item, SubMenu } = Menu
 export default SideMenu

@@ -4,7 +4,7 @@ import { DDownIcon } from './SVG_Icons';
 import { setTrackForm } from '../utils/Functions';
 import Scrollbars from 'react-custom-scrollbars-2';
 
-const SelectInput = ({ options, mode, onSelect, onDeselect, value, disabled,
+const SelectInput = ({ options, mode, onSelect, onDeselect, value, disabled, parentNode,
     placeholder = 'Select', track, error = '', className, suffixIcon = <DDownIcon /> }) => {
     const [hasTracked, setHasTracked] = useState(false)
 
@@ -38,6 +38,7 @@ const SelectInput = ({ options, mode, onSelect, onDeselect, value, disabled,
     }
 
     const showScroll = options.length > 8
+    const popupContainer = (node) => parentNode ? node.parentNode : document.getElementById('content')
 
     return (
         <Select
@@ -54,7 +55,7 @@ const SelectInput = ({ options, mode, onSelect, onDeselect, value, disabled,
             onDeselect={handleDeselect}
             dropdownClassName={showScroll && 'select-dropdown-overflow'}
             className={`${className} ${error && 'app-select-error'}`}
-            getPopupContainer={() => document.getElementById('content')}
+            getPopupContainer={popupContainer}
         >
             {options}
         </Select>

@@ -88,6 +88,7 @@ const App = () => {
                   <Route path='/manage-production' render={byRole(<MotherplantStock />)} />
                   <Route path='/manage-dispatches' render={byRole(<Dispatches />)} />
                   <Route path='/manage-materials' render={byRole(<WarehouseMaterials />)} />
+                  <Route path='/manage-routes' render={byRole(<Transport />)} />
                   <Route path='/manage-stock' render={byRole(<WarehouseStock />)} />
                   <Route path='/materials' render={byRole(<MotherplantMaterials />)} />
                   <Route path='/staff/manage/:employeeId' render={byRole(<ManageEmployee />)} />

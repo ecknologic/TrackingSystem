@@ -306,7 +306,7 @@ router.get("/getRoutes/:departmentId", (req, res) => {
   })
 });
 router.get("/getOrders", (req, res) => {
-  customerQueries.getOrdersByDepartmentId(departmentId, (err, results) => {
+  customerQueries.getOrdersByDepartmentId(1, (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else if (results.length) {
       let arr = [], count = 0;
@@ -318,7 +318,10 @@ router.get("/getOrders", (req, res) => {
             result["products"] = response;
             arr.push(result)
           }
-          if (count == results.length) res.json(arr);
+          if (count == results.length) {
+            let sortedData = arr.sort((a, b) => b.registeredDate - a.registeredDate)
+            res.json(sortedData);
+          }
         });
       }
     }
@@ -447,6 +450,12 @@ router.delete('/deleteDelivery/:deliveryId', (req, res) => {
   customerQueries.deleteDeliveryAddress(req.params.deliveryId, (err, success) => {
     if (err) res.status(500).json(dbError(err))
     else res.json("Deleted successfully")
+  })
+})
+router.put('/updateCustomerOrderDetails', (req, res) => {
+  customerQueries.updateOrderDetails(req.body, (err, data) => {
+    if (err) res.status(500).json(dbError(err))
+    else res.json(data)
   })
 })
 router.post('/updateDeliveryDetails', (req, res) => {

@@ -6,10 +6,13 @@ import { resetTrackForm, trackAccountFormOnce } from '../../../../utils/Function
 
 const DCForm = (props) => {
 
-    const { data, errors, routeOptions, disabled, onBlur, driverOptions, onChange } = props
+    const { data, errors, routeOptions, disabledItems, onBlur, driverOptions, onChange } = props
 
     const { routeId, customerName, mobileNumber, address,
         driverId, cans20L, boxes1L, boxes500ML, boxes250ML } = data
+
+    const disableAll = disabledItems === 'ALL' && disabledItems !== 'NONE'
+    const disableFew = disabledItems === 'FEW'
 
     useEffect(() => {
         resetTrackForm()
@@ -27,7 +30,7 @@ const DCForm = (props) => {
                     <div className='input-container stretch'>
                         <InputLabel name='Select Route' error={errors.routeId} mandatory />
                         <SelectInput track options={routeOptions} value={routeId}
-                            error={errors.routeId} disabled={disabled}
+                            error={errors.routeId} disabled={disableAll}
                             onSelect={(value) => onChange(value, 'routeId')}
                         />
                     </div>
@@ -36,13 +39,13 @@ const DCForm = (props) => {
                     <div className='input-container'>
                         <InputLabel name='Person / Shop Name' error={errors.customerName} mandatory />
                         <CustomInput value={customerName} placeholder='Add Name'
-                            disabled={disabled} error={errors.customerName}
+                            disabled={disableAll || disableFew} error={errors.customerName}
                             onChange={(value) => onChange(value, 'customerName')}
                         />
                     </div>
                     <div className='input-container'>
                         <InputLabel name='Phone Number' error={errors.mobileNumber} mandatory />
-                        <CustomInput maxLength={10} value={mobileNumber} disabled={disabled}
+                        <CustomInput maxLength={10} value={mobileNumber} disabled={disableAll || disableFew}
                             placeholder='Phone Number' error={errors.mobileNumber}
                             onBlur={(value) => onBlur(value, 'mobileNumber')}
                             onChange={(value) => onChange(value, 'mobileNumber')}
@@ -53,7 +56,7 @@ const DCForm = (props) => {
                     <div className='input-container stretch'>
                         <InputLabel name='Address' error={errors.address} mandatory />
                         <CustomInput value={address} placeholder='Add Address'
-                            disabled={disabled} error={errors.address}
+                            disabled={disableAll || disableFew} error={errors.address}
                             onChange={(value) => onChange(value, 'address')}
                         />
                     </div>
@@ -61,7 +64,7 @@ const DCForm = (props) => {
                 <div className='input-container stretch'>
                     <InputLabel name='Driver Name' error={errors.driverId} mandatory />
                     <SelectInput track options={driverOptions} value={driverId}
-                        error={errors.driverId} disabled={disabled}
+                        error={errors.driverId} disabled={disableAll}
                         onSelect={(value) => onChange(value, 'driverId')}
                     />
                 </div>
@@ -71,28 +74,28 @@ const DCForm = (props) => {
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='20 Ltrs' />
-                                <CustomInput value={cans20L} disabled={disabled}
+                                <CustomInput value={cans20L} disabled={disableAll || disableFew}
                                     placeholder='Add' onChange={(value) => onChange(value, 'cans20L')} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='1 Ltrs (Box-1x12)' />
-                                <CustomInput value={boxes1L} disabled={disabled}
+                                <CustomInput value={boxes1L} disabled={disableAll || disableFew}
                                     placeholder='Add' onChange={(value) => onChange(value, 'boxes1L')} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='500 Ml (Box-1x12)' />
-                                <CustomInput value={boxes500ML} disabled={disabled}
+                                <CustomInput value={boxes500ML} disabled={disableAll || disableFew}
                                     placeholder='Add' onChange={(value) => onChange(value, 'boxes500ML')} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='250 Ml (Box-1x12)' />
-                                <CustomInput value={boxes250ML} disabled={disabled}
+                                <CustomInput value={boxes250ML} disabled={disableAll || disableFew}
                                     placeholder='Add' onChange={(value) => onChange(value, 'boxes250ML')} />
                             </div>
                         </div>

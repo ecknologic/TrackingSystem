@@ -34,13 +34,12 @@ const Delivery = ({ date }) => {
     const [confirmModal, setConfirmModal] = useState(false)
     const [filterInfo, setFilterInfo] = useState([])
     const [shake, setShake] = useState(false)
+    const [okTxt, setOkTxt] = useState('')
+    const [title, setTitle] = useState('')
+    const [mode, setMode] = useState(false)
 
     const routeOptions = useMemo(() => getRouteOptions(routes), [routes])
     const driverOptions = useMemo(() => getDriverOptions(drivers), [drivers])
-
-    const customerOrderIdRef = useRef()
-    const DCFormTitleRef = useRef()
-    const DCFormBtnRef = useRef()
 
     useEffect(() => {
         getRoutes()
@@ -52,7 +51,7 @@ const Delivery = ({ date }) => {
     }, [date])
 
     const getRoutes = async () => {
-        const data = await http.GET('/warehouse/getroutes')
+        const data = await await http.GET(`/customer/getRoutes/${warehouseId}`)
         setRoutes(data)
     }
 
@@ -123,9 +122,11 @@ const Delivery = ({ date }) => {
 
     const handleMenuSelect = (key, data) => {
         if (key === 'view') {
-            customerOrderIdRef.current = data.customerOrderId
-            DCFormTitleRef.current = data.dcNo
-            DCFormBtnRef.current = 'Update'
+            const { dcNo, isDelivered } = data
+            setTitle(dcNo)
+            const isDisabled = isDelivered === 'Completed'
+            setOkTxt(isDisabled ? 'Close' : 'Update')
+            setMode(isDisabled ? 'view' : 'edit')
             setFormData(data)
             setDCModal(true)
         }
@@ -151,7 +152,7 @@ const Delivery = ({ date }) => {
         }
 
         const dcValues = getDCValuesForDB(formData)
-        const customerOrderId = customerOrderIdRef.current
+        const { customerOrderId } = formData
 
         let url = '/warehouse/createDC'
         let method = 'POST'
@@ -159,7 +160,7 @@ const Delivery = ({ date }) => {
         let v2 = 'created'
 
         if (customerOrderId) {
-            url = '/warehouse/updateDC'
+            url = '/customer/updateCustomerOrderDetails'
             method = 'PUT'
             v1Ing = 'Updating'
             v2 = 'updated'
@@ -173,7 +174,7 @@ const Delivery = ({ date }) => {
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
-            let { data: [data = {}] } = await http[method](url, body)
+            let [data = {}] = await http[method](url, body)
             showToast(options)
             optimisticUpdate(data, method)
             onModalClose(true)
@@ -185,7 +186,7 @@ const Delivery = ({ date }) => {
     const optimisticUpdate = (data, method) => {
         if (method === 'PUT') {
             const clone = deepClone(deliveries)
-            const index = clone.findIndex(dc => dc.dcNo === data.dcNo)
+            const index = clone.findIndex(dc => dc.customerOrderId === data.customerOrderId)
             clone[index] = data
             setDeliveries(clone)
         }
@@ -197,7 +198,6 @@ const Delivery = ({ date }) => {
         if (formHasChanged && !hasSaved) {
             return setConfirmModal(true)
         }
-        customerOrderIdRef.current = undefined
         setDCModal(false)
         setBtnDisabled(false)
         setFormData({})
@@ -226,8 +226,9 @@ const Delivery = ({ date }) => {
     }, [])
 
     const onCreateDC = useCallback(() => {
-        DCFormTitleRef.current = 'Add New DC'
-        DCFormBtnRef.current = 'Save'
+        setMode('create')
+        setTitle('Add New DC')
+        setOkTxt('Save')
         setDCModal(true)
     }, [])
 
@@ -236,7 +237,7 @@ const Delivery = ({ date }) => {
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
-
+    const disabledItems = mode === 'view' ? 'ALL' : mode === 'create' ? 'NONE' : 'FEW'
     return (
         <div className='stock-delivery-container'>
             <div className='header'>
@@ -279,16 +280,15 @@ const Delivery = ({ date }) => {
                 className={`app-form-modal ${shake ? 'app-shake' : ''}`}
                 visible={DCModal}
                 btnDisabled={btnDisabled}
-                onOk={handleDCModalCancel}
+                onOk={mode === 'view' ? handleDCModalCancel : handleSubmit}
                 onCancel={handleDCModalCancel}
-                title={DCFormTitleRef.current}
-                okTxt='Close'
-                hideCancel
-                track
+                title={title}
+                okTxt={okTxt}
+                hideCancel={mode === 'view'}
             >
                 <DCForm
                     data={formData}
-                    disabled
+                    disabledItems={disabledItems}
                     errors={formErrors}
                     driverOptions={driverOptions}
                     routeOptions={routeOptions}

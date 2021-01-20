@@ -1,7 +1,7 @@
 import React from 'react';
 import CustomButton from './CustomButton';
 
-const ECPanel = ({ data }) => {
+const ECPanel = ({ data, onAdd }) => {
     const { emptycans } = data
     return (
         <div className='stock-panel ec-panel-container'>
@@ -16,7 +16,7 @@ const ECPanel = ({ data }) => {
             </div>
             <div className='box items mother-plant'>
                 <span className='name'>Return to Mother Plant</span>
-                <span className='add'>Add Empty Cans</span>
+                <span className='add' onClick={onAdd}>Add Empty Cans</span>
                 {/* <div className='numbers-container'>
                     <span className='number'>845</span>
                 </div> */}

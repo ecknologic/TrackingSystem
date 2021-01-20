@@ -46,7 +46,7 @@ const AddressCard = ({ data, onClick, onSelect }) => {
                 </div>
             </div>
             <div className='footer'>
-                <PrimaryButton text='View Details' onClick={() => onClick(data)} />
+                <PrimaryButton text='View Details' onClick={() => onClick(deliveryDetailsId)} />
                 {
                     role === SUPERADMIN &&
                     <Actions options={options} onSelect={handleSelect} />
