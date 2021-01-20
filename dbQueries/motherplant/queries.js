@@ -61,7 +61,7 @@ motherPlantDbQueries.getPostProductionBatchIds = async (departmentId, callback) 
 }
 motherPlantDbQueries.getQCDetailsByBatch = async (input, callback) => {
     const { batchId, departmentId } = input
-    let query = `select * from productionQC where batchId=?`;
+    let query = `select * from productionQC where batchId=? AND departmentId=?`;
     return executeGetParamsQuery(query, [batchId, departmentId], callback)
 }
 motherPlantDbQueries.getInternalQualityControl = async (callback) => {
@@ -130,9 +130,10 @@ motherPlantDbQueries.getDispatchDetailsByDC = async (dcNo, callback) => {
     FROM dispatches d INNER JOIN VehicleDetails v on d.vehicleNo=v.vehicleId INNER JOIN driverdetails driver on d.driverId=driver.driverId INNER JOIN departmentmaster dep on d.dispatchTo=dep.departmentId WHERE DCNO=?`;
     return executeGetParamsQuery(query, [dcNo], callback)
 }
-motherPlantDbQueries.getQCLevelsDetails = async (productionQcId, callback) => {
-    let query = "SELECT JSON_ARRAYAGG(JSON_OBJECT('testedDate',DATE_FORMAT(q.testedDate, '%Y-%c-%d %H:%i:%s'),'phLevel',ROUND(q.phLevel,1),'tds',ROUND(q.TDS,1),'ozoneLevel',ROUND(q.ozoneLevel,1),'testResult',q.testResult,'managerName',q.managerName,'description',q.description,'testType',q.testType,'qcLevel',q.qcLevel)) AS QCDetails FROM qualitycheck q  WHERE productionQcId=?";
-    return executeGetParamsQuery(query, [productionQcId], callback)
+motherPlantDbQueries.getQCLevelsDetails = async (input, callback) => {
+    const { productionQcId, departmentId } = input
+    let query = "SELECT JSON_ARRAYAGG(JSON_OBJECT('testedDate',DATE_FORMAT(q.testedDate, '%Y-%c-%d %H:%i:%s'),'phLevel',ROUND(q.phLevel,1),'tds',ROUND(q.TDS,1),'ozoneLevel',ROUND(q.ozoneLevel,1),'testResult',q.testResult,'managerName',q.managerName,'description',q.description,'testType',q.testType,'qcLevel',q.qcLevel)) AS QCDetails FROM qualitycheck q  WHERE productionQcId=? AND departmentId=?";
+    return executeGetParamsQuery(query, [productionQcId, departmentId], callback)
 }
 //POST Request Methods
 motherPlantDbQueries.createQC = async (input, callback) => {
