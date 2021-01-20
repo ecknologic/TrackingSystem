@@ -18,8 +18,8 @@ router.post('/login', (req, res) => {
 
 
     let loginQuery;
-    if (req.query.webUser) loginQuery = "SELECT * FROM usermaster u INNER JOIN rolemaster r ON u.roleId=r.RoleId WHERE u.emailid=? OR u.loginId=?";
-    else loginQuery = "SELECT * FROM driverdetails WHERE emailid=? OR loginId=?"
+    if (req.query.webUser) loginQuery = "SELECT u.RoleId,u.userId,u.departmentId,u.userName,u.password FROM usermaster u INNER JOIN rolemaster r ON u.roleId=r.RoleId WHERE u.emailid=? OR u.loginId=?";
+    else loginQuery = "SELECT d.driverId,d.driverName,d.password FROM driverdetails d WHERE emailid=? OR loginId=?"
     let reqBody = [username, username]
     let result = db.query(loginQuery, reqBody, (err, results) => {
         //var  passwordIsValid= bcrypt.compareSync(password,encryptedPassword);
@@ -61,8 +61,9 @@ router.post('/login', (req, res) => {
                             res.json({
                                 status: 200,
                                 role: results[0].RoleName,
-                                userName: results[0].userName,
+                                userName: results[0].userName || results[0].driverName,
                                 id: results[0].userId,
+                                driverId: results[0].driverId,
                                 warehouseId: results[0].departmentId,
                                 isLogged: true,
                                 token: token
