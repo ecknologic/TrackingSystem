@@ -18,7 +18,7 @@ router.post('/login', (req, res) => {
 
 
     let loginQuery;
-    if (req.query.webUser) loginQuery = "SELECT u.RoleId,u.userId,u.departmentId,u.userName,u.password FROM usermaster u INNER JOIN rolemaster r ON u.roleId=r.RoleId WHERE u.emailid=? OR u.loginId=?";
+    if (req.query.webUser) loginQuery = "SELECT u.RoleId,u.userId,u.departmentId,u.userName,u.password,r.RoleName FROM usermaster u INNER JOIN rolemaster r ON u.roleId=r.RoleId WHERE u.emailid=? OR u.loginId=?";
     else loginQuery = "SELECT d.driverId,d.driverName,d.password FROM driverdetails d WHERE emailid=? OR loginId=?"
     let reqBody = [username, username]
     let result = db.query(loginQuery, reqBody, (err, results) => {
@@ -66,11 +66,11 @@ router.post('/login', (req, res) => {
                                 driverId: results[0].driverId,
                                 warehouseId: results[0].departmentId,
                                 isLogged: true,
-                                token: token
+                                // token: token
                             });
                         }
                         else {
-                            res.json({ status: 400, message: "Could not create token" });
+                            res.status(400).json({ status: 400, message: "Could not create token" });
                         }
 
                     }

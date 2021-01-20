@@ -33,9 +33,9 @@ const Login = () => {
             message.loading('Logging you in...', 0)
             createOrUpdateAPI('bibo/login?webUser=true', userData, "POST")
                 .then(response => {
-                    if (response.token) {
-                        let token = response.token, { isLogged, warehouseId, userName, id, role } = response;
-                        sessionStorage.setItem("token", token)
+                    if (response.status==200) {
+                        let  { isLogged, warehouseId, userName, id, role } = response;
+                        // sessionStorage.setItem("token", token)
                         sessionStorage.setItem("isLogged", isLogged)
                         let user = {
                             id,
