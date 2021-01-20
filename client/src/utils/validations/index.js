@@ -727,8 +727,8 @@ export const validateDCValues = (data) => {
     const text = 'Required'
     const text2 = 'Incomplete'
 
-    const { routeId, customerName, phoneNumber, address,
-        driverId, twentyLCans, OneLBoxes, fiveHLBoxes, twofiftyLBoxes } = data
+    const { routeId, customerName, phoneNumber, address, driverId, cans20L: product20L,
+        boxes1L: product1L, boxes500ML: product500ML, boxes250ML: product250ML } = data
 
     if (!routeId) errors.routeId = text
     if (!driverId) errors.driverId = text
@@ -746,16 +746,8 @@ export const validateDCValues = (data) => {
         const error = validateNames(customerName)
         error && (errors.customerName = error)
     }
-
-    const error1 = validateNumber(twentyLCans)
-    const error2 = validateNumber(OneLBoxes)
-    const error3 = validateNumber(fiveHLBoxes)
-    const error4 = validateNumber(twofiftyLBoxes)
-
-    if (error1 || error2 || error3 || error4)
-        errors.stockDetails = error1 || error2 || error3 || error4
-
-    return errors
+    const productErrors = validateProducts({ product20L, product1L, product500ML, product250ML })
+    return { ...errors, ...productErrors }
 }
 
 export const validateASValues = (data) => {

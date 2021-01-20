@@ -6,7 +6,7 @@ import AccountCard from '../../../components/AccountCard';
 import Spinner from '../../../components/Spinner';
 import NoContent from '../../../components/NoContent';
 import { getUserId } from '../../../utils/constants';
-import { complexDateSort, complexSort, doubleKeyComplexSearch } from '../../../utils/Functions'
+import { complexDateSort, complexSort, doubleKeyComplexSearch, filterAccounts } from '../../../utils/Functions'
 import CustomPagination from '../../../components/CustomPagination';
 import { http } from '../../../modules/http'
 
@@ -95,21 +95,7 @@ const Accounts = () => {
     }
 
     const handleFilter = (filterInfo) => {
-        const { business, status } = filterInfo
-        let singleFiltered = [], bothFiltered = []
-        if (business.length && status.length) {
-            bothFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && status.includes(item.isApproved))
-        }
-        else {
-            singleFiltered = accountsClone.filter((item) => {
-                if (business.length) {
-                    return business.includes(item.natureOfBussiness)
-                }
-                return status.includes(item.isApproved)
-            })
-        }
-
-        const filtered = [...singleFiltered, ...bothFiltered]
+        const filtered = filterAccounts(accountsClone, filterInfo)
         setFilterON(true)
         setPageNumber(1)
         setAccounts(filtered)
@@ -127,8 +113,8 @@ const Accounts = () => {
     }
 
     const onFilterChange = (data) => {
-        const { business, status } = data
-        if (!business.length && !status.length) handleFilterClear()
+        const { business, status, account } = data
+        if (!business.length && !status.length && !account.length) handleFilterClear()
         else handleFilter(data)
     }
 

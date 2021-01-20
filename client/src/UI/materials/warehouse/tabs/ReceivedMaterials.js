@@ -12,7 +12,7 @@ import ReceivedMaterialView from '../views/ReceivedMaterials';
 import { getReceivedRMColumns } from '../../../../assets/fixtures';
 import CustomDateInput from '../../../../components/CustomDateInput';
 import CustomPagination from '../../../../components/CustomPagination';
-import { EditIconGrey, ScheduleIcon } from '../../../../components/SVG_Icons';
+import { EyeIconGrey, ScheduleIcon } from '../../../../components/SVG_Icons';
 import { base64String, disableFutureDates, getStatusColor } from '../../../../utils/Functions';
 const DATEFORMAT = 'DD-MM-YYYY'
 const format = 'YYYY-MM-DD'
@@ -182,5 +182,5 @@ const renderStatus = (status) => {
         </div>
     )
 }
-const options = [<Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>]
+const options = [<Menu.Item key="view" icon={<EyeIconGrey />}>View</Menu.Item>]
 export default ReceivedMaterials

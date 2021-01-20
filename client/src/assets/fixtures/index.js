@@ -28,6 +28,10 @@ export const statusFilterOptions = [
     { value: 0, option: 'Draft' },
     { value: 1, option: 'Active' }
 ]
+export const accountFilterOptions = [
+    { value: 'Corporate', option: 'Corporate' },
+    { value: 'Individual', option: 'Individual' }
+]
 export const businessFilterOptions = [
     { value: 'Residential', option: 'Residential' },
     { value: 'Software', option: 'Software' },

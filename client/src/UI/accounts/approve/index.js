@@ -55,6 +55,7 @@ const ApproveAccount = () => {
     const warehouseOptions = useMemo(() => getWarehouseOptions(warehouseList), [warehouseList])
 
     const confirmMsg = 'Changes you made may not be saved.'
+    const showTrashIcon = useMemo(() => addresses.length !== 1, [addresses.length])
     const { organizationName, customerId, customertype, customerName } = accountValues
 
     useEffect(() => {
@@ -324,12 +325,16 @@ const ApproveAccount = () => {
                     className='cb-tiny cb-secondary'>
                     Draft
                     </Checkbox>
-                <Popconfirm onConfirm={() => onAddressDelete(id, index)}
-                    title='Sure to delete?'
-                    getTooltipContainer={() => document.getElementById('content')}
-                >
-                    <TrashIconLight className='trash' />
-                </Popconfirm>
+                {
+                    showTrashIcon && (
+                        <Popconfirm onConfirm={() => onAddressDelete(id, index)}
+                            title='Sure to delete?'
+                            getTooltipContainer={() => document.getElementById('content')}
+                        >
+                            <TrashIconLight className='trash' />
+                        </Popconfirm>
+                    )
+                }
             </div>
         ) : null
     );
