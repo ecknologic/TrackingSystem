@@ -117,6 +117,9 @@ export const getRoleLabel = (id) => {
         case 5:
             return 'Sales & Marketing Admin'
 
+        case 6:
+            return 'Driver'
+
         default:
             return null
     }

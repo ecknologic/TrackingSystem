@@ -77,7 +77,7 @@ const AccountsFilter = ({ onChange }) => {
         <Dropdown
             overlay={menu}
             trigger={['click']}
-            getPopupContainer={() => document.getElementById('content')}
+            getPopupContainer={node => node.parentNode}
             visible={visible}
             onVisibleChange={(bool) => setVisible(bool)}
         >

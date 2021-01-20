@@ -18,7 +18,7 @@ const DATEFORMAT = 'DD-MM-YYYY'
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 const format = 'YYYY-MM-DD'
 
-const InternalQC = () => {
+const InternalQC = ({ reFetch }) => {
     const [loading, setLoading] = useState(true)
     const [viewData, setViewData] = useState({})
     const [pageSize, setPageSize] = useState(10)
@@ -33,7 +33,7 @@ const InternalQC = () => {
 
     useEffect(() => {
         getQC()
-    }, [])
+    }, [reFetch])
 
     const getQC = async () => {
         const data = await http.GET('/motherPlant/getProductionQcList')

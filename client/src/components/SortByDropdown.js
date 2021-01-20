@@ -35,7 +35,7 @@ const DropdownSelect = ({ width = '200px', onSelect }) => {
                 overlay={menu}
                 trigger='click'
                 className='sort-by-drop-down-select'
-                getPopupContainer={() => document.getElementById('content')}
+                getPopupContainer={node => node.parentNode}
             >
                 <div>
                     <div>
