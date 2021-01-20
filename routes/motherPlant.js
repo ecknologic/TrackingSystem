@@ -41,7 +41,8 @@ router.get('/getPostProductionBatchIds', (req, res) => {
 });
 
 router.get('/getQCDetailsByBatch/:batchId', (req, res) => {
-    motherPlantDbQueries.getQCDetailsByBatch(req.params.batchId, (err, results) => {
+    const { batchId } = req.params;
+    motherPlantDbQueries.getQCDetailsByBatch({ batchId, departmentId }, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else res.json(results);
     });
@@ -118,7 +119,8 @@ router.get('/getProdQCTestedBatches', (req, res) => {
     });
 });
 router.get('/getQCLevelsDetails/:productionQcId', (req, res) => {
-    motherPlantDbQueries.getQCLevelsDetails(req.params.productionQcId, (err, results) => {
+    const { productionQcId } = req.params
+    motherPlantDbQueries.getQCLevelsDetails({ productionQcId, departmentId }, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else res.json(JSON.parse(results[0].QCDetails) || []);
     });

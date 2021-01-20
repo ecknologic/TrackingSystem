@@ -59,9 +59,10 @@ motherPlantDbQueries.getPostProductionBatchIds = async (departmentId, callback) 
     let query = "select q.productionQcId,p.batchId from qualitycheck q INNER JOIN productionQC p ON q.productionQcId=p.productionQcId where q.departmentId=? AND q.testResult=? AND p.status='Approved' AND q.qcLevel != '1' ORDER BY q.testedDate DESC";
     return executeGetParamsQuery(query, [departmentId, "Approved"], callback)
 }
-motherPlantDbQueries.getQCDetailsByBatch = async (batchId, callback) => {
-    let query = `select * from productionQC where batchId=?`;
-    return executeGetParamsQuery(query, [batchId], callback)
+motherPlantDbQueries.getQCDetailsByBatch = async (input, callback) => {
+    const { batchId, departmentId } = input
+    let query = `select * from productionQC where batchId=? AND departmentId=?`;
+    return executeGetParamsQuery(query, [batchId, departmentId], callback)
 }
 motherPlantDbQueries.getInternalQualityControl = async (callback) => {
     let query = "select * from internalqualitycontrol";
@@ -129,9 +130,10 @@ motherPlantDbQueries.getDispatchDetailsByDC = async (dcNo, callback) => {
     FROM dispatches d INNER JOIN VehicleDetails v on d.vehicleNo=v.vehicleId INNER JOIN driverdetails driver on d.driverId=driver.driverId INNER JOIN departmentmaster dep on d.dispatchTo=dep.departmentId WHERE DCNO=?`;
     return executeGetParamsQuery(query, [dcNo], callback)
 }
-motherPlantDbQueries.getQCLevelsDetails = async (productionQcId, callback) => {
-    let query = "SELECT JSON_ARRAYAGG(JSON_OBJECT('testedDate',DATE_FORMAT(q.testedDate, '%Y-%c-%d %H:%i:%s'),'phLevel',ROUND(q.phLevel,1),'tds',ROUND(q.TDS,1),'ozoneLevel',ROUND(q.ozoneLevel,1),'testResult',q.testResult,'managerName',q.managerName,'description',q.description,'testType',q.testType,'qcLevel',q.qcLevel)) AS QCDetails FROM qualitycheck q  WHERE productionQcId=?";
-    return executeGetParamsQuery(query, [productionQcId], callback)
+motherPlantDbQueries.getQCLevelsDetails = async (input, callback) => {
+    const { productionQcId, departmentId } = input
+    let query = "SELECT JSON_ARRAYAGG(JSON_OBJECT('testedDate',DATE_FORMAT(q.testedDate, '%Y-%c-%d %H:%i:%s'),'phLevel',ROUND(q.phLevel,1),'tds',ROUND(q.TDS,1),'ozoneLevel',ROUND(q.ozoneLevel,1),'testResult',q.testResult,'managerName',q.managerName,'description',q.description,'testType',q.testType,'qcLevel',q.qcLevel)) AS QCDetails FROM qualitycheck q  WHERE productionQcId=? AND departmentId=?";
+    return executeGetParamsQuery(query, [productionQcId, departmentId], callback)
 }
 //POST Request Methods
 motherPlantDbQueries.createQC = async (input, callback) => {
