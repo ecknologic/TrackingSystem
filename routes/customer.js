@@ -10,7 +10,8 @@ const { Buffer } = require('buffer');
 const multer = require('multer');
 const customerQueries = require('../dbQueries/Customer/queries.js');
 const { customerProductDetails, dbError } = require('../utils/functions.js');
-const { saveToCustomerOrderDetails } = require('./utilities')
+const { saveToCustomerOrderDetails } = require('./utilities');
+const { createInvoice } = require('./Invoice/createInvoice.js');
 let departmentId;
 
 var storage = multer.diskStorage({
@@ -288,7 +289,7 @@ router.get("/approveDelivery/:deliveryDetailsId", (req, res) => {
 });
 
 router.get("/getCustomerDetails/:creatorId", (req, res) => {
-  let customerDetailsQuery = "SELECT c.organizationName,c.isActive,c.isApproved,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.createdBy=? AND d.deleted='0'  GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.isApproved,c.customerId,c.registeredDate ORDER BY c.registeredDate DESC"
+  let customerDetailsQuery = "SELECT c.organizationName,c.isActive,c.customertype,c.isApproved,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.createdBy=? AND d.deleted='0'  GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.isApproved,c.customerId,c.registeredDate ORDER BY c.registeredDate DESC"
   db.query(customerDetailsQuery, [req.params.creatorId], (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
@@ -306,7 +307,7 @@ router.get("/getRoutes/:departmentId", (req, res) => {
   })
 });
 router.get("/getOrders", (req, res) => {
-  customerQueries.getOrdersByDepartmentId(1, (err, results) => {
+  customerQueries.getOrdersByDepartmentId(departmentId, (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else if (results.length) {
       let arr = [], count = 0;
@@ -456,6 +457,26 @@ router.put('/updateCustomerOrderDetails', (req, res) => {
   customerQueries.updateOrderDetails(req.body, (err, data) => {
     if (err) res.status(500).json(dbError(err))
     else res.json(data)
+  })
+})
+router.get('/generatePDF', (req, res) => {
+  customerQueries.generatePDF("186",(err, items) => {
+    if (err) res.status(500).json(dbError(err))
+    else {
+      let invoice = {
+        shipping: {
+          name: "John Doe",
+          address: "1234 Main Street",
+          city: "San Francisco",
+          state: "CA",
+          country: "US",
+          postal_code: 94111
+        },
+        items
+      }
+      createInvoice(invoice, "invoice.pdf");
+      res.json(items)
+    }
   })
 })
 router.post('/updateDeliveryDetails', (req, res) => {

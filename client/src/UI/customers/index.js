@@ -1,5 +1,5 @@
 import { Col, Row } from 'antd';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import Header from './header';
 import { http } from '../../modules/http'
@@ -7,7 +7,7 @@ import Spinner from '../../components/Spinner';
 import NoContent from '../../components/NoContent';
 import AccountCard from '../../components/AccountCard';
 import CustomPagination from '../../components/CustomPagination';
-import { complexDateSort, complexSort, doubleKeyComplexSearch } from '../../utils/Functions'
+import { complexDateSort, complexSort, doubleKeyComplexSearch, filterAccounts } from '../../utils/Functions'
 import '../../sass/customers.scss'
 
 const Customers = () => {
@@ -109,21 +109,7 @@ const Customers = () => {
     }
 
     const handleFilter = (filterInfo) => {
-        const { business, status } = filterInfo
-        let singleFiltered = [], bothFiltered = []
-        if (business.length && status.length) {
-            bothFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && status.includes(item.isApproved))
-        }
-        else {
-            singleFiltered = accountsClone.filter((item) => {
-                if (business.length) {
-                    return business.includes(item.natureOfBussiness)
-                }
-                return status.includes(item.isApproved)
-            })
-        }
-
-        const filtered = [...singleFiltered, ...bothFiltered]
+        const filtered = filterAccounts(accountsClone, filterInfo)
         setFilterON(true)
         setPageNumber(1)
         setAccounts(filtered)
@@ -141,8 +127,8 @@ const Customers = () => {
     }
 
     const onFilterChange = (data) => {
-        const { business, status } = data
-        if (!business.length && !status.length) handleFilterClear()
+        const { business, status, account } = data
+        if (!business.length && !status.length && !account.length) handleFilterClear()
         else handleFilter(data)
     }
 

@@ -26,7 +26,7 @@ const ReportsDropdown = ({ onSelect }) => {
         <Dropdown
             overlay={reportsMenu}
             trigger={['click']}
-            getPopupContainer={() => document.getElementById('content')}
+            getPopupContainer={node => node.parentNode}
         >
             <CustomButton
                 text='Get Reports'

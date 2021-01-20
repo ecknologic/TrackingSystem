@@ -6,7 +6,7 @@ import CustomInput from '../../../../components/CustomInput';
 import DraggerInput from '../../../../components/DraggerInput';
 import UploadPreviewer from '../../../../components/UploadPreviewer';
 import CustomDateInput from '../../../../components/CustomDateInput';
-import { removeFormTracker, resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
+import { resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 const DATEFORMAT = 'DD-MM-YYYY'
 
 const MaterialReceivedForm = (props) => {

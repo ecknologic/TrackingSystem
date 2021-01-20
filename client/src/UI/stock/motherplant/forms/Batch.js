@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import InputLabel from '../../../../components/InputLabel';
 import CustomInput from '../../../../components/CustomInput';
 import SelectInput from '../../../../components/SelectInput';
-import { removeFormTracker, resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
+import { resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 
 const BatchForm = (props) => {
 

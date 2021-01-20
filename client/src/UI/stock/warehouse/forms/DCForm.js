@@ -61,15 +61,17 @@ const DCForm = (props) => {
                         />
                     </div>
                 </div>
-                <div className='input-container stretch'>
-                    <InputLabel name='Driver Name' error={errors.driverId} mandatory />
-                    <SelectInput track options={driverOptions} value={driverId}
-                        error={errors.driverId} disabled={disableAll}
-                        onSelect={(value) => onChange(value, 'driverId')}
-                    />
+                <div className='row'>
+                    <div className='input-container stretch'>
+                        <InputLabel name='Driver Name' error={errors.driverId} mandatory />
+                        <SelectInput track options={driverOptions} value={driverId}
+                            error={errors.driverId} disabled={disableAll}
+                            onSelect={(value) => onChange(value, 'driverId')}
+                        />
+                    </div>
                 </div>
                 <div className='columns'>
-                    <InputLabel name='Stock Details' error={errors.stockDetails} />
+                    <InputLabel name='Stock Details' error={errors.products} mandatory />
                     <div className='columns-container'>
                         <div className='column'>
                             <div className='input-container'>

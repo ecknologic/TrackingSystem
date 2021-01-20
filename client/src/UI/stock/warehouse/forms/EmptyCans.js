@@ -27,14 +27,14 @@ const EmptyCansForm = (props) => {
                 <div className='input-container'>
                     <InputLabel name='Mother Plant' error={errors.routeId} mandatory />
                     <SelectInput track options={motherplantOptions} value={routeId}
-                        error={errors.routeId} disabled={disabled} parentNode
+                        error={errors.routeId} disabled={disabled}
                         onSelect={(value) => onChange(value, 'routeId')}
                     />
                 </div>
                 <div className='input-container'>
                     <InputLabel name='Vehicle Number' error={errors.vehicleId} mandatory />
                     <SelectInput track options={vehicleOptions} value={vehicleId}
-                        error={errors.vehicleId} disabled={disabled} parentNode
+                        error={errors.vehicleId} disabled={disabled}
                         onSelect={(value) => onChange(value, 'vehicleId')}
                     />
                 </div>
@@ -44,7 +44,7 @@ const EmptyCansForm = (props) => {
                 <div className='input-container'>
                     <InputLabel name='Driver Name' error={errors.driverId} mandatory />
                     <SelectInput track options={driverOptions} value={driverId}
-                        error={errors.driverId} disabled={disabled} parentNode
+                        error={errors.driverId} disabled={disabled}
                         onSelect={(value) => onChange(value, 'driverId')}
                     />
                 </div>

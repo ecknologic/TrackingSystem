@@ -25,10 +25,10 @@ router.get('/validateQRCode', (req, res) => {
 router.get('/getOrderDetails/:date', (req, res) => {
     var date = req.params.date;
     console.log(date);
-
+    const { driverId, warehouseId } = req.query;
     // let query = "SELECT c.customerOrderId,c.damagedCount,c.isDelivered,c.dcNo,c.returnEmptyCans,c.deliveryDate,cd.customerName,cd.Address1,cd.Address2,cd.latitude,cd.longitude,cd.mobileNumber FROM customerorderdetails c INNER JOIN customerdetails cd ON c.existingCustomerId = cd.customerId WHERE DATE(`deliveryDate`) ='" + date + "'"
-    let query = "SELECT c.customerOrderId,c.damagedCount,c.isDelivered,c.dcNo,c.returnEmptyCans,c.deliveryDate,c.customerName,c.address,c.latitude,c.longitude,c.phoneNumber FROM customerorderdetails c  WHERE DATE(`deliveryDate`) =? AND c.warehouseId=? AND routeId != 'NULL' AND driverId != 'NULL'"
-    let result = db.query(query, [date, req.query.warehouseId], (err, results) => {
+    let query = "SELECT c.customerOrderId,c.damagedCount,c.isDelivered,c.dcNo,c.returnEmptyCans,c.deliveryDate,c.customerName,c.address,c.latitude,c.longitude,c.phoneNumber FROM customerorderdetails c  WHERE DATE(`deliveryDate`) =? AND c.driverId=? AND c.warehouseId=? AND routeId != 'NULL' AND driverId != 'NULL'"
+    let result = db.query(query, [date, warehouseId, driverId], (err, results) => {
 
         if (err) res.send(err);
 

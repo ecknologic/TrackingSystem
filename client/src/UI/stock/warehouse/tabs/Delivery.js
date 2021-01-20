@@ -92,7 +92,7 @@ const Delivery = ({ date }) => {
         }
         else if (key.includes('box') || key.includes('can')) {
             const error = validateNumber(value)
-            setFormErrors(errors => ({ ...errors, stockDetails: error }))
+            setFormErrors(errors => ({ ...errors, products: error }))
         }
     }
 

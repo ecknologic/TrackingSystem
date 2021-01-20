@@ -224,13 +224,33 @@ router.get('/getWarehouseDetails/:warehouseId', (req, res) => {
   });
 });
 
-router.get('/getEmptyCans/:warehouseId', (req, res) => {
+router.get('/getConfirmedEmptyCans/:warehouseId', (req, res) => {
   let { warehouseId } = req.params;
   let warehouseQuery = "SELECT (SELECT SUM(c.returnemptycans) FROM customerorderdetails c WHERE c.warehouseid=?)-(SELECT SUM(e.emptycans_count)  FROM EmptyCanDetails e  WHERE e.isconfirmed=1 AND e.warehouse_id=?) AS emptycans";
   db.query(warehouseQuery, [warehouseId, warehouseId], (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
-    else res.json({ status: 200, message: 'Success', data: results.length ? results[0] : results });
+    else res.json(results);
   });
 });
+router.get('/getReturnedEmptyCans/:warehouseId', (req, res) => {
+  let { warehouseId } = req.params;
+  warehouseQueries.getReturnedEmptyCans(warehouseId, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.json(results);
+  });
+});
+router.post('/returnEmptyCans', (req, res) => {
+  warehouseQueries.returnEmptyCansToMotherplant(req.body, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.json(results);
+  });
+});
+router.put('/updateReturnEmptyCans', (req, res) => {
+  warehouseQueries.updateMotherplantReturnEmptyCans(req.body, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.json(results);
+  });
+});
+
 
 module.exports = router;

@@ -32,7 +32,7 @@ const QualityControl = () => {
                         onChange={(key) => setActiveTab(key)}
                     >
                         <TabPane tab="Quality Control (Internal)" key="1">
-                            <InternalQC />
+                            <InternalQC reFetch={reFetch} />
                         </TabPane>
                         <TabPane tab="Quality Check" key="2">
                             <QualityCheck goToTab={handleGoToTab} />

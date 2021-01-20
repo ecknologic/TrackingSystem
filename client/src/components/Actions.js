@@ -13,7 +13,7 @@ const Actions = ({ onSelect, options = [] }) => {
         <Dropdown
             overlay={menu}
             trigger={['click']}
-            getPopupContainer={() => document.getElementById('content')}
+            getPopupContainer={node => node.parentNode}
         >
             <MoreIconGrey className='action-dots' />
         </Dropdown>

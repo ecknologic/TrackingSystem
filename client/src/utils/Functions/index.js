@@ -117,6 +117,9 @@ export const getRoleLabel = (id) => {
         case 5:
             return 'Sales & Marketing Admin'
 
+        case 6:
+            return 'Driver'
+
         default:
             return null
     }
@@ -164,6 +167,35 @@ export const doubleKeyComplexSearch = (data, matcher, key1, key2) => {
         const match2 = item[key2] && item[key2].toLowerCase().includes(matcher.toLowerCase())
         return (match1 || match2)
     })
+}
+export const filterAccounts = (accountsClone, filterInfo) => {
+    const { business, status, account } = filterInfo
+    let singleFiltered = [], allFiltered = []
+    if (business.length && status.length && account.length) {
+        allFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && status.includes(item.isApproved) && account.includes(item.customertype))
+    }
+    else if (business.length && status.length) {
+        allFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && status.includes(item.isApproved))
+    }
+    else if (business.length && account.length) {
+        allFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && account.includes(item.customertype))
+    }
+    else if (status.length && account.length) {
+        allFiltered = accountsClone.filter((item) => status.includes(item.isApproved) && account.includes(item.customertype))
+    }
+    else {
+        singleFiltered = accountsClone.filter((item) => {
+            if (account.length) {
+                return account.includes(item.customertype)
+            }
+            else if (business.length) {
+                return business.includes(item.natureOfBussiness)
+            }
+            return status.includes(item.isApproved)
+        })
+    }
+
+    return [...singleFiltered, ...allFiltered]
 }
 
 export const getIdProofName = (type) => {

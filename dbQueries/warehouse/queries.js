@@ -22,6 +22,10 @@ warehouseQueries.getOrderDetailsByDepartment = async (departmentId, callback) =>
     let query = `select d.deliveryDetailsId,d.address,r.RouteName from DeliveryDetails d INNER JOIN routes r ON d.routeId=r.routeId WHERE d.departmentId=? AND d.deleted=0 AND d.isActive=1`;
     return executeGetParamsQuery(query, [departmentId], callback)
 }
+warehouseQueries.getReturnedEmptyCans = async (warehouseId, callback) => {
+    let query = "SELECT (SELECT SUM(c.returnemptycans) FROM customerorderdetails c WHERE c.warehouseid=?)-(SELECT SUM(e.emptycans_count)  FROM EmptyCanDetails e  WHERE e.isconfirmed=1 AND e.warehouse_id=?) AS emptycans";
+    return executeGetParamsQuery(query, [warehouseId, warehouseId], callback)
+}
 
 //POST Request Methods
 warehouseQueries.saveWarehouseStockDetails = (input, callback) => {
@@ -35,6 +39,18 @@ warehouseQueries.saveWarehouseStockDetails = (input, callback) => {
 warehouseQueries.insertReturnStockDetails = (input, callback) => {
     let query = "insert into returnstockdetails (damaged20LCans,damaged1LBoxes,damaged500MLBoxes,damaged250MLBoxes,damagedDesc,departmentId,motherplantId) values(?,?,?,?,?,?,?)";
     let requestBody = [input.damaged20LCans, input.damaged1LBoxes, input.damaged500MLBoxes, input.damaged250MLBoxes, input.damagedDesc, input.departmentId, input.motherplantId]
+    executePostOrUpdateQuery(query, requestBody, callback)
+}
+warehouseQueries.returnEmptyCansToMotherplant = (input, callback) => {
+    const { motherplantId, warehouseId, driverId, vehicleId, emptycans_count, details, isConfirmed = 0 } = input
+    let query = "insert into EmptyCanDetails (motherplantId,warehouseId,driverId,vehicleId,emptycans_count,details,isConfirmed) values(?,?,?,?,?,?,?)";
+    let requestBody = [motherplantId, warehouseId, driverId, vehicleId, emptycans_count, details, isConfirmed]
+    executePostOrUpdateQuery(query, requestBody, callback)
+}
+warehouseQueries.updateMotherplantReturnEmptyCans = (input, callback) => {
+    const { motherplantId, warehouseId, driverId, vehicleId, emptycans_count, details, isConfirmed = 0, id } = input
+    let query = "update EmptyCanDetails set motherplantId=?, warehouseId=?, driverId=?, vehicleId=?, emptycans_count=?, details=?, isConfirmed=? where id=?";
+    let requestBody = [motherplantId, warehouseId, driverId, vehicleId, emptycans_count, details, isConfirmed, id]
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 warehouseQueries.createWarehouse = async (input, callback) => {
