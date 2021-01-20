@@ -23,7 +23,7 @@ warehouseQueries.getOrderDetailsByDepartment = async (departmentId, callback) =>
     return executeGetParamsQuery(query, [departmentId], callback)
 }
 warehouseQueries.getReturnedEmptyCans = async (warehouseId, callback) => {
-    let query = "SELECT (SELECT SUM(c.returnemptycans) FROM customerorderdetails c WHERE c.warehouseid=?)-(SELECT SUM(e.emptycans_count)  FROM EmptyCanDetails e  WHERE e.isconfirmed=1 AND e.warehouse_id=?) AS emptycans";
+    let query = "SELECT (SELECT SUM(c.returnemptycans) FROM customerorderdetails c WHERE c.warehouseid=?)-(SELECT SUM(e.emptycans_count)  FROM EmptyCanDetails e  WHERE e.isconfirmed=1 AND e.warehouseId=?) AS emptycans";
     return executeGetParamsQuery(query, [warehouseId, warehouseId], callback)
 }
 

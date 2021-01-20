@@ -770,6 +770,26 @@ export const validateASValues = (data) => {
 
 }
 
+export const validateRECValues = (data) => {
+    let errors = {}
+    const text = 'Required'
+
+    const { routeId, driverId, vehicleId, details, emptycans_count } = data
+
+    if (!Number(emptycans_count)) errors.emptycans_count = text
+    else {
+        const error = validateNumber(emptycans_count)
+        if (error) errors.emptycans_count = error
+    }
+    if (!routeId) errors.routeId = text
+    if (!driverId) errors.driverId = text
+    if (!vehicleId) errors.vehicleId = text
+    if (!details) errors.details = text
+    if (!emptycans_count) errors.details = text
+
+    return errors
+}
+
 export const validateAddresses = (data) => {
     let errors = {};
     for (let index = 0; index < data.length; index++) {

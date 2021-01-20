@@ -9,7 +9,7 @@ const EmptyCansForm = (props) => {
 
     const { data, errors, motherplantOptions, disabled, driverOptions, vehicleOptions, onBlur, onChange } = props
     const { routeId, driverId, vehicleId, mobileNumber } = data
-    const { damagedDesc, damaged20LCans } = data
+    const { details, emptycans_count } = data
 
 
     useEffect(() => {
@@ -58,22 +58,22 @@ const EmptyCansForm = (props) => {
                 </div>
             </div>
             <div className='columns'>
-                <InputLabel name='Return Cans' error={errors.damaged} />
+                <InputLabel name='Return Cans' mandatory />
                 <div className='columns-container'>
                     <div className='column'>
                         <div className='input-container'>
-                            <InputLabel name='20 Ltrs' />
-                            <CustomInput value={damaged20LCans} disabled={disabled}
-                                placeholder='Add' onChange={(value) => onChange(value, 'damaged20LCans')} />
+                            <InputLabel name='20 Ltrs' error={errors.emptycans_count} />
+                            <CustomInput value={emptycans_count} disabled={disabled} error={errors.emptycans_count}
+                                placeholder='Add' onChange={(value) => onChange(value, 'emptycans_count')} />
                         </div>
                     </div>
                 </div>
             </div>
             <div className='row'>
                 <div className='input-container stretch'>
-                    <InputLabel name='Details' error={errors.damagedDesc} />
-                    <CustomTextArea disabled={disabled} maxLength={1000} error={errors.damagedDesc} placeholder='Add Details' value={damagedDesc}
-                        minRows={3} maxRows={5} onChange={(value) => onChange(value, 'damagedDesc')}
+                    <InputLabel name='Details' error={errors.details} mandatory />
+                    <CustomTextArea disabled={disabled} maxLength={1000} error={errors.details} placeholder='Add Details' value={details}
+                        minRows={3} maxRows={5} onChange={(value) => onChange(value, 'details')}
                     />
                 </div>
             </div>

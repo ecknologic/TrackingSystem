@@ -12,7 +12,7 @@ import CASPanel from '../../../../components/CASPanel';
 import CustomModal from '../../../../components/CustomModal';
 import ConfirmModal from '../../../../components/CustomModal';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
-import { validateNumber, validateASValues } from '../../../../utils/validations';
+import { validateNumber, validateASValues, validateRECValues } from '../../../../utils/validations';
 import { getWarehoseId, TODAYDATE, TRACKFORM } from '../../../../utils/constants';
 import { getASValuesForDB, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 import { getDriverOptions, getWarehouseOptions, getVehicleOptions } from '../../../../assets/fixtures';
@@ -22,6 +22,7 @@ const StockDetails = ({ date }) => {
     const [CAS, setCAS] = useState({})
     const [OFD, setOFC] = useState({})
     const [EC, setEC] = useState({})
+    const [REC, setREC] = useState({})
     const [motherplantList, setMotherplantList] = useState([])
     const [driverList, setDriverList] = useState([])
     const [vehicleList, setVehicleList] = useState([])
@@ -45,6 +46,7 @@ const StockDetails = ({ date }) => {
         getOFD()
         getEC()
         getCAS()
+        getREC()
 
         if (isToday) getNewStock()
         else {
@@ -91,9 +93,15 @@ const StockDetails = ({ date }) => {
     }
 
     const getEC = async () => {
-        const url = `/warehouse/getEmptyCans/${warehouseId}`
-        const { data } = await http.GET(url)
+        const url = `/warehouse/getConfirmedEmptyCans/${warehouseId}`
+        const [data] = await http.GET(url)
         setEC(data)
+    }
+
+    const getREC = async () => {
+        const url = `/warehouse/getReturnedEmptyCans/${warehouseId}`
+        const [data] = await http.GET(url)
+        setREC(data)
     }
 
     const getNewStock = async () => {
@@ -121,8 +129,7 @@ const StockDetails = ({ date }) => {
             setFormData(data => ({ ...data, mobileNumber }))
             setFormErrors(errors => ({ ...errors, mobileNumber: '' }))
         }
-
-        if (key === 'isDamaged') {
+        else if (key === 'isDamaged') {
             if (!value) {
                 let damaged20LCans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes, damagedDesc;
                 setFormData(data => ({
@@ -137,6 +144,10 @@ const StockDetails = ({ date }) => {
             const error = validateNumber(value)
             setFormErrors(errors => ({ ...errors, damaged: error }))
         }
+        else if (key === 'emptycans_count') {
+            const error = validateNumber(value)
+            setFormErrors(errors => ({ ...errors, emptycans_count: error }))
+        }
     }
 
     const onArrivedStockConfirm = () => {
@@ -150,6 +161,34 @@ const StockDetails = ({ date }) => {
     const onAddEmptyCans = () => {
         setFetchList(true)
         setAddModal(true)
+    }
+
+    const handleCansReturn = async () => {
+        const formErrors = validateRECValues(formData)
+
+        if (!isEmpty(formErrors)) {
+            setShake(true)
+            setTimeout(() => setShake(false), 820)
+            setFormErrors(formErrors)
+            return
+        }
+
+        let url = '/warehouse/returnEmptyCans'
+        const body = {
+            ...formData, warehouseId
+        }
+        const options = { item: 'Empty Cans', v1Ing: 'Returning', v2: 'returned' }
+
+        try {
+            setBtnDisabled(true)
+            showToast({ ...options, action: 'loading' })
+            await http.POST(url, body)
+            showToast(options)
+            onModalClose(true)
+            getREC()
+        } catch (error) {
+            setBtnDisabled(false)
+        }
     }
 
     const handleArrivedStockConfirm = async () => {
@@ -170,7 +209,6 @@ const StockDetails = ({ date }) => {
             ...dcValues, motherplantId
         }
         const options = { item: 'Stock Particulars', v1Ing: 'Confirming', v2: 'confirmed' }
-
 
         try {
             setBtnDisabled(true)
@@ -220,7 +258,7 @@ const StockDetails = ({ date }) => {
                 <span className='title'>Empty Cans details</span>
                 <span className='msg'>Empty and damaged cans are not included in correct stock details</span>
             </div>
-            <ECPanel data={EC} onAdd={onAddEmptyCans} />
+            <ECPanel confirmed={EC} returned={REC} onAdd={onAddEmptyCans} />
             <ERCPanel />
             <DCPanel />
             <CustomModal
@@ -243,10 +281,10 @@ const StockDetails = ({ date }) => {
                 className={`app-form-modal app-view-modal stock-details-modal ${shake ? 'app-shake' : ''}`}
                 visible={addModal}
                 btnDisabled={btnDisabled}
-                onOk={handleArrivedStockConfirm}
+                onOk={handleCansReturn}
                 onCancel={handleModalCancel}
                 title='Empty Cans Return to Mother Plant'
-                okTxt='Return Cans'
+                okTxt='Return Empty Cans'
                 track
             >
                 <EmptyCansForm

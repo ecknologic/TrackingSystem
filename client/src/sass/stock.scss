@@ -222,6 +222,15 @@
 .ec-panel-container {
     .mother-plant {
         width: 21.5em;
+
+        .return {
+            display: flex;
+
+            .numbers-container {
+                flex: 0;
+                padding-right: 1em;
+            }
+        }
     }
     .add {
         color: #007AFF;
