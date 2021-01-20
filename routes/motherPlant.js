@@ -41,7 +41,8 @@ router.get('/getPostProductionBatchIds', (req, res) => {
 });
 
 router.get('/getQCDetailsByBatch/:batchId', (req, res) => {
-    motherPlantDbQueries.getQCDetailsByBatch(req.params.batchId, (err, results) => {
+    const { batchId } = req.params;
+    motherPlantDbQueries.getQCDetailsByBatch({ batchId, departmentId }, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else res.json(results);
     });
