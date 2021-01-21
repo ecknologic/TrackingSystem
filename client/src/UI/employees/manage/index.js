@@ -352,6 +352,7 @@ const ManageEmployee = () => {
                                             data={accountValues}
                                             errors={accountErrors}
                                             title={employeeType}
+                                            isDriver={isDriver}
                                             onBlur={handleBlur}
                                             onChange={handleChange}
                                             onUpload={handleUpload}
