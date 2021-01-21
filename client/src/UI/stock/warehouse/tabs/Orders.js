@@ -33,6 +33,7 @@ const Orders = () => {
     const [currentDepId, setCurrentDepId] = useState('')
     const [warehouseList, setWarehouseList] = useState([])
     const [confirmModal, setConfirmModal] = useState(false)
+    const [options, setOptions] = useState({})
     const [fetchList, setFetchList] = useState(false)
     const [devDays, setDevDays] = useState([])
     const [shake, setShake] = useState(false)
@@ -140,8 +141,15 @@ const Orders = () => {
         if (key === 'view') {
             handleView(data.deliveryDetailsId)
         }
-        else if (key === 'create-delivery') {
-            if (data.driverName) setLabel("Update")
+        else if (key === 'delivery') {
+            if (data.driverName) {
+                setLabel('Update')
+                setOptions({ item: 'Delivery', v1Ing: 'Updating', v2: 'updated' })
+            }
+            else {
+                setOptions({ item: 'Delivery', v1Ing: 'Creating', v2: 'created' })
+                setLabel('Create')
+            }
             setFormData(data)
             setDCModal(true)
         }
@@ -176,8 +184,9 @@ const Orders = () => {
 
     const handleSubmit = async () => {
         const formErrors = {}
-        const { driverId, vehicleId } = formData
+        const { driverId, vehicleId, routeId } = formData
         if (!driverId) formErrors.driverId = 'Required'
+        if (!routeId) formErrors.routeId = 'Required'
         if (!vehicleId) formErrors.vehicleId = 'Required'
 
         if (!isEmpty(formErrors)) {
@@ -189,7 +198,6 @@ const Orders = () => {
 
         let url = '/customer/createOrderDelivery'
         const body = { ...formData }
-        const options = { item: 'Delivery', v1Ing: 'Creating', v2: 'created' }
 
         try {
             setBtnDisabled(true)
@@ -235,7 +243,7 @@ const Orders = () => {
             orderDetails: renderOrderDetails(getProductsForUI(products)),
             action: <Actions options={getActions(driverName)} onSelect={({ key }) => handleMenuSelect(key, order)} />
         }
-    }), [orders, viewModal])
+    }), [orders, viewedArr])
 
     const handleConfirmModalOk = useCallback(() => {
         setConfirmModal(false);
@@ -341,6 +349,6 @@ const renderOrderDetails = ({ product20L, product1L, product500ML, product250ML 
 }
 const getActions = (driverName) => {
     return [<Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>,
-    <Menu.Item key="create-delivery" icon={<EditIconGrey />}>{`${driverName ? "Update Delivery" : "Create Delivery"}`}</Menu.Item>]
+    <Menu.Item key="delivery" icon={<EditIconGrey />}>{`${driverName ? "Update" : "Create"} Delivery`}</Menu.Item>]
 }
 export default Orders
