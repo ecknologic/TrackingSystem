@@ -273,7 +273,7 @@ router.post("/createOrderDelivery", (req, res) => {
   customerQueries.updateOrderDelivery(req.body, (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
-      res.json("success")
+      res.json(results)
     }
   })
 });
@@ -460,7 +460,7 @@ router.put('/updateCustomerOrderDetails', (req, res) => {
   })
 })
 router.get('/generatePDF', (req, res) => {
-  customerQueries.generatePDF("186",(err, items) => {
+  customerQueries.generatePDF("186", (err, items) => {
     if (err) res.status(500).json(dbError(err))
     else {
       let invoice = {
