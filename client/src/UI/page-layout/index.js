@@ -3,11 +3,15 @@ import { Layout } from 'antd';
 import { useLocation } from 'react-router-dom';
 import { Scrollbars } from 'react-custom-scrollbars-2';
 import SideMenu from './SideMenu';
+import Profile from '../../components/Profile';
+import { getUserId } from '../../utils/constants';
+import { getRoleLabel } from '../../utils/Functions';
 import { ChatIconGrey, NotificationIconGrey, SettingIconGrey } from '../../components/SVG_Icons';
 import '../../sass/pageLayout.scss'
 
 const PageLayout = ({ children }) => {
     const { pathname } = useLocation()
+    const roleName = getRoleLabel(getUserId())
 
     return (
         <Layout id='app-container'>
@@ -17,9 +21,10 @@ const PageLayout = ({ children }) => {
                     <h1 id='water'>Water</h1>
                 </div>
                 <div id='nav-container'>
-                    <SettingIconGrey />
-                    <NotificationIconGrey />
-                    <ChatIconGrey />
+                    <SettingIconGrey className='nav-icon' />
+                    <NotificationIconGrey className='nav-icon' />
+                    <ChatIconGrey className='nav-icon' />
+                    <Profile name={roleName} />
                 </div >
             </Header>
             <Layout id='app-content'>

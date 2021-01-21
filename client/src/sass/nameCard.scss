@@ -1,3 +1,5 @@
+$textColor:rgba(0,0,0,0.85);
+
 .name-card-container {
     display: flex;
     align-items: center;
@@ -10,3 +12,20 @@
         font-size: .9em;
     }
 }
+
+.name-card-container.large {
+    .avatar-text-container {
+        width: 2.6em;
+        height: 2.6em;
+        min-width: 2.6em;
+
+        #text {
+            font-size: 1em;
+        }
+    }
+    .name {
+        font-size: 1em;
+        color: $textColor;
+    }
+}
+

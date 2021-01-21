@@ -1,0 +1,14 @@
+.profile-dropdown {
+    min-width: 12em !important;
+    top: 4.4em !important;
+}
+
+.profile-container {
+    display: flex;
+    cursor: pointer;
+    align-items: center;
+
+    .down {
+        padding:.5em 0 .5em .5em;
+    }
+}
