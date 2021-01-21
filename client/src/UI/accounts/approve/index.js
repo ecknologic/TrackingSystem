@@ -221,7 +221,7 @@ const ApproveAccount = () => {
 
     const updateAddresses = async (deliveries) => {
         const body = deliveries.map(item => {
-            delete item.isApproved //should not send isApproved while update
+            // delete item.isApproved //should not send isApproved while update
             return item
         })
 
