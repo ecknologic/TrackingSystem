@@ -64,7 +64,7 @@ const EmptyCansForm = (props) => {
                         <div className='input-container'>
                             <InputLabel name='20 Ltrs' error={errors.emptycans_count} />
                             <CustomInput value={emptycans_count} disabled={disabled} error={errors.emptycans_count}
-                                placeholder='Add' onChange={(value) => onChange(value, 'emptycans_count')} />
+                                placeholder='Qty' onChange={(value) => onChange(value, 'emptycans_count')} />
                         </div>
                     </div>
                 </div>

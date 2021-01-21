@@ -24,7 +24,7 @@ import {
 import { TRACKFORM, getUserId, getUsername, getWarehoseId, TODAYDATE } from '../../../utils/constants';
 import {
     validateAccountValues, validateDeliveryValues, validateDevDays,
-    validateIDProofs, validateAddresses, validateIDNumbers, validateNames, validateNumber, validateMobileNumber, validateEmailId
+    validateIDProofs, validateAddresses, validateIDNumbers, validateNames, validateNumber, validateMobileNumber, validateEmailId, validateIntFloat
 } from '../../../utils/validations';
 
 const AddAccount = () => {
@@ -127,7 +127,11 @@ const AddAccount = () => {
             const error = validateNames(value)
             setDeliveryErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key.includes('price') || key.includes('product')) {
+        else if (key.includes('price')) {
+            const error = validateIntFloat(value)
+            setDeliveryErrors(errors => ({ ...errors, productNPrice: error }))
+        }
+        else if (key.includes('product')) {
             const error = validateNumber(value)
             setDeliveryErrors(errors => ({ ...errors, productNPrice: error }))
         }
@@ -142,6 +146,10 @@ const AddAccount = () => {
         else if (key === 'phoneNumber') {
             const error = validateMobileNumber(value, true)
             setDeliveryErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key.includes('price')) {
+            const error = validateIntFloat(value, true)
+            setDeliveryErrors(errors => ({ ...errors, productNPrice: error }))
         }
     }
     const handleGeneralValues = (value, key) => {
@@ -175,8 +183,12 @@ const AddAccount = () => {
             const error = validateNames(value)
             setGeneralErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key.includes('price') || key.includes('product')) {
+        else if (key.includes('product')) {
             const error = validateNumber(value)
+            setGeneralErrors(errors => ({ ...errors, productNPrice: error }))
+        }
+        else if (key.includes('price')) {
+            const error = validateIntFloat(value)
             setGeneralErrors(errors => ({ ...errors, productNPrice: error }))
         }
     }
@@ -195,6 +207,10 @@ const AddAccount = () => {
         else if (key === 'EmailId') {
             const error = validateEmailId(value)
             setGeneralErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key.includes('price')) {
+            const error = validateIntFloat(value, true)
+            setGeneralErrors(errors => ({ ...errors, productNPrice: error }))
         }
     }
 

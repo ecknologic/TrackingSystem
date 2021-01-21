@@ -12,9 +12,9 @@ import AddressCard from '../../../../components/AddressCard';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import { getRouteOptions, WEEKDAYS } from '../../../../assets/fixtures';
 import { getDevDays, getProductsWithIdForDB, getProductsForUI, isEmpty, extractDeliveryDetails, extractProductsFromForm, deepClone, getBase64, getDevDaysForDB, base64String, resetTrackForm, showToast } from '../../../../utils/Functions';
-import { validateDeliveryValues, validateDevDays, validateIDNumbers, validateMobileNumber, validateNames, validateNumber } from '../../../../utils/validations';
+import { validateDeliveryValues, validateDevDays, validateIDNumbers, validateIntFloat, validateMobileNumber, validateNames, validateNumber } from '../../../../utils/validations';
 
-const DeliveryDetails = ({ recentDelivery, ...rest }) => {
+const DeliveryDetails = ({ isSuperAdmin, recentDelivery, ...rest }) => {
     const { accountId } = useParams()
     const [delivery, setDelivery] = useState([])
     const [loading, setLoading] = useState(true)
@@ -147,8 +147,12 @@ const DeliveryDetails = ({ recentDelivery, ...rest }) => {
             const error = validateNames(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key.includes('price') || key.includes('product')) {
+        else if (key.includes('product')) {
             const error = validateNumber(value)
+            setFormErrors(errors => ({ ...errors, productNPrice: error }))
+        }
+        else if (key.includes('price')) {
+            const error = validateIntFloat(value)
             setFormErrors(errors => ({ ...errors, productNPrice: error }))
         }
     }
@@ -162,6 +166,10 @@ const DeliveryDetails = ({ recentDelivery, ...rest }) => {
         else if (key === 'phoneNumber') {
             const error = validateMobileNumber(value, true)
             setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key.includes('price')) {
+            const error = validateIntFloat(value, true)
+            setFormErrors(errors => ({ ...errors, productNPrice: error }))
         }
     }
 
@@ -284,6 +292,8 @@ const DeliveryDetails = ({ recentDelivery, ...rest }) => {
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
     const handleModalCancel = useCallback(() => onModalClose(), [])
 
+    const canView = !isSuperAdmin && formData.isApproved
+
     return (
         <div className='account-view-delivery-details'>
             <Row gutter={[{ lg: 32, xl: 16 }, { lg: 32, xl: 32 }]}>
@@ -300,15 +310,16 @@ const DeliveryDetails = ({ recentDelivery, ...rest }) => {
                 className={`app-form-modal ${shake ? 'app-shake' : ''}`}
                 visible={viewModal}
                 btnDisabled={btnDisabled}
-                onOk={formData.isApproved ? handleModalCancel : handleUpdate}
+                onOk={canView ? handleModalCancel : handleUpdate}
                 onCancel={handleModalCancel}
                 title={`Delivery Details - ${formData.location}`}
-                okTxt={formData.isApproved ? 'Close' : 'Update'}
+                okTxt={canView ? 'Close' : 'Update'}
             >
                 <DeliveryForm
                     data={formData}
                     errors={formErrors}
                     devDays={devDays}
+                    isSuperAdmin={isSuperAdmin}
                     devDaysError={devDaysError}
                     routeOptions={routeOptions}
                     onChange={handleChange}

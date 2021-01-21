@@ -2,9 +2,9 @@ import { message } from 'antd';
 import React, { useState } from 'react';
 import ProductForm from '../forms/Product';
 import { http } from '../../../modules/http';
-import { validateNumber } from '../../../utils/validations';
+import { validateIntFloat, validateNumber } from '../../../utils/validations';
 import CustomButton from '../../../components/CustomButton';
-import { isAlphaNum, isAlphaNumOnly, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
+import { isAlphaNum, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
 
 const CreateProduct = ({ goToTab }) => {
     const [formData, setFormData] = useState({})
@@ -21,8 +21,21 @@ const CreateProduct = ({ goToTab }) => {
             const isValid = isAlphaNum(value)
             if (!isValid) setFormErrors(errors => ({ ...errors, [key]: 'Enter aphanumeric only' }))
         }
-        else if (key === 'price' || key === 'tax') {
+        else if (key === 'tax') {
             const error = validateNumber(value)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'price') {
+            const error = validateIntFloat(value)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+    }
+
+    const handleBlur = (value, key) => {
+
+        // Validations
+        if (key === 'price') {
+            const error = validateIntFloat(value, true)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
     }
@@ -86,6 +99,7 @@ const CreateProduct = ({ goToTab }) => {
                 data={formData}
                 errors={formErrors}
                 onChange={handleChange}
+                onBlur={handleBlur}
             />
             <div className='app-footer-buttons-container'>
                 <CustomButton

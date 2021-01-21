@@ -655,13 +655,13 @@ const validateProductNPrice = ({ product20L, price20L, product1L, price1L,
     }
 
     const error7 = validateNumber(product250ML)
-    const error8 = validateNumber(price250ML)
     const error5 = validateNumber(product500ML)
-    const error6 = validateNumber(price500ML)
-    const error3 = validateNumber(product1L)
-    const error4 = validateNumber(price1L)
     const error1 = validateNumber(product20L)
-    const error2 = validateNumber(price20L)
+    const error3 = validateNumber(product1L)
+    const error8 = validateIntFloat(price250ML, true)
+    const error6 = validateIntFloat(price500ML, true)
+    const error4 = validateIntFloat(price1L, true)
+    const error2 = validateIntFloat(price20L, true)
 
     if (error1 || error2 || error3 || error4 || error5 || error6 || error7 || error8)
         errors.productNPrice = error1 || error2 || error3 || error4 || error5 || error6 || error7 || error8
@@ -949,7 +949,7 @@ export const validateIFSCCode = (value, isBlur) => {
 export const validateIntFloat = (value, isBlur) => {
     if (isBlur && value) {
         const isValid = isStrictIntFloat(value)
-        if (!isValid) return 'Invalid'
+        if (!isValid) return 'Invalid format'
     }
     if (value) {
         const isValid = isIntFloat(value)

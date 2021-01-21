@@ -10,11 +10,11 @@ import QuitModal from '../../../components/CustomModal';
 import NoContent from '../../../components/NoContent';
 import DeliveryDetails from './tabs/DeliveryDetails';
 import AccountOverview from './tabs/AccountOverview';
-import { TRACKFORM } from '../../../utils/constants';
+import { getRole, SUPERADMIN, TRACKFORM } from '../../../utils/constants';
 import DeliveryForm from '../add/forms/Delivery';
 import { http } from '../../../modules/http';
 import Header from './header';
-import { validateDeliveryValues, validateDevDays, validateIDNumbers, validateMobileNumber, validateNames, validateNumber } from '../../../utils/validations';
+import { validateDeliveryValues, validateDevDays, validateIDNumbers, validateIntFloat, validateMobileNumber, validateNames, validateNumber } from '../../../utils/validations';
 import { extractDeliveryDetails, getProductsForDB, extractProductsFromForm, isEmpty, getDevDaysForDB, getBase64, resetTrackForm, showToast, getMainPathname } from '../../../utils/Functions';
 
 const ViewAccount = () => {
@@ -38,6 +38,7 @@ const ViewAccount = () => {
     const [navigateTo, setNavigateTo] = useState('')
     const [activeTab, setActiveTab] = useState('1')
 
+    const isSuperAdmin = getRole() === SUPERADMIN
     const routeOptions = useMemo(() => getRouteOptions(routeList), [routeList])
     const warehouseOptions = useMemo(() => getWarehouseOptions(warehouseList), [warehouseList])
 
@@ -132,8 +133,12 @@ const ViewAccount = () => {
             const error = validateNames(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key.includes('price') || key.includes('product')) {
+        else if (key.includes('product')) {
             const error = validateNumber(value)
+            setFormErrors(errors => ({ ...errors, productNPrice: error }))
+        }
+        else if (key.includes('price')) {
+            const error = validateIntFloat(value)
             setFormErrors(errors => ({ ...errors, productNPrice: error }))
         }
     }
@@ -147,6 +152,10 @@ const ViewAccount = () => {
         else if (key === 'phoneNumber') {
             const error = validateMobileNumber(value, true)
             setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key.includes('price')) {
+            const error = validateIntFloat(value, true)
+            setFormErrors(errors => ({ ...errors, productNPrice: error }))
         }
     }
 
@@ -256,10 +265,19 @@ const ViewAccount = () => {
                         }
                     >
                         <TabPane tab="Account Overview" key="1">
-                            <AccountOverview data={account} warehouseOptions={warehouseOptions} onUpdate={handleAccountUpdate} />
+                            <AccountOverview
+                                data={account}
+                                isSuperAdmin={isSuperAdmin}
+                                warehouseOptions={warehouseOptions}
+                                onUpdate={handleAccountUpdate}
+                            />
                         </TabPane>
                         <TabPane tab="Delivery Details" key="2">
-                            <DeliveryDetails recentDelivery={recentDelivery} warehouseOptions={warehouseOptions} />
+                            <DeliveryDetails
+                                isSuperAdmin={isSuperAdmin}
+                                recentDelivery={recentDelivery}
+                                warehouseOptions={warehouseOptions}
+                            />
                         </TabPane>
                         <TabPane tab="Invoice" key="3" disabled>
                             <NoContent content='Design in progress' />

@@ -1,4 +1,4 @@
-import { message, Radio } from 'antd';
+import { message } from 'antd';
 import React, { useState, useCallback } from 'react';
 import CustomButton from '../../../components/CustomButton';
 import FormHeader from '../../../components/FormHeader';
@@ -6,10 +6,9 @@ import ExternalDispatchForm from '../forms/ExternalDispatch';
 import ConfirmModal from '../../../components/CustomModal';
 import { TRACKFORM } from '../../../utils/constants';
 import ConfirmMessage from '../../../components/ConfirmMessage';
-import InputLabel from '../../../components/InputLabel';
 import { http } from '../../../modules/http';
 import { extractValidProductsForDB, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
-import { validateExternalDispatchValues, validateMobileNumber, validateNames, validateNumber } from '../../../utils/validations';
+import { validateExternalDispatchValues, validateIntFloat, validateMobileNumber, validateNames, validateNumber } from '../../../utils/validations';
 
 const CreateExternalDispatch = ({ goToTab, driverList, ...rest }) => {
     const [formData, setFormData] = useState({})
@@ -49,8 +48,12 @@ const CreateExternalDispatch = ({ goToTab, driverList, ...rest }) => {
             const error = validateNames(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key.includes('price') || key.includes('product')) {
+        else if (key.includes('product')) {
             const error = validateNumber(value)
+            setFormErrors(errors => ({ ...errors, productNPrice: error }))
+        }
+        else if (key.includes('price')) {
+            const error = validateIntFloat(value)
             setFormErrors(errors => ({ ...errors, productNPrice: error }))
         }
     }
@@ -61,6 +64,10 @@ const CreateExternalDispatch = ({ goToTab, driverList, ...rest }) => {
         if (key === 'mobileNumber') {
             const error = validateMobileNumber(value, true)
             setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key.includes('price')) {
+            const error = validateIntFloat(value, true)
+            setFormErrors(errors => ({ ...errors, productNPrice: error }))
         }
     }
 

@@ -11,7 +11,7 @@ import CorporateAccountForm from '../../add/forms/CorporateAccount';
 import { base64String, extractCADetails, extractGADetails, getBase64, getIdProofsForDB, isEmpty, resetTrackForm, showToast, trackAccountFormOnce } from '../../../../utils/Functions';
 import { validateIDProofs, validateAccountValues, validateIDNumbers, validateMobileNumber, validateNames, validateEmailId, validateNumber } from '../../../../utils/validations';
 
-const AccountOverview = ({ data, warehouseOptions, onUpdate }) => {
+const AccountOverview = ({ data, warehouseOptions, onUpdate, isSuperAdmin }) => {
     const { gstProof, idProof_backside, idProof_frontside, isApproved, registeredDate,
         customertype, Address1, loading } = data
 
@@ -211,7 +211,7 @@ const AccountOverview = ({ data, warehouseOptions, onUpdate }) => {
                                     onRemove={handleProofRemove}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
-                                    disabled={isApproved}
+                                    disabled={isApproved && !isSuperAdmin}
                                 />
                                 : <GeneralAccountForm
                                     data={accountValues}
@@ -227,12 +227,12 @@ const AccountOverview = ({ data, warehouseOptions, onUpdate }) => {
                                     onDeselect={handleDevDaysDeselect}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
-                                    disabled={isApproved}
+                                    disabled={isApproved && !isSuperAdmin}
                                     accountOnly
                                 />
                         }
                         {
-                            !isApproved && renderFooter()
+                            isApproved && !isSuperAdmin ? null : renderFooter()
                         }
                     </>
             }

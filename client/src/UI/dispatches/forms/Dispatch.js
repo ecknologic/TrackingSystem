@@ -40,28 +40,28 @@ const DispatchForm = (props) => {
                             <div className='input-container'>
                                 <InputLabel name='20 Ltrs' />
                                 <CustomInput value={product20L} disabled={disabled}
-                                    placeholder='Add' onChange={(value) => onChange(value, 'product20L')} />
+                                    placeholder='Qty' onChange={(value) => onChange(value, 'product20L')} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='1 Ltrs' />
                                 <CustomInput value={product1L} disabled={disabled}
-                                    placeholder='Add' onChange={(value) => onChange(value, 'product1L')} />
+                                    placeholder='Qty' onChange={(value) => onChange(value, 'product1L')} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='500 Ml' />
                                 <CustomInput value={product500ML} disabled={disabled}
-                                    placeholder='Add' onChange={(value) => onChange(value, 'product500ML')} />
+                                    placeholder='Qty' onChange={(value) => onChange(value, 'product500ML')} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='250 Ml' />
                                 <CustomInput value={product250ML} disabled={disabled}
-                                    placeholder='Add' onChange={(value) => onChange(value, 'product250ML')} />
+                                    placeholder='Qty' onChange={(value) => onChange(value, 'product250ML')} />
                             </div>
                         </div>
                     </div>

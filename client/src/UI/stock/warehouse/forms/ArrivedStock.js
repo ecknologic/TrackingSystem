@@ -90,28 +90,28 @@ const ArrivedStockForm = (props) => {
                         <div className='input-container'>
                             <InputLabel name='20 Ltrs' />
                             <CustomInput value={damaged20LCans} disabled={!isDamaged || disabled}
-                                placeholder='Add' onChange={(value) => onChange(value, 'damaged20LCans')} />
+                                placeholder='Qty' onChange={(value) => onChange(value, 'damaged20LCans')} />
                         </div>
                     </div>
                     <div className='column'>
                         <div className='input-container'>
                             <InputLabel name='1 Ltrs (Box-1x12)' />
                             <CustomInput value={damaged1LBoxes} disabled={!isDamaged || disabled}
-                                placeholder='Add' onChange={(value) => onChange(value, 'damaged1LBoxes')} />
+                                placeholder='Qty' onChange={(value) => onChange(value, 'damaged1LBoxes')} />
                         </div>
                     </div>
                     <div className='column'>
                         <div className='input-container'>
                             <InputLabel name='500 Ml (Box-1x12)' />
                             <CustomInput value={damaged500MLBoxes} disabled={!isDamaged || disabled}
-                                placeholder='Add' onChange={(value) => onChange(value, 'damaged500MLBoxes')} />
+                                placeholder='Qty' onChange={(value) => onChange(value, 'damaged500MLBoxes')} />
                         </div>
                     </div>
                     <div className='column'>
                         <div className='input-container'>
                             <InputLabel name='250 Ml (Box-1x12)' />
                             <CustomInput value={damaged250MLBoxes} disabled={!isDamaged || disabled}
-                                placeholder='Add' onChange={(value) => onChange(value, 'damaged250MLBoxes')} />
+                                placeholder='Qty' onChange={(value) => onChange(value, 'damaged250MLBoxes')} />
                         </div>
                     </div>
                 </div>

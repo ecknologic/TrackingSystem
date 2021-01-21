@@ -11,7 +11,7 @@ import { resetTrackForm, trackAccountFormOnce } from '../../../../utils/Function
 const DeliveryForm = (props) => {
 
     const { data, errors, devDays, onBlur, devDaysError = {}, disabled, onChange, onSelect, onDeselect,
-        warehouseOptions, routeOptions, sameAddress, onUpload, onRemove } = props
+        warehouseOptions, routeOptions, sameAddress, onUpload, onRemove, isSuperAdmin } = props
 
     const {
         gstNo, gstProof, depositAmount, departmentId, routeId, phoneNumber, contactPerson, address, isApproved,
@@ -20,7 +20,7 @@ const DeliveryForm = (props) => {
     } = data
 
     const gstUploadDisable = gstProof
-    const isDisabled = disabled || isApproved
+    const isDisabled = disabled || (isApproved && !isSuperAdmin)
 
     useEffect(() => {
         resetTrackForm()
@@ -112,11 +112,13 @@ const DeliveryForm = (props) => {
                             <div className='input-container'>
                                 <InputLabel name='20 Ltrs' />
                                 <CustomInput value={product20L} disabled={isDisabled}
-                                    placeholder='Add' onChange={(value) => onChange(value, 'product20L')} />
+                                    placeholder='Qty' onChange={(value) => onChange(value, 'product20L')}
+                                />
                             </div>
                             <div className='input-container'>
                                 <InputLabel name='Price' />
                                 <CustomInput value={price20L} disabled={isDisabled}
+                                    onBlur={(value) => onBlur(value, 'price20L')}
                                     placeholder='Rs' onChange={(value) => onChange(value, 'price20L')} />
                             </div>
                         </div>
@@ -124,11 +126,13 @@ const DeliveryForm = (props) => {
                             <div className='input-container'>
                                 <InputLabel name='1 Ltrs' />
                                 <CustomInput value={product1L} disabled={isDisabled}
-                                    placeholder='Add' onChange={(value) => onChange(value, 'product1L')} />
+                                    placeholder='Qty' onChange={(value) => onChange(value, 'product1L')}
+                                />
                             </div>
                             <div className='input-container'>
                                 <InputLabel name='Price' />
                                 <CustomInput value={price1L} disabled={isDisabled}
+                                    onBlur={(value) => onBlur(value, 'price1L')}
                                     placeholder='Rs' onChange={(value) => onChange(value, 'price1L')} />
                             </div>
                         </div>
@@ -136,11 +140,13 @@ const DeliveryForm = (props) => {
                             <div className='input-container'>
                                 <InputLabel name='500 Ml' />
                                 <CustomInput value={product500ML} disabled={isDisabled}
-                                    placeholder='Add' onChange={(value) => onChange(value, 'product500ML')} />
+                                    placeholder='Qty' onChange={(value) => onChange(value, 'product500ML')}
+                                />
                             </div>
                             <div className='input-container'>
                                 <InputLabel name='Price' />
                                 <CustomInput value={price500ML} disabled={isDisabled}
+                                    onBlur={(value) => onBlur(value, 'price500ML')}
                                     placeholder='Rs' onChange={(value) => onChange(value, 'price500ML')} />
                             </div>
                         </div>
@@ -148,11 +154,13 @@ const DeliveryForm = (props) => {
                             <div className='input-container'>
                                 <InputLabel name='250 Ml' />
                                 <CustomInput value={product250ML} disabled={isDisabled}
-                                    placeholder='Add' onChange={(value) => onChange(value, 'product250ML')} />
+                                    placeholder='Qty' onChange={(value) => onChange(value, 'product250ML')}
+                                />
                             </div>
                             <div className='input-container'>
                                 <InputLabel name='Price' />
                                 <CustomInput value={price250ML} disabled={isDisabled}
+                                    onBlur={(value) => onBlur(value, 'price250ML')}
                                     placeholder='Rs' onChange={(value) => onChange(value, 'price250ML')} />
                             </div>
                         </div>

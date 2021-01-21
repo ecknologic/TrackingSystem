@@ -8,7 +8,7 @@ import CustomInput from '../../../../components/CustomInput';
 import InputWithAddon from '../../../../components/InputWithAddon';
 import UploadPreviewer from '../../../../components/UploadPreviewer';
 import { dayOptions, getRouteOptions, WEEKDAYS } from '../../../../assets/fixtures'
-import { validateIDNumbers, validateMobileNumber, validateNames, validateNumber } from '../../../../utils/validations';
+import { validateIDNumbers, validateIntFloat, validateMobileNumber, validateNames, validateNumber } from '../../../../utils/validations';
 
 const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => {
 
@@ -75,8 +75,12 @@ const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => 
             const error = validateNames(value)
             setErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key.includes('price') || key.includes('product')) {
+        else if (key.includes('product')) {
             const error = validateNumber(value)
+            setErrors(errors => ({ ...errors, productNPrice: error }))
+        }
+        else if (key.includes('price')) {
+            const error = validateIntFloat(value)
             setErrors(errors => ({ ...errors, productNPrice: error }))
         }
     }
@@ -91,6 +95,10 @@ const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => 
         else if (key === 'phoneNumber') {
             const error = validateMobileNumber(value, true)
             setErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key.includes('price')) {
+            const error = validateIntFloat(value, true)
+            setErrors(errors => ({ ...errors, productNPrice: error }))
         }
     }
 
@@ -205,48 +213,52 @@ const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => 
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='20 Ltrs' />
-                                <CustomInput value={product20L} placeholder='Add'
+                                <CustomInput value={product20L} placeholder='Qty'
                                     onChange={(value) => onChange(value, 'product20L')} />
                             </div>
                             <div className='input-container'>
                                 <InputLabel name='Price' />
                                 <CustomInput value={price20L} placeholder='Rs'
+                                    onBlur={(value) => onBlur(value, 'price20L')}
                                     onChange={(value) => onChange(value, 'price20L')} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='1 Ltrs' />
-                                <CustomInput value={product1L} placeholder='Add'
+                                <CustomInput value={product1L} placeholder='Qty'
                                     onChange={(value) => onChange(value, 'product1L')} />
                             </div>
                             <div className='input-container'>
                                 <InputLabel name='Price' />
                                 <CustomInput value={price1L} placeholder='Rs'
+                                    onBlur={(value) => onBlur(value, 'price1L')}
                                     onChange={(value) => onChange(value, 'price1L')} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='500 Ml' />
-                                <CustomInput value={product500ML} placeholder='Add'
+                                <CustomInput value={product500ML} placeholder='Qty'
                                     onChange={(value) => onChange(value, 'product500ML')} />
                             </div>
                             <div className='input-container'>
                                 <InputLabel name='Price' />
                                 <CustomInput value={price500ML} placeholder='Rs'
+                                    onBlur={(value) => onBlur(value, 'price500ML')}
                                     onChange={(value) => onChange(value, 'price500ML')} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='250 Ml' />
-                                <CustomInput value={product250ML} placeholder='Add'
+                                <CustomInput value={product250ML} placeholder='Qty'
                                     onChange={(value) => onChange(value, 'product250ML')} />
                             </div>
                             <div className='input-container'>
                                 <InputLabel name='Price' />
                                 <CustomInput value={price250ML} placeholder='Rs'
+                                    onBlur={(value) => onBlur(value, 'price250ML')}
                                     onChange={(value) => onChange(value, 'price250ML')} />
                             </div>
                         </div>

@@ -3,7 +3,7 @@ import InputLabel from '../../../components/InputLabel';
 import CustomInput from '../../../components/CustomInput';
 import { resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
 
-const ProductForm = ({ data, errors, onChange }) => {
+const ProductForm = ({ data, errors, onChange, onBlur }) => {
 
     const { productName, price, tax } = data
 
@@ -31,6 +31,7 @@ const ProductForm = ({ data, errors, onChange }) => {
                     <CustomInput value={price}
                         error={errors.price} placeholder="Unit Price"
                         onChange={(value) => onChange(value, 'price')}
+                        onBlur={(value) => onBlur(value, 'price')}
                     />
                 </div>
             </div>

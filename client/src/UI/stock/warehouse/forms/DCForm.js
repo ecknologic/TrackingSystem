@@ -77,28 +77,28 @@ const DCForm = (props) => {
                             <div className='input-container'>
                                 <InputLabel name='20 Ltrs' />
                                 <CustomInput value={cans20L} disabled={disableAll || disableFew}
-                                    placeholder='Add' onChange={(value) => onChange(value, 'cans20L')} />
+                                    placeholder='Qty' onChange={(value) => onChange(value, 'cans20L')} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='1 Ltrs (Box-1x12)' />
                                 <CustomInput value={boxes1L} disabled={disableAll || disableFew}
-                                    placeholder='Add' onChange={(value) => onChange(value, 'boxes1L')} />
+                                    placeholder='Qty' onChange={(value) => onChange(value, 'boxes1L')} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='500 Ml (Box-1x12)' />
                                 <CustomInput value={boxes500ML} disabled={disableAll || disableFew}
-                                    placeholder='Add' onChange={(value) => onChange(value, 'boxes500ML')} />
+                                    placeholder='Qty' onChange={(value) => onChange(value, 'boxes500ML')} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='250 Ml (Box-1x12)' />
                                 <CustomInput value={boxes250ML} disabled={disableAll || disableFew}
-                                    placeholder='Add' onChange={(value) => onChange(value, 'boxes250ML')} />
+                                    placeholder='Qty' onChange={(value) => onChange(value, 'boxes250ML')} />
                             </div>
                         </div>
                     </div>
