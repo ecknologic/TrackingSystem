@@ -52,7 +52,7 @@ const insertToCustomerOrderDetails = (result, res, sendResponse) => {
           customerQueries.updateDCNo(results.insertId, (err, data) => {
             resolve()
           })
-          sendResponse && res.json('Success')
+          sendResponse && res && res.json('Success')
         }
       });
     }).catch(err => {
