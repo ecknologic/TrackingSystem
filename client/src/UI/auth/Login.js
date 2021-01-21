@@ -33,15 +33,16 @@ const Login = () => {
             message.loading('Logging you in...', 0)
             createOrUpdateAPI('bibo/login?webUser=true', userData, "POST")
                 .then(response => {
-                    if (response.status==200) {
-                        let  { isLogged, warehouseId, userName, id, role } = response;
+                    if (response.status == 200) {
+                        let { isLogged, warehouseId, userName, id, role, roleId } = response;
                         // sessionStorage.setItem("token", token)
                         sessionStorage.setItem("isLogged", isLogged)
                         let user = {
                             id,
                             name: userName,
                             wareHouse: warehouseId,
-                            role
+                            role,
+                            roleId
                         }
                         sessionStorage.setItem("user", JSON.stringify(user))
                         getRoleInfo(warehouseId)

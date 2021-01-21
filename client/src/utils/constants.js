@@ -14,10 +14,15 @@ export const getUserId = () => {
     if (user) return user.id
     return 1
 }
+export const getRoleId = () => {
+    const user = JSON.parse(sessionStorage.getItem('user'))
+    if (user) return user.roleId
+    return null
+}
 export const getRole = () => {
     const user = JSON.parse(sessionStorage.getItem('user'))
     if (user) return user.role
-    return 1
+    return null
 }
 export const getUsername = () => {
     const user = JSON.parse(sessionStorage.getItem('user'))

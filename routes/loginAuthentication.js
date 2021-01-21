@@ -61,6 +61,7 @@ router.post('/login', (req, res) => {
                             res.json({
                                 status: 200,
                                 role: results[0].RoleName,
+                                roleId: results[0].RoleId,
                                 userName: results[0].userName || results[0].driverName,
                                 id: results[0].userId,
                                 driverId: results[0].driverId,

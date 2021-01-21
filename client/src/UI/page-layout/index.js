@@ -4,14 +4,14 @@ import { useLocation } from 'react-router-dom';
 import { Scrollbars } from 'react-custom-scrollbars-2';
 import SideMenu from './SideMenu';
 import Profile from '../../components/Profile';
-import { getUserId } from '../../utils/constants';
+import { getRoleId } from '../../utils/constants';
 import { getRoleLabel } from '../../utils/Functions';
 import { ChatIconGrey, NotificationIconGrey, SettingIconGrey } from '../../components/SVG_Icons';
 import '../../sass/pageLayout.scss'
 
 const PageLayout = ({ children }) => {
     const { pathname } = useLocation()
-    const roleName = getRoleLabel(getUserId())
+    const roleName = getRoleLabel(getRoleId()) || 'Bibo User'
 
     return (
         <Layout id='app-container'>
