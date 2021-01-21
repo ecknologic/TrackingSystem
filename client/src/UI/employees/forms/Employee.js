@@ -14,7 +14,7 @@ import { disableFutureDates, resetTrackForm, trackAccountFormOnce } from '../../
 const EmployeeForm = (props) => {
 
     const { data, errors, roleOptions, departmentOptions, onChange, onUpload, onRemove, disabled, onBlur,
-        adharProof, adharProofErrors, licenseProof, licenseProofErrors } = props
+        adharProof, adharProofErrors, licenseProof, licenseProofErrors, isDriver } = props
     const { userName, adharNo, licenseNo, parentName, gender, dob, mobileNumber, address,
         joinedDate, permanentAddress, roleId, emailid, departmentId, accountNo, branchName, bankName,
         ifscCode, recruitedBy, recommendedBy } = data
@@ -121,7 +121,7 @@ const EmployeeForm = (props) => {
                 <div className='input-container'>
                     <InputLabel name='Role' error={errors.roleId} mandatory />
                     <SelectInput track
-                        options={roleOptions} value={roleId} disabled={roleId === 6}
+                        options={roleOptions} value={roleId} disabled={isDriver}
                         error={errors.roleId} onSelect={(value) => onChange(value, 'roleId')}
                     />
                 </div>
