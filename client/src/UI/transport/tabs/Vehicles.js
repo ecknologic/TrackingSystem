@@ -14,7 +14,7 @@ import ConfirmMessage from '../../../components/ConfirmMessage';
 import CustomPagination from '../../../components/CustomPagination';
 import { deepClone, isAlphaNum, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
 
-const VehiclesDashboard = () => {
+const VehiclesDashboard = ({ reFetch }) => {
     const [vehicles, setVehicles] = useState([])
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
@@ -30,7 +30,7 @@ const VehiclesDashboard = () => {
     useEffect(() => {
         setLoading(true)
         getVehicles()
-    }, [])
+    }, [reFetch])
 
     const getVehicles = async () => {
         const url = '/motherPlant/getVehicleDetails'

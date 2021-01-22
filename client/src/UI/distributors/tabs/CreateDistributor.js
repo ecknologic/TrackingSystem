@@ -1,12 +1,14 @@
 import { message } from 'antd';
 import React, { useState } from 'react';
-import ProductForm from '../forms/Product';
 import { http } from '../../../modules/http';
-import { validateIntFloat, validateNumber } from '../../../utils/validations';
+import DistributorForm from '../forms/Distributor';
 import CustomButton from '../../../components/CustomButton';
-import { isAlphaNum, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
+import { getBase64, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
+import {
+    validateIDNumbers, validateMobileNumber, validateNames, validateDistributorValues, validateEmailId
+} from '../../../utils/validations';
 
-const CreateProduct = ({ goToTab }) => {
+const CreateEmployee = ({ goToTab }) => {
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
@@ -17,16 +19,16 @@ const CreateProduct = ({ goToTab }) => {
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
         // Validations
-        if (key === 'productName') {
-            const isValid = isAlphaNum(value)
-            if (!isValid) setFormErrors(errors => ({ ...errors, [key]: 'Enter aphanumeric only' }))
-        }
-        else if (key === 'tax') {
-            const error = validateNumber(value)
+        if (key === 'gstNo') {
+            const error = validateIDNumbers(key, value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key === 'price') {
-            const error = validateIntFloat(value)
+        else if (key === 'agencyName' || key === 'operationalArea' || key === 'contactPerson') {
+            const error = validateNames(value)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'mobileNumber' || key === 'alternateNumber') {
+            const error = validateMobileNumber(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
     }
@@ -34,30 +36,31 @@ const CreateProduct = ({ goToTab }) => {
     const handleBlur = (value, key) => {
 
         // Validations
-        if (key === 'price') {
-            const error = validateIntFloat(value, true)
+        if (key === 'gstNo') {
+            const error = validateIDNumbers(key, value, true)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'mailId' || key === 'alternateMailId') {
+            const error = validateEmailId(value)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'mobileNumber' || key === 'alternateNumber') {
+            const error = validateMobileNumber(value, true)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
     }
 
+    const handleUpload = (file) => {
+        getBase64(file, async (buffer) => {
+            setFormData(data => ({ ...data, gstProof: buffer }))
+            setFormErrors(errors => ({ ...errors, gstProof: '' }))
+        })
+    }
+
+    const handleRemove = () => setFormData(data => ({ ...data, gstProof: '' }))
+
     const handleSubmit = async () => {
-        const formErrors = {}
-        const { productName, price, tax } = formData
-        if (!price) formErrors.price = 'Required'
-        else {
-            const error = validateIntFloat(price, true)
-            if (error) formErrors.price = error
-        }
-        if (!tax) formErrors.tax = 'Required'
-        else {
-            const error = validateNumber(tax)
-            if (error) formErrors.tax = error
-        }
-        if (!productName) formErrors.productName = 'Required'
-        else {
-            const isValid = isAlphaNum(productName)
-            if (!isValid) formErrors.productName = 'Enter aphanumeric only'
-        }
+        const formErrors = validateDistributorValues(formData)
 
         if (!isEmpty(formErrors)) {
             setShake(true)
@@ -66,9 +69,11 @@ const CreateProduct = ({ goToTab }) => {
             return
         }
 
-        let body = { ...formData }
-        const url = '/products/createProduct'
-        const options = { item: 'Product', v1Ing: 'Adding', v2: 'added' }
+        let body = {
+            ...formData
+        }
+        const url = '/distributor/createDistributor'
+        const options = { item: 'Distributor', v1Ing: 'Adding', v2: 'added' }
 
         try {
             setBtnDisabled(true)
@@ -93,13 +98,15 @@ const CreateProduct = ({ goToTab }) => {
     return (
         <>
             <div className='employee-title-container'>
-                <span className='title'>New Product Details</span>
+                <span className='title'>New Distributor Details</span>
             </div>
-            <ProductForm
+            <DistributorForm
                 data={formData}
                 errors={formErrors}
-                onChange={handleChange}
                 onBlur={handleBlur}
+                onChange={handleChange}
+                onUpload={handleUpload}
+                onRemove={handleRemove}
             />
             <div className='app-footer-buttons-container'>
                 <CustomButton
@@ -115,4 +122,4 @@ const CreateProduct = ({ goToTab }) => {
     )
 }
 
-export default CreateProduct
+export default CreateEmployee

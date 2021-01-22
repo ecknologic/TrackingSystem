@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
-import { isLogged, getRole, getRoutesByRole, MARKETINGADMIN, MOTHERPLANTADMIN, SUPERADMIN, WAREHOUSEADMIN } from './utils/constants';
+import { isLogged, getRole, getRoutesByRole, MARKETINGADMIN, MOTHERPLANTADMIN, SUPERADMIN, WAREHOUSEADMIN, ACCOUNTSADMIN } from './utils/constants';
 import { getMainPathname, resetTrackForm } from './utils/Functions';
 import Login from './UI/auth/Login';
 import Products from './UI/products';
@@ -13,6 +13,7 @@ import AddAccount from './UI/accounts/add';
 import ViewAccount from './UI/accounts/view';
 import ManagePlant from './UI/plants/manage';
 import Drivers from './UI/employees/Drivers';
+import Distributors from './UI/distributors';
 import Warehouses from './UI/plants/Warehouses';
 import NoContent from './components/NoContent';
 import QualityControl from './UI/quality-control';
@@ -22,19 +23,28 @@ import ManageEmployee from './UI/employees/manage';
 import ApproveAccount from './UI/accounts/approve';
 import MotherplantStock from './UI/stock/motherplant';
 import AccountsDashboard from './UI/accounts/dashboard';
+import ManageDistributor from './UI/distributors/manage';
 import WarehouseMaterials from './UI/materials/warehouse';
 import MotherplantMaterials from './UI/materials/motherplant';
 
 const App = () => {
+   const userRef = useRef(false)
 
    useEffect(() => {
       resetTrackForm()
    }, [])
 
+   const getAuthentication = () => {
+      if (userRef.current) return true
+      else if (isLogged()) {
+         userRef.current = true
+         return true
+      }
+   }
+
    const byRole = (Component) => (props) => {
-      const isUser = isLogged()
-      if (!isUser) return <Redirect to='/' />
-      else {
+      const auth = getAuthentication()
+      if (auth) {
          const { match: { path } } = props
          const mainPath = getMainPathname(path)
          const role = getRole()
@@ -44,34 +54,40 @@ const App = () => {
             return <Redirect to="/unauthorized" />
          return Component
       }
+      else return <Redirect to='/' />
    }
 
-   const dashboardAuth = (props) => {
-      const isUser = isLogged()
-      if (!isUser) return <Redirect to='/' />
-      else {
+   const dashboardAuth = () => {
+      const auth = getAuthentication()
+      if (auth) {
          const role = getRole()
          if (role === MARKETINGADMIN) return <Redirect to='/manage-accounts' />
          else if (role === WAREHOUSEADMIN) return <Redirect to='/manage-stock' />
          else if (role === MOTHERPLANTADMIN) return <Redirect to='/manage-production' />
+         else if (role === ACCOUNTSADMIN) return <Redirect to='/customers' />
          else if (role === SUPERADMIN) return <Redirect to='/customers' />
          return <NoContent content='Screen Not designed for your role' />
       }
+      else return <Redirect to='/' />
    }
 
-   const loginAuth = (props) => {
-      const isUser = isLogged()
-      if (!isUser) return <Login />
-      else return <Redirect to='/dashboard' />
+   const loginAuth = () => {
+      const auth = getAuthentication()
+      if (auth) return <Redirect to='/dashboard' />
+      else return <Login />
    }
 
    const noMatchAuth = () => {
-      const isUser = isLogged()
-      if (!isUser) return <Redirect to='/' />
-      return <NoContent content='Page Not found' />
+      const auth = getAuthentication()
+      if (auth) return <NoContent content='Page Not found' />
+      else return <Redirect to='/' />
    }
 
-   const isUser = isLogged()
+   const Unauthorized = () => {
+      const auth = getAuthentication()
+      if (auth) return <NoContent content="Access denied." />
+      else return <Redirect to='/' />
+   }
 
    return (
       <Router>
@@ -93,19 +109,21 @@ const App = () => {
                   <Route path='/materials' render={byRole(<MotherplantMaterials />)} />
                   <Route path='/staff/manage/:employeeId' render={byRole(<ManageEmployee />)} />
                   <Route path='/drivers/manage/:employeeId' render={byRole(<ManageEmployee />)} />
+                  <Route path='/distributors/manage/:distributorId' render={byRole(<ManageDistributor />)} />
                   <Route path='/motherplants/manage/:plantId' render={byRole(<ManagePlant />)} />
                   <Route path='/warehouses/manage/:plantId' render={byRole(<ManagePlant />)} />
                   <Route path='/staff' render={byRole(<Staff />)} />
                   <Route path='/routes' render={byRole(<Transport />)} />
                   <Route path='/drivers' render={byRole(<Drivers />)} />
                   <Route path='/products' render={byRole(<Products />)} />
-                  <Route path='/motherplants' exact render={byRole(<Motherplants />)} />
+                  <Route path='/distributors' render={byRole(<Distributors />)} />
+                  <Route path='/motherplants' render={byRole(<Motherplants />)} />
                   <Route path='/warehouses' render={byRole(<Warehouses />)} />
                   <Route path='/customers/add-account' render={byRole(<AddAccount />)} />
                   <Route path='/customers/approval/:accountId' render={byRole(<ApproveAccount />)} />
                   <Route path='/customers/manage/:accountId' render={byRole(<ViewAccount />)} />
                   <Route path='/customers' render={byRole(<Customers />)} />
-                  <Route path='/unauthorized' component={Unauthorized} />
+                  <Route path='/unauthorized' render={Unauthorized} />
                   <Route render={noMatchAuth} />
                </Switch>
             </PageLayout>
@@ -114,7 +132,4 @@ const App = () => {
    );
 }
 
-const Unauthorized = () => {
-   return <NoContent content="Access denied." />
-}
 export default App;

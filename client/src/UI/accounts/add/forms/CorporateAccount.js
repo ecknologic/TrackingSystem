@@ -138,6 +138,7 @@ const CorporateAccountForm = (props) => {
                     <CustomInput
                         value={EmailId} type='email' disabled={disabled}
                         placeholder='Email' error={errors.EmailId}
+                        onBlur={(value) => onBlur(value, 'EmailId')}
                         onChange={(value) => onChange(value, 'EmailId')}
                     />
                 </div>

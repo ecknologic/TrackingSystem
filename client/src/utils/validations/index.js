@@ -388,6 +388,59 @@ export const validateDependentValues = (data) => {
 
     return errors
 }
+export const validateDistributorValues = (data) => {
+    let errors = {};
+    const text = 'Required'
+    const text2 = 'Incomplete'
+    const { agencyName, gstNo, gstProof, operationalArea, contactPerson, mobileNumber, address,
+        alternateNumber, mailId, alternateMailId } = data
+
+    if (!address) errors.address = text
+    if (!gstProof) errors.gstProof = text
+    if (!gstNo) errors.gstNo = text
+    else {
+        if (String(gstNo).length < 15) errors.gstNo = text2
+        else {
+            const error = validateIDNumbers('gstNo', gstNo)
+            error && (errors.gstNo = error)
+        }
+    }
+    if (!mobileNumber) errors.mobileNumber = text
+    else {
+        const error = validateMobileNumber(mobileNumber)
+        error && (errors.mobileNumber = error)
+    }
+    if (alternateNumber) {
+        const error = validateMobileNumber(alternateNumber)
+        error && (errors.alternateNumber = error)
+    }
+    if (!agencyName) errors.agencyName = text
+    else {
+        const error = validateNames(agencyName)
+        error && (errors.agencyName = error)
+    }
+    if (!contactPerson) errors.contactPerson = text
+    else {
+        const error = validateNames(contactPerson)
+        error && (errors.contactPerson = error)
+    }
+    if (!operationalArea) errors.operationalArea = text
+    else {
+        const error = validateNames(operationalArea)
+        error && (errors.operationalArea = error)
+    }
+    if (!mailId) errors.mailId = text
+    else {
+        const error = validateEmailId(mailId)
+        error && (errors.mailId = error)
+    }
+    if (alternateMailId) {
+        const error = validateEmailId(alternateMailId)
+        error && (errors.alternateMailId = error)
+    }
+
+    return errors
+}
 
 export const validateQCValues = (data) => {
     let errors = {};

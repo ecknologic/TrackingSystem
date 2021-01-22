@@ -146,7 +146,9 @@ const GeneralAccountForm = (props) => {
                         <InputLabel name='Email' error={errors.EmailId} mandatory />
                         <CustomInput value={EmailId} type='email'
                             disabled={disabled} placeholder='Email'
-                            error={errors.EmailId} onChange={(value) => onChange(value, 'EmailId')}
+                            error={errors.EmailId}
+                            onBlur={(value) => onBlur(value, 'EmailId')}
+                            onChange={(value) => onChange(value, 'EmailId')}
                         />
                     </div>
                 </div>

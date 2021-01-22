@@ -52,6 +52,9 @@ app.use("/users", require('./routes/users'));
 //Products Rest Services
 app.use("/products", require('./routes/products'));
 
+//Products Rest Services
+app.use("/distributor", require('./routes/distributor'));
+
 
 app.use("/bibo", require('./routes/loginAuthentication.js'));
 

@@ -63,10 +63,14 @@ const AccountView = ({ data, isDriver }) => {
                     <InputValue size='smaller' value='Recruited By' />
                     <InputValue size='large' value={recruitedBy} />
                 </div>
-                <div className='input-container'>
-                    <InputValue size='smaller' value='Recommended By' />
-                    <InputValue size='large' value={recommendedBy} />
-                </div>
+                {
+                    recommendedBy && (
+                        <div className='input-container'>
+                            <InputValue size='smaller' value='Recommended By' />
+                            <InputValue size='large' value={recommendedBy} />
+                        </div>
+                    )
+                }
             </div>
             <div className='row half-stretch'>
                 <div className='input-container stretch'>
