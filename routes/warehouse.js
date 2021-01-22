@@ -209,7 +209,7 @@ router.get('/currentActiveStockDetails/:date', (req, res) => {
 
 router.get('/outForDeliveryDetails/:date', (req, res) => {
   var date = req.params.date, { warehouseId } = req.query;
-  let outForDeliveryDetailsQuery = "SELECT SUM(c.20LCans) AS total20LCans,SUM(c.1LBoxes) AS total1LBoxes,SUM(c.500MLBoxes) total500MLBoxes,SUM(c.250MLBoxes) total250MLBoxes FROM customerorderdetails c WHERE warehouseId=? and routeId!='NULL' and driverId!='NULL' and DATE(`deliveryDate`)='" + date + "'";
+  let outForDeliveryDetailsQuery = "SELECT SUM(c.20LCans) AS total20LCans,SUM(c.1LBoxes) AS total1LBoxes,SUM(c.500MLBoxes) total500MLBoxes,SUM(c.250MLBoxes) total250MLBoxes FROM customerorderdetails c WHERE warehouseId=? and DATE(`deliveryDate`)='" + date + "'";
   db.query(outForDeliveryDetailsQuery, [warehouseId], (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else res.json({ status: 200, message: 'Success', data: results });
