@@ -45,7 +45,7 @@ const CreateProduct = ({ goToTab }) => {
         const { productName, price, tax } = formData
         if (!price) formErrors.price = 'Required'
         else {
-            const error = validateNumber(price)
+            const error = validateIntFloat(price)
             if (error) formErrors.price = error
         }
         if (!tax) formErrors.tax = 'Required'
