@@ -38,9 +38,10 @@ const ProductForm = ({ data, errors, onChange, onBlur }) => {
             <div className='row'>
                 <div className='input-container'>
                     <InputLabel name='Tax Percentage' error={errors.tax} mandatory />
-                    <CustomInput value={tax} maxLength={2}
+                    <CustomInput value={tax}
                         error={errors.tax} placeholder='Tax Percentage'
                         onChange={(value) => onChange(value, 'tax')}
+                        onBlur={(value) => onBlur(value, 'tax')}
                     />
                 </div>
             </div>

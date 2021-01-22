@@ -1,16 +1,17 @@
+import { Radio } from 'antd';
 import React, { useEffect } from 'react';
 import InputLabel from '../../../components/InputLabel';
 import CustomInput from '../../../components/CustomInput';
 import SelectInput from '../../../components/SelectInput';
-import { removeFormTracker, resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
+import { resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
 
 const DispatchForm = (props) => {
 
     const { data, errors, batchIdOptions, warehouseOptions, vehicleOptions, disabled, driverOptions,
-        onChange, onBlur } = props
+        onChange, onBlur, distributorOptions } = props
 
     const { batchId, dispatchTo, managerName, vehicleNo, driverId, mobileNumber,
-        product20L, product1L, product500ML, product250ML } = data
+        product20L, product1L, product500ML, product250ML, dispatchType } = data
 
     useEffect(() => {
         resetTrackForm()
@@ -20,6 +21,8 @@ const DispatchForm = (props) => {
             resetTrackForm()
         }
     }, [])
+
+    const dispatchToOptions = dispatchType === 'warehouse' ? warehouseOptions : distributorOptions
 
     return (
         <>
@@ -101,8 +104,16 @@ const DispatchForm = (props) => {
                 </div>
                 <div className='row'>
                     <div className='input-container stretch'>
-                        <InputLabel name='Dispatch To' error={errors.dispatchTo} mandatory />
-                        <SelectInput track value={dispatchTo} options={warehouseOptions}
+                        <InputLabel name='Dispatch To' error={errors.dispatchTo} errClass='dispatchTo' mandatory />
+                        <Radio.Group
+                            onChange={({ target: { value } }) => onChange(value, 'dispatchType')}
+                            value={dispatchType}
+                            className='radio-btns'
+                        >
+                            <Radio value='warehouse'>Warehouse</Radio>
+                            <Radio value='distributor'>Distributor</Radio>
+                        </Radio.Group>
+                        <SelectInput track value={dispatchTo} options={dispatchToOptions}
                             disabled={disabled} error={errors.dispatchTo}
                             onSelect={(value) => onChange(value, 'dispatchTo')}
                         />

@@ -83,6 +83,9 @@ export const testResultOptions = [
 export const getWarehouseOptions = (warehouses = []) => {
     return warehouses.map((item) => <Option key={item.departmentId} value={item.departmentId}>{item.departmentName}</Option>)
 }
+export const getDistributorOptions = (distributors = []) => {
+    return distributors.map((item) => <Option key={item.distributorId} value={item.distributorId}>{item.agencyName}</Option>)
+}
 export const getRouteOptions = (routes = []) => {
     return routes.map((item) => <Option key={item.RouteId} value={item.RouteId}>{item.RouteName}</Option>)
 }

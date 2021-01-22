@@ -1,7 +1,6 @@
 var express = require('express');
 var router = express.Router();
 const db = require('../config/db.js');
-const { getDepartmentsList } = require('../dbQueries/motherplant/queries');
 
 
 

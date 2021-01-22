@@ -5,6 +5,10 @@ distributorQueries.getDistributors = async (callback) => {
     let query = `select distributorId,agencyName,contactPerson,mobileNumber,address,isActive,operationalArea from Distributors ORDER BY createdDateTime DESC`;
     return executeGetQuery(query, callback)
 }
+distributorQueries.getDistributorsList = async (callback) => {
+    let query = `select distributorId,agencyName from Distributors WHERE isActive=1 ORDER BY createdDateTime DESC`;
+    return executeGetQuery(query, callback)
+}
 distributorQueries.getDistributorById = async (distributorId, callback) => {
     let query = `select * from Distributors where distributorId=${distributorId}`;
     return executeGetQuery(query, callback)

@@ -18,6 +18,16 @@
         .columns {
             width: 80%;
         }
+
+        .radio-btns {
+            padding: .5rem 0;
+            padding-top: .1rem;
+        }
+
+        .app-label-error.dispatchTo {
+            position: relative;
+            top: 2.2em;
+        }
     }
 
     .external-dispatch-form-container {
