@@ -71,6 +71,15 @@ const EmployeeForm = (props) => {
             </div>
             <div className='row'>
                 <div className='input-container'>
+                    <InputLabel name="Contact Person" error={errors.contactPerson} mandatory />
+                    <CustomInput value={contactPerson}
+                        error={errors.contactPerson} placeholder="Contact Person"
+                        onChange={(value) => onChange(value, 'contactPerson')}
+                    />
+                </div>
+            </div>
+            <div className='row'>
+                <div className='input-container'>
                     <InputLabel name='Mobile Number' error={errors.mobileNumber} mandatory />
                     <CustomInput value={mobileNumber} placeholder='Phone Number'
                         error={errors.mobileNumber} onBlur={(value) => onBlur(value, 'mobileNumber')}
@@ -78,7 +87,7 @@ const EmployeeForm = (props) => {
                     />
                 </div>
                 <div className='input-container'>
-                    <InputLabel name='Alternate Mobile No' error={errors.alternateNumber} mandatory />
+                    <InputLabel name='Alternate Mobile No' error={errors.alternateNumber} />
                     <CustomInput value={alternateNumber} placeholder='Alternate Mobile Number'
                         error={errors.alternateNumber} onBlur={(value) => onBlur(value, 'alternateNumber')}
                         onChange={(value) => onChange(value, 'alternateNumber')} maxLength={10}
@@ -96,21 +105,12 @@ const EmployeeForm = (props) => {
                     />
                 </div>
                 <div className='input-container'>
-                    <InputLabel name='Alternate Email' error={errors.alternateMailId} mandatory />
+                    <InputLabel name='Alternate Email' error={errors.alternateMailId} />
                     <CustomInput
                         value={alternateMailId} type='email' disabled={disabled}
                         placeholder='Alternate Email' error={errors.alternateMailId}
                         onBlur={(value) => onBlur(value, 'alternateMailId')}
                         onChange={(value) => onChange(value, 'alternateMailId')}
-                    />
-                </div>
-            </div>
-            <div className='row'>
-                <div className='input-container'>
-                    <InputLabel name="Contact Person" error={errors.contactPerson} mandatory />
-                    <CustomInput value={contactPerson}
-                        error={errors.contactPerson} placeholder="Contact Person"
-                        onChange={(value) => onChange(value, 'contactPerson')}
                     />
                 </div>
             </div>

@@ -4,14 +4,12 @@ import { http } from '../../../../modules/http';
 import CustomButton from '../../../../components/CustomButton';
 import FormHeader from '../../../../components/FormHeader';
 import ConfirmModal from '../../../../components/CustomModal';
-import { getUserId } from '../../../../utils/constants';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import { shiftOptions } from '../../../../assets/fixtures';
 import { isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 import { validateQCValues, validateIntFloat, validateNames } from '../../../../utils/validations';
 
 const InternalQC = () => {
-    const USERID = getUserId()
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)

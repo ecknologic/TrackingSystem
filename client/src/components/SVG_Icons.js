@@ -156,7 +156,7 @@ const CrossComponent = ({ color }) => (
 )
 const CloseComponent = ({ color }) => (
     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22">
-        <g fill="none" fill-rule="evenodd">
+        <g fill="none" fillRule="evenodd">
             <path fill={color} d="M7 0h8a7 7 0 017 7v8a7 7 0 01-7 7H7a7 7 0 01-7-7V7a7 7 0 017-7z" />
             <path fill="#FFF" d="M9.41 10.83L7.3 8.7a1 1 0 011.42-1.42l2.12 2.12 2.12-2.12a1 1 0 111.41 1.42l-2.12 2.12 2.12 2.12a1 1 0 11-1.41 1.41l-2.12-2.12-2.12 2.12a1 1 0 01-1.42-1.41l2.12-2.12z" />
         </g>

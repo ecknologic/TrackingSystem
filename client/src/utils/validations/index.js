@@ -395,6 +395,16 @@ export const validateDistributorValues = (data) => {
     const { agencyName, gstNo, gstProof, operationalArea, contactPerson, mobileNumber, address,
         alternateNumber, mailId, alternateMailId } = data
 
+    if (mailId && alternateMailId) {
+        if (mailId.trim() === alternateMailId.trim()) {
+            errors.alternateMailId = 'Duplicate'
+        }
+    }
+    if (mobileNumber && alternateNumber) {
+        if (mobileNumber == alternateNumber) {
+            errors.alternateNumber = 'Duplicate'
+        }
+    }
     if (!address) errors.address = text
     if (!gstProof) errors.gstProof = text
     if (!gstNo) errors.gstNo = text
@@ -407,12 +417,18 @@ export const validateDistributorValues = (data) => {
     }
     if (!mobileNumber) errors.mobileNumber = text
     else {
-        const error = validateMobileNumber(mobileNumber)
-        error && (errors.mobileNumber = error)
+        if (String(mobileNumber).length < 10) errors.mobileNumber = text2
+        else {
+            const error = validateMobileNumber(mobileNumber)
+            error && (errors.mobileNumber = error)
+        }
     }
     if (alternateNumber) {
-        const error = validateMobileNumber(alternateNumber)
-        error && (errors.alternateNumber = error)
+        if (String(alternateNumber).length < 10) errors.alternateNumber = text2
+        else {
+            const error = validateMobileNumber(alternateNumber)
+            error && (errors.alternateNumber = error)
+        }
     }
     if (!agencyName) errors.agencyName = text
     else {

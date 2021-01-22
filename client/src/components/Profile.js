@@ -6,7 +6,7 @@ import { DDownIcon } from './SVG_Icons';
 import NameCard from './NameCard';
 import '../sass/profile.scss'
 
-const Profile = ({ name = '' }) => {
+const Profile = ({ userName = '' }) => {
     const history = useHistory()
 
     const handleSelect = ({ key }) => {
@@ -19,7 +19,7 @@ const Profile = ({ name = '' }) => {
 
     const menu = (
         <Menu onClick={handleSelect}>
-            <Menu.ItemGroup title={<NameCard name={name} size='large' />}></Menu.ItemGroup>
+            <Menu.ItemGroup title={<NameCard name={userName} size='large' />}></Menu.ItemGroup>
             <Menu.Divider />
             <Menu.Item key="logout" >
                 Logout
@@ -36,7 +36,7 @@ const Profile = ({ name = '' }) => {
             getPopupContainer={node => node.parentNode}
         >
             <div className='profile-container'>
-                <AvatarText name={name} />
+                <AvatarText name={userName} />
                 <DDownIcon className='down' />
             </div>
         </Dropdown>

@@ -84,7 +84,7 @@ const ManageDistributor = () => {
 
     const handleUpload = (file) => {
         getBase64(file, async (buffer) => {
-            setFormData(data => ({ ...data, gstProof: buffer }))
+            setFormData(data => ({ ...data, gstProof: buffer, isNewFile: true }))
             setFormErrors(errors => ({ ...errors, gstProof: '' }))
         })
     }
@@ -102,6 +102,9 @@ const ManageDistributor = () => {
         }
 
         let body = { ...formData }
+        if (!formData.isNewFile) {
+            delete body.gstProof
+        }
         const url = '/distributor/updateDistributor'
         const options = { item: 'Distributor', v1Ing: 'Updating', v2: 'updated' }
 

@@ -2,6 +2,7 @@ import { message } from 'antd';
 import React, { useState } from 'react';
 import { http } from '../../../modules/http';
 import DistributorForm from '../forms/Distributor';
+import { getUserId } from '../../../utils/constants';
 import CustomButton from '../../../components/CustomButton';
 import { getBase64, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
 import {
@@ -9,6 +10,7 @@ import {
 } from '../../../utils/validations';
 
 const CreateEmployee = ({ goToTab }) => {
+    const USERID = getUserId()
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
@@ -70,7 +72,7 @@ const CreateEmployee = ({ goToTab }) => {
         }
 
         let body = {
-            ...formData
+            ...formData, createdBy: USERID
         }
         const url = '/distributor/createDistributor'
         const options = { item: 'Distributor', v1Ing: 'Adding', v2: 'added' }

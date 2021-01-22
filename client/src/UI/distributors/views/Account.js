@@ -26,29 +26,37 @@ const AccountView = ({ data }) => {
             </div>
             <div className='row half-stretch'>
                 <div className='input-container'>
+                    <InputValue size='smaller' value='Contact Person' />
+                    <InputValue size='large' value={contactPerson} />
+                </div>
+            </div>
+            <div className='row half-stretch'>
+                <div className='input-container'>
                     <InputValue size='smaller' value='Mobile Number' />
                     <InputValue size='large' value={mobileNumber} />
                 </div>
-                <div className='input-container'>
-                    <InputValue size='smaller' value='Alternate Mobile No' />
-                    <InputValue size='large' value={alternateNumber} />
-                </div>
+                {
+                    alternateNumber && (
+                        <div className='input-container'>
+                            <InputValue size='smaller' value='Alternate Mobile No' />
+                            <InputValue size='large' value={alternateNumber} />
+                        </div>
+                    )
+                }
             </div>
             <div className='row half-stretch'>
                 <div className='input-container'>
                     <InputValue size='smaller' value='Email' />
                     <InputValue size='large' value={mailId} />
                 </div>
-                <div className='input-container'>
-                    <InputValue size='smaller' value='Alternate Email' />
-                    <InputValue size='large' value={alternateMailId} />
-                </div>
-            </div>
-            <div className='row half-stretch'>
-                <div className='input-container'>
-                    <InputValue size='smaller' value='Contact Person' />
-                    <InputValue size='large' value={contactPerson} />
-                </div>
+                {
+                    alternateMailId && (
+                        <div className='input-container'>
+                            <InputValue size='smaller' value='Alternate Email' />
+                            <InputValue size='large' value={alternateMailId} />
+                        </div>
+                    )
+                }
             </div>
         </div>
     )
