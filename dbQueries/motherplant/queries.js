@@ -26,8 +26,8 @@ motherPlantDbQueries.getDispatchesByBatch = async (input, callback) => {
 }
 motherPlantDbQueries.getProducedBatchNumbers = async (departmentId, callback) => {
     let past10thDay = dayjs().subtract(10, 'day').format('YYYY-MM-DD')
-    let query = "select p.batchId,q.productionQcId from production p INNER JOIN productionQC q on p.batchId=q.batchId WHERE p.departmentId=? AND DATE(`productionDate`)>=? ORDER BY productionDate DESC";
-    return executeGetParamsQuery(query, [departmentId, past10thDay], callback)
+    let query = "select p.batchId,q.productionQcId from production p INNER JOIN productionQC q on p.batchId=q.batchId WHERE p.departmentId=? AND q.departmentId=? AND DATE(`productionDate`)>=? ORDER BY productionDate DESC";
+    return executeGetParamsQuery(query, [departmentId, departmentId, past10thDay], callback)
 }
 
 motherPlantDbQueries.getVehicleDetails = async (callback) => {
