@@ -307,7 +307,13 @@ router.get('/getDepartmentsList', (req, res) => {
 router.get('/getAllDepartmentsList', (req, res) => {
     motherPlantDbQueries.getAllDepartmentsList(req.query.departmentType, (err, results) => {
         if (err) res.status(500).json(dbError(err));
-        res.json((results));
+        else {
+            if (results.length) {
+                results.push({ departmentId: null, departmentName: 'None' })
+                res.json(results)
+            }
+            else res.json([])
+        }
     });
 });
 
