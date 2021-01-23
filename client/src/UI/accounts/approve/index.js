@@ -130,7 +130,7 @@ const ApproveAccount = () => {
             const error = validateIDNumbers(key, value)
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key === 'organizationName' || key === 'customerName' || key === 'referredBy') {
+        else if (key === 'referredBy') {
             const error = validateNames(value)
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }

@@ -230,7 +230,7 @@ const AddAccount = () => {
             const error = validateIDNumbers(key, value)
             setCorporateErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key === 'organizationName' || key === 'customerName' || key === 'referredBy') {
+        else if (key === 'referredBy') {
             const error = validateNames(value)
             setCorporateErrors(errors => ({ ...errors, [key]: error }))
         }

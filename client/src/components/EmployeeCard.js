@@ -7,8 +7,8 @@ import '../sass/employeeCard.scss'
 const EmployeeCard = ({ data, onClick, btnTxt = 'Manage Account' }) => {
     const { RoleId, isActive, userName, mobileNumber, emailid, address, userId, departmentName } = data
 
-    const role = userId ? getRoleLabel(RoleId) : departmentName
-    const label = userId ? 'Role' : 'Assigned To'
+    const role = userId && !departmentName ? getRoleLabel(RoleId) : departmentName
+    const label = userId && !departmentName ? 'Role' : 'Assigned To'
 
     return (
         <div className='account-card-container employee-card-container'>
