@@ -4,15 +4,15 @@ import ProductForm from '../forms/Product';
 import { http } from '../../../modules/http'
 import Actions from '../../../components/Actions';
 import Spinner from '../../../components/Spinner';
+import { TRACKFORM } from '../../../utils/constants';
+import ConfirmMessage from '../../../components/ConfirmMessage';
 import CustomModal from '../../../components/CustomModal';
 import { productColumns } from '../../../assets/fixtures';
 import { EditIconGrey } from '../../../components/SVG_Icons';
 import ConfirmModal from '../../../components/CustomModal';
 import CustomPagination from '../../../components/CustomPagination';
 import { deepClone, isAlphaNum, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
-import { validateNumber } from '../../../utils/validations';
-import ConfirmMessage from '../../../components/ConfirmMessage';
-import { TRACKFORM } from '../../../utils/constants';
+import { validateIntFloat, validateProductValues } from '../../../utils/validations';
 
 const Dashboard = ({ reFetch }) => {
     const [products, setProducts] = useState([])
@@ -66,25 +66,23 @@ const Dashboard = ({ reFetch }) => {
             const isValid = isAlphaNum(value)
             if (!isValid) setFormErrors(errors => ({ ...errors, [key]: 'Enter aphanumeric only' }))
         }
-        else if (key === 'price') {
-            const error = validateNumber(value)
+        else if (key === 'price' || key === 'tax') {
+            const error = validateIntFloat(value)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+    }
+
+    const handleBlur = (value, key) => {
+
+        // Validations
+        if (key === 'price' || key === 'tax') {
+            const error = validateIntFloat(value, true)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
     }
 
     const handleSubmit = async () => {
-        const formErrors = {}
-        const { productName, price } = formData
-        if (!price) formErrors.price = 'Required'
-        else {
-            const error = validateNumber(price)
-            if (error) formErrors.price = error
-        }
-        if (!productName) formErrors.productName = 'Required'
-        else {
-            const isValid = isAlphaNum(productName)
-            if (!isValid) formErrors.productName = 'Enter aphanumeric only'
-        }
+        const formErrors = validateProductValues(formData)
 
         if (!isEmpty(formErrors)) {
             setShake(true)
@@ -191,6 +189,7 @@ const Dashboard = ({ reFetch }) => {
                     data={formData}
                     errors={formErrors}
                     onChange={handleChange}
+                    onBlur={handleBlur}
                 />
             </CustomModal>
             <ConfirmModal

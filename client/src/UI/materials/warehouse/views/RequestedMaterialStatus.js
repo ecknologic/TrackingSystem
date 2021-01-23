@@ -7,7 +7,7 @@ import CustomTextArea from '../../../../components/CustomTextArea';
 import { getStatusColor, resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
-const RequestedMaterialStatusView = ({ data, formData, errors, isSuperAdmin, onChange }) => {
+const RequestedMaterialStatusView = ({ data, formData, errors, isSuperAdmin, editMode, onChange }) => {
 
     const { orderId, status, itemName, itemCode, itemQty, description, vendorName, requestedDate, approvedDate } = data
     const { reason } = formData
@@ -22,7 +22,7 @@ const RequestedMaterialStatusView = ({ data, formData, errors, isSuperAdmin, onC
     }, [])
 
     const color = getStatusColor(status)
-    const text = status === 'Pending' || status === 'Rejected' ? status : 'Approved'
+    const label = status === 'Rejected' ? status : 'Approved'
 
     return (
         <>
@@ -35,7 +35,7 @@ const RequestedMaterialStatusView = ({ data, formData, errors, isSuperAdmin, onC
                     <div className='input-container'>
                         <InputLabel name='Status' />
                         <span className='app-dot' style={{ background: color }}></span>
-                        <InputValue size='smaller' value={text} />
+                        <InputValue size='smaller' value={status} />
                     </div>
                 </div>
                 <Divider />
@@ -69,7 +69,7 @@ const RequestedMaterialStatusView = ({ data, formData, errors, isSuperAdmin, onC
                     {
                         approvedDate && (
                             <div className='input-container'>
-                                <InputLabel name={`${text} On`} />
+                                <InputLabel name={`${label} On`} />
                                 <InputValue size='smaller' value={dayjs(approvedDate).format(DATEANDTIMEFORMAT)} />
                             </div>
                         )
@@ -89,9 +89,13 @@ const RequestedMaterialStatusView = ({ data, formData, errors, isSuperAdmin, onC
                         <div className='row'>
                             <div className='input-container stretch'>
                                 <InputLabel name='Description' error={errors.reason} />
-                                <CustomTextArea maxLength={256} error={errors.reason} placeholder='Add Description'
-                                    value={reason} maxRows={4} onChange={(value) => onChange(value, 'reason')}
-                                />
+                                {
+                                    editMode ? (
+                                        <CustomTextArea maxLength={256} error={errors.reason} placeholder='Add Description'
+                                            value={reason} maxRows={4} onChange={(value) => onChange(value, 'reason')}
+                                        />
+                                    ) : <InputValue size='smaller' value={reason} />
+                                }
                             </div>
                         </div>
                     </>

@@ -1,5 +1,5 @@
 import { message } from 'antd';
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { http } from '../../../modules/http';
 import DispatchForm from '../forms/Dispatch';
 import { TRACKFORM } from '../../../utils/constants';
@@ -9,14 +9,18 @@ import CustomButton from '../../../components/CustomButton';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import { extractValidProductsForDB, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
 import { validateDispatchValues, validateMobileNumber, validateNames, validateNumber } from '../../../utils/validations';
+import { getDistributorOptions } from '../../../assets/fixtures';
 
 const CreateDispatch = ({ goToTab, driverList, warehouseList, ...rest }) => {
-    const [formData, setFormData] = useState({})
+    const [formData, setFormData] = useState({ dispatchType: 'warehouse' })
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
     const [currentStock, setCurrentStock] = useState({})
+    const [distributorList, setDistributorList] = useState([])
     const [shake, setShake] = useState(false)
+
+    const distributorOptions = useMemo(() => getDistributorOptions(distributorList), [distributorList])
 
     const getCurrentStock = async (batchId) => {
         const data = await http.GET(`/motherPlant/getProductByBatch/${batchId}`)
@@ -27,11 +31,22 @@ const CreateDispatch = ({ goToTab, driverList, warehouseList, ...rest }) => {
         setFormData(data => ({ ...data, ...currentStock }))
     }
 
+    const getDistributorList = async () => {
+        const data = await http.GET('/distributor/getDistributorsList')
+        setDistributorList(data)
+    }
+
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
         if (key === 'batchId') getCurrentStock(value)
+        if (key === 'dispatchType') {
+            setFormData(data => ({ ...data, dispatchTo: null }))
+            if (value === 'distributor' && !distributorList.length) {
+                getDistributorList()
+            }
+        }
 
         // Validations
         if (key === 'driverId') {
@@ -59,6 +74,7 @@ const CreateDispatch = ({ goToTab, driverList, warehouseList, ...rest }) => {
     }
 
     const handleSubmit = async () => {
+        const { dispatchType } = formData
         const formErrors = validateDispatchValues(formData, currentStock)
 
         if (!isEmpty(formErrors)) {
@@ -68,10 +84,13 @@ const CreateDispatch = ({ goToTab, driverList, warehouseList, ...rest }) => {
             return
         }
 
-        let { departmentName: dispatchAddress } = warehouseList.find(dep => dep.departmentId === formData.dispatchTo)
+        let departmentName = ''
+        if (dispatchType === 'warehouse') departmentName = warehouseList.find(dep => dep.departmentId === formData.dispatchTo).departmentName
+        else departmentName = distributorList.find(dep => dep.distributorId === formData.dispatchTo).agencyName
+
         const { product20L, product1L, product500ML, product250ML } = extractValidProductsForDB(formData)
         let body = {
-            ...formData, dispatchType: 'Internal', dispatchAddress,
+            ...formData, dispatchAddress: departmentName,
             product20L, product1L, product500ML, product250ML
         }
         const options = { item: 'Dispatch', v1Ing: 'Creating', v2: 'created' }
@@ -123,6 +142,7 @@ const CreateDispatch = ({ goToTab, driverList, warehouseList, ...rest }) => {
                 errors={formErrors}
                 onChange={handleChange}
                 onBlur={handleBlur}
+                distributorOptions={distributorOptions}
                 {...rest}
             />
             <div className='app-footer-buttons-container'>

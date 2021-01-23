@@ -105,7 +105,7 @@ const StockDetails = ({ date }) => {
     }
 
     const getNewStock = async () => {
-        const url = `/warehouse/getNewStockDetails/1`
+        const url = `/warehouse/getNewStockDetails/${warehouseId}`
         const data = await http.GET(url)
         const { DCDetails } = data || {}
         const arrivedStock = JSON.parse(DCDetails || "[]")

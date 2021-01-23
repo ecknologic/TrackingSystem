@@ -56,7 +56,7 @@ const ManagePlant = () => {
 
         setGstProof({ Front: gstProof, idProofType: 'gstNo', gstNo })
         setHeaderContent({ title: departmentName })
-        setAccountValues(rest)
+        setAccountValues({ ...rest, gstProof })
         setPrevAdminId(adminId)
         setAdmin({ userName, mobileNumber, emailid, roleId })
         setLoading(false)

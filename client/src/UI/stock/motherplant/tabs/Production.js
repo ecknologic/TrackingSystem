@@ -18,7 +18,6 @@ const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
 const Production = () => {
     const [loading, setLoading] = useState(true)
-    const [productsClone, setProductsClone] = useState([])
     const [products, setProducts] = useState([])
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
@@ -28,7 +27,6 @@ const Production = () => {
     const [confirmModal, setConfirmModal] = useState(false)
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [modal, setModal] = useState(false)
-    const [filterInfo, setFilterInfo] = useState([])
     const [shake, setShake] = useState(false)
 
     const productionIdRef = useRef()
@@ -43,15 +41,9 @@ const Production = () => {
         const url = `/motherPlant/getProductionDetails`
         const data = await http.GET(url)
         setPageNumber(1)
-        setProductsClone(data)
         setLoading(false)
-        if (filterInfo.length) {
-            generateFiltered(data, filterInfo)
-        }
-        else {
-            setTotalCount(data.length)
-            setProducts(data)
-        }
+        setTotalCount(data.length)
+        setProducts(data)
     }
 
     const handleChange = (value, key) => {
@@ -79,12 +71,6 @@ const Production = () => {
             const error = validateIntFloat(value, true)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
-    }
-
-    const generateFiltered = (original, filterInfo) => {
-        const filtered = original.filter((item) => filterInfo.includes(item.RouteId))
-        setProducts(filtered)
-        setTotalCount(filtered.length)
     }
 
     const handleMenuSelect = (key, data) => {

@@ -6,7 +6,7 @@ import { resetTrackForm, trackAccountFormOnce } from '../../../../utils/Function
 
 const BatchForm = (props) => {
 
-    const { data, errors, disabled, onChange, shiftOptions, batchOptions, onBlur } = props
+    const { data, errors, disabled, onChange, shiftOptions, batchOptions = [], onBlur } = props
 
     const { phLevel, TDS, ozoneLevel, batchId, product20L, product1L,
         product500ML, product250ML, managerName, shiftType } = data

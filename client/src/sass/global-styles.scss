@@ -757,6 +757,20 @@ textarea {
     }
 }
 
+// -------------- antd Radio styles ------------------- //
+
+.ant-radio-checked .ant-radio-inner{
+    border-color: $primaryColor !important ;
+}
+  
+.ant-radio-checked .ant-radio-inner:after{
+    background-color: $primaryColor;
+}
+
+.ant-radio:hover .ant-radio-inner {
+    border-color: $primaryColor ;
+}
+
 // -------------- Antd Dropdown styles ------------------- //
 .ant-dropdown {
     // width: 12em;

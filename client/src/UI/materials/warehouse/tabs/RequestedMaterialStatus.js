@@ -172,8 +172,10 @@ const MaterialStatus = ({ reFetch, isSuperAdmin = false }) => {
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
 
-    const canApprove = viewData.status === 'Rejected' || viewData.status === 'Pending'
-    const canReject = viewData.status === 'Approved' || viewData.status === 'Pending'
+    const { status } = viewData
+    const canApprove = status === 'Rejected' || status === 'Pending'
+    const canReject = status === 'Approved' || status === 'Pending'
+    const editMode = status !== 'Confirmed'
 
     return (
         <div className='stock-delivery-container'>
@@ -227,14 +229,14 @@ const MaterialStatus = ({ reFetch, isSuperAdmin = false }) => {
             <CustomModal
                 hideCancel
                 bothDisabled={btnDisabled}
-                showTwinBtn={isSuperAdmin}
+                showTwinBtn={isSuperAdmin && editMode}
                 twinDisabled={!canReject}
-                btnDisabled={isSuperAdmin && !canApprove}
+                btnDisabled={isSuperAdmin && !canApprove && editMode}
                 twinTxt='Reject'
-                okTxt={isSuperAdmin ? 'Approve' : 'Close'}
+                okTxt={isSuperAdmin && editMode ? 'Approve' : 'Close'}
                 visible={viewModal}
                 title={formTitle}
-                onOk={isSuperAdmin ? handleApprove : handleModalCancel}
+                onOk={isSuperAdmin && editMode ? handleApprove : handleModalCancel}
                 onTwin={handleReject}
                 onCancel={handleModalCancel}
                 className='app-form-modal app-view-modal'
@@ -245,6 +247,7 @@ const MaterialStatus = ({ reFetch, isSuperAdmin = false }) => {
                     errors={formErrors}
                     onChange={handleChange}
                     isSuperAdmin={isSuperAdmin}
+                    editMode={editMode}
                 />
             </CustomModal>
             <ConfirmModal

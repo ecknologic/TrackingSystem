@@ -97,7 +97,7 @@ motherPlantDbQueries.getReceiptDetailsByRMId = async (input, callback) => {
 }
 
 motherPlantDbQueries.getDepartmentsList = async (deptType, callback) => {
-    let query = `select * from departmentmaster where departmentType="${deptType}"`
+    let query = `select departmentId,departmentName from departmentmaster where departmentType="${deptType}"`
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getAllDepartmentsList = async (deptType, callback) => {
@@ -241,8 +241,9 @@ motherPlantDbQueries.updateRMStatus = async (input, callback) => {
 }
 
 motherPlantDbQueries.updateDispatchDetails = async (input, callback) => {
-    let query = `update dispatches SET DCNO=?,vehicleNo=?,driverId=?,driverName=?,dispatchTo=?,batchId=?,product20L=?,product1L=?,product500ML=?,product250ML=?,managerName=?,dispatchAddress=? where dispatchId="${input.dispatchId}"`;
-    let requestBody = [input.DCNO, input.vehicleNo, input.driverId, input.driverName, input.dispatchTo, input.batchId, input.product20L, input.product1L, input.product500ML, input.product250ML, input.managerName, input.dispatchAddress]
+    const { dispatchType, DCNO, vehicleNo, driverId, driverName, dispatchTo, batchId, product20L, product1L, product500ML, product250ML, managerName, dispatchAddress } = input
+    let query = `update dispatches SET dispatchType=?,DCNO=?,vehicleNo=?,driverId=?,driverName=?,dispatchTo=?,batchId=?,product20L=?,product1L=?,product500ML=?,product250ML=?,managerName=?,dispatchAddress=? where dispatchId="${input.dispatchId}"`;
+    let requestBody = [dispatchType, DCNO, vehicleNo, driverId, driverName, dispatchTo, batchId, product20L, product1L, product500ML, product250ML, managerName, dispatchAddress]
     executePostOrUpdateQuery(query, requestBody, (err, data) => {
         if (err) callback(err, data)
         else {

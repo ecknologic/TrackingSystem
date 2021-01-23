@@ -10,6 +10,12 @@ router.get('/getDistributors', (req, res) => {
         else res.send(results);
     });
 });
+router.get('/getDistributorsList', (req, res) => {
+    distributorQueries.getDistributorsList((err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.send(results);
+    });
+});
 router.get('/getDistributor/:distributorId', (req, res) => {
     const { distributorId } = req.params
     distributorQueries.getDistributorById(distributorId, (err, results) => {

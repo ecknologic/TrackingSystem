@@ -55,7 +55,6 @@ export const validateAccountValues = (data, customerType, isInView) => {
     let errors = {};
     let productErrors = {}
     const text = 'Required'
-    const text2 = 'Incomplete'
     const {
         gstNo, panNo, adharNo, licenseNo, natureOfBussiness, organizationName, address, customerName,
         mobileNumber, invoicetype, creditPeriodInDays = "", EmailId, referredBy, idProofType,
@@ -118,39 +117,24 @@ export const validateAccountValues = (data, customerType, isInView) => {
     }
     if (!mobileNumber) errors.mobileNumber = text
     else {
-        if (String(mobileNumber).length < 10) errors.mobileNumber = text2
-        else {
-            const error = validateMobileNumber(mobileNumber)
-            error && (errors.mobileNumber = error)
-        }
+        const error = validateMobileNumber(mobileNumber, true)
+        error && (errors.mobileNumber = error)
     }
     if (panNo) {
-        if (String(panNo).length < 10) (errors.panNo = text2)
-        else {
-            const error = validateIDNumbers('panNo', panNo)
-            error && (errors.panNo = error)
-        }
+        const error = validateIDNumbers('panNo', panNo, true)
+        error && (errors.panNo = error)
     }
     if (adharNo) {
-        if (String(adharNo).length < 12) errors.adharNo = text2
-        else {
-            const error = validateIDNumbers('adharNo', adharNo)
-            error && (errors.adharNo = error)
-        }
+        const error = validateIDNumbers('adharNo', adharNo, true)
+        error && (errors.adharNo = error)
     }
     if (licenseNo) {
-        if (String(licenseNo).length < 16) errors.licenseNo = text2
-        else {
-            const error = validateIDNumbers('licenseNo', licenseNo)
-            error && (errors.licenseNo = error)
-        }
+        const error = validateIDNumbers('licenseNo', licenseNo, true)
+        error && (errors.licenseNo = error)
     }
     if (gstNo) {
-        if (String(gstNo).length < 15) errors.gstNo = text2
-        else {
-            const error = validateIDNumbers('gstNo', gstNo)
-            error && (errors.gstNo = error)
-        }
+        const error = validateIDNumbers('gstNo', gstNo, true)
+        error && (errors.gstNo = error)
     }
 
     return { ...errors, ...productErrors }
@@ -158,7 +142,6 @@ export const validateAccountValues = (data, customerType, isInView) => {
 export const validateDeliveryValues = (data) => {
     let errors = {};
     const text = 'Required'
-    const text2 = 'Incomplete'
     const {
         gstNo, gstProof, depositAmount = "", departmentId, routeId, phoneNumber, contactPerson, address,
         deliveryLocation, ...rest
@@ -175,19 +158,13 @@ export const validateDeliveryValues = (data) => {
     if (gstNo && !gstProof) errors.gstProof = text
     if (!gstNo && gstProof) errors.gstNo = text
     if (gstNo) {
-        if (String(gstNo).length < 15) errors.gstNo = text2
-        else {
-            const error = validateIDNumbers('gstNo', gstNo)
-            error && (errors.gstNo = error)
-        }
+        const error = validateIDNumbers('gstNo', gstNo, true)
+        error && (errors.gstNo = error)
     }
     if (!phoneNumber) errors.phoneNumber = text
     else {
-        if (String(phoneNumber).length < 10) errors.phoneNumber = text2
-        else {
-            const error = validateMobileNumber(phoneNumber)
-            error && (errors.phoneNumber = error)
-        }
+        const error = validateMobileNumber(phoneNumber, true)
+        error && (errors.phoneNumber = error)
     }
     if (!contactPerson) errors.contactPerson = text
     else {
@@ -239,7 +216,6 @@ export const validateBatchValues = (data) => {
 export const validatePlantValues = (data) => {
     let errors = {};
     const text = 'Required'
-    const text2 = 'Incomplete'
     const { gstNo, gstProof, departmentName, address, adminId, phoneNumber, city, state, pinCode } = data
 
     if (!adminId) errors.adminId = text
@@ -247,14 +223,11 @@ export const validatePlantValues = (data) => {
     if (gstNo && !gstProof) errors.gstProof = text
     if (!gstNo && gstProof) errors.gstNo = text
     if (gstNo) {
-        if (String(gstNo).length < 15) errors.gstNo = text2
-        else {
-            const error = validateIDNumbers('gstNo', gstNo)
-            error && (errors.gstNo = error)
-        }
+        const error = validateIDNumbers('gstNo', gstNo, true)
+        error && (errors.gstNo = error)
     }
     if (phoneNumber) {
-        const error = validateMobileNumber(phoneNumber)
+        const error = validateMobileNumber(phoneNumber, true)
         error && (errors.phoneNumber = error)
     }
     if (!departmentName) errors.departmentName = text
@@ -284,7 +257,6 @@ export const validatePlantValues = (data) => {
 export const validateEmployeeValues = (data, employeeType) => {
     let errors = {};
     const text = 'Required'
-    const text2 = 'Incomplete'
     const { userName, adharNo, parentName, gender, dob, mobileNumber, address, joinedDate, permanentAddress,
         accountNo, branchName, bankName, ifscCode, recruitedBy, roleId, licenseNo, emailid } = data
 
@@ -332,24 +304,18 @@ export const validateEmployeeValues = (data, employeeType) => {
     }
     if (!mobileNumber) errors.mobileNumber = text
     if (mobileNumber) {
-        const error = validateMobileNumber(mobileNumber)
+        const error = validateMobileNumber(mobileNumber, true)
         error && (errors.mobileNumber = error)
     }
     if (!ifscCode) errors.ifscCode = text
     else {
-        if (String(ifscCode).length < 11) errors.ifscCode = text2
-        else {
-            const error = validateIFSCCode(ifscCode)
-            error && (errors.ifscCode = error)
-        }
+        const error = validateIFSCCode(ifscCode, true)
+        error && (errors.ifscCode = error)
     }
     if (!adharNo) errors.adharNo = text
     else {
-        if (String(adharNo).length < 12) errors.adharNo = text2
-        else {
-            const error = validateIDNumbers('adharNo', adharNo)
-            error && (errors.adharNo = error)
-        }
+        const error = validateIDNumbers('adharNo', adharNo, true)
+        error && (errors.adharNo = error)
     }
 
     return errors
@@ -374,16 +340,13 @@ export const validateDependentValues = (data) => {
     }
     if (!mobileNumber) errors.mobileNumber = text
     if (mobileNumber) {
-        const error = validateMobileNumber(mobileNumber)
+        const error = validateMobileNumber(mobileNumber, true)
         error && (errors.mobileNumber = error)
     }
     if (!adharNo) errors.adharNo = text
     else {
-        if (String(adharNo).length < 12) errors.adharNo = text2
-        else {
-            const error = validateIDNumbers('adharNo', adharNo)
-            error && (errors.adharNo = error)
-        }
+        const error = validateIDNumbers('adharNo', adharNo, true)
+        error && (errors.adharNo = error)
     }
 
     return errors
@@ -391,7 +354,6 @@ export const validateDependentValues = (data) => {
 export const validateDistributorValues = (data) => {
     let errors = {};
     const text = 'Required'
-    const text2 = 'Incomplete'
     const { agencyName, gstNo, gstProof, operationalArea, contactPerson, mobileNumber, address,
         alternateNumber, mailId, alternateMailId } = data
 
@@ -409,26 +371,17 @@ export const validateDistributorValues = (data) => {
     if (!gstProof) errors.gstProof = text
     if (!gstNo) errors.gstNo = text
     else {
-        if (String(gstNo).length < 15) errors.gstNo = text2
-        else {
-            const error = validateIDNumbers('gstNo', gstNo)
-            error && (errors.gstNo = error)
-        }
+        const error = validateIDNumbers('gstNo', gstNo, true)
+        error && (errors.gstNo = error)
     }
     if (!mobileNumber) errors.mobileNumber = text
     else {
-        if (String(mobileNumber).length < 10) errors.mobileNumber = text2
-        else {
-            const error = validateMobileNumber(mobileNumber)
-            error && (errors.mobileNumber = error)
-        }
+        const error = validateMobileNumber(mobileNumber, true)
+        error && (errors.mobileNumber = error)
     }
     if (alternateNumber) {
-        if (String(alternateNumber).length < 10) errors.alternateNumber = text2
-        else {
-            const error = validateMobileNumber(alternateNumber)
-            error && (errors.alternateNumber = error)
-        }
+        const error = validateMobileNumber(alternateNumber, true)
+        error && (errors.alternateNumber = error)
     }
     if (!agencyName) errors.agencyName = text
     else {
@@ -488,6 +441,29 @@ export const validateQCValues = (data) => {
     return errors
 }
 
+export const validateProductValues = (data) => {
+    let errors = {};
+    const text = 'Required'
+    const { productName, price, tax } = data;
+    if (!price) errors.price = text;
+    else {
+        const error = validateIntFloat(price, true);
+        if (error) errors.price = error;
+    }
+    if (!tax) errors.tax = text;
+    else {
+        const error = validateIntFloat(tax, true);
+        if (error) errors.tax = error;
+        else if (tax > 100) errors.tax = 'Should not exceed 100';
+    }
+    if (!productName) errors.productName = text;
+    else {
+        const isValid = isAlphaNum(productName);
+        if (!isValid) errors.productName = 'Enter aphanumeric only';
+    }
+    return errors
+}
+
 export const validateQCcheckValues = (data, type) => {
     let errors = {};
     const text = 'Required'
@@ -538,7 +514,7 @@ export const validateDispatchValues = (data, currentStock) => {
     if (!dispatchTo) errors.dispatchTo = text
     if (!mobileNumber) errors.mobileNumber = text
     else {
-        const error = validateMobileNumber(mobileNumber)
+        const error = validateMobileNumber(mobileNumber, true)
         error && (errors.mobileNumber = error)
     }
     if (!managerName) errors.managerName = text
@@ -562,7 +538,7 @@ export const validateExternalDispatchValues = (data, currentStock) => {
     if (!batchId) errors.batchId = text
     if (!dispatchAddress) errors.dispatchAddress = text
     if (mobileNumber) {
-        const error = validateMobileNumber(mobileNumber, true)
+        const error = validateMobileNumber(mobileNumber, true, true)
         error && (errors.mobileNumber = error)
     }
     if (!managerName) errors.managerName = text
@@ -794,7 +770,6 @@ export const validateDamagedWithArrived = (data, key) => {
 export const validateDCValues = (data) => {
     let errors = {};
     const text = 'Required'
-    const text2 = 'Incomplete'
 
     const { routeId, customerName, phoneNumber, address, driverId, cans20L: product20L,
         boxes1L: product1L, boxes500ML: product500ML, boxes250ML: product250ML } = data
@@ -804,11 +779,8 @@ export const validateDCValues = (data) => {
     if (!address) errors.address = text
     if (!phoneNumber) errors.phoneNumber = text
     else {
-        if (String(phoneNumber).length < 10) errors.phoneNumber = text2
-        else {
-            const error = validateMobileNumber(phoneNumber)
-            error && (errors.phoneNumber = error)
-        }
+        const error = validateMobileNumber(phoneNumber, true)
+        error && (errors.phoneNumber = error)
     }
     if (!customerName) errors.customerName = text
     else {

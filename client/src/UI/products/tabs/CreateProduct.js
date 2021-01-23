@@ -2,8 +2,8 @@ import { message } from 'antd';
 import React, { useState } from 'react';
 import ProductForm from '../forms/Product';
 import { http } from '../../../modules/http';
-import { validateIntFloat, validateNumber } from '../../../utils/validations';
 import CustomButton from '../../../components/CustomButton';
+import { validateIntFloat, validateProductValues } from '../../../utils/validations';
 import { isAlphaNum, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
 
 const CreateProduct = ({ goToTab }) => {
@@ -21,11 +21,7 @@ const CreateProduct = ({ goToTab }) => {
             const isValid = isAlphaNum(value)
             if (!isValid) setFormErrors(errors => ({ ...errors, [key]: 'Enter aphanumeric only' }))
         }
-        else if (key === 'tax') {
-            const error = validateNumber(value)
-            setFormErrors(errors => ({ ...errors, [key]: error }))
-        }
-        else if (key === 'price') {
+        else if (key === 'price' || key === 'tax') {
             const error = validateIntFloat(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -34,30 +30,14 @@ const CreateProduct = ({ goToTab }) => {
     const handleBlur = (value, key) => {
 
         // Validations
-        if (key === 'price') {
+        if (key === 'price' || key === 'tax') {
             const error = validateIntFloat(value, true)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
     }
 
     const handleSubmit = async () => {
-        const formErrors = {}
-        const { productName, price, tax } = formData
-        if (!price) formErrors.price = 'Required'
-        else {
-            const error = validateIntFloat(price, true)
-            if (error) formErrors.price = error
-        }
-        if (!tax) formErrors.tax = 'Required'
-        else {
-            const error = validateNumber(tax)
-            if (error) formErrors.tax = error
-        }
-        if (!productName) formErrors.productName = 'Required'
-        else {
-            const isValid = isAlphaNum(productName)
-            if (!isValid) formErrors.productName = 'Enter aphanumeric only'
-        }
+        const formErrors = validateProductValues(formData);
 
         if (!isEmpty(formErrors)) {
             setShake(true)
@@ -116,3 +96,4 @@ const CreateProduct = ({ goToTab }) => {
 }
 
 export default CreateProduct
+
