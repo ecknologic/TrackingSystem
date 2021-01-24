@@ -4,11 +4,18 @@ import { getRoleLabel } from '../utils/Functions';
 import '../sass/accountCard.scss'
 import '../sass/employeeCard.scss'
 
-const EmployeeCard = ({ data, onClick, btnTxt = 'Manage Account' }) => {
-    const { RoleId, isActive, userName, mobileNumber, emailid, address, userId, departmentName } = data
+const EmployeeCard = ({ data, onClick, btnTxt = 'Manage Account', isDriver }) => {
+    const { RoleId, isActive, userName, mobileNumber, emailid, address, departmentName } = data
+    let role, label
 
-    const role = userId && !departmentName ? getRoleLabel(RoleId) : departmentName
-    const label = userId && !departmentName ? 'Role' : 'Assigned To'
+    if (isDriver) {
+        label = departmentName ? 'Assigned To' : 'Not Assigned'
+        role = departmentName && departmentName
+    }
+    else {
+        label = departmentName ? 'Assigned To' : 'Role'
+        role = departmentName ? departmentName : getRoleLabel(RoleId)
+    }
 
     return (
         <div className='account-card-container employee-card-container'>

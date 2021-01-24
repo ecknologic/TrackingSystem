@@ -4,13 +4,13 @@ import InputLabel from '../../../../components/InputLabel';
 import CustomInput from '../../../../components/CustomInput';
 import InputValue from '../../../../components/InputValue';
 import CustomTextArea from '../../../../components/CustomTextArea';
-import { removeFormTracker, resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
+import { resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 
 const ArrivedStockForm = (props) => {
 
     const { data, errors, disabled, onChange } = props
 
-    const { dcNo = '', damagedDesc, address = '', isDamaged, driverName = '', mobileNumber = '', vehicleNo = '', vehicleType = '',
+    const { dcNo = '', damagedDesc, address = '', isDamaged, driverName = '', mobileNumber = '', vehicleNo = '', vehicleType = '', departmentName,
         damaged20LCans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes, total20LCans, total1LBoxes, total250MLBoxes, total500MLBoxes } = data
 
     useEffect(() => {
@@ -22,6 +22,7 @@ const ArrivedStockForm = (props) => {
         }
     }, [])
 
+    const location = `${departmentName}, ${address}`
     return (
         <div className='app-form-container'>
             <div className='row'>
@@ -33,8 +34,8 @@ const ArrivedStockForm = (props) => {
             <Divider />
             <div className='row'>
                 <div className='input-container'>
-                    <InputLabel name='Location Details' />
-                    <InputValue size='smaller' value={address} />
+                    <InputLabel name='Address' />
+                    <InputValue size='smaller' value={location} />
                 </div>
             </div>
             <Divider />

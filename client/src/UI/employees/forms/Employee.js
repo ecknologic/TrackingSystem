@@ -14,7 +14,7 @@ import { disableFutureDates, resetTrackForm, trackAccountFormOnce } from '../../
 const EmployeeForm = (props) => {
 
     const { data, errors, roleOptions, departmentOptions, onChange, onUpload, onRemove, disabled, onBlur,
-        adharProof, adharProofErrors, licenseProof, licenseProofErrors, isDriver } = props
+        adharProof, adharProofErrors, licenseProof, licenseProofErrors, isDriver, editMode } = props
     const { userName, adharNo, licenseNo, parentName, gender, dob, mobileNumber, address,
         joinedDate, permanentAddress, roleId, emailid, departmentId, accountNo, branchName, bankName,
         ifscCode, recruitedBy, recommendedBy } = data
@@ -31,6 +31,7 @@ const EmployeeForm = (props) => {
 
     const adharProofDisabled = adharProof.Front && adharProof.Back
     const licenseProofDisabled = licenseProof.Front && licenseProof.Back
+    const eligibleRole = roleId === 2 || roleId === 3 || roleId === 6 // department can't be assigned/modified for these roles
 
     return (
         <div className='app-form-container employee-form-container'>
@@ -110,15 +111,6 @@ const EmployeeForm = (props) => {
                     />
                 </div>
                 <div className='input-container'>
-                    <InputLabel name='Department' error={errors.departmentId} />
-                    <SelectInput track
-                        options={departmentOptions} value={departmentId}
-                        error={errors.departmentId} onSelect={(value) => onChange(value, 'departmentId')}
-                    />
-                </div>
-            </div>
-            <div className='row'>
-                <div className='input-container'>
                     <InputLabel name='Role' error={errors.roleId} mandatory />
                     <SelectInput track
                         options={roleOptions} value={roleId} disabled={isDriver}
@@ -126,6 +118,19 @@ const EmployeeForm = (props) => {
                     />
                 </div>
             </div>
+            {
+                (editMode && eligibleRole) || roleId === 6 ? (
+                    <div className='row'>
+                        <div className='input-container'>
+                            <InputLabel name='Department' error={errors.departmentId} />
+                            <SelectInput track
+                                options={departmentOptions} value={departmentId}
+                                error={errors.departmentId} onSelect={(value) => onChange(value, 'departmentId')}
+                            />
+                        </div>
+                    </div>
+                ) : null
+            }
             {
                 roleId === 6
                     ? <div className='app-identity-proof-container identity-proof-container'>

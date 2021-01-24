@@ -288,8 +288,8 @@ const Delivery = ({ date }) => {
             >
                 <DCForm
                     data={formData}
-                    disabledItems={disabledItems}
                     errors={formErrors}
+                    disabledItems={disabledItems}
                     driverOptions={driverOptions}
                     routeOptions={routeOptions}
                     onChange={handleChange}

@@ -108,6 +108,11 @@ const ManageEmployee = () => {
         setAccountValues(data => ({ ...data, [key]: value }))
         setAccountErrors(errors => ({ ...errors, [key]: '' }))
 
+        if (key === 'departmentId') {
+            if (!(value === 2 || value === 3 || value === 6))  // department can't be assigned/modified for these roles
+                setAccountValues(data => ({ ...data, [key]: null }))
+        }
+
         // Validations
         if (key === 'adharNo' || key === 'licenseNo') {
             const error = validateIDNumbers(key, value)
@@ -349,6 +354,7 @@ const ManageEmployee = () => {
                                 editMode ? (
                                     <>
                                         <EmployeeForm
+                                            editMode
                                             data={accountValues}
                                             errors={accountErrors}
                                             title={employeeType}

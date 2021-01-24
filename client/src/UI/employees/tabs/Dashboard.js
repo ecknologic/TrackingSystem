@@ -21,6 +21,7 @@ const Dashboard = ({ reFetch }) => {
     const [employeeType] = useState(() => getEmployeeType(mainUrl))
     const pageSizeOptions = useMemo(() => generatePageSizeOptions(), [window.innerWidth])
     const idKey = useMemo(() => getKey(mainUrl), [])
+    const isDriver = employeeType === 'Driver'
 
     useEffect(() => {
         setLoading(true)
@@ -58,7 +59,7 @@ const Dashboard = ({ reFetch }) => {
                         loading ? <NoContent content={<Spinner />} />
                             : employees.length ? employees.slice(sliceFrom, sliceTo).map((employee) => (
                                 <Col lg={{ span: 12 }} xl={{ span: 8 }} xxl={{ span: 6 }} key={employee[idKey]}>
-                                    <EmployeeCard data={employee} onClick={() => goToManageEmployee(employee[idKey])} />
+                                    <EmployeeCard isDriver={isDriver} data={employee} onClick={() => goToManageEmployee(employee[idKey])} />
                                 </Col>
                             )) : <NoContent content={`No ${employeeType}s to show`} />
                     }

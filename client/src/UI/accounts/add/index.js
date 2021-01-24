@@ -376,6 +376,14 @@ const AddAccount = () => {
         setDevDays([])
     }
 
+    const resetErrorValues = () => {
+        setCorporateErrors({})
+        setGeneralErrors({})
+        setDeliveryErrors({})
+        setIDProofErrors({})
+        setDevDaysError({})
+    }
+
     const getSessionAddresses = () => {
         const add1 = JSON.parse(sessionStorage.getItem('address0'))
         const add2 = JSON.parse(sessionStorage.getItem('address1'))
@@ -490,7 +498,10 @@ const AddAccount = () => {
     const handleSwitchAccount = () => {
         const formHasChanged = sessionStorage.getItem(TRACKFORM)
         if (formHasChanged) setSwitchModal(true)
-        else setCorporate(!corporate)
+        else {
+            setCorporate(!corporate)
+            resetErrorValues()
+        }
     }
 
     const handleAddNewAccount = () => {
@@ -517,13 +528,10 @@ const AddAccount = () => {
         setCorporate(!corporate)
         setSwitchModal(false)
         resetCorporateValues()
-        setCorporateErrors({})
         setAddresses([])
         resetGeneralValues()
-        setGeneralErrors({})
+        resetErrorValues()
         resetDeliveryValues()
-        setDeliveryErrors({})
-        setDevDaysError({})
         resetTrackForm()
     }, [corporate])
 

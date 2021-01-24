@@ -303,6 +303,7 @@ const CreateEmployee = ({ goToTab }) => {
                 onChange={handleChange}
                 onUpload={handleUpload}
                 onRemove={handleRemove}
+                editMode={false}
                 {...childProps}
             />
             <DependentForm
