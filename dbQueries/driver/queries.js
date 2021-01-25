@@ -41,5 +41,15 @@ driverQueries.updateDriverLoginId = (input, callback) => {
     let requestBody = [idValue, driverId];
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
+driverQueries.updateDeliveryStatus = (input, callback) => {
+    const { status, orderId } = input
+    let query = "update customerorderdetails set isDelivered=? where customerOrderId=?"
+    let requestBody = [status, orderId];
+    if (status == "Completed") {
+        query = "update customerorderdetails set isDelivered=?,deliveredDate=? where customerOrderId=?"
+        requestBody = [status, new Date(), orderId]
+    }
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
 
 module.exports = driverQueries
