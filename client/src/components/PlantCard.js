@@ -1,11 +1,24 @@
 import React from 'react';
+import { Menu } from 'antd';
+import Actions from './Actions';
 import NameCard from './NameCard';
 import PrimaryButton from './PrimaryButton';
 import '../sass/accountCard.scss'
 import '../sass/plantCard.scss'
 
-const PlantCard = ({ data, onClick, btnTxt = 'Manage Account' }) => {
-    const { isApproved, departmentName, adminName, address } = data
+const PlantCard = ({ data, onClick, btnTxt = 'Manage Account', isSuperAdmin, onSelect }) => {
+    const { isApproved, departmentName, adminName, address, departmentId } = data
+
+    const optionOne = isApproved ? 'Inactive' : 'Active'
+
+    const options = [
+        <Menu.Item key={optionOne}>{optionOne}</Menu.Item>,
+        <Menu.Item key="Delete">Delete</Menu.Item>
+    ]
+
+    const handleSelect = ({ key }) => {
+        onSelect(key, departmentId)
+    }
 
     return (
         <div className='account-card-container plant-card-container'>
@@ -27,7 +40,11 @@ const PlantCard = ({ data, onClick, btnTxt = 'Manage Account' }) => {
                 </div>
             </div>
             <div className='footer'>
-                <PrimaryButton text={btnTxt} onClick={onClick} />
+                <PrimaryButton text={btnTxt} onClick={() => onClick(departmentId)} />
+                {
+                    isSuperAdmin &&
+                    <Actions options={options} onSelect={handleSelect} />
+                }
             </div>
         </div>
     )

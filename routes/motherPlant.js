@@ -439,5 +439,11 @@ router.post('/updateProductionDetails', (req, res) => {
         else res.json(data);
     })
 })
+router.delete('/deleteVehicle/:vehicleId', (req, res) => {
+    motherPlantDbQueries.deleteVehicle(req.params.vehicleId, (err, results) => {
+        if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+        else res.json(results);
+    });
+});
 
 module.exports = router;

@@ -38,7 +38,7 @@ const ViewAccount = () => {
     const [navigateTo, setNavigateTo] = useState('')
     const [activeTab, setActiveTab] = useState('1')
 
-    const isSuperAdmin = getRole() === SUPERADMIN
+    const isSuperAdmin = useMemo(() => getRole() === SUPERADMIN, [])
     const routeOptions = useMemo(() => getRouteOptions(routeList), [routeList])
     const warehouseOptions = useMemo(() => getWarehouseOptions(warehouseList), [warehouseList])
 

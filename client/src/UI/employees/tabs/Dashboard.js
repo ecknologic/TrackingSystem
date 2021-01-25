@@ -1,12 +1,13 @@
-import { Col, Row } from 'antd';
+import { Col, message, Row } from 'antd';
 import { useHistory, useLocation } from 'react-router-dom';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../modules/http'
 import Spinner from '../../../components/Spinner';
 import NoContent from '../../../components/NoContent';
 import EmployeeCard from '../../../components/EmployeeCard';
-import { getMainPathname } from '../../../utils/Functions';
+import { getMainPathname, showToast } from '../../../utils/Functions';
 import CustomPagination from '../../../components/CustomPagination';
+import { getRole, SUPERADMIN } from '../../../utils/constants';
 
 const Dashboard = ({ reFetch }) => {
     const history = useHistory()
@@ -18,6 +19,7 @@ const Dashboard = ({ reFetch }) => {
     const [totalCount, setTotalCount] = useState(null)
 
     const mainUrl = useMemo(() => getMainPathname(pathname), [pathname])
+    const isSuperAdmin = useMemo(() => getRole() === SUPERADMIN, [])
     const [employeeType] = useState(() => getEmployeeType(mainUrl))
     const pageSizeOptions = useMemo(() => generatePageSizeOptions(), [window.innerWidth])
     const idKey = useMemo(() => getKey(mainUrl), [])
@@ -46,6 +48,31 @@ const Dashboard = ({ reFetch }) => {
         setPageNumber(number)
     }
 
+    const handleMenuSelect = (key, id) => {
+        if (key === 'Delete') {
+            handleEmployeeDelete(id)
+        }
+    }
+
+    const handleEmployeeDelete = async (id) => {
+        const options = { item: employeeType, v1Ing: 'Deleting', v2: 'deleted' }
+        const url = deleteUrl(mainUrl, id)
+
+        try {
+            showToast({ ...options, action: 'loading' })
+            await http.DELETE(url)
+            optimisticApprove(id)
+            showToast(options)
+        } catch (error) {
+            message.destroy()
+        }
+    }
+
+    const optimisticApprove = (id) => {
+        const filtered = employees.filter(item => item[idKey] !== id)
+        setEmployees(filtered)
+    }
+
     const goToManageEmployee = (id) => history.push(`${mainUrl}/manage/${id}`)
 
     const sliceFrom = (pageNumber - 1) * pageSize
@@ -59,7 +86,14 @@ const Dashboard = ({ reFetch }) => {
                         loading ? <NoContent content={<Spinner />} />
                             : employees.length ? employees.slice(sliceFrom, sliceTo).map((employee) => (
                                 <Col lg={{ span: 12 }} xl={{ span: 8 }} xxl={{ span: 6 }} key={employee[idKey]}>
-                                    <EmployeeCard isDriver={isDriver} data={employee} onClick={() => goToManageEmployee(employee[idKey])} />
+                                    <EmployeeCard
+                                        data={employee}
+                                        isDriver={isDriver}
+                                        isSuperAdmin={isSuperAdmin}
+                                        onSelect={handleMenuSelect}
+                                        onClick={goToManageEmployee}
+
+                                    />
                                 </Col>
                             )) : <NoContent content={`No ${employeeType}s to show`} />
                     }
@@ -83,6 +117,14 @@ const Dashboard = ({ reFetch }) => {
 const getUrl = (url) => {
     const staffUrl = '/users/getUsers'
     const driverUrl = '/driver/getDrivers'
+
+    if (url === '/staff') return staffUrl
+    return driverUrl
+}
+
+const deleteUrl = (url, id) => {
+    const staffUrl = `/users/deleteWebUser/${id}`
+    const driverUrl = `/driver/deleteDriver/${id}`
 
     if (url === '/staff') return staffUrl
     return driverUrl

@@ -1,12 +1,12 @@
 import axios from 'axios';
 import { message } from 'antd';
-import { getWarehoseId } from '../utils/constants';
-
+import { getUserId, getWarehoseId } from '../utils/constants';
 message.config({ maxCount: 1 });
 
 // Setting headers in request
 axios.interceptors.request.use(function (config) {
     config.headers.departmentId = getWarehoseId()
+    config.headers.userId = getUserId()
 
     return config;
 });
@@ -19,6 +19,13 @@ axios.interceptors.response.use(null, error => {
         if (error.message === 'Network Error')
             message.info('Please check your network connection')
         else message.error('Oops! Something went wrong, try again!')
+    }
+    else if (expectedError) {
+        if (error.response.status === 406) {
+            sessionStorage.clear()
+            message.error('Account no longer exists, Logging you out.')
+            setTimeout(() => window.location.href = '/', 1500)
+        }
     }
 
     return Promise.reject(error)

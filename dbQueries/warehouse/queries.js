@@ -2,7 +2,7 @@ const { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery } = req
 let warehouseQueries = {}
 
 warehouseQueries.getWarehouseList = async (callback) => {
-    let query = `select d.departmentId,d.departmentName,d.address,d.state,d.city,d.isApproved,u.userName as adminName from departmentmaster d INNER JOIN usermaster u on d.adminId=u.userId WHERE d.departmentType='Warehouse' ORDER BY d.createdDateTime DESC`;
+    let query = `select d.departmentId,d.departmentName,d.address,d.state,d.city,d.isApproved,u.userName as adminName from departmentmaster d INNER JOIN usermaster u on d.adminId=u.userId WHERE d.departmentType='Warehouse' AND d.deleted='0' ORDER BY d.createdDateTime DESC`;
     return executeGetQuery(query, callback)
 }
 warehouseQueries.getDeliveryDetails = (input, callback) => {
@@ -94,10 +94,14 @@ warehouseQueries.updateDepartmentStatus = (input, callback) => {
     let requestBody = [status, departmentId]
     executePostOrUpdateQuery(query, requestBody, callback)
 }
-warehouseQueries.deleteDepartment = (input, callback) => {
-    const { departmentId } = input
+warehouseQueries.deleteDepartment = (departmentId, callback) => {
     let query = "update departmentmaster set deleted=? where departmentId=?";
     let requestBody = [1, departmentId]
+    executePostOrUpdateQuery(query, requestBody, callback)
+}
+warehouseQueries.deleteRoute = (RouteId, callback) => {
+    let query = "update routes set deleted=? where RouteId=?";
+    let requestBody = [1, RouteId]
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 module.exports = warehouseQueries

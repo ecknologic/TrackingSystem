@@ -54,7 +54,7 @@ router.get('/getUsersBydepartmentType/:departmentType', (req, res) => {
     else res.json(results)
   })
 })
-router.put('/deleteWebUser/:userId', (req, res) => {
+router.delete('/deleteWebUser/:userId', (req, res) => {
   usersQueries.deleteWebUser(req.params.userId, (err, results) => {
     if (err) res.json(err);
     else res.json(results)

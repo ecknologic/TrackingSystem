@@ -26,11 +26,11 @@ router.post('/login', (req, res) => {
 
         if (err) res.json({ status: 404, message: err.sqlMessage });
         else if (results.length == 0)
-            res.json({ status: 404, message: "User Not Available" });
+            res.json({ status: 404, message: "You have entered an invalid username or password" });
         else {
             passwordIsValid = bcrypt.compareSync(password, results[0].password);
             if (!passwordIsValid)
-                res.json({ status: 401, message: "Invalid Details" });
+                res.json({ status: 401, message: "You have entered an invalid username or password" });
             else {
 
                 var data = JSON.stringify(results);

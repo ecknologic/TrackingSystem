@@ -473,7 +473,7 @@ router.put('/updateCustomerStatus', (req, res) => {
   })
 })
 
-router.put('/deleteCustomer/:customerId', (req, res) => {
+router.delete('/deleteCustomer/:customerId', (req, res) => {
   const { customerId } = req.params;
   customerQueries.deleteCustomer(customerId, (err, data) => {
     if (err) res.status(500).json(dbError(err))

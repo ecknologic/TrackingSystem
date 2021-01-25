@@ -514,6 +514,7 @@ textarea {
 }
 
 // -------------- Antd Modal styles ------------------- //
+
 .ant-modal {
 
     .ant-modal-content {
@@ -533,7 +534,7 @@ textarea {
         justify-content: space-between;
         align-items: center;
         padding: 10px 24px;
-
+        
         .twin-btns {
             display: flex;
         }
@@ -544,28 +545,28 @@ textarea {
             border-radius: .7em;
             background-color: $primaryColor;
         }
-
+        
         .twin-btn {
             margin-right: 1em;
             background-color: $secondaryColor;
         }
     }
-
+    
     .ant-modal-title {
         color: #171725;
         font-family: 'PoppinsSemiBold600';
     }
-
+    
 
     .ant-modal-close-x {
         display: flex;
         justify-content: center;
         align-items: center;
-
+        
         svg {
             transition: all .3s;
         }
-
+        
         &:hover {
             svg {
                 transform: scale(1.2);
@@ -573,6 +574,14 @@ textarea {
         }
     }
 }
+
+.ant-modal-wrap {
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+// -------------- Various Modal styles ------------------- //
 
 .app-form-modal {
     width: 55vw !important;
@@ -1330,7 +1339,6 @@ textarea {
         &::-webkit-scrollbar-button {
             display: none;
         }
-        
     }
     
     .ant-table-thead > tr > th {
@@ -1493,8 +1501,8 @@ textarea {
     
     .title {
         font-size: 1.55em;
-        font-weight: 700;
         color: $primaryColor;
+        font-family: 'PoppinsSemiBold600';
     }
 }
 
@@ -1516,7 +1524,6 @@ textarea {
         .heading {
             font-family: 'PoppinsSemiBold600';
             font-size: 1.4em;
-            font-weight: 700;
         }
 
         .tail {

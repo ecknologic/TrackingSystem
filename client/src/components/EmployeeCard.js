@@ -1,11 +1,14 @@
 import React from 'react';
+import { Menu } from 'antd';
+import Actions from './Actions';
 import PrimaryButton from './PrimaryButton';
 import { getRoleLabel } from '../utils/Functions';
 import '../sass/accountCard.scss'
 import '../sass/employeeCard.scss'
 
-const EmployeeCard = ({ data, onClick, btnTxt = 'Manage Account', isDriver }) => {
-    const { RoleId, isActive, userName, mobileNumber, emailid, address, departmentName } = data
+const EmployeeCard = ({ data, onClick, btnTxt = 'Manage Account', isDriver, isSuperAdmin, onSelect }) => {
+    const { RoleId, isActive, userName, mobileNumber, emailid, address, departmentName, driverId, userId } = data
+    const employeeId = isDriver ? driverId : userId
     let role, label
 
     if (isDriver) {
@@ -15,6 +18,10 @@ const EmployeeCard = ({ data, onClick, btnTxt = 'Manage Account', isDriver }) =>
     else {
         label = departmentName ? 'Assigned To' : 'Role'
         role = departmentName ? departmentName : getRoleLabel(RoleId)
+    }
+
+    const handleSelect = ({ key }) => {
+        onSelect(key, employeeId)
     }
 
     return (
@@ -44,10 +51,14 @@ const EmployeeCard = ({ data, onClick, btnTxt = 'Manage Account', isDriver }) =>
                 </div>
             </div>
             <div className='footer'>
-                <PrimaryButton text={btnTxt} onClick={onClick} />
+                <PrimaryButton text={btnTxt} onClick={() => onClick(employeeId)} />
+                {
+                    isSuperAdmin &&
+                    <Actions options={options} onSelect={handleSelect} />
+                }
             </div>
         </div>
     )
 }
-
+const options = [<Menu.Item key="Delete">Delete</Menu.Item>]
 export default EmployeeCard

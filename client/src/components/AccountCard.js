@@ -1,17 +1,28 @@
+import { Menu } from 'antd';
 import React from 'react';
-import '../sass/accountCard.scss'
+import Actions from './Actions';
 import NameCard from './NameCard';
 import PrimaryButton from './PrimaryButton';
 import { FriendsIconGrey, FriendIconGrey } from './SVG_Icons';
+import '../sass/accountCard.scss'
 
-const AccountCard = ({ data, onClick, btnTxt = 'Manage Account' }) => {
+const AccountCard = ({ data, onClick, btnTxt = 'Manage Account', onSelect, isSuperAdmin }) => {
+    const { customerId, isApproved, contactpersons, customerName, organizationName, address, natureOfBussiness } = data
 
-    const { isApproved, contactpersons, customerName, organizationName, address, natureOfBussiness } = data
-
+    const optionOne = isApproved ? 'Draft' : 'Active'
     const names = JSON.parse(contactpersons)
     const contacts = names.length
 
     const extra = contacts > 3 ? <span className='extra'>{`+${contacts - 3}`}</span> : null
+
+    const handleSelect = ({ key }) => {
+        onSelect(key, customerId)
+    }
+
+    const options = [
+        <Menu.Item key={optionOne}>{optionOne}</Menu.Item>,
+        <Menu.Item key="Delete">Delete</Menu.Item>
+    ]
 
     return (
         <div className='account-card-container'>
@@ -46,7 +57,11 @@ const AccountCard = ({ data, onClick, btnTxt = 'Manage Account' }) => {
                 </div>
             </div>
             <div className='footer'>
-                <PrimaryButton text={btnTxt} onClick={onClick} />
+                <PrimaryButton text={btnTxt} onClick={() => onClick(customerId)} />
+                {
+                    isSuperAdmin &&
+                    <Actions options={options} onSelect={handleSelect} />
+                }
             </div>
         </div>
     )

@@ -3,7 +3,7 @@ const dayjs = require('dayjs');
 
 var motherPlantDbQueries = {}
 motherPlantDbQueries.getMotherPlantsList = async (callback) => {
-    let query = `select d.departmentId, d.departmentName,d.address,d.state,d.city,d.isApproved,u.userName as adminName from departmentmaster d INNER JOIN usermaster u on d.adminId=u.userId WHERE d.departmentType='MotherPlant' ORDER BY d.createdDateTime DESC`;
+    let query = `select d.departmentId, d.departmentName,d.address,d.state,d.city,d.isApproved,u.userName as adminName from departmentmaster d INNER JOIN usermaster u on d.adminId=u.userId WHERE d.departmentType='MotherPlant' AND d.deleted='0' ORDER BY d.createdDateTime DESC`;
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getMotherPlantById = async (motherPlantId, callback) => {
@@ -31,7 +31,7 @@ motherPlantDbQueries.getProducedBatchNumbers = async (departmentId, callback) =>
 }
 
 motherPlantDbQueries.getVehicleDetails = async (callback) => {
-    let query = "select * from VehicleDetails ORDER BY createdDateTime DESC";
+    let query = "select * from VehicleDetails WHERE deleted='0' ORDER BY createdDateTime DESC";
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getDispatchDetails = async (departmentId, callback) => {
@@ -261,6 +261,11 @@ motherPlantDbQueries.updateProductionQC = (input, callback) => {
 motherPlantDbQueries.updateProductionQCStatus = (input, callback) => {
     let query = `update productionQC set status=? where productionQcId=${input.productionQcId}`;
     let requestBody = [input.status]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+motherPlantDbQueries.deleteVehicle = (vehicleId, callback) => {
+    let query = `update VehicleDetails set deleted=? where vehicleId=${vehicleId}`;
+    let requestBody = [1]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 module.exports = motherPlantDbQueries

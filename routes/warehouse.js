@@ -17,7 +17,7 @@ router.use(function timeLog(req, res, next) {
 
 
 router.get('/getroutes', (req, res) => {
-  let query = "select r.*,d.departmentName from routes r INNER JOIN departmentmaster d ON r.departmentId=d.departmentId ORDER BY r.createdDateTime DESC";
+  let query = "select r.*,d.departmentName from routes r INNER JOIN departmentmaster d ON r.departmentId=d.departmentId WHERE r.deleted='0' ORDER BY r.createdDateTime DESC";
   db.query(query, (err, results) => {
     if (err) res.status(500).json(err.sqlMessage);
     res.send(JSON.stringify(results));
@@ -257,8 +257,14 @@ router.put('/updateDepartmentStatus', (req, res) => {
     else res.json(results);
   });
 });
-router.put('/deleteDepartment', (req, res) => {
-  warehouseQueries.deleteDepartment(req.body, (err, results) => {
+router.delete('/deleteDepartment/:departmentId', (req, res) => {
+  warehouseQueries.deleteDepartment(req.params.departmentId, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.json(results);
+  });
+});
+router.delete('/deleteRoute/:RouteId', (req, res) => {
+  warehouseQueries.deleteRoute(req.params.RouteId, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else res.json(results);
   });

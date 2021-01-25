@@ -9,7 +9,7 @@ const getBatchId = (shiftType) => {
     return shift + '-' + currentDate
 }
 const checkUserExists = (req, res, next) => {
-    let userId = req.headers['userId']
+    let userId = req.headers['userid']
     let query = `Select userName from usermaster where userId=${userId} AND isActive='1' AND deleted=0`
     executeGetQuery(query, (err, results) => {
         if (err) console.log("Error", err)

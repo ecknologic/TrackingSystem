@@ -4,14 +4,14 @@ import VehicleForm from '../forms/Vehicle';
 import { http } from '../../../modules/http'
 import Actions from '../../../components/Actions';
 import Spinner from '../../../components/Spinner';
-import { TRACKFORM } from '../../../utils/constants';
 import CustomModal from '../../../components/CustomModal';
 import { vehicleColumns } from '../../../assets/fixtures';
-import { EditIconGrey } from '../../../components/SVG_Icons';
 import ConfirmModal from '../../../components/CustomModal';
 import { validateNames } from '../../../utils/validations';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import CustomPagination from '../../../components/CustomPagination';
+import { getRole, SUPERADMIN, TRACKFORM } from '../../../utils/constants';
+import { EditIconGrey, TrashIconGrey } from '../../../components/SVG_Icons';
 import { deepClone, isAlphaNum, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
 
 const VehiclesDashboard = ({ reFetch }) => {
@@ -26,6 +26,9 @@ const VehiclesDashboard = ({ reFetch }) => {
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
     const [shake, setShake] = useState(false)
+
+    const isSuperAdmin = useMemo(() => getRole() === SUPERADMIN, [])
+    const options = useMemo(() => getOptions(isSuperAdmin), [])
 
     useEffect(() => {
         setLoading(true)
@@ -55,6 +58,28 @@ const VehiclesDashboard = ({ reFetch }) => {
             setFormData(data)
             setEditModal(true)
         }
+        else if (key === 'delete') {
+            handleVehicleDelete(data.vehicleId)
+        }
+    }
+
+    const handleVehicleDelete = async (id) => {
+        const options = { item: 'Vehicle', v1Ing: 'Deleting', v2: 'deleted' }
+        const url = `/motherPlant/deleteVehicle/${id}`
+
+        try {
+            showToast({ ...options, action: 'loading' })
+            await http.DELETE(url)
+            optimisticDelete(id)
+            showToast(options)
+        } catch (error) {
+            message.destroy()
+        }
+    }
+
+    const optimisticDelete = (id) => {
+        const filtered = vehicles.filter(item => item.vehicleId !== id)
+        setVehicles(filtered)
     }
 
     const handleChange = (value, key) => {
@@ -208,5 +233,14 @@ const VehiclesDashboard = ({ reFetch }) => {
     )
 }
 
-const options = [<Menu.Item key="edit" icon={<EditIconGrey />}>Edit</Menu.Item>]
+const getOptions = (isSuperAdmin) => {
+    const options = [
+        <Menu.Item key="edit" icon={<EditIconGrey />}>Edit</Menu.Item>,
+        <Menu.Item key="delete" icon={<TrashIconGrey />}>Delete</Menu.Item>
+    ]
+
+    if (!isSuperAdmin) options.pop()
+    return options
+}
+
 export default VehiclesDashboard

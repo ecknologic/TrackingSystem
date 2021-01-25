@@ -45,7 +45,7 @@ const Login = () => {
                             roleId
                         }
                         sessionStorage.setItem("user", JSON.stringify(user))
-                        getRoleInfo(warehouseId)
+                        warehouseId && getRoleInfo(warehouseId)
                         message.success("Logged in successfully.")
                         history.replace('/dashboard')
                     } else {

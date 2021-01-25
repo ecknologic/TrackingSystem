@@ -1,107 +1,120 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif,'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue';
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-html{
-  overflow:hidden;
-}
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
 @font-face {
   font-family: 'Lato-Black';
-  src: local('Lato-Black'), url(../src/assets/fonts/woff/Lato-Black.woff) format('woff');
+  src: url(../src/assets/fonts/woff2/Lato-Black.woff2) format('woff2'),
+       url(../src/assets/fonts/woff/Lato-Black.woff) format('woff');
 }
 @font-face {
   font-family: 'Lato-Bold';
-  src: local('Lato-Bold'), url(../src/assets/fonts/woff/Lato-Bold.woff) format('woff');
+  src: url(../src/assets/fonts/woff2/Lato-Bold.woff2) format('woff2'),
+       url(../src/assets/fonts/woff/Lato-Bold.woff) format('woff');
 }
 @font-face {
   font-family: 'Lato-Hairline';
-  src: local('Lato-Hairline'), url(../src/assets/fonts/woff/Lato-Hairline.woff) format('woff');
+  src: url(../src/assets/fonts/woff2/Lato-Hairline.woff2) format('woff2'),
+       url(../src/assets/fonts/woff/Lato-Hairline.woff) format('woff');
 }
 @font-face {
   font-family: 'Lato-Heavy';
-  src: local('Lato-Heavy'), url(../src/assets/fonts/woff/Lato-Heavy.woff) format('woff');
+  src: url(../src/assets/fonts/woff2/Lato-Heavy.woff2) format('woff2'),
+       url(../src/assets/fonts/woff/Lato-Heavy.woff) format('woff');
 }
 @font-face {
   font-family: 'Lato-Light';
-  src: local('Lato-Light'), url(../src/assets/fonts/woff/Lato-Light.woff) format('woff');
+  src: url(../src/assets/fonts/woff2/Lato-Light.woff2) format('woff2'),
+       url(../src/assets/fonts/woff/Lato-Light.woff) format('woff');
 }
 @font-face {
   font-family: 'Lato-Medium';
-  src: local('Lato-Medium'), url(../src/assets/fonts/woff/Lato-Medium.woff) format('woff');
+  src: url(../src/assets/fonts/woff2/Lato-Medium.woff2) format('woff2'),
+       url(../src/assets/fonts/woff/Lato-Medium.woff) format('woff');
 }
 @font-face {
   font-family: 'Lato-Regular';
-  src: local('Lato-Regular'), url(../src/assets/fonts/woff/Lato-Regular.woff) format('woff');
+  src: url(../src/assets/fonts/woff2/Lato-Regular.woff2) format('woff2'),
+       url(../src/assets/fonts/woff/Lato-Regular.woff) format('woff');
 }
 @font-face {
   font-family: 'Lato-Thin';
-  src: local('Lato-Thin'), url(../src/assets/fonts/woff/Lato-Thin.woff) format('woff');
-}
-@font-face {
-  font-family: 'FuturaPTBook';
-  src: local('FuturaPTBook'), url(../src/assets/fonts/woff/FuturaPTBook.woff) format('woff');
+  src: url(../src/assets/fonts/woff2/Lato-Thin.woff2) format('woff2'),
+       url(../src/assets/fonts/woff/Lato-Thin.woff) format('woff');
 }
 @font-face {
   font-family: 'FuturaPTMedium';
-  src: local('FuturaPTMedium'), url(../src/assets/fonts/woff/FuturaPTMedium.woff) format('woff');
+  src: url(../src/assets/fonts/woff2/FuturaPTMedium.woff2) format('woff2'),
+       url(../src/assets/fonts/woff/FuturaPTMedium.woff) format('woff');
 }
 @font-face {
   font-family: 'FuturaPTHeavy';
-  src: local('FuturaPTHeavy'), url(../src/assets/fonts/woff/FuturaPTHeavy.woff) format('woff');
+  src: url(../src/assets/fonts/woff2/FuturaPTHeavy.woff2) format('woff2'),
+       url(../src/assets/fonts/woff/FuturaPTHeavy.woff) format('woff');
 }
 @font-face {
   font-family: 'PoppinsExtraLight275';
-  src: local('PoppinsExtraLight275'), url(../src/assets/fonts/woff/PoppinsExtraLight275.woff) format('woff');
+  src: url(../src/assets/fonts/woff2/PoppinsExtraLight275.woff2) format('woff2'),
+       url(../src/assets/fonts/woff/PoppinsExtraLight275.woff) format('woff');
 }
 @font-face {
   font-family: 'PoppinsThin250';
-  src: local('PoppinsThin250'), url(../src/assets/fonts/woff/PoppinsThin250.woff) format('woff');
+  src: url(../src/assets/fonts/woff2/PoppinsThin250.woff2) format('woff2'),
+       url(../src/assets/fonts/woff/PoppinsThin250.woff) format('woff');
 }
 @font-face {
   font-family: 'PoppinsLight300';
-  src: local('PoppinsLight300'), url(../src/assets/fonts/woff/PoppinsLight300.woff) format('woff');
+  src: url(../src/assets/fonts/woff2/PoppinsLight300.woff2) format('woff2'),
+       url(../src/assets/fonts/woff/PoppinsLight300.woff) format('woff');
 }
 @font-face {
   font-family: 'PoppinsRegular400';
-  src: local('PoppinsRegular400'), url(../src/assets/fonts/woff/PoppinsRegular400.woff) format('woff');
+  src: url(../src/assets/fonts/woff2/PoppinsRegular400.woff2) format('woff2'),
+       url(../src/assets/fonts/woff/PoppinsRegular400.woff) format('woff');
 }
 @font-face {
   font-family: 'PoppinsItalic400';
-  src: local('PoppinsItalic400'), url(../src/assets/fonts/woff/PoppinsItalic400.woff) format('woff');
+  src: url(../src/assets/fonts/woff2/PoppinsItalic400.woff2) format('woff2'),
+       url(../src/assets/fonts/woff/PoppinsItalic400.woff) format('woff');
 }
 @font-face {
   font-family: 'PoppinsMedium500';
-  src: local('PoppinsMedium500'), url(../src/assets/fonts/woff/PoppinsMedium500.woff) format('woff');
+  src: url(../src/assets/fonts/woff2/PoppinsMedium500.woff2) format('woff2'),
+       url(../src/assets/fonts/woff/PoppinsMedium500.woff) format('woff');
 }
 @font-face {
   font-family: 'PoppinsSemiBold600';
-  src: local('PoppinsSemiBold600'), url(../src/assets/fonts/woff/PoppinsSemiBold600.woff) format('woff');
+  src: url(../src/assets/fonts/woff2/PoppinsSemiBold600.woff2) format('woff2'),
+       url(../src/assets/fonts/woff/PoppinsSemiBold600.woff) format('woff');
 }
 @font-face {
   font-family: 'PoppinsSemiBold600';
-  src: local('PoppinsSemiBold600'), url(../src/assets/fonts/woff/PoppinsSemiBold600.woff) format('woff');
+  src: url(../src/assets/fonts/woff2/PoppinsSemiBold600.woff2) format('woff2'),
+       url(../src/assets/fonts/woff/PoppinsSemiBold600.woff) format('woff');
 }
 @font-face {
   font-family: 'PoppinsBold700';
-  src: local('PoppinsBold700'), url(../src/assets/fonts/woff/PoppinsBold700.woff) format('woff');
+  src: url(../src/assets/fonts/woff2/PoppinsBold700.woff2) format('woff2'),
+       url(../src/assets/fonts/woff/PoppinsBold700.woff) format('woff');
 }
 @font-face {
   font-family: 'PoppinsSemiBold900';
-  src: local('PoppinsSemiBold900'), url(../src/assets/fonts/woff/PoppinsBlack900.woff) format('woff');
+  src: url(../src/assets/fonts/woff2/PoppinsBlack900.woff2) format('woff2'),
+       url(../src/assets/fonts/woff/PoppinsBlack900.woff) format('woff');
 }
 @font-face {
   font-family: 'PoppinsExtraBold800';
-  src: local('PoppinsExtraBold800'), url(../src/assets/fonts/woff/PoppinsExtraBold800.woff) format('woff');
+  src: url(../src/assets/fonts/woff2/PoppinsExtraBold800.woff2) format('woff2'),
+       url(../src/assets/fonts/woff/PoppinsExtraBold800.woff) format('woff');
 }
 
+html {
+  overflow:hidden;
+}
 
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+   Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
 .login_component p{
   font-family: 'Lato-Medium';

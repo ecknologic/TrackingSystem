@@ -1,13 +1,14 @@
-import { Col, Row } from 'antd';
+import { Col, message, Row } from 'antd';
 import { useHistory } from 'react-router-dom';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import Header from './header';
 import { http } from '../../modules/http'
 import Spinner from '../../components/Spinner';
+import { getRole, SUPERADMIN } from '../../utils/constants';
 import NoContent from '../../components/NoContent';
 import AccountCard from '../../components/AccountCard';
 import CustomPagination from '../../components/CustomPagination';
-import { complexDateSort, complexSort, doubleKeyComplexSearch, filterAccounts } from '../../utils/Functions'
+import { complexDateSort, complexSort, deepClone, doubleKeyComplexSearch, filterAccounts, showToast } from '../../utils/Functions'
 import '../../sass/customers.scss'
 
 const Customers = () => {
@@ -26,6 +27,7 @@ const Customers = () => {
     const [activeTab, setActiveTab] = useState('1')
 
     const pageSizeOptions = useMemo(() => generatePageSizeOptions(), [window.innerWidth])
+    const isSuperAdmin = useMemo(() => getRole() === SUPERADMIN, [])
 
     useEffect(() => {
         setLoading(true)
@@ -132,11 +134,56 @@ const Customers = () => {
         else handleFilter(data)
     }
 
-    const onCardBtnClick = (id) => {
+    const handleManageAccount = (id) => {
         if (activeTab === '3') {
             return history.push(`/customers/approval/${id}`)
         }
         return history.push(`/customers/manage/${id}`)
+    }
+
+    const handleMenuSelect = (key, id) => {
+        if (key === 'Active') {
+            handleAccountStatusUpdate(id, 1)
+        }
+        else if (key === 'Draft') {
+            handleAccountStatusUpdate(id, 0)
+        }
+        else if (key === 'Delete') {
+            handleAccountDelete(id)
+        }
+    }
+
+    const handleAccountStatusUpdate = async (customerId, status) => {
+        const options = { item: 'Customer status', v1Ing: 'Updating', v2: 'updated' }
+        const url = `/customer/updateCustomerStatus`
+        const body = { status, customerId }
+        try {
+            showToast({ ...options, action: 'loading' })
+            await http.PUT(url, body)
+            optimisticApprove(customerId)
+            showToast(options)
+        } catch (error) {
+            message.destroy()
+        }
+    }
+
+    const handleAccountDelete = async (id) => {
+        const options = { item: 'Customer', v1Ing: 'Deleting', v2: 'deleted' }
+        const url = `/customer/deleteCustomer/${id}`
+
+        try {
+            showToast({ ...options, action: 'loading' })
+            await http.DELETE(url)
+            optimisticApprove(id)
+            showToast(options)
+        } catch (error) {
+            message.destroy()
+        }
+    }
+
+    const optimisticApprove = (id) => {
+        const filtered = accounts.filter(item => item.customerId !== id)
+        setAccounts(filtered)
     }
 
     const goToAddAccount = () => history.push('/customers/add-account')
@@ -156,7 +203,9 @@ const Customers = () => {
                                     <AccountCard
                                         data={account}
                                         btnTxt={cardBtnTxt}
-                                        onClick={() => onCardBtnClick(account.customerId)}
+                                        isSuperAdmin={isSuperAdmin}
+                                        onSelect={handleMenuSelect}
+                                        onClick={handleManageAccount}
                                     />
                                 </Col>
                             )) : <NoContent content='No accounts to show' />

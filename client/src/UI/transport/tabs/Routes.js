@@ -4,13 +4,13 @@ import RouteForm from '../forms/Route';
 import { http } from '../../../modules/http'
 import Actions from '../../../components/Actions';
 import Spinner from '../../../components/Spinner';
-import { getRole, getWarehoseId, TRACKFORM } from '../../../utils/constants';
 import CustomModal from '../../../components/CustomModal';
 import { routeColumns } from '../../../assets/fixtures';
-import { EditIconGrey } from '../../../components/SVG_Icons';
 import ConfirmModal from '../../../components/CustomModal';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import CustomPagination from '../../../components/CustomPagination';
+import { EditIconGrey, TrashIconGrey } from '../../../components/SVG_Icons';
+import { getRole, getWarehoseId, SUPERADMIN, TRACKFORM } from '../../../utils/constants';
 import { deepClone, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
 
 const RoutesDashboard = ({ reFetch, departmentOptions }) => {
@@ -28,6 +28,8 @@ const RoutesDashboard = ({ reFetch, departmentOptions }) => {
     const [shake, setShake] = useState(false)
 
     const isWHAdmin = useMemo(() => role === 'WarehouseAdmin', [role])
+    const isSuperAdmin = useMemo(() => getRole() === SUPERADMIN, [])
+    const options = useMemo(() => getOptions(isSuperAdmin), [])
 
     useEffect(() => {
         setLoading(true)
@@ -58,6 +60,28 @@ const RoutesDashboard = ({ reFetch, departmentOptions }) => {
             setFormData(data)
             setEditModal(true)
         }
+        else if (key === 'delete') {
+            handleRouteDelete(data.RouteId)
+        }
+    }
+
+    const handleRouteDelete = async (id) => {
+        const options = { item: 'Route', v1Ing: 'Deleting', v2: 'deleted' }
+        const url = `/warehouse/deleteRoute/${id}`
+
+        try {
+            showToast({ ...options, action: 'loading' })
+            await http.DELETE(url)
+            optimisticDelete(id)
+            showToast(options)
+        } catch (error) {
+            message.destroy()
+        }
+    }
+
+    const optimisticDelete = (id) => {
+        const filtered = routes.filter(item => item.RouteId !== id)
+        setRoutes(filtered)
     }
 
     const handleChange = (value, key) => {
@@ -195,5 +219,14 @@ const getUrl = (isWHAdmin, id) => {
     return '/warehouse/getroutes'
 }
 
-const options = [<Menu.Item key="edit" icon={<EditIconGrey />}>Edit</Menu.Item>]
+const getOptions = (isSuperAdmin) => {
+    const options = [
+        <Menu.Item key="edit" icon={<EditIconGrey />}>Edit</Menu.Item>,
+        <Menu.Item key="delete" icon={<TrashIconGrey />}>Delete</Menu.Item>
+    ]
+
+    if (!isSuperAdmin) options.pop()
+    return options
+}
+
 export default RoutesDashboard

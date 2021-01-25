@@ -11,7 +11,7 @@ customerQueries.getOrdersByDepartmentId = (departmentId, callback) => {
     executeGetParamsQuery(query, [departmentId], callback)
 }
 customerQueries.getRoutesByDepartmentId = (departmentId, callback) => {
-    let query = `SELECT r.RouteId,r.RouteName,r.RouteDescription,d.departmentName from routes r INNER JOIN departmentmaster d ON d.departmentId=r.departmentId WHERE r.departmentId=${departmentId} ORDER BY r.createdDateTime DESC`
+    let query = `SELECT r.RouteId,r.RouteName,r.RouteDescription,d.departmentName from routes r INNER JOIN departmentmaster d ON d.departmentId=r.departmentId WHERE r.departmentId=${departmentId} AND r.deleted='0' ORDER BY r.createdDateTime DESC`
     executeGetQuery(query, callback)
 }
 customerQueries.getCustomersByCustomerType = (customerType, callback) => {
