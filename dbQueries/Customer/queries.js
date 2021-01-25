@@ -54,6 +54,28 @@ customerQueries.updateOrderDetails = (input, callback) => {
         return getDeliverysByCustomerOrderId(customerOrderId, callback)
     })
 }
+customerQueries.updateCustomerStatus = (input, callback) => {
+    let { status, customerId } = input
+    let query = `update customerdetails SET isApproved=? where customerId=${customerId}`;
+    let requestBody = [status]
+    executePostOrUpdateQuery(query, requestBody, callback)
+}
+customerQueries.updateCustomerDeliveriesStatus = (input, callback) => {
+    let { status, customerId } = input
+    let query = `update DeliveryDetails SET isActive=? where customer_Id=${customerId}`;
+    let requestBody = [status]
+    executePostOrUpdateQuery(query, requestBody, callback)
+}
+customerQueries.deleteCustomer = (customerId, callback) => {
+    let query = `update customerdetails SET deleted=? where customerId=${customerId}`;
+    let requestBody = [1]
+    executePostOrUpdateQuery(query, requestBody, callback)
+}
+customerQueries.deleteCustomerDeliveries = (customerId, callback) => {
+    let query = `update DeliveryDetails SET deleted=? where customer_Id=${customerId}`;
+    let requestBody = [1]
+    executePostOrUpdateQuery(query, requestBody, callback)
+}
 customerQueries.generatePDF = (input, callback) => {
     const { customerId = 186, fromDate = '2021-01-01', toDate = '2021-01-17' } = input
     let query = "SELECT c.customerId,c.customerName,c.organizationName,c.address1,d.address,c.gstNo,co.20LCans,co.price20L,co.1LBoxes,co.price1L, co.500MLBoxes,co.price500ML,co.250MLBoxes,co.price250ML FROM customerdetails c INNER JOIN  customerorderdetails co ON c.customerId=co.existingCustomerId INNER JOIN DeliveryDetails d ON d.customer_Id=c.customerId  WHERE c.customerId=?  AND co.isDelivered='Completed' AND( DATE(co.deliveryDate) BETWEEN ? AND ?)"

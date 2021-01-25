@@ -12,6 +12,7 @@ const customerQueries = require('../dbQueries/Customer/queries.js');
 const { customerProductDetails, dbError } = require('../utils/functions.js');
 const { saveToCustomerOrderDetails } = require('./utilities');
 const { createInvoice } = require('./Invoice/createInvoice.js');
+const { UPDATEMESSAGE, DELETEMESSAGE } = require('../utils/constants.js');
 let departmentId;
 
 var storage = multer.diskStorage({
@@ -120,7 +121,7 @@ router.get('/getQrcode/:customerId', (req, res) => {
   });
 });
 router.get('/getCustomers', (req, res) => {
-  let query = "SELECT * from customerdetails";
+  let query = "SELECT * from customerdetails where deleted=0";
   db.query(query, (err, results) => {
     if (err) res.status(500).json(err);
     res.send(JSON.stringify(results));
@@ -459,6 +460,32 @@ router.put('/updateCustomerOrderDetails', (req, res) => {
     else res.json(data)
   })
 })
+
+router.put('/updateCustomerStatus', (req, res) => {
+  customerQueries.updateCustomerStatus(req.body, (err, data) => {
+    if (err) res.status(500).json(dbError(err))
+    else {
+      customerQueries.updateCustomerDeliveriesStatus(req.body, (err, update) => {
+        if (err) res.status(500).json(dbError(err))
+        else res.json(UPDATEMESSAGE)
+      })
+    }
+  })
+})
+
+router.put('/deleteCustomer/:customerId', (req, res) => {
+  const { customerId } = req.params;
+  customerQueries.deleteCustomer(customerId, (err, data) => {
+    if (err) res.status(500).json(dbError(err))
+    else {
+      customerQueries.deleteCustomerDeliveries(customerId, (err, update) => {
+        if (err) res.status(500).json(dbError(err))
+        else res.json(DELETEMESSAGE)
+      })
+    }
+  })
+})
+
 router.get('/generatePDF', (req, res) => {
   customerQueries.generatePDF("186", (err, items) => {
     if (err) res.status(500).json(dbError(err))
