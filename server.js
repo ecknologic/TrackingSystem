@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const app = express();
 const cors = require('cors');
 var path = require('path');
-const { checkDepartmentExists } = require('./utils/functions')
+const { checkDepartmentExists, checkUserExists } = require('./utils/functions')
 
 const port = 8888;
 
@@ -33,28 +33,28 @@ app.get('/swagger.json', function (req, res) {
 
 
 //Ware house rest services
-app.use("/warehouse", checkDepartmentExists, require('./routes/warehouse.js'));
+app.use("/warehouse", checkUserExists, checkDepartmentExists, require('./routes/warehouse.js'));
 
 //Driver app Rest Services
 app.use("/driver", require('./routes/driver.js'));
 
 //Customer Rest Services
-app.use("/customer", require('./routes/customer.js'));
+app.use("/customer", checkUserExists, require('./routes/customer.js'));
 
 //MotherPlant Rest Services
-app.use("/motherPlant", checkDepartmentExists, require('./routes/motherPlant.js'));
+app.use("/motherPlant", checkUserExists, checkDepartmentExists, require('./routes/motherPlant.js'));
 
 //Permissions Rest Services
 app.use("/roles", require('./routes/rolesAndPermissions'));
 
 //Users Rest Services
-app.use("/users", require('./routes/users'));
+app.use("/users", checkUserExists, require('./routes/users'));
 
 //Products Rest Services
-app.use("/products", require('./routes/products'));
+app.use("/products", checkUserExists, require('./routes/products'));
 
 //Products Rest Services
-app.use("/distributor", require('./routes/distributor'));
+app.use("/distributor", checkUserExists, require('./routes/distributor'));
 
 
 app.use("/bibo", require('./routes/loginAuthentication.js'));
