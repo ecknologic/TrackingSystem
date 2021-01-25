@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const app = express();
 const cors = require('cors');
 var path = require('path');
+const { checkDepartmentExists } = require('./utils/functions')
 
 const port = 8888;
 
@@ -32,7 +33,7 @@ app.get('/swagger.json', function (req, res) {
 
 
 //Ware house rest services
-app.use("/warehouse", require('./routes/warehouse.js'));
+app.use("/warehouse", checkDepartmentExists, require('./routes/warehouse.js'));
 
 //Driver app Rest Services
 app.use("/driver", require('./routes/driver.js'));
@@ -40,8 +41,8 @@ app.use("/driver", require('./routes/driver.js'));
 //Customer Rest Services
 app.use("/customer", require('./routes/customer.js'));
 
-//MotherPlat Rest Services
-app.use("/motherPlant", require('./routes/motherPlant.js'));
+//MotherPlant Rest Services
+app.use("/motherPlant", checkDepartmentExists, require('./routes/motherPlant.js'));
 
 //Permissions Rest Services
 app.use("/roles", require('./routes/rolesAndPermissions'));
