@@ -8,6 +8,15 @@ const getBatchId = (shiftType) => {
     let currentDate = dayjs().format(format)
     return shift + '-' + currentDate
 }
+const checkUserExists = (req, res, next) => {
+    let userId = req.headers['userId']
+    let query = `Select userName from usermaster where userId=${userId} AND isActive='1' AND deleted=0`
+    executeGetQuery(query, (err, results) => {
+        if (err) console.log("Error", err)
+        else if (!results.length) res.status(406).json("Something went wrong")
+        else next()
+    })
+}
 const checkDepartmentExists = (req, res, next) => {
     let departmentid = req.headers['departmentid']
     let query = `Select departmentName from departmentmaster where departmentId=${departmentid} AND deleted=0`
@@ -64,4 +73,4 @@ const customerProductDetails = (deliveryDetailsId) => {
 var createHash = function (password) {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(10), null);
 }
-module.exports = { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, checkDepartmentExists, dbError, getBatchId, customerProductDetails, createHash }
+module.exports = { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, checkDepartmentExists, checkUserExists, dbError, getBatchId, customerProductDetails, createHash }
