@@ -88,4 +88,16 @@ warehouseQueries.updateRoute = async (input, callback) => {
     let requestBody = [RouteName, RouteDescription, departmentId, RouteId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
+warehouseQueries.updateDepartmentStatus = (input, callback) => {
+    const { departmentId, status } = input
+    let query = "update departmentmaster set isApproved=? where departmentId=?";
+    let requestBody = [status, departmentId]
+    executePostOrUpdateQuery(query, requestBody, callback)
+}
+warehouseQueries.deleteDepartment = (input, callback) => {
+    const { departmentId } = input
+    let query = "update departmentmaster set deleted=? where departmentId=?";
+    let requestBody = [1, departmentId]
+    executePostOrUpdateQuery(query, requestBody, callback)
+}
 module.exports = warehouseQueries

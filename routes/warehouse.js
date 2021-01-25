@@ -251,6 +251,17 @@ router.put('/updateReturnEmptyCans', (req, res) => {
     else res.json(results);
   });
 });
-
+router.put('/updateDepartmentStatus', (req, res) => {
+  warehouseQueries.updateDepartmentStatus(req.body, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.json(results);
+  });
+});
+router.put('/deleteDepartment', (req, res) => {
+  warehouseQueries.deleteDepartment(req.body, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.json(results);
+  });
+});
 
 module.exports = router;
