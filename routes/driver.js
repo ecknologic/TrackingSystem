@@ -128,6 +128,12 @@ router.get('/getDriver/:driverId', (req, res) => {
         else res.json(results)
     })
 })
+router.put('/deleteDriver/:driverId', (req, res) => {
+    driverQueries.deleteDriver(req.params.driverId, (err, results) => {
+        if (err) res.json(dbError(err))
+        else res.json(results)
+    })
+})
 router.post('/createDriver', (req, res) => {
     let input = req.body;
     input.password = createHash("Bibo@123")

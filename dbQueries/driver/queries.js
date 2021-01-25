@@ -2,7 +2,7 @@ const { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery } = req
 let driverQueries = {}
 
 driverQueries.getDrivers = async (callback) => {
-    let query = `select d.driverId,d.driverName as userName,d.address,d.emailid,d.mobileNumber,d.isActive,dep.departmentName from driverdetails d LEFT JOIN departmentmaster dep on d.departmentId=dep.departmentId ORDER BY d.createdDateTime DESC`;
+    let query = `select d.driverId,d.driverName as userName,d.address,d.emailid,d.mobileNumber,d.isActive,dep.departmentName from driverdetails d LEFT JOIN departmentmaster dep on d.departmentId=dep.departmentId where d.deleted='0' ORDER BY d.createdDateTime DESC`;
     return executeGetQuery(query, callback)
 }
 driverQueries.getDriverById = async (driverId, callback) => {
@@ -49,6 +49,11 @@ driverQueries.updateDeliveryStatus = (input, callback) => {
         query = "update customerorderdetails set isDelivered=?,deliveredDate=? where customerOrderId=?"
         requestBody = [status, new Date(), orderId]
     }
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+driverQueries.deleteDriver = (driverId, callback) => {
+    let query = "update driverdetails set deleted=? where driverId=?"
+    let requestBody = [1, driverId];
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
