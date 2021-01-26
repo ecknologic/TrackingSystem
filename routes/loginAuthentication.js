@@ -4,6 +4,8 @@ const db = require('../config/db.js')
 const jwt = require("jsonwebtoken");
 const config = require("../config/auth.config.js");
 var bcrypt = require("bcryptjs");
+const motherPlantDbQueries = require('../dbQueries/motherplant/queries.js');
+const warehouseQueries = require('../dbQueries/warehouse/queries.js');
 
 
 router.use(function timeLog(req, res, next) {
@@ -78,6 +80,47 @@ router.post('/login', (req, res) => {
                 });
             }
         }
+    });
+});
+
+router.get('/getDepartmentsList', (req, res) => {
+    motherPlantDbQueries.getDepartmentsList(req.query.departmentType, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        res.json((results));
+    });
+});
+router.get('/getAllDepartmentsList', (req, res) => {
+    motherPlantDbQueries.getAllDepartmentsList(req.query.departmentType, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else {
+            if (results.length) {
+                results.push({ departmentId: null, departmentName: 'None' })
+                res.json(results)
+            }
+            else res.json([])
+        }
+    });
+});
+
+router.get('/getVehicleDetails', (req, res) => {
+    motherPlantDbQueries.getVehicleDetails((err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        res.json(results);
+    });
+});
+router.get('/getdriverDetails/:warehouseId', (req, res) => {
+    let warehouseId = req.params.warehouseId;
+    let query = "select * from driverdetails where departmentId=" + warehouseId;
+    db.query(query, (err, results) => {
+        if (err) res.status(500).json(err.sqlMessage);
+        res.send(JSON.stringify(results));
+    });
+});
+router.get('/getroutes', (req, res) => {
+    let query = "select r.*,d.departmentName from routes r INNER JOIN departmentmaster d ON r.departmentId=d.departmentId WHERE r.deleted='0' ORDER BY r.createdDateTime DESC";
+    db.query(query, (err, results) => {
+        if (err) res.status(500).json(err.sqlMessage);
+        res.send(JSON.stringify(results));
     });
 });
 

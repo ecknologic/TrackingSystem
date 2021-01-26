@@ -18,13 +18,18 @@ const checkUserExists = (req, res, next) => {
     })
 }
 const checkDepartmentExists = (req, res, next) => {
-    let departmentid = req.headers['departmentid']
-    let query = `Select departmentName from departmentmaster where departmentId=${departmentid} AND deleted=0`
-    executeGetQuery(query, (err, results) => {
-        if (err) console.log("Error", err)
-        else if (!results.length) res.status(406).json("Something went wrong")
-        else next()
-    })
+    let isSuperAdmin = req.headers['issuperadmin']
+    if (isSuperAdmin) {
+        next()
+    } else {
+        let departmentid = req.headers['departmentid']
+        let query = `Select departmentName from departmentmaster where departmentId=${departmentid} AND deleted=0`
+        executeGetQuery(query, (err, results) => {
+            if (err) console.log("Error", err)
+            else if (!results.length) res.status(406).json("Something went wrong")
+            else next()
+        })
+    }
 }
 const executeGetQuery = (query, callback) => {
     try {
