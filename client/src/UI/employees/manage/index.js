@@ -94,11 +94,13 @@ const ManageEmployee = () => {
         const url = '/roles/getRoles'
 
         const data = await http.GET(url)
+        if (!isDriver) data[5].disabled = true
+        else data.map((item, index) => index !== 5 && (item.disabled = true))
         setRoleList(data)
     }
 
     const getDepartmentList = async () => {
-        const url = '/bibo/getAllDepartmentsList'
+        const url = '/bibo/getAllDepartmentsList?hasNone=true'
 
         const data = await http.GET(url)
         setDepartmentList(data)
@@ -108,9 +110,9 @@ const ManageEmployee = () => {
         setAccountValues(data => ({ ...data, [key]: value }))
         setAccountErrors(errors => ({ ...errors, [key]: '' }))
 
-        if (key === 'departmentId') {
+        if (key === 'roleId') {
             if (!(value === 2 || value === 3 || value === 6))  // department can't be assigned/modified for these roles
-                setAccountValues(data => ({ ...data, [key]: null }))
+                setAccountValues(data => ({ ...data, departmentId: null }))
         }
 
         // Validations

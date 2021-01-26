@@ -113,7 +113,7 @@ const EmployeeForm = (props) => {
                 <div className='input-container'>
                     <InputLabel name='Role' error={errors.roleId} mandatory />
                     <SelectInput track
-                        options={roleOptions} value={roleId} disabled={isDriver}
+                        options={roleOptions} value={roleId}
                         error={errors.roleId} onSelect={(value) => onChange(value, 'roleId')}
                     />
                 </div>

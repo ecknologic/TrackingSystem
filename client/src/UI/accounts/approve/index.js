@@ -36,6 +36,7 @@ const ApproveAccount = () => {
     const [accountValues, setAccountValues] = useState({ loading: true })
     const [headerContent, setHeaderContent] = useState({})
     const [loading, setLoading] = useState(true)
+    const [allAddressIds, setAllAddressIds] = useState([])
     const [activeAddressIds, setActiveAddressIds] = useState([])
     const [removedAddressIds, setRemovedAddressIds] = useState([])
     const [confirmModal, setConfirmModal] = useState(false)
@@ -107,6 +108,7 @@ const ApproveAccount = () => {
                 return { ...item, devDays, gstProof: gst, ...productList }
             })
             setAddresses(deliveries)
+            setAllAddressIds(addressIds)
             setActiveAddressIds(addressIds)
             return Promise.resolve()
         } catch (error) { }
@@ -266,8 +268,7 @@ const ApproveAccount = () => {
 
     const handleAccountEdit = () => {
         getWarehouseList()
-        const filtered = addresses.filter(item => item.isApproved === 1)
-        setActiveAddressIds(filtered)
+        setActiveAddressIds(allAddressIds)
         setEditMode(true)
     }
 
@@ -283,7 +284,7 @@ const ApproveAccount = () => {
         const sessionAddresses = getSessionItems('address')
         const index = sessionAddresses.findIndex((item) => item.deliveryDetailsId === id)
         const address = sessionAddresses[index]
-        address.isApproved = Number(isDraft)
+        address.isDrafted = Number(isDraft)
         setAddresses(sessionAddresses)
         sessionStorage.setItem(`address${index}`, JSON.stringify(address))
     }
@@ -330,10 +331,10 @@ const ApproveAccount = () => {
         else goToCustomers()
     }
 
-    const genExtra = (id, isApproved, index) => (
+    const genExtra = (id, isDrafted, index) => (
         editMode ? (
             <div className='extra-icons' onClick={e => e.stopPropagation()}>
-                <Checkbox checked={isApproved} onChange={({ target: { checked } }) => handleAddressDraft(checked, id)}
+                <Checkbox checked={isDrafted} onChange={({ target: { checked } }) => handleAddressDraft(checked, id)}
                     className='cb-tiny cb-secondary'>
                     Draft
                     </Checkbox>
@@ -395,14 +396,14 @@ const ApproveAccount = () => {
                             >
                                 {
                                     addresses.map((item, index) => {
-                                        const { deliveryLocation, address, isApproved, deliveryDetailsId: id } = item
-                                        console.log('isApproved...', isApproved)
+                                        const { deliveryLocation, address, isDrafted, deliveryDetailsId: id } = item
+
                                         return (
                                             <Panel
                                                 header={<CollapseHeader
                                                     title={deliveryLocation}
                                                     msg={address}
-                                                    extra={genExtra(id, Boolean(isApproved), index)}
+                                                    extra={genExtra(id, Boolean(isDrafted), index)}
                                                 />}
                                                 key={String(index)}
                                                 forceRender
