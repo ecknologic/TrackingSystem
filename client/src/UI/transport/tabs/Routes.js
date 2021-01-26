@@ -216,7 +216,7 @@ const RoutesDashboard = ({ reFetch, departmentOptions }) => {
 
 const getUrl = (isWHAdmin, id) => {
     if (isWHAdmin) return `/customer/getRoutes/${id}`
-    return '/warehouse/getroutes'
+    return '/bibo/getroutes'
 }
 
 const getOptions = (isSuperAdmin) => {

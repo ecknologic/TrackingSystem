@@ -87,7 +87,7 @@ const AddAccount = () => {
     }, [sameAddress])
 
     const getWarehouseList = async () => {
-        const data = await http.GET('/motherPlant/getDepartmentsList?departmentType=warehouse')
+        const data = await http.GET('/bibo/getDepartmentsList?departmentType=warehouse')
         setWarehouseList(data)
     }
 

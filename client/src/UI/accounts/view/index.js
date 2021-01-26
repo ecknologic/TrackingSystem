@@ -1,19 +1,19 @@
 import { Tabs } from 'antd';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
-import { getRouteOptions, getWarehouseOptions, WEEKDAYS } from '../../../assets/fixtures';
-import ConfirmMessage from '../../../components/ConfirmMessage';
-import { DocIconWhite } from '../../../components/SVG_Icons';
-import CustomButton from '../../../components/CustomButton';
-import CustomModal from '../../../components/CustomModal';
-import QuitModal from '../../../components/CustomModal';
-import NoContent from '../../../components/NoContent';
-import DeliveryDetails from './tabs/DeliveryDetails';
-import AccountOverview from './tabs/AccountOverview';
-import { getRole, SUPERADMIN, TRACKFORM } from '../../../utils/constants';
-import DeliveryForm from '../add/forms/Delivery';
-import { http } from '../../../modules/http';
 import Header from './header';
+import { http } from '../../../modules/http';
+import DeliveryForm from '../add/forms/Delivery';
+import AccountOverview from './tabs/AccountOverview';
+import DeliveryDetails from './tabs/DeliveryDetails';
+import NoContent from '../../../components/NoContent';
+import QuitModal from '../../../components/CustomModal';
+import CustomModal from '../../../components/CustomModal';
+import CustomButton from '../../../components/CustomButton';
+import { DocIconWhite } from '../../../components/SVG_Icons';
+import ConfirmMessage from '../../../components/ConfirmMessage';
+import { getRole, SUPERADMIN, TRACKFORM } from '../../../utils/constants';
+import { getRouteOptions, getWarehouseOptions, WEEKDAYS } from '../../../assets/fixtures';
 import { validateDeliveryValues, validateDevDays, validateIDNumbers, validateIntFloat, validateMobileNumber, validateNames, validateNumber } from '../../../utils/validations';
 import { extractDeliveryDetails, getProductsForDB, extractProductsFromForm, isEmpty, getDevDaysForDB, getBase64, resetTrackForm, showToast, getMainPathname } from '../../../utils/Functions';
 
@@ -62,7 +62,7 @@ const ViewAccount = () => {
 
     const getWarehouseList = async () => {
         try {
-            const data = await http.GET('/motherPlant/getDepartmentsList?departmentType=warehouse')
+            const data = await http.GET('/bibo/getDepartmentsList?departmentType=warehouse')
             setWarehouseList(data)
         } catch (ex) { }
     }

@@ -98,7 +98,7 @@ const ManageEmployee = () => {
     }
 
     const getDepartmentList = async () => {
-        const url = '/motherplant/getAllDepartmentsList'
+        const url = '/bibo/getAllDepartmentsList'
 
         const data = await http.GET(url)
         setDepartmentList(data)

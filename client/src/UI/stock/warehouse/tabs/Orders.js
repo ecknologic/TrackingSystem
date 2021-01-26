@@ -65,20 +65,20 @@ const Orders = () => {
     }
 
     const getDriverList = async () => {
-        const url = `/warehouse/getdriverDetails/${warehouseId}`
+        const url = `/bibo/getdriverDetails/${warehouseId}`
         const data = await http.GET(url)
         setDrivers(data)
     }
 
     const getVehicleList = async () => {
-        const url = `/motherPlant/getVehicleDetails`
+        const url = `/bibo/getVehicleDetails`
         const data = await http.GET(url)
         setVehicles(data)
     }
 
     const getWarehouseList = async () => {
         try {
-            const data = await http.GET('/motherPlant/getDepartmentsList?departmentType=warehouse')
+            const data = await http.GET('/bibo/getDepartmentsList?departmentType=warehouse')
             setWarehouseList(data)
         } catch (ex) { }
     }

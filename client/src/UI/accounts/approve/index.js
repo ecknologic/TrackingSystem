@@ -22,9 +22,9 @@ import { getWarehouseOptions } from '../../../assets/fixtures';
 import { DDownIcon, TrashIconLight } from '../../../components/SVG_Icons'
 import {
     getIdProofsForDB, getAddressesForDB, isEmpty, showToast, extractCADetails, base64String, getDevDays,
-    getProductsForUI, resetSessionItems, getSessionItems, resetTrackForm
+    getProductsForUI, resetSessionItems, getSessionItems, resetTrackForm, getBase64
 } from '../../../utils/Functions';
-import { TRACKFORM } from '../../../utils/constants';
+import { getRole, SUPERADMIN, TRACKFORM } from '../../../utils/constants';
 import {
     validateAccountValues, validateAddresses, validateIDNumbers, validateNames, validateNumber,
     validateMobileNumber, validateEmailId
@@ -56,6 +56,7 @@ const ApproveAccount = () => {
 
     const confirmMsg = 'Changes you made may not be saved.'
     const showTrashIcon = useMemo(() => addresses.length !== 1, [addresses.length])
+    const isSuperAdmin = useMemo(() => getRole() === SUPERADMIN, [])
     const { organizationName, customerId, customertype, customerName } = accountValues
 
     useEffect(() => {
@@ -92,7 +93,7 @@ const ApproveAccount = () => {
     }
 
     const getAddresses = async () => {
-        const url = `/customer/getCustomerDeliveryDetails/${accountId}?isSuperAdmin=true`
+        const url = `/customer/getCustomerDeliveryDetails/${accountId}?isSuperAdmin=${isSuperAdmin}`
         try {
             const { data: [data = {}] } = await http.GET(url)
             const { deliveryDetails = [] } = data
@@ -112,7 +113,7 @@ const ApproveAccount = () => {
     }
 
     const getWarehouseList = async () => {
-        const data = await http.GET('/motherPlant/getDepartmentsList?departmentType=warehouse')
+        const data = await http.GET('/bibo/getDepartmentsList?departmentType=warehouse')
         setWarehouseList(data)
     }
 
@@ -159,6 +160,17 @@ const ApproveAccount = () => {
             const error = validateEmailId(value)
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }
+    }
+
+    const handleUpload = (file, name) => {
+        getBase64(file, async (buffer) => {
+            setAccountValues(data => ({ ...data, [name]: buffer }))
+            setAccountErrors(errors => ({ ...errors, [name]: '' }))
+        })
+    }
+
+    const handleRemove = (name) => {
+        setAccountValues(data => ({ ...data, [name]: '' }))
     }
 
     const handleAccountSave = async () => {
@@ -359,7 +371,9 @@ const ApproveAccount = () => {
                                         errors={accountErrors}
                                         onChange={handleChange}
                                         onBlur={handleBlur}
-                                        disabledItems={{ gstDisable: gstProof.Front }}
+                                        onUpload={handleUpload}
+                                        onRemove={handleRemove}
+                                        disabledItems={{ gstDisable: gstProof.Front && !isSuperAdmin }}
                                     />
                                 ) : <>
                                         <IDProofInfo data={IDProofs} />

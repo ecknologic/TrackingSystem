@@ -56,7 +56,7 @@ const Delivery = ({ date }) => {
     }
 
     const getDrivers = async () => {
-        const url = `/warehouse/getdriverDetails/${warehouseId}`
+        const url = `/bibo/getdriverDetails/${warehouseId}`
         const data = await http.GET(url)
         setDrivers(data)
     }

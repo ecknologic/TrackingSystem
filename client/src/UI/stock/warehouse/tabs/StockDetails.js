@@ -64,18 +64,18 @@ const StockDetails = ({ date }) => {
     }, [fetchList])
 
     const getMotherplantList = async () => {
-        const data = await http.GET('/motherPlant/getDepartmentsList?departmentType=MotherPlant')
+        const data = await http.GET('/bibo/getDepartmentsList?departmentType=MotherPlant')
         setMotherplantList(data)
     }
 
     const getDriverList = async () => {
-        const url = `/warehouse/getdriverDetails/${warehouseId}`
+        const url = `/bibo/getdriverDetails/${warehouseId}`
         const data = await http.GET(url)
         setDriverList(data)
     }
 
     const getVehicleList = async () => {
-        const url = `/motherPlant/getVehicleDetails`
+        const url = `/bibo/getVehicleDetails`
         const data = await http.GET(url)
         setVehicleList(data)
     }

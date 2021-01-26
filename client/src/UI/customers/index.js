@@ -160,7 +160,7 @@ const Customers = () => {
         try {
             showToast({ ...options, action: 'loading' })
             await http.PUT(url, body)
-            optimisticApprove(customerId)
+            optimisticUpdate(customerId)
             showToast(options)
         } catch (error) {
             message.destroy()
@@ -174,16 +174,21 @@ const Customers = () => {
         try {
             showToast({ ...options, action: 'loading' })
             await http.DELETE(url)
-            optimisticApprove(id)
+            optimisticUpdate(id)
             showToast(options)
         } catch (error) {
             message.destroy()
         }
     }
 
-    const optimisticApprove = (id) => {
+    const optimisticUpdate = (id) => {
+        if (filterON || searchON) {
+            const filtered = accountsClone.filter(item => item.customerId !== id)
+            setAccountsClone(filtered)
+        }
         const filtered = accounts.filter(item => item.customerId !== id)
         setAccounts(filtered)
+        setTotalCount(filtered.length)
     }
 
     const goToAddAccount = () => history.push('/customers/add-account')

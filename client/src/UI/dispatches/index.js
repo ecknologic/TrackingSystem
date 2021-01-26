@@ -41,17 +41,17 @@ const Dispatche = () => {
     }
 
     const getDriverList = async () => {
-        const data = await http.GET(`/warehouse/getdriverDetails/${warehouseId}`)
+        const data = await http.GET(`/bibo/getdriverDetails/${warehouseId}`)
         setDrivers(data)
     }
 
     const getWarehouseList = async () => {
-        const data = await http.GET('/motherPlant/getDepartmentsList?departmentType=warehouse')
+        const data = await http.GET('/bibo/getDepartmentsList?departmentType=warehouse')
         setWarehouseList(data)
     }
 
     const getVehicleDetails = async () => {
-        const data = await http.GET('/motherPlant/getVehicleDetails')
+        const data = await http.GET('/bibo/getVehicleDetails')
         setVehiclesList(data)
     }
 

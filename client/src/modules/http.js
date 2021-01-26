@@ -1,12 +1,13 @@
 import axios from 'axios';
 import { message } from 'antd';
-import { getUserId, getWarehoseId } from '../utils/constants';
+import { getRole, getUserId, getWarehoseId, SUPERADMIN } from '../utils/constants';
 message.config({ maxCount: 1 });
 
 // Setting headers in request
 axios.interceptors.request.use(function (config) {
     config.headers.departmentId = getWarehoseId()
     config.headers.userId = getUserId()
+    config.headers.isSuperAdmin = getRole() === SUPERADMIN
 
     return config;
 });
@@ -22,9 +23,9 @@ axios.interceptors.response.use(null, error => {
     }
     else if (expectedError) {
         if (error.response.status === 406) {
-            sessionStorage.clear()
+            // sessionStorage.clear()
             message.error('Account no longer exists, Logging you out.')
-            setTimeout(() => window.location.href = '/', 1500)
+            // setTimeout(() => window.location.href = '/', 1500)
         }
     }
 

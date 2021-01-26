@@ -36,7 +36,7 @@ const VehiclesDashboard = ({ reFetch }) => {
     }, [reFetch])
 
     const getVehicles = async () => {
-        const url = '/motherPlant/getVehicleDetails'
+        const url = '/bibo/getVehicleDetails'
 
         const data = await http.GET(url)
         setVehicles(data)
