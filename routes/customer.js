@@ -395,9 +395,9 @@ const getAddedDeliveryDetails = (deliveryDetailsId) => {
 // })
 const getDeliveryDetails = ({ customerId, deliveryDetailsId, isSuperAdmin }) => {
   return new Promise((resolve, reject) => {
-    let deliveryDetailsQuery = "SELECT d.location,d.contactPerson,d.customer_Id,d.deliveryDetailsId,d.phoneNumber,d.isActive as isApproved,d.location AS deliveryLocation,r.departmentName FROM DeliveryDetails d INNER JOIN departmentmaster r ON r.departmentId=d.departmentId WHERE d.deleted=0 AND (d.customer_Id=? OR d.deliveryDetailsId=?) ORDER BY d.registeredDate DESC";
+    let deliveryDetailsQuery = "SELECT d.location,d.contactPerson,d.customer_Id,d.deliveryDetailsId,d.phoneNumber,d.isActive as isApproved,d.location AS deliveryLocation,r.departmentName,ro.routeName FROM DeliveryDetails d INNER JOIN routes ro ON d.routeId=ro.RouteId INNER JOIN departmentmaster r ON r.departmentId=d.departmentId WHERE d.deleted=0 AND (d.customer_Id=? OR d.deliveryDetailsId=?) ORDER BY d.registeredDate DESC";
     if (isSuperAdmin == 'true') {
-      deliveryDetailsQuery = "SELECT d.*,d.isActive as isApproved,d.location AS deliveryLocation,r.departmentName,json_object('SUN',cd.SUN,'MON',cd.MON,'TUE',cd.TUE,'WED',cd.WED,'THU',cd.THU,'FRI',cd.FRI,'SAT',cd.SAT) as 'deliveryDays' " +
+      deliveryDetailsQuery = "SELECT d.*,d.isActive as isApproved,d.location AS deliveryLocation,r.departmentName,ro.routeName,json_object('SUN',cd.SUN,'MON',cd.MON,'TUE',cd.TUE,'WED',cd.WED,'THU',cd.THU,'FRI',cd.FRI,'SAT',cd.SAT) as 'deliveryDays' " +
         /*  "concat(CASE WHEN cd.sun=1 THEN 'Sunday,' ELSE '' END,"+
          "CASE WHEN cd.mon=1 THEN 'Monday,' ELSE '' END,"+
          "CASE WHEN cd.tue=1 THEN 'Tuesday,' ELSE '' END,"+
@@ -405,7 +405,7 @@ const getDeliveryDetails = ({ customerId, deliveryDetailsId, isSuperAdmin }) => 
          "CASE WHEN cd.thu=1 THEN 'Thursday,' ELSE '' END,"+
          "CASE WHEN cd.fri=1 THEN 'Friday,' ELSE '' END,"+
          "CASE WHEN cd.sat=1 THEN 'Saturday,' ELSE '' END) AS 'Delivery Days'"+ */
-        "FROM DeliveryDetails d INNER JOIN customerdeliverydays cd ON cd.deliveryDaysId=d.deliverydaysid INNER JOIN departmentmaster r ON r.departmentId=d.departmentId WHERE d.deleted=0 AND (d.customer_Id=? OR d.deliveryDetailsId=?) ORDER BY d.registeredDate DESC;";
+        "FROM DeliveryDetails d INNER JOIN routes ro ON d.routeId=ro.RouteId INNER JOIN customerdeliverydays cd ON cd.deliveryDaysId=d.deliverydaysid INNER JOIN departmentmaster r ON r.departmentId=d.departmentId WHERE d.deleted=0 AND (d.customer_Id=? OR d.deliveryDetailsId=?) ORDER BY d.registeredDate DESC;";
     }
     db.query(deliveryDetailsQuery, [customerId, deliveryDetailsId], (err, results) => {
       if (err) reject(err)
@@ -487,7 +487,7 @@ router.delete('/deleteCustomer/:customerId', (req, res) => {
 })
 
 router.get('/generatePDF', (req, res) => {
-  customerQueries.generatePDF("186", (err, items) => {
+  customerQueries.generatePDF("215", (err, items) => {
     if (err) res.status(500).json(dbError(err))
     else {
       let invoice = {

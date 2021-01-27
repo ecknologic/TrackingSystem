@@ -97,7 +97,7 @@ motherPlantDbQueries.getReceiptDetailsByRMId = async (input, callback) => {
 }
 
 motherPlantDbQueries.getDepartmentsList = async (deptType, callback) => {
-    let query = `select departmentId,departmentName from departmentmaster where departmentType="${deptType}"`
+    let query = `select departmentId,departmentName from departmentmaster where isApproved='1' AND deleted='0' AND departmentType="${deptType}"`
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getAllDepartmentsList = async (deptType, callback) => {
