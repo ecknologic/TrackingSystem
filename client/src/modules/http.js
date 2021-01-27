@@ -23,9 +23,9 @@ axios.interceptors.response.use(null, error => {
     }
     else if (expectedError) {
         if (error.response.status === 406) {
-            sessionStorage.clear()
+            // sessionStorage.clear()
             message.error('Account no longer exists, Logging you out.')
-            setTimeout(() => window.location.href = '/', 1500)
+            // setTimeout(() => window.location.href = '/', 1500)
         }
     }
 
