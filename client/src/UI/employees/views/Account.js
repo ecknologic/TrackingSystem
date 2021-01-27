@@ -9,7 +9,7 @@ const AccountView = ({ data, isDriver }) => {
 
     const {
         userName, parentName, gender, dob, mobileNumber, address, joinedDate, permanentAddress,
-        roleId, emailid, recommendedBy, recruitedBy, accountNo, branchName, bankName, ifscCode
+        roleId, emailid, recommendedBy, recruitedBy, accountNo, branchName, bankName, ifscCode, departmentName
     } = data
 
     return (
@@ -50,12 +50,17 @@ const AccountView = ({ data, isDriver }) => {
                     <InputValue size='large' value={dayjs(joinedDate).format(DATEFORMAT)} />
                 </div>
                 {
-                    !isDriver && (
+                    !isDriver ? (
                         <div className='input-container'>
                             <InputValue size='smaller' value='Administrator Role' />
                             <InputValue size='large' value={getRoleLabel(roleId)} />
                         </div>
-                    )
+                    ) : departmentName ? (
+                        <div className='input-container'>
+                            <InputValue size='smaller' value='Assigned To' />
+                            <InputValue size='large' value={departmentName} />
+                        </div>
+                    ) : null
                 }
             </div>
             <div className='row half-stretch'>
