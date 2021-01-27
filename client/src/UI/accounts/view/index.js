@@ -268,7 +268,6 @@ const ViewAccount = () => {
                             <AccountOverview
                                 data={account}
                                 isSuperAdmin={isSuperAdmin}
-                                warehouseOptions={warehouseOptions}
                                 onUpdate={handleAccountUpdate}
                             />
                         </TabPane>

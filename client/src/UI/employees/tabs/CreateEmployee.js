@@ -51,7 +51,7 @@ const CreateEmployee = ({ goToTab }) => {
     }
 
     const getDepartmentList = async () => {
-        const url = '/bibo/getAllDepartmentsList'
+        const url = '/bibo/getAllDepartmentsList?hasNone=true'
 
         const data = await http.GET(url)
         setDepartmentList(data)
@@ -61,9 +61,12 @@ const CreateEmployee = ({ goToTab }) => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
-        if (key === 'roleId') { // Driver role Id is 6 in DB
+        if (key === 'roleId') {
             if (value === 6) setEmployeeType('Driver')
-            else setEmployeeType('Staff')
+            else {
+                setFormData(data => ({ ...data, departmentId: null }))
+                setEmployeeType('Staff')
+            }
         }
 
         // Validations

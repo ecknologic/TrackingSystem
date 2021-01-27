@@ -204,7 +204,20 @@ $primary-color: #0062FF;
 }
 
 .account-view-account-overview {
+
     .footer {
+        justify-content: flex-end;
+    }
+}
+.account-view-account-overview.app-manage-content {
+    padding: 0;
+
+    .app-footer-buttons-container.view {
+        width: 60%;
+    }
+
+    .multi-buttons-container {
+        flex: 1;
         justify-content: flex-end;
     }
 }

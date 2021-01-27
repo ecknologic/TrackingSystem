@@ -8,7 +8,7 @@ import SelectInput from '../../../components/SelectInput';
 import { DDownIcon } from '../../../components/SVG_Icons';
 import CollapseHeader from '../../../components/CollapseHeader';
 import CustomTextArea from '../../../components/CustomTextArea';
-import { removeFormTracker, resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
+import { getStatusColor, resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
 
 const ProductionQCForm = (props) => {
 
@@ -44,12 +44,14 @@ const ProductionQCForm = (props) => {
                 >
                     {
                         QCList.map((item) => {
-                            const { qcLevel, ozoneLevel, phLevel, tds, managerName, testedDate } = item
+                            const { qcLevel, ozoneLevel, phLevel, tds, managerName, testedDate, testResult } = item
                             const date = testedDate ? dayjs(testedDate).format('DD/MM/YYYY') : null
                             const time = testedDate ? dayjs(testedDate).format('hh:mm A') : null
 
+                            const color = getStatusColor(testResult)
+
                             return (
-                                <Panel key={qcLevel} header={<CollapseHeader title={`Level-${qcLevel} Test`} />}>
+                                <Panel key={qcLevel} header={<CollapseHeader title={`Level-${qcLevel} Test`} extra={<InputValue size='smaller' value={testResult} />} />}>
                                     <>
                                         <div className='row half-stretch'>
                                             <div className='input-container'>
@@ -79,10 +81,15 @@ const ProductionQCForm = (props) => {
                                                 <InputValue size='larger' value={tds || '--'} />
                                             </div>
                                         </div>
-                                        <div className='row'>
+                                        <div className='row half-stretch'>
                                             <div className='input-container'>
                                                 <InputLabel name='Manager' />
                                                 <InputValue size='larger' value={managerName || '--'} />
+                                            </div>
+                                            <div className='input-container'>
+                                                <InputLabel name='Status' />
+                                                <span className='app-dot' style={{ background: color }}></span>
+                                                <InputValue size='smaller' value={testResult} />
                                             </div>
                                         </div>
                                     </>
