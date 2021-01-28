@@ -1,6 +1,10 @@
 const fs = require("fs");
 const PDFDocument = require("pdfkit");
-
+const { convertToWords } = require("../../utils/functions");
+const HSNCODE = 22011010;
+const GST20L = 12, GSTOthers = 18, CGST20L = 6, CGSTOthers = 9;
+var totalTaxValue = 0
+var totalCGSTValue = 0
 function createInvoice(invoice, path) {
     let doc = new PDFDocument({ size: "A4", margin: 50 });
 
@@ -75,6 +79,7 @@ function generateInvoiceTable(doc, invoice) {
         doc,
         invoiceTableTop,
         "Product",
+        "HSN CODE",
         "% GST",
         "Quantity",
         "Price",
@@ -133,30 +138,42 @@ function generateInvoiceTable(doc, invoice) {
             invoiceTableTop = 0;
             j = 0;
         }
+        let taxValue = quantity * price
+        let cgst = product == "20 Lt Bt Jar" ? CGST20L : CGSTOthers
+        let gst = product == "20 Lt Bt Jar" ? GST20L : GSTOthers
+        let cgstValue = (taxValue * cgst) / 100
         generateIndividualTableRow(
             doc,
             position,
             product,
-            250,
+            HSNCODE,
+            gst,
             quantity,
             price,
+            taxValue,
+            cgstValue,
+            cgstValue,
+            0.00
         )
+        totalTaxValue = totalTaxValue + taxValue
+        totalCGSTValue = totalCGSTValue + cgstValue
     }
+    let totalAmount = totalTaxValue + (2 * totalCGSTValue)
     const subtotalPosition = (invoiceTableTop + (j + 1) * 30) + 98;
     generateHr(doc, subtotalPosition)
     doc
-        .text("Totals :", 270, subtotalPosition + 10)
-        .text("11265.41", 320, subtotalPosition + 10)
-        .text("900.62", 415, subtotalPosition + 10)
-        .text("900.62", 470, subtotalPosition + 10)
-        .text("0.00", 500, subtotalPosition + 10, { align: "right" })
+        .text(`Total:`, 320, subtotalPosition + 10)
+        .text(totalTaxValue, 380, subtotalPosition + 10)
+        .text(totalCGSTValue, 445, subtotalPosition + 10)
+        .text(totalCGSTValue, 488, subtotalPosition + 10)
+        .text("0.00", 525, subtotalPosition + 10, { align: "right" })
     generateHr(doc, subtotalPosition + 30)
     doc
         .text("Invoice Value in Words Rs :", 30, subtotalPosition + 40)
         .text("Total Invoice Value Round off To :", 350, subtotalPosition + 40)
         .fillColor("red")
-        .text("13067.00", 500, subtotalPosition + 40, { align: "right" })
-        .text("THIRTEEN THOUSAND SIXTY-SEVEN ONLY", 30, subtotalPosition + 60)
+        .text(totalAmount, 500, subtotalPosition + 40, { align: "right" })
+        .text(convertToWords(totalAmount), 30, subtotalPosition + 60)
     generateHr(doc, subtotalPosition + 80)
     doc
         .fillColor("black")
@@ -174,33 +191,31 @@ function generateInvoiceTable(doc, invoice) {
         .text("Authorized Signatory", 0, subtotalPosition + 220, { align: "right" })
 }
 function billingTable(doc, invoice) {
+    const item = invoice.items.length ? invoice.items[0] : {}
+    const { customerId = "", customerName = "", organizationName = "", address1 = "", address = "", gstNO = "", mobileNumber = "" } = item
     const billingInfoTop = 160;
-    const address = "1st Floor Solitaire Building Plot no 14 & 15,software unit layout, Madhapur , Hyderabad,500081 "
 
     doc
         .text("Details of receiver ( Billed to)", 30, billingInfoTop + 5)
-        .text("Customer Id : ", 200, billingInfoTop + 5)
+        .text(`Customer Id : ${customerId}`, 200, billingInfoTop + 5)
         .text("Details of receiver ( Shipped to)", 350, billingInfoTop + 5)
     generateHr(doc, billingInfoTop + 18);
     generateVr(doc, 300, 160, 130)
     generateHr(doc, billingInfoTop + 130);
     doc
         .fontSize(10)
-        .text("Pennywise Solutions Private Limited", 30, billingInfoTop + 30)
+        .text(`${organizationName || customerName} `, 30, billingInfoTop + 30)
         .fontSize(8)
-        .text(`${address} , Contact No: 9908599589`, 30, billingInfoTop + 42, { width: 200 })
-        .text(`GST NO: 36AAECP0333L1ZH `, 30, billingInfoTop + 100)
+        .text(`${address1} , Contact No: ${mobileNumber} `, 30, billingInfoTop + 42, { width: 200 })
+        .text(`GST NO: ${gstNO} `, 30, billingInfoTop + 100)
         .text(`State Code: 36`, 30, billingInfoTop + 115)
         .fontSize(10)
-        .text("Pennywise Solutions Private Limited", 310, billingInfoTop + 30)
+        .text(`${organizationName || customerName} `, 310, billingInfoTop + 30)
         .fontSize(8)
-        .text(`${address} , Contact No: 9908599589`, 310, billingInfoTop + 42, { width: 200 })
-        .text(`GST NO: 36AAECP0333L1ZH `, 310, billingInfoTop + 100)
+        .text(`${address} , Contact No: ${mobileNumber} `, 310, billingInfoTop + 42, { width: 200 })
+        .text(`GST NO: ${gstNO} `, 310, billingInfoTop + 100)
         .text(`State Code: 36`, 310, billingInfoTop + 115)
 
-}
-const calculateSubTotal = (total, num) => {
-    return { price20L: total.price20L + num.price20L }
 }
 function generateFooter(doc) {
     doc
@@ -217,6 +232,7 @@ function generateIndividualTableRow(
     doc,
     y,
     product,
+    hsnCode,
     GST,
     quantity,
     price,
@@ -228,27 +244,27 @@ function generateIndividualTableRow(
     console.log("y value:::" + y + "item:::");
     generateVr(doc, 125, y - 10, 140)
     generateVr(doc, 188, y - 10, 140)
-    generateVr(doc, 255, y - 10, 140)
-    generateVr(doc, 315, y - 10, 140)
-    generateVr(doc, 400, y - 10, 140)
-    generateVr(doc, 450, y - 10, 140)
-    generateVr(doc, 500, y - 10, 140)
+    generateVr(doc, 240, y - 10, 140)
+    generateVr(doc, 300, y - 10, 140)
+    generateVr(doc, 365, y - 10, 140)
+    generateVr(doc, 435, y - 10, 140)
+    generateVr(doc, 480, y - 10, 140)
+    generateVr(doc, 520, y - 10, 140)
     doc
-        .fontSize(10)
+        .fontSize(9)
         .text(product, 40, y, { align: "left" })
-        .text(GST, 130, y, { align: "left" })
-        .text(quantity, 200, y, { align: "left" })
-        .text(price, 270, y, { align: "left" })
-        .text(taxValue, 330, y, { align: "left" })
-        .text(CGST, 410, y, { align: "left" })
-        .text(SGST, 460, y, { align: "left" })
-        .text(IGST, 500, y, { align: "center" })
-    // .text(lineTotal, 0, y, { align: "right" });
+        .text(hsnCode, 130, y, { align: "left" })
+        .text(GST, 200, y, { align: "left" })
+        .text(quantity, 250, y, { align: "left" })
+        .text(price, 310, y, { align: "left" })
+        .text(taxValue, 370, y, { align: "left" })
+        .text(CGST, 440, y, { align: "left" })
+        .text(SGST, 490, y, { align: "left" })
+        .text(IGST, 520, y, { align: "right" })
 }
 
 function generateHr(doc, y) {
     doc
-        // .strokeColor("#aaaaaa")
         .lineWidth(1)
         .moveTo(25, y)
         .lineTo(570, y)
@@ -256,16 +272,9 @@ function generateHr(doc, y) {
 }
 function generateVr(doc, xAxis, yAxis, height) {
     doc
-        // .strokeColor("#aaaaaa")
         .rect(xAxis, yAxis, 0, height)
-    // .moveTo(25, y)
-    // .lineTo(570, y)
-    // .stroke();
 }
 
-function formatCurrency(cents) {
-    return "$" + (cents / 100).toFixed(2);
-}
 
 function formatDate(date) {
     const day = date.getDate();
