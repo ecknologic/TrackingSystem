@@ -200,11 +200,12 @@ router.get('/deliveryDetails/:date', (req, res) => {
 router.get('/currentActiveStockDetails/:date', (req, res) => {
   let deliveryDate = req.params.date;
   let { warehouseId } = req.query;
+  let currentActiveStockQuery = `CALL warehouse_CurrentActiveStock(?,?)`;
   // let currentActiveStockQuery = "SELECT SUM(total1LBoxes) total1LBoxes, SUM(total20LCans) total20LCans, SUM(total500MLBoxes) total500MLBoxes, SUM(total250MLBoxes) total250MLBoxes FROM customerActiveStock WHERE DATE(deliveryDate)<='" + deliveryDate + "' and warehouseId=" + warehouseId;
-  let currentActiveStockQuery = "SELECT (`a`.`total20LCans` - IFNULL(`b`.`total20LCans`,0)) AS `total20LCans`, (`a`.`total1LBoxes` - IFNULL(`b`.`total1LBoxes`,0)) AS `total1LBoxes`, (`a`.`total500MLBoxes` - IFNULL(`b`.`total500MLBoxes`,0)) AS `total500MLBoxes`, (`a`.`total250MLBoxes` - IFNULL(`b`.`total250MLBoxes`,0)) AS `total250MLBoxes` FROM (SELECT  SUM(20LCans) AS `total20LCans`,SUM(1LBoxes) AS `total1LBoxes`, SUM(500MLBoxes) AS `total500MLBoxes`,SUM(250MLBoxes) AS `total250MLBoxes` FROM `warehousestockdetails` WHERE warehouseId=1 AND DATE(DeliveryDate)<=?) AS a INNER JOIN (SELECT  SUM(20LCans) AS `total20LCans`, SUM(1LBoxes) AS `total1LBoxes`,  SUM(500MLBoxes) AS `total500MLBoxes`, SUM(250MLBoxes) AS `total250MLBoxes` FROM  customerorderdetails WHERE  isDelivered='Completed' AND warehouseId=? AND DATE(DeliveryDate)<=?) AS b"
-  db.query(currentActiveStockQuery, [deliveryDate, warehouseId, deliveryDate], (err, results) => {
+  // let currentActiveStockQuery = "SELECT (`a`.`total20LCans` - IFNULL(`b`.`total20LCans`,0)) AS `total20LCans`, (`a`.`total1LBoxes` - IFNULL(`b`.`total1LBoxes`,0)) AS `total1LBoxes`, (`a`.`total500MLBoxes` - IFNULL(`b`.`total500MLBoxes`,0)) AS `total500MLBoxes`, (`a`.`total250MLBoxes` - IFNULL(`b`.`total250MLBoxes`,0)) AS `total250MLBoxes` FROM (SELECT  SUM(20LCans) AS `total20LCans`,SUM(1LBoxes) AS `total1LBoxes`, SUM(500MLBoxes) AS `total500MLBoxes`,SUM(250MLBoxes) AS `total250MLBoxes` FROM `warehousestockdetails` WHERE warehouseId=1 AND DATE(DeliveryDate)<=?) AS a INNER JOIN (SELECT  SUM(20LCans) AS `total20LCans`, SUM(1LBoxes) AS `total1LBoxes`,  SUM(500MLBoxes) AS `total500MLBoxes`, SUM(250MLBoxes) AS `total250MLBoxes` FROM  customerorderdetails WHERE  isDelivered='Completed' AND warehouseId=? AND DATE(DeliveryDate)<=?) AS b"
+  db.query(currentActiveStockQuery, [warehouseId, deliveryDate], (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
-    else res.json({ status: 200, message: 'Success', data: results });
+    else res.json({ status: 200, message: 'Success', data: results[0] });
   });
 });
 
