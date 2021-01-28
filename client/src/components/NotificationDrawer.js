@@ -37,6 +37,27 @@ const Notifications = () => {
                 <NotificationCard title='Customer Order' content='Console Technologies is having a delivery to be confirmed' />
                 <NotificationCard title='Customer Added' content='Rao Ramesh created a new corporate customer Maestro Agencies' />
                 <NotificationCard title='Delivery Address Added' content='Rao Ramesh added new delivery address to Console Technologies' />
+                <NotificationCard title='Particulars Out of stock' content='Kondapur WH is having 20L,300ML bottles out of stock' />
+                <NotificationCard title='Material Request' content='Aqua Maestro Pvt Ltd MP Has raised material request' />
+                <NotificationCard title='Particulars Out of stock' content='JEEDIMETLA WH is having 500ML bottles and 500ML, 300ML caps out of stock' />
+                <NotificationCard title='Created Delivery' content='Sangareddy MP Created a delivery request to Kondapur WH' />
+                <NotificationCard title='Customer Order' content='Console Technologies is having a delivery to be confirmed' />
+                <NotificationCard title='Customer Added' content='Rao Ramesh created a new corporate customer Maestro Agencies' />
+                <NotificationCard title='Delivery Address Added' content='Rao Ramesh added new delivery address to Console Technologies' />
+                <NotificationCard title='Particulars Out of stock' content='Kondapur WH is having 20L,300ML bottles out of stock' />
+                <NotificationCard title='Material Request' content='Aqua Maestro Pvt Ltd MP Has raised material request' />
+                <NotificationCard title='Particulars Out of stock' content='JEEDIMETLA WH is having 500ML bottles and 500ML, 300ML caps out of stock' />
+                <NotificationCard title='Created Delivery' content='Sangareddy MP Created a delivery request to Kondapur WH' />
+                <NotificationCard title='Customer Order' content='Console Technologies is having a delivery to be confirmed' />
+                <NotificationCard title='Customer Added' content='Rao Ramesh created a new corporate customer Maestro Agencies' />
+                <NotificationCard title='Delivery Address Added' content='Rao Ramesh added new delivery address to Console Technologies' />
+                <NotificationCard title='Particulars Out of stock' content='Kondapur WH is having 20L,300ML bottles out of stock' />
+                <NotificationCard title='Material Request' content='Aqua Maestro Pvt Ltd MP Has raised material request' />
+                <NotificationCard title='Particulars Out of stock' content='JEEDIMETLA WH is having 500ML bottles and 500ML, 300ML caps out of stock' />
+                <NotificationCard title='Created Delivery' content='Sangareddy MP Created a delivery request to Kondapur WH' />
+                <NotificationCard title='Customer Order' content='Console Technologies is having a delivery to be confirmed' />
+                <NotificationCard title='Customer Added' content='Rao Ramesh created a new corporate customer Maestro Agencies' />
+                <NotificationCard title='Delivery Address Added' content='Rao Ramesh added new delivery address to Console Technologies' />
             </div>
         </div>
     )
