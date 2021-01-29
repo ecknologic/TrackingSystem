@@ -19,11 +19,11 @@ const checkUserExists = (req, res, next) => {
 }
 const checkDepartmentExists = (req, res, next) => {
     let isSuperAdmin = req.headers['issuperadmin']
-    if (isSuperAdmin) {
+    if (isSuperAdmin == 'true') {
         next()
     } else {
         let departmentid = req.headers['departmentid']
-        let query = `Select departmentName from departmentmaster where departmentId=${departmentid} AND deleted=0`
+        let query = `Select departmentName from departmentmaster where departmentId=${departmentid} AND isApproved=1 AND deleted=0`
         executeGetQuery(query, (err, results) => {
             if (err) console.log("Error", err)
             else if (!results.length) res.status(406).json("Something went wrong")
