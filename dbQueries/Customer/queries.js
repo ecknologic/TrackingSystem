@@ -88,8 +88,9 @@ customerQueries.deleteDeliveryAddress = (deliveryId, callback) => {
 customerQueries.updateOrderDelivery = (input, callback) => {
     const { driverId, routeId, vehicleId, deliveryDetailsId } = input
     let query = "update DeliveryDetails set driverId=?,routeId=?,vehicleId=? where deliveryDetailsId=?"
-    executePostOrUpdateQuery(query, [driverId, routeId, vehicleId, deliveryDetailsId])
-    let getQuery = 'SELECT d.registeredDate,d.location,d.contactPerson,d.deliveryDetailsId,d.isActive as isApproved,d.vehicleId,r.routeName,r.routeId,dri.driverName,dri.driverId,dri.mobileNumber FROM DeliveryDetails d INNER JOIN routes r ON d.routeId=r.routeId left JOIN driverdetails dri ON d.driverId=dri.driverid WHERE d.deliveryDetailsId=' + deliveryDetailsId
-    return executeGetQuery(getQuery, callback)
+    executePostOrUpdateQuery(query, [driverId, routeId, vehicleId, deliveryDetailsId], () => {
+        let getQuery = 'SELECT d.registeredDate,d.location,d.contactPerson,d.deliveryDetailsId,d.isActive as isApproved,d.vehicleId,r.routeName,r.routeId,dri.driverName,dri.driverId,dri.mobileNumber FROM DeliveryDetails d INNER JOIN routes r ON d.routeId=r.routeId left JOIN driverdetails dri ON d.driverId=dri.driverid WHERE d.deliveryDetailsId=' + deliveryDetailsId
+        return executeGetQuery(getQuery, callback)
+    })
 }
 module.exports = customerQueries

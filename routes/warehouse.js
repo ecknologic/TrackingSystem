@@ -2,11 +2,12 @@ const dayjs = require('dayjs');
 var express = require('express');
 var router = express.Router();
 const db = require('../config/db.js');
+const customerQueries = require('../dbQueries/Customer/queries.js');
 const motherPlantDbQueries = require('../dbQueries/motherplant/queries.js');
 const usersQueries = require('../dbQueries/users/queries.js');
 const warehouseQueries = require('../dbQueries/warehouse/queries.js');
 const { DATEFORMAT, INSERTMESSAGE, UPDATEMESSAGE } = require('../utils/constants.js');
-const { dbError } = require('../utils/functions.js');
+const { customerProductDetails, dbError } = require('../utils/functions.js');
 var departmentId;
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -271,5 +272,29 @@ router.delete('/deleteRoute/:RouteId', (req, res) => {
     else res.json(results);
   });
 });
-
+router.get("/getOrders", (req, res) => {
+  customerQueries.getOrdersByDepartmentId(departmentId, (err, results) => {
+    if (err) res.json({ status: 500, message: err.sqlMessage });
+    else if (results.length) {
+      let arr = [], count = 0;
+      for (let result of results) {
+        customerProductDetails(result.deliveryDetailsId).then(response => {
+          count++
+          if (err) console.log(err);
+          else {
+            result["products"] = response;
+            arr.push(result)
+          }
+          if (count == results.length) {
+            let sortedData = arr.sort((a, b) => b.registeredDate - a.registeredDate)
+            res.json(sortedData);
+          }
+        });
+      }
+    }
+    else {
+      res.json(results)
+    }
+  })
+});
 module.exports = router;
