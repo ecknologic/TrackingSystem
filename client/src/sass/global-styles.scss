@@ -54,7 +54,7 @@ $textColorDisabled:rgba(0,0,0,0.55);
 .thumb-vertical {
     width: 8px !important;
     border-radius: 99px;
-    background-color: rgba(0, 0, 0, 0.2) !important;
+    background-color: #CCD3D6 !important;
 }
 
 // -------------- antd Popconfirm styles ------------------- //
@@ -80,6 +80,39 @@ $textColorDisabled:rgba(0,0,0,0.55);
         background-color: #0062FF;
         border: 1px solid #0062FF;
         color: #fff;
+    }
+}
+
+// -------------- antd Drawer styles ------------------- //
+
+.ant-drawer-content {
+    background-color: #FAFAFB;
+}
+
+.ant-drawer-header {
+    background-color: #FAFAFB;
+    border-bottom: none;
+
+    .ant-drawer-title {
+        color: #171725;
+        font-size: 1.55em;
+        font-family: 'PoppinsMedium500';
+    }
+}
+
+.ant-drawer-close {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    svg {
+        transition: all .3s;
+    }
+    
+    &:hover {
+        svg {
+            transform: scale(1.2);
+        }
     }
 }
 
@@ -374,7 +407,7 @@ textarea {
     }
 
     &::-webkit-scrollbar-thumb {
-        background-color: #C8C8C9;
+        background-color: #CCD3D6;
         border-radius: 1em;
     }
     
@@ -1323,7 +1356,7 @@ textarea {
         transition: color 0.3s;
     
         &:hover {
-            color: rgba(0, 0, 0, 0.2);
+            color:#CCD3D6;
         }
         
         &::-webkit-scrollbar-corner {

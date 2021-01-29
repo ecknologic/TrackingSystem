@@ -108,7 +108,7 @@ const Orders = () => {
 
     const getOrders = async () => {
         setLoading(true)
-        const url = `/customer/getOrders`
+        const url = `/warehouse/getOrders`
         const data = await http.GET(url)
         setPageNumber(1)
         setLoading(false)
@@ -202,20 +202,26 @@ const Orders = () => {
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
-            await http.POST(url, body)
+            const [data] = await http.POST(url, body)
+            console.log(data)
             showToast(options)
-            optimisticUpdate(formData)
+            optimisticUpdate(data)
             onModalClose(true)
         } catch (error) {
             setBtnDisabled(false)
         }
     }
 
-    const optimisticUpdate = (data) => {
+    const optimisticUpdate = ({ driverName, deliveryDetailsId: id, routeName }) => {
         const clone = deepClone(orders)
-        const index = clone.findIndex(dc => dc.deliveryDetailsId === data.deliveryDetailsId)
-        clone[index] = data
+        const index = clone.findIndex(dc => dc.deliveryDetailsId === id)
+        clone[index].driverName = driverName
+        clone[index].routeName = routeName
         setOrders(clone)
+
+        //Remove order object from viewed Array if exists
+        const filtered = viewedArr.filter(dc => dc.deliveryDetailsId !== id)
+        setViewedArr(filtered)
     }
 
     const onModalClose = (hasSaved) => {

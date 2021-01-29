@@ -1,0 +1,36 @@
+.no-notifications-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
+    .msg {
+        color: #171725;
+        font-family: 'PoppinsRegular400';
+        text-align: center;
+    }
+    
+    .main {
+        margin-top: 1em;
+        font-size: 1.1em;
+        font-family: 'PoppinsMedium500';
+    }
+}
+
+
+.notifications-drawer {
+    user-select: none;
+    
+    .ant-drawer-body {
+        padding: 0;
+    }
+    
+    .notifications-drawer-body {
+        padding: 5px 1.5em 0 1.5em;
+    }
+
+    .notifications-container {
+        padding-right: 5px;
+    }
+}

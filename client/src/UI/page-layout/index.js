@@ -2,30 +2,16 @@ import React from 'react'
 import { Layout } from 'antd';
 import { useLocation } from 'react-router-dom';
 import { Scrollbars } from 'react-custom-scrollbars-2';
+import Header from './header';
 import SideMenu from './SideMenu';
-import Profile from '../../components/Profile';
-import { getUsername } from '../../utils/constants';
-import { ChatIconGrey, NotificationIconGrey, SettingIconGrey } from '../../components/SVG_Icons';
 import '../../sass/pageLayout.scss'
 
 const PageLayout = ({ children }) => {
     const { pathname } = useLocation()
-    const userName = getUsername() || 'Bibo User'
 
     return (
         <Layout id='app-container'>
-            <Header id='app-header'>
-                <div id="logo-container">
-                    <h1 id='bibo'>Bibo</h1>
-                    <h1 id='water'>Water</h1>
-                </div>
-                <div id='nav-container'>
-                    <SettingIconGrey className='nav-icon' />
-                    <NotificationIconGrey className='nav-icon' />
-                    <ChatIconGrey className='nav-icon' />
-                    <Profile userName={userName} />
-                </div >
-            </Header>
+            <Header />
             <Layout id='app-content'>
                 <Sider width='16em' className='app-sider'>
                     <Scrollbars autoHide renderThumbVertical={Thumb}>
@@ -43,5 +29,5 @@ const PageLayout = ({ children }) => {
 }
 
 const Thumb = (props) => <div {...props} className="thumb-vertical" />
-const { Header, Content, Sider } = Layout;
+const { Content, Sider } = Layout;
 export default PageLayout;
