@@ -47,6 +47,7 @@ const ManageEmployee = () => {
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [employeeType, setEmployeeType] = useState('')
     const [departmentList, setDepartmentList] = useState([])
+    const [prevDepartmentId, setPrevDepartmentId] = useState('')
 
     const isDriver = employeeType === 'Driver'
     const roleOptions = useMemo(() => getRoleOptions(roleList), [roleList])
@@ -66,7 +67,7 @@ const ManageEmployee = () => {
         const [data] = await http.GET(url)
         const { adhar_frontside, adhar_backside, dependentAdharNo, dependentDetails: dep, license_frontside,
             dependentFrontProof, dependentBackProof, license_backside, ...rest } = data
-        const { userName, adharNo, licenseNo } = rest
+        const { userName, adharNo, licenseNo, departmentId } = rest
         const adharFront = base64String(adhar_frontside?.data)
         const adharBack = base64String(adhar_backside?.data)
         const depAdharFront = base64String(dependentFrontProof?.data)
@@ -81,6 +82,7 @@ const ManageEmployee = () => {
         setLicenseProof({ Front: licenseFront, Back: licenseBack, idProofType: 'licenseNo', licenseNo })
         setHeaderContent({ title: userName })
         setAccountValues({ ...rest, dob, joinedDate })
+        setPrevDepartmentId(departmentId)
         setDepValues({ ...JSON.parse(dep), adharNo: dependentAdharNo })
         setLoading(false)
     }
@@ -100,7 +102,7 @@ const ManageEmployee = () => {
     }
 
     const getDepartmentList = async () => {
-        const url = '/bibo/getAllDepartmentsList?hasNone=true'
+        const url = '/bibo/getAllDepartmentsList?hasNone=true&availableOnly=true'
 
         const data = await http.GET(url)
         setDepartmentList(data)
@@ -300,9 +302,15 @@ const ManageEmployee = () => {
         }
 
         const dependentDetails = { ...depValues, adharProof: depAdharProof }
+        let removedDepartmentId;
+
+        if (dependentDetails.departmentId !== prevDepartmentId) {
+            removedDepartmentId = prevDepartmentId
+        }
 
         let body = {
-            ...accountValues, adharProof, licenseProof, dependentDetails
+            ...accountValues, adharProof, licenseProof, dependentDetails,
+            removedDepartmentId
         }
         const url = updateUrl(mainUrl)
         const options = { item: employeeType, v1Ing: 'Updating', v2: 'updated' }

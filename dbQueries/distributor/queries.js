@@ -35,4 +35,15 @@ distributorQueries.updateDistributor = (input, callback) => {
     }
     executePostOrUpdateQuery(query, requestBody, callback)
 }
+distributorQueries.updateDistributorStatus = (input, callback) => {
+    const { distributorId, status } = input
+    let query = "update Distributors set isActive=? where distributorId=?";
+    let requestBody = [status, distributorId]
+    executePostOrUpdateQuery(query, requestBody, callback)
+}
+distributorQueries.deleteDistributor = (distributorId, callback) => {
+    let query = "update Distributors set deleted=? where distributorId=?";
+    let requestBody = [1, distributorId]
+    executePostOrUpdateQuery(query, requestBody, callback)
+}
 module.exports = distributorQueries

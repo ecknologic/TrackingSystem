@@ -7,7 +7,7 @@ import '../sass/accountCard.scss'
 import '../sass/plantCard.scss'
 
 const PlantCard = ({ data, onClick, btnTxt = 'Manage Account', isSuperAdmin, onSelect }) => {
-    const { isApproved, departmentName, adminName, address, departmentId } = data
+    const { isApproved, departmentName, adminName, adminEmail, adminNumber, address, departmentId } = data
 
     const optionOne = isApproved ? 'Inactive' : 'Active'
 
@@ -36,6 +36,13 @@ const PlantCard = ({ data, onClick, btnTxt = 'Manage Account', isSuperAdmin, onS
                     <span className='type1'>Admin</span>
                     <div className='contacts'>
                         <NameCard name={adminName} />
+                    </div>
+                </div>
+                <div className='contact-container role'>
+                    <span className='type1'>Contact Details</span>
+                    <div className='contacts'>
+                        <span >{adminEmail}</span>
+                        <span >{adminNumber}</span>
                     </div>
                 </div>
             </div>

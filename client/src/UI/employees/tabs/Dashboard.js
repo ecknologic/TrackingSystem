@@ -1,13 +1,15 @@
 import { Col, message, Row } from 'antd';
 import { useHistory, useLocation } from 'react-router-dom';
-import React, { Fragment, useEffect, useMemo, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../modules/http'
 import Spinner from '../../../components/Spinner';
 import NoContent from '../../../components/NoContent';
+import DeleteModal from '../../../components/CustomModal';
 import EmployeeCard from '../../../components/EmployeeCard';
-import { getMainPathname, showToast } from '../../../utils/Functions';
-import CustomPagination from '../../../components/CustomPagination';
 import { getRole, SUPERADMIN } from '../../../utils/constants';
+import ConfirmMessage from '../../../components/ConfirmMessage';
+import CustomPagination from '../../../components/CustomPagination';
+import { getMainPathname, showToast } from '../../../utils/Functions';
 
 const Dashboard = ({ reFetch }) => {
     const history = useHistory()
@@ -17,6 +19,8 @@ const Dashboard = ({ reFetch }) => {
     const [pageSize, setPageSize] = useState(12)
     const [pageNumber, setPageNumber] = useState(1)
     const [totalCount, setTotalCount] = useState(null)
+    const [modalDelete, setModalDelete] = useState(false)
+    const [currentId, setCurrentId] = useState('')
 
     const mainUrl = useMemo(() => getMainPathname(pathname), [pathname])
     const isSuperAdmin = useMemo(() => getRole() === SUPERADMIN, [])
@@ -50,28 +54,38 @@ const Dashboard = ({ reFetch }) => {
 
     const handleMenuSelect = (key, id) => {
         if (key === 'Delete') {
-            handleEmployeeDelete(id)
+            setModalDelete(true)
+            setCurrentId(id)
         }
     }
 
-    const handleEmployeeDelete = async (id) => {
+    const handleDelete = async (id) => {
         const options = { item: employeeType, v1Ing: 'Deleting', v2: 'deleted' }
         const url = deleteUrl(mainUrl, id)
 
         try {
             showToast({ ...options, action: 'loading' })
             await http.DELETE(url)
-            optimisticApprove(id)
+            optimisticDelete(id)
             showToast(options)
         } catch (error) {
             message.destroy()
         }
     }
 
-    const optimisticApprove = (id) => {
+    const optimisticDelete = (id) => {
         const filtered = employees.filter(item => item[idKey] !== id)
         setEmployees(filtered)
     }
+
+    const handleDeleteModalOk = useCallback(() => {
+        setModalDelete(false);
+        handleDelete(currentId)
+    }, [currentId])
+
+    const handleDeleteModalCancel = useCallback(() => {
+        setModalDelete(false)
+    }, [])
 
     const goToManageEmployee = (id) => history.push(`${mainUrl}/manage/${id}`)
 
@@ -92,7 +106,6 @@ const Dashboard = ({ reFetch }) => {
                                         isSuperAdmin={isSuperAdmin}
                                         onSelect={handleMenuSelect}
                                         onClick={goToManageEmployee}
-
                                     />
                                 </Col>
                             )) : <NoContent content={`No ${employeeType}s to show`} />
@@ -110,6 +123,15 @@ const Dashboard = ({ reFetch }) => {
                         />)
                 }
             </div>
+            <DeleteModal
+                visible={modalDelete}
+                onOk={handleDeleteModalOk}
+                onCancel={handleDeleteModalCancel}
+                title='Are you sure to Delete?'
+                okTxt='Yes'
+            >
+                <ConfirmMessage msg='This action cannot be undone.' />
+            </DeleteModal>
         </Fragment>
     )
 }

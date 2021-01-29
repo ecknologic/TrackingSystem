@@ -38,4 +38,16 @@ router.post("/updateDistributor", (req, res) => {
         else res.json(UPDATEMESSAGE)
     })
 });
+router.put('/updateDistributorStatus', (req, res) => {
+    distributorQueries.updateDistributorStatus(req.body, (err, results) => {
+        if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+        else res.json(results);
+    });
+});
+router.delete('/deleteDistributor/:distributorId', (req, res) => {
+    distributorQueries.deleteDistributor(req.params.distributorId, (err, results) => {
+        if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+        else res.json(results);
+    });
+});
 module.exports = router;

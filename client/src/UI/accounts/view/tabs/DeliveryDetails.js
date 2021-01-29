@@ -9,6 +9,7 @@ import NoContent from '../../../../components/NoContent';
 import QuitModal from '../../../../components/CustomModal';
 import CustomModal from '../../../../components/CustomModal';
 import AddressCard from '../../../../components/AddressCard';
+import DeleteModal from '../../../../components/CustomModal';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import { getRouteOptions, WEEKDAYS } from '../../../../assets/fixtures';
 import { getDevDays, getProductsWithIdForDB, getProductsForUI, isEmpty, extractDeliveryDetails, extractProductsFromForm, deepClone, getBase64, getDevDaysForDB, base64String, resetTrackForm, showToast } from '../../../../utils/Functions';
@@ -27,7 +28,9 @@ const DeliveryDetails = ({ isSuperAdmin, recentDelivery, ...rest }) => {
     const [devDaysError, setDevDaysError] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
+    const [modalDelete, setModalDelete] = useState(false)
     const [viewedArr, setViewedArr] = useState([])
+    const [currentId, setCurrentId] = useState('')
     const [shake, setShake] = useState(false)
 
     const routeOptions = useMemo(() => getRouteOptions(routeList), [routeList])
@@ -90,11 +93,16 @@ const DeliveryDetails = ({ isSuperAdmin, recentDelivery, ...rest }) => {
         setDelivery(clone)
     }
 
-    const optimisticApprove = (id) => {
+    const optimisticApprove = (id, status) => {
         let clone = deepClone(delivery);
         const index = clone.findIndex(item => item.deliveryDetailsId === id)
-        clone[index].isApproved = 1;
+        clone[index].isApproved = status;
         setDelivery(clone)
+    }
+
+    const optimisticDelete = (id) => {
+        const filtered = delivery.filter(item => item.deliveryDetailsId !== id)
+        setDelivery(filtered)
     }
 
     const handleDevDaysSelect = (value) => {
@@ -202,41 +210,45 @@ const DeliveryDetails = ({ isSuperAdmin, recentDelivery, ...rest }) => {
         else fetchDelivery(id)
     }
 
-    const handleAddressDelete = async (id) => {
+    const handleMenuSelect = (key, id) => {
+        if (key === 'Active') {
+            handleStatusUpdate(id, 1)
+        }
+        else if (key === 'Draft') {
+            handleStatusUpdate(id, 0)
+        }
+        else if (key === 'Delete') {
+            setCurrentId(id)
+            setModalDelete(true)
+        }
+    }
+
+    const handleStatusUpdate = async (id, status) => {
+        const options = { item: 'Delivery status', v1Ing: 'Updating', v2: 'updated' }
+        const url = `/customer/updateDeliveryDetailsStatus`
+        const body = { status, deliveryDetailsId: id }
+
+        try {
+            showToast({ ...options, action: 'loading' })
+            await http.PUT(url, body)
+            optimisticApprove(id, status)
+            showToast(options)
+        } catch (error) {
+            message.destroy()
+        }
+    }
+
+    const handleDelete = async (id) => {
         const options = { item: 'Delivery details', v1Ing: 'Deleting', v2: 'deleted' }
         const url = `/customer/deleteDelivery/${id}`
 
         try {
             showToast({ ...options, action: 'loading' })
             await http.DELETE(url)
-            const filtered = delivery.filter(item => item.deliveryDetailsId !== id)
-            setDelivery(filtered)
+            optimisticDelete(id)
             showToast(options)
         } catch (error) {
             message.destroy()
-        }
-    }
-
-    const handleAddressApprove = async (id) => {
-        const options = { item: 'Delivery details', v1Ing: 'Approving', v2: 'approved' }
-        const url = `/customer/approveDelivery/${id}`
-
-        try {
-            showToast({ ...options, action: 'loading' })
-            await http.GET(url)
-            optimisticApprove(id)
-            showToast(options)
-        } catch (error) {
-            message.destroy()
-        }
-    }
-
-    const handleMenuSelect = (key, id) => {
-        if (key === 'approve') {
-            handleAddressApprove(id)
-        }
-        else if (key === 'delete') {
-            handleAddressDelete(id)
         }
     }
 
@@ -289,9 +301,16 @@ const DeliveryDetails = ({ isSuperAdmin, recentDelivery, ...rest }) => {
         resetTrackForm()
         onModalClose()
     }, [])
+    const handleDeleteModalOk = useCallback(() => {
+        setModalDelete(false);
+        handleDelete(currentId)
+    }, [currentId])
+
+    const handleDeleteModalCancel = useCallback(() => {
+        setModalDelete(false)
+    }, [])
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
     const handleModalCancel = useCallback(() => onModalClose(), [])
-
     const canView = !isSuperAdmin && formData.isApproved
 
     return (
@@ -340,6 +359,15 @@ const DeliveryDetails = ({ isSuperAdmin, recentDelivery, ...rest }) => {
             >
                 <ConfirmMessage msg='Changes you made may not be saved.' />
             </QuitModal>
+            <DeleteModal
+                visible={modalDelete}
+                onOk={handleDeleteModalOk}
+                onCancel={handleDeleteModalCancel}
+                title='Are you sure to Delete?'
+                okTxt='Yes'
+            >
+                <ConfirmMessage msg='This action cannot be undone.' />
+            </DeleteModal>
         </div>
     )
 }

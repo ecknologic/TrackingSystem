@@ -4,8 +4,9 @@ import RouteForm from '../forms/Route';
 import { http } from '../../../modules/http'
 import Actions from '../../../components/Actions';
 import Spinner from '../../../components/Spinner';
-import CustomModal from '../../../components/CustomModal';
 import { routeColumns } from '../../../assets/fixtures';
+import CustomModal from '../../../components/CustomModal';
+import DeleteModal from '../../../components/CustomModal';
 import ConfirmModal from '../../../components/CustomModal';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import CustomPagination from '../../../components/CustomPagination';
@@ -26,6 +27,8 @@ const RoutesDashboard = ({ reFetch, departmentOptions }) => {
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
     const [shake, setShake] = useState(false)
+    const [modalDelete, setModalDelete] = useState(false)
+    const [currentId, setCurrentId] = useState('')
 
     const isWHAdmin = useMemo(() => role === 'WarehouseAdmin', [role])
     const isSuperAdmin = useMemo(() => getRole() === SUPERADMIN, [])
@@ -61,11 +64,12 @@ const RoutesDashboard = ({ reFetch, departmentOptions }) => {
             setEditModal(true)
         }
         else if (key === 'delete') {
-            handleRouteDelete(data.RouteId)
+            setModalDelete(true)
+            setCurrentId(data.RouteId)
         }
     }
 
-    const handleRouteDelete = async (id) => {
+    const handleDelete = async (id) => {
         const options = { item: 'Route', v1Ing: 'Deleting', v2: 'deleted' }
         const url = `/warehouse/deleteRoute/${id}`
 
@@ -120,6 +124,13 @@ const RoutesDashboard = ({ reFetch, departmentOptions }) => {
         }
     }
 
+    const optimisticUpdate = (data) => {
+        let clone = deepClone(routes);
+        const index = clone.findIndex(item => item.RouteId === data.RouteId)
+        clone[index] = data;
+        setRoutes(clone)
+    }
+
     const onModalClose = (hasUpdated) => {
         const formHasChanged = sessionStorage.getItem(TRACKFORM)
         if (formHasChanged && !hasUpdated) {
@@ -130,13 +141,6 @@ const RoutesDashboard = ({ reFetch, departmentOptions }) => {
         setFormErrors({})
         resetTrackForm()
         setBtnDisabled(false)
-    }
-
-    const optimisticUpdate = (data) => {
-        let clone = deepClone(routes);
-        const index = clone.findIndex(item => item.RouteId === data.RouteId)
-        clone[index] = data;
-        setRoutes(clone)
     }
 
     const dataSource = useMemo(() => routes.map((route) => {
@@ -158,6 +162,14 @@ const RoutesDashboard = ({ reFetch, departmentOptions }) => {
     }, [])
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
     const handleModalCancel = useCallback(() => onModalClose(), [])
+    const handleDeleteModalOk = useCallback(() => {
+        setModalDelete(false);
+        handleDelete(currentId)
+    }, [currentId])
+
+    const handleDeleteModalCancel = useCallback(() => {
+        setModalDelete(false)
+    }, [])
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
@@ -210,6 +222,15 @@ const RoutesDashboard = ({ reFetch, departmentOptions }) => {
             >
                 <ConfirmMessage msg='Changes you made may not be saved.' />
             </ConfirmModal>
+            <DeleteModal
+                visible={modalDelete}
+                onOk={handleDeleteModalOk}
+                onCancel={handleDeleteModalCancel}
+                title='Are you sure to Delete?'
+                okTxt='Yes'
+            >
+                <ConfirmMessage msg='This action cannot be undone.' />
+            </DeleteModal>
         </div>
     )
 }

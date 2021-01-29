@@ -11,14 +11,15 @@ import '../sass/addressCard.scss'
 const AddressCard = ({ data, onClick, onSelect }) => {
     const role = getRole()
     const { isApproved, departmentName, phoneNumber, location, contactPerson, deliveryDetailsId } = data
+    const optionOne = isApproved ? 'Draft' : 'Active'
 
     const handleSelect = ({ key }) => {
         onSelect(key, deliveryDetailsId)
     }
 
     const options = [
-        <Menu.Item key="approve" className={isApproved ? 'disabled' : ''}>Approve</Menu.Item>,
-        <Menu.Item key="delete">Delete</Menu.Item>
+        <Menu.Item key={optionOne}>{optionOne}</Menu.Item>,
+        <Menu.Item key="Delete">Delete</Menu.Item>
     ]
 
     return (

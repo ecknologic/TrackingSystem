@@ -38,7 +38,7 @@ usersQueries.updateUserDepartment = (input, callback) => {
     const { departmentId, userId, removedAdminId } = input
     if (removedAdminId) {
         let query1 = "update usermaster set departmentId=? where userId=?";
-        executePostOrUpdateQuery(query1, ["Null", removedAdminId])
+        executePostOrUpdateQuery(query1, [null, removedAdminId])
     }
     let query = "update usermaster set departmentId=? where userId=?";
     let requestBody = [departmentId, userId];
@@ -48,5 +48,9 @@ usersQueries.deleteWebUser = (userId, callback) => {
     let query = "update usermaster set deleted=? where userId=?"
     let requestBody = [1, userId];
     return executePostOrUpdateQuery(query, requestBody, callback)
+}
+usersQueries.removeDepartmentAdmin = async (departmentId) => {
+    let query = "UPDATE departmentmaster SET adminId=? WHERE departmentId=?";
+    return executeGetParamsQuery(query, [null, departmentId])
 }
 module.exports = usersQueries

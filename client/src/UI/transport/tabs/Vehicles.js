@@ -6,6 +6,7 @@ import Actions from '../../../components/Actions';
 import Spinner from '../../../components/Spinner';
 import CustomModal from '../../../components/CustomModal';
 import { vehicleColumns } from '../../../assets/fixtures';
+import DeleteModal from '../../../components/CustomModal';
 import ConfirmModal from '../../../components/CustomModal';
 import { validateNames } from '../../../utils/validations';
 import ConfirmMessage from '../../../components/ConfirmMessage';
@@ -26,6 +27,8 @@ const VehiclesDashboard = ({ reFetch }) => {
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
     const [shake, setShake] = useState(false)
+    const [modalDelete, setModalDelete] = useState(false)
+    const [currentId, setCurrentId] = useState('')
 
     const isSuperAdmin = useMemo(() => getRole() === SUPERADMIN, [])
     const options = useMemo(() => getOptions(isSuperAdmin), [])
@@ -59,11 +62,12 @@ const VehiclesDashboard = ({ reFetch }) => {
             setEditModal(true)
         }
         else if (key === 'delete') {
-            handleVehicleDelete(data.vehicleId)
+            setModalDelete(true)
+            setCurrentId(data.vehicleId)
         }
     }
 
-    const handleVehicleDelete = async (id) => {
+    const handleDelete = async (id) => {
         const options = { item: 'Vehicle', v1Ing: 'Deleting', v2: 'deleted' }
         const url = `/motherPlant/deleteVehicle/${id}`
 
@@ -179,6 +183,14 @@ const VehiclesDashboard = ({ reFetch }) => {
     }, [])
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
     const handleModalCancel = useCallback(() => onModalClose(), [])
+    const handleDeleteModalOk = useCallback(() => {
+        setModalDelete(false);
+        handleDelete(currentId)
+    }, [currentId])
+
+    const handleDeleteModalCancel = useCallback(() => {
+        setModalDelete(false)
+    }, [])
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
@@ -229,6 +241,15 @@ const VehiclesDashboard = ({ reFetch }) => {
             >
                 <ConfirmMessage msg='Changes you made may not be saved.' />
             </ConfirmModal>
+            <DeleteModal
+                visible={modalDelete}
+                onOk={handleDeleteModalOk}
+                onCancel={handleDeleteModalCancel}
+                title='Are you sure to Delete?'
+                okTxt='Yes'
+            >
+                <ConfirmMessage msg='This action cannot be undone.' />
+            </DeleteModal>
         </div>
     )
 }
