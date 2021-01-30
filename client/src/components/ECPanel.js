@@ -18,9 +18,13 @@ const ECPanel = ({ confirmed, returned, onAdd }) => {
             <div className='box items mother-plant'>
                 <span className='name'>Return to Mother Plant</span>
                 <div className='return'>
-                    <div className='numbers-container'>
-                        <span className='number'>{rec}</span>
-                    </div>
+                    {
+                        rec && (
+                            <div className='numbers-container'>
+                                <span className='number'>{rec}</span>
+                            </div>
+                        )
+                    }
                     <span className='add' onClick={onAdd}>Add Empty Cans</span>
                 </div>
             </div>
