@@ -15,10 +15,14 @@ const AccountView = ({ data, admin }) => {
                     <InputValue size='smaller' value='Name' />
                     <InputValue size='large' value={departmentName} />
                 </div>
-                <div className='input-container'>
-                    <InputValue size='smaller' value='Phone Number' />
-                    <InputValue size='large' value={phoneNumber} />
-                </div>
+                {
+                    phoneNumber && (
+                        <div className='input-container'>
+                            <InputValue size='smaller' value='Phone Number' />
+                            <InputValue size='large' value={phoneNumber} />
+                        </div>
+                    )
+                }
             </div>
             <div className='input-container half-stretch'>
                 <InputValue size='smaller' value='Address' />

@@ -246,7 +246,7 @@ const Customers = () => {
                 visible={modalDelete}
                 onOk={handleDeleteModalOk}
                 onCancel={handleDeleteModalCancel}
-                title='Are you sure to Delete?'
+                title='Are you sure to delete?'
                 okTxt='Yes'
             >
                 <ConfirmMessage msg='This action cannot be undone.' />
