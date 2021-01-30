@@ -8,7 +8,7 @@ import { resetTrackForm, trackAccountFormOnce } from '../../../../utils/Function
 const EmptyCansForm = (props) => {
 
     const { data, errors, motherplantOptions, disabled, driverOptions, vehicleOptions, onBlur, onChange } = props
-    const { routeId, driverId, vehicleId, mobileNumber } = data
+    const { motherplantId, driverId, vehicleId, mobileNumber } = data
     const { details, emptycans_count } = data
 
 
@@ -25,10 +25,10 @@ const EmptyCansForm = (props) => {
         <div className='app-form-container'>
             <div className='row'>
                 <div className='input-container'>
-                    <InputLabel name='Mother Plant' error={errors.routeId} mandatory />
-                    <SelectInput track options={motherplantOptions} value={routeId}
-                        error={errors.routeId} disabled={disabled}
-                        onSelect={(value) => onChange(value, 'routeId')}
+                    <InputLabel name='Mother Plant' error={errors.motherplantId} mandatory />
+                    <SelectInput track options={motherplantOptions} value={motherplantId}
+                        error={errors.motherplantId} disabled={disabled}
+                        onSelect={(value) => onChange(value, 'motherplantId')}
                     />
                 </div>
                 <div className='input-container'>

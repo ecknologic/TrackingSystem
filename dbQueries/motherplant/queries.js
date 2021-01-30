@@ -92,7 +92,7 @@ motherPlantDbQueries.getRMReceiptDetails = async (input, callback) => {
 }
 
 motherPlantDbQueries.getReceiptDetailsByRMId = async (input, callback) => {
-    let query = `select rmr.receiptImage from rawmaterialreceipt rmr WHERE rmr.rawmaterialId=?`;
+    let query = `select rmr.receiptImage,rmr.receiptNo,rmr.invoiceNo,rmr.taxAmount,rmr.invoiceAmount,rmr.managerName,rmr.invoiceDate from rawmaterialreceipt rmr WHERE rmr.rawmaterialId=?`;
     return executeGetParamsQuery(query, [input.rmId], callback)
 }
 
