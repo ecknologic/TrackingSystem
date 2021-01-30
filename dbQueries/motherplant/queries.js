@@ -3,7 +3,7 @@ const dayjs = require('dayjs');
 
 var motherPlantDbQueries = {}
 motherPlantDbQueries.getMotherPlantsList = async (callback) => {
-    let query = `select d.departmentId, d.departmentName,d.address,d.state,d.city,d.isApproved,u.userName as adminName from departmentmaster d INNER JOIN usermaster u on d.adminId=u.userId WHERE d.departmentType='MotherPlant' AND d.deleted='0' ORDER BY d.createdDateTime DESC`;
+    let query = `select d.departmentId, d.departmentName,d.address,d.state,d.city,d.isApproved,u.userName as adminName,u.emailid as adminEmail, u.mobileNumber as adminNumber from departmentmaster d INNER JOIN usermaster u on d.adminId=u.userId WHERE d.departmentType='MotherPlant' AND d.deleted='0' ORDER BY d.createdDateTime DESC`;
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getMotherPlantById = async (motherPlantId, callback) => {
@@ -100,8 +100,11 @@ motherPlantDbQueries.getDepartmentsList = async (deptType, callback) => {
     let query = `select departmentId,departmentName from departmentmaster where isApproved='1' AND deleted='0' AND departmentType="${deptType}"`
     return executeGetQuery(query, callback)
 }
-motherPlantDbQueries.getAllDepartmentsList = async (deptType, callback) => {
+motherPlantDbQueries.getAllDepartmentsList = async (availableOnly, callback) => {
     let query = `select * from departmentmaster WHERE deleted='0' ORDER BY createdDateTime DESC`
+    if (availableOnly == 'true') {
+        query = `select * from departmentmaster WHERE deleted='0' AND adminId!='NULL' ORDER BY createdDateTime DESC`
+    }
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getQCTestedBatches = async (departmentId, callback) => {

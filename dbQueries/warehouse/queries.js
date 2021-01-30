@@ -2,7 +2,7 @@ const { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery } = req
 let warehouseQueries = {}
 
 warehouseQueries.getWarehouseList = async (callback) => {
-    let query = `select d.departmentId,d.departmentName,d.address,d.state,d.city,d.isApproved,u.userName as adminName from departmentmaster d INNER JOIN usermaster u on d.adminId=u.userId WHERE d.departmentType='Warehouse' AND d.deleted='0' ORDER BY d.createdDateTime DESC`;
+    let query = `select d.departmentId,d.departmentName,d.address,d.state,d.city,d.isApproved,u.userName as adminName,u.emailid as adminEmail,u.mobileNumber as adminNumber from departmentmaster d INNER JOIN usermaster u on d.adminId=u.userId WHERE d.departmentType='Warehouse' AND d.deleted='0' ORDER BY d.createdDateTime DESC`;
     return executeGetQuery(query, callback)
 }
 warehouseQueries.getDeliveryDetails = (input, callback) => {
@@ -83,7 +83,6 @@ warehouseQueries.updateWarehouse = async (input, callback) => {
 
 warehouseQueries.updateRoute = async (input, callback) => {
     const { RouteName, RouteDescription, departmentId, RouteId } = input
-    console.log('adfsfsadfs', input)
     let query = "update routes set RouteName=?, RouteDescription=?, departmentId=? where RouteId=?";
     let requestBody = [RouteName, RouteDescription, departmentId, RouteId]
     return executePostOrUpdateQuery(query, requestBody, callback)

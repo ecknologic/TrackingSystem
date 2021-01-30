@@ -51,7 +51,7 @@ const CreateEmployee = ({ goToTab }) => {
     }
 
     const getDepartmentList = async () => {
-        const url = '/bibo/getAllDepartmentsList?hasNone=true'
+        const url = '/bibo/getAllDepartmentsList?hasNone=true&availableOnly=true'
 
         const data = await http.GET(url)
         setDepartmentList(data)

@@ -91,7 +91,7 @@ router.get('/getDepartmentsList', (req, res) => {
     });
 });
 router.get('/getAllDepartmentsList', (req, res) => {
-    motherPlantDbQueries.getAllDepartmentsList(req.query.departmentType, (err, results) => {
+    motherPlantDbQueries.getAllDepartmentsList(req.query.availableOnly, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
             req.query.hasNone == 'true' && results.push({ departmentId: null, departmentName: 'None' })

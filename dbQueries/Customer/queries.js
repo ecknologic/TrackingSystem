@@ -66,6 +66,12 @@ customerQueries.updateCustomerDeliveriesStatus = (input, callback) => {
     let requestBody = [status]
     executePostOrUpdateQuery(query, requestBody, callback)
 }
+customerQueries.updateCustomerDeliveryStatus = (input, callback) => {
+    let { status, deliveryDetailsId } = input
+    let query = `update DeliveryDetails SET isActive=? where deliveryDetailsId=${deliveryDetailsId}`;
+    let requestBody = [status]
+    executePostOrUpdateQuery(query, requestBody, callback)
+}
 customerQueries.deleteCustomer = (customerId, callback) => {
     let query = `update customerdetails SET deleted=? where customerId=${customerId}`;
     let requestBody = [1]

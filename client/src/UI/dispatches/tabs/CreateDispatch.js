@@ -7,12 +7,13 @@ import FormHeader from '../../../components/FormHeader';
 import ConfirmModal from '../../../components/CustomModal';
 import CustomButton from '../../../components/CustomButton';
 import ConfirmMessage from '../../../components/ConfirmMessage';
+import { getDistributorOptions } from '../../../assets/fixtures';
 import { extractValidProductsForDB, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
 import { validateDispatchValues, validateMobileNumber, validateNames, validateNumber } from '../../../utils/validations';
-import { getDistributorOptions } from '../../../assets/fixtures';
 
 const CreateDispatch = ({ goToTab, driverList, warehouseList, ...rest }) => {
-    const [formData, setFormData] = useState({ dispatchType: 'warehouse' })
+    const defaultValue = { dispatchType: 'warehouse' }
+    const [formData, setFormData] = useState(defaultValue)
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
@@ -112,7 +113,7 @@ const CreateDispatch = ({ goToTab, driverList, warehouseList, ...rest }) => {
     const resetForm = () => {
         setBtnDisabled(false)
         resetTrackForm()
-        setFormData({})
+        setFormData(defaultValue)
         setFormErrors({})
     }
 
@@ -122,7 +123,7 @@ const CreateDispatch = ({ goToTab, driverList, warehouseList, ...rest }) => {
             return setConfirmModal(true)
         }
         setBtnDisabled(false)
-        setFormData({})
+        setFormData(defaultValue)
         setFormErrors({})
     }
 

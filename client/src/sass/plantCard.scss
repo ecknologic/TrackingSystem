@@ -1,5 +1,5 @@
 .plant-card-container {
-    height: 19.6em;
+    height: 23.5em;
 
     .header {
         height: 8em;
@@ -10,6 +10,14 @@
     }
 
     .body {
-        height: 7em;
+        height: 10.9em;
+
+        .contacts {
+            flex-direction: column;
+        }
+
+        .role {
+            padding-top: 1em;
+        }
     }
 }

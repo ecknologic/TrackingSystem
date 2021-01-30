@@ -272,6 +272,16 @@ router.delete('/deleteRoute/:RouteId', (req, res) => {
     else res.json(results);
   });
 });
+router.post('/updateUserDepartment', (req, res) => {
+  const { departmentId, userId } = req.body;
+  usersQueries.updateUserDepartment({ departmentId, userId }, (err, userResults) => {
+    if (err) res.status(500).json(dbError(err));
+    else {
+      res.json(userResults);
+    }
+  })
+});
+
 router.get("/getOrders", (req, res) => {
   customerQueries.getOrdersByDepartmentId(departmentId, (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });

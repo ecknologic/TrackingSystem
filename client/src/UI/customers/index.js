@@ -1,14 +1,16 @@
 import { Col, message, Row } from 'antd';
 import { useHistory } from 'react-router-dom';
-import React, { Fragment, useEffect, useMemo, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import Header from './header';
 import { http } from '../../modules/http'
 import Spinner from '../../components/Spinner';
 import { getRole, SUPERADMIN } from '../../utils/constants';
 import NoContent from '../../components/NoContent';
 import AccountCard from '../../components/AccountCard';
+import DeleteModal from '../../components/CustomModal';
+import ConfirmMessage from '../../components/ConfirmMessage';
 import CustomPagination from '../../components/CustomPagination';
-import { complexDateSort, complexSort, deepClone, doubleKeyComplexSearch, filterAccounts, showToast } from '../../utils/Functions'
+import { complexDateSort, complexSort, doubleKeyComplexSearch, filterAccounts, showToast } from '../../utils/Functions'
 import '../../sass/customers.scss'
 
 const Customers = () => {
@@ -25,6 +27,8 @@ const Customers = () => {
     const [searchON, setSeachON] = useState(false)
     const [sortBy, setSortBy] = useState('NEW')
     const [activeTab, setActiveTab] = useState('1')
+    const [modalDelete, setModalDelete] = useState(false)
+    const [currentId, setCurrentId] = useState('')
 
     const pageSizeOptions = useMemo(() => generatePageSizeOptions(), [window.innerWidth])
     const isSuperAdmin = useMemo(() => getRole() === SUPERADMIN, [])
@@ -143,17 +147,18 @@ const Customers = () => {
 
     const handleMenuSelect = (key, id) => {
         if (key === 'Active') {
-            handleAccountStatusUpdate(id, 1)
+            handleStatusUpdate(id, 1)
         }
         else if (key === 'Draft') {
-            handleAccountStatusUpdate(id, 0)
+            handleStatusUpdate(id, 0)
         }
         else if (key === 'Delete') {
-            handleAccountDelete(id)
+            setCurrentId(id)
+            setModalDelete(true)
         }
     }
 
-    const handleAccountStatusUpdate = async (customerId, status) => {
+    const handleStatusUpdate = async (customerId, status) => {
         const options = { item: 'Customer status', v1Ing: 'Updating', v2: 'updated' }
         const url = `/customer/updateCustomerStatus`
         const body = { status, customerId }
@@ -167,7 +172,7 @@ const Customers = () => {
         }
     }
 
-    const handleAccountDelete = async (id) => {
+    const handleDelete = async (id) => {
         const options = { item: 'Customer', v1Ing: 'Deleting', v2: 'deleted' }
         const url = `/customer/deleteCustomer/${id}`
 
@@ -190,6 +195,15 @@ const Customers = () => {
         setAccounts(filtered)
         setTotalCount(filtered.length)
     }
+
+    const handleDeleteModalOk = useCallback(() => {
+        setModalDelete(false);
+        handleDelete(currentId)
+    }, [currentId])
+
+    const handleDeleteModalCancel = useCallback(() => {
+        setModalDelete(false)
+    }, [])
 
     const goToAddAccount = () => history.push('/customers/add-account')
     const sliceFrom = (pageNumber - 1) * pageSize
@@ -228,6 +242,15 @@ const Customers = () => {
                         />)
                 }
             </div>
+            <DeleteModal
+                visible={modalDelete}
+                onOk={handleDeleteModalOk}
+                onCancel={handleDeleteModalCancel}
+                title='Are you sure to delete?'
+                okTxt='Yes'
+            >
+                <ConfirmMessage msg='This action cannot be undone.' />
+            </DeleteModal>
         </Fragment>
     )
 }

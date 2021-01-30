@@ -7,17 +7,15 @@ import AccountView from '../views/Account';
 import { http } from '../../../modules/http'
 import Spinner from '../../../components/Spinner';
 import ScrollUp from '../../../components/ScrollUp';
+import { TRACKFORM } from '../../../utils/constants';
 import NoContent from '../../../components/NoContent';
 import QuitModal from '../../../components/CustomModal';
 import IDProofInfo from '../../../components/IDProofInfo';
+import { getStaffOptions } from '../../../assets/fixtures';
 import CustomButton from '../../../components/CustomButton';
 import ConfirmMessage from '../../../components/ConfirmMessage';
-import { getStaffOptions } from '../../../assets/fixtures';
 import { isEmpty, showToast, base64String, getMainPathname, getBase64, getPlantValuesForDB } from '../../../utils/Functions';
-import { TRACKFORM } from '../../../utils/constants';
-import {
-    validateIDNumbers, validateNames, validateMobileNumber, validatePinCode, validatePlantValues
-} from '../../../utils/validations';
+import { validateIDNumbers, validateNames, validateMobileNumber, validatePinCode, validatePlantValues } from '../../../utils/validations';
 import '../../../sass/plants.scss'
 
 const ManagePlant = () => {

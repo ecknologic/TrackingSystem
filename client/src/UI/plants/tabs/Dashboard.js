@@ -1,11 +1,13 @@
 import { Col, message, Row } from 'antd';
 import { useHistory, useLocation } from 'react-router-dom';
-import React, { Fragment, useEffect, useMemo, useState } from 'react';
+import React, { Fragment, useEffect, useMemo, useState, useCallback } from 'react';
 import { http } from '../../../modules/http'
 import Spinner from '../../../components/Spinner';
 import NoContent from '../../../components/NoContent';
 import PlantCard from '../../../components/PlantCard';
+import DeleteModal from '../../../components/CustomModal';
 import { getRole, SUPERADMIN } from '../../../utils/constants';
+import ConfirmMessage from '../../../components/ConfirmMessage';
 import CustomPagination from '../../../components/CustomPagination';
 import { deepClone, getMainPathname, showToast } from '../../../utils/Functions';
 
@@ -18,6 +20,8 @@ const Dashboard = ({ reFetch }) => {
     const [pageNumber, setPageNumber] = useState(1)
     const [totalCount, setTotalCount] = useState(null)
     const [plantType, setPlantType] = useState('')
+    const [modalDelete, setModalDelete] = useState(false)
+    const [currentId, setCurrentId] = useState('')
 
     const mainUrl = useMemo(() => getMainPathname(pathname), [pathname])
     const isSuperAdmin = useMemo(() => getRole() === SUPERADMIN, [])
@@ -55,17 +59,18 @@ const Dashboard = ({ reFetch }) => {
 
     const handleMenuSelect = (key, id) => {
         if (key === 'Active') {
-            handlePlantStatusUpdate(id, 1)
+            handleStatusUpdate(id, 1)
         }
         else if (key === 'Inactive') {
-            handlePlantStatusUpdate(id, 0)
+            handleStatusUpdate(id, 0)
         }
         else if (key === 'Delete') {
-            handlePlantDelete(id)
+            setModalDelete(true)
+            setCurrentId(id)
         }
     }
 
-    const handlePlantStatusUpdate = async (departmentId, status) => {
+    const handleStatusUpdate = async (departmentId, status) => {
         const options = { item: 'Department status', v1Ing: 'Updating', v2: 'updated' }
         const url = `/warehouse/updateDepartmentStatus`
         const body = { status, departmentId }
@@ -79,7 +84,7 @@ const Dashboard = ({ reFetch }) => {
         }
     }
 
-    const handlePlantDelete = async (id) => {
+    const handleDelete = async (id) => {
         const options = { item: 'Department', v1Ing: 'Deleting', v2: 'deleted' }
         const url = `/warehouse/deleteDepartment/${id}`
 
@@ -104,6 +109,15 @@ const Dashboard = ({ reFetch }) => {
         const filtered = plants.filter(item => item.departmentId !== id)
         setPlants(filtered)
     }
+
+    const handleDeleteModalOk = useCallback(() => {
+        setModalDelete(false);
+        handleDelete(currentId)
+    }, [currentId])
+
+    const handleDeleteModalCancel = useCallback(() => {
+        setModalDelete(false)
+    }, [])
 
     const goToManageEmployee = (id) => history.push(`${mainUrl}/manage/${id}`)
 
@@ -140,6 +154,15 @@ const Dashboard = ({ reFetch }) => {
                         />)
                 }
             </div>
+            <DeleteModal
+                visible={modalDelete}
+                onOk={handleDeleteModalOk}
+                onCancel={handleDeleteModalCancel}
+                title='Are you sure to delete?'
+                okTxt='Yes'
+            >
+                <ConfirmMessage msg='This action cannot be undone.' />
+            </DeleteModal>
         </Fragment>
     )
 }
