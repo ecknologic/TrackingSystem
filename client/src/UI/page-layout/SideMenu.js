@@ -61,6 +61,10 @@ const SideMenu = () => {
                                 {selected === '/manage-production' ? <ProjectIcon /> : <ProjectIconLight />}
                                 <span>Stock Details</span>
                             </Item>
+                            <Item key='/manage-received-cans'>
+                                {selected === '/manage-received-cans' ? <ProjectIcon /> : <ProjectIconLight />}
+                                <span>Empty Cans</span>
+                            </Item>
                             <Item key='/manage-dispatches'>
                                 {selected === '/manage-dispatches' ? <ProjectIcon /> : <ProjectIconLight />}
                                 <span>Dispatches</span>
@@ -82,6 +86,10 @@ const SideMenu = () => {
                             <Item key='/manage-stock'>
                                 {selected === '/manage-stock' ? <ProjectIcon /> : <ProjectIconLight />}
                                 <span>Manage Stock</span>
+                            </Item>
+                            <Item key='/manage-return-cans'>
+                                {selected === '/manage-return-cans' ? <ProjectIcon /> : <ProjectIconLight />}
+                                <span>Empty Cans</span>
                             </Item>
                             <Item key='/manage-routes'>
                                 {selected === '/manage-routes' ? <FriendsIcon /> : <FriendsIconLight />}
@@ -192,7 +200,7 @@ const SideMenu = () => {
                 visible={confirm}
                 onOk={handleConfirmOk}
                 onCancel={handleConfirmCancel}
-                title='Are you sure to leave?'
+                title='Are you sure you want to leave?'
                 okTxt='Yes'
             >
                 <ConfirmMessage msg='Changes you made may not be saved.' />

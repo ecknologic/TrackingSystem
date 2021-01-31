@@ -82,7 +82,7 @@ const MotherplantStock = () => {
                 visible={confirm}
                 onOk={handleConfirmOk}
                 onCancel={handleConfirmCancel}
-                title='Are you sure to leave?'
+                title='Are you sure you want to leave?'
                 okTxt='Yes'
             >
                 <ConfirmMessage msg='Changes you made may not be saved.' />

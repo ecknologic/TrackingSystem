@@ -162,6 +162,61 @@ export const routeColumns = [
         key: 'action'
     },
 ]
+export const getEmptyCanColumns = (department) => {
+
+    const columns = [
+        {
+            title: 'Return ID',
+            dataIndex: 'returnId',
+            key: 'returnId',
+        },
+        {
+            title: 'Date',
+            dataIndex: 'dateAndTime',
+            key: 'dateAndTime',
+        },
+        {
+            title: 'Return Cans',
+            dataIndex: 'emptycans_count',
+            key: 'emptycans_count',
+        },
+        {
+            title: 'Mother Plant',
+            dataIndex: 'departmentName',
+            key: 'departmentName',
+        },
+        {
+            title: 'Driver Name',
+            key: 'driverName',
+            dataIndex: 'driverName',
+        },
+        {
+            title: 'Phone Number',
+            key: 'mobileNumber',
+            dataIndex: 'mobileNumber',
+        },
+        {
+            title: 'Status',
+            dataIndex: 'status',
+            key: 'status',
+        },
+        {
+            title: 'Actions',
+            dataIndex: 'action',
+            key: 'action'
+        },
+    ]
+
+    if (department === 'motherplant') {
+        columns.splice(3, 1, {
+            title: 'Warehouse',
+            dataIndex: 'departmentName',
+            key: 'departmentName'
+        })
+    }
+
+    return columns
+}
 export const productColumns = [
     {
         title: 'Product Name',

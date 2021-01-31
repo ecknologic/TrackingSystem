@@ -167,6 +167,11 @@ const BlockComponent = ({ color }) => (
         <path fill={color} fill-rule="evenodd" d="M16.64 14.46a8 8 0 00-11.1-11.1l11.1 11.1zm-1.31 1.5L4.03 4.69a8 8 0 0011.3 11.3v-.01zM10 0a10 10 0 110 20 10 10 0 010-20z" />
     </svg>
 )
+const TickComponent = ({ color }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="12">
+        <path fill={color} fillRule="evenodd" d="M1.7 3.97A1 1 0 00.3 5.4l5.82 5.77a1 1 0 001.46-.06l8.18-9.45a1 1 0 00-1.52-1.3L6.77 8.99 1.7 3.97z" />
+    </svg>
+)
 
 const RightChevronSvgGrey = () => <RightChevronComponent color={greyColor} />
 const LeftChevronSvgGrey = () => <LeftChevronComponent color={greyColor} />
@@ -215,6 +220,7 @@ const CardViewSvg = () => <CardViewComponent color={primaryColor} />
 const CardViewSvgGrey = () => <CardViewComponent color={greyColor} />
 const ListViewSvg = () => <ListViewComponent color={primaryColor} />
 const ListViewSvgGrey = () => <ListViewComponent color={greyColor} />
+const TickSvgGrey = () => <TickComponent color={greyColor} />
 
 export const RightChevronIconGrey = ({ currentSlide, slideCount, ...props }) => <Icon component={RightChevronSvgGrey} {...props} />
 export const LeftChevronIconGrey = ({ currentSlide, slideCount, ...props }) => <Icon component={LeftChevronSvgGrey} {...props} />
@@ -264,3 +270,4 @@ export const FriendIconGrey = props => <Icon component={FriendSvgGrey} {...props
 export const FriendIcon = props => <Icon component={FriendSvg} {...props} />
 export const FriendIconLight = props => <Icon component={FriendSvgLight} {...props} />
 export const SearchIconGrey = props => <Icon component={SearchSvgGrey} {...props} />
+export const TickIconGrey = props => <Icon component={TickSvgGrey} {...props} />

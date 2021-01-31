@@ -160,7 +160,7 @@ const CreateDispatch = ({ goToTab, driverList, warehouseList, ...rest }) => {
                 visible={confirmModal}
                 onOk={handleConfirmModalOk}
                 onCancel={handleConfirmModalCancel}
-                title='Are you sure to leave?'
+                title='Are you sure you want to leave?'
                 okTxt='Yes'
             >
                 <ConfirmMessage msg='Changes you made may not be saved.' />

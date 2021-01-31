@@ -1,20 +1,19 @@
 import { Menu, message, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import RouteForm from '../forms/Route';
-import { http } from '../../../modules/http'
-import Actions from '../../../components/Actions';
-import Spinner from '../../../components/Spinner';
-import { routeColumns } from '../../../assets/fixtures';
-import CustomModal from '../../../components/CustomModal';
-import DeleteModal from '../../../components/CustomModal';
-import ConfirmModal from '../../../components/CustomModal';
-import ConfirmMessage from '../../../components/ConfirmMessage';
-import CustomPagination from '../../../components/CustomPagination';
-import { EditIconGrey, TrashIconGrey } from '../../../components/SVG_Icons';
-import { getRole, getWarehoseId, SUPERADMIN, TRACKFORM } from '../../../utils/constants';
-import { deepClone, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
+import { http } from '../../../../modules/http'
+import EmptyCansForm from '../forms/EmptyCans';
+import Actions from '../../../../components/Actions';
+import Spinner from '../../../../components/Spinner';
+import CustomModal from '../../../../components/CustomModal';
+import ConfirmModal from '../../../../components/CustomModal';
+import { getEmptyCanColumns } from '../../../../assets/fixtures';
+import { EditIconGrey } from '../../../../components/SVG_Icons';
+import ConfirmMessage from '../../../../components/ConfirmMessage';
+import CustomPagination from '../../../../components/CustomPagination';
+import { getRole, getWarehoseId, TRACKFORM } from '../../../../utils/constants';
+import { deepClone, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 
-const RoutesDashboard = ({ reFetch, departmentOptions }) => {
+const Dashboard = ({ reFetch, driverList, ...rest }) => {
     const role = getRole()
     const [routes, setRoutes] = useState([])
     const [formData, setFormData] = useState({})
@@ -27,12 +26,9 @@ const RoutesDashboard = ({ reFetch, departmentOptions }) => {
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
     const [shake, setShake] = useState(false)
-    const [modalDelete, setModalDelete] = useState(false)
-    const [currentId, setCurrentId] = useState('')
 
     const isWHAdmin = useMemo(() => role === 'WarehouseAdmin', [role])
-    const isSuperAdmin = useMemo(() => getRole() === SUPERADMIN, [])
-    const options = useMemo(() => getOptions(isSuperAdmin), [])
+    const emptyCanColumns = useMemo(() => getEmptyCanColumns(), [])
 
     useEffect(() => {
         setLoading(true)
@@ -62,10 +58,6 @@ const RoutesDashboard = ({ reFetch, departmentOptions }) => {
         if (key === 'edit') {
             setFormData(data)
             setEditModal(true)
-        }
-        else if (key === 'delete') {
-            setModalDelete(true)
-            setCurrentId(data.RouteId)
         }
     }
 
@@ -162,14 +154,6 @@ const RoutesDashboard = ({ reFetch, departmentOptions }) => {
     }, [])
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
     const handleModalCancel = useCallback(() => onModalClose(), [])
-    const handleDeleteModalOk = useCallback(() => {
-        setModalDelete(false);
-        handleDelete(currentId)
-    }, [currentId])
-
-    const handleDeleteModalCancel = useCallback(() => {
-        setModalDelete(false)
-    }, [])
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
@@ -180,7 +164,7 @@ const RoutesDashboard = ({ reFetch, departmentOptions }) => {
                 <Table
                     loading={{ spinning: loading, indicator: <Spinner /> }}
                     dataSource={dataSource.slice(sliceFrom, sliceTo)}
-                    columns={routeColumns}
+                    columns={emptyCanColumns}
                     pagination={false}
                     scroll={{ x: true }}
                 />
@@ -197,20 +181,20 @@ const RoutesDashboard = ({ reFetch, departmentOptions }) => {
                     />)
             }
             <CustomModal
-                okTxt='Update'
-                title='Route Details'
+                className={`app-form-modal app-view-modal stock-details-modal ${shake ? 'app-shake' : ''}`}
                 visible={editModal}
                 btnDisabled={btnDisabled}
                 onOk={handleSubmit}
                 onCancel={handleModalCancel}
-                className={`app-form-modal ${shake ? 'app-shake' : ''}`}
+                title='Empty Cans Return to Mother Plant'
+                okTxt='Return Empty Cans'
+                track
             >
-                <RouteForm
+                <EmptyCansForm
                     data={formData}
-                    isWHAdmin={isWHAdmin}
                     errors={formErrors}
                     onChange={handleChange}
-                    departmentOptions={departmentOptions}
+                    {...rest}
                 />
             </CustomModal>
             <ConfirmModal
@@ -222,15 +206,6 @@ const RoutesDashboard = ({ reFetch, departmentOptions }) => {
             >
                 <ConfirmMessage msg='Changes you made may not be saved.' />
             </ConfirmModal>
-            <DeleteModal
-                visible={modalDelete}
-                onOk={handleDeleteModalOk}
-                onCancel={handleDeleteModalCancel}
-                title='Are you sure you want to delete?'
-                okTxt='Yes'
-            >
-                <ConfirmMessage msg='This action cannot be undone.' />
-            </DeleteModal>
         </div>
     )
 }
@@ -239,15 +214,5 @@ const getUrl = (isWHAdmin, id) => {
     if (isWHAdmin) return `/customer/getRoutes/${id}`
     return '/bibo/getroutes'
 }
-
-const getOptions = (isSuperAdmin) => {
-    const options = [
-        <Menu.Item key="edit" icon={<EditIconGrey />}>Edit</Menu.Item>,
-        <Menu.Item key="delete" icon={<TrashIconGrey />}>Delete</Menu.Item>
-    ]
-
-    if (!isSuperAdmin) options.pop()
-    return options
-}
-
-export default RoutesDashboard
+const options = [<Menu.Item key="edit" icon={<EditIconGrey />}>Edit</Menu.Item>]
+export default Dashboard

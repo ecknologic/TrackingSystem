@@ -21,11 +21,13 @@ import WarehouseStock from './UI/stock/warehouse';
 import Motherplants from './UI/plants/Motherplants';
 import ManageEmployee from './UI/employees/manage';
 import ApproveAccount from './UI/accounts/approve';
+import Materials from './UI/materials/super-admin';
 import MotherplantStock from './UI/stock/motherplant';
 import AccountsDashboard from './UI/accounts/dashboard';
 import ManageDistributor from './UI/distributors/manage';
-import WarehouseMaterials from './UI/materials/warehouse';
 import MotherplantMaterials from './UI/materials/motherplant';
+import ReturnEmptyCans from './UI/empty-cans/warehouse';
+import ReceivedEmptyCans from './UI/empty-cans/motherplant';
 
 const App = () => {
 
@@ -94,10 +96,13 @@ const App = () => {
                   <Route path='/manage-qc' render={byRole(<QualityControl />)} />
                   <Route path='/manage-production' render={byRole(<MotherplantStock />)} />
                   <Route path='/manage-dispatches' render={byRole(<Dispatches />)} />
-                  <Route path='/manage-materials' render={byRole(<WarehouseMaterials />)} />
+                  <Route path='/manage-materials' render={byRole(<MotherplantMaterials />)} />
                   <Route path='/manage-routes' render={byRole(<Transport />)} />
+                  <Route path='/manage-received-cans' render={byRole(<ReceivedEmptyCans />)} />
+                  <Route path='/manage-return-cans' render={byRole(<ReturnEmptyCans />)} />
+                  <Route path='/manage-return-cans' render={byRole(<ReturnEmptyCans />)} />
                   <Route path='/manage-stock' render={byRole(<WarehouseStock />)} />
-                  <Route path='/materials' render={byRole(<MotherplantMaterials />)} />
+                  <Route path='/materials' render={byRole(<Materials />)} />
                   <Route path='/staff/manage/:employeeId' render={byRole(<ManageEmployee />)} />
                   <Route path='/drivers/manage/:employeeId' render={byRole(<ManageEmployee />)} />
                   <Route path='/distributors/manage/:distributorId' render={byRole(<ManageDistributor />)} />

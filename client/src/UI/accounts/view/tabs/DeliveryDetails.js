@@ -354,7 +354,7 @@ const DeliveryDetails = ({ isSuperAdmin, recentDelivery, ...rest }) => {
                 visible={confirmModal}
                 onOk={handleConfirmModalOk}
                 onCancel={handleConfirmModalCancel}
-                title='Are you sure to leave?'
+                title='Are you sure you want to leave?'
                 okTxt='Yes'
             >
                 <ConfirmMessage msg='Changes you made may not be saved.' />
@@ -363,7 +363,7 @@ const DeliveryDetails = ({ isSuperAdmin, recentDelivery, ...rest }) => {
                 visible={modalDelete}
                 onOk={handleDeleteModalOk}
                 onCancel={handleDeleteModalCancel}
-                title='Are you sure to delete?'
+                title='Are you sure you want to delete?'
                 okTxt='Yes'
             >
                 <ConfirmMessage msg='This action cannot be undone.' />

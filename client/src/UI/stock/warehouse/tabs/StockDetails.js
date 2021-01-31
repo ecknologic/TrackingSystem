@@ -1,6 +1,5 @@
 import dayjs from 'dayjs';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import EmptyCansForm from '../forms/EmptyCans';
 import { http } from '../../../../modules/http';
 import ArrivedStockForm from '../forms/ArrivedStock';
 import DCPanel from '../../../../components/DCPanel';
@@ -12,6 +11,7 @@ import CASPanel from '../../../../components/CASPanel';
 import CustomModal from '../../../../components/CustomModal';
 import ConfirmModal from '../../../../components/CustomModal';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
+import EmptyCansForm from '../../../empty-cans/warehouse/forms/EmptyCans';
 import { validateNumber, validateASValues, validateRECValues } from '../../../../utils/validations';
 import { getWarehoseId, TODAYDATE, TRACKFORM } from '../../../../utils/constants';
 import { getASValuesForDB, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
@@ -285,7 +285,6 @@ const StockDetails = ({ date }) => {
                 onCancel={handleModalCancel}
                 title='Empty Cans Return to Mother Plant'
                 okTxt='Return Empty Cans'
-                track
             >
                 <EmptyCansForm
                     data={formData}
@@ -300,7 +299,7 @@ const StockDetails = ({ date }) => {
                 visible={confirmModal}
                 onOk={handleConfirmModalOk}
                 onCancel={handleConfirmModalCancel}
-                title='Are you sure to leave?'
+                title='Are you sure you want to leave?'
                 okTxt='Yes'
             >
                 <ConfirmMessage msg='Changes you made may not be saved.' />
