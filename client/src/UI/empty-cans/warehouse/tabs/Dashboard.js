@@ -186,8 +186,8 @@ const Dashboard = ({ reFetch, driverList, ...rest }) => {
                 btnDisabled={btnDisabled}
                 onOk={handleSubmit}
                 onCancel={handleModalCancel}
-                title='Empty Cans Return to Mother Plant'
-                okTxt='Return Empty Cans'
+                title='Empty Cans Details'
+                okTxt='Update'
                 track
             >
                 <EmptyCansForm

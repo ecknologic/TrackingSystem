@@ -177,7 +177,7 @@ const Dashboard = () => {
                 twinTxt='Reject'
                 okTxt={editMode ? 'Approve' : 'Close'}
                 visible={viewModal}
-                title='Received Empty Cans Details'
+                title='Empty Cans Details'
                 onOk={editMode ? handleApprove : handleModalCancel}
                 onTwin={handleReject}
                 onCancel={handleModalCancel}

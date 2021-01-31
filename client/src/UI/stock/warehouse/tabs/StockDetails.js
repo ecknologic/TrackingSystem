@@ -267,7 +267,7 @@ const StockDetails = ({ date }) => {
                 btnDisabled={btnDisabled}
                 onOk={handleArrivedStockConfirm}
                 onCancel={handleModalCancel}
-                title='Stock Details'
+                title='Arrived Stock Details'
                 okTxt='Confirm Stock Received'
                 track
             >
