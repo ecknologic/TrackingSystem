@@ -1,6 +1,7 @@
 import React from 'react';
 import { Menu } from 'antd';
 import Actions from './Actions';
+import { TrashIconGrey } from './SVG_Icons';
 import PrimaryButton from './PrimaryButton';
 import { getRoleLabel } from '../utils/Functions';
 import '../sass/accountCard.scss'
@@ -60,5 +61,5 @@ const EmployeeCard = ({ data, onClick, btnTxt = 'Manage Account', isDriver, isSu
         </div>
     )
 }
-const options = [<Menu.Item key="Delete">Delete</Menu.Item>]
+const options = [<Menu.Item key="Delete" icon={<TrashIconGrey />}>Delete</Menu.Item>]
 export default EmployeeCard

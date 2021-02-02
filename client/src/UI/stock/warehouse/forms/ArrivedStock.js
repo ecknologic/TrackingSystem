@@ -8,10 +8,10 @@ import { resetTrackForm, trackAccountFormOnce } from '../../../../utils/Function
 
 const ArrivedStockForm = (props) => {
 
-    const { data, errors, disabled, onChange } = props
+    const { data, errors = {}, disabled, onChange, viewOnly } = props
 
     const { dcNo = '', damagedDesc, address = '', isDamaged, driverName = '', mobileNumber = '', vehicleNo = '', vehicleType = '', departmentName,
-        damaged20LCans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes, total20LCans, total1LBoxes, total250MLBoxes, total500MLBoxes } = data
+        damaged20LCans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes, product20L, product1L, product250ML, product500ML } = data
 
     useEffect(() => {
         resetTrackForm()
@@ -59,60 +59,73 @@ const ArrivedStockForm = (props) => {
                     <div className='column'>
                         <div className='input-container'>
                             <InputLabel name='20 Ltrs' />
-                            <InputValue size='smaller' value={total20LCans} />
+                            <InputValue size='smaller' value={product20L} />
                         </div>
                     </div>
                     <div className='column'>
                         <div className='input-container'>
                             <InputLabel name='1 Ltrs (Box-1x12)' />
-                            <InputValue size='smaller' value={total1LBoxes} />
+                            <InputValue size='smaller' value={product1L} />
                         </div>
                     </div>
                     <div className='column'>
                         <div className='input-container'>
                             <InputLabel name='500 Ml (Box-1x12)' />
-                            <InputValue size='smaller' value={total250MLBoxes} />
+                            <InputValue size='smaller' value={product500ML} />
                         </div>
                     </div>
                     <div className='column'>
                         <div className='input-container'>
                             <InputLabel name='250 Ml (Box-1x12)' />
-                            <InputValue size='smaller' value={total500MLBoxes} />
+                            <InputValue size='smaller' value={product250ML} />
                         </div>
                     </div>
                 </div>
             </div>
             <Divider />
+
             <div className='columns'>
                 <InputLabel name='Damaged Particulars' error={errors.damaged} />
                 <div className='columns-container'>
-                    <Checkbox onChange={({ target: { checked } }) => onChange(checked, 'isDamaged')} checked={isDamaged} />
+                    {!viewOnly && <Checkbox onChange={({ target: { checked } }) => onChange(checked, 'isDamaged')} checked={isDamaged} />}
                     <div className='column'>
                         <div className='input-container'>
                             <InputLabel name='20 Ltrs' />
-                            <CustomInput value={damaged20LCans} disabled={!isDamaged || disabled}
-                                placeholder='Qty' onChange={(value) => onChange(value, 'damaged20LCans')} />
+                            {
+                                viewOnly ? <InputValue size='smaller' value={damaged20LCans} />
+                                    :
+                                    <CustomInput value={damaged20LCans} disabled={!isDamaged || disabled}
+                                        placeholder='Qty' onChange={(value) => onChange(value, 'damaged20LCans')} />
+                            }
                         </div>
                     </div>
                     <div className='column'>
                         <div className='input-container'>
                             <InputLabel name='1 Ltrs (Box-1x12)' />
-                            <CustomInput value={damaged1LBoxes} disabled={!isDamaged || disabled}
-                                placeholder='Qty' onChange={(value) => onChange(value, 'damaged1LBoxes')} />
-                        </div>
+                            {
+                                viewOnly ? <InputValue size='smaller' value={damaged1LBoxes} />
+                                    : <CustomInput value={damaged1LBoxes} disabled={!isDamaged || disabled}
+                                        placeholder='Qty' onChange={(value) => onChange(value, 'damaged1LBoxes')} />
+                            }</div>
                     </div>
                     <div className='column'>
                         <div className='input-container'>
                             <InputLabel name='500 Ml (Box-1x12)' />
-                            <CustomInput value={damaged500MLBoxes} disabled={!isDamaged || disabled}
-                                placeholder='Qty' onChange={(value) => onChange(value, 'damaged500MLBoxes')} />
+                            {
+                                viewOnly ? <InputValue size='smaller' value={damaged500MLBoxes} />
+                                    : <CustomInput value={damaged500MLBoxes} disabled={!isDamaged || disabled}
+                                        placeholder='Qty' onChange={(value) => onChange(value, 'damaged500MLBoxes')} />
+                            }
                         </div>
                     </div>
                     <div className='column'>
                         <div className='input-container'>
                             <InputLabel name='250 Ml (Box-1x12)' />
-                            <CustomInput value={damaged250MLBoxes} disabled={!isDamaged || disabled}
-                                placeholder='Qty' onChange={(value) => onChange(value, 'damaged250MLBoxes')} />
+                            {
+                                viewOnly ? <InputValue size='smaller' value={damaged250MLBoxes} />
+                                    : <CustomInput value={damaged250MLBoxes} disabled={!isDamaged || disabled}
+                                        placeholder='Qty' onChange={(value) => onChange(value, 'damaged250MLBoxes')} />
+                            }
                         </div>
                     </div>
                 </div>
@@ -120,9 +133,12 @@ const ArrivedStockForm = (props) => {
             <div className='row'>
                 <div className='input-container stretch'>
                     <InputLabel name='Damaged Details' error={errors.damagedDesc} />
-                    <CustomTextArea disabled={!isDamaged || disabled} maxLength={1000} error={errors.damagedDesc} placeholder='Add Damaged Details' value={damagedDesc}
-                        minRows={3} maxRows={5} onChange={(value) => onChange(value, 'damagedDesc')}
-                    />
+                    {
+                        viewOnly ? <InputValue size='smaller' value={damagedDesc || '--'} />
+                            : <CustomTextArea disabled={!isDamaged || disabled} maxLength={1000} error={errors.damagedDesc} placeholder='Add Damaged Details' value={damagedDesc}
+                                minRows={3} maxRows={5} onChange={(value) => onChange(value, 'damagedDesc')}
+                            />
+                    }
                 </div>
             </div>
         </div>

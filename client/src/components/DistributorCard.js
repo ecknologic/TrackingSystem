@@ -3,6 +3,7 @@ import { Menu } from 'antd';
 import Actions from './Actions';
 import NameCard from './NameCard';
 import PrimaryButton from './PrimaryButton';
+import { BlockIconGrey, TickIconGrey, TrashIconGrey } from './SVG_Icons';
 import '../sass/accountCard.scss'
 import '../sass/distributorCard.scss'
 
@@ -10,10 +11,11 @@ const DistributorCard = ({ data, onClick, btnTxt = 'Manage Account', isSuperAdmi
     const { isActive, agencyName, operationalArea, contactPerson, mobileNumber, address, distributorId } = data
 
     const optionOne = isActive ? 'Inactive' : 'Active'
+    const iconOne = isActive ? <BlockIconGrey /> : <TickIconGrey />
 
     const options = [
-        <Menu.Item key={optionOne}>{optionOne}</Menu.Item>,
-        <Menu.Item key="Delete">Delete</Menu.Item>
+        <Menu.Item key={optionOne} icon={iconOne}>{optionOne}</Menu.Item>,
+        <Menu.Item key="Delete" icon={<TrashIconGrey />}>Delete</Menu.Item>
     ]
 
     const handleSelect = ({ key }) => {

@@ -162,6 +162,61 @@ export const routeColumns = [
         key: 'action'
     },
 ]
+export const getEmptyCanColumns = (department) => {
+
+    const columns = [
+        {
+            title: 'Return ID',
+            dataIndex: 'returnId',
+            key: 'returnId',
+        },
+        {
+            title: 'Date',
+            dataIndex: 'dateAndTime',
+            key: 'dateAndTime',
+        },
+        {
+            title: '20L Cans',
+            dataIndex: 'emptycans_count',
+            key: 'emptycans_count',
+        },
+        {
+            title: 'Mother Plant',
+            dataIndex: 'departmentName',
+            key: 'departmentName',
+        },
+        {
+            title: 'Driver',
+            key: 'driverName',
+            dataIndex: 'driverName',
+        },
+        {
+            title: 'Phone Number',
+            key: 'mobileNumber',
+            dataIndex: 'mobileNumber',
+        },
+        {
+            title: 'Status',
+            dataIndex: 'status',
+            key: 'status',
+        },
+        {
+            title: 'Actions',
+            dataIndex: 'action',
+            key: 'action'
+        },
+    ]
+
+    if (department === 'motherplant') {
+        columns.splice(3, 1, {
+            title: 'Warehouse',
+            dataIndex: 'departmentName',
+            key: 'departmentName'
+        })
+    }
+
+    return columns
+}
 export const productColumns = [
     {
         title: 'Product Name',
@@ -211,7 +266,7 @@ export const deliveryColumns = [
         key: 'route',
     },
     {
-        title: 'Driver Name',
+        title: 'Driver',
         key: 'driverName',
         dataIndex: 'driverName',
     },
@@ -233,7 +288,7 @@ export const deliveryColumns = [
 ]
 export const orderColumns = [
     {
-        title: 'ID',
+        title: 'Order ID',
         dataIndex: 'id',
         key: 'id',
     },
@@ -261,6 +316,39 @@ export const orderColumns = [
         title: 'Driver',
         dataIndex: 'driverName',
         key: 'driverName',
+    },
+    {
+        title: 'Actions',
+        dataIndex: 'action',
+        key: 'action'
+    },
+]
+
+export const receivedStockColumns = [
+    {
+        title: 'DC Number',
+        dataIndex: 'dcNo',
+        key: 'dcNo',
+    },
+    {
+        title: 'Mother Plant',
+        dataIndex: 'departmentName',
+        key: 'departmentName',
+    },
+    {
+        title: 'Stock Details',
+        dataIndex: 'stockDetails',
+        key: 'stockDetails',
+    },
+    {
+        title: 'Driver',
+        dataIndex: 'driverName',
+        key: 'driverName',
+    },
+    {
+        title: 'Phone Number',
+        dataIndex: 'mobileNumber',
+        key: 'mobileNumber',
     },
     {
         title: 'Actions',
@@ -341,7 +429,7 @@ export const getDispatchColumns = (type) => {
             key: 'vehicleNo',
         },
         {
-            title: 'Driver Name',
+            title: 'Driver',
             key: 'driverName',
             dataIndex: 'driverName',
         },

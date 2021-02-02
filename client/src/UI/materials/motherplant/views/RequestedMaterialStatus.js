@@ -94,7 +94,7 @@ const RequestedMaterialStatusView = ({ data, formData, errors, isSuperAdmin, edi
                                         <CustomTextArea maxLength={256} error={errors.reason} placeholder='Add Description'
                                             value={reason} maxRows={4} onChange={(value) => onChange(value, 'reason')}
                                         />
-                                    ) : <InputValue size='smaller' value={reason} />
+                                    ) : <InputValue size='smaller' value={reason || '--'} />
                                 }
                             </div>
                         </div>

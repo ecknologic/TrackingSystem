@@ -50,7 +50,7 @@ const SideMenu = () => {
                 selectedKeys={selected}
                 onSelect={handleMenuSelect}
             >
-                <Item key='/dashboard' style={{ pointerEvents: 'none' }}>
+                <Item key='/dashboard'>
                     {selected === '/dashboard' ? <DashboardIcon /> : <DashboardIconLight />}
                     <span>Dashboard</span>
                 </Item>
@@ -60,6 +60,10 @@ const SideMenu = () => {
                             <Item key='/manage-production'>
                                 {selected === '/manage-production' ? <ProjectIcon /> : <ProjectIconLight />}
                                 <span>Stock Details</span>
+                            </Item>
+                            <Item key='/manage-return-cans'>
+                                {selected === '/manage-return-cans' ? <ProjectIcon /> : <ProjectIconLight />}
+                                <span>Empty Cans</span>
                             </Item>
                             <Item key='/manage-dispatches'>
                                 {selected === '/manage-dispatches' ? <ProjectIcon /> : <ProjectIconLight />}
@@ -82,6 +86,10 @@ const SideMenu = () => {
                             <Item key='/manage-stock'>
                                 {selected === '/manage-stock' ? <ProjectIcon /> : <ProjectIconLight />}
                                 <span>Manage Stock</span>
+                            </Item>
+                            <Item key='/manage-empty-cans'>
+                                {selected === '/manage-empty-cans' ? <ProjectIcon /> : <ProjectIconLight />}
+                                <span>Empty Cans</span>
                             </Item>
                             <Item key='/manage-routes'>
                                 {selected === '/manage-routes' ? <FriendsIcon /> : <FriendsIconLight />}
@@ -192,7 +200,7 @@ const SideMenu = () => {
                 visible={confirm}
                 onOk={handleConfirmOk}
                 onCancel={handleConfirmCancel}
-                title='Are you sure to leave?'
+                title='Are you sure you want to leave?'
                 okTxt='Yes'
             >
                 <ConfirmMessage msg='Changes you made may not be saved.' />

@@ -229,8 +229,7 @@ router.get('/getWarehouseDetails/:warehouseId', (req, res) => {
 
 router.get('/getConfirmedEmptyCans/:warehouseId', (req, res) => {
   let { warehouseId } = req.params;
-  let warehouseQuery = "SELECT (SELECT SUM(c.returnemptycans) FROM customerorderdetails c WHERE c.warehouseid=?)-(SELECT SUM(e.emptycans_count)  FROM EmptyCanDetails e  WHERE e.isconfirmed=1 AND e.warehouseId=?) AS emptycans";
-  db.query(warehouseQuery, [warehouseId, warehouseId], (err, results) => {
+  warehouseQueries.getConfirmedEmptyCans(warehouseId, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else res.json(results);
   });
@@ -307,4 +306,28 @@ router.get("/getOrders", (req, res) => {
     }
   })
 });
+router.get('/getEmptyCansList', (req, res) => {
+  warehouseQueries.getEmptyCansList(departmentId, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.json(results);
+  })
+})
+router.get('/getReceivedStock', (req, res) => {
+  warehouseQueries.getReceivedStock(departmentId, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.json(results);
+  })
+})
+router.get('/getReceivedStockById/:id', (req, res) => {
+  warehouseQueries.getReceivedStockById({ id: req.params.id }, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.json(results);
+  })
+})
+router.get('/getDepartmentStaff', (req, res) => {
+  warehouseQueries.getDepartmentStaff(departmentId, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.json(results);
+  })
+})
 module.exports = router;

@@ -21,11 +21,15 @@ import WarehouseStock from './UI/stock/warehouse';
 import Motherplants from './UI/plants/Motherplants';
 import ManageEmployee from './UI/employees/manage';
 import ApproveAccount from './UI/accounts/approve';
+import Materials from './UI/materials/super-admin';
 import MotherplantStock from './UI/stock/motherplant';
 import AccountsDashboard from './UI/accounts/dashboard';
+import ReturnEmptyCans from './UI/empty-cans/warehouse';
 import ManageDistributor from './UI/distributors/manage';
-import WarehouseMaterials from './UI/materials/warehouse';
+import ReceivedEmptyCans from './UI/empty-cans/motherplant';
+import MotherplantDashboard from './UI/dashboard/motherplant';
 import MotherplantMaterials from './UI/materials/motherplant';
+// import SuperAdminDashboard from './UI/dashboard/super-admin';
 
 const App = () => {
 
@@ -55,7 +59,7 @@ const App = () => {
          const role = getRole()
          if (role === MARKETINGADMIN) return <Redirect to='/manage-accounts' />
          else if (role === WAREHOUSEADMIN) return <Redirect to='/manage-stock' />
-         else if (role === MOTHERPLANTADMIN) return <Redirect to='/manage-production' />
+         else if (role === MOTHERPLANTADMIN) return <MotherplantDashboard />
          else if (role === SUPERADMIN) return <Redirect to='/customers' />
          else if (role === ACCOUNTSADMIN) return <Redirect to='/customers' />
          return <NoContent content='Screen Not designed for your role' />
@@ -94,10 +98,12 @@ const App = () => {
                   <Route path='/manage-qc' render={byRole(<QualityControl />)} />
                   <Route path='/manage-production' render={byRole(<MotherplantStock />)} />
                   <Route path='/manage-dispatches' render={byRole(<Dispatches />)} />
-                  <Route path='/manage-materials' render={byRole(<WarehouseMaterials />)} />
+                  <Route path='/manage-materials' render={byRole(<MotherplantMaterials />)} />
                   <Route path='/manage-routes' render={byRole(<Transport />)} />
+                  <Route path='/manage-return-cans' render={byRole(<ReceivedEmptyCans />)} />
+                  <Route path='/manage-empty-cans' render={byRole(<ReturnEmptyCans />)} />
                   <Route path='/manage-stock' render={byRole(<WarehouseStock />)} />
-                  <Route path='/materials' render={byRole(<MotherplantMaterials />)} />
+                  <Route path='/materials' render={byRole(<Materials />)} />
                   <Route path='/staff/manage/:employeeId' render={byRole(<ManageEmployee />)} />
                   <Route path='/drivers/manage/:employeeId' render={byRole(<ManageEmployee />)} />
                   <Route path='/distributors/manage/:distributorId' render={byRole(<ManageDistributor />)} />

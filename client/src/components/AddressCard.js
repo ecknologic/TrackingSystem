@@ -2,7 +2,7 @@ import React from 'react';
 import { Menu } from 'antd';
 import NameCard from './NameCard';
 import PrimaryButton from './PrimaryButton';
-import { FriendIconGrey } from './SVG_Icons';
+import { FriendIconGrey, TrashIconGrey, TickIconGrey, BlockIconGrey } from './SVG_Icons';
 import { getRole, SUPERADMIN } from '../utils/constants';
 import Actions from '../components/Actions'
 import '../sass/accountCard.scss'
@@ -12,14 +12,15 @@ const AddressCard = ({ data, onClick, onSelect }) => {
     const role = getRole()
     const { isApproved, departmentName, phoneNumber, location, contactPerson, deliveryDetailsId } = data
     const optionOne = isApproved ? 'Draft' : 'Active'
+    const iconOne = isApproved ? <BlockIconGrey /> : <TickIconGrey />
 
     const handleSelect = ({ key }) => {
         onSelect(key, deliveryDetailsId)
     }
 
     const options = [
-        <Menu.Item key={optionOne}>{optionOne}</Menu.Item>,
-        <Menu.Item key="Delete">Delete</Menu.Item>
+        <Menu.Item key={optionOne} icon={iconOne}>{optionOne}</Menu.Item>,
+        <Menu.Item key="Delete" icon={<TrashIconGrey />} >Delete</Menu.Item>
     ]
 
     return (

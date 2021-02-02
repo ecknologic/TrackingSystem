@@ -439,6 +439,13 @@ router.post('/updateProductionDetails', (req, res) => {
         else res.json(data);
     })
 })
+router.put('/updateEmptyCansStatus', (req, res) => {
+    let input = req.body;
+    motherPlantDbQueries.updateEmptyCansStatus(input, (updateErr, data) => {
+        if (updateErr) res.status(500).json(dbError(updateErr));
+        else res.json(data);
+    })
+})
 router.delete('/deleteVehicle/:vehicleId', (req, res) => {
     motherPlantDbQueries.deleteVehicle(req.params.vehicleId, (err, results) => {
         if (err) res.status(500).json({ status: 500, message: err.sqlMessage });

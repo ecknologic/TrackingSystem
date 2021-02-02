@@ -1,15 +1,16 @@
-import { Menu } from 'antd';
 import React from 'react';
+import { Menu } from 'antd';
 import Actions from './Actions';
 import NameCard from './NameCard';
 import PrimaryButton from './PrimaryButton';
-import { FriendsIconGrey, FriendIconGrey } from './SVG_Icons';
+import { FriendsIconGrey, FriendIconGrey, TrashIconGrey, TickIconGrey, BlockIconGrey } from './SVG_Icons';
 import '../sass/accountCard.scss'
 
 const AccountCard = ({ data, onClick, btnTxt = 'Manage Account', onSelect, isSuperAdmin }) => {
     const { customerId, isApproved, contactpersons, customerName, organizationName, address, natureOfBussiness } = data
 
     const optionOne = isApproved ? 'Draft' : 'Active'
+    const iconOne = isApproved ? <BlockIconGrey /> : <TickIconGrey />
     const names = JSON.parse(contactpersons)
     const contacts = names.length
 
@@ -20,8 +21,8 @@ const AccountCard = ({ data, onClick, btnTxt = 'Manage Account', onSelect, isSup
     }
 
     const options = [
-        <Menu.Item key={optionOne}>{optionOne}</Menu.Item>,
-        <Menu.Item key="Delete">Delete</Menu.Item>
+        <Menu.Item key={optionOne} icon={iconOne}>{optionOne}</Menu.Item>,
+        <Menu.Item key="Delete" icon={<TrashIconGrey />} >Delete</Menu.Item>
     ]
 
     return (

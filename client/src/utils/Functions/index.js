@@ -43,7 +43,7 @@ export const resetSessionItems = (matcher) => {
 }
 
 export const showToast = (props) => {
-    let { item = 'Item', action = 'success',
+    let { item = 'Data', action = 'success',
         v1Ing = 'Saving', v2 = 'saved', duration } = props
     let msg = ''
     if (action === 'loading') {

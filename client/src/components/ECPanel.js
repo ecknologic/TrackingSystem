@@ -12,7 +12,7 @@ const ECPanel = ({ confirmed, returned, onAdd }) => {
             <div className='box items'>
                 <span className='name'>Total Cans (20 ltr)</span>
                 <div className='numbers-container'>
-                    <span className='number'>{cec || '--'}</span>
+                    <span className='number'>{cec}</span>
                 </div>
             </div>
             <div className='box items mother-plant'>
