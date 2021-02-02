@@ -307,20 +307,26 @@ router.get("/getOrders", (req, res) => {
     }
   })
 });
-router.get('/getEmptyCansList/:warehouseId', (req, res) => {
-  warehouseQueries.getEmptyCansList(req.params.warehouseId, (err, results) => {
+router.get('/getEmptyCansList', (req, res) => {
+  warehouseQueries.getEmptyCansList(departmentId, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else res.json(results);
   })
 })
-router.get('/getReceivedStock/:warehouseId', (req, res) => {
-  warehouseQueries.getReceivedStock(req.params.warehouseId, (err, results) => {
+router.get('/getReceivedStock', (req, res) => {
+  warehouseQueries.getReceivedStock(departmentId, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else res.json(results);
   })
 })
-router.get('/getDepartmentStaff/:warehouseId', (req, res) => {
-  warehouseQueries.getDepartmentStaff(req.params.warehouseId, (err, results) => {
+router.get('/getReceivedStockById/:id', (req, res) => {
+  warehouseQueries.getReceivedStockById({ id: req.params.id }, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.json(results);
+  })
+})
+router.get('/getDepartmentStaff', (req, res) => {
+  warehouseQueries.getDepartmentStaff(departmentId, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else res.json(results);
   })

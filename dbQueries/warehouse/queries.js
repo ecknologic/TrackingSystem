@@ -33,20 +33,25 @@ warehouseQueries.getEmptyCansList = async (warehouseId, callback) => {
     return executeGetParamsQuery(query, [warehouseId], callback)
 }
 warehouseQueries.getReceivedStock = async (warehouseId, callback) => {
-    let query = "SELECT w.id,w.warehouseId,w.isConfirmed,w.deliveryDate,w.20LCans as product20L,w.1LBoxes as product1L,w.500MLBoxes as product500ML,w.250MLBoxes as product250ML,d.driverName,dep.address,dep.departmentName from warehousestockdetails w INNER JOIN dispatches d ON w.DCNO=d.DCNO INNER JOIN departmentmaster dep ON d.departmentId=dep.departmentId where w.warehouseId=? ORDER BY w.deliveryDate DESC";
+    let query = "SELECT w.id,w.DCNO as dcNo,w.warehouseId,w.isConfirmed,w.deliveryDate,w.20LCans as product20L,w.1LBoxes as product1L,w.500MLBoxes as product500ML,w.250MLBoxes as product250ML,d.driverName,dri.mobileNumber,dep.address,dep.departmentName from warehousestockdetails w INNER JOIN dispatches d ON w.DCNO=d.DCNO INNER JOIN departmentmaster dep ON d.departmentId=dep.departmentId INNER JOIN driverdetails dri ON d.driverId=dri.driverId where w.warehouseId=? ORDER BY w.deliveryDate DESC";
     return executeGetParamsQuery(query, [warehouseId], callback)
 }
+warehouseQueries.getReceivedStockById = async (input, callback) => {
+    const { id } = input
+    let query = "SELECT w.id,w.DCNO as dcNo,w.warehouseId,w.isConfirmed,w.deliveryDate,w.damaged20LCans,w.damaged1LBoxes,w.damaged500MLBoxes,w.damaged250MLBoxes,w.20LCans as product20L,w.1LBoxes as product1L,w.500MLBoxes as product500ML,w.250MLBoxes as product250ML,d.driverName,dri.mobileNumber,dep.address,dep.departmentName from warehousestockdetails w INNER JOIN dispatches d ON w.DCNO=d.DCNO INNER JOIN departmentmaster dep ON d.departmentId=dep.departmentId INNER JOIN driverdetails dri ON d.driverId=dri.driverId where w.id=?";
+    return executeGetParamsQuery(query, [id], callback)
+}
 warehouseQueries.getDepartmentStaff = async (warehouseId, callback) => {
-    let query = "SELECT u.userId,u.userName,u.emailid,u.address,u.mobileNumber,d.departmentName from usermaster u INNER JOIN departmentmaster d on u.departmentId=d.departmentId where u.departmentId=? AND u.deleted='0' ORDER BY u.createdDateTime DESC";
+    let query = "SELECT d.driverId,d.driverName as userName,d.isActive,d.emailid,d.address,d.mobileNumber,dep.departmentName from driverdetails d INNER JOIN departmentmaster dep on d.departmentId=dep.departmentId where d.departmentId=? AND d.deleted='0' ORDER BY d.createdDateTime DESC";
     return executeGetParamsQuery(query, [warehouseId], callback)
 }
 //POST Request Methods
 warehouseQueries.saveWarehouseStockDetails = (input, callback) => {
-    const { isDamaged, departmentId, total20LCans, total1LBoxes, total250MLBoxes, total500MLBoxes, damaged500MLBoxes, damaged250MLBoxes, damaged20LCans, damaged1LBoxes, deliveryDate, dcNo } = input
-    let query = "insert into warehousestockdetails (warehouseId,20LCans,1LBoxes,500MLBoxes,250MLBoxes,damaged20LCans,damaged1LBoxes,damaged500MLBoxes,damaged250MLBoxes,deliveryDate,isConfirmed,DCNO) values(?,?,?,?,?,?,?,?,?,?,?,?)";
-    let requestBody = [departmentId, total20LCans, total1LBoxes, total500MLBoxes, total250MLBoxes, damaged20LCans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes, deliveryDate, '1', dcNo]
+    const { isDamaged, departmentId, total20LCans, total1LBoxes, total250MLBoxes, total500MLBoxes, damaged500MLBoxes, damaged250MLBoxes, damaged20LCans, damaged1LBoxes, deliveryDate, dcNo, damagedDesc } = input
+    let query = "insert into warehousestockdetails (warehouseId,20LCans,1LBoxes,500MLBoxes,250MLBoxes,damaged20LCans,damaged1LBoxes,damaged500MLBoxes,damaged250MLBoxes,deliveryDate,isConfirmed,DCNO,damagedDesc) values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    let requestBody = [departmentId, total20LCans, total1LBoxes, total500MLBoxes, total250MLBoxes, damaged20LCans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes, deliveryDate, '1', dcNo, damagedDesc]
 
-    if (isDamaged) requestBody = [departmentId, total20LCans - damaged20LCans, total1LBoxes - damaged1LBoxes, total500MLBoxes - damaged500MLBoxes, total250MLBoxes - damaged250MLBoxes, damaged20LCans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes, deliveryDate, '1', dcNo]
+    if (isDamaged) requestBody = [departmentId, total20LCans - damaged20LCans, total1LBoxes - damaged1LBoxes, total500MLBoxes - damaged500MLBoxes, total250MLBoxes - damaged250MLBoxes, damaged20LCans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes, deliveryDate, '1', dcNo, damagedDesc]
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 warehouseQueries.insertReturnStockDetails = (input, callback) => {
