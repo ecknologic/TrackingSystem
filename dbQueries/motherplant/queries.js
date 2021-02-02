@@ -271,4 +271,10 @@ motherPlantDbQueries.deleteVehicle = (vehicleId, callback) => {
     let requestBody = [1]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
+motherPlantDbQueries.updateEmptyCansStatus = async (input, callback) => {
+    const { status, reason, id } = input
+    let query = "update EmptyCanDetails set status=?,reason=?,approvedDate=? where id=?";
+    let requestBody = [status, reason, new Date(), id]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
 module.exports = motherPlantDbQueries
