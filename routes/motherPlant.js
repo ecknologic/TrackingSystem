@@ -439,7 +439,7 @@ router.post('/updateProductionDetails', (req, res) => {
         else res.json(data);
     })
 })
-router.post('/updateEmptyCansStatus', (req, res) => {
+router.put('/updateEmptyCansStatus', (req, res) => {
     let input = req.body;
     motherPlantDbQueries.updateEmptyCansStatus(input, (updateErr, data) => {
         if (updateErr) res.status(500).json(dbError(updateErr));

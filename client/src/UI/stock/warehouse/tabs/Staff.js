@@ -22,7 +22,7 @@ const Staff = () => {
     }, [])
 
     const getEmployees = async () => {
-        const url = '/driver/getDrivers'
+        const url = 'warehouse/getDepartmentStaff'
 
         const data = await http.GET(url)
         setEmployees(data)

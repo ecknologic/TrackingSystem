@@ -176,7 +176,7 @@ export const getEmptyCanColumns = (department) => {
             key: 'dateAndTime',
         },
         {
-            title: 'Return Cans',
+            title: '20L Cans',
             dataIndex: 'emptycans_count',
             key: 'emptycans_count',
         },
@@ -186,7 +186,7 @@ export const getEmptyCanColumns = (department) => {
             key: 'departmentName',
         },
         {
-            title: 'Driver Name',
+            title: 'Driver',
             key: 'driverName',
             dataIndex: 'driverName',
         },
@@ -266,7 +266,7 @@ export const deliveryColumns = [
         key: 'route',
     },
     {
-        title: 'Driver Name',
+        title: 'Driver',
         key: 'driverName',
         dataIndex: 'driverName',
     },
@@ -288,7 +288,7 @@ export const deliveryColumns = [
 ]
 export const orderColumns = [
     {
-        title: 'ID',
+        title: 'Order ID',
         dataIndex: 'id',
         key: 'id',
     },
@@ -316,6 +316,39 @@ export const orderColumns = [
         title: 'Driver',
         dataIndex: 'driverName',
         key: 'driverName',
+    },
+    {
+        title: 'Actions',
+        dataIndex: 'action',
+        key: 'action'
+    },
+]
+
+export const receivedStockColumns = [
+    {
+        title: 'DC Number',
+        dataIndex: 'dcNo',
+        key: 'dcNo',
+    },
+    {
+        title: 'Mother Plant',
+        dataIndex: 'departmentName',
+        key: 'departmentName',
+    },
+    {
+        title: 'Stock Details',
+        dataIndex: 'stockDetails',
+        key: 'stockDetails',
+    },
+    {
+        title: 'Driver',
+        dataIndex: 'driverName',
+        key: 'driverName',
+    },
+    {
+        title: 'Phone Number',
+        dataIndex: 'mobileNumber',
+        key: 'mobileNumber',
     },
     {
         title: 'Actions',
@@ -396,7 +429,7 @@ export const getDispatchColumns = (type) => {
             key: 'vehicleNo',
         },
         {
-            title: 'Driver Name',
+            title: 'Driver',
             key: 'driverName',
             dataIndex: 'driverName',
         },

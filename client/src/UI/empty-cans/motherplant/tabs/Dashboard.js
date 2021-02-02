@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { Menu, message, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import EmptyCansView from '../views/EmptyCans';
@@ -10,11 +11,11 @@ import { getEmptyCanColumns } from '../../../../assets/fixtures';
 import { EditIconGrey } from '../../../../components/SVG_Icons';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomPagination from '../../../../components/CustomPagination';
-import { getRole, getWarehoseId, TRACKFORM } from '../../../../utils/constants';
-import { deepClone, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
+import { getRole, TRACKFORM } from '../../../../utils/constants';
+import { deepClone, getStatusColor, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
+const DATEFORMAT = 'DD/MM/YYYY'
 
 const Dashboard = () => {
-    const role = getRole()
     const [emptyCans, setEmptyCans] = useState([])
     const [formData, setFormData] = useState({})
     const [viewData, setViewData] = useState({})
@@ -28,18 +29,14 @@ const Dashboard = () => {
     const [confirmModal, setConfirmModal] = useState(false)
     const [shake, setShake] = useState(false)
 
-    const isWHAdmin = useMemo(() => role === 'WarehouseAdmin', [role])
     const emptyCanColumns = useMemo(() => getEmptyCanColumns('motherplant'), [])
 
     useEffect(() => {
-        setLoading(true)
         getEmptyCans()
     }, [])
 
     const getEmptyCans = async () => {
-        const depId = getWarehoseId()
-        const url = getUrl(isWHAdmin, depId)
-
+        const url = '/warehouse/getEmptyCansList'
         const data = await http.GET(url)
         setEmptyCans(data)
         setTotalCount(data.length)
@@ -69,29 +66,29 @@ const Dashboard = () => {
     }
 
     const handleApprove = () => {
-        const { rawmaterialid: id } = viewData
+        const { id } = viewData
         const { reason } = formData
         updateCansStatus(id, 'Approved', reason)
     }
 
     const handleReject = () => {
-        const { rawmaterialid: id } = viewData
+        const { id } = viewData
         const { reason } = formData
         if (!reason.trim()) return setFormErrors({ reason: 'Reason is required on Reject ' })
         updateCansStatus(id, 'Rejected', reason)
     }
 
-    const updateCansStatus = async (rawmaterialid, status, reason) => {
-        const url = '/motherPlant/updateRMStatus'
-        const body = { rawmaterialid, status, reason }
-        const options = { item: 'Order', v1Ing: status === 'Approved' ? 'Approving' : 'Rejecting', v2: status }
+    const updateCansStatus = async (id, status, reason) => {
+        const url = '/motherPlant/updateEmptyCansStatus'
+        const body = { id, status, reason }
+        const options = { item: 'Empty Cans', v1Ing: status === 'Approved' ? 'Approving' : 'Rejecting', v2: status }
 
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
             await http.PUT(url, body)
             showToast(options)
-            optimisticUpdate(rawmaterialid, status, reason)
+            optimisticUpdate(id, status, reason)
             onModalClose(true)
         } catch (error) {
             setBtnDisabled(false)
@@ -100,7 +97,7 @@ const Dashboard = () => {
 
     const optimisticUpdate = (id, status, reason) => {
         let clone = deepClone(emptyCans);
-        const index = clone.findIndex(item => item.rawmaterialid === id)
+        const index = clone.findIndex(item => item.id === id)
         clone[index].status = status;
         clone[index].reason = reason;
         setEmptyCans(clone)
@@ -119,13 +116,17 @@ const Dashboard = () => {
     }
 
     const dataSource = useMemo(() => emptyCans.map((route) => {
-        const { RouteId: key, RouteName, RouteDescription, departmentName } = route
+        const { id, departmentName, status, driverName, createdDateTime, mobileNumber, emptycans_count } = route
 
         return {
-            key,
-            RouteName,
-            RouteDescription,
+            key: id,
+            returnId: id,
+            emptycans_count,
             departmentName,
+            driverName,
+            mobileNumber,
+            status: renderStatus(status),
+            dateAndTime: dayjs(createdDateTime).format(DATEFORMAT),
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, route)} />
         }
     }), [emptyCans])
@@ -203,10 +204,14 @@ const Dashboard = () => {
         </div>
     )
 }
-
-const getUrl = (isWHAdmin, id) => {
-    if (isWHAdmin) return `/customer/getRoutes/${id}`
-    return '/bibo/getroutes'
+const renderStatus = (status) => {
+    const color = getStatusColor(status)
+    return (
+        <div className='status'>
+            <span className='app-dot' style={{ background: color }}></span>
+            <span className='status-text'>{status}</span>
+        </div>
+    )
 }
 const options = [<Menu.Item key="edit" icon={<EditIconGrey />}>View/Edit</Menu.Item>]
 export default Dashboard

@@ -25,12 +25,18 @@ warehouseQueries.getOrderDetailsByDepartment = async (departmentId, callback) =>
 warehouseQueries.getReturnedEmptyCans = async (warehouseId, callback) => {
     // let query = "SELECT (SELECT SUM(c.returnemptycans) FROM customerorderdetails c WHERE c.warehouseid=?)-(SELECT SUM(e.emptycans_count)  FROM EmptyCanDetails e  WHERE e.isconfirmed=1 AND e.warehouseId=?) AS emptycans";
     let query = `SELECT ABS(e.emptycans) AS emptycans FROM (SELECT (SELECT IFNULL(SUM(c.returnemptycans),0) FROM customerorderdetails c WHERE c.warehouseid=?)-(SELECT IFNULL(SUM(e.emptycans_count),0)
+    FROM EmptyCanDetails e  WHERE e.status='Pending' AND e.warehouseId=?) AS emptycans) AS e`
+    return executeGetParamsQuery(query, [warehouseId, warehouseId], callback)
+}
+warehouseQueries.getConfirmedEmptyCans = async (warehouseId, callback) => {
+    // let query = "SELECT (SELECT SUM(c.returnemptycans) FROM customerorderdetails c WHERE c.warehouseid=?)-(SELECT SUM(e.emptycans_count)  FROM EmptyCanDetails e  WHERE e.isconfirmed=1 AND e.warehouseId=?) AS emptycans";
+    let query = `SELECT ABS(e.emptycans) AS emptycans FROM (SELECT (SELECT IFNULL(SUM(c.returnemptycans),0) FROM customerorderdetails c WHERE c.warehouseid=?)-(SELECT IFNULL(SUM(e.emptycans_count),0)
     FROM EmptyCanDetails e  WHERE e.status='Approved' AND e.warehouseId=?) AS emptycans) AS e`
     return executeGetParamsQuery(query, [warehouseId, warehouseId], callback)
 }
-warehouseQueries.getEmptyCansList = async (warehouseId, callback) => {
-    let query = "SELECT e.*,d.departmentName as motherplantName,dri.driverName,dri.mobileNumber from EmptyCanDetails e INNER JOIN departmentmaster d ON e.motherplantId=d.departmentId INNER JOIN driverdetails dri ON e.driverId=dri.driverId where e.warehouseId=? ORDER BY e.createdDateTime DESC";
-    return executeGetParamsQuery(query, [warehouseId], callback)
+warehouseQueries.getEmptyCansList = async (departmentId, callback) => {
+    let query = "SELECT e.*,d.departmentName,dri.driverName,dri.mobileNumber from EmptyCanDetails e INNER JOIN departmentmaster d ON e.motherplantId=d.departmentId INNER JOIN driverdetails dri ON e.driverId=dri.driverId where e.warehouseId=? OR e.motherPlantId=? ORDER BY e.createdDateTime DESC";
+    return executeGetParamsQuery(query, [departmentId, departmentId], callback)
 }
 warehouseQueries.getReceivedStock = async (warehouseId, callback) => {
     let query = "SELECT w.id,w.DCNO as dcNo,w.warehouseId,w.isConfirmed,w.deliveryDate,w.20LCans as product20L,w.1LBoxes as product1L,w.500MLBoxes as product500ML,w.250MLBoxes as product250ML,d.driverName,dri.mobileNumber,dep.address,dep.departmentName from warehousestockdetails w INNER JOIN dispatches d ON w.DCNO=d.DCNO INNER JOIN departmentmaster dep ON d.departmentId=dep.departmentId INNER JOIN driverdetails dri ON d.driverId=dri.driverId where w.warehouseId=? ORDER BY w.deliveryDate DESC";

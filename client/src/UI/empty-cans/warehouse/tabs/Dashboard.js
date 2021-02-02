@@ -1,4 +1,5 @@
-import { Menu, message, Table } from 'antd';
+import dayjs from 'dayjs';
+import { Menu, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http'
 import EmptyCansForm from '../forms/EmptyCans';
@@ -10,12 +11,14 @@ import { getEmptyCanColumns } from '../../../../assets/fixtures';
 import { EditIconGrey } from '../../../../components/SVG_Icons';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomPagination from '../../../../components/CustomPagination';
-import { getRole, getWarehoseId, TRACKFORM } from '../../../../utils/constants';
-import { deepClone, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
+import { getRole, TRACKFORM } from '../../../../utils/constants';
+import { deepClone, getStatusColor, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
+import { validateNumber, validateRECValues } from '../../../../utils/validations';
+const DATEFORMAT = 'DD/MM/YYYY'
 
 const Dashboard = ({ reFetch, driverList, ...rest }) => {
     const role = getRole()
-    const [routes, setRoutes] = useState([])
+    const [emptyCans, setEmptyCans] = useState([])
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [loading, setLoading] = useState(true)
@@ -32,15 +35,13 @@ const Dashboard = ({ reFetch, driverList, ...rest }) => {
 
     useEffect(() => {
         setLoading(true)
-        getRoutes()
+        getEmptyCans()
     }, [reFetch])
 
-    const getRoutes = async () => {
-        const depId = getWarehoseId()
-        const url = getUrl(isWHAdmin, depId)
-
+    const getEmptyCans = async () => {
+        const url = '/warehouse/getEmptyCansList'
         const data = await http.GET(url)
-        setRoutes(data)
+        setEmptyCans(data)
         setTotalCount(data.length)
         setLoading(false)
     }
@@ -61,36 +62,39 @@ const Dashboard = ({ reFetch, driverList, ...rest }) => {
         }
     }
 
-    const handleDelete = async (id) => {
-        const options = { item: 'Route', v1Ing: 'Deleting', v2: 'deleted' }
-        const url = `/warehouse/deleteRoute/${id}`
-
-        try {
-            showToast({ ...options, action: 'loading' })
-            await http.DELETE(url)
-            optimisticDelete(id)
-            showToast(options)
-        } catch (error) {
-            message.destroy()
-        }
-    }
-
-    const optimisticDelete = (id) => {
-        const filtered = routes.filter(item => item.RouteId !== id)
-        setRoutes(filtered)
-    }
-
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
+
+        if (key === 'driverId') {
+            let selectedDriver = driverList.find(driver => driver.driverId === Number(value))
+            let { mobileNumber = null } = selectedDriver || {}
+            setFormData(data => ({ ...data, mobileNumber }))
+            setFormErrors(errors => ({ ...errors, mobileNumber: '' }))
+        }
+        else if (key === 'isDamaged') {
+            if (!value) {
+                let damaged20LCans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes, damagedDesc;
+                setFormData(data => ({
+                    ...data, damaged20LCans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes, damagedDesc
+                }))
+                setFormErrors(errors => ({ ...errors, damagedDesc: '', damaged: '' }))
+            }
+        }
+
+        // Validations
+        if (key.includes('Box') || key.includes('Can')) {
+            const error = validateNumber(value)
+            setFormErrors(errors => ({ ...errors, damaged: error }))
+        }
+        else if (key === 'emptycans_count') {
+            const error = validateNumber(value)
+            setFormErrors(errors => ({ ...errors, emptycans_count: error }))
+        }
     }
 
     const handleSubmit = async () => {
-        const formErrors = {}
-        let { RouteName, RouteDescription, departmentId } = formData
-        if (!isWHAdmin && !departmentId) formErrors.departmentId = 'Required'
-        if (!RouteName) formErrors.RouteName = 'Required'
-        if (!RouteDescription) formErrors.RouteDescription = 'Required'
+        const formErrors = validateRECValues(formData)
 
         if (!isEmpty(formErrors)) {
             setShake(true)
@@ -98,29 +102,38 @@ const Dashboard = ({ reFetch, driverList, ...rest }) => {
             setFormErrors(formErrors)
             return
         }
-        departmentId = isWHAdmin ? getWarehoseId() : departmentId
-        let body = { ...formData, departmentId }
-        const url = '/warehouse/updateRoute'
-        const options = { item: 'Route', v1Ing: 'Updating', v2: 'updated' }
+
+        let url = '/warehouse/updateReturnEmptyCans'
+        const body = {
+            ...formData, status: 'Pending'
+        }
+        const options = { item: 'Empty Cans', v1Ing: 'Updating', v2: 'updated' }
 
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
-            await http.POST(url, body)
+            const [data] = await http.PUT(url, body)
+            optimisticUpdate(data)
             showToast(options)
-            optimisticUpdate(formData)
-            onModalClose(true)
+            setEditModal(false)
+            resetForm()
         } catch (error) {
-            message.destroy()
             setBtnDisabled(false)
         }
     }
 
+    const resetForm = () => {
+        setBtnDisabled(false)
+        resetTrackForm()
+        setFormData({})
+        setFormErrors({})
+    }
+
     const optimisticUpdate = (data) => {
-        let clone = deepClone(routes);
-        const index = clone.findIndex(item => item.RouteId === data.RouteId)
+        let clone = deepClone(emptyCans);
+        const index = clone.findIndex(item => item.id === data.id)
         clone[index] = data;
-        setRoutes(clone)
+        setEmptyCans(clone)
     }
 
     const onModalClose = (hasUpdated) => {
@@ -129,23 +142,24 @@ const Dashboard = ({ reFetch, driverList, ...rest }) => {
             return setConfirmModal(true)
         }
         setEditModal(false)
-        setFormData({})
-        setFormErrors({})
-        resetTrackForm()
-        setBtnDisabled(false)
+        resetForm()
     }
 
-    const dataSource = useMemo(() => routes.map((route) => {
-        const { RouteId: key, RouteName, RouteDescription, departmentName } = route
+    const dataSource = useMemo(() => emptyCans.map((route) => {
+        const { id, departmentName, status, driverName, createdDateTime, mobileNumber, emptycans_count } = route
 
         return {
-            key,
-            RouteName,
-            RouteDescription,
+            key: id,
+            returnId: id,
+            emptycans_count,
             departmentName,
+            driverName,
+            mobileNumber,
+            status: renderStatus(status),
+            dateAndTime: dayjs(createdDateTime).format(DATEFORMAT),
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, route)} />
         }
-    }), [routes])
+    }), [emptyCans])
 
     const handleConfirmModalOk = useCallback(() => {
         setConfirmModal(false)
@@ -210,9 +224,14 @@ const Dashboard = ({ reFetch, driverList, ...rest }) => {
     )
 }
 
-const getUrl = (isWHAdmin, id) => {
-    if (isWHAdmin) return `/customer/getRoutes/${id}`
-    return '/bibo/getroutes'
+const renderStatus = (status) => {
+    const color = getStatusColor(status)
+    return (
+        <div className='status'>
+            <span className='app-dot' style={{ background: color }}></span>
+            <span className='status-text'>{status}</span>
+        </div>
+    )
 }
 const options = [<Menu.Item key="edit" icon={<EditIconGrey />}>Edit</Menu.Item>]
 export default Dashboard

@@ -9,7 +9,7 @@ const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
 const EmptyCansView = ({ data, formData, errors, editMode, onChange }) => {
 
-    const { returnId, status, emptycans_count, departmentName, vehicleNo, vehicleType,
+    const { id, status, emptycans_count, departmentName, vehicleNo, vehicleType,
         driverName, mobileNumber, returnDate, details } = data
     const { reason } = formData
 
@@ -30,7 +30,7 @@ const EmptyCansView = ({ data, formData, errors, editMode, onChange }) => {
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Return ID' />
-                        <InputValue size='larger' value={returnId} />
+                        <InputValue size='larger' value={id} />
                     </div>
                     <div className='input-container'>
                         <InputLabel name='Status' />

@@ -1,19 +1,19 @@
-import { Menu, Table } from 'antd';
+import { Menu, message, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
 import Spinner from '../../../../components/Spinner';
 import Actions from '../../../../components/Actions';
 import ArrivedStockView from '../forms/ArrivedStock';
-import { orderColumns } from '../../../../assets/fixtures';
 import SearchInput from '../../../../components/SearchInput';
 import CustomModal from '../../../../components/CustomModal';
 import { EyeIconGrey } from '../../../../components/SVG_Icons';
+import { receivedStockColumns } from '../../../../assets/fixtures';
 import CustomPagination from '../../../../components/CustomPagination';
-import { getProductsForUI } from '../../../../utils/Functions';
+import { showToast } from '../../../../utils/Functions';
 
 const StockReceived = () => {
     const [loading, setLoading] = useState(true)
-    const [orders, setOrders] = useState([])
+    const [stock, setStock] = useState([])
     const [viewData, setViewData] = useState({})
     const [pageSize, setPageSize] = useState(10)
     const [totalCount, setTotalCount] = useState(null)
@@ -22,21 +22,29 @@ const StockReceived = () => {
     const [viewModal, setViewModal] = useState(false)
 
     useEffect(() => {
-        getOrders()
+        getReceivedStock()
     }, [])
 
-    const getOrders = async () => {
-        const url = `/warehouse/getOrders`
+    const getReceivedStock = async () => {
+        const url = `/warehouse/getReceivedStock`
         const data = await http.GET(url)
         setLoading(false)
         setTotalCount(data.length)
-        setOrders(data)
+        setStock(data)
     }
 
-    const handleMenuSelect = (key, data) => {
+    const getStockById = async (id) => {
+        showToast({ v1Ing: 'Fetching', action: 'loading' })
+        const url = `/warehouse/getReceivedStockById/${id}`
+        const [data] = await http.GET(url)
+        message.destroy()
+        setViewData(data)
+        setViewModal(true)
+    }
+
+    const handleMenuSelect = (key, id) => {
         if (key === 'view') {
-            setViewData(data)
-            setViewModal(true)
+            getStockById(id)
         }
     }
 
@@ -49,19 +57,18 @@ const StockReceived = () => {
         setPageNumber(number)
     }
 
-    const dataSource = useMemo(() => orders.map((order) => {
-        const { deliveryDetailsId: key, contactPerson, location, routeName, driverName, products } = order
+    const dataSource = useMemo(() => stock.map((order) => {
+        const { id, dcNo, departmentName, driverName, mobileNumber, product20L, product1L, product250ML, product500ML } = order
         return {
-            key,
-            id: `${key}`,
-            address: location,
-            route: routeName,
-            contactPerson,
-            driverName: driverName || "Not Assigned",
-            orderDetails: renderOrderDetails(getProductsForUI(products)),
-            action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, order)} />
+            key: id,
+            dcNo,
+            departmentName,
+            driverName,
+            mobileNumber,
+            stockDetails: renderStockDetails({ product20L, product1L, product250ML, product500ML }),
+            action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, id)} />
         }
-    }), [orders])
+    }), [stock])
 
     const handleModalCancel = useCallback(() => setViewModal(false), [])
 
@@ -84,7 +91,7 @@ const StockReceived = () => {
                 <Table
                     loading={{ spinning: loading, indicator: <Spinner /> }}
                     dataSource={dataSource.slice(sliceFrom, sliceTo)}
-                    columns={orderColumns}
+                    columns={receivedStockColumns}
                     pagination={false}
                     scroll={{ x: true }}
                 />
@@ -119,7 +126,7 @@ const StockReceived = () => {
     )
 }
 
-const renderOrderDetails = ({ product20L, product1L, product500ML, product250ML }) => {
+const renderStockDetails = ({ product20L, product1L, product500ML, product250ML }) => {
     return `
     20 lts - ${product20L}, 1 ltr - ${product1L} boxes, 
     500 ml - ${product500ML} boxes, 250 ml - ${product250ML} boxes

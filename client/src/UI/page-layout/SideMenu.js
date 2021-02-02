@@ -61,8 +61,8 @@ const SideMenu = () => {
                                 {selected === '/manage-production' ? <ProjectIcon /> : <ProjectIconLight />}
                                 <span>Stock Details</span>
                             </Item>
-                            <Item key='/manage-received-cans'>
-                                {selected === '/manage-received-cans' ? <ProjectIcon /> : <ProjectIconLight />}
+                            <Item key='/manage-return-cans'>
+                                {selected === '/manage-return-cans' ? <ProjectIcon /> : <ProjectIconLight />}
                                 <span>Empty Cans</span>
                             </Item>
                             <Item key='/manage-dispatches'>
@@ -87,8 +87,8 @@ const SideMenu = () => {
                                 {selected === '/manage-stock' ? <ProjectIcon /> : <ProjectIconLight />}
                                 <span>Manage Stock</span>
                             </Item>
-                            <Item key='/manage-return-cans'>
-                                {selected === '/manage-return-cans' ? <ProjectIcon /> : <ProjectIconLight />}
+                            <Item key='/manage-empty-cans'>
+                                {selected === '/manage-empty-cans' ? <ProjectIcon /> : <ProjectIconLight />}
                                 <span>Empty Cans</span>
                             </Item>
                             <Item key='/manage-routes'>
