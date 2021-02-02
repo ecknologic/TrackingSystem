@@ -26,14 +26,25 @@ warehouseQueries.getReturnedEmptyCans = async (warehouseId, callback) => {
     let query = "SELECT (SELECT SUM(c.returnemptycans) FROM customerorderdetails c WHERE c.warehouseid=?)-(SELECT SUM(e.emptycans_count)  FROM EmptyCanDetails e  WHERE e.isconfirmed=1 AND e.warehouseId=?) AS emptycans";
     return executeGetParamsQuery(query, [warehouseId, warehouseId], callback)
 }
-
+warehouseQueries.getEmptyCansList = async (warehouseId, callback) => {
+    let query = "SELECT e.*,d.departmentName as motherplantName,dri.driverName,dri.mobileNumber from EmptyCanDetails e INNER JOIN departmentmaster d ON e.motherplantId=d.departmentId INNER JOIN driverdetails dri ON e.driverId=dri.driverId where e.warehouseId=? ORDER BY e.createdDateTime DESC";
+    return executeGetParamsQuery(query, [warehouseId], callback)
+}
+warehouseQueries.getReceivedStock = async (warehouseId, callback) => {
+    let query = "SELECT w.id,w.warehouseId,w.isConfirmed,w.deliveryDate,w.20LCans as product20L,w.1LBoxes as product1L,w.500MLBoxes as product500ML,w.250MLBoxes as product250ML,d.driverName,dep.address,dep.departmentName from warehousestockdetails w INNER JOIN dispatches d ON w.DCNO=d.DCNO INNER JOIN departmentmaster dep ON d.departmentId=dep.departmentId where w.warehouseId=? ORDER BY w.deliveryDate DESC";
+    return executeGetParamsQuery(query, [warehouseId], callback)
+}
+warehouseQueries.getDepartmentStaff = async (warehouseId, callback) => {
+    let query = "SELECT u.userId,u.userName,u.emailid,u.address,u.mobileNumber,d.departmentName from usermaster u INNER JOIN departmentmaster d on u.departmentId=d.departmentId where u.departmentId=? AND u.deleted='0' ORDER BY u.createdDateTime DESC";
+    return executeGetParamsQuery(query, [warehouseId], callback)
+}
 //POST Request Methods
 warehouseQueries.saveWarehouseStockDetails = (input, callback) => {
-    const { isDamaged, departmentId, total20LCans, total1LBoxes, total250MLBoxes, total500MLBoxes, damaged500MLBoxes, damaged250MLBoxes, damaged20LCans, damaged1LBoxes, deliveryDate } = input
-    let query = "insert into warehousestockdetails (warehouseId,20LCans,1LBoxes,500MLBoxes,250MLBoxes,damaged20LCans,damaged1LBoxes,damaged500MLBoxes,damaged250MLBoxes,deliveryDate,isConfirmed) values(?,?,?,?,?,?,?,?,?,?,?)";
-    let requestBody = [departmentId, total20LCans, total1LBoxes, total500MLBoxes, total250MLBoxes, damaged20LCans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes, deliveryDate, '1']
+    const { isDamaged, departmentId, total20LCans, total1LBoxes, total250MLBoxes, total500MLBoxes, damaged500MLBoxes, damaged250MLBoxes, damaged20LCans, damaged1LBoxes, deliveryDate, dcNo } = input
+    let query = "insert into warehousestockdetails (warehouseId,20LCans,1LBoxes,500MLBoxes,250MLBoxes,damaged20LCans,damaged1LBoxes,damaged500MLBoxes,damaged250MLBoxes,deliveryDate,isConfirmed,DCNO) values(?,?,?,?,?,?,?,?,?,?,?,?)";
+    let requestBody = [departmentId, total20LCans, total1LBoxes, total500MLBoxes, total250MLBoxes, damaged20LCans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes, deliveryDate, '1', dcNo]
 
-    if (isDamaged) requestBody = [departmentId, total20LCans - damaged20LCans, total1LBoxes - damaged1LBoxes, total500MLBoxes - damaged500MLBoxes, total250MLBoxes - damaged250MLBoxes, damaged20LCans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes, deliveryDate, '1']
+    if (isDamaged) requestBody = [departmentId, total20LCans - damaged20LCans, total1LBoxes - damaged1LBoxes, total500MLBoxes - damaged500MLBoxes, total250MLBoxes - damaged250MLBoxes, damaged20LCans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes, deliveryDate, '1', dcNo]
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 warehouseQueries.insertReturnStockDetails = (input, callback) => {

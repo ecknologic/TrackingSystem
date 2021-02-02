@@ -307,4 +307,22 @@ router.get("/getOrders", (req, res) => {
     }
   })
 });
+router.get('/getEmptyCansList/:warehouseId', (req, res) => {
+  warehouseQueries.getEmptyCansList(req.params.warehouseId, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.json(results);
+  })
+})
+router.get('/getReceivedStock/:warehouseId', (req, res) => {
+  warehouseQueries.getReceivedStock(req.params.warehouseId, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.json(results);
+  })
+})
+router.get('/getDepartmentStaff/:warehouseId', (req, res) => {
+  warehouseQueries.getDepartmentStaff(req.params.warehouseId, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.json(results);
+  })
+})
 module.exports = router;
