@@ -1,4 +1,5 @@
 import { Col, Row } from 'antd';
+import { useHistory } from 'react-router-dom';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http'
 import Spinner from '../../../../components/Spinner';
@@ -7,6 +8,7 @@ import EmployeeCard from '../../../../components/EmployeeCard';
 import CustomPagination from '../../../../components/CustomPagination';
 
 const Staff = () => {
+    const history = useHistory()
     const [employees, setEmployees] = useState([])
     const [loading, setLoading] = useState(true)
     const [pageSize, setPageSize] = useState(12)
@@ -38,7 +40,7 @@ const Staff = () => {
     }
 
     const goToManageEmployee = (id) => {
-        // history.push(`drivers/manage/${id}`)
+        history.push(`drivers/manage/${id}`)
     }
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize

@@ -50,7 +50,7 @@ const SideMenu = () => {
                 selectedKeys={selected}
                 onSelect={handleMenuSelect}
             >
-                <Item key='/dashboard' style={{ pointerEvents: 'none' }}>
+                <Item key='/dashboard'>
                     {selected === '/dashboard' ? <DashboardIcon /> : <DashboardIconLight />}
                     <span>Dashboard</span>
                 </Item>

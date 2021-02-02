@@ -1,0 +1,51 @@
+.dashboard-content {
+    width: 100%;
+    display: flex;
+    padding: 2em;
+}
+
+.dashboard-panel {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.dashboard-panel-header {
+    width: 100%;
+    display: flex;
+
+    .primary {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+
+        .head-container {
+            display: flex;
+            align-items: center;
+
+            .title {
+                font-family: 'PoppinsSemiBold600';
+                font-size: 1.2em;
+                color: #354052;
+                margin-right: 1em;
+            }
+
+            .select-options {
+                display: flex;
+
+                .option {
+                    margin-right: 1em;
+                }
+            }
+        }
+
+        .date-display {
+            color: #B4B3B3;
+            font-family: 'PoppinsSemiBold600';
+            
+            span {
+                font-size: .9em;
+            }
+        }
+    }
+}

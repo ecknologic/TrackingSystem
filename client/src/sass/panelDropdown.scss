@@ -1,0 +1,38 @@
+$textColor:rgba(0,0,0,0.85);
+
+.panel-drop-down-select {
+    border: none;
+    outline: none;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+
+    .down {
+        height: 100%;
+        width: 1.5em;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        svg {
+            transform: scale(.9);
+        }
+    }
+
+    .text-container {
+        cursor: default;
+    }
+
+    .label {
+        color: $textColor;
+        padding-right: .5em;
+        font-family: 'PoppinsRegular400';
+    }
+
+    .selected-item {
+        font-family: 'PoppinsSemiBold600';
+        cursor: pointer;
+    }
+}

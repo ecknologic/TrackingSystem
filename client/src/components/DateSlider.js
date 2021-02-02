@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Slider from "react-slick";
 import DateSlideItem from './DateSlideItem';
@@ -6,7 +7,6 @@ import { getAdjustedSlideIndex } from '../utils/Functions';
 import { TODAYDATE } from '../utils/constants';
 import WeekSlider from './WeekSlider';
 import '../sass/dateSlider.scss'
-import dayjs from 'dayjs';
 
 const DateSlider = ({ data, selected, selectedDate, month, onSelect }) => {
     const sliderRef = useRef()
