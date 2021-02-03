@@ -6,7 +6,6 @@ import Delivery from './tabs/Delivery';
 import StockDetails from './tabs/StockDetails';
 import StockReceived from './tabs/StockReceived';
 import { TODAYDATE } from '../../../utils/constants';
-import NoContent from '../../../components/NoContent';
 import Header from '../../../components/ContentHeader';
 import ReportsDropdown from '../../../components/ReportsDropdown';
 import DatePickerPanel from '../../../components/DatePickerPanel';

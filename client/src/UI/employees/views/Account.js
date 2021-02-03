@@ -5,12 +5,26 @@ import { getRoleLabel } from '../../../utils/Functions';
 import { Divider } from 'antd';
 const DATEFORMAT = 'DD/MM/YYYY'
 
-const AccountView = ({ data, isDriver }) => {
+const AccountView = ({ data, isDriver, isWHAdmin }) => {
 
     const {
         userName, parentName, gender, dob, mobileNumber, address, joinedDate, permanentAddress,
         roleId, emailid, recommendedBy, recruitedBy, accountNo, branchName, bankName, ifscCode, departmentName
     } = data
+
+    const renderDOJ = () => (
+        <div className='input-container'>
+            <InputValue size='smaller' value='Date of Joining' />
+            <InputValue size='large' value={dayjs(joinedDate).format(DATEFORMAT)} />
+        </div>
+    )
+
+    const renderDOB = () => (
+        <div className='input-container'>
+            <InputValue size='smaller' value='Date of Birth' />
+            <InputValue size='large' value={dayjs(dob).format(DATEFORMAT)} />
+        </div>
+    )
 
     return (
         <div className='app-view-info'>
@@ -39,16 +53,14 @@ const AccountView = ({ data, isDriver }) => {
                     <InputValue size='smaller' value='Gender' />
                     <InputValue size='large' value={gender} />
                 </div>
-                <div className='input-container'>
-                    <InputValue size='smaller' value='Date of Birth' />
-                    <InputValue size='large' value={dayjs(dob).format(DATEFORMAT)} />
-                </div>
+                {
+                    isWHAdmin ? renderDOJ() : renderDOB()
+                }
             </div>
             <div className='row half-stretch'>
-                <div className='input-container'>
-                    <InputValue size='smaller' value='Date of Joining' />
-                    <InputValue size='large' value={dayjs(joinedDate).format(DATEFORMAT)} />
-                </div>
+                {
+                    isWHAdmin ? null : renderDOJ()
+                }
                 {
                     !isDriver ? (
                         <div className='input-container'>
@@ -63,20 +75,25 @@ const AccountView = ({ data, isDriver }) => {
                     ) : null
                 }
             </div>
-            <div className='row half-stretch'>
-                <div className='input-container'>
-                    <InputValue size='smaller' value='Recruited By' />
-                    <InputValue size='large' value={recruitedBy} />
-                </div>
-                {
-                    recommendedBy && (
-                        <div className='input-container'>
-                            <InputValue size='smaller' value='Recommended By' />
-                            <InputValue size='large' value={recommendedBy} />
+            {
+                isWHAdmin ? null
+                    : <>
+                        <div className='row half-stretch'>
+                            <div className='input-container'>
+                                <InputValue size='smaller' value='Recruited By' />
+                                <InputValue size='large' value={recruitedBy} />
+                            </div>
+                            {
+                                recommendedBy && (
+                                    <div className='input-container'>
+                                        <InputValue size='smaller' value='Recommended By' />
+                                        <InputValue size='large' value={recommendedBy} />
+                                    </div>
+                                )
+                            }
                         </div>
-                    )
-                }
-            </div>
+                    </>
+            }
             <div className='row half-stretch'>
                 <div className='input-container stretch'>
                     <InputValue size='smaller' value='Address of Communtication' />
@@ -89,30 +106,35 @@ const AccountView = ({ data, isDriver }) => {
                     <InputValue size='large' value={permanentAddress} />
                 </div>
             </div>
-            <Divider className='form-divider' />
-            <div className='employee-title-container inner'>
-                <span className='title'>Bank Account Details</span>
-            </div>
-            <div className='row half-stretch'>
-                <div className='input-container '>
-                    <InputValue size='smaller' value='Account Number' />
-                    <InputValue size='large' value={accountNo} />
-                </div>
-                <div className='input-container'>
-                    <InputValue size='smaller' value='Bank Name' />
-                    <InputValue size='large' value={bankName} />
-                </div>
-            </div>
-            <div className='row half-stretch'>
-                <div className='input-container'>
-                    <InputValue size='smaller' value='Branch Name' />
-                    <InputValue size='large' value={branchName} />
-                </div>
-                <div className='input-container'>
-                    <InputValue size='smaller' value='IFSC Code' />
-                    <InputValue size='large' value={ifscCode} />
-                </div>
-            </div>
+            {
+                isWHAdmin ? null
+                    : <>
+                        <Divider className='form-divider' />
+                        <div className='employee-title-container inner'>
+                            <span className='title'>Bank Account Details</span>
+                        </div>
+                        <div className='row half-stretch'>
+                            <div className='input-container '>
+                                <InputValue size='smaller' value='Account Number' />
+                                <InputValue size='large' value={accountNo} />
+                            </div>
+                            <div className='input-container'>
+                                <InputValue size='smaller' value='Bank Name' />
+                                <InputValue size='large' value={bankName} />
+                            </div>
+                        </div>
+                        <div className='row half-stretch'>
+                            <div className='input-container'>
+                                <InputValue size='smaller' value='Branch Name' />
+                                <InputValue size='large' value={branchName} />
+                            </div>
+                            <div className='input-container'>
+                                <InputValue size='smaller' value='IFSC Code' />
+                                <InputValue size='large' value={ifscCode} />
+                            </div>
+                        </div>
+                    </>
+            }
         </div>
     )
 }

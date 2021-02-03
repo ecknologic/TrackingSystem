@@ -11,7 +11,7 @@ import ConfirmMessage from '../../../components/ConfirmMessage';
 import CustomPagination from '../../../components/CustomPagination';
 import { getMainPathname, showToast } from '../../../utils/Functions';
 
-const Dashboard = ({ reFetch }) => {
+const Dashboard = ({ reFetch, isDriver }) => {
     const history = useHistory()
     const { pathname } = useLocation()
     const [employees, setEmployees] = useState([])
@@ -24,10 +24,9 @@ const Dashboard = ({ reFetch }) => {
 
     const mainUrl = useMemo(() => getMainPathname(pathname), [pathname])
     const isSuperAdmin = useMemo(() => getRole() === SUPERADMIN, [])
-    const [employeeType] = useState(() => getEmployeeType(mainUrl))
+    const [employeeType] = useState(() => getEmployeeType(isDriver))
     const pageSizeOptions = useMemo(() => generatePageSizeOptions(), [window.innerWidth])
-    const idKey = useMemo(() => getKey(mainUrl), [])
-    const isDriver = employeeType === 'Driver'
+    const idKey = useMemo(() => getKey(isDriver), [])
 
     useEffect(() => {
         setLoading(true)
@@ -35,7 +34,7 @@ const Dashboard = ({ reFetch }) => {
     }, [reFetch])
 
     const getEmployees = async () => {
-        const url = getUrl(mainUrl)
+        const url = getUrl(isDriver)
 
         const data = await http.GET(url)
         setEmployees(data)
@@ -61,7 +60,7 @@ const Dashboard = ({ reFetch }) => {
 
     const handleDelete = async (id) => {
         const options = { item: employeeType, v1Ing: 'Deleting', v2: 'deleted' }
-        const url = deleteUrl(mainUrl, id)
+        const url = deleteUrl(isDriver, id)
 
         try {
             showToast({ ...options, action: 'loading' })
@@ -136,29 +135,29 @@ const Dashboard = ({ reFetch }) => {
     )
 }
 
-const getUrl = (url) => {
+const getUrl = (isDriver) => {
     const staffUrl = '/users/getUsers'
     const driverUrl = '/driver/getDrivers'
 
-    if (url === '/staff') return staffUrl
-    return driverUrl
+    if (isDriver) return driverUrl
+    return staffUrl
 }
 
-const deleteUrl = (url, id) => {
+const deleteUrl = (isDriver, id) => {
     const staffUrl = `/users/deleteWebUser/${id}`
     const driverUrl = `/driver/deleteDriver/${id}`
 
-    if (url === '/staff') return staffUrl
-    return driverUrl
+    if (isDriver) return driverUrl
+    return staffUrl
 }
 
-const getKey = (url) => {
-    const type = url === '/staff' ? 'userId' : 'driverId'
+const getKey = (isDriver) => {
+    const type = isDriver ? 'driverId' : 'userId'
     return type
 }
 
-const getEmployeeType = (url) => {
-    const type = url === '/staff' ? 'Staff' : 'Driver'
+const getEmployeeType = (isDriver) => {
+    const type = isDriver ? 'Driver' : 'Staff'
     return type
 }
 
