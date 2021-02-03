@@ -35,7 +35,7 @@ warehouseQueries.getConfirmedEmptyCans = async (warehouseId, callback) => {
     return executeGetParamsQuery(query, [warehouseId, warehouseId], callback)
 }
 warehouseQueries.getEmptyCansList = async (departmentId, callback) => {
-    let query = "SELECT e.*,d.departmentName,dri.driverName,dri.mobileNumber from EmptyCanDetails e INNER JOIN departmentmaster d ON e.motherplantId=d.departmentId INNER JOIN driverdetails dri ON e.driverId=dri.driverId where e.warehouseId=? OR e.motherPlantId=? ORDER BY e.createdDateTime DESC";
+    let query = "SELECT e.*,d.departmentName,dri.driverName,dri.mobileNumber,v.vehicleType,v.vehicleName,v.vehicleNo from EmptyCanDetails e INNER JOIN departmentmaster d ON e.motherplantId=d.departmentId INNER JOIN driverdetails dri ON e.driverId=dri.driverId INNER JOIN VehicleDetails v ON e.vehicleId=v.vehicleId where e.warehouseId=? OR e.motherPlantId=? ORDER BY e.createdDateTime DESC";
     return executeGetParamsQuery(query, [departmentId, departmentId], callback)
 }
 warehouseQueries.getReceivedStock = async (warehouseId, callback) => {
