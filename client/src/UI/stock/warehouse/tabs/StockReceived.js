@@ -9,7 +9,7 @@ import CustomModal from '../../../../components/CustomModal';
 import { EyeIconGrey } from '../../../../components/SVG_Icons';
 import { receivedStockColumns } from '../../../../assets/fixtures';
 import CustomPagination from '../../../../components/CustomPagination';
-import { showToast } from '../../../../utils/Functions';
+import { getStatusColor, showToast } from '../../../../utils/Functions';
 
 const StockReceived = () => {
     const [loading, setLoading] = useState(true)
@@ -18,7 +18,6 @@ const StockReceived = () => {
     const [pageSize, setPageSize] = useState(10)
     const [totalCount, setTotalCount] = useState(null)
     const [pageNumber, setPageNumber] = useState(1)
-    const [btnDisabled, setBtnDisabled] = useState(false)
     const [viewModal, setViewModal] = useState(false)
 
     useEffect(() => {
@@ -58,13 +57,15 @@ const StockReceived = () => {
     }
 
     const dataSource = useMemo(() => stock.map((order) => {
-        const { id, dcNo, departmentName, driverName, mobileNumber, product20L, product1L, product250ML, product500ML } = order
+        const { id, dcNo, departmentName, driverName, mobileNumber, product20L, product1L,
+            product250ML, product500ML, isConfirmed } = order
         return {
             key: id,
             dcNo,
             departmentName,
             driverName,
             mobileNumber,
+            status: renderStatus(isConfirmed),
             stockDetails: renderStockDetails({ product20L, product1L, product250ML, product500ML }),
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, id)} />
         }
@@ -110,22 +111,27 @@ const StockReceived = () => {
             <CustomModal
                 className={`app-form-modal app-view-modal stock-details-modal`}
                 visible={viewModal}
-                btnDisabled={btnDisabled}
                 onOk={handleModalCancel}
                 onCancel={handleModalCancel}
                 title='Received Stock Details'
                 okTxt='Close'
                 hideCancel
             >
-                <ArrivedStockView
-                    viewOnly
-                    data={viewData}
-                />
+                <ArrivedStockView viewOnly data={viewData} />
             </CustomModal>
         </div>
     )
 }
-
+const renderStatus = (status) => {
+    const text = status ? 'Confirmed' : 'Pending'
+    const color = getStatusColor(text)
+    return (
+        <div className='status'>
+            <span className='app-dot' style={{ background: color }}></span>
+            <span className='status-text'>{text}</span>
+        </div>
+    )
+}
 const renderStockDetails = ({ product20L, product1L, product500ML, product250ML }) => {
     return `
     20 lts - ${product20L}, 1 ltr - ${product1L} boxes, 

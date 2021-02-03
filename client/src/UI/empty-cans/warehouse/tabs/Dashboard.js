@@ -8,12 +8,13 @@ import Spinner from '../../../../components/Spinner';
 import CustomModal from '../../../../components/CustomModal';
 import ConfirmModal from '../../../../components/CustomModal';
 import { getEmptyCanColumns } from '../../../../assets/fixtures';
-import { EditIconGrey } from '../../../../components/SVG_Icons';
+import { EditIconGrey, EyeIconGrey } from '../../../../components/SVG_Icons';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomPagination from '../../../../components/CustomPagination';
 import { getRole, TRACKFORM } from '../../../../utils/constants';
 import { deepClone, getStatusColor, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 import { validateNumber, validateRECValues } from '../../../../utils/validations';
+import EmptyCansView from '../../motherplant/views/EmptyCans';
 const DATEFORMAT = 'DD/MM/YYYY'
 
 const Dashboard = ({ reFetch, driverList, ...rest }) => {
@@ -26,6 +27,7 @@ const Dashboard = ({ reFetch, driverList, ...rest }) => {
     const [pageNumber, setPageNumber] = useState(1)
     const [totalCount, setTotalCount] = useState(null)
     const [editModal, setEditModal] = useState(false)
+    const [viewModal, setViewModal] = useState(false)
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
     const [shake, setShake] = useState(false)
@@ -56,10 +58,9 @@ const Dashboard = ({ reFetch, driverList, ...rest }) => {
     }
 
     const handleMenuSelect = (key, data) => {
-        if (key === 'edit') {
-            setFormData(data)
-            setEditModal(true)
-        }
+        setFormData(data)
+        if (key === 'view') setViewModal(true)
+        else if (key === 'edit') setEditModal(true)
     }
 
     const handleChange = (value, key) => {
@@ -141,6 +142,7 @@ const Dashboard = ({ reFetch, driverList, ...rest }) => {
         if (formHasChanged && !hasUpdated) {
             return setConfirmModal(true)
         }
+        setViewModal(false)
         setEditModal(false)
         resetForm()
     }
@@ -157,7 +159,7 @@ const Dashboard = ({ reFetch, driverList, ...rest }) => {
             mobileNumber,
             status: renderStatus(status),
             dateAndTime: dayjs(createdDateTime).format(DATEFORMAT),
-            action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, route)} />
+            action: <Actions options={getActions(status)} onSelect={({ key }) => handleMenuSelect(key, route)} />
         }
     }), [emptyCans])
 
@@ -196,20 +198,26 @@ const Dashboard = ({ reFetch, driverList, ...rest }) => {
             }
             <CustomModal
                 className={`app-form-modal app-view-modal stock-details-modal ${shake ? 'app-shake' : ''}`}
-                visible={editModal}
+                visible={viewModal || editModal}
                 btnDisabled={btnDisabled}
-                onOk={handleSubmit}
+                hideCancel={viewModal}
+                onOk={viewModal ? handleModalCancel : handleSubmit}
                 onCancel={handleModalCancel}
                 title='Empty Cans Details'
-                okTxt='Update'
-                track
+                okTxt={viewModal ? 'Close' : 'Update'}
             >
-                <EmptyCansForm
-                    data={formData}
-                    errors={formErrors}
-                    onChange={handleChange}
-                    {...rest}
-                />
+                {
+                    viewModal ? <EmptyCansView
+                        data={formData}
+                        formData={formData}
+                        errors={formErrors}
+                    /> : <EmptyCansForm
+                            data={formData}
+                            errors={formErrors}
+                            onChange={handleChange}
+                            {...rest}
+                        />
+                }
             </CustomModal>
             <ConfirmModal
                 visible={confirmModal}
@@ -233,5 +241,9 @@ const renderStatus = (status) => {
         </div>
     )
 }
-const options = [<Menu.Item key="edit" icon={<EditIconGrey />}>Edit</Menu.Item>]
+const getActions = (status) => {
+    if (status === 'Approved')
+        return [<Menu.Item key="view" icon={<EyeIconGrey />}>View</Menu.Item>]
+    return [<Menu.Item key="edit" icon={<EditIconGrey />}>Edit</Menu.Item>]
+}
 export default Dashboard

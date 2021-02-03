@@ -76,7 +76,7 @@ warehouseQueries.updateMotherplantReturnEmptyCans = (input, callback) => {
     let query = "update EmptyCanDetails set motherplantId=?, warehouseId=?, driverId=?, vehicleId=?, emptycans_count=?, details=?, status=? where id=?";
     let requestBody = [motherplantId, warehouseId, driverId, vehicleId, emptycans_count, details, status, id]
     executePostOrUpdateQuery(query, requestBody, () => {
-        let query1 = `SELECT e.*,d.departmentName as motherplantName,dri.driverName,dri.mobileNumber from EmptyCanDetails e INNER JOIN departmentmaster d ON e.motherplantId=d.departmentId INNER JOIN driverdetails dri ON e.driverId=dri.driverId where id=${id}`
+        let query1 = `SELECT e.*,d.departmentName,dri.driverName,dri.mobileNumber from EmptyCanDetails e INNER JOIN departmentmaster d ON e.motherplantId=d.departmentId INNER JOIN driverdetails dri ON e.driverId=dri.driverId where id=${id}`
         executeGetQuery(query1, callback)
     })
 }

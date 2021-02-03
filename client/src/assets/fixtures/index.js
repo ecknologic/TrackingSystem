@@ -351,6 +351,11 @@ export const receivedStockColumns = [
         key: 'mobileNumber',
     },
     {
+        title: 'Status',
+        dataIndex: 'status',
+        key: 'status'
+    },
+    {
         title: 'Actions',
         dataIndex: 'action',
         key: 'action'
