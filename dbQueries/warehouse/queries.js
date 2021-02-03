@@ -53,11 +53,11 @@ warehouseQueries.getDepartmentStaff = async (warehouseId, callback) => {
 }
 //POST Request Methods
 warehouseQueries.saveWarehouseStockDetails = (input, callback) => {
-    const { isDamaged, departmentId, total20LCans, total1LBoxes, total250MLBoxes, total500MLBoxes, damaged500MLBoxes, damaged250MLBoxes, damaged20LCans, damaged1LBoxes, deliveryDate, dcNo, damagedDesc } = input
+    const { isDamaged, departmentId, product20L, product1L, product250ML, product500ML, damaged500MLBoxes, damaged250MLBoxes, damaged20LCans, damaged1LBoxes, deliveryDate, dcNo, damagedDesc } = input
     let query = "insert into warehousestockdetails (warehouseId,20LCans,1LBoxes,500MLBoxes,250MLBoxes,damaged20LCans,damaged1LBoxes,damaged500MLBoxes,damaged250MLBoxes,deliveryDate,isConfirmed,DCNO,damagedDesc) values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
-    let requestBody = [departmentId, total20LCans, total1LBoxes, total500MLBoxes, total250MLBoxes, damaged20LCans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes, deliveryDate, '1', dcNo, damagedDesc]
+    let requestBody = [departmentId, product20L, product1L, product500ML, product250ML, damaged20LCans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes, deliveryDate, '1', dcNo, damagedDesc]
 
-    if (isDamaged) requestBody = [departmentId, total20LCans - damaged20LCans, total1LBoxes - damaged1LBoxes, total500MLBoxes - damaged500MLBoxes, total250MLBoxes - damaged250MLBoxes, damaged20LCans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes, deliveryDate, '1', dcNo, damagedDesc]
+    if (isDamaged) requestBody = [departmentId, product20L - damaged20LCans, product1L - damaged1LBoxes, product500ML - damaged500MLBoxes, product250ML - damaged250MLBoxes, damaged20LCans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes, deliveryDate, '1', dcNo, damagedDesc]
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 warehouseQueries.insertReturnStockDetails = (input, callback) => {
