@@ -30,7 +30,7 @@ const Drivers = () => {
                         activeKey={activeTab}
                     >
                         <TabPane tab="Drivers" key="1">
-                            <Dashboard />
+                            <Dashboard isDriver />
                         </TabPane>
                         <TabPane tab="Vehicles" key="2">
                             <Vehicles reFetch={reFetch} />

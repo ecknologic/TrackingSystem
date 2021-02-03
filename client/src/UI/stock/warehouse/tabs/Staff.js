@@ -40,7 +40,7 @@ const Staff = () => {
     }
 
     const goToManageEmployee = (id) => {
-        history.push(`drivers/manage/${id}`)
+        history.push(`/manage-stock/staff/${id}`)
     }
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize

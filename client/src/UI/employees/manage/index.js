@@ -16,7 +16,7 @@ import CustomButton from '../../../components/CustomButton';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import { getDepartmentOptions, getRoleOptions } from '../../../assets/fixtures';
 import { isEmpty, showToast, base64String, getMainPathname, getBase64, getValidDate } from '../../../utils/Functions';
-import { TRACKFORM } from '../../../utils/constants';
+import { getRole, TRACKFORM } from '../../../utils/constants';
 import {
     validateIDNumbers, validateNames, validateMobileNumber, validateEmailId, validateIDProofs,
     validateEmployeeValues, validateDependentValues, validateNumber, validateIFSCCode
@@ -24,9 +24,10 @@ import {
 import '../../../sass/employees.scss'
 const DATEFORMAT = 'YYYY-MM-DD'
 
-const ManageEmployee = () => {
-    const { employeeId } = useParams()
+const ManageEmployee = ({ isDriver }) => {
+    const role = getRole()
     const history = useHistory()
+    const { employeeId } = useParams()
     const { pathname } = useLocation()
     const [accountValues, setAccountValues] = useState({ loading: true })
     const [headerContent, setHeaderContent] = useState({})
@@ -49,7 +50,7 @@ const ManageEmployee = () => {
     const [departmentList, setDepartmentList] = useState([])
     const [prevDepartmentId, setPrevDepartmentId] = useState('')
 
-    const isDriver = employeeType === 'Driver'
+    const isWHAdmin = useMemo(() => role === 'WarehouseAdmin', [role])
     const roleOptions = useMemo(() => getRoleOptions(roleList), [roleList])
     const mainUrl = useMemo(() => getMainPathname(pathname), [pathname])
     const departmentOptions = useMemo(() => getDepartmentOptions(departmentList), [departmentList])
@@ -57,12 +58,12 @@ const ManageEmployee = () => {
         [adharProof, licenseProof, adharProofErrors, licenseProofErrors, roleOptions, departmentOptions])
 
     useEffect(() => {
-        getEmployeeType(mainUrl)
+        getEmployeeType()
         getEmployee()
     }, [])
 
     const getEmployee = async () => {
-        const url = `${getUrl(mainUrl)}/${employeeId}`
+        const url = `${getUrl(isDriver)}/${employeeId}`
 
         const [data] = await http.GET(url)
         const { adhar_frontside, adhar_backside, dependentAdharNo, dependentDetails: dep, license_frontside,
@@ -87,8 +88,8 @@ const ManageEmployee = () => {
         setLoading(false)
     }
 
-    const getEmployeeType = (url) => {
-        const type = url === '/staff' ? 'Staff' : 'Driver'
+    const getEmployeeType = () => {
+        const type = isDriver ? 'Driver' : 'Staff'
         setEmployeeType(type)
     }
 
@@ -312,7 +313,7 @@ const ManageEmployee = () => {
             ...accountValues, adharProof, licenseProof, dependentDetails,
             removedDepartmentId
         }
-        const url = updateUrl(mainUrl)
+        const url = updateUrl(isDriver)
         const options = { item: employeeType, v1Ing: 'Updating', v2: 'updated' }
 
 
@@ -365,6 +366,7 @@ const ManageEmployee = () => {
                                     <>
                                         <EmployeeForm
                                             editMode
+                                            isWHAdmin={isWHAdmin}
                                             data={accountValues}
                                             errors={accountErrors}
                                             title={employeeType}
@@ -375,28 +377,36 @@ const ManageEmployee = () => {
                                             onRemove={handleRemove}
                                             {...childProps}
                                         />
-                                        <DependentForm
-                                            data={depValues}
-                                            errors={depErrors}
-                                            adharProof={depAdharProof}
-                                            adharProofErrors={depAdharProofErrors}
-                                            onBlur={handleDepBlur}
-                                            onChange={handleDepChange}
-                                            onUpload={handleDepUpload}
-                                            onRemove={handleDepRemove}
-                                        />
+                                        {
+                                            isWHAdmin ? null
+                                                : <DependentForm
+                                                    data={depValues}
+                                                    errors={depErrors}
+                                                    adharProof={depAdharProof}
+                                                    adharProofErrors={depAdharProofErrors}
+                                                    onBlur={handleDepBlur}
+                                                    onChange={handleDepChange}
+                                                    onUpload={handleDepUpload}
+                                                    onRemove={handleDepRemove}
+                                                />
+                                        }
                                     </>
                                 ) :
                                     <>
                                         <IDProofInfo data={adharProof} />
                                         {isDriver && <IDProofInfo data={licenseProof} />}
-                                        <AccountView isDriver={isDriver} data={accountValues} />
-                                        <Divider className='form-divider half-line' />
-                                        <div className='employee-title-container inner'>
-                                            <span className='title'>Dependent Details</span>
-                                        </div>
-                                        <IDProofInfo data={depAdharProof} />
-                                        <DependentView data={depValues} />
+                                        <AccountView isDriver={isDriver} isWHAdmin={isWHAdmin} data={accountValues} />
+                                        {
+                                            isWHAdmin ? null
+                                                : <>
+                                                    <Divider className='form-divider half-line' />
+                                                    <div className='employee-title-container inner'>
+                                                        <span className='title'>Dependent Details</span>
+                                                    </div>
+                                                    <IDProofInfo data={depAdharProof} />
+                                                    <DependentView data={depValues} />
+                                                </>
+                                        }
                                     </>
                             }
                             <div className={`app-footer-buttons-container ${editMode ? 'edit' : 'view'}`}>
@@ -427,20 +437,20 @@ const ManageEmployee = () => {
     )
 }
 
-const getUrl = (url) => {
+const getUrl = (isDriver) => {
     const staffUrl = '/users/getUser'
     const driverUrl = '/driver/getDriver'
 
-    if (url === '/staff') return staffUrl
-    return driverUrl
+    if (isDriver) return driverUrl
+    return staffUrl
 }
 
-const updateUrl = (url) => {
+const updateUrl = (isDriver) => {
     const staffUrl = '/users/updateWebUser'
     const driverUrl = '/driver/updateDriver'
 
-    if (url === '/staff') return staffUrl
-    return driverUrl
+    if (isDriver) return driverUrl
+    return staffUrl
 }
 
 export default ManageEmployee
