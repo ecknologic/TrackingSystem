@@ -44,7 +44,7 @@ warehouseQueries.getReceivedStock = async (warehouseId, callback) => {
 }
 warehouseQueries.getReceivedStockById = async (input, callback) => {
     const { id } = input
-    let query = "SELECT w.id,w.DCNO as dcNo,w.warehouseId,w.isConfirmed,w.deliveryDate,w.damaged20LCans,w.damaged1LBoxes,w.damaged500MLBoxes,w.damaged250MLBoxes,w.20LCans as product20L,w.1LBoxes as product1L,w.500MLBoxes as product500ML,w.250MLBoxes as product250ML,d.driverName,dri.mobileNumber,dep.address,dep.departmentName from warehousestockdetails w INNER JOIN dispatches d ON w.DCNO=d.DCNO INNER JOIN departmentmaster dep ON d.departmentId=dep.departmentId INNER JOIN driverdetails dri ON d.driverId=dri.driverId where w.id=?";
+    let query = "SELECT w.id,w.DCNO as dcNo,w.warehouseId,w.isConfirmed,w.deliveryDate,w.damaged20LCans,w.damaged1LBoxes,w.damaged500MLBoxes,w.damaged250MLBoxes,w.20LCans as product20L,w.1LBoxes as product1L,w.500MLBoxes as product500ML,w.250MLBoxes as product250ML,d.driverName,dri.mobileNumber,dep.address,dep.departmentName,v.vehicleType,v.vehicleName,v.vehicleNo from warehousestockdetails w INNER JOIN dispatches d ON w.DCNO=d.DCNO INNER JOIN departmentmaster dep ON d.departmentId=dep.departmentId INNER JOIN driverdetails dri ON d.driverId=dri.driverId INNER JOIN VehicleDetails v ON d.vehicleNo=v.vehicleId where w.id=?";
     return executeGetParamsQuery(query, [id], callback)
 }
 warehouseQueries.getDepartmentStaff = async (warehouseId, callback) => {
