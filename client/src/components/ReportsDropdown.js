@@ -1,9 +1,9 @@
 import React from 'react';
 import { Dropdown, Menu } from 'antd';
 import CustomButton from './CustomButton';
-import { DocIconWhite } from './SVG_Icons';
+import { DocIconLight, DocIconWhite } from './SVG_Icons';
 
-const ReportsDropdown = ({ onSelect }) => {
+const ReportsDropdown = ({ onSelect, inverse }) => {
 
     const reportsMenu = (
         <Menu onClick={() => { }}>
@@ -31,8 +31,8 @@ const ReportsDropdown = ({ onSelect }) => {
             <CustomButton
                 text='Get Reports'
                 onClick={() => { }}
-                icon={<DocIconWhite />}
-                className='extra-btn' />
+                icon={inverse ? <DocIconLight /> : <DocIconWhite />}
+                className={`app-extra-btn ${inverse ? 'inverse' : ''}`} />
         </Dropdown>
     )
 }
