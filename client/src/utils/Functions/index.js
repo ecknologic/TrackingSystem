@@ -536,6 +536,9 @@ export const getStatusColor = (status) => {
         case 'Rejected':
             return '#E02020'
 
+        case 'Postponed':
+            return '#FA6400'
+
         default:
             return '#A10101'
     }

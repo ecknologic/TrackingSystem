@@ -1,3 +1,5 @@
+$textColor:rgba(0,0,0,0.85);
+
 .dashboard-content {
     width: 100%;
     display: flex;
@@ -15,12 +17,22 @@
         display: flex;
         flex-direction: column;
 
-        .head-container {
+        .date-display {
+            color: #B4B3B3;
+            font-family: 'PoppinsSemiBold600';
+            
+            span {
+                font-size: .9em;
+            }
+        }
+    }
+
+    .head-container {
             display: flex;
             align-items: center;
 
             .title {
-                font-family: 'PoppinsSemiBold600';
+                font-family: 'PoppinsBold700';
                 font-size: 1.1em;
                 color: #354052;
                 margin-right: 1em;
@@ -34,21 +46,39 @@
                 }
             }
         }
-
-        .date-display {
-            color: #B4B3B3;
-            font-family: 'PoppinsSemiBold600';
-            
-            span {
-                font-size: .9em;
-            }
-        }
-    }
 }
 
 .panel-body {
     padding: 1.5em 0 2.5em 0;
     display: flex;
+}
+
+.panel-details {
+    .item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: .5em;
+    }
+
+    .app-dot {
+        width: 6.5px;
+        height: 6.5px;
+        margin-right: .5em;
+        background-color: #2F9AB9;
+    }
+
+    .name {
+        color: rgba(0,0,0,0.5);
+        font-family: 'PoppinsRegular400';
+        display: flex;
+        align-items: center;
+    }
+    
+    .value {
+        font-family: 'PoppinsSemiBold600';
+        color: $textColor;
+    }
 }
 
 .prod-status-panel {
@@ -67,4 +97,25 @@
     background-color: #fff;
     border-radius: .6em;
     padding: 1em;
+}
+
+.bottom-panels-container {
+    display: flex;
+    width: 100%;
+
+    .panel-body {
+        padding-bottom: 0;
+        flex: 1;
+    }
+
+    .raw-material-panel {
+        flex-basis: 28%;
+        padding-right: 1em;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .today-delivery-details-panel {
+        flex: 1;
+    }
 }

@@ -1347,6 +1347,44 @@ textarea {
     font-family: 'PoppinsSemiBold600';
 }
 
+// -------------- Various Badge styles ------------------- //
+.app-stock-badge {
+    border: 1px solid #DC5858;
+    background-color: #F6E9EA;
+    padding: 0 .4em;
+    border-radius: .4em;
+    height: 1.1em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    span {
+        font-family: 'PoppinsSemiBold600';
+        color: #DC5858;
+        font-size: .7em;
+    }
+}
+
+.app-change-badge {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    .anticon {
+        display: flex;
+
+        svg {
+            transform: scale(.45);
+        }
+    }
+
+    .value {
+        display: flex;
+        font-family: 'PoppinsSemiBold600';
+        font-size: .8em;
+    }
+}
+
 // -------------- Various Table styles ------------------- //
 
 .app-table {

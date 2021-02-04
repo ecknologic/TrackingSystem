@@ -27,6 +27,7 @@ const Header = ({ onChange, onSearch, onSort, onFilter, onClick }) => {
                     <TabPane tab="Corporate Customers" key="1" />
                     <TabPane tab="Individual Customers" key="2" />
                     <TabPane tab="Customer Approvals" key="3" />
+                    <TabPane tab="Inactive Customers" key="4" />
                 </Tabs>
             </div>
             <div className='app-menu-container'>

@@ -733,6 +733,27 @@ export const validateProductsInStock = (inStock, products, key) => {
     return errors
 }
 
+export const compareDispatchValues = (products, inStock) => {
+    let outOfStock = 1
+    const { product20L, product1L, product500ML, product250ML } = products
+    const { product20LCount, product1LCount, product500MLCount, product250MLCount } = inStock
+
+    if (Number(product20L) !== product20LCount) {
+        outOfStock = 0
+    }
+    if (Number(product1L) !== product1LCount) {
+        outOfStock = 0
+    }
+    if (Number(product500ML) !== product500MLCount) {
+        outOfStock = 0
+    }
+    if (Number(product250ML) !== product250MLCount) {
+        outOfStock = 0
+    }
+
+    return outOfStock
+}
+
 export const validateDamagedWithArrived = (data, key) => {
     let errors = {};
     let textArray = []

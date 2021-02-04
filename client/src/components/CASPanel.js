@@ -1,7 +1,7 @@
 import React from 'react';
 import CustomButton from './CustomButton';
 
-const CASPanel = ({ data, newStock, onConfirm, arrivedStock }) => {
+const CASPanel = ({ data, newStock, onConfirm, arrivedStock, btnDisabled }) => {
 
     const { total1LBoxes, total20LCans, total250MLBoxes, total500MLBoxes } = data
     const { total20LCans: newStock20L, total1LBoxes: newStock1L, total500MLBoxes: newStock500ML,
@@ -56,7 +56,7 @@ const CASPanel = ({ data, newStock, onConfirm, arrivedStock }) => {
             </div>
             <div className='buttons'>
                 {
-                    showPurple ? <CustomButton text='Confirm Stock Particulars' onClick={onConfirm} className='app-stock-btn purple-btn' />
+                    showPurple ? <CustomButton text='Confirm Stock Particulars' onClick={onConfirm} className={`app-stock-btn purple-btn ${btnDisabled ? 'disabled' : ''}`} />
                         : showGreen ? <CustomButton text='Confirmed' className='app-stock-btn green-btn' />
                             : null
                 }

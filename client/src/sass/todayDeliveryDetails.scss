@@ -1,0 +1,14 @@
+$textColor:rgba(0,0,0,0.85);
+
+.today-delivery-details-panel {
+    display: flex;
+    flex-direction: column;
+
+    .app-table {
+        flex: 1;
+    }
+
+    .small-btn {
+        height: auto;
+    }
+}

@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { message } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
 import ArrivedStockForm from '../forms/ArrivedStock';
@@ -32,6 +33,7 @@ const StockDetails = ({ date }) => {
     const [formErrors, setFormErrors] = useState({})
     const [confirmModal, setConfirmModal] = useState(false)
     const [btnDisabled, setBtnDisabled] = useState(false)
+    const [confirmBtnDisabled, setConfirmBtnDisabled] = useState(false)
     const [modal, setModal] = useState(false)
     const [addModal, setAddModal] = useState(false)
     const [fetchList, setFetchList] = useState(false)
@@ -114,9 +116,13 @@ const StockDetails = ({ date }) => {
     }
 
     const getStockDetailsByDC = async (dcNo) => {
+        showToast({ v1Ing: 'Fetching', action: 'loading' })
         const url = `/warehouse/getDispatchDetailsByDC/${dcNo}`
         const data = await http.GET(url)
+        setConfirmBtnDisabled(false)
+        message.destroy()
         setFormData(data)
+        setModal(true)
     }
 
     const handleChange = (value, key) => {
@@ -153,8 +159,8 @@ const StockDetails = ({ date }) => {
     const onArrivedStockConfirm = () => {
         const dcItem = arrivedStock.find(item => item.isConfirmed === 0)
         if (dcItem) {
+            setConfirmBtnDisabled(true)
             getStockDetailsByDC(dcItem.dcNo)
-            setModal(true)
         }
     }
 
@@ -249,6 +255,7 @@ const StockDetails = ({ date }) => {
         <div className='stock-details-container'>
             <CASPanel data={CAS}
                 newStock={newStock}
+                btnDisabled={confirmBtnDisabled}
                 arrivedStock={arrivedStock}
                 onConfirm={onArrivedStockConfirm}
             />

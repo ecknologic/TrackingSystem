@@ -9,9 +9,9 @@ import CustomButton from '../../../components/CustomButton';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import { getDistributorOptions } from '../../../assets/fixtures';
 import { extractValidProductsForDB, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
-import { validateDispatchValues, validateMobileNumber, validateNames, validateNumber } from '../../../utils/validations';
+import { compareDispatchValues, validateDispatchValues, validateMobileNumber, validateNames, validateNumber } from '../../../utils/validations';
 
-const CreateDispatch = ({ goToTab, driverList, warehouseList, ...rest }) => {
+const CreateDispatch = ({ goToTab, driverList, warehouseList, reFetch, ...rest }) => {
     const defaultValue = { dispatchType: 'warehouse' }
     const [formData, setFormData] = useState(defaultValue)
     const [formErrors, setFormErrors] = useState({})
@@ -90,8 +90,9 @@ const CreateDispatch = ({ goToTab, driverList, warehouseList, ...rest }) => {
         else departmentName = distributorList.find(dep => dep.distributorId === formData.dispatchTo).agencyName
 
         const { product20L, product1L, product500ML, product250ML } = extractValidProductsForDB(formData)
+        const outOfStock = compareDispatchValues(formData, currentStock)
         let body = {
-            ...formData, dispatchAddress: departmentName,
+            ...formData, dispatchAddress: departmentName, outOfStock,
             product20L, product1L, product500ML, product250ML
         }
         const options = { item: 'Dispatch', v1Ing: 'Creating', v2: 'created' }
@@ -103,6 +104,7 @@ const CreateDispatch = ({ goToTab, driverList, warehouseList, ...rest }) => {
             await http.POST(url, body)
             showToast(options)
             goToTab('1')
+            outOfStock && reFetch()
             resetForm()
         } catch (error) {
             message.destroy()

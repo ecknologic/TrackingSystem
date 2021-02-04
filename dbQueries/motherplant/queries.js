@@ -26,7 +26,7 @@ motherPlantDbQueries.getDispatchesByBatch = async (input, callback) => {
 }
 motherPlantDbQueries.getProducedBatchNumbers = async (departmentId, callback) => {
     let past10thDay = dayjs().subtract(10, 'day').format('YYYY-MM-DD')
-    let query = "select p.batchId,q.productionQcId from production p INNER JOIN productionQC q on p.batchId=q.batchId WHERE p.departmentId=? AND q.departmentId=? AND DATE(`productionDate`)>=? ORDER BY productionDate DESC";
+    let query = "select p.batchId,q.productionQcId from production p INNER JOIN productionQC q on p.batchId=q.batchId WHERE p.departmentId=? AND q.outOfStock='0' AND q.departmentId=? AND DATE(`productionDate`)>=? ORDER BY productionDate DESC";
     return executeGetParamsQuery(query, [departmentId, departmentId, past10thDay], callback)
 }
 
@@ -52,11 +52,11 @@ motherPlantDbQueries.getProductionQcBatchIds = async (departmentId, callback) =>
     return executeGetParamsQuery(query, [departmentId, "Pending"], callback)
 }
 motherPlantDbQueries.getProductionBatchIds = async (departmentId, callback) => {
-    let query = "select productionQcId,batchId from productionQC where departmentId=? AND status=? ORDER BY requestedDate DESC";
+    let query = "select productionQcId,batchId from productionQC where departmentId=? AND status=? AND outOfStock='0' ORDER BY requestedDate DESC";
     return executeGetParamsQuery(query, [departmentId, "Approved"], callback)
 }
 motherPlantDbQueries.getPostProductionBatchIds = async (departmentId, callback) => {
-    let query = "select q.productionQcId,p.batchId from qualitycheck q INNER JOIN productionQC p ON q.productionQcId=p.productionQcId where q.departmentId=? AND q.testResult=? AND p.status='Approved' AND q.qcLevel != '1' ORDER BY q.testedDate DESC";
+    let query = "select q.productionQcId,p.batchId from qualitycheck q INNER JOIN productionQC p ON q.productionQcId=p.productionQcId where q.departmentId=? AND q.testResult=? AND p.status='Approved' AND q.qcLevel != '1' AND p.outOfStock='0' ORDER BY q.testedDate DESC";
     return executeGetParamsQuery(query, [departmentId, "Approved"], callback)
 }
 motherPlantDbQueries.getQCDetailsByBatch = async (input, callback) => {
@@ -275,6 +275,11 @@ motherPlantDbQueries.updateEmptyCansStatus = async (input, callback) => {
     const { status, reason, id } = input
     let query = "update EmptyCanDetails set status=?,reason=?,approvedDate=? where id=?";
     let requestBody = [status, reason, new Date(), id]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+motherPlantDbQueries.updateProductionQCStockStatus = async (batchId, callback) => {
+    let query = "update productionQC set outOfStock='1' where batchId=?";
+    let requestBody = [batchId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 module.exports = motherPlantDbQueries
