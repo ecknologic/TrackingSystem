@@ -21,9 +21,14 @@ $textColor:rgba(0,0,0,0.85);
     }
 
     .body {
+
+        .stats {
+            display: flex;
+        }
         .number {
             color: #2E384D;
             font-size: 1.55em;
+            padding-right: .3em;
         }
 
         .compare-text {

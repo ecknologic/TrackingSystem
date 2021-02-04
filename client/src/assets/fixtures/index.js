@@ -362,6 +362,34 @@ export const receivedStockColumns = [
     },
 ]
 
+export const todayDeliveryColumns = [
+    {
+        title: 'DC Number',
+        dataIndex: 'dcNo',
+        key: 'dcNo',
+    },
+    {
+        title: 'Delivery Details',
+        dataIndex: 'address',
+        key: 'address',
+    },
+    {
+        title: 'Order Details',
+        dataIndex: 'orderDetails',
+        key: 'orderDetails',
+    },
+    {
+        title: 'Driver Name',
+        dataIndex: 'driverName',
+        key: 'driverName',
+    },
+    {
+        title: 'Status',
+        dataIndex: 'status',
+        key: 'status'
+    }
+]
+
 export const productionColumns = [
     {
         title: 'Batch No',
@@ -729,3 +757,116 @@ export const getRMColumns = (type, isSuperAdmin) => {
 
     return columns
 }
+
+export const todayDeliveryData = [
+    {
+        "customerOrderId": 1473,
+        "customerName": "Srinivas",
+        "phoneNumber": 8528528528,
+        "address": "Madhapur",
+        "routeId": 16,
+        "driverId": 23,
+        "isDelivered": "Completed",
+        "dcNo": "DC-1473",
+        "cans20L": 10,
+        "boxes1L": 10,
+        "boxes500ML": 10,
+        "boxes250ML": 10,
+        "RouteId": 16,
+        "RouteName": "Madhapur one",
+        "RouteDescription": "Covers all Kaveri Hills and part of Madhapur",
+        "departmentId": 10,
+        "createdDateTime": "2021-01-21T07:55:46.000Z",
+        "deleted": 0,
+        "driverName": "Driver Sadhik",
+        "mobileNumber": 7987897897
+    },
+    {
+        "customerOrderId": 1470,
+        "customerName": "Ramurthy",
+        "phoneNumber": 7539852969,
+        "address": "Madhapur",
+        "routeId": 15,
+        "driverId": 20,
+        "isDelivered": "Inprogress",
+        "dcNo": "DC-1470",
+        "cans20L": 20,
+        "boxes1L": 15,
+        "boxes500ML": 152,
+        "boxes250ML": 25,
+        "RouteId": 15,
+        "RouteName": "Jubilee Hills one",
+        "RouteDescription": "Covers all Jubilee Hills area",
+        "departmentId": 10,
+        "createdDateTime": "2021-01-20T18:20:43.000Z",
+        "deleted": 0,
+        "driverName": "sharif sk",
+        "mobileNumber": 8989898989
+    },
+    {
+        "customerOrderId": 1469,
+        "customerName": "Raj kumar",
+        "phoneNumber": 7588986699,
+        "address": "Hitech city",
+        "routeId": 16,
+        "driverId": 17,
+        "isDelivered": "Postponed",
+        "dcNo": "DC-1469",
+        "cans20L": 5,
+        "boxes1L": 65,
+        "boxes500ML": 10,
+        "boxes250ML": 555,
+        "RouteId": 16,
+        "RouteName": "Madhapur one",
+        "RouteDescription": "Covers all Kaveri Hills and part of Madhapur",
+        "departmentId": 10,
+        "createdDateTime": "2021-01-21T07:55:46.000Z",
+        "deleted": 0,
+        "driverName": "Ramarao",
+        "mobileNumber": 8989898989
+    },
+    {
+        "customerOrderId": 1466,
+        "customerName": "Sai Kumar",
+        "phoneNumber": 7985897895,
+        "address": "Maithrivanam, Ameerpet",
+        "routeId": 15,
+        "driverId": 17,
+        "isDelivered": "Inprogress",
+        "dcNo": "DC-1466",
+        "cans20L": 10,
+        "boxes1L": 10,
+        "boxes500ML": 10,
+        "boxes250ML": 10,
+        "RouteId": 15,
+        "RouteName": "Jubilee Hills one",
+        "RouteDescription": "Covers all Jubilee Hills area",
+        "departmentId": 10,
+        "createdDateTime": "2021-01-20T18:20:43.000Z",
+        "deleted": 0,
+        "driverName": "Ramarao",
+        "mobileNumber": 8989898989
+    },
+    {
+        "customerOrderId": 1465,
+        "customerName": "Sundar",
+        "phoneNumber": 7897897897,
+        "address": "Ameerpet",
+        "routeId": 16,
+        "driverId": null,
+        "isDelivered": "Inprogress",
+        "dcNo": "DC-1465",
+        "cans20L": 10,
+        "boxes1L": 10,
+        "boxes500ML": 10,
+        "boxes250ML": 100,
+        "RouteId": 16,
+        "RouteName": "Madhapur one",
+        "RouteDescription": "Covers all Kaveri Hills and part of Madhapur",
+        "departmentId": 10,
+        "createdDateTime": "2021-01-21T07:55:46.000Z",
+        "deleted": 0,
+        "driverName": null,
+        "mobileNumber": null
+    }
+]

@@ -75,7 +75,7 @@ const Dispatche = () => {
                             <Dispatches reFetch={reFetch} />
                         </TabPane>
                         <TabPane tab="Create Dispatch" key="2">
-                            <CreateDispatch goToTab={handleGoToTab} {...childProps} />
+                            <CreateDispatch goToTab={handleGoToTab} reFetch={getBatchsList} {...childProps} />
                         </TabPane>
                         {/* <TabPane tab="Create Dispatch (Outside)" key="3">
                             <CreateExternalDispatch goToTab={handleGoToTab} {...childProps} />
