@@ -276,6 +276,11 @@ router.post('/addDispatchDetails', (req, res) => {
     let input = req.body;
     input.departmentId = departmentId
     input.dispatchedDate = new Date()
+    if (input.outOfStock == '1') {
+        motherPlantDbQueries.updateProductionQCStockStatus(input.batchId, (err, data) => {
+            if (err) console.log("Err", err)
+        })
+    }
     motherPlantDbQueries.addDispatchDetails(input, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
