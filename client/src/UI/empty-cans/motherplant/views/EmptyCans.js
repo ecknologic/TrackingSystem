@@ -10,7 +10,7 @@ const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 const EmptyCansView = ({ data, formData, errors, editMode, onChange }) => {
 
     const { id, status, emptycans_count, departmentName, vehicleNo, vehicleType,
-        driverName, mobileNumber, returnDate, details } = data
+        driverName, mobileNumber, createdDateTime, details } = data
     const { reason } = formData
 
     useEffect(() => {
@@ -46,7 +46,7 @@ const EmptyCansView = ({ data, formData, errors, editMode, onChange }) => {
                     </div>
                     <div className='input-container'>
                         <InputLabel name='Returned On' />
-                        <InputValue size='smaller' value={dayjs(returnDate).format(DATEANDTIMEFORMAT)} />
+                        <InputValue size='smaller' value={dayjs(createdDateTime).format(DATEANDTIMEFORMAT)} />
                     </div>
                 </div>
                 <Divider />

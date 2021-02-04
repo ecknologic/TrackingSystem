@@ -1,0 +1,64 @@
+$textColor:rgba(0,0,0,0.85);
+
+.quality-result-card {
+    height: 13em;
+    background-color: #fff;
+    border-radius: .6em;
+    flex-basis: 32.3%;
+    padding: 1em;
+    color: $textColor;
+
+    display: flex;
+    flex-direction: column;
+    
+    .title {
+        font-family: 'PoppinsBold700';
+        color: #B4B3B3;
+    }
+    
+    .shift-box {
+        .shift {
+            font-family: 'PoppinsSemiBold600';
+            color: $textColor;
+            padding-right: 1em;
+        }
+
+        .date {
+            color: #B4B3B3;
+            font-family: 'PoppinsSemiBold600';
+            font-size: .9em;
+        }
+    }
+    
+    .details {
+        margin-top: auto;
+
+        .item {
+            display: flex;
+            justify-content: space-between;
+            padding-bottom: .5em;
+        }
+
+        .name {
+            color: rgba(0,0,0,0.5);
+            font-family: 'PoppinsRegular400';
+            
+            &::before {
+                content: '';
+                display: inline-block;
+                width: 7px;
+                height: 7px;
+                border-radius: 50%;
+                margin-right: .2em;
+                background-color: #2F9AB9;
+            }
+        }
+        
+        .value {
+            font-family: 'PoppinsSemiBold600';
+            color: $textColor;
+        }
+    }
+
+    
+}

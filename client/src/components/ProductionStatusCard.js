@@ -1,0 +1,18 @@
+import React from 'react';
+import '../sass/productionStatusCard.scss';
+
+const ProductionStatusCard = ({ title, total, }) => {
+
+
+    return (
+        <div className='production-status-card'>
+            <div className='title'>{title}</div>
+            <div className='body'>
+                <div className='number'>{total}</div>
+                <span className='compare-text'>Compared to (1832 yesterday)</span>
+            </div>
+        </div>
+    )
+}
+
+export default ProductionStatusCard

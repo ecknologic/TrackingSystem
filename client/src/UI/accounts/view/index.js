@@ -258,7 +258,7 @@ const ViewAccount = () => {
                         tabBarExtraContent={
                             activeTab === '2' &&
                             <CustomButton
-                                className='extra-btn'
+                                className='app-extra-btn'
                                 onClick={onAddNewDelivery}
                                 icon={<DocIconWhite />}
                                 text='Add new Delivery address' />

@@ -736,19 +736,19 @@ export const validateProductsInStock = (inStock, products, key) => {
 export const validateDamagedWithArrived = (data, key) => {
     let errors = {};
     let textArray = []
-    const { total20LCans = 1, total1LBoxes = 1, total250MLBoxes = 1, total500MLBoxes = 1,
+    const { product20L = 1, product1L = 1, product250ML = 1, product500ML = 1,
         damaged20LCans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes } = data
 
-    if (Number(damaged20LCans) > total20LCans) {
+    if (Number(damaged20LCans) > product20L) {
         textArray.push('20 Ltrs')
     }
-    if (Number(damaged1LBoxes) > total1LBoxes) {
+    if (Number(damaged1LBoxes) > product1L) {
         textArray.push('1 Ltrs')
     }
-    if (Number(damaged500MLBoxes) > total500MLBoxes) {
+    if (Number(damaged500MLBoxes) > product500ML) {
         textArray.push('500 Ml')
     }
-    if (Number(damaged250MLBoxes) > total250MLBoxes) {
+    if (Number(damaged250MLBoxes) > product250ML) {
         textArray.push('250 Ml')
     }
 

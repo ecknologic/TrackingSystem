@@ -768,19 +768,6 @@ textarea {
         display: flex;
         justify-content: flex-end;
         align-items: center;
-
-        .extra-btn {
-            background-color: #5C63AB;
-            color: #fff;
-            cursor: pointer;
-            font-family: 'PoppinsMedium500';
-            height: 2.6em;
-            border-radius: .6em;
-
-            svg {
-                transform: scale(.7);
-            }
-        }
     }
 
     .ant-tabs-tabpane {
@@ -993,6 +980,25 @@ textarea {
         font-family: 'PoppinsRegular400';
         font-size: 1.2ch;
     }
+}
+
+.app-extra-btn {
+    background-color: #5C63AB;
+    color: #fff;
+    cursor: pointer;
+    font-family: 'PoppinsMedium500';
+    height: 2.6em;
+    border-radius: .6em;
+
+    svg {
+        transform: scale(.7);
+    }
+}
+
+.app-extra-btn.inverse {
+    background-color: transparent;
+    color: #5C63AB;
+    border: 1px solid #5C60B6;
 }
 // -------------- Various Modal styles ------------------- //
 .app-preview-modal {

@@ -1,0 +1,35 @@
+$textColor:rgba(0,0,0,0.85);
+
+.stack-card {
+    height: 6em;
+    background-color: #fff;
+    border-radius: .6em;
+    flex-basis: 24%;
+    padding: 1em;
+    color: $textColor;
+
+    display: flex;
+
+    .image-box {
+        padding-right: 1em;
+    }
+
+    .body {
+        font-family: 'PoppinsSemiBold600';
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+
+        .title {
+            font-size: .9em;
+            color: rgba(0,0,0,0.5);
+        }
+
+        .number {
+            color: #2E384D;
+            font-size: 1.55em;
+        }
+    }
+
+    
+}
