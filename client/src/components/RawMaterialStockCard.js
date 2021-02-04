@@ -1,4 +1,5 @@
 import React from 'react';
+import StockBadge from './StockBadge';
 import '../sass/rawMaterialStockCard.scss';
 
 const RawMaterialStockCard = () => {
@@ -20,7 +21,8 @@ const RawMaterialStockCard = () => {
     },
     {
         name: '1 Ltrs Caps',
-        value: '2980'
+        value: '2980',
+        isLow: true
     },
     {
         name: 'Stickers',
@@ -31,7 +33,8 @@ const RawMaterialStockCard = () => {
     },
     {
         name: '1 Ltrs Caps',
-        value: '2980'
+        value: '2980',
+        isLow: true
     },
     {
         name: 'Stickers',
@@ -43,10 +46,11 @@ const RawMaterialStockCard = () => {
             <div className='panel-details'>
                 {
                     items.map((item) => {
-                        const { name, value } = item
+                        const { name, value, isLow } = item
                         return (
                             <div className='item'>
                                 <span className='name'><span className='app-dot'></span>{name}</span>
+                                {isLow && <StockBadge />}
                                 <span className='value'>{value}</span>
                             </div>
                         )

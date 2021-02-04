@@ -34,7 +34,7 @@ const Orders = () => {
     const [warehouseList, setWarehouseList] = useState([])
     const [confirmModal, setConfirmModal] = useState(false)
     const [options, setOptions] = useState({})
-    const [fetchList, setFetchList] = useState(false)
+    const [isFetched, setIsFetched] = useState(false)
     const [devDays, setDevDays] = useState([])
     const [shake, setShake] = useState(false)
     const [label, setLabel] = useState('Create')
@@ -44,19 +44,23 @@ const Orders = () => {
     const driverOptions = useMemo(() => getDriverOptions(drivers), [drivers])
     const vehicleOptions = useMemo(() => getVehicleOptions(vehicles), [vehicles])
     const warehouseOptions = useMemo(() => getWarehouseOptions(warehouseList), [warehouseList])
+    const toastLoading = { v1Ing: 'Fetching', action: 'loading' }
 
     useEffect(() => {
         getOrders()
     }, [])
 
-    useEffect(() => {
-        if (fetchList) {
-            getRouteList(warehouseId)
-            getDriverList()
-            getVehicleList()
-            getWarehouseList()
+    const fetchData = async () => {
+        if (!isFetched) {
+            showToast(toastLoading)
+            const p1 = getRouteList(warehouseId)
+            const p2 = getDriverList()
+            const p3 = getVehicleList()
+            const p4 = getWarehouseList()
+            await Promise.all([p1, p2, p3, p4])
+            message.destroy()
         }
-    }, [fetchList])
+    }
 
     const getRouteList = async (depId) => {
         const data = await http.GET(`/customer/getRoutes/${depId}`)
@@ -85,10 +89,9 @@ const Orders = () => {
 
     const fetchDelivery = async (id) => {
         const url = `/customer/getDeliveryDetails/${id}`
-        const options = { item: 'Delivery details', v1Ing: 'Fetching', v2: 'fetched' }
 
         try {
-            showToast({ ...options, action: 'loading' })
+            showToast(toastLoading)
             let { data: [data] } = await http.GET(url)
             const { location, products, deliveryDays, gstProof, departmentId } = data
             const gst = base64String(gstProof?.data)
@@ -99,8 +102,8 @@ const Orders = () => {
             handleGetNewRouteList(departmentId)
             setFormData(formData)
             setViewedArr([...viewedArr, formData])
+            message.destroy()
             setViewModal(true)
-            showToast(options)
         } catch (error) {
             message.destroy()
         }
@@ -136,12 +139,14 @@ const Orders = () => {
         // }
     }
 
-    const handleMenuSelect = (key, data) => {
-        setFetchList(true)
+    const handleMenuSelect = async (key, data) => {
+        setIsFetched(true)
         if (key === 'view') {
             handleView(data.deliveryDetailsId)
         }
         else if (key === 'delivery') {
+            setFormData(data)
+            await fetchData()
             if (data.driverName) {
                 setLabel('Update')
                 setOptions({ item: 'Delivery', v1Ing: 'Updating', v2: 'updated' })
@@ -150,7 +155,7 @@ const Orders = () => {
                 setOptions({ item: 'Delivery', v1Ing: 'Creating', v2: 'created' })
                 setLabel('Create')
             }
-            setFormData(data)
+
             setDCModal(true)
         }
     }
@@ -203,7 +208,6 @@ const Orders = () => {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
             const [data] = await http.POST(url, body)
-            console.log(data)
             showToast(options)
             optimisticUpdate(data)
             onModalClose(true)
@@ -249,7 +253,7 @@ const Orders = () => {
             orderDetails: renderOrderDetails(getProductsForUI(products)),
             action: <Actions options={getActions(driverName)} onSelect={({ key }) => handleMenuSelect(key, order)} />
         }
-    }), [orders, viewedArr])
+    }), [orders, viewedArr, isFetched])
 
     const handleConfirmModalOk = useCallback(() => {
         setConfirmModal(false);
