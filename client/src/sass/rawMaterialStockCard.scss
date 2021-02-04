@@ -6,4 +6,12 @@ $textColor:rgba(0,0,0,0.85);
     padding: 1em;
     color: $textColor;
     flex: 1;
+
+    .name {
+        margin-right: .5em;
+    }
+
+    .app-stock-badge {
+        margin-right: auto;
+    }
 }

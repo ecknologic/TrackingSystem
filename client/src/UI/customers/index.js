@@ -52,6 +52,7 @@ const Customers = () => {
         if (tab === '1') return `getCustomerDetailsByType/Corporate`
         else if (tab === '2') return `getCustomerDetailsByType/Individual`
         else if (tab === '3') return `getCustomerDetailsByStatus/0`
+        else if (tab === '4') return `getCustomerDetailsByStatus/0`
     }
 
     const handleSearch = (value) => {
