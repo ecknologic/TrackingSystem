@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { Table } from 'antd';
+import { message, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { http } from '../../../../modules/http';
 import Spinner from '../../../../components/Spinner';
@@ -42,6 +42,7 @@ const AddMaterials = ({ onUpdate = fn }) => {
     const [formTitle, setFormTitle] = useState('')
 
     const RMColumns = useMemo(() => getRMColumns('add'), [])
+    const toastLoading = { v1Ing: 'Fetching', action: 'loading' }
 
     useEffect(() => {
         getRM()
@@ -56,9 +57,11 @@ const AddMaterials = ({ onUpdate = fn }) => {
     }
 
     const getRMReceipt = async (RMId) => {
+        showToast(toastLoading)
         const [data = {}] = await http.GET(`/motherPlant/getReceiptDetails/${RMId}`)
         const receiptImage = base64String(data?.receiptImage?.data)
         setFormData(prev => ({ ...prev, ...data, receiptImage }))
+        message.destroy()
     }
 
     const datePickerStatus = (status) => {
@@ -184,22 +187,22 @@ const AddMaterials = ({ onUpdate = fn }) => {
         setCurrentRMId(data.rawmaterialid)
         configureModalUI(data)
         setFormData(data)
-        setModal(true)
     }
 
-    const configureModalUI = (data) => {
+    const configureModalUI = async (data) => {
         setFormTitle(`Received Material Details - ${data.orderId}`)
         if (data.status === 'Confirmed') {
             setFormDisabled(true)
             setOkText('Close')
             setHideCancel(true)
-            getRMReceipt(data.rawmaterialid)
+            await getRMReceipt(data.rawmaterialid)
         }
         else {
             setOkText('Confirm Details')
             setHideCancel(false)
             setFormDisabled(false)
         }
+        setModal(true)
     }
 
     const dataSource = useMemo(() => RM.map((item) => {
