@@ -4,7 +4,7 @@ import { TRACKFORM } from "../constants"
 
 export const editData = (updatedItem, data, idField) => {
     return new Promise(resolve => {
-        if (data.length) {
+        if (!isEmpty(data)) {
             const updatedData = []
             data.map(item => {
                 if (item[idField] === updatedItem[idField]) {
@@ -76,7 +76,7 @@ export const getBase64 = (img, callback) => {
 }
 
 export const base64String = (buffer = []) => {
-    if (buffer.length) return "data:image/png;base64," + btoa(
+    if (!isEmpty(buffer)) return "data:image/png;base64," + btoa(
         new Uint8Array(buffer)
             .reduce((data, byte) => data + String.fromCharCode(byte), '')
     );
@@ -171,24 +171,24 @@ export const doubleKeyComplexSearch = (data, matcher, key1, key2) => {
 export const filterAccounts = (accountsClone, filterInfo) => {
     const { business, status, account } = filterInfo
     let singleFiltered = [], allFiltered = []
-    if (business.length && status.length && account.length) {
+    if (!isEmpty(business) && !isEmpty(status) && !isEmpty(account)) {
         allFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && status.includes(item.isApproved) && account.includes(item.customertype))
     }
-    else if (business.length && status.length) {
+    else if (!isEmpty(business) && !isEmpty(status)) {
         allFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && status.includes(item.isApproved))
     }
-    else if (business.length && account.length) {
+    else if (!isEmpty(business) && !isEmpty(account)) {
         allFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && account.includes(item.customertype))
     }
-    else if (status.length && account.length) {
+    else if (!isEmpty(status) && !isEmpty(account)) {
         allFiltered = accountsClone.filter((item) => status.includes(item.isApproved) && account.includes(item.customertype))
     }
     else {
         singleFiltered = accountsClone.filter((item) => {
-            if (account.length) {
+            if (!isEmpty(account)) {
                 return account.includes(item.customertype)
             }
-            else if (business.length) {
+            else if (!isEmpty(business)) {
                 return business.includes(item.natureOfBussiness)
             }
             return status.includes(item.isApproved)
@@ -344,8 +344,8 @@ export const extractDeliveryDetails = (data) => {
     return clone
 }
 
-export const extractGADeliveryDetails = ({ gstNo = '', deliveryLocation, departmentId, isApproved = 0, gstProof = '', address, depositAmount, routeId, mobileNumber, customerName: contactPerson }) => {
-    return { gstNo, gstProof, address, deliveryLocation, departmentId, isApproved, depositAmount, phoneNumber: mobileNumber, routeId, contactPerson }
+export const extractGADeliveryDetails = ({ gstNo = '', deliveryLocation, departmentId, isApproved = 0, gstProof = '', address, routeId, mobileNumber, customerName: contactPerson }) => {
+    return { gstNo, gstProof, address, deliveryLocation, departmentId, isApproved, phoneNumber: mobileNumber, routeId, contactPerson }
 }
 
 export const getPlantValuesForDB = ({ gstNo = '', gstProof = '', phoneNumber = '', ...rest }) => {

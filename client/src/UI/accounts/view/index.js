@@ -138,10 +138,6 @@ const ViewAccount = () => {
             const error = validateMobileNumber(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key === 'depositAmount') {
-            const error = validateNumber(value)
-            setFormErrors(errors => ({ ...errors, [key]: error }))
-        }
         else if (key === 'contactPerson') {
             const error = validateNames(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))

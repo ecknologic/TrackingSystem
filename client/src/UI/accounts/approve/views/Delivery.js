@@ -6,7 +6,7 @@ import InputLabel from '../../../../components/InputLabel';
 const DeliveryView = ({ data }) => {
 
     const {
-        gstNo, gstProof, depositAmount, departmentName, devDays, phoneNumber, contactPerson, routeName,
+        gstNo, gstProof, departmentName, devDays, phoneNumber, contactPerson, routeName,
         product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML
     } = data
 
@@ -41,10 +41,6 @@ const DeliveryView = ({ data }) => {
                     </div>
                 </div>
                 <div className='row half-stretch'>
-                    <div className='input-container'>
-                        <InputValue size='smaller' value='Deposit Amount' />
-                        <InputValue size='large' value={depositAmount} />
-                    </div>
                     <div className='input-container'>
                         <InputValue size='smaller' value='Delivery Days' />
                         <InputValue size='large' value={days.join(', ')} />

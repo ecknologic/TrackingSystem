@@ -165,7 +165,7 @@ const CloseComponent = ({ color }) => (
 )
 const BlockComponent = ({ color }) => (
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20">
-        <path fill={color} fill-rule="evenodd" d="M16.64 14.46a8 8 0 00-11.1-11.1l11.1 11.1zm-1.31 1.5L4.03 4.69a8 8 0 0011.3 11.3v-.01zM10 0a10 10 0 110 20 10 10 0 010-20z" />
+        <path fill={color} fillRule="evenodd" d="M16.64 14.46a8 8 0 00-11.1-11.1l11.1 11.1zm-1.31 1.5L4.03 4.69a8 8 0 0011.3 11.3v-.01zM10 0a10 10 0 110 20 10 10 0 010-20z" />
     </svg>
 )
 const TickComponent = ({ color }) => (

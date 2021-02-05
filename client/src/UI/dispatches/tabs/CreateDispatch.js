@@ -62,7 +62,7 @@ const CreateDispatch = ({ goToTab, driverList, warehouseList, reFetch, ...rest }
         if (key === 'batchId') getCurrentStock(value)
         if (key === 'dispatchType') {
             setFormData(data => ({ ...data, dispatchTo: null }))
-            if (value === 'distributor' && !distributorList.length) {
+            if (value === 'distributor' && isEmpty(distributorList)) {
                 getDistributorList()
             }
         }

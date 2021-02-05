@@ -28,12 +28,9 @@ const StockDetails = ({ date, source, goToTab }) => {
     const config = { cancelToken: source.token }
 
     useEffect(() => {
-        getBatchesList()
-    }, [])
-
-    useEffect(() => {
         resetForm()
         getActiveStockByDate(date)
+        isEmpty(batchList) && getBatchesList()
 
         return () => {
             http.ABORT(source)
@@ -44,7 +41,7 @@ const StockDetails = ({ date, source, goToTab }) => {
         const url = '/motherPlant/getProductionBatchIds'
 
         try {
-            const data = await http.GET(axios, url)
+            const data = await http.GET(axios, url, config)
             setBatchList(data)
         } catch (error) { }
     }

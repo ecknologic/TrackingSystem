@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import ProductForm from '../forms/Product';
 import { http } from '../../../modules/http';
 import CustomButton from '../../../components/CustomButton';
-import { validateIntFloat, validateProductValues } from '../../../utils/validations';
+import { validateIntFloat, validateNumber, validateProductValues } from '../../../utils/validations';
 import { isAlphaNum, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
 
 const CreateProduct = ({ goToTab }) => {
@@ -33,6 +33,10 @@ const CreateProduct = ({ goToTab }) => {
         }
         else if (key === 'price' || key === 'tax') {
             const error = validateIntFloat(value)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'hsnCode') {
+            const error = validateNumber(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
     }

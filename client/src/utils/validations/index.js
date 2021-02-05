@@ -34,7 +34,7 @@ export const validateRequired = (data) => {
 export const validateIDProofs = (proofs, proofType) => {
     let errors = {};
     const text = 'Required'
-    if (Object.keys(proofs).length) {
+    if (!isEmpty(proofs)) {
         const { Front, Back } = proofs;
         if (!Front) errors.Front = text
         if (proofType !== 'panNo' && !Back) errors.Back = text
@@ -46,7 +46,7 @@ export const validateIDProofs = (proofs, proofType) => {
 export const validateDevDays = (days) => {
     let errors = {};
     const text = 'Required'
-    if (!days.length) errors = { devDays: text }
+    if (isEmpty(days)) errors = { devDays: text }
 
     return errors
 }
@@ -73,11 +73,6 @@ export const validateAccountValues = (data, customerType, isInView) => {
     }
     else {
         if (!isInView) { // General account form in add account screen
-            if (!String(depositAmount)) errors.depositAmount = text
-            else {
-                const error = validateNumber(depositAmount)
-                error && (errors.depositAmount = error)
-            }
             if (!departmentId) errors.departmentId = text
             if (!routeId) errors.routeId = text
             if (!deliveryLocation) errors.deliveryLocation = text
@@ -101,6 +96,11 @@ export const validateAccountValues = (data, customerType, isInView) => {
     if (referredBy) {
         const error = validateNames(referredBy)
         error && (errors.referredBy = error)
+    }
+    if (!String(depositAmount)) errors.depositAmount = text
+    else {
+        const error = validateNumber(depositAmount)
+        error && (errors.depositAmount = error)
     }
     if (!EmailId) errors.EmailId = text
     else {
@@ -135,15 +135,9 @@ export const validateDeliveryValues = (data) => {
     let errors = {};
     const text = 'Required'
     const {
-        gstNo, gstProof, depositAmount = "", departmentId, routeId, phoneNumber, contactPerson, address,
-        deliveryLocation, ...rest
+        gstNo, gstProof, departmentId, routeId, phoneNumber, contactPerson, address, deliveryLocation, ...rest
     } = data
 
-    if (!String(depositAmount)) errors.depositAmount = text
-    else {
-        const error = validateNumber(depositAmount)
-        error && (errors.depositAmount = error)
-    }
     if (!departmentId) errors.departmentId = text
     if (!routeId) errors.routeId = text
     if (!address) errors.address = text
@@ -436,7 +430,7 @@ export const validateQCValues = (data) => {
 export const validateProductValues = (data) => {
     let errors = {};
     const text = 'Required'
-    const { productName, price, tax } = data;
+    const { productName, price, tax, hsnCode } = data;
     if (!price) errors.price = text;
     else {
         const error = validateIntFloat(price, true);
@@ -452,6 +446,11 @@ export const validateProductValues = (data) => {
     else {
         const isValid = isAlphaNum(productName);
         if (!isValid) errors.productName = 'Enter aphanumeric only';
+    }
+    if (!hsnCode) errors.hsnCode = text;
+    else {
+        const error = validateNumber(hsnCode);
+        error && (errors.hsnCode = error)
     }
     return errors
 }
@@ -726,7 +725,7 @@ export const validateProductsInStock = (inStock, products, key) => {
         textArray.push('250 Ml')
     }
 
-    if (textArray.length) {
+    if (!isEmpty(textArray)) {
         errors[key] = `${textArray.join(',')} qty exceeds current stock`
     }
 
@@ -773,7 +772,7 @@ export const validateDamagedWithArrived = (data, key) => {
         textArray.push('250 Ml')
     }
 
-    if (textArray.length) {
+    if (!isEmpty(textArray)) {
         errors[key] = `${textArray.join(',')} qty exceeds arrived stock`
     }
 

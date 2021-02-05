@@ -44,13 +44,10 @@ const Delivery = ({ date, source }) => {
     const config = { cancelToken: source.token }
 
     useEffect(() => {
-        getRoutes()
-        getDrivers()
-    }, [])
-
-    useEffect(() => {
         setLoading(true)
         getDeliveries()
+        isEmpty(routes) && getRoutes()
+        isEmpty(drivers) && getDrivers()
 
         return () => {
             http.ABORT(source)
@@ -61,7 +58,7 @@ const Delivery = ({ date, source }) => {
         const url = `/customer/getRoutes/${warehouseId}`
 
         try {
-            const data = await http.GET(axios, url)
+            const data = await http.GET(axios, url, config)
             setRoutes(data)
         } catch (error) { }
     }
@@ -70,7 +67,7 @@ const Delivery = ({ date, source }) => {
         const url = `/bibo/getdriverDetails/${warehouseId}`
 
         try {
-            const data = await http.GET(axios, url)
+            const data = await http.GET(axios, url, config)
             setDrivers(data)
         } catch (error) { }
     }
@@ -83,7 +80,7 @@ const Delivery = ({ date, source }) => {
             setPageNumber(1)
             setDeliveriesClone(data)
             setLoading(false)
-            if (filterInfo.length) {
+            if (!isEmpty(filterInfo)) {
                 generateFiltered(data, filterInfo)
             }
             else {
@@ -123,7 +120,7 @@ const Delivery = ({ date, source }) => {
     const onFilterChange = (data) => {
         setPageNumber(1)
         setFilterInfo(data)
-        if (!data.length) {
+        if (isEmpty(data)) {
             setDeliveries(deliveriesClone)
             setTotalCount(deliveriesClone.length)
         }

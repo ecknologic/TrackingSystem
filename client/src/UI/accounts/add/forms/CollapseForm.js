@@ -74,10 +74,6 @@ const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => 
             const error = validateNames(value)
             setErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key === 'depositAmount') {
-            const error = validateNumber(value)
-            setErrors(errors => ({ ...errors, [key]: error }))
-        }
         else if (key === 'phoneNumber') {
             const error = validateMobileNumber(value)
             setErrors(errors => ({ ...errors, [key]: error }))
@@ -140,7 +136,7 @@ const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => 
     }
 
     const {
-        gstNo, gstProof, depositAmount, departmentId, routeId, devDays, phoneNumber, contactPerson, address,
+        gstNo, gstProof, departmentId, routeId, devDays, phoneNumber, contactPerson, address,
         deliveryLocation, product20L, price20L, product1L, price1L, product500ML, price500ML,
         product250ML, price250ML
     } = deliveryValues
@@ -217,6 +213,14 @@ const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => 
                             onBlur={({ target: { value } }) => onBlur(value, 'phoneNumber')}
                             onChange={(value) => onChange(value, 'phoneNumber')} />
                     </div>
+                    <div className='input-container'>
+                        <InputLabel name='Delivery Days' error={errors.devDays} mandatory />
+                        <SelectInput value={devDays}
+                            options={dayOptions} mode='multiple'
+                            error={errors.devDays}
+                            onSelect={handleSelect} onDeselect={handleDeselect}
+                        />
+                    </div>
                 </div>
                 <div className='columns'>
                     <InputLabel name='Products and Price' error={errors.productNPrice} mandatory />
@@ -273,22 +277,6 @@ const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => 
                                     onChange={(value) => onChange(value, 'price250ML')} />
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div className='row'>
-                    <div className='input-container'>
-                        <InputLabel name='Delivery Days' error={errors.devDays} mandatory />
-                        <SelectInput value={devDays}
-                            options={dayOptions} mode='multiple'
-                            error={errors.devDays}
-                            onSelect={handleSelect} onDeselect={handleDeselect}
-                        />
-                    </div>
-                    <div className='input-container'>
-                        <InputLabel name='Deposit Amount' error={errors.depositAmount} mandatory />
-                        <CustomInput value={depositAmount} placeholder='Deposit Amount'
-                            error={errors.depositAmount}
-                            onChange={(value) => onChange(value, 'depositAmount')} />
                     </div>
                 </div>
             </div>

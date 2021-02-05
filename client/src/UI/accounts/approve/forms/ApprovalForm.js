@@ -15,7 +15,7 @@ const ApprovalForm = (props) => {
 
     const {
         gstNo, natureOfBussiness, organizationName, address, customerName, mobileNumber, invoicetype,
-        creditPeriodInDays, EmailId, referredBy, registeredDate, gstProof, customertype
+        creditPeriodInDays, EmailId, referredBy, registeredDate, gstProof, customertype, depositAmount
     } = data
 
     const { gstDisable } = disabledItems
@@ -74,8 +74,16 @@ const ApprovalForm = (props) => {
                             />
                         </div>
                 }
-
-
+                <div className='input-container'>
+                    <InputLabel name='Nature Of Business' error={errors.natureOfBussiness} mandatory />
+                    <SelectInput
+                        value={natureOfBussiness}
+                        options={businessOptions}
+                        track disabled={disabled}
+                        error={errors.natureOfBussiness}
+                        onSelect={(value) => onChange(value, 'natureOfBussiness')}
+                    />
+                </div>
             </div>
             <div className='row'>
                 <div className='input-container stretch'>
@@ -121,13 +129,11 @@ const ApprovalForm = (props) => {
                     />
                 </div>
                 <div className='input-container'>
-                    <InputLabel name='Nature Of Business' error={errors.natureOfBussiness} mandatory />
-                    <SelectInput
-                        value={natureOfBussiness}
-                        options={businessOptions}
-                        track disabled={disabled}
-                        error={errors.natureOfBussiness}
-                        onSelect={(value) => onChange(value, 'natureOfBussiness')}
+                    <InputLabel name='Deposit Amount' error={errors.depositAmount} mandatory />
+                    <CustomInput value={depositAmount}
+                        disabled={disabled} placeholder='Deposit Amount'
+                        error={errors.depositAmount}
+                        onChange={(value) => onChange(value, 'depositAmount')}
                     />
                 </div>
             </div>

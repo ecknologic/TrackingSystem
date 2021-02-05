@@ -148,6 +148,10 @@ const ApproveAccount = () => {
             const error = validateNames(value)
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }
+        else if (key === 'depositAmount') {
+            const error = validateNumber(value)
+            setAccountErrors(errors => ({ ...errors, [key]: error }))
+        }
         else if (key === 'mobileNumber') {
             const error = validateMobileNumber(value)
             setAccountErrors(errors => ({ ...errors, [key]: error }))
@@ -399,7 +403,7 @@ const ApproveAccount = () => {
                             }
                             <div className='heading-container'>
                                 <span className='heading'>Delivery Details</span>
-                                <span className='tail'>{`(${addresses.length} Locations)`}</span>
+                                <span className='tail'>{`(${addresses.length} ${addresses.length === 1 ? 'Location' : 'Locations'})`}</span>
                             </div>
                             <Collapse
                                 accordion
