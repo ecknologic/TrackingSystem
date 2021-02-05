@@ -242,11 +242,11 @@ const Orders = () => {
     }
 
     const dataSource = useMemo(() => orders.map((order) => {
-        const { deliveryDetailsId: key, contactPerson, location, routeName, driverName, products } = order
+        const { deliveryDetailsId: key, contactPerson, address, routeName, driverName, products } = order
         return {
             key,
             id: `${key}`,
-            address: location,
+            address,
             route: routeName,
             contactPerson,
             driverName: driverName || "Not Assigned",

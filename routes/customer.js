@@ -11,7 +11,7 @@ const multer = require('multer');
 const customerQueries = require('../dbQueries/Customer/queries.js');
 const { customerProductDetails, dbError } = require('../utils/functions.js');
 const { saveToCustomerOrderDetails } = require('./utilities');
-const { createInvoice } = require('./Invoice/createInvoice.js');
+const { createInvoice } = require('./Invoice/invoice');
 const { UPDATEMESSAGE, DELETEMESSAGE } = require('../utils/constants.js');
 let departmentId;
 
@@ -341,6 +341,14 @@ router.get("/getCustomerDetailsByType/:customertype", (req, res) => {
     }
   })
 });
+router.get("/getInActiveCustomers", (req, res) => {
+  customerQueries.getInActiveCustomers((err, customersData) => {
+    if (err) res.json({ status: 500, message: err.sqlMessage });
+    else {
+      res.json(customersData)
+    }
+  })
+});
 router.get("/getCustomerDetailsByStatus/:approvedStatus", (req, res) => {
   customerQueries.getCustomerDetailsByStatus(req.params.approvedStatus, (err, customersData) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
@@ -498,17 +506,9 @@ router.get('/generatePDF', (req, res) => {
     if (err) res.status(500).json(dbError(err))
     else {
       let invoice = {
-        shipping: {
-          name: "John Doe",
-          address: "1234 Main Street",
-          city: "San Francisco",
-          state: "CA",
-          country: "US",
-          postal_code: 94111
-        },
         items
       }
-      createInvoice(invoice, "invoice.pdf");
+      createInvoice(invoice, "invoice1.pdf");
       res.json(items)
     }
   })

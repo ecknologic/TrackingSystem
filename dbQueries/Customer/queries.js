@@ -7,7 +7,7 @@ customerQueries.getCustomerDetails = (customerId, callback) => {
     executeGetQuery(query, callback)
 }
 customerQueries.getOrdersByDepartmentId = (departmentId, callback) => {
-    let query = "SELECT d.registeredDate,d.location,d.contactPerson,d.deliveryDetailsId,d.isActive as isApproved,d.vehicleId,r.routeName,r.routeId,dri.driverName,dri.driverId,dri.mobileNumber FROM DeliveryDetails d INNER JOIN routes r ON d.routeId=r.routeId left JOIN driverdetails dri ON d.driverId=dri.driverid WHERE d.deleted=0 AND d.isActive=1 AND d.departmentId=? ORDER BY d.registeredDate DESC";
+    let query = "SELECT d.registeredDate,d.address,d.contactPerson,d.deliveryDetailsId,d.isActive as isApproved,d.vehicleId,r.routeName,r.routeId,dri.driverName,dri.driverId,dri.mobileNumber FROM DeliveryDetails d INNER JOIN routes r ON d.routeId=r.routeId left JOIN driverdetails dri ON d.driverId=dri.driverid WHERE d.deleted=0 AND d.isActive=1 AND d.departmentId=? ORDER BY d.registeredDate DESC";
     executeGetParamsQuery(query, [departmentId], callback)
 }
 customerQueries.getRoutesByDepartmentId = (departmentId, callback) => {
@@ -15,11 +15,15 @@ customerQueries.getRoutesByDepartmentId = (departmentId, callback) => {
     executeGetQuery(query, callback)
 }
 customerQueries.getCustomersByCustomerType = (customerType, callback) => {
-    let query = "SELECT c.organizationName,c.isActive,c.customertype,c.isApproved,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.approvedDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.customertype=? and c.isApproved=1 and d.deleted=0  GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.isApproved,c.customerId,c.registeredDate,c.approvedDate ORDER BY c.approvedDate DESC"
+    let query = "SELECT c.organizationName,c.isActive,c.customertype,c.isApproved,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.approvedDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.customertype=? and c.isApproved=1 and d.deleted=0  GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.isApproved,c.customerId,c.registeredDate,c.approvedDate ORDER BY c.lastApprovedDate DESC"
     executeGetParamsQuery(query, [customerType], callback)
 }
+customerQueries.getInActiveCustomers = (callback) => {
+    let query = "SELECT c.organizationName,c.customertype,c.isActive,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.isApproved=0 AND approvedDate!='NULL' and d.deleted=0  GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.customerId,c.registeredDate ORDER BY c.lastDraftedDate DESC"
+    executeGetParamsQuery(query, callback)
+}
 customerQueries.getCustomerDetailsByStatus = (status, callback) => {
-    let query = "SELECT c.organizationName,c.customertype,c.isActive,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.isApproved=? and d.deleted=0  GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.customerId,c.registeredDate ORDER BY c.registeredDate DESC"
+    let query = "SELECT c.organizationName,c.customertype,c.isActive,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.isApproved=? and d.deleted=0 and c.approvedDate='NULL'  GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.customerId,c.registeredDate ORDER BY c.registeredDate DESC"
     executeGetParamsQuery(query, [status], callback)
 }
 customerQueries.getsqlNo = (tableName, callback) => {
@@ -35,12 +39,12 @@ customerQueries.saveCustomerOrderDetails = (input, callback) => {
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 customerQueries.approveCustomer = (customerId, callback) => {
-    let query = `UPDATE customerdetails set isApproved=1,approvedDate=? where customerId=?`
-    executePostOrUpdateQuery(query, [new Date(), customerId], callback)
+    let query = `UPDATE customerdetails set isApproved=1,approvedDate=?,lastApprovedDate=? where customerId=?`
+    executePostOrUpdateQuery(query, [new Date(), new Date(), customerId], callback)
 }
 customerQueries.approveDeliveryDetails = (ids, callback) => {
-    let query = 'UPDATE DeliveryDetails set isActive=1 where deliveryDetailsId IN (?)'
-    executePostOrUpdateQuery(query, [ids], callback)
+    let query = 'UPDATE DeliveryDetails set isActive=1,approvedDate=? where deliveryDetailsId IN (?)'
+    executePostOrUpdateQuery(query, [ids, new Date()], callback)
 }
 customerQueries.updateDCNo = (insertedId, callback) => {
     let query = "UPDATE customerorderdetails SET DCNO=? WHERE customerOrderId=?"
@@ -56,20 +60,38 @@ customerQueries.updateOrderDetails = (input, callback) => {
 }
 customerQueries.updateCustomerStatus = (input, callback) => {
     let { status, customerId } = input
-    let query = `update customerdetails SET isApproved=? where customerId=${customerId}`;
-    let requestBody = [status]
+    let query, requestBody;
+    if (status == 1) {
+        query = `update customerdetails SET isApproved=?,lastApprovedDate=? where customerId=${customerId}`;
+        requestBody = [status, new Date()]
+    } else {
+        query = `update customerdetails SET isApproved=?,lastDraftedDate=? where customerId=${customerId}`;
+        requestBody = [status, new Date()]
+    }
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 customerQueries.updateCustomerDeliveriesStatus = (input, callback) => {
     let { status, customerId } = input
-    let query = `update DeliveryDetails SET isActive=? where customer_Id=${customerId}`;
-    let requestBody = [status]
+    let query, requestBody;
+    if (status == 1) {
+        query = `update DeliveryDetails SET isActive=?,lastApprovedDate=? where customer_Id=${customerId}`;
+        requestBody = [status, new Date()]
+    } else {
+        query = `update DeliveryDetails SET isActive=?,lastDraftedDate=? where customer_Id=${customerId}`;
+        requestBody = [status, new Date()]
+    }
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 customerQueries.updateCustomerDeliveryStatus = (input, callback) => {
     let { status, deliveryDetailsId } = input
-    let query = `update DeliveryDetails SET isActive=? where deliveryDetailsId=${deliveryDetailsId}`;
-    let requestBody = [status]
+    let query, requestBody;
+    if (status == 1) {
+        query = `update DeliveryDetails SET isActive=?,lastApprovedDate=? where deliveryDetailsId=${deliveryDetailsId}`;
+        requestBody = [status, new Date()]
+    } else {
+        query = `update DeliveryDetails SET isActive=?,lastDraftedDate=? where deliveryDetailsId=${deliveryDetailsId}`;
+        requestBody = [status, new Date()]
+    }
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 customerQueries.deleteCustomer = (customerId, callback) => {
@@ -83,8 +105,8 @@ customerQueries.deleteCustomerDeliveries = (customerId, callback) => {
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 customerQueries.generatePDF = (input, callback) => {
-    const { customerId = 186, fromDate = '2021-01-01', toDate = '2021-01-17' } = input
-    let query = "SELECT c.customerId,c.customerName,c.organizationName,c.address1,d.address,c.gstNo,co.20LCans,co.price20L,co.1LBoxes,co.price1L, co.500MLBoxes,co.price500ML,co.250MLBoxes,co.price250ML FROM customerdetails c INNER JOIN  customerorderdetails co ON c.customerId=co.existingCustomerId INNER JOIN DeliveryDetails d ON d.customer_Id=c.customerId  WHERE c.customerId=?  AND co.isDelivered='Completed' AND( DATE(co.deliveryDate) BETWEEN ? AND ?)"
+    const { customerId = 215, fromDate = '2021-01-21', toDate = '2021-01-22' } = input
+    let query = "SELECT c.customerId,c.customerName,c.organizationName,c.address1,d.address,c.gstNo,c.panNo,c.mobileNumber,co.20LCans,co.price20L,co.1LBoxes,co.price1L, co.500MLBoxes,co.price500ML,co.250MLBoxes,co.price250ML FROM customerdetails c INNER JOIN  customerorderdetails co ON c.customerId=co.existingCustomerId INNER JOIN DeliveryDetails d ON d.customer_Id=c.customerId  WHERE c.customerId=?  AND co.isDelivered='Completed' AND( DATE(co.deliveryDate) BETWEEN ? AND ?)"
     return executeGetParamsQuery(query, [customerId, fromDate, toDate], callback)
 }
 customerQueries.deleteDeliveryAddress = (deliveryId, callback) => {
