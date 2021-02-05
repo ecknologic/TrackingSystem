@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { message } from 'antd';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import React, { Fragment, useEffect, useMemo, useState, useCallback } from 'react';
@@ -38,26 +39,34 @@ const ManagePlant = () => {
 
     const mainUrl = useMemo(() => getMainPathname(pathname), [pathname])
     const staffOptions = useMemo(() => getStaffOptions(staffList), [staffList])
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
 
     useEffect(() => {
         getPlantType()
         getPlant()
+
+        return () => {
+            http.ABORT(source)
+        }
     }, [])
 
     const getPlant = async () => {
         const url = `${getUrl(mainUrl)}/${plantId}`
 
-        const [data] = await http.GET(url)
-        const { gstProof: gst, userName, mobileNumber, emailid, roleId, ...rest } = data
-        const { departmentName, gstNo, adminId } = rest
-        const gstProof = base64String(gst?.data)
+        try {
+            const [data] = await http.GET(axios, url, config)
+            const { gstProof: gst, userName, mobileNumber, emailid, roleId, ...rest } = data
+            const { departmentName, gstNo, adminId } = rest
+            const gstProof = base64String(gst?.data)
 
-        setGstProof({ Front: gstProof, idProofType: 'gstNo', gstNo })
-        setHeaderContent({ title: departmentName })
-        setAccountValues({ ...rest, gstProof })
-        setPrevAdminId(adminId)
-        setAdmin({ userName, mobileNumber, emailid, roleId })
-        setLoading(false)
+            setGstProof({ Front: gstProof, idProofType: 'gstNo', gstNo })
+            setHeaderContent({ title: departmentName })
+            setAccountValues({ ...rest, gstProof })
+            setPrevAdminId(adminId)
+            setAdmin({ userName, mobileNumber, emailid, roleId })
+            setLoading(false)
+        } catch (error) { }
     }
 
     const getPlantType = () => {
@@ -67,8 +76,12 @@ const ManagePlant = () => {
     }
 
     const getStaffList = async (type) => {
-        const data = await http.GET(`/users/getUsersBydepartmentType/${type}`)
-        setStaffList(data)
+        const url = `/users/getUsersBydepartmentType/${type}`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setStaffList(data)
+        } catch (error) { }
     }
 
     const handleChange = (value, key) => {
@@ -150,12 +163,14 @@ const ManagePlant = () => {
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
-            await http.POST(url, body)
+            await http.POST(axios, url, body, config)
             showToast(options)
             goBack()
         } catch (error) {
             message.destroy()
-            setBtnDisabled(false)
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+            }
         }
     }
 

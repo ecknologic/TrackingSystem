@@ -1,7 +1,8 @@
+import axios from 'axios';
 import dayjs from 'dayjs';
 import { message } from 'antd';
 import { useLocation, useHistory } from 'react-router-dom';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
 import Spinner from '../../../../components/Spinner';
 import AccountView from '../../approve/views/Account';
@@ -14,7 +15,7 @@ import CustomButton from '../../../../components/CustomButton';
 import GeneralAccountForm from '../../add/forms/GeneralAccount';
 import CorporateAccountForm from '../../add/forms/CorporateAccount';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
-import { base64String, extractCADetails, extractGADetails, getBase64, getIdProofsForDB, getMainPathname, isEmpty, resetTrackForm, showToast, trackAccountFormOnce } from '../../../../utils/Functions';
+import { base64String, extractCADetails, extractGADetails, getBase64, getIdProofsForDB, getMainPathname, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 import { validateIDProofs, validateAccountValues, validateIDNumbers, validateMobileNumber, validateNames, validateEmailId, validateNumber } from '../../../../utils/validations';
 
 const AccountOverview = ({ data, onUpdate, isSuperAdmin }) => {
@@ -33,6 +34,9 @@ const AccountOverview = ({ data, onUpdate, isSuperAdmin }) => {
     const [gstProofs, setGstProofs] = useState({})
     const [shake, setShake] = useState(false)
 
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
+
     useEffect(() => {
         if (!loading) {
             const gst = base64String(gstProof?.data)
@@ -50,10 +54,9 @@ const AccountOverview = ({ data, onUpdate, isSuperAdmin }) => {
     }, [loading])
 
     useEffect(() => {
-        resetTrackForm()
-        trackAccountFormOnce()
-
-        return () => resetTrackForm()
+        return () => {
+            http.ABORT(source)
+        }
     }, [])
 
     const handleChange = (value, key) => {
@@ -176,14 +179,16 @@ const AccountOverview = ({ data, onUpdate, isSuperAdmin }) => {
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
-            await http.POST(url, body)
+            await http.POST(axios, url, body, config)
             setBtnDisabled(false)
             resetTrackForm()
             onUpdate(organizationName, Address1)
             showToast(options)
         } catch (error) {
-            setBtnDisabled(false)
             message.destroy()
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+            }
         }
     }
 

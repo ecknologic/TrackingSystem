@@ -1,6 +1,7 @@
+import axios from 'axios';
 import { message } from 'antd';
 import { useHistory, useParams } from 'react-router-dom';
-import React, { Fragment, useEffect, useState, useCallback } from 'react';
+import React, { Fragment, useEffect, useState, useCallback, useMemo } from 'react';
 import Header from './header';
 import AccountView from '../views/Account';
 import { http } from '../../../modules/http'
@@ -30,20 +31,30 @@ const ManageDistributor = () => {
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [editMode, setEditMode] = useState('')
 
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
+
     useEffect(() => {
         getDistributor()
+
+        return () => {
+            http.ABORT(source)
+        }
     }, [])
 
     const getDistributor = async () => {
         const url = `/distributor/getDistributor/${distributorId}`
-        const [data] = await http.GET(url)
-        const { gstProof: gst, agencyName, gstNo } = data
-        const gstProof = base64String(gst?.data)
 
-        setGstProof({ idProofType: 'gstNo', Front: gstProof, gstNo })
-        setHeaderContent({ title: agencyName })
-        setFormData({ ...data, gstProof })
-        setLoading(false)
+        try {
+            const [data] = await http.GET(axios, url, config)
+            const { gstProof: gst, agencyName, gstNo } = data
+            const gstProof = base64String(gst?.data)
+
+            setGstProof({ idProofType: 'gstNo', Front: gstProof, gstNo })
+            setHeaderContent({ title: agencyName })
+            setFormData({ ...data, gstProof })
+            setLoading(false)
+        } catch (error) { }
     }
 
     const handleChange = (value, key) => {
@@ -111,12 +122,14 @@ const ManageDistributor = () => {
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
-            await http.POST(url, body)
+            await http.POST(axios, url, body, config)
             showToast(options)
             goBack()
         } catch (error) {
             message.destroy()
-            setBtnDisabled(false)
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+            }
         }
     }
 

@@ -1,7 +1,9 @@
-import { Tabs } from 'antd';
+import axios from 'axios';
+import { message, Tabs } from 'antd';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import Dashboard from './tabs/Dashboard';
 import { http } from '../../../modules/http';
+import { showToast } from '../../../utils/Functions';
 import ReturnEmptyCans from './tabs/ReturnEmptyCans';
 import Header from '../../../components/SimpleHeader';
 import { getWarehoseId } from '../../../utils/constants';
@@ -16,6 +18,7 @@ const EmptyCans = () => {
     const [motherplantList, setMotherplantList] = useState([])
     const [driverList, setDriverList] = useState([])
     const [vehicleList, setVehicleList] = useState([])
+    const [isFetched, setIsFetched] = useState(false)
 
     const departmentOptions = useMemo(() => getDepartmentOptions(departmentList), [departmentList])
     const motherplantOptions = useMemo(() => getWarehouseOptions(motherplantList), [motherplantList])
@@ -23,36 +26,49 @@ const EmptyCans = () => {
     const vehicleOptions = useMemo(() => getVehicleOptions(vehicleList), [vehicleList])
     const childProps = useMemo(() => ({ motherplantOptions, driverOptions, driverList, vehicleOptions, departmentOptions }),
         [motherplantOptions, driverOptions, vehicleOptions, departmentOptions])
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
 
     useEffect(() => {
-        getDepartmentList()
-        getMotherplantList()
-        getDriverList()
-        getVehicleList()
+        return () => {
+            http.ABORT(source)
+        }
     }, [])
 
     const getDepartmentList = async () => {
         const url = '/bibo/getAllDepartmentsList'
 
-        const data = await http.GET(url)
-        setDepartmentList(data)
+        try {
+            const data = await http.GET(axios, url, config)
+            setDepartmentList(data)
+        } catch (error) { }
     }
 
     const getMotherplantList = async () => {
-        const data = await http.GET('/bibo/getDepartmentsList?departmentType=MotherPlant')
-        setMotherplantList(data)
+        const url = '/bibo/getDepartmentsList?departmentType=MotherPlant'
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setMotherplantList(data)
+        } catch (error) { }
     }
 
     const getDriverList = async () => {
         const url = `/bibo/getdriverDetails/${warehouseId}`
-        const data = await http.GET(url)
-        setDriverList(data)
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setDriverList(data)
+        } catch (error) { }
     }
 
     const getVehicleList = async () => {
         const url = `/bibo/getVehicleDetails`
-        const data = await http.GET(url)
-        setVehicleList(data)
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setVehicleList(data)
+        } catch (error) { }
     }
 
     const handleGoToTab = useCallback((key) => {
@@ -62,6 +78,17 @@ const EmptyCans = () => {
 
     const handleTabClick = (key) => {
         setActiveTab(key)
+    }
+
+    const fetchList = async () => {
+        if (!isFetched) {
+            const p2 = getDriverList()
+            const p3 = getVehicleList()
+            const p4 = getDepartmentList()
+            const p1 = getMotherplantList()
+            await Promise.all([p1, p2, p3, p4])
+            setIsFetched(true)
+        }
     }
 
     return (
@@ -74,10 +101,10 @@ const EmptyCans = () => {
                         activeKey={activeTab}
                     >
                         <TabPane tab="Empty Cans" key="1">
-                            <Dashboard reFetch={reFetch} {...childProps} />
+                            <Dashboard reFetch={reFetch} isFetched={isFetched} fetchList={fetchList} {...childProps} />
                         </TabPane>
                         <TabPane tab="Return Empty Cans" key="2">
-                            <ReturnEmptyCans goToTab={handleGoToTab} {...childProps} />
+                            <ReturnEmptyCans goToTab={handleGoToTab} fetchList={fetchList} {...childProps} />
                         </TabPane>
                     </Tabs>
                 </div>

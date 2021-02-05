@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
 import { getBase64 } from '../../../../utils/Functions';
@@ -17,12 +18,18 @@ const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => 
     const [routeList, setRouteList] = useState([])
 
     const routeOptions = useMemo(() => getRouteOptions(routeList), [routeList])
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
 
     useEffect(() => { // To pre-fill the form
         setDeliveryValues(data)
 
         const { departmentId } = data
         getRouteList(departmentId)
+
+        return () => {
+            http.ABORT(source)
+        }
     }, [])
 
     useEffect(() => { // To pre-fill errors
@@ -41,8 +48,12 @@ const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => 
     }
 
     const getRouteList = async (departmentId) => {
-        const data = await http.GET(`/customer/getRoutes/${departmentId}`)
-        setRouteList(data)
+        const url = `/customer/getRoutes/${departmentId}`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setRouteList(data)
+        } catch (error) { }
     }
 
     const onChange = (value, key) => {

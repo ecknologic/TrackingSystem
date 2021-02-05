@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { Col, message, Row } from 'antd';
 import { useHistory } from 'react-router-dom';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
@@ -32,20 +33,28 @@ const Customers = () => {
 
     const pageSizeOptions = useMemo(() => generatePageSizeOptions(), [window.innerWidth])
     const isSuperAdmin = useMemo(() => getRole() === SUPERADMIN, [])
+    const source = useMemo(() => axios.CancelToken.source(), [activeTab]);
+    const config = { cancelToken: source.token }
 
     useEffect(() => {
         setLoading(true)
         getAccounts()
+
+        return () => {
+            http.ABORT(source)
+        }
     }, [activeTab])
 
     const getAccounts = async () => {
         const url = `/customer/${getUrl(activeTab)}`
 
-        const data = await http.GET(url)
-        setAccountsClone(data)
-        setAccounts(data)
-        setTotalCount(data.length)
-        setLoading(false)
+        try {
+            const data = await http.GET(axios, url, config)
+            setAccountsClone(data)
+            setAccounts(data)
+            setTotalCount(data.length)
+            setLoading(false)
+        } catch (error) { }
     }
 
     const getUrl = (tab) => {
@@ -109,6 +118,7 @@ const Customers = () => {
     }
 
     const handleTabChange = (key) => {
+        http.ABORT(source)
         setActiveTab(key)
         if (key === '3') {
             setCardBtnTxt('View Details')
@@ -165,7 +175,7 @@ const Customers = () => {
         const body = { status, customerId }
         try {
             showToast({ ...options, action: 'loading' })
-            await http.PUT(url, body)
+            await http.PUT(axios, url, body, config)
             optimisticUpdate(customerId)
             showToast(options)
         } catch (error) {
@@ -179,7 +189,7 @@ const Customers = () => {
 
         try {
             showToast({ ...options, action: 'loading' })
-            await http.DELETE(url)
+            await http.DELETE(axios, url, config)
             optimisticUpdate(id)
             showToast(options)
         } catch (error) {

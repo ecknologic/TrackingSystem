@@ -1,3 +1,4 @@
+import axios from 'axios';
 import dayjs from 'dayjs';
 import { Menu, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -32,6 +33,14 @@ const Dispatches = ({ reFetch }) => {
     const [open, setOpen] = useState(false)
 
     const dispatchColumns = useMemo(() => getDispatchColumns(), [])
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
+
+    useEffect(() => {
+        return () => {
+            http.ABORT(source)
+        }
+    }, [])
 
     useEffect(() => {
         setLoading(true)
@@ -39,11 +48,15 @@ const Dispatches = ({ reFetch }) => {
     }, [reFetch])
 
     const getDispatches = async () => {
-        const data = await http.GET('/motherPlant/getDispatchDetails')
-        setDispatches(data)
-        setDispatchesClone(data)
-        setTotalCount(data.length)
-        setLoading(false)
+        const url = '/motherPlant/getDispatchDetails'
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setDispatches(data)
+            setDispatchesClone(data)
+            setTotalCount(data.length)
+            setLoading(false)
+        } catch (error) { }
     }
 
     const datePickerStatus = (status) => {

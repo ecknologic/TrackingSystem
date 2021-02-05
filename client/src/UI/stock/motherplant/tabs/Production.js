@@ -1,5 +1,6 @@
+import axios from 'axios';
 import dayjs from 'dayjs';
-import { Menu, Table } from 'antd';
+import { Menu, message, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import BatchForm from '../forms/Batch';
 import { http } from '../../../../modules/http';
@@ -29,21 +30,29 @@ const Production = () => {
     const [modal, setModal] = useState(false)
     const [shake, setShake] = useState(false)
 
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
     const productionIdRef = useRef()
     const formTitleRef = useRef()
 
     useEffect(() => {
         getProducts()
+
+        return () => {
+            http.ABORT(source)
+        }
     }, [])
 
     const getProducts = async () => {
-        setLoading(true)
         const url = `/motherPlant/getProductionDetails`
-        const data = await http.GET(url)
-        setPageNumber(1)
-        setLoading(false)
-        setTotalCount(data.length)
-        setProducts(data)
+        try {
+            setLoading(true)
+            const data = await http.GET(axios, url, config)
+            setPageNumber(1)
+            setLoading(false)
+            setTotalCount(data.length)
+            setProducts(data)
+        } catch (error) { }
     }
 
     const handleChange = (value, key) => {
@@ -117,13 +126,16 @@ const Production = () => {
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
-            const data = await http.POST(url, body)
+            const data = await http.POST(axios, url, body, config)
             showToast(options)
             optimisticUpdate(data)
             onModalClose(true)
             setBtnDisabled(false)
         } catch (error) {
-            setBtnDisabled(false)
+            message.destroy()
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+            }
         }
     }
 

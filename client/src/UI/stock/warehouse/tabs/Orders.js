@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { Menu, message, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import CreateDelivery from '../forms/Delivery';
@@ -45,9 +46,15 @@ const Orders = () => {
     const vehicleOptions = useMemo(() => getVehicleOptions(vehicles), [vehicles])
     const warehouseOptions = useMemo(() => getWarehouseOptions(warehouseList), [warehouseList])
     const toastLoading = { v1Ing: 'Fetching', action: 'loading' }
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
 
     useEffect(() => {
         getOrders()
+
+        return () => {
+            http.ABORT(source)
+        }
     }, [])
 
     const fetchData = async () => {
@@ -63,26 +70,38 @@ const Orders = () => {
     }
 
     const getRouteList = async (depId) => {
-        const data = await http.GET(`/customer/getRoutes/${depId}`)
-        setRoutes(data)
-        setCurrentDepId(depId)
+        const url = `/customer/getRoutes/${depId}`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setRoutes(data)
+            setCurrentDepId(depId)
+        } catch (error) { }
     }
 
     const getDriverList = async () => {
         const url = `/bibo/getdriverDetails/${warehouseId}`
-        const data = await http.GET(url)
-        setDrivers(data)
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setDrivers(data)
+        } catch (error) { }
     }
 
     const getVehicleList = async () => {
         const url = `/bibo/getVehicleDetails`
-        const data = await http.GET(url)
-        setVehicles(data)
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setVehicles(data)
+        } catch (error) { }
     }
 
     const getWarehouseList = async () => {
+        const url = '/bibo/getDepartmentsList?departmentType=warehouse'
+
         try {
-            const data = await http.GET('/bibo/getDepartmentsList?departmentType=warehouse')
+            const data = await http.GET(axios, url, config)
             setWarehouseList(data)
         } catch (ex) { }
     }
@@ -92,7 +111,7 @@ const Orders = () => {
 
         try {
             showToast(toastLoading)
-            let { data: [data] } = await http.GET(url)
+            let { data: [data] } = await http.GET(axios, url, config)
             const { location, products, deliveryDays, gstProof, departmentId } = data
             const gst = base64String(gstProof?.data)
             const devDays = getDevDays(deliveryDays)
@@ -110,13 +129,15 @@ const Orders = () => {
     }
 
     const getOrders = async () => {
-        setLoading(true)
         const url = `/warehouse/getOrders`
-        const data = await http.GET(url)
-        setPageNumber(1)
-        setLoading(false)
-        setTotalCount(data.length)
-        setOrders(data)
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setPageNumber(1)
+            setLoading(false)
+            setTotalCount(data.length)
+            setOrders(data)
+        } catch (error) { }
     }
 
     const handleChange = (value, key) => {
@@ -207,12 +228,15 @@ const Orders = () => {
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
-            const [data] = await http.POST(url, body)
+            const [data] = await http.POST(axios, url, body, config)
             showToast(options)
             optimisticUpdate(data)
             onModalClose(true)
         } catch (error) {
-            setBtnDisabled(false)
+            message.destroy()
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+            }
         }
     }
 

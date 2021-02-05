@@ -1,3 +1,4 @@
+import axios from 'axios';
 import dayjs from 'dayjs';
 import { Menu, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -31,23 +32,37 @@ const ReceivedMaterials = ({ isSuperAdmin = false }) => {
     const [RMClone, setRMClone] = useState([])
 
     const ReceivedMColumns = useMemo(() => getReceivedRMColumns(isSuperAdmin), [])
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
 
     useEffect(() => {
         getRM()
+
+        return () => {
+            http.ABORT(source)
+        }
     }, [])
 
     const getRM = async () => {
-        const data = await http.GET(`/motherPlant/getRMReceiptDetails?isSuperAdmin=${isSuperAdmin}`)
-        setRM(data)
-        setRMClone(data)
-        setTotalCount(data.length)
-        setLoading(false)
+        const url = `/motherPlant/getRMReceiptDetails?isSuperAdmin=${isSuperAdmin}`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setRM(data)
+            setRMClone(data)
+            setTotalCount(data.length)
+            setLoading(false)
+        } catch (error) { }
     }
 
     const getRMById = async (id) => {
-        const [data] = await http.GET(`/motherPlant/getReceiptDetails/${id}`)
-        const receiptImage = base64String(data?.receiptImage?.data)
-        setViewData(data => ({ ...data, receiptImage }))
+        const url = `/motherPlant/getReceiptDetails/${id}`
+
+        try {
+            const [data] = await http.GET(axios, url, config)
+            const receiptImage = base64String(data?.receiptImage?.data)
+            setViewData(data => ({ ...data, receiptImage }))
+        } catch (error) { }
     }
 
     const datePickerStatus = (status) => {

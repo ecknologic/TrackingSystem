@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { message } from 'antd';
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { http } from '../../../modules/http';
@@ -21,19 +22,33 @@ const ProductionQC = ({ goToTab }) => {
 
     const batchOptions = useMemo(() => getBatchOptions(batchList), [batchList])
     const childProps = useMemo(() => ({ batchOptions, testResultOptions }), [batchOptions, testResultOptions])
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
 
     useEffect(() => {
         getBatchsList()
+
+        return () => {
+            http.ABORT(source)
+        }
     }, [])
 
     const getBatchsList = async () => {
-        const data = await http.GET(`/motherPlant/getBatchNumbers`)
-        setBatchList(data)
+        const url = `/motherPlant/getBatchNumbers`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setBatchList(data)
+        } catch (error) { }
     }
 
     const getQCByProductionQcId = async (productionQcId) => {
-        const data = await http.GET(`/motherPlant/getQCLevelsDetails/${productionQcId}`)
-        setQCList(data)
+        const url = `/motherPlant/getQCLevelsDetails/${productionQcId}`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setQCList(data)
+        } catch (error) { }
     }
 
     const handleChange = (value, key) => {
@@ -81,13 +96,15 @@ const ProductionQC = ({ goToTab }) => {
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
-            await http.POST(url, body)
+            await http.POST(axios, url, body, config)
             showToast(options)
             goToTab('5')
             resetForm()
         } catch (error) {
             message.destroy()
-            setBtnDisabled(false)
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+            }
         }
     }
 

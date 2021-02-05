@@ -1,3 +1,4 @@
+import axios from 'axios';
 import dayjs from 'dayjs';
 import { Menu, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -31,16 +32,29 @@ const InternalQC = ({ reFetch }) => {
     const [QC, setQC] = useState([])
     const [QCClone, setQCClone] = useState([])
 
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
+
+    useEffect(() => {
+        return () => {
+            http.ABORT(source)
+        }
+    }, [])
+
     useEffect(() => {
         getQC()
     }, [reFetch])
 
     const getQC = async () => {
-        const data = await http.GET('/motherPlant/getProductionQcList')
-        setQC(data)
-        setQCClone(data)
-        setTotalCount(data.length)
-        setLoading(false)
+        const url = '/motherPlant/getProductionQcList'
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setQC(data)
+            setQCClone(data)
+            setTotalCount(data.length)
+            setLoading(false)
+        } catch (error) { }
     }
 
     const datePickerStatus = (status) => {

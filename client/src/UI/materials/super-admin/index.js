@@ -6,7 +6,7 @@ import ReceivedMaterials from '../motherplant/tabs/ReceivedMaterials';
 import RequestedMaterialStatus from '../motherplant/tabs/RequestedMaterialStatus';
 import '../../../sass/materials.scss'
 
-const MotherplantMaterials = () => {
+const Materials = () => {
 
     return (
         <Fragment>
@@ -29,4 +29,4 @@ const MotherplantMaterials = () => {
     )
 }
 const { TabPane } = Tabs;
-export default MotherplantMaterials
+export default Materials

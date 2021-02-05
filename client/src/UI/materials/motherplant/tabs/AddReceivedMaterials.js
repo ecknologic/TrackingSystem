@@ -1,3 +1,4 @@
+import axios from 'axios';
 import dayjs from 'dayjs';
 import { message, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -16,9 +17,9 @@ import MaterialReceivedForm from '../forms/MaterialReceived';
 import { validateNames, validateNumber, validateReceivedMaterialValues } from '../../../../utils/validations';
 import DateValue from '../../../../components/DateValue';
 import CustomDateInput from '../../../../components/CustomDateInput';
+const fn = () => { }
 const DATEFORMAT = 'DD-MM-YYYY'
 const format = 'YYYY-MM-DD'
-const fn = () => { }
 
 const AddMaterials = ({ onUpdate = fn }) => {
     const [loading, setLoading] = useState(true)
@@ -43,25 +44,41 @@ const AddMaterials = ({ onUpdate = fn }) => {
 
     const RMColumns = useMemo(() => getRMColumns('add'), [])
     const toastLoading = { v1Ing: 'Fetching', action: 'loading' }
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
 
     useEffect(() => {
         getRM()
+
+        return () => {
+            http.ABORT(source)
+        }
     }, [])
 
     const getRM = async () => {
-        const data = await http.GET(`/motherPlant/getRMDetails?status=Approved`)
-        setRM(data)
-        setRMClone(data)
-        setTotalCount(data.length)
-        setLoading(false)
+        const url = '/motherPlant/getRMDetails?status=Approved'
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setRM(data)
+            setRMClone(data)
+            setTotalCount(data.length)
+            setLoading(false)
+        } catch (error) { }
     }
 
     const getRMReceipt = async (RMId) => {
-        showToast(toastLoading)
-        const [data = {}] = await http.GET(`/motherPlant/getReceiptDetails/${RMId}`)
-        const receiptImage = base64String(data?.receiptImage?.data)
-        setFormData(prev => ({ ...prev, ...data, receiptImage }))
-        message.destroy()
+        const url = `/motherPlant/getReceiptDetails/${RMId}`
+
+        try {
+            showToast(toastLoading)
+            const [data = {}] = await http.GET(axios, url, config)
+            const receiptImage = base64String(data?.receiptImage?.data)
+            setFormData(prev => ({ ...prev, ...data, receiptImage }))
+            message.destroy()
+        } catch (error) {
+            message.destroy()
+        }
     }
 
     const datePickerStatus = (status) => {
@@ -135,8 +152,8 @@ const AddMaterials = ({ onUpdate = fn }) => {
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
-            const p1 = http.POST(url, body)
-            const p2 = http.PUT(otherUrl, otherBody)
+            const p1 = http.POST(axios, url, body, config)
+            const p2 = http.PUT(axios, otherUrl, otherBody, config)
             await Promise.all([p1, p2])
             optimisticUpdate(currentRMId)
             showToast(options)
@@ -144,7 +161,10 @@ const AddMaterials = ({ onUpdate = fn }) => {
             onModalClose(true)
             setBtnDisabled(false)
         } catch (error) {
-            setBtnDisabled(false)
+            message.destroy()
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+            }
         }
     }
 

@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { Tabs } from 'antd';
 import { http } from '../../modules/http';
 import React, { Fragment, useState, useCallback, useEffect, useMemo } from 'react';
@@ -27,32 +28,50 @@ const Dispatche = () => {
     const warehouseOptions = useMemo(() => getWarehouseOptions(warehouseList), [warehouseList])
     const childProps = useMemo(() => ({ driverList, batchIdOptions, warehouseList, driverOptions, warehouseOptions, vehicleOptions }),
         [batchIdOptions, driverOptions, warehouseOptions, vehicleOptions])
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
 
     useEffect(() => {
         getBatchsList()
         getDriverList()
         getVehicleDetails()
         getWarehouseList()
+
+        return () => {
+            http.ABORT(source)
+        }
     }, [])
 
     const getBatchsList = async () => {
-        const data = await http.GET('/motherPlant/getPostProductionBatchIds')
-        setBatchList(data)
+        const url = '/motherPlant/getPostProductionBatchIds'
+        try {
+            const data = await http.GET(axios, url, config)
+            setBatchList(data)
+        } catch (error) { }
     }
 
     const getDriverList = async () => {
-        const data = await http.GET(`/bibo/getdriverDetails/${warehouseId}`)
-        setDrivers(data)
+        const url = `/bibo/getdriverDetails/${warehouseId}`
+        try {
+            const data = await http.GET(axios, url, config)
+            setDrivers(data)
+        } catch (error) { }
     }
 
     const getWarehouseList = async () => {
-        const data = await http.GET('/bibo/getDepartmentsList?departmentType=warehouse')
-        setWarehouseList(data)
+        const url = '/bibo/getDepartmentsList?departmentType=warehouse'
+        try {
+            const data = await http.GET(axios, url, config)
+            setWarehouseList(data)
+        } catch (error) { }
     }
 
     const getVehicleDetails = async () => {
-        const data = await http.GET('/bibo/getVehicleDetails')
-        setVehiclesList(data)
+        const url = '/bibo/getVehicleDetails'
+        try {
+            const data = await http.GET(axios, url, config)
+            setVehiclesList(data)
+        } catch (error) { }
     }
 
     const handleGoToTab = useCallback((key) => {

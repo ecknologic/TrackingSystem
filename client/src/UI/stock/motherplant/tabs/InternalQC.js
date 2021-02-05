@@ -1,4 +1,6 @@
-import React, { useCallback, useState } from 'react';
+import axios from 'axios';
+import { message } from 'antd';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import InternalQCForm from '../forms/InternalQC';
 import { http } from '../../../../modules/http';
 import CustomButton from '../../../../components/CustomButton';
@@ -15,6 +17,15 @@ const InternalQC = () => {
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
     const [shake, setShake] = useState(false)
+
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
+
+    useEffect(() => {
+        return () => {
+            http.ABORT(source)
+        }
+    }, [])
 
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
@@ -58,11 +69,14 @@ const InternalQC = () => {
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
-            await http.POST(url, body)
+            await http.POST(axios, url, body, config)
             resetForm()
             showToast(options)
         } catch (error) {
-            setBtnDisabled(false)
+            message.destroy()
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+            }
         }
     }
 

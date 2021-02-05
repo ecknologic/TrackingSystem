@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { Menu, message, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
@@ -20,25 +21,38 @@ const StockReceived = () => {
     const [pageNumber, setPageNumber] = useState(1)
     const [viewModal, setViewModal] = useState(false)
 
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
+
     useEffect(() => {
         getReceivedStock()
+
+        return () => {
+            http.ABORT(source)
+        }
     }, [])
 
     const getReceivedStock = async () => {
-        const url = `/warehouse/getReceivedStock`
-        const data = await http.GET(url)
-        setLoading(false)
-        setTotalCount(data.length)
-        setStock(data)
+        const url = '/warehouse/getReceivedStock'
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setLoading(false)
+            setTotalCount(data.length)
+            setStock(data)
+        } catch (error) { }
     }
 
     const getStockById = async (id) => {
-        showToast({ v1Ing: 'Fetching', action: 'loading' })
         const url = `/warehouse/getReceivedStockById/${id}`
-        const [data] = await http.GET(url)
-        message.destroy()
-        setViewData(data)
-        setViewModal(true)
+
+        try {
+            showToast({ v1Ing: 'Fetching', action: 'loading' })
+            const [data] = await http.GET(axios, url, config)
+            message.destroy()
+            setViewData(data)
+            setViewModal(true)
+        } catch (error) { }
     }
 
     const handleMenuSelect = (key, id) => {

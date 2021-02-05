@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { Col, message, Row } from 'antd';
 import { useHistory } from 'react-router-dom';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
@@ -23,6 +24,14 @@ const Dashboard = ({ reFetch }) => {
 
     const isSuperAdmin = useMemo(() => getRole() === SUPERADMIN, [])
     const pageSizeOptions = useMemo(() => generatePageSizeOptions(), [window.innerWidth])
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
+
+    useEffect(() => {
+        return () => {
+            http.ABORT(source)
+        }
+    }, [])
 
     useEffect(() => {
         setLoading(true)
@@ -32,10 +41,12 @@ const Dashboard = ({ reFetch }) => {
     const getDistributors = async () => {
         const url = '/distributor/getDistributors'
 
-        const data = await http.GET(url)
-        setDistributors(data)
-        setTotalCount(data.length)
-        setLoading(false)
+        try {
+            const data = await http.GET(axios, url, config)
+            setDistributors(data)
+            setTotalCount(data.length)
+            setLoading(false)
+        } catch (error) { }
     }
 
     const handleMenuSelect = (key, id) => {
@@ -58,7 +69,7 @@ const Dashboard = ({ reFetch }) => {
 
         try {
             showToast({ ...options, action: 'loading' })
-            await http.PUT(url, body)
+            await http.PUT(axios, url, body, config)
             optimisticApprove(distributorId, status)
             showToast(options)
         } catch (error) {
@@ -72,7 +83,7 @@ const Dashboard = ({ reFetch }) => {
 
         try {
             showToast({ ...options, action: 'loading' })
-            await http.DELETE(url)
+            await http.DELETE(axios, url, config)
             optimisticDelete(id)
             showToast(options)
         } catch (error) {

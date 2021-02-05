@@ -1,7 +1,9 @@
+import axios from 'axios';
 import { Tabs } from 'antd';
 import React, { Fragment, useMemo, useRef, useCallback, useState } from 'react';
 import Production from './tabs/Production';
 import InternalQC from './tabs/InternalQC';
+import { http } from '../../../modules/http';
 import StockDetails from './tabs/StockDetails';
 import NoContent from '../../../components/NoContent';
 import Header from '../../../components/ContentHeader';
@@ -18,6 +20,7 @@ const MotherplantStock = () => {
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
     const [confirm, setConfirm] = useState(false)
     const clickRef = useRef('')
+    const source = useMemo(() => axios.CancelToken.source(), [selectedDate, activeTab]);
 
     const handleDateChange = (date) => {
         setSelectedDate(date)
@@ -48,6 +51,8 @@ const MotherplantStock = () => {
         setActiveTab(value)
     }, [])
 
+    const handleDateSelect = () => http.ABORT(source)
+
     return (
         <Fragment>
             <Header />
@@ -67,12 +72,12 @@ const MotherplantStock = () => {
                 {
                     showDatePicker && (
                         <div className='date-picker-panel'>
-                            <DatePickerPanel onChange={handleDateChange} />
+                            <DatePickerPanel onChange={handleDateChange} onSelect={handleDateSelect} />
                         </div>
                     )
                 }
                 {
-                    activeTab === '1' ? <StockDetails goToTab={handleGoToTab} date={selectedDate} />
+                    activeTab === '1' ? <StockDetails goToTab={handleGoToTab} date={selectedDate} source={source} />
                         : activeTab === '2' ? <Production />
                             : activeTab === '3' ? <InternalQC />
                                 : <NoContent content='Design is in progress' />

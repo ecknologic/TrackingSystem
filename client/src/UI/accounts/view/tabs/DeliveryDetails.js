@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { Col, message, Row } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -34,10 +35,15 @@ const DeliveryDetails = ({ isSuperAdmin, recentDelivery, ...rest }) => {
     const [shake, setShake] = useState(false)
 
     const routeOptions = useMemo(() => getRouteOptions(routeList), [routeList])
-
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
 
     useEffect(() => {
         getDeliveryDetails()
+
+        return () => {
+            http.ABORT(source)
+        }
     }, [])
 
     useEffect(() => {
@@ -50,7 +56,7 @@ const DeliveryDetails = ({ isSuperAdmin, recentDelivery, ...rest }) => {
     const getDeliveryDetails = async () => {
         const url = `/customer/getCustomerDeliveryDetails/${accountId}`
         try {
-            const { data: [data = {}] } = await http.GET(url)
+            const { data: [data = {}] } = await http.GET(axios, url, config)
             const { deliveryDetails } = data
             setDelivery(deliveryDetails)
             setLoading(false)
@@ -63,7 +69,7 @@ const DeliveryDetails = ({ isSuperAdmin, recentDelivery, ...rest }) => {
 
         try {
             showToast({ ...options, action: 'loading' })
-            let { data: [data] } = await http.GET(url)
+            let { data: [data] } = await http.GET(axios, url, config)
             const { location, products, deliveryDays, gstProof, departmentId } = data
             const gst = base64String(gstProof?.data)
             const devDays = getDevDays(deliveryDays)
@@ -81,9 +87,13 @@ const DeliveryDetails = ({ isSuperAdmin, recentDelivery, ...rest }) => {
     }
 
     const getRouteList = async (departmentId) => {
-        const data = await http.GET(`/customer/getRoutes/${departmentId}`)
-        setRouteList(data)
-        setCurrentDepId(departmentId)
+        const url = `/customer/getRoutes/${departmentId}`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setRouteList(data)
+            setCurrentDepId(departmentId)
+        } catch (error) { }
     }
 
     const optimisticUpdate = (data) => {
@@ -230,7 +240,7 @@ const DeliveryDetails = ({ isSuperAdmin, recentDelivery, ...rest }) => {
 
         try {
             showToast({ ...options, action: 'loading' })
-            await http.PUT(url, body)
+            await http.PUT(axios, url, body, config)
             optimisticApprove(id, status)
             showToast(options)
         } catch (error) {
@@ -244,7 +254,7 @@ const DeliveryDetails = ({ isSuperAdmin, recentDelivery, ...rest }) => {
 
         try {
             showToast({ ...options, action: 'loading' })
-            await http.DELETE(url)
+            await http.DELETE(axios, url, config)
             optimisticDelete(id)
             showToast(options)
         } catch (error) {
@@ -274,14 +284,17 @@ const DeliveryDetails = ({ isSuperAdmin, recentDelivery, ...rest }) => {
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
-            const { data: [data = {}] } = await http.POST(url, body)
+            const { data: [data = {}] } = await http.POST(axios, url, body, config)
             optimisticUpdate(data)
             showToast(options)
             onModalClose(true)
             setBtnDisabled(false)
             setViewedArr([])
         } catch (error) {
-            setBtnDisabled(false)
+            message.destroy()
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+            }
         }
     }
 

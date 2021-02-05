@@ -1,6 +1,7 @@
+import axios from 'axios';
 import { Table } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
-// import { http } from '../../../../modules/http';
+import { http } from '../../../../modules/http';
 import Spinner from '../../../../components/Spinner';
 import { getStatusColor } from '../../../../utils/Functions';
 import CustomButton from '../../../../components/CustomButton';
@@ -11,15 +12,25 @@ const TodayDeliveryDetails = () => {
     const [loading, setLoading] = useState(true)
     const [orders, setOrders] = useState(todayDeliveryData)
 
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
+
     useEffect(() => {
         getOrders()
+
+        return () => {
+            http.ABORT(source)
+        }
     }, [])
 
     const getOrders = async () => {
         const url = `/warehouse/getOrders`
-        // const data = await http.GET(url)
-        setLoading(false)
-        // setOrders(data)
+
+        try {
+            // const data = await http.GET(axios, url, config)
+            setLoading(false)
+            // setOrders(data)
+        } catch (error) { }
     }
 
     const dataSource = useMemo(() => orders.map((order) => {

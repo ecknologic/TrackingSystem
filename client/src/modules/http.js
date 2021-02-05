@@ -19,6 +19,7 @@ axios.interceptors.response.use(null, error => {
     if (!expectedError) {
         if (error.message === 'Network Error')
             message.info('Please check your network connection')
+        if (error.message === 'Cancelled') { } //Ignore
         else message.error('Oops! Something went wrong, try again!')
     }
     else if (expectedError) {
@@ -33,49 +34,53 @@ axios.interceptors.response.use(null, error => {
 })
 
 // GET Request
-export const GET = async (url) => {
+export const GET = async (axios, url, config) => {
     try {
-        const { data } = await axios.get(url)
+        const { data } = await axios.get(url, config)
         return Promise.resolve(data)
     } catch (error) {
         return Promise.reject(error)
     }
 }
 // POST Request
-export const POST = async (url, body) => {
+export const POST = async (axios, url, body, config) => {
     try {
-        const { data } = await axios.post(url, body)
+        const { data } = await axios.post(url, body, config)
         return Promise.resolve(data)
     } catch (error) {
         return Promise.reject(error)
     }
 }
 // PUT Request
-export const PUT = async (url, body) => {
+export const PUT = async (axios, url, body, config) => {
     try {
-        const { data } = await axios.put(url, body)
+        const { data } = await axios.put(url, body, config)
         return Promise.resolve(data)
     } catch (error) {
         return Promise.reject(error)
     }
 }
 // PATCH Request
-export const PATCH = async (url, body) => {
+export const PATCH = async (axios, url, body, config) => {
     try {
-        const { data } = await axios.patch(url, body)
+        const { data } = await axios.patch(url, body, config)
         return Promise.resolve(data)
     } catch (error) {
         return Promise.reject(error)
     }
 }
 // DELETE Request
-export const DELETE = async (url) => {
+export const DELETE = async (axios, url, config) => {
     try {
-        const { data } = await axios.delete(url)
+        const { data } = await axios.delete(url, config)
         return Promise.resolve(data)
     } catch (error) {
         return Promise.reject(error)
     }
+}
+// CANCEL Request
+export const ABORT = (source) => {
+    source.cancel('Cancelled');
 }
 
 export const http = {
@@ -83,5 +88,6 @@ export const http = {
     POST,
     PUT,
     PATCH,
-    DELETE
+    DELETE,
+    ABORT
 }

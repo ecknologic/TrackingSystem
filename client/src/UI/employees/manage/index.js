@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { Divider, message } from 'antd';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import React, { Fragment, useEffect, useMemo, useState, useCallback } from 'react';
@@ -56,36 +57,44 @@ const ManageEmployee = ({ isDriver }) => {
     const departmentOptions = useMemo(() => getDepartmentOptions(departmentList), [departmentList])
     const childProps = useMemo(() => ({ adharProof, licenseProof, adharProofErrors, licenseProofErrors, roleOptions, departmentOptions }),
         [adharProof, licenseProof, adharProofErrors, licenseProofErrors, roleOptions, departmentOptions])
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
 
     useEffect(() => {
         getEmployeeType()
         getEmployee()
+
+        return () => {
+            http.ABORT(source)
+        }
     }, [])
 
     const getEmployee = async () => {
         const url = `${getUrl(isDriver)}/${employeeId}`
 
-        const [data] = await http.GET(url)
-        const { adhar_frontside, adhar_backside, dependentAdharNo, dependentDetails: dep, license_frontside,
-            dependentFrontProof, dependentBackProof, license_backside, ...rest } = data
-        const { userName, adharNo, licenseNo, departmentId } = rest
-        const adharFront = base64String(adhar_frontside?.data)
-        const adharBack = base64String(adhar_backside?.data)
-        const depAdharFront = base64String(dependentFrontProof?.data)
-        const depAdharBack = base64String(dependentBackProof?.data)
-        const licenseFront = base64String(license_frontside?.data)
-        const licenseBack = base64String(license_backside?.data)
-        const dob = getValidDate(rest.dob, DATEFORMAT)
-        const joinedDate = getValidDate(rest.joinedDate, DATEFORMAT)
+        try {
+            const [data] = await http.GET(axios, url, config)
+            const { adhar_frontside, adhar_backside, dependentAdharNo, dependentDetails: dep, license_frontside,
+                dependentFrontProof, dependentBackProof, license_backside, ...rest } = data
+            const { userName, adharNo, licenseNo, departmentId } = rest
+            const adharFront = base64String(adhar_frontside?.data)
+            const adharBack = base64String(adhar_backside?.data)
+            const depAdharFront = base64String(dependentFrontProof?.data)
+            const depAdharBack = base64String(dependentBackProof?.data)
+            const licenseFront = base64String(license_frontside?.data)
+            const licenseBack = base64String(license_backside?.data)
+            const dob = getValidDate(rest.dob, DATEFORMAT)
+            const joinedDate = getValidDate(rest.joinedDate, DATEFORMAT)
 
-        setAdharProof({ Front: adharFront, Back: adharBack, idProofType: 'adharNo', adharNo })
-        setDepAdharProof({ Front: depAdharFront, Back: depAdharBack, idProofType: 'adharNo', adharNo: dependentAdharNo })
-        setLicenseProof({ Front: licenseFront, Back: licenseBack, idProofType: 'licenseNo', licenseNo })
-        setHeaderContent({ title: userName })
-        setAccountValues({ ...rest, dob, joinedDate })
-        setPrevDepartmentId(departmentId)
-        setDepValues({ ...JSON.parse(dep), adharNo: dependentAdharNo })
-        setLoading(false)
+            setAdharProof({ Front: adharFront, Back: adharBack, idProofType: 'adharNo', adharNo })
+            setDepAdharProof({ Front: depAdharFront, Back: depAdharBack, idProofType: 'adharNo', adharNo: dependentAdharNo })
+            setLicenseProof({ Front: licenseFront, Back: licenseBack, idProofType: 'licenseNo', licenseNo })
+            setHeaderContent({ title: userName })
+            setAccountValues({ ...rest, dob, joinedDate })
+            setPrevDepartmentId(departmentId)
+            setDepValues({ ...JSON.parse(dep), adharNo: dependentAdharNo })
+            setLoading(false)
+        } catch (error) { }
     }
 
     const getEmployeeType = () => {
@@ -96,17 +105,21 @@ const ManageEmployee = ({ isDriver }) => {
     const getRoleList = async () => {
         const url = '/roles/getRoles'
 
-        const data = await http.GET(url)
-        if (!isDriver) data[5].disabled = true
-        else data.map((item, index) => index !== 5 && (item.disabled = true))
-        setRoleList(data)
+        try {
+            const data = await http.GET(axios, url, config)
+            if (!isDriver) data[5].disabled = true
+            else data.map((item, index) => index !== 5 && (item.disabled = true))
+            setRoleList(data)
+        } catch (error) { }
     }
 
     const getDepartmentList = async () => {
         const url = '/bibo/getAllDepartmentsList?hasNone=true&availableOnly=true'
 
-        const data = await http.GET(url)
-        setDepartmentList(data)
+        try {
+            const data = await http.GET(axios, url, config)
+            setDepartmentList(data)
+        } catch (error) { }
     }
 
     const handleChange = (value, key) => {
@@ -320,12 +333,14 @@ const ManageEmployee = ({ isDriver }) => {
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
-            await http.POST(url, body)
+            await http.POST(axios, url, body, config)
             showToast(options)
             goBack()
         } catch (error) {
             message.destroy()
-            setBtnDisabled(false)
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+            }
         }
     }
 

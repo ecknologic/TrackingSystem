@@ -1,3 +1,5 @@
+import axios from 'axios';
+import { message } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import BatchForm from '../forms/Batch';
 import { http } from '../../../../modules/http';
@@ -11,7 +13,7 @@ import { shiftOptions, getBatchIdOptions } from '../../../../assets/fixtures';
 import { extractValidProductsForDB, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 import { validateBatchValues, validateIntFloat, validateNames, validateNumber } from '../../../../utils/validations';
 
-const StockDetails = ({ date, goToTab }) => {
+const StockDetails = ({ date, source, goToTab }) => {
     const USERID = getUserId()
     const [formData, setFormData] = useState({})
     const [stock, setStock] = useState({})
@@ -23,6 +25,7 @@ const StockDetails = ({ date, goToTab }) => {
 
     const batchOptions = useMemo(() => getBatchIdOptions(batchList), [batchList])
     const childProps = useMemo(() => ({ batchOptions, shiftOptions }), [batchOptions, shiftOptions])
+    const config = { cancelToken: source.token }
 
     useEffect(() => {
         getBatchesList()
@@ -31,17 +34,28 @@ const StockDetails = ({ date, goToTab }) => {
     useEffect(() => {
         resetForm()
         getActiveStockByDate(date)
+
+        return () => {
+            http.ABORT(source)
+        }
     }, [date])
 
     const getBatchesList = async () => {
-        const data = await http.GET('/motherPlant/getProductionBatchIds')
-        setBatchList(data)
+        const url = '/motherPlant/getProductionBatchIds'
+
+        try {
+            const data = await http.GET(axios, url)
+            setBatchList(data)
+        } catch (error) { }
     }
 
     const getActiveStockByDate = async (date) => {
         const url = `/motherPlant/getProductionDetailsByDate/${date}`
-        const data = await http.GET(url)
-        setStock(data)
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setStock(data)
+        } catch (error) { }
     }
 
     const handleChange = (value, key) => {
@@ -93,12 +107,15 @@ const StockDetails = ({ date, goToTab }) => {
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
-            await http.POST(url, body)
+            await http.POST(axios, url, body, config)
             resetForm()
             goToTab('2')
             showToast(options)
         } catch (error) {
-            setBtnDisabled(false)
+            message.destroy()
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+            }
         }
     }
 

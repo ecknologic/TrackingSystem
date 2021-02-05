@@ -14,6 +14,7 @@ import { getDispatchColumns } from '../../../assets/fixtures';
 import { disableFutureDates, getStatusColor } from '../../../utils/Functions';
 import DateValue from '../../../components/DateValue';
 import CustomDateInput from '../../../components/CustomDateInput';
+import axios from 'axios';
 const DATEFORMAT = 'DD-MM-YYYY'
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 const format = 'YYYY-MM-DD'
@@ -35,20 +36,30 @@ const Dispatches = () => {
     const [dispatchesClone, setDispatchesClone] = useState([])
 
     const dispatchColumns = useMemo(() => getDispatchColumns('external'), [])
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
     const customerOrderIdRef = useRef()
     const DCFormTitleRef = useRef()
     const DCFormBtnRef = useRef()
 
     useEffect(() => {
         getDispatches()
+
+        return () => {
+            http.ABORT(source)
+        }
     }, [])
 
     const getDispatches = async () => {
-        const data = await http.GET('/motherPlant/getDispatchDetails')
-        setDispatches(data)
-        setDispatchesClone(data)
-        setTotalCount(data.length)
-        setLoading(false)
+        const url = '/motherPlant/getDispatchDetails'
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setDispatches(data)
+            setDispatchesClone(data)
+            setTotalCount(data.length)
+            setLoading(false)
+        } catch (error) { }
     }
 
     const datePickerStatus = (status) => {

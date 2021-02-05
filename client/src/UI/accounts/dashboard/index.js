@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { Col, Row } from 'antd';
 import { useHistory } from 'react-router-dom';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
@@ -25,19 +26,27 @@ const Accounts = () => {
     const [sortBy, setSortBy] = useState('NEW')
 
     const pageSizeOptions = useMemo(() => generatePageSizeOptions(), [window.innerWidth])
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
 
     useEffect(() => {
         getAccounts()
+
+        return () => {
+            http.ABORT(source)
+        }
     }, [])
 
     const getAccounts = async () => {
         const url = `/customer/getCustomerDetails/${USERID}`
 
-        const { data } = await http.GET(url)
-        setAccountsClone(data)
-        setAccounts(data)
-        setTotalCount(data.length)
-        setLoading(false)
+        try {
+            const { data } = await http.GET(axios, url, config)
+            setAccountsClone(data)
+            setAccounts(data)
+            setTotalCount(data.length)
+            setLoading(false)
+        } catch (error) { }
     }
 
     const handleSearch = (value) => {

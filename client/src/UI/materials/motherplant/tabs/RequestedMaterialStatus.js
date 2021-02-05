@@ -1,5 +1,6 @@
+import axios from 'axios';
 import dayjs from 'dayjs';
-import { Menu, Table } from 'antd';
+import { Menu, message, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
 import Spinner from '../../../../components/Spinner';
@@ -37,6 +38,14 @@ const MaterialStatus = ({ reFetch, isSuperAdmin = false }) => {
     const [formTitle, setFormTitle] = useState('')
 
     const RMColumns = useMemo(() => getRMColumns(null, isSuperAdmin), [])
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
+
+    useEffect(() => {
+        return () => {
+            http.ABORT(source)
+        }
+    }, [])
 
     useEffect(() => {
         setLoading(true)
@@ -44,11 +53,15 @@ const MaterialStatus = ({ reFetch, isSuperAdmin = false }) => {
     }, [reFetch])
 
     const getRM = async () => {
-        const data = await http.GET(`/motherPlant/getRMDetails?isSuperAdmin=${isSuperAdmin}`)
-        setRM(data)
-        setRMClone(data)
-        setTotalCount(data.length)
-        setLoading(false)
+        const url = `/motherPlant/getRMDetails?isSuperAdmin=${isSuperAdmin}`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setRM(data)
+            setRMClone(data)
+            setTotalCount(data.length)
+            setLoading(false)
+        } catch (error) { }
     }
 
     const datePickerStatus = (status) => {
@@ -114,12 +127,15 @@ const MaterialStatus = ({ reFetch, isSuperAdmin = false }) => {
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
-            await http.PUT(url, body)
+            await http.PUT(axios, url, body, config)
             showToast(options)
             optimisticUpdate(rawmaterialid, status, reason)
             onModalClose(true)
         } catch (error) {
-            setBtnDisabled(false)
+            message.destroy()
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+            }
         }
     }
 
