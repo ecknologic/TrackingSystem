@@ -10,19 +10,19 @@ productQueries.getProductById = async (productId, callback) => {
     return executeGetQuery(query, callback)
 }
 productQueries.saveProduct = (input, callback) => {
-    let query = `insert into productdetails (productName,price,tax,totalAmount) values(?,?,?,?)`;
-    const { productName, price, tax } = input
+    let query = `insert into productdetails (productName,price,tax,totalAmount,hsnCode) values(?,?,?,?,?)`;
+    const { productName, price, tax, hsnCode } = input
     let totalAmount = (price * tax) / 100 + Number(price)
     totalAmount = totalAmount.toFixed(2)
-    let requestBody = [productName, price, tax, totalAmount]
+    let requestBody = [productName, price, tax, totalAmount, hsnCode]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 productQueries.updateProducts = (input, callback) => {
-    const { productName, price, productId, tax } = input
+    const { productName, price, productId, tax, hsnCode } = input
     let totalAmount = (price * tax) / 100 + Number(price)
     totalAmount = totalAmount.toFixed(2)
-    let query = `update productdetails set productName=?,price=?,tax=?,totalAmount=? where productId=${productId}`;
-    let requestBody = [productName, price, tax, totalAmount]
+    let query = `update productdetails set productName=?,price=?,tax=?,totalAmount=?,hsnCode=? where productId=${productId}`;
+    let requestBody = [productName, price, tax, totalAmount, hsnCode]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 module.exports = productQueries

@@ -3,7 +3,7 @@ const { getDeliverysByCustomerOrderId } = require('../warehouse/queries.js');
 let customerQueries = {}
 
 customerQueries.getCustomerDetails = (customerId, callback) => {
-    let query = "SELECT customerId,customerName,mobileNumber,EmailId,Address1,gstNo,panNo,adharNo,registeredDate,invoicetype,natureOfBussiness,creditPeriodInDays,referredBy,isApproved,customertype,organizationName,idProofType,customer_id_proof,d.idProof_backside,d.idProof_frontside,d.gstProof from customerdetails c INNER JOIN customerDocStore d ON c.customer_id_proof=d.docId WHERE c.customerId=" + customerId
+    let query = "SELECT depositAmount,customerId,customerName,mobileNumber,EmailId,Address1,gstNo,panNo,adharNo,registeredDate,invoicetype,natureOfBussiness,creditPeriodInDays,referredBy,isApproved,customertype,organizationName,idProofType,customer_id_proof,d.idProof_backside,d.idProof_frontside,d.gstProof from customerdetails c INNER JOIN customerDocStore d ON c.customer_id_proof=d.docId WHERE c.customerId=" + customerId
     executeGetQuery(query, callback)
 }
 customerQueries.getOrdersByDepartmentId = (departmentId, callback) => {
@@ -105,7 +105,7 @@ customerQueries.deleteCustomerDeliveries = (customerId, callback) => {
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 customerQueries.generatePDF = (input, callback) => {
-    const { customerId = 215, fromDate = '2021-01-21', toDate = '2021-01-22' } = input
+    const { customerId = 222, fromDate = '2021-01-21', toDate = '2021-02-05' } = input
     let query = "SELECT c.customerId,c.customerName,c.organizationName,c.address1,d.address,c.gstNo,c.panNo,c.mobileNumber,co.20LCans,co.price20L,co.1LBoxes,co.price1L, co.500MLBoxes,co.price500ML,co.250MLBoxes,co.price250ML FROM customerdetails c INNER JOIN  customerorderdetails co ON c.customerId=co.existingCustomerId INNER JOIN DeliveryDetails d ON d.customer_Id=c.customerId  WHERE c.customerId=?  AND co.isDelivered='Completed' AND( DATE(co.deliveryDate) BETWEEN ? AND ?)"
     return executeGetParamsQuery(query, [customerId, fromDate, toDate], callback)
 }
