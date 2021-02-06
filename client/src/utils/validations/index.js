@@ -63,7 +63,7 @@ export const validateAccountValues = (data, customerType, isInView) => {
 
     if (customerType === 'Corporate') {
         if (!organizationName) errors.organizationName = text
-        if (!String(creditPeriodInDays)) errors.creditPeriodInDays = text
+        if (creditPeriodInDays === null || !String(creditPeriodInDays)) errors.creditPeriodInDays = text
         else {
             const error = validateNumber(creditPeriodInDays)
             error && (errors.creditPeriodInDays = error)
@@ -97,7 +97,7 @@ export const validateAccountValues = (data, customerType, isInView) => {
         const error = validateNames(referredBy)
         error && (errors.referredBy = error)
     }
-    if (!String(depositAmount)) errors.depositAmount = text
+    if (depositAmount === null || !String(depositAmount)) errors.depositAmount = text
     else {
         const error = validateNumber(depositAmount)
         error && (errors.depositAmount = error)

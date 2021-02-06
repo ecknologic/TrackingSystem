@@ -77,6 +77,10 @@ const AccountOverview = ({ data, onUpdate, isSuperAdmin }) => {
             const error = validateNames(value)
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }
+        else if (key === 'depositAmount') {
+            const error = validateNumber(value)
+            setAccountErrors(errors => ({ ...errors, [key]: error }))
+        }
         else if (key === 'mobileNumber') {
             const error = validateMobileNumber(value)
             setAccountErrors(errors => ({ ...errors, [key]: error }))
