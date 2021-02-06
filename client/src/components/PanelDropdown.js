@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Menu, Dropdown } from 'antd';
 import { DDownIcon } from './SVG_Icons';
 import '../sass/panelDropdown.scss'
+const fn = () => { }
 
-const PanelDropdown = ({ label = 'Label', onSelect = () => { } }) => {
-    const [value, setValue] = useState('Today')
+const PanelDropdown = ({ label, initValue, onSelect = fn, options = [] }) => {
+    const [value, setValue] = useState(() => initValue)
 
     const handleSelect = ({ key }) => {
         setValue(key)
@@ -13,15 +14,7 @@ const PanelDropdown = ({ label = 'Label', onSelect = () => { } }) => {
 
     const menu = (
         <Menu onClick={handleSelect}>
-            <Menu.Item key="Today" >
-                Today
-          </Menu.Item>
-            <Menu.Item key="This Week">
-                This Week
-          </Menu.Item>
-            <Menu.Item key="This Month" >
-                This Month
-          </Menu.Item>
+            {options}
         </Menu>
     );
 

@@ -10,7 +10,7 @@ const ProductionStatusCard = ({ title, total }) => {
             <div className='title'>{title}</div>
             <div className='body'>
                 <div className='stats'>
-                    <span className='number'>{total}</span>
+                    <span className='number'>{total || 0}</span>
                     <ChangeBadge />
                 </div>
                 <span className='compare-text'>Compared to (1832 yesterday)</span>
