@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { Tabs } from 'antd';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import Dashboard from './tabs/Routes';
@@ -8,21 +9,28 @@ import { getDepartmentOptions } from '../../assets/fixtures';
 import '../../sass/products.scss';
 
 const Transport = () => {
-
     const [activeTab, setActiveTab] = useState('1')
     const [reFetch, setreFetch] = useState(false)
     const [departmentList, setDepartmentList] = useState([])
+    const [isFetched, setIsFetched] = useState(false)
     const departmentOptions = useMemo(() => getDepartmentOptions(departmentList), [departmentList])
 
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
+
     useEffect(() => {
-        getDepartmentList()
+        return () => {
+            http.ABORT(source)
+        }
     }, [])
 
     const getDepartmentList = async () => {
         const url = '/bibo/getAllDepartmentsList'
 
-        const data = await http.GET(url)
-        setDepartmentList(data)
+        try {
+            const data = await http.GET(axios, url, config)
+            setDepartmentList(data)
+        } catch (error) { }
     }
 
     const handleGoToTab = useCallback((key) => {
@@ -32,6 +40,14 @@ const Transport = () => {
 
     const handleTabClick = (key) => {
         setActiveTab(key)
+    }
+
+    const fetchList = async () => {
+        if (!isFetched) {
+            const p1 = getDepartmentList()
+            await Promise.all([p1])
+            setIsFetched(true)
+        }
     }
 
     return (
@@ -44,15 +60,15 @@ const Transport = () => {
                         activeKey={activeTab}
                     >
                         <TabPane tab="Routes" key="1">
-                            <Dashboard departmentOptions={departmentOptions} reFetch={reFetch} />
+                            <Dashboard departmentOptions={departmentOptions} isFetched={isFetched} fetchList={fetchList} reFetch={reFetch} />
                         </TabPane>
                         <TabPane tab="Create New Route" key="2">
-                            <CreateRoute departmentOptions={departmentOptions} goToTab={handleGoToTab} />
+                            <CreateRoute departmentOptions={departmentOptions} fetchList={fetchList} goToTab={handleGoToTab} />
                         </TabPane>
                     </Tabs>
                 </div>
             </div >
-        </Fragment >
+        </Fragment>
     )
 }
 const { TabPane } = Tabs;

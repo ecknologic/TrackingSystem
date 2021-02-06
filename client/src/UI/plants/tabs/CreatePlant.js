@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { message } from 'antd';
 import { useLocation } from 'react-router-dom';
 import React, { useState, useEffect, useMemo } from 'react';
@@ -20,16 +21,26 @@ const CreateNewPlant = ({ goToTab }) => {
 
     const mainUrl = useMemo(() => getMainPathname(pathname), [pathname])
     const staffOptions = useMemo(() => getStaffOptions(staffList), [staffList])
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
 
     useEffect(() => {
         getPlantType()
         getStaffList()
+
+        return () => {
+            http.ABORT(source)
+        }
     }, [])
 
     const getStaffList = async () => {
         const roleName = getRoleName()
-        const data = await http.GET(`/users/getUsersByRole/${roleName}`)
-        setStaffList(data)
+        const url = `/users/getUsersByRole/${roleName}`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setStaffList(data)
+        } catch (error) { }
     }
 
     const getPlantType = () => {
@@ -116,13 +127,15 @@ const CreateNewPlant = ({ goToTab }) => {
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
-            await http.POST(url, body)
+            await http.POST(axios, url, body, config)
             showToast(options)
             goToTab('1')
             resetForm()
         } catch (error) {
             message.destroy()
-            setBtnDisabled(false)
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+            }
         }
     }
 

@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { Menu, message, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import RouteForm from '../forms/Route';
@@ -14,7 +15,7 @@ import { EditIconGrey, TrashIconGrey } from '../../../components/SVG_Icons';
 import { getRole, getWarehoseId, SUPERADMIN, TRACKFORM } from '../../../utils/constants';
 import { deepClone, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
 
-const RoutesDashboard = ({ reFetch, departmentOptions }) => {
+const RoutesDashboard = ({ reFetch, isFetched, fetchList, departmentOptions }) => {
     const role = getRole()
     const [routes, setRoutes] = useState([])
     const [formData, setFormData] = useState({})
@@ -33,6 +34,15 @@ const RoutesDashboard = ({ reFetch, departmentOptions }) => {
     const isWHAdmin = useMemo(() => role === 'WarehouseAdmin', [role])
     const isSuperAdmin = useMemo(() => getRole() === SUPERADMIN, [])
     const options = useMemo(() => getOptions(isSuperAdmin), [])
+    const toastLoading = { v1Ing: 'Fetching', action: 'loading' }
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
+
+    useEffect(() => {
+        return () => {
+            http.ABORT(source)
+        }
+    }, [])
 
     useEffect(() => {
         setLoading(true)
@@ -43,10 +53,12 @@ const RoutesDashboard = ({ reFetch, departmentOptions }) => {
         const depId = getWarehoseId()
         const url = getUrl(isWHAdmin, depId)
 
-        const data = await http.GET(url)
-        setRoutes(data)
-        setTotalCount(data.length)
-        setLoading(false)
+        try {
+            const data = await http.GET(axios, url, config)
+            setRoutes(data)
+            setTotalCount(data.length)
+            setLoading(false)
+        } catch (error) { }
     }
 
     const handlePageChange = (number) => {
@@ -58,10 +70,17 @@ const RoutesDashboard = ({ reFetch, departmentOptions }) => {
         setPageNumber(number)
     }
 
+    const handleFetchList = async () => {
+        showToast(toastLoading)
+        await fetchList()
+        message.destroy()
+        setEditModal(true)
+    }
+
     const handleMenuSelect = (key, data) => {
         if (key === 'edit') {
             setFormData(data)
-            setEditModal(true)
+            handleFetchList()
         }
         else if (key === 'delete') {
             setModalDelete(true)
@@ -75,7 +94,7 @@ const RoutesDashboard = ({ reFetch, departmentOptions }) => {
 
         try {
             showToast({ ...options, action: 'loading' })
-            await http.DELETE(url)
+            await http.DELETE(axios, url, config)
             optimisticDelete(id)
             showToast(options)
         } catch (error) {
@@ -114,13 +133,15 @@ const RoutesDashboard = ({ reFetch, departmentOptions }) => {
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
-            await http.POST(url, body)
+            await http.POST(axios, url, body, config)
             showToast(options)
             optimisticUpdate(formData)
             onModalClose(true)
         } catch (error) {
             message.destroy()
-            setBtnDisabled(false)
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+            }
         }
     }
 
@@ -153,7 +174,7 @@ const RoutesDashboard = ({ reFetch, departmentOptions }) => {
             departmentName,
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, route)} />
         }
-    }), [routes])
+    }), [routes, isFetched])
 
     const handleConfirmModalOk = useCallback(() => {
         setConfirmModal(false)

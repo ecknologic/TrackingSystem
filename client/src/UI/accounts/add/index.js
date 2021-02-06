@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Divider, Checkbox, Collapse, message } from 'antd';
 import React, { Fragment, useEffect, useMemo, useState, useCallback } from 'react';
@@ -71,6 +72,8 @@ const AddAccount = () => {
     const { customerName } = generalValues
     const highlight = { backgroundColor: '#5C63AB', color: '#fff' }
     const fade = { backgroundColor: '#EBEBEB', color: '#1B2125' }
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
 
     useEffect(() => {
         getWarehouseList()
@@ -79,6 +82,10 @@ const AddAccount = () => {
         sessionStorage.removeItem('address2')
         sessionStorage.removeItem('address3')
         sessionStorage.removeItem('address4')
+
+        return () => {
+            http.ABORT(source)
+        }
     }, [])
 
     useEffect(() => {
@@ -87,14 +94,22 @@ const AddAccount = () => {
     }, [sameAddress])
 
     const getWarehouseList = async () => {
-        const data = await http.GET('/bibo/getDepartmentsList?departmentType=warehouse')
-        setWarehouseList(data)
+        const url = '/bibo/getDepartmentsList?departmentType=warehouse'
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setWarehouseList(data)
+        } catch (error) { }
     }
 
     const getRouteList = async (departmentId) => {
-        const data = await http.GET(`/customer/getRoutes/${departmentId}`)
-        setRouteList(data)
-        setCurrentDepId(departmentId)
+        const url = `/customer/getRoutes/${departmentId}`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setRouteList(data)
+            setCurrentDepId(departmentId)
+        } catch (error) { }
     }
 
     const handleDeliveryValues = (value, key) => {
@@ -117,10 +132,6 @@ const AddAccount = () => {
         }
         else if (key === 'phoneNumber') {
             const error = validateMobileNumber(value)
-            setDeliveryErrors(errors => ({ ...errors, [key]: error }))
-        }
-        else if (key === 'depositAmount') {
-            const error = validateNumber(value)
             setDeliveryErrors(errors => ({ ...errors, [key]: error }))
         }
         else if (key === 'contactPerson') {
@@ -232,6 +243,10 @@ const AddAccount = () => {
         }
         else if (key === 'referredBy') {
             const error = validateNames(value)
+            setCorporateErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'depositAmount') {
+            const error = validateNumber(value)
             setCorporateErrors(errors => ({ ...errors, [key]: error }))
         }
         else if (key === 'mobileNumber') {
@@ -360,7 +375,6 @@ const AddAccount = () => {
     }
 
     const resetCorporateValues = () => {
-        const defaultValues = { referredBy: USERNAME, registeredDate: TODAYDATE }
         setCorporateValues(defaultValues)
         setIDProofs({})
     }
@@ -461,12 +475,14 @@ const AddAccount = () => {
         try {
             setBtnDisabled(true)
             showToast(options)
-            await http.POST(url, body)
+            await http.POST(axios, url, body, config)
             message.destroy()
             setSucessModal(true)
         } catch (error) {
             message.destroy()
-            setBtnDisabled(false)
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+            }
         }
     }
 

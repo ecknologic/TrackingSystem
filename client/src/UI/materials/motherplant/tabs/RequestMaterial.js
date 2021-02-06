@@ -1,5 +1,6 @@
+import axios from 'axios';
 import { message } from 'antd';
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import CustomButton from '../../../../components/CustomButton';
 import FormHeader from '../../../../components/FormHeader';
 import MaterialRequestForm from '../forms/MaterialRequest';
@@ -16,6 +17,15 @@ const RequestMaterial = ({ goToTab, ...rest }) => {
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
     const [shake, setShake] = useState(false)
+
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
+
+    useEffect(() => {
+        return () => {
+            http.ABORT(source)
+        }
+    }, [])
 
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
@@ -54,13 +64,15 @@ const RequestMaterial = ({ goToTab, ...rest }) => {
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
-            await http.POST(url, body)
+            await http.POST(axios, url, body, config)
             showToast(options)
             goToTab('2')
             resetForm()
         } catch (error) {
             message.destroy()
-            setBtnDisabled(false)
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+            }
         }
     }
 

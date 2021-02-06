@@ -1,3 +1,4 @@
+import axios from 'axios';
 import dayjs from 'dayjs';
 import { useHistory, useParams } from 'react-router-dom';
 import { Checkbox, Collapse, message, Popconfirm } from 'antd';
@@ -59,18 +60,24 @@ const ApproveAccount = () => {
     const showTrashIcon = useMemo(() => addresses.length !== 1, [addresses.length])
     const isSuperAdmin = useMemo(() => getRole() === SUPERADMIN, [])
     const { organizationName, customerId, customertype, customerName } = accountValues
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
 
     useEffect(() => {
         resetSessionItems('address')
         const p1 = getAccount()
         const p2 = getAddresses()
         Promise.all([p1, p2]).then(() => setLoading(false))
+
+        return () => {
+            http.ABORT(source)
+        }
     }, [])
 
     const getAccount = async () => {
         const url = `/customer/getCustomerDetailsById/${accountId}`
         try {
-            const { data: [data = {}] } = await http.GET(url)
+            const { data: [data = {}] } = await http.GET(axios, url, config)
             const { gstProof, idProof_frontside, idProof_backside, Address1, registeredDate, ...rest } = data
             const { customerName, organizationName, customertype, gstNo, adharNo, panNo, idProofType } = rest
 
@@ -96,7 +103,7 @@ const ApproveAccount = () => {
     const getAddresses = async () => {
         const url = `/customer/getCustomerDeliveryDetails/${accountId}?isSuperAdmin=${isSuperAdmin}`
         try {
-            const { data: [data = {}] } = await http.GET(url)
+            const { data: [data = {}] } = await http.GET(axios, url, config)
             const { deliveryDetails = [] } = data
             const addressIds = []
             const deliveries = deliveryDetails.map((item) => {
@@ -115,8 +122,12 @@ const ApproveAccount = () => {
     }
 
     const getWarehouseList = async () => {
-        const data = await http.GET('/bibo/getDepartmentsList?departmentType=warehouse')
-        setWarehouseList(data)
+        const url = '/bibo/getDepartmentsList?departmentType=warehouse'
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setWarehouseList(data)
+        } catch (error) { }
     }
 
     const handleChange = (value, key) => {
@@ -135,6 +146,10 @@ const ApproveAccount = () => {
         }
         else if (key === 'referredBy') {
             const error = validateNames(value)
+            setAccountErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'depositAmount') {
+            const error = validateNumber(value)
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }
         else if (key === 'mobileNumber') {
@@ -210,7 +225,9 @@ const ApproveAccount = () => {
             postAccountSave()
         } catch (error) {
             message.destroy()
-            setSaveDisabled(false)
+            if (!axios.isCancel(error)) {
+                setSaveDisabled(false)
+            }
         }
     }
 
@@ -226,7 +243,7 @@ const ApproveAccount = () => {
     const updateCustomer = async (body) => {
         try {
             const url = '/customer/updateCustomer'
-            await http.POST(url, body)
+            await http.POST(axios, url, body, config)
             return Promise.resolve()
         } catch (error) {
             Promise.reject()
@@ -242,7 +259,7 @@ const ApproveAccount = () => {
         try {
             const url = '/customer/updateDeliveryDetails'
             if (body.length) {
-                await http.POST(url, body)
+                await http.POST(axios, url, body, config)
             }
             return Promise.resolve()
         } catch (error) {
@@ -257,7 +274,7 @@ const ApproveAccount = () => {
             for (let index = 0; index < total; index++) {
                 const id = removedAddressIds[index]
                 const url = `/customer/deleteDelivery/${id}`
-                promises.push(http.DELETE(url))
+                promises.push(http.DELETE(axios, url, config))
             }
             await Promise.all(promises)
             return Promise.resolve()
@@ -307,13 +324,15 @@ const ApproveAccount = () => {
         try {
             setBtnDisabled(true)
             showToast(options)
-            await http.POST(url, body)
+            await http.POST(axios, url, body, config)
             message.destroy()
             resetTrackForm()
             setSucessModal(true)
         } catch (error) {
             message.destroy()
-            setBtnDisabled(false)
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+            }
         }
     }
 
@@ -384,7 +403,7 @@ const ApproveAccount = () => {
                             }
                             <div className='heading-container'>
                                 <span className='heading'>Delivery Details</span>
-                                <span className='tail'>{`(${addresses.length} Locations)`}</span>
+                                <span className='tail'>{`(${addresses.length} ${addresses.length === 1 ? 'Location' : 'Locations'})`}</span>
                             </div>
                             <Collapse
                                 accordion

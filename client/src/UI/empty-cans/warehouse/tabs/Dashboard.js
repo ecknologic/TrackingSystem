@@ -1,24 +1,24 @@
+import axios from 'axios';
 import dayjs from 'dayjs';
-import { Menu, Table } from 'antd';
+import { Menu, message, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http'
 import EmptyCansForm from '../forms/EmptyCans';
 import Actions from '../../../../components/Actions';
 import Spinner from '../../../../components/Spinner';
 import CustomModal from '../../../../components/CustomModal';
+import EmptyCansView from '../../motherplant/views/EmptyCans';
 import ConfirmModal from '../../../../components/CustomModal';
 import { getEmptyCanColumns } from '../../../../assets/fixtures';
-import { EditIconGrey, EyeIconGrey } from '../../../../components/SVG_Icons';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
+import { TRACKFORM } from '../../../../utils/constants';
 import CustomPagination from '../../../../components/CustomPagination';
-import { getRole, TRACKFORM } from '../../../../utils/constants';
-import { deepClone, getStatusColor, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
+import { EditIconGrey, EyeIconGrey } from '../../../../components/SVG_Icons';
 import { validateNumber, validateRECValues } from '../../../../utils/validations';
-import EmptyCansView from '../../motherplant/views/EmptyCans';
+import { deepClone, getStatusColor, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 const DATEFORMAT = 'DD/MM/YYYY'
 
-const Dashboard = ({ reFetch, driverList, ...rest }) => {
-    const role = getRole()
+const Dashboard = ({ reFetch, isFetched, fetchList, driverList, ...rest }) => {
     const [emptyCans, setEmptyCans] = useState([])
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
@@ -32,8 +32,16 @@ const Dashboard = ({ reFetch, driverList, ...rest }) => {
     const [confirmModal, setConfirmModal] = useState(false)
     const [shake, setShake] = useState(false)
 
-    const isWHAdmin = useMemo(() => role === 'WarehouseAdmin', [role])
     const emptyCanColumns = useMemo(() => getEmptyCanColumns(), [])
+    const toastLoading = { v1Ing: 'Fetching', action: 'loading' }
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
+
+    useEffect(() => {
+        return () => {
+            http.ABORT(source)
+        }
+    }, [])
 
     useEffect(() => {
         setLoading(true)
@@ -42,10 +50,20 @@ const Dashboard = ({ reFetch, driverList, ...rest }) => {
 
     const getEmptyCans = async () => {
         const url = '/warehouse/getEmptyCansList'
-        const data = await http.GET(url)
-        setEmptyCans(data)
-        setTotalCount(data.length)
-        setLoading(false)
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setEmptyCans(data)
+            setTotalCount(data.length)
+            setLoading(false)
+        } catch (error) { }
+    }
+
+    const handleFetchList = async () => {
+        showToast(toastLoading)
+        await fetchList()
+        message.destroy()
+        setEditModal(true)
     }
 
     const handlePageChange = (number) => {
@@ -60,7 +78,7 @@ const Dashboard = ({ reFetch, driverList, ...rest }) => {
     const handleMenuSelect = (key, data) => {
         setFormData(data)
         if (key === 'view') setViewModal(true)
-        else if (key === 'edit') setEditModal(true)
+        else if (key === 'edit') handleFetchList()
     }
 
     const handleChange = (value, key) => {
@@ -113,13 +131,16 @@ const Dashboard = ({ reFetch, driverList, ...rest }) => {
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
-            const [data] = await http.PUT(url, body)
+            const [data] = await http.PUT(axios, url, body, config)
             optimisticUpdate(data)
             showToast(options)
             setEditModal(false)
             resetForm()
         } catch (error) {
-            setBtnDisabled(false)
+            message.destroy()
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+            }
         }
     }
 
@@ -161,7 +182,7 @@ const Dashboard = ({ reFetch, driverList, ...rest }) => {
             dateAndTime: dayjs(createdDateTime).format(DATEFORMAT),
             action: <Actions options={getActions(status)} onSelect={({ key }) => handleMenuSelect(key, route)} />
         }
-    }), [emptyCans])
+    }), [emptyCans, isFetched])
 
     const handleConfirmModalOk = useCallback(() => {
         setConfirmModal(false)

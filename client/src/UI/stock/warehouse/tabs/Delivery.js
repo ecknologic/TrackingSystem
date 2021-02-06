@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { Menu, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import DCForm from '../forms/DCForm';
@@ -17,7 +18,7 @@ import { deliveryColumns, getRouteOptions, getDriverOptions } from '../../../../
 import { validateMobileNumber, validateNames, validateNumber, validateDCValues } from '../../../../utils/validations';
 import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone, getStatusColor } from '../../../../utils/Functions';
 
-const Delivery = ({ date }) => {
+const Delivery = ({ date, source }) => {
     const warehouseId = getWarehoseId()
     const [routes, setRoutes] = useState([])
     const [drivers, setDrivers] = useState([])
@@ -40,41 +41,53 @@ const Delivery = ({ date }) => {
 
     const routeOptions = useMemo(() => getRouteOptions(routes), [routes])
     const driverOptions = useMemo(() => getDriverOptions(drivers), [drivers])
+    const config = { cancelToken: source.token }
 
     useEffect(() => {
-        getRoutes()
-        getDrivers()
-    }, [])
-
-    useEffect(() => {
+        setLoading(true)
         getDeliveries()
+        isEmpty(routes) && getRoutes()
+        isEmpty(drivers) && getDrivers()
+
+        return () => {
+            http.ABORT(source)
+        }
     }, [date])
 
     const getRoutes = async () => {
-        const data = await await http.GET(`/customer/getRoutes/${warehouseId}`)
-        setRoutes(data)
+        const url = `/customer/getRoutes/${warehouseId}`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setRoutes(data)
+        } catch (error) { }
     }
 
     const getDrivers = async () => {
         const url = `/bibo/getdriverDetails/${warehouseId}`
-        const data = await http.GET(url)
-        setDrivers(data)
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setDrivers(data)
+        } catch (error) { }
     }
 
     const getDeliveries = async () => {
-        setLoading(true)
         const url = `/warehouse/deliveryDetails/${date}`
-        const data = await http.GET(url)
-        setPageNumber(1)
-        setDeliveriesClone(data)
-        setLoading(false)
-        if (filterInfo.length) {
-            generateFiltered(data, filterInfo)
-        }
-        else {
-            setTotalCount(data.length)
-            setDeliveries(data)
-        }
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setPageNumber(1)
+            setDeliveriesClone(data)
+            setLoading(false)
+            if (!isEmpty(filterInfo)) {
+                generateFiltered(data, filterInfo)
+            }
+            else {
+                setTotalCount(data.length)
+                setDeliveries(data)
+            }
+        } catch (error) { }
     }
 
     const handleChange = (value, key) => {
@@ -107,7 +120,7 @@ const Delivery = ({ date }) => {
     const onFilterChange = (data) => {
         setPageNumber(1)
         setFilterInfo(data)
-        if (!data.length) {
+        if (isEmpty(data)) {
             setDeliveries(deliveriesClone)
             setTotalCount(deliveriesClone.length)
         }

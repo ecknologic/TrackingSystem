@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { Col, Row } from 'antd';
 import { useHistory } from 'react-router-dom';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
@@ -16,18 +17,26 @@ const Staff = () => {
     const [totalCount, setTotalCount] = useState(null)
 
     const pageSizeOptions = useMemo(() => generatePageSizeOptions(), [window.innerWidth])
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
 
     useEffect(() => {
         getEmployees()
+
+        return () => {
+            http.ABORT(source)
+        }
     }, [])
 
     const getEmployees = async () => {
         const url = 'warehouse/getDepartmentStaff'
 
-        const data = await http.GET(url)
-        setEmployees(data)
-        setTotalCount(data.length)
-        setLoading(false)
+        try {
+            const data = await http.GET(axios, url, config)
+            setEmployees(data)
+            setTotalCount(data.length)
+            setLoading(false)
+        } catch (error) { }
     }
 
     const handlePageChange = (number) => {

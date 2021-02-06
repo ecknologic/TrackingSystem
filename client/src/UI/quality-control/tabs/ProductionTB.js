@@ -1,3 +1,4 @@
+import axios from 'axios';
 import dayjs from 'dayjs';
 import { Table } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -24,17 +25,30 @@ const ProductionTB = ({ reFetch }) => {
     const [TB, setTB] = useState([])
     const [TBClone, setTBClone] = useState([])
 
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
+
+    useEffect(() => {
+        return () => {
+            http.ABORT(source)
+        }
+    }, [])
+
     useEffect(() => {
         setLoading(true)
         getTB()
     }, [reFetch])
 
     const getTB = async () => {
-        const data = await http.GET('/motherPlant/getProdQCTestedBatches')
-        setTB(data)
-        setTBClone(data)
-        setTotalCount(data.length)
-        setLoading(false)
+        const url = '/motherPlant/getProdQCTestedBatches'
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setTB(data)
+            setTBClone(data)
+            setTotalCount(data.length)
+            setLoading(false)
+        } catch (error) { }
     }
 
     const datePickerStatus = (status) => {

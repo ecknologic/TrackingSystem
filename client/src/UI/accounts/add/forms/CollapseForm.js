@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
 import { getBase64 } from '../../../../utils/Functions';
@@ -17,12 +18,18 @@ const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => 
     const [routeList, setRouteList] = useState([])
 
     const routeOptions = useMemo(() => getRouteOptions(routeList), [routeList])
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
 
     useEffect(() => { // To pre-fill the form
         setDeliveryValues(data)
 
         const { departmentId } = data
         getRouteList(departmentId)
+
+        return () => {
+            http.ABORT(source)
+        }
     }, [])
 
     useEffect(() => { // To pre-fill errors
@@ -41,8 +48,12 @@ const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => 
     }
 
     const getRouteList = async (departmentId) => {
-        const data = await http.GET(`/customer/getRoutes/${departmentId}`)
-        setRouteList(data)
+        const url = `/customer/getRoutes/${departmentId}`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setRouteList(data)
+        } catch (error) { }
     }
 
     const onChange = (value, key) => {
@@ -61,10 +72,6 @@ const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => 
         }
         else if (key === 'deliveryLocation') {
             const error = validateNames(value)
-            setErrors(errors => ({ ...errors, [key]: error }))
-        }
-        else if (key === 'depositAmount') {
-            const error = validateNumber(value)
             setErrors(errors => ({ ...errors, [key]: error }))
         }
         else if (key === 'phoneNumber') {
@@ -129,7 +136,7 @@ const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => 
     }
 
     const {
-        gstNo, gstProof, depositAmount, departmentId, routeId, devDays, phoneNumber, contactPerson, address,
+        gstNo, gstProof, departmentId, routeId, devDays, phoneNumber, contactPerson, address,
         deliveryLocation, product20L, price20L, product1L, price1L, product500ML, price500ML,
         product250ML, price250ML
     } = deliveryValues
@@ -206,6 +213,14 @@ const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => 
                             onBlur={({ target: { value } }) => onBlur(value, 'phoneNumber')}
                             onChange={(value) => onChange(value, 'phoneNumber')} />
                     </div>
+                    <div className='input-container'>
+                        <InputLabel name='Delivery Days' error={errors.devDays} mandatory />
+                        <SelectInput value={devDays}
+                            options={dayOptions} mode='multiple'
+                            error={errors.devDays}
+                            onSelect={handleSelect} onDeselect={handleDeselect}
+                        />
+                    </div>
                 </div>
                 <div className='columns'>
                     <InputLabel name='Products and Price' error={errors.productNPrice} mandatory />
@@ -262,22 +277,6 @@ const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => 
                                     onChange={(value) => onChange(value, 'price250ML')} />
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div className='row'>
-                    <div className='input-container'>
-                        <InputLabel name='Delivery Days' error={errors.devDays} mandatory />
-                        <SelectInput value={devDays}
-                            options={dayOptions} mode='multiple'
-                            error={errors.devDays}
-                            onSelect={handleSelect} onDeselect={handleDeselect}
-                        />
-                    </div>
-                    <div className='input-container'>
-                        <InputLabel name='Deposit Amount' error={errors.depositAmount} mandatory />
-                        <CustomInput value={depositAmount} placeholder='Deposit Amount'
-                            error={errors.depositAmount}
-                            onChange={(value) => onChange(value, 'depositAmount')} />
                     </div>
                 </div>
             </div>

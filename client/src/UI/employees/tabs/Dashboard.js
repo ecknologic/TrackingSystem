@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { Col, message, Row } from 'antd';
 import { useHistory, useLocation } from 'react-router-dom';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
@@ -27,6 +28,14 @@ const Dashboard = ({ reFetch, isDriver }) => {
     const [employeeType] = useState(() => getEmployeeType(isDriver))
     const pageSizeOptions = useMemo(() => generatePageSizeOptions(), [window.innerWidth])
     const idKey = useMemo(() => getKey(isDriver), [])
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
+
+    useEffect(() => {
+        return () => {
+            http.ABORT(source)
+        }
+    }, [])
 
     useEffect(() => {
         setLoading(true)
@@ -36,10 +45,12 @@ const Dashboard = ({ reFetch, isDriver }) => {
     const getEmployees = async () => {
         const url = getUrl(isDriver)
 
-        const data = await http.GET(url)
-        setEmployees(data)
-        setTotalCount(data.length)
-        setLoading(false)
+        try {
+            const data = await http.GET(axios, url, config)
+            setEmployees(data)
+            setTotalCount(data.length)
+            setLoading(false)
+        } catch (error) { }
     }
 
     const handlePageChange = (number) => {
@@ -64,7 +75,7 @@ const Dashboard = ({ reFetch, isDriver }) => {
 
         try {
             showToast({ ...options, action: 'loading' })
-            await http.DELETE(url)
+            await http.DELETE(axios, url, config)
             optimisticDelete(id)
             showToast(options)
         } catch (error) {

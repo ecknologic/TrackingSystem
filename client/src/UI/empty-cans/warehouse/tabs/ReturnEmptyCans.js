@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import axios from 'axios';
+import { message } from 'antd';
+import React, { useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
 import EmptyCansForm from '../forms/EmptyCans';
 import CustomButton from '../../../../components/CustomButton';
@@ -6,12 +8,23 @@ import { getWarehoseId } from '../../../../utils/constants';
 import { isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 import { validateNumber, validateRECValues } from '../../../../utils/validations';
 
-const ReturnEmptyCans = ({ goToTab, driverList, ...rest }) => {
+const ReturnEmptyCans = ({ goToTab, fetchList, driverList, ...rest }) => {
     const warehouseId = getWarehoseId()
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [shake, setShake] = useState(false)
+
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
+
+    useEffect(() => {
+        fetchList()
+
+        return () => {
+            http.ABORT(source)
+        }
+    }, [])
 
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
@@ -63,12 +76,15 @@ const ReturnEmptyCans = ({ goToTab, driverList, ...rest }) => {
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
-            await http.POST(url, body)
+            await http.POST(axios, url, body, config)
             showToast(options)
             goToTab('1')
             resetForm()
         } catch (error) {
-            setBtnDisabled(false)
+            message.destroy()
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+            }
         }
     }
 

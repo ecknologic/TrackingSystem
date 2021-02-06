@@ -11,7 +11,7 @@ import '../sass/datePickerPanel.scss'
 const format = 'YYYY-MM-DD';
 const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-const DatePickerPanel = ({ onChange }) => {
+const DatePickerPanel = ({ onChange, onSelect }) => {
     const [open, setOpen] = useState(false)
     const [daysInMonth, SetdaysInMonth] = useState(0)
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
@@ -62,6 +62,7 @@ const DatePickerPanel = ({ onChange }) => {
             setConfirm(true)
         }
         else {
+            !sameDay && onSelect()
             generateRequiredDates(date)
             setOpen(false)
         }
@@ -75,6 +76,7 @@ const DatePickerPanel = ({ onChange }) => {
             setConfirm(true)
         }
         else {
+            !sameDay && onSelect()
             setSelectedDay(value)
             const date = `${selectedYear}-${selectedMonth}-${value}`
             setSelectedDate(date)

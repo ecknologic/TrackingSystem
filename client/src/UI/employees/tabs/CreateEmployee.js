@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { message } from 'antd';
 import { useHistory, useLocation } from 'react-router-dom';
 import React, { useState, useEffect, useMemo } from 'react';
@@ -36,25 +37,35 @@ const CreateEmployee = ({ goToTab }) => {
     const departmentOptions = useMemo(() => getDepartmentOptions(departmentList), [departmentList])
     const childProps = useMemo(() => ({ roleOptions, departmentOptions }),
         [roleOptions, departmentOptions])
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
 
     useEffect(() => {
         getEmployeeType(mainUrl)
         getDepartmentList()
         getRoleList()
+
+        return () => {
+            http.ABORT(source)
+        }
     }, [])
 
     const getRoleList = async () => {
         const url = '/roles/getRoles'
 
-        const data = await http.GET(url)
-        setRoleList(data)
+        try {
+            const data = await http.GET(axios, url, config)
+            setRoleList(data)
+        } catch (error) { }
     }
 
     const getDepartmentList = async () => {
         const url = '/bibo/getAllDepartmentsList?hasNone=true&availableOnly=true'
 
-        const data = await http.GET(url)
-        setDepartmentList(data)
+        try {
+            const data = await http.GET(axios, url, config)
+            setDepartmentList(data)
+        } catch (error) { }
     }
 
     const handleChange = (value, key) => {
@@ -266,13 +277,15 @@ const CreateEmployee = ({ goToTab }) => {
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
-            await http.POST(url, body)
+            await http.POST(axios, url, body, config)
             showToast(options)
             postCreation(employeeType)
             resetForm()
         } catch (error) {
             message.destroy()
-            setBtnDisabled(false)
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+            }
         }
     }
 

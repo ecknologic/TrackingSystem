@@ -11,7 +11,7 @@ import React, { Fragment, useState, useCallback, useMemo } from 'react';
 import { getMaterialOpitons, getVendorOptions } from '../../../assets/fixtures';
 import '../../../sass/materials.scss'
 
-const WarehouseMaterials = () => {
+const Materials = () => {
     const [activeTab, setActiveTab] = useState('1')
     const [reFetch, setreFetch] = useState(false)
 
@@ -62,4 +62,4 @@ const WarehouseMaterials = () => {
     )
 }
 const { TabPane } = Tabs;
-export default WarehouseMaterials
+export default Materials

@@ -1,5 +1,6 @@
+import axios from 'axios';
 import { message } from 'antd';
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { http } from '../../../modules/http';
 import DispatchForm from '../forms/Dispatch';
 import { TRACKFORM } from '../../../utils/constants';
@@ -22,19 +23,36 @@ const CreateDispatch = ({ goToTab, driverList, warehouseList, reFetch, ...rest }
     const [shake, setShake] = useState(false)
 
     const distributorOptions = useMemo(() => getDistributorOptions(distributorList), [distributorList])
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
+
+    useEffect(() => {
+        return () => {
+            http.ABORT(source)
+        }
+    }, [])
 
     const getCurrentStock = async (batchId) => {
-        const data = await http.GET(`/motherPlant/getProductByBatch/${batchId}`)
-        const { product20LCount: product20L, product1LCount: product1L,
-            product500MLCount: product500ML, product250MLCount: product250ML } = data
-        const currentStock = { product20L, product1L, product500ML, product250ML }
-        setCurrentStock(data)
-        setFormData(data => ({ ...data, ...currentStock }))
+
+        const url = `/motherPlant/getProductByBatch/${batchId}`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            const { product20LCount: product20L, product1LCount: product1L,
+                product500MLCount: product500ML, product250MLCount: product250ML } = data
+            const currentStock = { product20L, product1L, product500ML, product250ML }
+            setCurrentStock(data)
+            setFormData(data => ({ ...data, ...currentStock }))
+        } catch (error) { }
     }
 
     const getDistributorList = async () => {
-        const data = await http.GET('/distributor/getDistributorsList')
-        setDistributorList(data)
+        const url = '/distributor/getDistributorsList'
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setDistributorList(data)
+        } catch (error) { }
     }
 
     const handleChange = (value, key) => {
@@ -44,7 +62,7 @@ const CreateDispatch = ({ goToTab, driverList, warehouseList, reFetch, ...rest }
         if (key === 'batchId') getCurrentStock(value)
         if (key === 'dispatchType') {
             setFormData(data => ({ ...data, dispatchTo: null }))
-            if (value === 'distributor' && !distributorList.length) {
+            if (value === 'distributor' && isEmpty(distributorList)) {
                 getDistributorList()
             }
         }
@@ -101,14 +119,16 @@ const CreateDispatch = ({ goToTab, driverList, warehouseList, reFetch, ...rest }
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
-            await http.POST(url, body)
+            await http.POST(axios, url, body, config)
             showToast(options)
             goToTab('1')
             outOfStock && reFetch()
             resetForm()
         } catch (error) {
             message.destroy()
-            setBtnDisabled(false)
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+            }
         }
     }
 

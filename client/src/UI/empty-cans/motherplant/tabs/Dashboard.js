@@ -1,3 +1,4 @@
+import axios from 'axios';
 import dayjs from 'dayjs';
 import { Menu, message, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -11,8 +12,8 @@ import { getEmptyCanColumns } from '../../../../assets/fixtures';
 import { EditIconGrey } from '../../../../components/SVG_Icons';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomPagination from '../../../../components/CustomPagination';
-import { getRole, TRACKFORM } from '../../../../utils/constants';
-import { deepClone, getStatusColor, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
+import { TRACKFORM } from '../../../../utils/constants';
+import { deepClone, getStatusColor, resetTrackForm, showToast } from '../../../../utils/Functions';
 const DATEFORMAT = 'DD/MM/YYYY'
 
 const Dashboard = () => {
@@ -27,20 +28,27 @@ const Dashboard = () => {
     const [viewModal, setViewModal] = useState(false)
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
-    const [shake, setShake] = useState(false)
 
     const emptyCanColumns = useMemo(() => getEmptyCanColumns('motherplant'), [])
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
 
     useEffect(() => {
         getEmptyCans()
+
+        return () => {
+            http.ABORT(source)
+        }
     }, [])
 
     const getEmptyCans = async () => {
-        const url = '/warehouse/getEmptyCansList'
-        const data = await http.GET(url)
-        setEmptyCans(data)
-        setTotalCount(data.length)
-        setLoading(false)
+        try {
+            const url = '/warehouse/getEmptyCansList'
+            const data = await http.GET(axios, url, config)
+            setEmptyCans(data)
+            setTotalCount(data.length)
+            setLoading(false)
+        } catch (error) { }
     }
 
     const handlePageChange = (number) => {
@@ -86,12 +94,15 @@ const Dashboard = () => {
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
-            await http.PUT(url, body)
+            await http.PUT(axios, url, body, config)
             showToast(options)
             optimisticUpdate(id, status, reason)
             onModalClose(true)
         } catch (error) {
-            setBtnDisabled(false)
+            message.destroy()
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+            }
         }
     }
 

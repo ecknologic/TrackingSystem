@@ -8,7 +8,7 @@ const AccountView = ({ data }) => {
 
     const {
         natureOfBussiness, address, customerName, mobileNumber, invoicetype, creditPeriodInDays,
-        customertype, EmailId, registeredDate
+        customertype, EmailId, registeredDate, depositAmount
     } = data
 
     const isCorporate = customertype === 'Corporate'
@@ -50,13 +50,18 @@ const AccountView = ({ data }) => {
                         <InputValue size='large' value={getInvoiceLabel(invoicetype)} />
                     </div>
                 </div>
-                {
-                    isCorporate ? <div className='input-container'>
-                        <InputValue size='smaller' value='Credit Period in Days' />
-                        <InputValue size='large' value={creditPeriodInDays} />
-                    </div> : null
-                }
-
+                <div className='row half-stretch'>
+                    {
+                        isCorporate ? <div className='input-container'>
+                            <InputValue size='smaller' value='Credit Period in Days' />
+                            <InputValue size='large' value={creditPeriodInDays} />
+                        </div> : null
+                    }
+                    <div className='input-container'>
+                        <InputValue size='smaller' value='Deposit Amount' />
+                        <InputValue size='large' value={depositAmount} />
+                    </div>
+                </div>
             </div>
         </>
     )

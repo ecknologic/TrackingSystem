@@ -1,5 +1,6 @@
+import axios from 'axios';
 import { message } from 'antd';
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import CustomButton from '../../../components/CustomButton';
 import FormHeader from '../../../components/FormHeader';
 import ExternalDispatchForm from '../forms/ExternalDispatch';
@@ -18,9 +19,21 @@ const CreateExternalDispatch = ({ goToTab, driverList, ...rest }) => {
     const [currentStock, setCurrentStock] = useState({})
     const [shake, setShake] = useState(false)
 
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
+
+    useEffect(() => {
+        return () => {
+            http.ABORT(source)
+        }
+    }, [])
+
     const getCurrentStock = async (batchId) => {
-        const data = await http.GET(`/motherPlant/getProductByBatch/${batchId}`)
-        setCurrentStock(data)
+        const url = `/motherPlant/getProductByBatch/${batchId}`
+        try {
+            const data = await http.GET(axios, url, config)
+            setCurrentStock(data)
+        } catch (error) { }
     }
 
     const handleChange = (value, key) => {
@@ -91,13 +104,15 @@ const CreateExternalDispatch = ({ goToTab, driverList, ...rest }) => {
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
-            await http.POST(url, body)
+            await http.POST(axios, url, body, config)
             message.destroy()
             goToTab('1')
             showToast(options)
         } catch (error) {
             message.destroy()
-            setBtnDisabled(false)
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+            }
         }
     }
 

@@ -1,3 +1,4 @@
+import axios from 'axios';
 import dayjs from 'dayjs';
 import { message } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -13,12 +14,12 @@ import CustomModal from '../../../../components/CustomModal';
 import ConfirmModal from '../../../../components/CustomModal';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import EmptyCansForm from '../../../empty-cans/warehouse/forms/EmptyCans';
-import { validateNumber, validateASValues, validateRECValues } from '../../../../utils/validations';
 import { getWarehoseId, TODAYDATE, TRACKFORM } from '../../../../utils/constants';
 import { getASValuesForDB, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
+import { validateNumber, validateASValues, validateRECValues } from '../../../../utils/validations';
 import { getDriverOptions, getWarehouseOptions, getVehicleOptions } from '../../../../assets/fixtures';
 
-const StockDetails = ({ date }) => {
+const StockDetails = ({ date, source }) => {
     const warehouseId = getWarehoseId()
     const [CAS, setCAS] = useState({})
     const [OFD, setOFC] = useState({})
@@ -42,6 +43,13 @@ const StockDetails = ({ date }) => {
     const motherplantOptions = useMemo(() => getWarehouseOptions(motherplantList), [motherplantList])
     const driverOptions = useMemo(() => getDriverOptions(driverList), [driverList])
     const vehicleOptions = useMemo(() => getVehicleOptions(vehicleList), [vehicleList])
+    const config = { cancelToken: source.token }
+
+    useEffect(() => {
+        return () => {
+            http.ABORT(source)
+        }
+    }, [])
 
     useEffect(() => {
         const isToday = dayjs(date).isSame(dayjs(TODAYDATE))
@@ -66,63 +74,91 @@ const StockDetails = ({ date }) => {
     }, [fetchList])
 
     const getMotherplantList = async () => {
-        const data = await http.GET('/bibo/getDepartmentsList?departmentType=MotherPlant')
-        setMotherplantList(data)
+        const url = '/bibo/getDepartmentsList?departmentType=MotherPlant'
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setMotherplantList(data)
+        } catch (error) { }
     }
 
     const getDriverList = async () => {
         const url = `/bibo/getdriverDetails/${warehouseId}`
-        const data = await http.GET(url)
-        setDriverList(data)
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setDriverList(data)
+        } catch (error) { }
     }
 
     const getVehicleList = async () => {
         const url = `/bibo/getVehicleDetails`
-        const data = await http.GET(url)
-        setVehicleList(data)
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setVehicleList(data)
+        } catch (error) { }
     }
 
     const getCAS = async () => {
         const url = `warehouse/currentActiveStockDetails/${date}?warehouseId=${warehouseId}`
-        const { data: [data = {}] } = await http.GET(url)
-        setCAS(data)
+
+        try {
+            const { data: [data = {}] } = await http.GET(axios, url, config)
+            setCAS(data)
+        } catch (error) { }
     }
 
     const getOFD = async () => {
         const url = `warehouse/outForDeliveryDetails/${date}?warehouseId=${warehouseId}`
-        const { data: [data = {}] } = await http.GET(url)
-        setOFC(data)
+
+        try {
+            const { data: [data = {}] } = await http.GET(axios, url, config)
+            setOFC(data)
+        } catch (error) { }
     }
 
     const getEC = async () => {
         const url = `/warehouse/getConfirmedEmptyCans/${warehouseId}`
-        const [data] = await http.GET(url)
-        setEC(data)
+
+        try {
+            const [data] = await http.GET(axios, url, config)
+            setEC(data)
+        } catch (error) { }
     }
 
     const getREC = async () => {
         const url = `/warehouse/getReturnedEmptyCans/${warehouseId}`
-        const [data] = await http.GET(url)
-        setREC(data)
+
+        try {
+            const [data] = await http.GET(axios, url, config)
+            setREC(data)
+        } catch (error) { }
     }
 
     const getNewStock = async () => {
         const url = `/warehouse/getNewStockDetails/${warehouseId}`
-        const data = await http.GET(url)
-        const { DCDetails } = data || {}
-        const arrivedStock = JSON.parse(DCDetails || "[]")
-        setNewStock(data)
-        setArrivedStock(arrivedStock)
+
+        try {
+            const data = await http.GET(axios, url, config)
+            const { DCDetails } = data || {}
+            const arrivedStock = JSON.parse(DCDetails || "[]")
+            setNewStock(data)
+            setArrivedStock(arrivedStock)
+        } catch (error) { }
     }
 
     const getStockDetailsByDC = async (dcNo) => {
-        showToast({ v1Ing: 'Fetching', action: 'loading' })
         const url = `/warehouse/getDispatchDetailsByDC/${dcNo}`
-        const data = await http.GET(url)
-        setConfirmBtnDisabled(false)
-        message.destroy()
-        setFormData(data)
-        setModal(true)
+
+        try {
+            showToast({ v1Ing: 'Fetching', action: 'loading' })
+            const data = await http.GET(axios, url, config)
+            setConfirmBtnDisabled(false)
+            message.destroy()
+            setFormData(data)
+            setModal(true)
+        } catch (error) { }
     }
 
     const handleChange = (value, key) => {
@@ -188,12 +224,15 @@ const StockDetails = ({ date }) => {
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
-            await http.POST(url, body)
+            await http.POST(axios, url, body, config)
             showToast(options)
             onModalClose(true)
             getREC()
         } catch (error) {
-            setBtnDisabled(false)
+            message.destroy()
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+            }
         }
     }
 
@@ -219,13 +258,16 @@ const StockDetails = ({ date }) => {
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
-            await http.POST(url, body)
+            await http.POST(axios, url, body, config)
             showToast(options)
             onModalClose(true)
             getNewStock()
             getCAS()
         } catch (error) {
-            setBtnDisabled(false)
+            message.destroy()
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+            }
         }
     }
 

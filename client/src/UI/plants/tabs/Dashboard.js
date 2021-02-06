@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { Col, message, Row } from 'antd';
 import { useHistory, useLocation } from 'react-router-dom';
 import React, { Fragment, useEffect, useMemo, useState, useCallback } from 'react';
@@ -26,6 +27,14 @@ const Dashboard = ({ reFetch }) => {
     const mainUrl = useMemo(() => getMainPathname(pathname), [pathname])
     const isSuperAdmin = useMemo(() => getRole() === SUPERADMIN, [])
     const pageSizeOptions = useMemo(() => generatePageSizeOptions(), [window.innerWidth])
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
+
+    useEffect(() => {
+        return () => {
+            http.ABORT(source)
+        }
+    }, [])
 
     useEffect(() => {
         setLoading(true)
@@ -36,10 +45,12 @@ const Dashboard = ({ reFetch }) => {
     const getPlants = async (plantType) => {
         const url = `${mainUrl.slice(0, -1)}/get${plantType}List`
 
-        const data = await http.GET(url)
-        setPlants(data)
-        setTotalCount(data.length)
-        setLoading(false)
+        try {
+            const data = await http.GET(axios, url, config)
+            setPlants(data)
+            setTotalCount(data.length)
+            setLoading(false)
+        } catch (error) { }
     }
 
     const getPlantType = () => {
@@ -76,7 +87,7 @@ const Dashboard = ({ reFetch }) => {
         const body = { status, departmentId }
         try {
             showToast({ ...options, action: 'loading' })
-            await http.PUT(url, body)
+            await http.PUT(axios, url, body, config)
             optimisticApprove(departmentId, status)
             showToast(options)
         } catch (error) {
@@ -90,7 +101,7 @@ const Dashboard = ({ reFetch }) => {
 
         try {
             showToast({ ...options, action: 'loading' })
-            await http.DELETE(url)
+            await http.DELETE(axios, url, config)
             optimisticDelete(id)
             showToast(options)
         } catch (error) {

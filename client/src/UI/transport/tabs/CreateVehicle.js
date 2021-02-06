@@ -1,5 +1,6 @@
+import axios from 'axios';
 import { message } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import VehicleForm from '../forms/Vehicle';
 import { http } from '../../../modules/http';
 import { validateNames } from '../../../utils/validations';
@@ -11,6 +12,15 @@ const CreateVehicle = ({ goToTab }) => {
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [shake, setShake] = useState(false)
+
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
+
+    useEffect(() => {
+        return () => {
+            http.ABORT(source)
+        }
+    }, [])
 
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
@@ -60,13 +70,15 @@ const CreateVehicle = ({ goToTab }) => {
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
-            await http.POST(url, body)
+            await http.POST(axios, url, body, config)
             showToast(options)
             goToTab('2')
             resetForm()
         } catch (error) {
             message.destroy()
-            setBtnDisabled(false)
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+            }
         }
     }
 

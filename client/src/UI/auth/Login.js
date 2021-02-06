@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import axios from 'axios';
+import React, { useEffect, useMemo, useState } from 'react'
 import { useSessionStorage } from '../../utils/hooks/sessionHook';
 import { Form, Row, Col, Input, Card, Button, Checkbox, message } from 'antd'
 import image from '../../assets/images/login_img.png'
@@ -15,10 +16,22 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState({});
 
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
+
+    useEffect(() => {
+        return () => {
+            http.ABORT(source)
+        }
+    }, [])
+
     const getRoleInfo = async (id) => {
         const url = `/warehouse/getWarehouseDetails/${id}`
-        const { data } = await http.GET(url)
-        setRoleInfo(data)
+
+        try {
+            const { data } = await http.GET(axios, url)
+            setRoleInfo(data)
+        } catch (error) { }
     }
 
     const loginBtn = () => {

@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { Menu, message, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import ProductForm from '../forms/Product';
@@ -12,7 +13,7 @@ import { EditIconGrey } from '../../../components/SVG_Icons';
 import ConfirmModal from '../../../components/CustomModal';
 import CustomPagination from '../../../components/CustomPagination';
 import { deepClone, isAlphaNum, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
-import { validateIntFloat, validateProductValues } from '../../../utils/validations';
+import { validateIntFloat, validateNumber, validateProductValues } from '../../../utils/validations';
 
 const Dashboard = ({ reFetch }) => {
     const [products, setProducts] = useState([])
@@ -27,6 +28,15 @@ const Dashboard = ({ reFetch }) => {
     const [confirmModal, setConfirmModal] = useState(false)
     const [shake, setShake] = useState(false)
 
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
+
+    useEffect(() => {
+        return () => {
+            http.ABORT(source)
+        }
+    }, [])
+
     useEffect(() => {
         setLoading(true)
         getProducts()
@@ -35,10 +45,12 @@ const Dashboard = ({ reFetch }) => {
     const getProducts = async () => {
         const url = '/products/getProducts'
 
-        const data = await http.GET(url)
-        setProducts(data)
-        setTotalCount(data.length)
-        setLoading(false)
+        try {
+            const data = await http.GET(axios, url, config)
+            setProducts(data)
+            setTotalCount(data.length)
+            setLoading(false)
+        } catch (error) { }
     }
 
     const handlePageChange = (number) => {
@@ -70,6 +82,10 @@ const Dashboard = ({ reFetch }) => {
             const error = validateIntFloat(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
+        else if (key === 'hsnCode') {
+            const error = validateNumber(value)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
     }
 
     const handleBlur = (value, key) => {
@@ -98,13 +114,15 @@ const Dashboard = ({ reFetch }) => {
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
-            await http.POST(url, body)
+            await http.POST(axios, url, body, config)
             showToast(options)
             optimisticUpdate(formData)
             onModalClose(true)
         } catch (error) {
             message.destroy()
-            setBtnDisabled(false)
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+            }
         }
     }
 
@@ -131,14 +149,15 @@ const Dashboard = ({ reFetch }) => {
     }
 
     const dataSource = useMemo(() => products.map((product) => {
-        const { productId: key, productName, price, tax, totalAmount } = product
+        const { productId: key, productName, price, tax, totalAmount, hsnCode } = product
 
         return {
             key,
-            productName,
             price,
             tax,
+            hsnCode,
             totalAmount,
+            productName,
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, product)} />
         }
     }), [products])

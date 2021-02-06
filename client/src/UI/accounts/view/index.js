@@ -1,4 +1,5 @@
-import { Tabs } from 'antd';
+import axios from 'axios';
+import { message, Tabs } from 'antd';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import Header from './header';
@@ -41,16 +42,22 @@ const ViewAccount = () => {
     const isSuperAdmin = useMemo(() => getRole() === SUPERADMIN, [])
     const routeOptions = useMemo(() => getRouteOptions(routeList), [routeList])
     const warehouseOptions = useMemo(() => getWarehouseOptions(warehouseList), [warehouseList])
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
 
     useEffect(() => {
         getAccount()
         getWarehouseList()
+
+        return () => {
+            http.ABORT(source)
+        }
     }, [])
 
     const getAccount = async () => {
         const url = `/customer/getCustomerDetailsById/${accountId}`
         try {
-            const { data: [data = {}] } = await http.GET(url)
+            const { data: [data = {}] } = await http.GET(axios, url, config)
             const { customerName, organizationName, Address1 } = data
             setAccount({ ...data, loading: false })
             setHeaderContent({
@@ -61,16 +68,22 @@ const ViewAccount = () => {
     }
 
     const getWarehouseList = async () => {
+        const url = '/bibo/getDepartmentsList?departmentType=warehouse'
+
         try {
-            const data = await http.GET('/bibo/getDepartmentsList?departmentType=warehouse')
+            const data = await http.GET(axios, url, config)
             setWarehouseList(data)
         } catch (ex) { }
     }
 
     const getRouteList = async (departmentId) => {
-        const data = await http.GET(`/customer/getRoutes/${departmentId}`)
-        setRouteList(data)
-        setCurrentDepId(departmentId)
+        const url = `/customer/getRoutes/${departmentId}`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setRouteList(data)
+            setCurrentDepId(departmentId)
+        } catch (error) { }
     }
 
     const handleDevDaysSelect = (value) => {
@@ -123,10 +136,6 @@ const ViewAccount = () => {
         }
         else if (key === 'phoneNumber') {
             const error = validateMobileNumber(value)
-            setFormErrors(errors => ({ ...errors, [key]: error }))
-        }
-        else if (key === 'depositAmount') {
-            const error = validateNumber(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
         else if (key === 'contactPerson') {
@@ -189,12 +198,15 @@ const ViewAccount = () => {
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
-            let { data: [data = {}] } = await http.POST(url, body)
+            let { data: [data = {}] } = await http.POST(axios, url, body, config)
             setRecentDelivery(data)
             showToast(options)
             onModalClose(true)
         } catch (error) {
-            setBtnDisabled(false)
+            message.destroy()
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+            }
         }
     }
 

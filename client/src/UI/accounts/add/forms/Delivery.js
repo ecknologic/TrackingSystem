@@ -68,7 +68,6 @@ const DeliveryForm = (props) => {
                             onChange={(value) => onChange(value, 'deliveryLocation')}
                         />
                     </div>
-
                 </div>
                 <div className='row'>
                     <div className='input-container stretch'>
@@ -102,6 +101,15 @@ const DeliveryForm = (props) => {
                             placeholder='Phone Number' error={errors.phoneNumber}
                             onBlur={(value) => onBlur(value, 'phoneNumber')}
                             onChange={(value) => onChange(value, 'phoneNumber')}
+                        />
+                    </div>
+                    <div className='input-container'>
+                        <InputLabel name='Delivery Days' error={devDaysError.devDays} mandatory />
+                        <SelectInput
+                            track
+                            mode='multiple' disabled={isDisabled}
+                            value={devDays} options={dayOptions}
+                            error={devDaysError.devDays} onSelect={onSelect} onDeselect={onDeselect}
                         />
                     </div>
                 </div>
@@ -164,25 +172,6 @@ const DeliveryForm = (props) => {
                                     placeholder='Rs' onChange={(value) => onChange(value, 'price250ML')} />
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div className='row'>
-                    <div className='input-container'>
-                        <InputLabel name='Delivery Days' error={devDaysError.devDays} mandatory />
-                        <SelectInput
-                            track
-                            mode='multiple' disabled={isDisabled}
-                            value={devDays} options={dayOptions}
-                            error={devDaysError.devDays} onSelect={onSelect} onDeselect={onDeselect}
-                        />
-                    </div>
-                    <div className='input-container'>
-                        <InputLabel name='Deposit Amount' error={errors.depositAmount} mandatory />
-                        <CustomInput value={depositAmount}
-                            disabled={isDisabled} placeholder='Deposit Amount'
-                            error={errors.depositAmount}
-                            onChange={(value) => onChange(value, 'depositAmount')}
-                        />
                     </div>
                 </div>
             </div>
