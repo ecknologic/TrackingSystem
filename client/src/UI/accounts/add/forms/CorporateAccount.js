@@ -164,20 +164,6 @@ const CorporateAccountForm = (props) => {
                     />
                 </div>
                 <div className='input-container'>
-                    <InputLabel name='Deposit Amount' error={errors.depositAmount} mandatory />
-                    <CustomInput value={depositAmount}
-                        disabled={disabled} placeholder='Deposit Amount'
-                        error={errors.depositAmount}
-                        onChange={(value) => onChange(value, 'depositAmount')}
-                    />
-                </div>
-            </div>
-            <div className='row'>
-                <div className='input-container'>
-                    <InputLabel name='Registered Date' error={errors.registeredDate} />
-                    <CustomInput value={dayjs(registeredDate).format(DATEFORMAT)} placeholder='Registered Date' disabled />
-                </div>
-                <div className='input-container'>
                     <InputLabel name='Invoice Type' error={errors.invoicetype} mandatory />
                     <SelectInput
                         error={errors.invoicetype}
@@ -196,6 +182,20 @@ const CorporateAccountForm = (props) => {
                         error={errors.creditPeriodInDays}
                         onChange={(value) => onChange(value, 'creditPeriodInDays')}
                     />
+                </div>
+                <div className='input-container'>
+                    <InputLabel name='Deposit Amount' error={errors.depositAmount} mandatory />
+                    <CustomInput value={depositAmount}
+                        disabled={disabled} placeholder='Deposit Amount'
+                        error={errors.depositAmount}
+                        onChange={(value) => onChange(value, 'depositAmount')}
+                    />
+                </div>
+            </div>
+            <div className='row'>
+                <div className='input-container'>
+                    <InputLabel name='Registered Date' error={errors.registeredDate} />
+                    <CustomInput value={dayjs(registeredDate).format(DATEFORMAT)} placeholder='Registered Date' disabled />
                 </div>
                 <div className='input-container'>
                     <InputLabel name='Referred By' error={errors.referredBy} />
