@@ -119,6 +119,7 @@ const Customers = () => {
 
     const handleTabChange = (key) => {
         http.ABORT(source)
+        setPageNumber(1)
         setActiveTab(key)
         if (key === '3') {
             setCardBtnTxt('View Details')

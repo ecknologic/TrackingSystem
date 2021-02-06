@@ -384,6 +384,29 @@ router.get('/getProductionDetailsByDate/:date', (req, res) => {
         else res.json({ product20LCount: 0, product1LCount: 0, product500MLCount: 0, product250MLCount: 0 });
     })
 });
+router.get('/getTotalProductionByDate', (req, res) => {
+    let { startDate, endDate } = req.query;
+    let input = {
+        departmentId, startDate, endDate
+    }
+    motherPlantDbQueries.getTotalProductionByDate(input, (err, productionResult) => {
+        if (err) res.status(500).json(dbError(err));
+        else if (productionResult.length) {
+
+            let product20LCount = 0, product1LCount = 0, product500MLCount = 0, product250MLCount = 0
+
+            let productionObj = productionResult[0]
+            let { total20LCans = 0, total1LBoxes = 0, total500MLBoxes = 0, total250MLBoxes = 0 } = productionObj
+
+            product20LCount = total20LCans
+            product1LCount = total1LBoxes
+            product500MLCount = total500MLBoxes
+            product250MLCount = total250MLBoxes
+            res.json({ product20LCount, product1LCount, product500MLCount, product250MLCount });
+        }
+        else res.json({ product20LCount: 0, product1LCount: 0, product500MLCount: 0, product250MLCount: 0 });
+    })
+});
 
 router.get('/getBatchNumbers', (req, res) => {
     motherPlantDbQueries.getProducedBatchNumbers(departmentId, (err, results) => {
