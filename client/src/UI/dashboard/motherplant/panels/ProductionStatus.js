@@ -1,17 +1,63 @@
-import React from 'react';
+import axios from 'axios';
+import Slider from "react-slick";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { http } from '../../../../modules/http';
+import { TODAYDATE as d } from '../../../../utils/constants';
 import PanelHeader from '../../../../components/PanelHeader';
 import ProductionStatusCard from '../../../../components/ProductionStatusCard';
+import { LeftChevronIconGrey, RightChevronIconGrey } from '../../../../components/SVG_Icons';
 
 const ProductionStatus = () => {
+    const sliderRef = useRef()
+    const [production, setProduction] = useState({})
+    const [opData, setOpData] = useState(() => ({ startDate: d, endDate: d }))
+
+    const { product20LCount, product1LCount, product500MLCount, product250MLCount } = production
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
+
+    useEffect(() => {
+        getProductionStatus(opData)
+
+        return () => {
+            http.ABORT(source)
+        }
+    }, [])
+
+    const getProductionStatus = async ({ startDate, endDate }) => {
+        const url = `/motherPlant/getTotalProductionByDate?startDate=${startDate}&endDate=${endDate}`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setProduction(data)
+        } catch (error) { }
+    }
+
+    const handleOperation = useCallback((data) => {
+        const newData = { ...opData, ...data }
+        getProductionStatus(newData)
+        setOpData(newData)
+    }, [opData])
+
+    const props = {
+        infinite: false,
+        slidesToShow: 4,
+        slidesToScroll: 1,
+        prevArrow: <LeftChevronIconGrey />,
+        nextArrow: <RightChevronIconGrey />,
+    }
 
     return (
         <>
-            <PanelHeader title='Production Status' />
-            <div className='panel-body prod-status-panel'>
-                <ProductionStatusCard title='20 Ltrs' total='2345' />
-                <ProductionStatusCard title='1 Ltrs' total='2345' />
-                <ProductionStatusCard title='500 ml' total='2345' />
-                <ProductionStatusCard title='300 ml' total='2345' />
+            <PanelHeader title='Production Status' onSelect={handleOperation} />
+            <div className='panel-body'>
+                <Slider className='dashboard-slider' {...props} ref={sliderRef}>
+                    <ProductionStatusCard title='20 Ltrs' total={product20LCount} />
+                    <ProductionStatusCard title='2 Ltrs' total={0} />
+                    <ProductionStatusCard title='1 Ltrs' total={product1LCount} />
+                    <ProductionStatusCard title='500 ml' total={product500MLCount} />
+                    <ProductionStatusCard title='300 ml' total={product250MLCount} />
+                </Slider>
             </div>
         </>
     )

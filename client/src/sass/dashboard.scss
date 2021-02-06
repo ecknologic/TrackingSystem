@@ -44,8 +44,21 @@ $textColor:rgba(0,0,0,0.85);
                 .option {
                     margin-right: 1em;
                 }
+
+                .show {
+                    margin-right: 0;
+                }
             }
+    }
+
+    .app-date-picker-wrapper {
+        margin: 0;
+        padding-right: 1em;
+
+        svg {
+            transform: scale(.8);
         }
+    }
 }
 
 .panel-body {
@@ -81,22 +94,41 @@ $textColor:rgba(0,0,0,0.85);
     }
 }
 
-.prod-status-panel {
-    justify-content: space-between;
-}
-
-.total-stack-panel {
-    justify-content: space-between;
-}
-
-.empty-bottles-stock-panel {
-    display: flex;
+.dashboard-slider {
     width: 100%;
-    align-items: center;
-    justify-content: space-between;
+    // overflow: hidden;
+
+    .slick-slide > div {
+        margin-right: 1em // to add gap between slides
+    }
+
+    .slick-track {
+        margin-left: 0; // to put slides ltr
+    }
+
+    .slick-list {
+        margin-right: -1em; // to compensate right most slide gap
+    }
+
+    .slick-arrow {
+        display: flex !important;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .slick-disabled {
+        opacity: .5;
+        cursor: default;
+    }
+}
+
+.empty-bottles-stock-slider {
     background-color: #fff;
     border-radius: .6em;
-    padding: 1em;
+}
+
+.quality-testing-panel {
+    justify-content: space-between;
 }
 
 .bottom-panels-container {

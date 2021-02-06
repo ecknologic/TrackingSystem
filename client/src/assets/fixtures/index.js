@@ -1,6 +1,7 @@
-import { Select } from 'antd';
+import { Menu, Select } from 'antd';
 import React from 'react';
 const { Option } = Select;
+
 export const WEEKDAYS = ["ALL", "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
 export const idOptions = [
     <Option key='1' value="adharNo">Aadhar</Option>,
@@ -78,6 +79,16 @@ export const productOptions = [
 export const testResultOptions = [
     <Option key="1" value="Approved">Approve</Option>,
     <Option key="2" value="Rejected">Reject</Option>
+]
+export const calendarMenu = [
+    <Menu.Item key="Today" >Today</Menu.Item>,
+    <Menu.Item key="This Week">This Week</Menu.Item>,
+    <Menu.Item key="This Month" >This Month</Menu.Item>
+]
+export const shiftMenu = [
+    <Menu.Item key="Morning" >Morning</Menu.Item>,
+    <Menu.Item key="Evening">Evening</Menu.Item>,
+    <Menu.Item key="Night" >Night</Menu.Item>
 ]
 
 export const getWarehouseOptions = (warehouses = []) => {
