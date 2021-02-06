@@ -13,7 +13,7 @@ import { EditIconGrey } from '../../../components/SVG_Icons';
 import ConfirmModal from '../../../components/CustomModal';
 import CustomPagination from '../../../components/CustomPagination';
 import { deepClone, isAlphaNum, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
-import { validateIntFloat, validateProductValues } from '../../../utils/validations';
+import { validateIntFloat, validateNumber, validateProductValues } from '../../../utils/validations';
 
 const Dashboard = ({ reFetch }) => {
     const [products, setProducts] = useState([])
@@ -82,6 +82,10 @@ const Dashboard = ({ reFetch }) => {
             const error = validateIntFloat(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
+        else if (key === 'hsnCode') {
+            const error = validateNumber(value)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
     }
 
     const handleBlur = (value, key) => {
@@ -145,14 +149,15 @@ const Dashboard = ({ reFetch }) => {
     }
 
     const dataSource = useMemo(() => products.map((product) => {
-        const { productId: key, productName, price, tax, totalAmount } = product
+        const { productId: key, productName, price, tax, totalAmount, hsnCode } = product
 
         return {
             key,
-            productName,
             price,
             tax,
+            hsnCode,
             totalAmount,
+            productName,
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, product)} />
         }
     }), [products])

@@ -65,10 +65,9 @@ const DeliveryDetails = ({ isSuperAdmin, recentDelivery, ...rest }) => {
 
     const fetchDelivery = async (id) => {
         const url = `/customer/getDeliveryDetails/${id}`
-        const options = { item: 'Delivery details', v1Ing: 'Fetching', v2: 'fetched' }
 
         try {
-            showToast({ ...options, action: 'loading' })
+            showToast({ v1Ing: 'Fetching', action: 'loading' })
             let { data: [data] } = await http.GET(axios, url, config)
             const { location, products, deliveryDays, gstProof, departmentId } = data
             const gst = base64String(gstProof?.data)
@@ -80,7 +79,7 @@ const DeliveryDetails = ({ isSuperAdmin, recentDelivery, ...rest }) => {
             setFormData(formData)
             setViewedArr([...viewedArr, formData])
             setViewModal(true)
-            showToast(options)
+            message.destroy()
         } catch (error) {
             message.destroy()
         }

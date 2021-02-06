@@ -219,6 +219,11 @@ export const getEmptyCanColumns = (department) => {
 }
 export const productColumns = [
     {
+        title: 'HSN Code',
+        dataIndex: 'hsnCode',
+        key: 'hsnCode',
+    },
+    {
         title: 'Product Name',
         dataIndex: 'productName',
         key: 'productName',
