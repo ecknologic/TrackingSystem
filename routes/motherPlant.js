@@ -118,6 +118,25 @@ router.get('/getProdQCTestedBatches', (req, res) => {
         }
     });
 });
+router.get('/getQCTestResults', (req, res) => {
+    const input = { departmentId, date: new Date() }
+    motherPlantDbQueries.getQCTestResults(input, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else {
+            if (results.length) {
+                let arr = []
+                for (let i of results) {
+                    let obj = i
+                    obj.levels = JSON.parse(i.levels)
+                    obj.batchId = i.batchId
+                    arr.push(obj)
+                }
+                res.json(results);
+            }
+            else res.json(results);
+        }
+    });
+});
 router.get('/getQCLevelsDetails/:productionQcId', (req, res) => {
     const { productionQcId } = req.params
     motherPlantDbQueries.getQCLevelsDetails({ productionQcId, departmentId }, (err, results) => {
@@ -385,9 +404,9 @@ router.get('/getProductionDetailsByDate/:date', (req, res) => {
     })
 });
 router.get('/getTotalProductionByDate', (req, res) => {
-    let { startDate, endDate } = req.query;
+    let { startDate, endDate, shiftType } = req.query;
     let input = {
-        departmentId, startDate, endDate
+        departmentId, startDate, endDate, shiftType
     }
     motherPlantDbQueries.getTotalProductionByDate(input, (err, productionResult) => {
         if (err) res.status(500).json(dbError(err));

@@ -10,9 +10,9 @@ import { LeftChevronIconGrey, RightChevronIconGrey } from '../../../../component
 const ProductionStatus = () => {
     const sliderRef = useRef()
     const [production, setProduction] = useState({})
-    const [opData, setOpData] = useState(() => ({ startDate: d, endDate: d }))
+    const [opData, setOpData] = useState(() => ({ startDate: d, endDate: d, shift: 'All' }))
 
-    const { product20LCount, product1LCount, product500MLCount, product250MLCount } = production
+    const { product20LCount, product2LCount, product1LCount, product500MLCount, product250MLCount } = production
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
@@ -24,8 +24,8 @@ const ProductionStatus = () => {
         }
     }, [])
 
-    const getProductionStatus = async ({ startDate, endDate }) => {
-        const url = `/motherPlant/getTotalProductionByDate?startDate=${startDate}&endDate=${endDate}`
+    const getProductionStatus = async ({ startDate, endDate, shift }) => {
+        const url = `/motherPlant/getTotalProductionByDate?startDate=${startDate}&endDate=${endDate}&shiftType=${shift}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -39,21 +39,13 @@ const ProductionStatus = () => {
         setOpData(newData)
     }, [opData])
 
-    const props = {
-        infinite: false,
-        slidesToShow: 4,
-        slidesToScroll: 1,
-        prevArrow: <LeftChevronIconGrey />,
-        nextArrow: <RightChevronIconGrey />,
-    }
-
     return (
         <>
             <PanelHeader title='Production Status' onSelect={handleOperation} />
             <div className='panel-body'>
                 <Slider className='dashboard-slider' {...props} ref={sliderRef}>
                     <ProductionStatusCard title='20 Ltrs' total={product20LCount} />
-                    <ProductionStatusCard title='2 Ltrs' total={0} />
+                    <ProductionStatusCard title='2 Ltrs' total={product2LCount} />
                     <ProductionStatusCard title='1 Ltrs' total={product1LCount} />
                     <ProductionStatusCard title='500 ml' total={product500MLCount} />
                     <ProductionStatusCard title='300 ml' total={product250MLCount} />
@@ -61,6 +53,13 @@ const ProductionStatus = () => {
             </div>
         </>
     )
+}
+const props = {
+    infinite: false,
+    slidesToShow: 4,
+    slidesToScroll: 1,
+    prevArrow: <LeftChevronIconGrey />,
+    nextArrow: <RightChevronIconGrey />,
 }
 
 export default ProductionStatus

@@ -11,6 +11,7 @@ const fn = () => { }
 const todayString = 'Today'
 const weekString = 'This Week'
 const monthString = 'This Month'
+const customString = 'Select Date'
 const DATETIMEFORMAT = 'DD/MM/YYYY h:mm A'
 const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
@@ -26,15 +27,21 @@ const PanelHeader = memo(({ title, hideShow, hideShift, onSelect = fn }) => {
     }
 
     const handleCalendarSelect = (value) => {
+        const isToday = value === todayString
+        const isWeek = value === weekString
+        const isMonth = value === monthString
+        const isCustom = value === customString
+
+        if (isCustom) {
+            setOpen(true)
+            return
+        }
+
         setShow(value)
         const endDate = dayjs().format(APIDATEFORMAT)
         let to = dayjs().format(DATEFORMAT)
         let from = dayjs(endDate).format(DATEFORMAT)
         let startDate = endDate
-
-        const isToday = value === todayString
-        const isWeek = value === weekString
-        const isMonth = value === monthString
 
         if (isToday) {
             const todayFull = dayjs().format(DATETIMEFORMAT)
@@ -60,7 +67,12 @@ const PanelHeader = memo(({ title, hideShow, hideShift, onSelect = fn }) => {
     }
 
     const handleDateSelect = (value) => {
+        const d = dayjs(value).format(APIDATEFORMAT)
+        const time = dayjs(value).format(DATEFORMAT)
+        setShow(`on ${time}`)
+        setTime('')
         setSelectedDate(value)
+        onSelect({ startDate: d, endDate: d })
     }
 
     return (
@@ -84,7 +96,7 @@ const PanelHeader = memo(({ title, hideShow, hideShift, onSelect = fn }) => {
                                             />
                                         </div>
                                         <div className='app-date-picker-wrapper'>
-                                            <ScheduleIconGrey onClick={() => setOpen(true)} />
+                                            {/* <ScheduleIconGrey onClick={() => setOpen(true)} /> */}
                                             <CustomDateInput // Hidden in the DOM
                                                 open={open}
                                                 value={selectedDate}
@@ -105,7 +117,7 @@ const PanelHeader = memo(({ title, hideShow, hideShift, onSelect = fn }) => {
                                     <div className='option'>
                                         <PanelDropdown
                                             label='Shift Type'
-                                            initValue='Morning'
+                                            initValue='All'
                                             options={shiftMenu}
                                             onSelect={handleShiftSelect}
                                         />

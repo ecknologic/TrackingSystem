@@ -7,14 +7,6 @@ import { LeftChevronIconGrey, RightChevronIconGrey } from '../../../../component
 const TotalStackStatus = () => {
     const sliderRef = useRef()
 
-    const props = {
-        infinite: false,
-        slidesToShow: 4,
-        slidesToScroll: 1,
-        prevArrow: <LeftChevronIconGrey />,
-        nextArrow: <RightChevronIconGrey />,
-    }
-
     return (
         <>
             <PanelHeader title='Total Stack Status' />
@@ -29,6 +21,13 @@ const TotalStackStatus = () => {
             </div>
         </>
     )
+}
+const props = {
+    infinite: false,
+    slidesToShow: 4,
+    slidesToScroll: 1,
+    prevArrow: <LeftChevronIconGrey />,
+    nextArrow: <RightChevronIconGrey />,
 }
 
 export default TotalStackStatus

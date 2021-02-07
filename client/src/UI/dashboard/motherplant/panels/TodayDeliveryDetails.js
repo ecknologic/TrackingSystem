@@ -3,51 +3,51 @@ import { Table } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
 import Spinner from '../../../../components/Spinner';
+import { TODAYDATE } from '../../../../utils/constants';
 import { getStatusColor } from '../../../../utils/Functions';
 import CustomButton from '../../../../components/CustomButton';
-import { todayDeliveryColumns, todayDeliveryData } from '../../../../assets/fixtures'
+import { todayDeliveryColumns } from '../../../../assets/fixtures'
 import '../../../../sass/todayDeliveryDetails.scss'
 
 const TodayDeliveryDetails = () => {
     const [loading, setLoading] = useState(true)
-    const [orders, setOrders] = useState(todayDeliveryData)
+    const [delivery, setDelivery] = useState([])
 
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
-        getOrders()
+        getDelivery()
 
         return () => {
             http.ABORT(source)
         }
     }, [])
 
-    const getOrders = async () => {
-        const url = `/warehouse/getOrders`
+    const getDelivery = async () => {
+        const url = `/warehouse/deliveryDetails/${TODAYDATE}`
 
         try {
-            // const data = await http.GET(axios, url, config)
+            const data = await http.GET(axios, url, config)
+            setDelivery(data)
             setLoading(false)
-            // setOrders(data)
         } catch (error) { }
     }
 
-    const dataSource = useMemo(() => orders.map((order) => {
-        const { customerOrderId: key, dcNo, contactPerson, address, routeName, driverName, cans20L,
+    const dataSource = useMemo(() => delivery.map((order) => {
+        const { customerOrderId: key, dcNo, contactPerson, address, driverName, cans20L,
             boxes1L, boxes250ML, boxes500ML, isDelivered } = order
         return {
             key,
             id: `${key}`,
             dcNo,
             address,
-            route: routeName,
             contactPerson,
             driverName: driverName || "Not Assigned",
             status: renderStatus(isDelivered),
             orderDetails: renderOrderDetails({ cans20L, boxes1L, boxes250ML, boxes500ML }),
         }
-    }), [orders])
+    }), [delivery])
 
     return (
         <div className='today-delivery-details-panel'>

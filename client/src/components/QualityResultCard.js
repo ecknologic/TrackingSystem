@@ -1,40 +1,34 @@
-import React from 'react';
+import dayjs from 'dayjs';
+import React, { useMemo } from 'react';
 import '../sass/qualityResultCard.scss';
+const DATETIMEFORMAT = 'DD/MM/YYYY h:mm A'
 
-const QualityResultCard = ({ batchNo, shift }) => {
-
-    const items = [{
-        name: 'PH',
-        value: '6.5 to 8.5'
-    },
-    {
-        name: 'Ozone level (mg/litre)',
-        value: '6.5 to 8.5'
-    },
-    {
-        name: 'TDS (mg/litre)',
-        value: '6.5 to 8.5'
-    }]
+const QualityResultCard = ({ data }) => {
+    const { batchId, shiftType, levels } = data
+    const level = levels[levels.length - 1]
+    const { phLevel, ozoneLevel, tds, testingDate } = level
+    const time = useMemo(() => dayjs(testingDate).format(DATETIMEFORMAT), [testingDate])
 
     return (
         <div className='quality-result-card'>
-            <div className='title'>{batchNo}</div>
+            <div className='title'>{batchId}</div>
             <div className='shift-box'>
-                <span className='shift'>{shift} Shift</span>
-                <span className='date'>21/01/2021 2:45 PM</span>
+                <span className='shift'>{shiftType} Shift</span>
+                <span className='date'>{time}</span>
             </div>
             <div className='panel-details'>
-                {
-                    items.map((item) => {
-                        const { name, value } = item
-                        return (
-                            <div className='item'>
-                                <span className='name'><span className='app-dot'></span>{name}</span>
-                                <span className='value'>{value}</span>
-                            </div>
-                        )
-                    })
-                }
+                <div className='item'>
+                    <span className='name'><span className='app-dot'></span>PH</span>
+                    <span className='value'>{phLevel}</span>
+                </div>
+                <div className='item'>
+                    <span className='name'><span className='app-dot'></span>Ozone level (mg/litre)</span>
+                    <span className='value'>{ozoneLevel}</span>
+                </div>
+                <div className='item'>
+                    <span className='name'><span className='app-dot'></span>TDS (mg/litre)</span>
+                    <span className='value'>{tds}</span>
+                </div>
             </div>
         </div>
     )

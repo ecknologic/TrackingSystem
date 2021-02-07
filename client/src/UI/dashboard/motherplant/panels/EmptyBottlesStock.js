@@ -7,14 +7,6 @@ import { LeftChevronIconGrey, RightChevronIconGrey } from '../../../../component
 const EmptyBottlesStock = () => {
     const sliderRef = useRef()
 
-    const props = {
-        infinite: false,
-        slidesToShow: 4,
-        slidesToScroll: 1,
-        prevArrow: <LeftChevronIconGrey />,
-        nextArrow: <RightChevronIconGrey />,
-    }
-
     return (
         <>
             <PanelHeader title='Empty Bottles Stock' hideShift />
@@ -31,4 +23,11 @@ const EmptyBottlesStock = () => {
     )
 }
 
+const props = {
+    infinite: false,
+    slidesToShow: 4,
+    slidesToScroll: 1,
+    prevArrow: <LeftChevronIconGrey />,
+    nextArrow: <RightChevronIconGrey />,
+}
 export default EmptyBottlesStock
