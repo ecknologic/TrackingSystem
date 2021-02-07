@@ -95,6 +95,10 @@ motherPlantDbQueries.getReceiptDetailsByRMId = async (input, callback) => {
     let query = `select rmr.receiptImage,rmr.receiptNo,rmr.invoiceNo,rmr.taxAmount,rmr.invoiceAmount,rmr.managerName,rmr.invoiceDate from rawmaterialreceipt rmr WHERE rmr.rawmaterialId=?`;
     return executeGetParamsQuery(query, [input.rmId], callback)
 }
+motherPlantDbQueries.getRMTotalCount = async (departmentId, callback) => {
+    let query = `SELECT SUM(itemQty) AS itemCount, itemName FROM requiredrawmaterial where departmentId=${departmentId} AND status='Confirmed' GROUP BY itemName`;
+    return executeGetQuery(query, callback)
+}
 
 motherPlantDbQueries.getDepartmentsList = async (deptType, callback) => {
     let query = `select departmentId,departmentName from departmentmaster where isApproved='1' AND deleted='0' AND departmentType="${deptType}"`

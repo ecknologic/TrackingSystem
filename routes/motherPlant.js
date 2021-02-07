@@ -273,6 +273,12 @@ router.get('/getReceiptDetails/:RMId', (req, res) => {
         else res.json(results);
     });
 });
+router.get('/getRMTotalCount', (req, res) => {
+    motherPlantDbQueries.getRMTotalCount(departmentId, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.json(results);
+    });
+});
 
 router.post('/createRMReceipt', (req, res) => {
     let input = req.body;
