@@ -4,7 +4,6 @@ const { convertToWords } = require("../../utils/functions");
 const GST20L = 12, GSTOthers = 18, CGST20L = 6, CGSTOthers = 9;
 var totalTaxValue = 0
 var totalCGSTValue = 0
-let totalArr = []
 function createInvoice(invoice, path) {
     let doc = new PDFDocument({ size: "A4", margin: 50 });
 
@@ -70,7 +69,8 @@ function generateCustomerInformation(doc, invoice) {
 
 function generateInvoiceTable(doc, invoice) {
     let i, subTotal = 0;
-    let invoiceTableTop = 305;
+    let invoiceTableTop = 325, jCount = 0;
+    let totalArr = []
 
     doc.font("Helvetica-Bold");
     generateTableRow(
@@ -84,11 +84,11 @@ function generateInvoiceTable(doc, invoice) {
         "Price",
         // "Line Total"
     );
-    generateHr(doc, invoiceTableTop + 20);
+    generateHr(doc, invoiceTableTop - 20);
 
     doc.font("Helvetica");
-    let totalPrice20L = 0, totalQuantity20L = 0, totalPrice1L = 0, totalQuantity1L = 0, totalPrice500ML = 0, totalQuantity500ML = 0, totalPrice250ML = 0, totalQuantity250ML = 0;
-    for (i = 0, j = 0; i < invoice.items.length; i++) {
+    let sno = 1, totalPrice20L = 0, totalQuantity20L = 0, totalPrice1L = 0, totalQuantity1L = 0, totalPrice500ML = 0, totalQuantity500ML = 0, totalPrice250ML = 0, totalQuantity250ML = 0;
+    for (i = 0; i < invoice.items.length; i++) {
         const item = invoice.items[i];
         let product, quantity, price, address = item.address;
         let arr = [{ "20LCans": item["20LCans"], price20L: item.price20L }, { "1LBoxes": item["1LBoxes"], "price1L": item.price1L }, { "500MLBoxes": item["500MLBoxes"], "price500ML": item.price500ML }, { "250MLBoxes": item["250MLBoxes"], "price250ML": item.price250ML }]
@@ -100,8 +100,7 @@ function generateInvoiceTable(doc, invoice) {
                 totalQuantity20L = totalQuantity20L + productInfo["20LCans"]
                 totalPrice20L = totalPrice20L + productInfo.price20L
                 subTotal = subTotal + productInfo.price20L
-                renderProductRow(doc, invoiceTableTop + 27, j, product, quantity, price, address, index, i)
-                j++;
+                renderProductRow(doc, invoiceTableTop, jCount, product, quantity, price, address, index, i)
             } else if (productInfo["1LBoxes"] > 0) {
                 product = "1L Boxes";
                 quantity = productInfo["1LBoxes"];
@@ -109,8 +108,7 @@ function generateInvoiceTable(doc, invoice) {
                 totalQuantity1L = totalQuantity1L + productInfo["1LBoxes"]
                 totalPrice1L = totalPrice1L + productInfo.price1L
                 subTotal = subTotal + productInfo.price1L
-                renderProductRow(doc, invoiceTableTop + 27, j, product, quantity, price, address, index, i)
-                j++;
+                renderProductRow(doc, invoiceTableTop, jCount, product, quantity, price, address, index, i)
             } else if (productInfo["500MLBoxes"] > 0) {
                 product = "500ML Boxes";
                 quantity = productInfo["500MLBoxes"];
@@ -118,8 +116,7 @@ function generateInvoiceTable(doc, invoice) {
                 totalQuantity500ML = totalQuantity500ML + productInfo["500MLBoxes"]
                 totalPrice500ML = totalPrice500ML + productInfo.price500ML
                 subTotal = subTotal + productInfo.price500ML
-                renderProductRow(doc, invoiceTableTop + 27, j, product, quantity, price, address, index, i)
-                j++;
+                renderProductRow(doc, invoiceTableTop, jCount, product, quantity, price, address, index, i)
             } else if (productInfo["250MLBoxes"] > 0) {
                 product = "300ML Boxes";
                 quantity = productInfo["250MLBoxes"];
@@ -127,8 +124,7 @@ function generateInvoiceTable(doc, invoice) {
                 totalQuantity250ML = totalQuantity250ML + productInfo["250MLBoxes"]
                 totalPrice250ML = totalPrice250ML + productInfo.price250ML
                 subTotal = subTotal + productInfo.price250ML
-                renderProductRow(doc, invoiceTableTop + 27, j, product, quantity, price, address, index, i)
-                j++;
+                renderProductRow(doc, invoiceTableTop, jCount, product, quantity, price, address, index, i)
             }
         }
         if (i == (invoice.items.length - 1)) {
@@ -139,20 +135,19 @@ function generateInvoiceTable(doc, invoice) {
             )
         }
     }
-    function renderProductRow(doc, invoiceTableTop, j, product, quantity, price, address, index, i) {
-        const position = invoiceTableTop + (j + 1) * 30;
-        if (position == 60) {
+    function renderProductRow(doc, tableTop, j, product, quantity, price, address, index, i) {
+        const position = tableTop + (j + 1) * 20;
+        if (position == 40) {
             doc.addPage();
         }
-        if (position >= 780) {
+        if (position >= 760) {
             invoiceTableTop = 0;
-            j = 0;
+            jCount = 0;
         }
-
         generateTableRow(
             doc,
             position,
-            i + j + 1,
+            sno,
             address,
             product,
             "22011010",
@@ -161,10 +156,12 @@ function generateInvoiceTable(doc, invoice) {
             // formatCurrency(item.amount / item.quantity),
             // formatCurrency(item.amount)
         );
+        jCount++; sno++
     }
+
     // generateHr(doc, position + 20);
-    const subtotalPosition = (invoiceTableTop + (j + 1) * 30) + 98;
-    generateHr(doc, subtotalPosition - 10)
+    const subtotalPosition = (invoiceTableTop + (jCount + 1) * 20) + 98;
+    generateHr(doc, subtotalPosition - 15)
     doc
         .rect(25, subtotalPosition - 50, 545, 250)
         .text("SUMMARY", 30, subtotalPosition - 40)
@@ -185,7 +182,7 @@ function generateInvoiceTable(doc, invoice) {
             let cgst = item.product == "20 Lt Bt Jar" ? CGST20L : CGSTOthers
             let gst = item.product == "20 Lt Bt Jar" ? GST20L : GSTOthers
             let cgstValue = (taxValue * cgst) / 100
-            generateSummaryRow(doc, subtotalPosition + (index + 1) * 18,
+            generateSummaryRow(doc, subtotalPosition + (index + 1) * 15,
                 item.product,
                 "22011010",
                 gst,
