@@ -5,7 +5,6 @@ import { http } from '../../../../modules/http';
 import PanelHeader from '../../../../components/PanelHeader';
 import QualityResultCard from '../../../../components/QualityResultCard';
 import { LeftChevronIconGrey, RightChevronIconGrey } from '../../../../components/SVG_Icons';
-import { isEmpty } from '../../../../utils/Functions';
 
 const WaterQualityResults = () => {
     const sliderRef = useRef()
@@ -31,9 +30,8 @@ const WaterQualityResults = () => {
     }
 
     return (
-        !isEmpty(results) &&
         <>
-            <PanelHeader title='Water Quality Testing Results' hideShow hideShift />
+            <PanelHeader title='Water Quality Testing Results' beginning hideShift />
             <div className='panel-body quality-testing-panel'>
                 <Slider className='dashboard-slider' {...props} ref={sliderRef}>
                     {

@@ -312,6 +312,13 @@ router.get('/getEmptyCansList', (req, res) => {
     else res.json(results);
   })
 })
+router.get('/getTotalEmptyCansCount', (req, res) => {
+  const input = { departmentId, ...req.query }
+  warehouseQueries.getTotalEmptyCansCount(input, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.json(results);
+  })
+})
 router.get('/getReceivedStock', (req, res) => {
   warehouseQueries.getReceivedStock(departmentId, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });

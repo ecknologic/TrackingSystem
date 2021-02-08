@@ -383,18 +383,18 @@ export const receivedStockColumns = [
 export const todayDeliveryColumns = [
     {
         title: 'DC Number',
-        dataIndex: 'dcNo',
-        key: 'dcNo',
+        dataIndex: 'DCNO',
+        key: 'DCNO',
     },
     {
-        title: 'Delivery Details',
-        dataIndex: 'address',
-        key: 'address',
+        title: 'Dispatch To',
+        dataIndex: 'dispatchAddress',
+        key: 'dispatchAddress',
     },
     {
-        title: 'Order Details',
-        dataIndex: 'orderDetails',
-        key: 'orderDetails',
+        title: 'Production Details',
+        dataIndex: 'production',
+        key: 'production',
     },
     {
         title: 'Driver Name',

@@ -297,6 +297,13 @@ router.get('/getDispatchDetails', (req, res) => {
     });
 });
 
+router.get('/getDispatchDetails/:date', (req, res) => {
+    motherPlantDbQueries.getDispatchDetailsByDate({ departmentId, date: req.params.date }, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        res.json((results));
+    });
+});
+
 router.post('/addDispatchDetails', (req, res) => {
     let input = req.body;
     input.departmentId = departmentId
@@ -388,6 +395,36 @@ router.get('/getProductionDetailsByDate/:date', (req, res) => {
         if (err) res.status(500).json(dbError(err));
         else if (productionResult.length) {
             motherPlantDbQueries.getPDDetailsByDate(input, (dispatchErr, dispatchResults) => {
+                if (dispatchErr) res.status(500).json(dbError(err));
+                else {
+                    let product20LCount = 0, product1LCount = 0, product500MLCount = 0, product250MLCount = 0
+
+                    let productionObj = productionResult[0]
+                    let { total20LCans = 0, total1LBoxes = 0, total500MLBoxes = 0, total250MLBoxes = 0 } = productionObj
+
+                    let dispatchedObj = dispatchResults.length ? dispatchResults[0] : {}
+                    let { total20LCans: dispatched20L = 0, total1LBoxes: dispatched1L = 0, total500MLBoxes: dispatched500ML = 0, total250MLBoxes: dispatched250ML = 0 } = dispatchedObj
+
+                    product20LCount = total20LCans - dispatched20L
+                    product1LCount = total1LBoxes - dispatched1L
+                    product500MLCount = total500MLBoxes - dispatched500ML
+                    product250MLCount = total250MLBoxes - dispatched250ML
+                    res.json({ product20LCount, product1LCount, product500MLCount, product250MLCount });
+                }
+            })
+        }
+        else res.json({ product20LCount: 0, product1LCount: 0, product500MLCount: 0, product250MLCount: 0 });
+    })
+});
+router.get('/getTotalProductionDetails', (req, res) => {
+    let input = {
+        departmentId, ...req.query
+    }
+    motherPlantDbQueries.getTotalProductionDetails(input, (err, productionResult) => {
+        if (err) res.status(500).json(dbError(err));
+        else if (productionResult.length) {
+            const { batchIds } = productionResult[0]
+            motherPlantDbQueries.getTotalPDDetails({ ...input, batchIds }, (dispatchErr, dispatchResults) => {
                 if (dispatchErr) res.status(500).json(dbError(err));
                 else {
                     let product20LCount = 0, product1LCount = 0, product500MLCount = 0, product250MLCount = 0

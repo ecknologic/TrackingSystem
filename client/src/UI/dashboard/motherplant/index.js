@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import Header from '../../../components/ContentHeader';
 import ProductionStatus from './panels/ProductionStatus';
-import TotalStackStatus from './panels/TotalStackStatus';
+import TotalStockStatus from './panels/TotalStockStatus';
 import RawMaterialStock from './panels/RawMaterialStock';
 import EmptyBottlesStock from './panels/EmptyBottlesStock';
 import WaterQualityResults from './panels/WaterQualityResults';
@@ -15,7 +15,7 @@ const MotherplantDashboard = () => {
             <Header />
             <div className='dashboard-content'>
                 <ProductionStatus />
-                <TotalStackStatus />
+                <TotalStockStatus />
                 <EmptyBottlesStock />
                 <WaterQualityResults />
                 <div className='bottom-panels-container'>
