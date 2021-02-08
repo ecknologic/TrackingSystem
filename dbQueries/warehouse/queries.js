@@ -77,8 +77,8 @@ warehouseQueries.insertReturnStockDetails = (input, callback) => {
 }
 warehouseQueries.returnEmptyCansToMotherplant = (input, callback) => {
     const { motherplantId, warehouseId, driverId, vehicleId, emptycans_count, details, status = 'Pending' } = input
-    let query = "insert into EmptyCanDetails (motherplantId,warehouseId,driverId,vehicleId,emptycans_count,details,status) values(?,?,?,?,?,?,?)";
-    let requestBody = [motherplantId, warehouseId, driverId, vehicleId, emptycans_count, details, status]
+    let query = "insert into EmptyCanDetails (motherplantId,warehouseId,driverId,vehicleId,emptycans_count,details,status,createdDateTime) values(?,?,?,?,?,?,?,?)";
+    let requestBody = [motherplantId, warehouseId, driverId, vehicleId, emptycans_count, details, status, new Date()]
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 warehouseQueries.updateMotherplantReturnEmptyCans = (input, callback) => {
