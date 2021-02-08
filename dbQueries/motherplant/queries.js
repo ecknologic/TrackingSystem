@@ -121,9 +121,14 @@ motherPlantDbQueries.getQCTestedBatches = async (departmentId, callback) => {
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getQCTestResults = async (input, callback) => {
-    const { departmentId, date } = input
-    let query = `SELECT JSON_ARRAYAGG(JSON_OBJECT('phLevel',ROUND(q.phLevel,1),'tds',ROUND(q.TDS,1),'ozoneLevel',ROUND(q.ozoneLevel,1),'qcLevel',q.qcLevel,'testResult',q.testResult,'managerName',q.managerName,'testingDate',q.testedDate)) levels,p.batchId batchId, p.shiftType FROM qualitycheck q INNER JOIN productionQC p ON q.productionQcId=p.productionQcId WHERE q.departmentId=? AND DATE('q.testedDate')=? GROUP BY q.productionQcId`;
-    return executeGetParamsQuery(query, [departmentId, date], callback)
+    let { departmentId, startDate, endDate, fromStart } = input;
+    let options = [departmentId, endDate]
+    let query = `SELECT JSON_ARRAYAGG(JSON_OBJECT('phLevel',ROUND(q.phLevel,1),'tds',ROUND(q.TDS,1),'ozoneLevel',ROUND(q.ozoneLevel,1),'qcLevel',q.qcLevel,'testResult',q.testResult,'managerName',q.managerName,'testingDate',q.testedDate)) levels,p.batchId batchId, p.shiftType FROM qualitycheck q INNER JOIN productionQC p ON q.productionQcId=p.productionQcId WHERE q.departmentId=? AND DATE(q.testedDate)<=? GROUP BY q.productionQcId`;
+    if (fromStart !== 'true') {
+        options = [departmentId, startDate, endDate]
+        query = `SELECT JSON_ARRAYAGG(JSON_OBJECT('phLevel',ROUND(q.phLevel,1),'tds',ROUND(q.TDS,1),'ozoneLevel',ROUND(q.ozoneLevel,1),'qcLevel',q.qcLevel,'testResult',q.testResult,'managerName',q.managerName,'testingDate',q.testedDate)) levels,p.batchId batchId, p.shiftType FROM qualitycheck q INNER JOIN productionQC p ON q.productionQcId=p.productionQcId WHERE q.departmentId=? AND DATE(q.testedDate)>=? AND DATE(q.testedDate)<=?  GROUP BY q.productionQcId`;
+    }
+    return executeGetParamsQuery(query, options, callback)
 }
 motherPlantDbQueries.getProdQCTestedBatches = async (departmentId, callback) => {
     let query = `SELECT JSON_ARRAYAGG(JSON_OBJECT('phLevel',ROUND(q.phLevel,1),'tds',ROUND(q.TDS,1),'ozoneLevel',ROUND(q.ozoneLevel,1),'qcLevel',q.qcLevel,'testResult',q.testResult,'managerName',q.managerName,'testingDate',q.testedDate)) levels,p.batchId batchId FROM qualitycheck q INNER JOIN productionQC p ON q.productionQcId=p.productionQcId WHERE q.departmentId=${departmentId} GROUP BY q.productionQcId`;

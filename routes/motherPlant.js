@@ -119,7 +119,9 @@ router.get('/getProdQCTestedBatches', (req, res) => {
     });
 });
 router.get('/getQCTestResults', (req, res) => {
-    const input = { departmentId, date: new Date() }
+    let input = {
+        departmentId, ...req.query
+    }
     motherPlantDbQueries.getQCTestResults(input, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
