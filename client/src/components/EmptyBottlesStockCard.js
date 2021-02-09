@@ -20,7 +20,7 @@ const EmptyBottlesStockCard = ({ title, total, strokeColor }) => {
                 </div>
                 <div className='details'>
                     <span className='title'>{title}</span>
-                    <div className='number'>{total}</div>
+                    <span className='number'>{total || 0}</span>
                 </div>
             </div>
             <span className='footer'>Total Bottles Added - 18,232</span>

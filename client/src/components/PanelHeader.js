@@ -2,7 +2,6 @@ import dayjs from 'dayjs';
 import React, { useState, memo } from 'react';
 import PanelDropdown from './PanelDropdown';
 import ReportsDropdown from './ReportsDropdown';
-import { ScheduleIconGrey } from './SVG_Icons';
 import { TODAYDATE } from '../utils/constants';
 import CustomDateInput from './CustomDateInput';
 import { calendarMenu, shiftMenu } from '../assets/fixtures';
@@ -11,12 +10,13 @@ const fn = () => { }
 const todayString = 'Today'
 const weekString = 'This Week'
 const monthString = 'This Month'
+const customString = 'Select Date'
 const DATETIMEFORMAT = 'DD/MM/YYYY h:mm A'
 const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
-const PanelHeader = memo(({ title, hideShow, hideShift, onSelect = fn }) => {
-    const [show, setShow] = useState('Today')
+const PanelHeader = memo(({ title, hideShow, hideShift, onSelect = fn, beginning = false }) => {
+    const [show, setShow] = useState(() => beginning ? `till Today` : 'Today')
     const [open, setOpen] = useState(false)
     const [time, setTime] = useState(() => dayjs().format(DATETIMEFORMAT))
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
@@ -26,19 +26,25 @@ const PanelHeader = memo(({ title, hideShow, hideShift, onSelect = fn }) => {
     }
 
     const handleCalendarSelect = (value) => {
-        setShow(value)
+        const isToday = value === todayString
+        const isWeek = value === weekString
+        const isMonth = value === monthString
+        const isCustom = value === customString
+
+        if (isCustom) {
+            setOpen(true)
+            return
+        }
+
         const endDate = dayjs().format(APIDATEFORMAT)
         let to = dayjs().format(DATEFORMAT)
         let from = dayjs(endDate).format(DATEFORMAT)
         let startDate = endDate
 
-        const isToday = value === todayString
-        const isWeek = value === weekString
-        const isMonth = value === monthString
-
         if (isToday) {
             const todayFull = dayjs().format(DATETIMEFORMAT)
             setTime(todayFull)
+            setShow(beginning ? `till Today` : 'Today')
         }
         else {
             if (isWeek) {
@@ -50,9 +56,10 @@ const PanelHeader = memo(({ title, hideShow, hideShift, onSelect = fn }) => {
                 from = dayjs(startDate).format(DATEFORMAT)
             }
             setTime(`${from} to ${to}`)
+            setShow(value)
         }
 
-        onSelect({ startDate, endDate })
+        onSelect({ startDate, endDate, fromStart: beginning })
     }
 
     const datePickerStatus = (status) => {
@@ -60,7 +67,12 @@ const PanelHeader = memo(({ title, hideShow, hideShift, onSelect = fn }) => {
     }
 
     const handleDateSelect = (value) => {
+        const d = dayjs(value).format(APIDATEFORMAT)
+        const time = dayjs(value).format(DATEFORMAT)
+        setTime('')
         setSelectedDate(value)
+        setShow(`${beginning ? 'till' : 'on'} ${time}`)
+        onSelect({ startDate: d, endDate: d, fromStart: beginning })
     }
 
     return (
@@ -84,7 +96,6 @@ const PanelHeader = memo(({ title, hideShow, hideShift, onSelect = fn }) => {
                                             />
                                         </div>
                                         <div className='app-date-picker-wrapper'>
-                                            <ScheduleIconGrey onClick={() => setOpen(true)} />
                                             <CustomDateInput // Hidden in the DOM
                                                 open={open}
                                                 value={selectedDate}
@@ -105,7 +116,7 @@ const PanelHeader = memo(({ title, hideShow, hideShift, onSelect = fn }) => {
                                     <div className='option'>
                                         <PanelDropdown
                                             label='Shift Type'
-                                            initValue='Morning'
+                                            initValue='All'
                                             options={shiftMenu}
                                             onSelect={handleShiftSelect}
                                         />

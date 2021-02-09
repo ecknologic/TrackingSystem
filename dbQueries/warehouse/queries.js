@@ -38,6 +38,16 @@ warehouseQueries.getEmptyCansList = async (departmentId, callback) => {
     let query = "SELECT e.*,d.departmentName,dri.driverName,dri.mobileNumber,v.vehicleType,v.vehicleName,v.vehicleNo from EmptyCanDetails e INNER JOIN departmentmaster d ON e.motherplantId=d.departmentId INNER JOIN driverdetails dri ON e.driverId=dri.driverId INNER JOIN VehicleDetails v ON e.vehicleId=v.vehicleId where e.warehouseId=? OR e.motherPlantId=? ORDER BY e.createdDateTime DESC";
     return executeGetParamsQuery(query, [departmentId, departmentId], callback)
 }
+warehouseQueries.getTotalEmptyCansCount = async (input, callback) => {
+    let { departmentId, startDate, endDate, fromStart } = input;
+    let options = [departmentId, departmentId, endDate]
+    let query = "SELECT SUM(emptycans_count) as product20LCount from EmptyCanDetails where warehouseId=? OR motherPlantId=? AND DATE(approvedDate)<=?";
+    if (fromStart !== 'true') {
+        options = [departmentId, departmentId, startDate, endDate]
+        query = "SELECT SUM(emptycans_count) as product20LCount from EmptyCanDetails where warehouseId=? OR motherPlantId=? AND DATE(approvedDate)>=?  AND DATE(approvedDate)<=?";
+    }
+    return executeGetParamsQuery(query, options, callback)
+}
 warehouseQueries.getReceivedStock = async (warehouseId, callback) => {
     let query = "SELECT w.id,w.DCNO as dcNo,w.warehouseId,w.isConfirmed,w.deliveryDate,w.20LCans as product20L,w.1LBoxes as product1L,w.500MLBoxes as product500ML,w.250MLBoxes as product250ML,d.driverName,dri.mobileNumber,dep.address,dep.departmentName from warehousestockdetails w INNER JOIN dispatches d ON w.DCNO=d.DCNO INNER JOIN departmentmaster dep ON d.departmentId=dep.departmentId INNER JOIN driverdetails dri ON d.driverId=dri.driverId where w.warehouseId=? ORDER BY w.deliveryDate DESC";
     return executeGetParamsQuery(query, [warehouseId], callback)
@@ -67,8 +77,8 @@ warehouseQueries.insertReturnStockDetails = (input, callback) => {
 }
 warehouseQueries.returnEmptyCansToMotherplant = (input, callback) => {
     const { motherplantId, warehouseId, driverId, vehicleId, emptycans_count, details, status = 'Pending' } = input
-    let query = "insert into EmptyCanDetails (motherplantId,warehouseId,driverId,vehicleId,emptycans_count,details,status) values(?,?,?,?,?,?,?)";
-    let requestBody = [motherplantId, warehouseId, driverId, vehicleId, emptycans_count, details, status]
+    let query = "insert into EmptyCanDetails (motherplantId,warehouseId,driverId,vehicleId,emptycans_count,details,status,createdDateTime) values(?,?,?,?,?,?,?,?)";
+    let requestBody = [motherplantId, warehouseId, driverId, vehicleId, emptycans_count, details, status, new Date()]
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 warehouseQueries.updateMotherplantReturnEmptyCans = (input, callback) => {

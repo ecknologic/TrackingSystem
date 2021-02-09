@@ -2,51 +2,54 @@ import axios from 'axios';
 import Slider from "react-slick";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { http } from '../../../../modules/http';
+import StockCard from '../../../../components/StockCard';
 import PanelHeader from '../../../../components/PanelHeader';
 import { TODAYDATE as d } from '../../../../utils/constants';
-import QualityResultCard from '../../../../components/QualityResultCard';
 import { LeftChevronIconGrey, RightChevronIconGrey } from '../../../../components/SVG_Icons';
-const options = { startDate: d, endDate: d, fromStart: true }
+const options = { startDate: d, endDate: d, shift: 'All', fromStart: true }
 
-const WaterQualityResults = () => {
+const TotalStockStatus = () => {
     const sliderRef = useRef()
-    const [results, setResults] = useState([])
+    const [stock, setStock] = useState({})
     const [opData, setOpData] = useState(() => options)
+    const { product20LCount, product2LCount, product1LCount, product500MLCount, product250MLCount } = stock
 
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
-        getTestResults(opData)
+        getTotalStock(opData)
 
         return () => {
             http.ABORT(source)
         }
     }, [])
 
-    const getTestResults = async ({ startDate, endDate, fromStart }) => {
-        const url = `/motherPlant/getQCTestResults?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}`
+    const getTotalStock = async ({ startDate, endDate, shift, fromStart }) => {
+        const url = `/motherPlant/getTotalProductionDetails?startDate=${startDate}&endDate=${endDate}&shiftType=${shift}&fromStart=${fromStart}`
 
         try {
             const data = await http.GET(axios, url, config)
-            setResults(data)
+            setStock(data)
         } catch (error) { }
     }
 
     const handleOperation = useCallback((data) => {
         const newData = { ...opData, ...data }
-        getTestResults(newData)
+        getTotalStock(newData)
         setOpData(newData)
     }, [opData])
 
     return (
         <>
-            <PanelHeader title='Water Quality Testing Results' onSelect={handleOperation} beginning hideShift />
-            <div className='panel-body quality-testing-panel'>
+            <PanelHeader title='Total Stock Status' onSelect={handleOperation} beginning />
+            <div className='panel-body'>
                 <Slider className='dashboard-slider' {...props} ref={sliderRef}>
-                    {
-                        results.map((item) => <QualityResultCard key={item.batchId} data={item} />)
-                    }
+                    <StockCard title='20 Ltrs' total={product20LCount} />
+                    <StockCard title='2 Ltrs' total={product2LCount} />
+                    <StockCard title='1 Ltrs' total={product1LCount} />
+                    <StockCard title='500 ml' total={product500MLCount} />
+                    <StockCard title='300 ml' total={product250MLCount} />
                 </Slider>
             </div>
         </>
@@ -54,10 +57,10 @@ const WaterQualityResults = () => {
 }
 const props = {
     infinite: false,
-    slidesToShow: 3,
+    slidesToShow: 4,
     slidesToScroll: 1,
     prevArrow: <LeftChevronIconGrey />,
-    nextArrow: <RightChevronIconGrey />
+    nextArrow: <RightChevronIconGrey />,
 }
 
-export default WaterQualityResults
+export default TotalStockStatus

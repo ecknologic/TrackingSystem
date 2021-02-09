@@ -3,15 +3,25 @@ $textColor:rgba(0,0,0,0.85);
 .raw-mat-stock-card {
     background-color: #fff;
     border-radius: .6em;
-    padding: 1em;
+    padding-left: 1em;
+    padding-top: 1em;
     color: $textColor;
+    max-height: 302px;
     flex: 1;
-
+    
     .name {
         margin-right: .5em;
     }
-
+    
     .app-stock-badge {
         margin-right: auto;
+    }
+    
+    .panel-details-scroll {
+        padding-right: 1.5em;
+    }
+    
+    .panel-details {
+        margin-top: auto;
     }
 }

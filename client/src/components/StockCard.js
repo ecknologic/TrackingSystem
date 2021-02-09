@@ -1,18 +1,18 @@
 import React from 'react';
-import '../sass/stackCard.scss';
+import '../sass/stockCard.scss';
 
-const StackCard = ({ title, total, }) => {
+const StockCard = ({ title, total, }) => {
 
 
     return (
-        <div className='stack-card'>
+        <div className='stock-card'>
             <div className='image-box'>Image</div>
             <div className='body'>
                 <div className='title'>{title}</div>
-                <div className='number'>{total}</div>
+                <div className='number'>{total || 0}</div>
             </div>
         </div>
     )
 }
 
-export default StackCard
+export default StockCard

@@ -1,7 +1,29 @@
-import React from 'react';
+import axios from 'axios';
+import React, { useEffect, useMemo, useState } from 'react';
+import { http } from '../../../../modules/http';
 import RawMaterialStockCard from '../../../../components/RawMaterialStockCard';
 
 const RawMaterialStock = () => {
+    const [RMStock, setRMStock] = useState([])
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
+
+    useEffect(() => {
+        getRMStock()
+
+        return () => {
+            http.ABORT(source)
+        }
+    }, [])
+
+    const getRMStock = async () => {
+        const url = `/motherPlant/getRMTotalCount`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setRMStock(data)
+        } catch (error) { }
+    }
 
     return (
         <div className='raw-material-panel'>
@@ -13,7 +35,7 @@ const RawMaterialStock = () => {
                 </div>
             </div>
             <div className='panel-body'>
-                <RawMaterialStockCard />
+                <RawMaterialStockCard data={RMStock} />
             </div>
         </div>
     )
