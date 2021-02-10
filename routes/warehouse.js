@@ -197,6 +197,13 @@ router.get('/deliveryDetails/:date', (req, res) => {
     res.send(JSON.stringify(results));
   });
 });
+router.get('/getTotalSales', (req, res) => {
+  var input = req.query;
+  warehouseQueries.getTotalSales(input, (err, results) => {
+    if (err) res.status(500).json(err.sqlMessage);
+    else res.json(results);
+  });
+});
 
 router.get('/currentActiveStockDetails/:date', (req, res) => {
   let deliveryDate = req.params.date;

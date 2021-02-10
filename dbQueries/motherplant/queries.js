@@ -19,6 +19,16 @@ motherPlantDbQueries.getProductsByBatch = async (input, callback) => {
     let query = `SELECT SUM(p.product20L) AS product20LCount,SUM(p.product1L) AS product1LCount,SUM(p.product500ML) product500MLCount,SUM(p.product250ML) product250MLCount FROM production p WHERE departmentId=? AND batchId=?`;
     return executeGetParamsQuery(query, [departmentId, batchNo], callback)
 }
+motherPlantDbQueries.getTotalProduction = async (input, callback) => {
+    let { departmentId, startDate, endDate } = input
+    let query = `SELECT SUM(p.product20L) AS product20LCount,SUM(p.product1L) AS product1LCount,SUM(p.product500ML) product500MLCount,SUM(p.product250ML) product250MLCount FROM production p WHERE DATE(productionDate)>=? AND DATE(productionDate)<=?`;
+    let options = [startDate, endDate]
+    if (departmentId != 'All') {
+        query = `SELECT SUM(p.product20L) AS product20LCount,SUM(p.product1L) AS product1LCount,SUM(p.product500ML) product500MLCount,SUM(p.product250ML) product250MLCount FROM production p WHERE departmentId=? AND DATE(productionDate)>=? AND DATE(productionDate)<=?`;
+        options = [departmentId, startDate, endDate]
+    }
+    return executeGetParamsQuery(query, options, callback)
+}
 motherPlantDbQueries.getDispatchesByBatch = async (input, callback) => {
     let { departmentId, batchNo } = input
     let query = `SELECT SUM(d.product20L) AS product20LCount,SUM(d.product1L) AS product1LCount,SUM(d.product500ML) product500MLCount,SUM(d.product250ML) product250MLCount FROM dispatches d WHERE departmentId=? AND batchId=?`;
