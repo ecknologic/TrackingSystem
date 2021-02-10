@@ -21,7 +21,7 @@ function createInvoice(invoice, path) {
 
 function generateHeader(doc) {
     doc
-        .rect(25, 20, 545, 80)
+        .rect(25, 25, 545, 80)
         .fontSize(12)
         .text("Acer Engineers Pvt Ltd.", 30, 30, { align: "left" })
         .fontSize(8)
@@ -43,7 +43,7 @@ function generateHeader(doc) {
 function generateCustomerInformation(doc, invoice) {
     doc
         .fillColor("#444444")
-        .rect(25, 105, 545, 60)
+        .rect(25, 105, 545, 0)
 
     const customerInformationTop = 110;
 
@@ -69,7 +69,7 @@ function generateCustomerInformation(doc, invoice) {
 
 function generateInvoiceTable(doc, invoice) {
     let i, subTotal = 0;
-    let invoiceTableTop = 325, jCount = 0;
+    let invoiceTableTop = 305, jCount = 0;
     let totalArr = []
 
     doc.font("Helvetica-Bold");
@@ -84,7 +84,7 @@ function generateInvoiceTable(doc, invoice) {
         "Price",
         // "Line Total"
     );
-    generateHr(doc, invoiceTableTop - 20);
+    generateHr(doc, invoiceTableTop + 10);
 
     doc.font("Helvetica");
     let sno = 1, totalPrice20L = 0, totalQuantity20L = 0, totalPrice1L = 0, totalQuantity1L = 0, totalPrice500ML = 0, totalQuantity500ML = 0, totalPrice250ML = 0, totalQuantity250ML = 0;
@@ -138,9 +138,12 @@ function generateInvoiceTable(doc, invoice) {
     function renderProductRow(doc, tableTop, j, product, quantity, price, address, index, i) {
         const position = tableTop + (j + 1) * 20;
         if (position == 40) {
+            generateHr(doc, position - 15)
             doc.addPage();
         }
         if (position >= 760) {
+            doc
+                .rect(25, 25, 545, position + 10)
             invoiceTableTop = 0;
             jCount = 0;
         }
