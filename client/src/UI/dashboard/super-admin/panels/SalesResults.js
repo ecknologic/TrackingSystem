@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import axios from 'axios';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
@@ -5,37 +6,38 @@ import PanelStats from '../../../../components/PanelStats';
 import ColumnChart from '../../../../components/ColumnChart';
 import { TODAYDATE as d } from '../../../../utils/constants';
 import PanelHeader from '../../../../components/PanelHeader';
-import { dummyDepOptions, dummyWaterResults } from '../../../../assets/fixtures';
 import DashboardResultsCard from '../../../../components/DashboardResultsCard';
-const options = { startDate: d, endDate: d, fromStart: true }
+const APIDATEFORMAT = 'YYYY-MM-DD'
 
-const SalesResults = () => {
-    const [results, setResults] = useState(dummyWaterResults)
+const SalesResults = ({ depOptions }) => {
+    const startDate = useMemo(() => dayjs().weekday(1).format(APIDATEFORMAT), [])
+    const options = { startDate, endDate: d, departmentId: 'All' }
+    const [results, setResults] = useState({})
     const [opData, setOpData] = useState(() => options)
 
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
-        getTestResults(opData)
+        getResults(opData)
 
         return () => {
             http.ABORT(source)
         }
     }, [])
 
-    const getTestResults = async ({ startDate, endDate, fromStart }) => {
-        const url = `/motherPlant/getQCTestResults?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}`
+    const getResults = async ({ startDate, endDate, departmentId }) => {
+        const url = `/warehouse/getTotalSales?startDate=${startDate}&endDate=${endDate}&departmentId=${departmentId}`
 
         try {
-            // const data = await http.GET(axios, url, config)
-            // setResults(data)
+            const [data] = await http.GET(axios, url, config)
+            setResults(data)
         } catch (error) { }
     }
 
     const handleOperation = useCallback((data) => {
         const newData = { ...opData, ...data }
-        getTestResults(newData)
+        getResults(newData)
         setOpData(newData)
     }, [opData])
 
@@ -43,25 +45,22 @@ const SalesResults = () => {
         <PanelHeader
             title='Sales Results'
             onSelect={handleOperation}
-            depName='Mother Plant'
-            depOptions={dummyDepOptions}
+            depOptions={depOptions}
+            depName='Warehouse'
+            initTime='This Week'
             showFooter
         />
     )
 
     const Stats = (
-        <PanelStats title='Total Sales' />
+        <PanelStats title='Total Sales' data={results} />
     )
 
     const Chart = (
         <ColumnChart />
     )
 
-    return <DashboardResultsCard
-        Header={Header}
-        Stats={Stats}
-        Chart={Chart}
-    />
+    return <DashboardResultsCard Header={Header} Stats={Stats} Chart={Chart} />
 }
 
 export default SalesResults

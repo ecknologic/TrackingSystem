@@ -98,6 +98,9 @@ export const shiftMenu = [
     <Menu.Item key="Night" >Night</Menu.Item>,
     <Menu.Item key="All" >All</Menu.Item>
 ]
+export const getDepartmentMenu = (departments = []) => {
+    return departments.map((item) => <Menu.Item key={item.departmentName} >{item.departmentName}</Menu.Item>)
+}
 
 export const getWarehouseOptions = (warehouses = []) => {
     return warehouses.map((item) => <Option key={item.departmentId} value={item.departmentId}>{item.departmentName}</Option>)
@@ -781,10 +784,6 @@ export const getRMColumns = (type, isSuperAdmin) => {
 
     return columns
 }
-
-export const dummyDepOptions = [
-    <Option key='1' value="All">All</Option>,
-]
 
 export const dummyWaterResults = [
     {

@@ -9,7 +9,7 @@ import QualityResultCard from '../../../../components/QualityResultCard';
 import { LeftChevronIconGrey, RightChevronIconGrey } from '../../../../components/SVG_Icons';
 const options = { startDate: d, endDate: d, fromStart: true }
 
-const WaterQualityResults = () => {
+const WaterQualityResults = ({ depMenu }) => {
     const [results, setResults] = useState(dummyWaterResults)
     const [opData, setOpData] = useState(() => options)
 
@@ -41,7 +41,7 @@ const WaterQualityResults = () => {
 
     return (
         <>
-            <PanelHeader title='Water Quality Testing Results' onSelect={handleOperation} beginning showShow showShift showDep />
+            <PanelHeader title='Water Quality Testing Results' depMenu={depMenu} onSelect={handleOperation} beginning showShow showShift showDep />
             <div className='panel-body quality-testing-panel'>
                 <Slider className='dashboard-slider' {...props}>
                     {
