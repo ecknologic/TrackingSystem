@@ -1,19 +1,16 @@
 import axios from 'axios';
 import Slider from "react-slick";
 import { useHistory } from 'react-router-dom';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
 import PanelHeader from '../../../../components/PanelHeader';
 import { TODAYDATE as d } from '../../../../utils/constants';
-import { dummyWaterResults } from '../../../../assets/fixtures';
 import CustomerOverviewCard from '../../../../components/CustomerOverviewCard';
 import { LeftChevronIconGrey, RightChevronIconGrey } from '../../../../components/SVG_Icons';
 const options = { startDate: d, endDate: d, fromStart: true }
 
 const CustomersOverview = () => {
-    const sliderRef = useRef()
     const history = useHistory()
-    const [results, setResults] = useState(dummyWaterResults)
     const [opData, setOpData] = useState(() => options)
 
     const source = useMemo(() => axios.CancelToken.source(), []);
@@ -48,7 +45,7 @@ const CustomersOverview = () => {
         <>
             <PanelHeader title='Customers Overview' onSelect={handleOperation} beginning showShow />
             <div className='panel-body quality-testing-panel'>
-                <Slider className='dashboard-slider' {...props} ref={sliderRef}>
+                <Slider className='dashboard-slider' {...props} >
                     <CustomerOverviewCard title='Corporate Customers' onClick={goToCustomers} />
                     <CustomerOverviewCard title='Other Customers' onClick={goToCustomers} />
                     <CustomerOverviewCard title='Memberships' onClick={goToCustomers} />

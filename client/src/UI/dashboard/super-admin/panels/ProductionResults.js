@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
 import PanelStats from '../../../../components/PanelStats';
+import ColumnChart from '../../../../components/ColumnChart';
 import { TODAYDATE as d } from '../../../../utils/constants';
 import PanelHeader from '../../../../components/PanelHeader';
 import { dummyWaterResults, dummyDepOptions } from '../../../../assets/fixtures';
@@ -49,13 +50,18 @@ const ProductionResults = () => {
     )
 
     const Stats = (
-        <PanelStats />
+        <PanelStats title='Total Production' />
+    )
+
+    const Chart = (
+        <ColumnChart />
     )
 
     return <DashboardResultsCard
         isFirst
         Header={Header}
         Stats={Stats}
+        Chart={Chart}
     />
 }
 

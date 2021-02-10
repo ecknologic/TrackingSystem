@@ -58,7 +58,7 @@ const PanelHeader = memo((props) => {
         }
         else {
             if (isWeek) {
-                startDate = dayjs().startOf('week').format(APIDATEFORMAT)
+                startDate = dayjs().weekday(1).format(APIDATEFORMAT)
                 from = dayjs(startDate).format(DATEFORMAT)
             }
             else if (isMonth) {

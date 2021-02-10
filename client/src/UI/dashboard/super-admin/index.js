@@ -1,6 +1,4 @@
 import React, { Fragment } from 'react';
-// import PieChart from '../../../components/PieChart';
-// import ColumnChart from '../..   /../components/ColumnChart';
 import Header from '../../../components/ContentHeader';
 import CustomersOverview from './panels/CustomersOverview';
 import InvoiceOverview from './panels/InvoiceOverview';

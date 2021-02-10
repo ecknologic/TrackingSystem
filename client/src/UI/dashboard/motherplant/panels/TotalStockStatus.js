@@ -1,6 +1,6 @@
 import axios from 'axios';
 import Slider from "react-slick";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
 import StockCard from '../../../../components/StockCard';
 import PanelHeader from '../../../../components/PanelHeader';
@@ -9,7 +9,6 @@ import { LeftChevronIconGrey, RightChevronIconGrey } from '../../../../component
 const options = { startDate: d, endDate: d, shift: 'All', fromStart: true }
 
 const TotalStockStatus = () => {
-    const sliderRef = useRef()
     const [stock, setStock] = useState({})
     const [opData, setOpData] = useState(() => options)
     const { product20LCount, product2LCount, product1LCount, product500MLCount, product250MLCount } = stock
@@ -44,7 +43,7 @@ const TotalStockStatus = () => {
         <>
             <PanelHeader title='Total Stock Status' onSelect={handleOperation} beginning showShow showShift />
             <div className='panel-body'>
-                <Slider className='dashboard-slider' {...props} ref={sliderRef}>
+                <Slider className='dashboard-slider' {...props} >
                     <StockCard title='20 Ltrs' total={product20LCount} />
                     <StockCard title='2 Ltrs' total={product2LCount} />
                     <StockCard title='1 Ltrs' total={product1LCount} />

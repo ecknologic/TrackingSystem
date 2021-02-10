@@ -1,6 +1,6 @@
 import axios from 'axios';
 import Slider from "react-slick";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
 import PanelHeader from '../../../../components/PanelHeader';
 import { TODAYDATE as d } from '../../../../utils/constants';
@@ -10,7 +10,6 @@ import { LeftChevronIconGrey, RightChevronIconGrey } from '../../../../component
 const options = { startDate: d, endDate: d, fromStart: true }
 
 const WaterQualityResults = () => {
-    const sliderRef = useRef()
     const [results, setResults] = useState(dummyWaterResults)
     const [opData, setOpData] = useState(() => options)
 
@@ -44,7 +43,7 @@ const WaterQualityResults = () => {
         <>
             <PanelHeader title='Water Quality Testing Results' onSelect={handleOperation} beginning showShow showShift showDep />
             <div className='panel-body quality-testing-panel'>
-                <Slider className='dashboard-slider' {...props} ref={sliderRef}>
+                <Slider className='dashboard-slider' {...props}>
                     {
                         results.map((item) => <QualityResultCard key={item.batchId} data={item} />)
                     }
