@@ -1,8 +1,9 @@
 import React from 'react';
 import { Progress } from 'antd'
 import '../sass/emptyBottlesStockCard.scss';
+import ChangeBadge from './ChangeBadge';
 
-const EmptyBottlesStockCard = ({ title, total, strokeColor }) => {
+const EmptyBottlesStockCard = ({ title, total, strokeColor, isRs, text }) => {
 
 
     return (
@@ -20,10 +21,11 @@ const EmptyBottlesStockCard = ({ title, total, strokeColor }) => {
                 </div>
                 <div className='details'>
                     <span className='title'>{title}</span>
-                    <span className='number'>{total || 0}</span>
+                    <span className='number'>{isRs ? '₹ ' : ''}{total || 0}</span>
+                    <ChangeBadge />
                 </div>
             </div>
-            <span className='footer'>Total Bottles Added - 18,232</span>
+            <span className='footer'>{text}</span>
         </div>
     )
 }

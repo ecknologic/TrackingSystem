@@ -41,7 +41,7 @@ const ProductionStatus = () => {
 
     return (
         <>
-            <PanelHeader title='Production Status' onSelect={handleOperation} />
+            <PanelHeader title='Production Status' onSelect={handleOperation} showShow showShift />
             <div className='panel-body'>
                 <Slider className='dashboard-slider' {...props} ref={sliderRef}>
                     <ProductionStatusCard title='20 Ltrs' total={product20LCount} />

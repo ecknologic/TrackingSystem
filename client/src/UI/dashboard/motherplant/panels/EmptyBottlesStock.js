@@ -42,14 +42,14 @@ const EmptyBottlesStock = () => {
 
     return (
         <>
-            <PanelHeader title='Empty Bottles Stock' onSelect={handleOperation} beginning hideShift />
+            <PanelHeader title='Empty Bottles Stock' onSelect={handleOperation} beginning showShow />
             <div className='panel-body'>
                 <Slider className='dashboard-slider empty-bottles-stock-slider' {...props} ref={sliderRef}>
-                    <EmptyBottlesStockCard title='20 Ltrs' total={product20LCount} strokeColor='#F7B500' />
-                    <EmptyBottlesStockCard title='20 Ltrs new' total={product2LCount} strokeColor='#4C9400' />
-                    <EmptyBottlesStockCard title='1 Ltrs new' total={product1LCount} strokeColor='#41B9AD' />
-                    <EmptyBottlesStockCard title='500 ml new' total={product500MLCount} strokeColor='#0091FF' />
-                    <EmptyBottlesStockCard title='300 ml new' total={product250MLCount} strokeColor='#FA6400' />
+                    <EmptyBottlesStockCard title='20 Ltrs' total={product20LCount} strokeColor='#F7B500' text='Total Bottles Added - 18,232' />
+                    <EmptyBottlesStockCard title='20 Ltrs new' total={product2LCount} strokeColor='#4C9400' text='Total Bottles Added - 18,232' />
+                    <EmptyBottlesStockCard title='1 Ltrs new' total={product1LCount} strokeColor='#41B9AD' text='Total Bottles Added - 18,232' />
+                    <EmptyBottlesStockCard title='500 ml new' total={product500MLCount} strokeColor='#0091FF' text='Total Bottles Added - 18,232' />
+                    <EmptyBottlesStockCard title='300 ml new' total={product250MLCount} strokeColor='#FA6400' text='Total Bottles Added - 18,232' />
                 </Slider>
             </div>
         </>

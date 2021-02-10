@@ -42,7 +42,7 @@ const TotalStockStatus = () => {
 
     return (
         <>
-            <PanelHeader title='Total Stock Status' onSelect={handleOperation} beginning />
+            <PanelHeader title='Total Stock Status' onSelect={handleOperation} beginning showShow showShift />
             <div className='panel-body'>
                 <Slider className='dashboard-slider' {...props} ref={sliderRef}>
                     <StockCard title='20 Ltrs' total={product20LCount} />

@@ -5,23 +5,26 @@ const PieChart = () => {
 
     var data = [
         {
-            type: 'a',
-            value: 35,
+            type: 'Cleared Invoices',
+            value: 65,
         },
         {
-            type: 'b',
-            value: 65,
+            type: 'Pending to Clear',
+            value: 35,
         }
     ];
     var config = {
         appendPadding: 10,
         // startAngle: 90,
         // endAngle: 360,
+        width: 180,
+        height: 180,
+        autoFit: false,
         data: data,
         angleField: 'value',
         colorField: 'type',
         color: ['#34B53A', '#FFB200'],
-        radius: 0.8,
+        radius: 1,
         legend: false,
         pieStyle: {
             lineWidth: 0,
@@ -37,7 +40,7 @@ const PieChart = () => {
                 return ''.concat(percent * 100, '%');
             },
             style: {
-                fontSize: 30,
+                fontSize: 24,
                 textAlign: 'center',
                 fontWeight: 600,
             },

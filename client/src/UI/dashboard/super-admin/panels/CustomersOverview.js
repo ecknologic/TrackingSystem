@@ -1,16 +1,19 @@
 import axios from 'axios';
 import Slider from "react-slick";
+import { useHistory } from 'react-router-dom';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { http } from '../../../../modules/http';
 import PanelHeader from '../../../../components/PanelHeader';
 import { TODAYDATE as d } from '../../../../utils/constants';
-import QualityResultCard from '../../../../components/QualityResultCard';
+import { dummyWaterResults } from '../../../../assets/fixtures';
+import CustomerOverviewCard from '../../../../components/CustomerOverviewCard';
 import { LeftChevronIconGrey, RightChevronIconGrey } from '../../../../components/SVG_Icons';
 const options = { startDate: d, endDate: d, fromStart: true }
 
-const WaterQualityResults = () => {
+const CustomersOverview = () => {
     const sliderRef = useRef()
-    const [results, setResults] = useState([])
+    const history = useHistory()
+    const [results, setResults] = useState(dummyWaterResults)
     const [opData, setOpData] = useState(() => options)
 
     const source = useMemo(() => axios.CancelToken.source(), []);
@@ -28,8 +31,8 @@ const WaterQualityResults = () => {
         const url = `/motherPlant/getQCTestResults?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}`
 
         try {
-            const data = await http.GET(axios, url, config)
-            setResults(data)
+            // const data = await http.GET(axios, url, config)
+            // setResults(data)
         } catch (error) { }
     }
 
@@ -39,14 +42,17 @@ const WaterQualityResults = () => {
         setOpData(newData)
     }, [opData])
 
+    const goToCustomers = () => history.push('/customers')
+
     return (
         <>
-            <PanelHeader title='Water Quality Testing Results' onSelect={handleOperation} beginning showShow />
+            <PanelHeader title='Customers Overview' onSelect={handleOperation} beginning showShow />
             <div className='panel-body quality-testing-panel'>
                 <Slider className='dashboard-slider' {...props} ref={sliderRef}>
-                    {
-                        results.map((item) => <QualityResultCard key={item.batchId} data={item} />)
-                    }
+                    <CustomerOverviewCard title='Corporate Customers' onClick={goToCustomers} />
+                    <CustomerOverviewCard title='Other Customers' onClick={goToCustomers} />
+                    <CustomerOverviewCard title='Memberships' onClick={goToCustomers} />
+                    <CustomerOverviewCard title='Dealerships' onClick={goToCustomers} />
                 </Slider>
             </div>
         </>
@@ -54,10 +60,10 @@ const WaterQualityResults = () => {
 }
 const props = {
     infinite: false,
-    slidesToShow: 3,
+    slidesToShow: 4,
     slidesToScroll: 1,
     prevArrow: <LeftChevronIconGrey />,
     nextArrow: <RightChevronIconGrey />
 }
 
-export default WaterQualityResults
+export default CustomersOverview

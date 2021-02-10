@@ -2,6 +2,7 @@ import React from 'react'
 import Icon from '@ant-design/icons'
 const primaryColor = '#0062FF'
 const secondaryColor = '#5C63AB'
+const purpleColor = '#4F63BC'
 const greyColor = '#92929D'
 const darkColor = '#4A4A4A'
 const whiteColor = '#FFFFFF'
@@ -174,6 +175,7 @@ const TickComponent = ({ color }) => (
     </svg>
 )
 
+const RightChevronSvgLight = () => <RightChevronComponent color={purpleColor} />
 const RightChevronSvgGrey = () => <RightChevronComponent color={greyColor} />
 const LeftChevronSvgGrey = () => <LeftChevronComponent color={greyColor} />
 const BlockSvgGrey = () => <BlockComponent color={greyColor} />
@@ -227,6 +229,7 @@ const TickSvgGrey = () => <TickComponent color={greyColor} />
 
 export const RightChevronIconGrey = ({ currentSlide, slideCount, ...props }) => <Icon component={RightChevronSvgGrey} {...props} />
 export const LeftChevronIconGrey = ({ currentSlide, slideCount, ...props }) => <Icon component={LeftChevronSvgGrey} {...props} />
+export const RightChevronIconLight = props => <Icon component={RightChevronSvgLight} {...props} />
 export const ScheduleIcon = props => <Icon component={ScheduleSvg} {...props} />
 export const ScheduleIconGrey = props => <Icon component={ScheduleSvgGrey} {...props} />
 export const TrashIconLight = props => <Icon component={TrashSvgLight} {...props} />
