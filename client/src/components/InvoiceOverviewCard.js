@@ -1,8 +1,8 @@
 import React from 'react';
-import '../sass/invoiceOverviewCard.scss'
+import PieChart from './PieChart';
 import CustomButton from './CustomButton';
 import { RightChevronIconLight } from './SVG_Icons';
-import PieChart from './PieChart';
+import '../sass/invoiceOverviewCard.scss'
 
 
 const InvoiceOverviewCard = ({ onClick }) => {

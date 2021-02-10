@@ -54,8 +54,6 @@ const ProductionResults = () => {
 
     return <DashboardResultsCard
         isFirst
-        title='Production Results'
-        depName='MotherPlant'
         Header={Header}
         Stats={Stats}
     />

@@ -40,7 +40,7 @@ const SalesResults = () => {
 
     const Header = (
         <PanelHeader
-            title='Production Results'
+            title='Sales Results'
             onSelect={handleOperation}
             depName='Mother Plant'
             depOptions={dummyDepOptions}
@@ -52,8 +52,6 @@ const SalesResults = () => {
         <PanelStats />
     )
     return <DashboardResultsCard
-        title='Sales Results'
-        depName='Warehouse'
         Header={Header}
         Stats={Stats}
     />
