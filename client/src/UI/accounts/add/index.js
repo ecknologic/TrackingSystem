@@ -174,7 +174,7 @@ const AddAccount = () => {
         }
 
         // Validations
-        if (key === 'adharNo' || key === 'panNo' || (key === 'gstNo' || key === 'licenseNo')) {
+        if (key === 'adharNo' || key === 'panNo' || key === 'gstNo' || key === 'licenseNo') {
             const error = validateIDNumbers(key, value)
             setGeneralErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -231,13 +231,13 @@ const AddAccount = () => {
         setCorporateErrors(errors => ({ ...errors, [key]: '' }))
         if (sameAddress) preFillDDForm(value, key)
 
-        if (value === 'adharNo' || value === 'panNo' || value === 'licenseNo') {
+        if (value === 'panNo') {
             setCorporateValues(data => ({ ...data, [value]: '' }))
             setCorporateErrors(errors => ({ ...errors, [value]: '' }))
         }
 
         // Validations
-        if (key === 'adharNo' || key === 'panNo' || key === 'gstNo') {
+        if (key === 'panNo' || key === 'gstNo') {
             const error = validateIDNumbers(key, value)
             setCorporateErrors(errors => ({ ...errors, [key]: error }))
         }

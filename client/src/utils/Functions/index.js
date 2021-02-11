@@ -208,6 +208,8 @@ export const getIdProofName = (type) => {
             return 'PAN Number'
         case 'voterId':
             return 'Voter ID Number'
+        case 'rocNo':
+            return 'ROC Number'
         case 'licenseNo':
             return 'Driving License Number'
         case 'passportNo':
@@ -431,6 +433,12 @@ export const getIDInputValidationProps = (IDType) => {
     }
     else if (IDType === 'adharNo') {
         props.maxLength = 12
+    }
+    else if (IDType === 'rocNo') {
+        props.maxLength = 6
+    }
+    else if (IDType === 'licenseNo') {
+        props.maxLength = 16
     }
 
     return props

@@ -6,7 +6,7 @@ import SelectInput from '../../../../components/SelectInput';
 import DraggerInput from '../../../../components/DraggerInput';
 import InputWithAddon from '../../../../components/InputWithAddon';
 import UploadPreviewer from '../../../../components/UploadPreviewer';
-import { invoiceOptions, idOptions, businessOptions } from '../../../../assets/fixtures'
+import { invoiceOptions, corpIdOptions, businessOptions } from '../../../../assets/fixtures'
 import { getIdProofName, getIDInputValidationProps, resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 const DATEFORMAT = 'DD/MM/YYYY'
 
@@ -48,7 +48,7 @@ const CorporateAccountForm = (props) => {
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Select Id Proof' error={errors.idProofType} mandatory />
-                        <SelectInput track value={idProofType} options={idOptions} disabled={disabled} error={errors.idProofType} onSelect={(value) => onChange(value, 'idProofType')} />
+                        <SelectInput track value={idProofType} options={corpIdOptions} disabled={disabled} error={errors.idProofType} onSelect={(value) => onChange(value, 'idProofType')} />
                     </div>
                     {
                         idProofType && (
