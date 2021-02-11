@@ -18,21 +18,33 @@ const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
 const PanelHeader = memo((props) => {
-    const { title, showShow, showShift, showDep, depName, showFooter, depOptions, onSelect = fn, beginning = false } = props
+    const { title, showShow, showShift, initTime = todayString, showDep, depName, showFooter,
+        depMenu = [], depOptions = [], onSelect = fn, beginning = false } = props
     const [show, setShow] = useState(() => beginning ? `till Today` : 'Today')
     const [open, setOpen] = useState(false)
-    const [time, setTime] = useState(() => dayjs().format(DATETIMEFORMAT))
+    const [time, setTime] = useState(() => getInitTime(initTime))
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
-    const [dateRange, setDateRange] = useState('This Week')
+    const [dateRange, setDateRange] = useState(initTime)
     const [depValue, setDepValue] = useState('All')
 
     const handleShiftSelect = (shift) => {
         onSelect({ shift })
     }
 
-    const handleDepartmentSelect = (departmentName) => {
-        setDepValue(departmentName)
-        onSelect({ departmentName })
+    function getInitTime(value) {
+        const isToday = value === todayString
+        const isWeek = value === weekString
+        if (isToday) return dayjs().format(DATETIMEFORMAT)
+        else if (isWeek) {
+            const from = dayjs().weekday(1).format(DATEFORMAT)
+            const to = dayjs().format(DATEFORMAT)
+            return `${from} to ${to}`
+        }
+    }
+
+    const handleDepartmentSelect = (departmentId) => {
+        setDepValue(departmentId)
+        onSelect({ departmentId })
     }
 
     const handleCalendarSelect = (value) => {
@@ -104,7 +116,7 @@ const PanelHeader = memo((props) => {
                                     <div className='option show'>
                                         <PanelDropdown
                                             label='Show'
-                                            initValue='Today'
+                                            initValue={initTime}
                                             options={calendarMenu}
                                             onSelect={handleCalendarSelect}
                                         />
@@ -145,7 +157,7 @@ const PanelHeader = memo((props) => {
                                         <PanelDropdown
                                             label='Motherplant'
                                             initValue='All'
-                                            options={shiftMenu}
+                                            options={depMenu}
                                             onSelect={handleShiftSelect}
                                         />
                                     </div>

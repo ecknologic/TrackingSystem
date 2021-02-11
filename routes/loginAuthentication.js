@@ -87,7 +87,10 @@ router.post('/login', (req, res) => {
 router.get('/getDepartmentsList', (req, res) => {
     motherPlantDbQueries.getDepartmentsList(req.query.departmentType, (err, results) => {
         if (err) res.status(500).json(dbError(err));
-        res.json((results));
+        else {
+            req.query.hasAll == 'true' && results.push({ departmentId: 'All', departmentName: 'All' })
+            res.json(results)
+        }
     });
 });
 router.get('/getAllDepartmentsList', (req, res) => {
