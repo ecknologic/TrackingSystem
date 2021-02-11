@@ -28,7 +28,7 @@ import {
 import { getRole, SUPERADMIN, TRACKFORM } from '../../../utils/constants';
 import {
     validateAccountValues, validateAddresses, validateIDNumbers, validateNames, validateNumber,
-    validateMobileNumber, validateEmailId
+    validateMobileNumber, validateEmailId, compareMaxNumber
 } from '../../../utils/validations';
 
 const ApproveAccount = () => {
@@ -157,7 +157,7 @@ const ApproveAccount = () => {
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }
         else if (key === 'creditPeriodInDays') {
-            const error = validateNumber(value)
+            const error = compareMaxNumber(value, 90, 'days')
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }
     }

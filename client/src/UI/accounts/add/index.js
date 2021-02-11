@@ -25,7 +25,7 @@ import {
 import { TRACKFORM, getUserId, getUsername, getWarehoseId, TODAYDATE } from '../../../utils/constants';
 import {
     validateAccountValues, validateDeliveryValues, validateDevDays,
-    validateIDProofs, validateAddresses, validateIDNumbers, validateNames, validateNumber, validateMobileNumber, validateEmailId, validateIntFloat
+    validateIDProofs, validateAddresses, validateIDNumbers, validateNames, validateNumber, validateMobileNumber, validateEmailId, validateIntFloat, compareMaxNumber, validatePinCode
 } from '../../../utils/validations';
 
 const AddAccount = () => {
@@ -126,10 +126,6 @@ const AddAccount = () => {
             const error = validateIDNumbers(key, value)
             setDeliveryErrors(errors => ({ ...errors, [key]: error }))
         }
-        if (key === 'deliveryLocation') {
-            const error = validateNames(value)
-            setDeliveryErrors(errors => ({ ...errors, [key]: error }))
-        }
         else if (key === 'phoneNumber') {
             const error = validateMobileNumber(value)
             setDeliveryErrors(errors => ({ ...errors, [key]: error }))
@@ -190,10 +186,6 @@ const AddAccount = () => {
             const error = validateNumber(value)
             setGeneralErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key === 'deliveryLocation' || key === 'referredBy') {
-            const error = validateNames(value)
-            setGeneralErrors(errors => ({ ...errors, [key]: error }))
-        }
         else if (key.includes('product')) {
             const error = validateNumber(value)
             setGeneralErrors(errors => ({ ...errors, productNPrice: error }))
@@ -201,6 +193,10 @@ const AddAccount = () => {
         else if (key.includes('price')) {
             const error = validateIntFloat(value)
             setGeneralErrors(errors => ({ ...errors, productNPrice: error }))
+        }
+        else if (key === 'pinCode') {
+            const error = validatePinCode(value)
+            setGeneralErrors(errors => ({ ...errors, [key]: error }))
         }
     }
 
@@ -222,6 +218,10 @@ const AddAccount = () => {
         else if (key.includes('price')) {
             const error = validateIntFloat(value, true)
             setGeneralErrors(errors => ({ ...errors, productNPrice: error }))
+        }
+        else if (key === 'pinCode') {
+            const error = validatePinCode(value, true)
+            setGeneralErrors(errors => ({ ...errors, [key]: error }))
         }
     }
 
@@ -254,7 +254,11 @@ const AddAccount = () => {
             setCorporateErrors(errors => ({ ...errors, [key]: error }))
         }
         else if (key === 'creditPeriodInDays') {
-            const error = validateNumber(value)
+            const error = compareMaxNumber(value, 90, 'days')
+            setCorporateErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'pinCode') {
+            const error = validatePinCode(value)
             setCorporateErrors(errors => ({ ...errors, [key]: error }))
         }
     }
@@ -272,6 +276,10 @@ const AddAccount = () => {
         }
         else if (key === 'EmailId') {
             const error = validateEmailId(value)
+            setCorporateErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'pinCode') {
+            const error = validatePinCode(value, true)
             setCorporateErrors(errors => ({ ...errors, [key]: error }))
         }
     }
@@ -516,6 +524,8 @@ const AddAccount = () => {
         if (formHasChanged) setSwitchModal(true)
         else {
             setCorporate(!corporate)
+            setCorporateValues({ ...defaultValues, natureOfBussiness: '' })
+            setGeneralValues({ ...defaultValues, natureOfBussiness: 'Residential' })
             resetErrorValues()
         }
     }

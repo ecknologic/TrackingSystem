@@ -70,10 +70,6 @@ const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => 
             const error = validateIDNumbers(key, value)
             setErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key === 'deliveryLocation') {
-            const error = validateNames(value)
-            setErrors(errors => ({ ...errors, [key]: error }))
-        }
         else if (key === 'phoneNumber') {
             const error = validateMobileNumber(value)
             setErrors(errors => ({ ...errors, [key]: error }))

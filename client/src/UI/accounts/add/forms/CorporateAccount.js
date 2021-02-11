@@ -16,7 +16,7 @@ const CorporateAccountForm = (props) => {
     const {
         gstNo, natureOfBussiness, organizationName, address, customerName,
         mobileNumber, invoicetype, creditPeriodInDays, EmailId, referredBy, idProofType,
-        registeredDate, gstProof, depositAmount
+        registeredDate, gstProof, depositAmount, pinCode, dispenserCount, contractPeriod
     } = data
 
     const [proofName, setProofName] = useState('')
@@ -132,6 +132,13 @@ const CorporateAccountForm = (props) => {
             </div>
             <div className='row'>
                 <div className='input-container'>
+                    <InputLabel name='PIN Code' error={errors.pinCode} mandatory />
+                    <CustomInput value={pinCode} placeholder='Add PIN Code'
+                        error={errors.pinCode} maxLength={6} onBlur={(value) => onBlur(value, 'pinCode')}
+                        onChange={(value) => onChange(value, 'pinCode')}
+                    />
+                </div>
+                <div className='input-container'>
                     <InputLabel name='Phone Number' error={errors.mobileNumber} mandatory />
                     <CustomInput
                         maxLength={10}
@@ -140,6 +147,18 @@ const CorporateAccountForm = (props) => {
                         error={errors.mobileNumber}
                         onBlur={(value) => onBlur(value, 'mobileNumber')}
                         onChange={(value) => onChange(value, 'mobileNumber')}
+                    />
+                </div>
+            </div>
+            <div className='row'>
+                <div className='input-container'>
+                    <InputLabel name='Contact Person' error={errors.customerName} mandatory />
+                    <CustomInput
+                        value={customerName}
+                        disabled={disabled}
+                        placeholder='Contact Person'
+                        error={errors.customerName}
+                        onChange={(value) => onChange(value, 'customerName')}
                     />
                 </div>
                 <div className='input-container'>
@@ -154,13 +173,12 @@ const CorporateAccountForm = (props) => {
             </div>
             <div className='row'>
                 <div className='input-container'>
-                    <InputLabel name='Account Owner' error={errors.customerName} mandatory />
+                    <InputLabel name='Contract Period' error={errors.contractPeriod} mandatory />
                     <CustomInput
-                        value={customerName}
-                        disabled={disabled}
-                        placeholder='Account Owner'
-                        error={errors.customerName}
-                        onChange={(value) => onChange(value, 'customerName')}
+                        value={contractPeriod}
+                        disabled={disabled} placeholder='Contract Period'
+                        error={errors.contractPeriod}
+                        onChange={(value) => onChange(value, 'contractPeriod')}
                     />
                 </div>
                 <div className='input-container'>
@@ -189,6 +207,17 @@ const CorporateAccountForm = (props) => {
                         disabled={disabled} placeholder='Deposit Amount'
                         error={errors.depositAmount}
                         onChange={(value) => onChange(value, 'depositAmount')}
+                    />
+                </div>
+            </div>
+            <div className='row'>
+                <div className='input-container'>
+                    <InputLabel name='Dispenser' error={errors.dispenserCount} mandatory />
+                    <CustomInput
+                        value={dispenserCount}
+                        disabled={disabled} placeholder='Dispenser Qty'
+                        error={errors.dispenserCount}
+                        onChange={(value) => onChange(value, 'dispenserCount')}
                     />
                 </div>
             </div>

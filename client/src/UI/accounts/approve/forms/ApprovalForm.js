@@ -15,8 +15,8 @@ const ApprovalForm = (props) => {
 
     const {
         gstNo, natureOfBussiness, organizationName, address, customerName, mobileNumber, invoicetype,
-        creditPeriodInDays, EmailId, referredBy, registeredDate, gstProof, customertype, depositAmount
-    } = data
+        creditPeriodInDays, EmailId, referredBy, registeredDate, gstProof, customertype, depositAmount,
+        pinCode, contractPeriod, dispenserCount } = data
 
     const { gstDisable } = disabledItems
     const isCorporate = customertype === 'Corporate'
@@ -29,6 +29,41 @@ const ApprovalForm = (props) => {
             resetTrackForm()
         }
     }, [])
+
+    const renderDepAmount = () => (
+        <div className='input-container'>
+            <InputLabel name='Deposit Amount' error={errors.depositAmount} mandatory />
+            <CustomInput value={depositAmount}
+                disabled={disabled} placeholder='Deposit Amount'
+                error={errors.depositAmount}
+                onChange={(value) => onChange(value, 'depositAmount')}
+            />
+        </div>
+    )
+
+    const renderCreditDays = () => (
+        <div className='input-container'>
+            <InputLabel name='Credit Period in Days' error={errors.creditPeriodInDays} mandatory />
+            <CustomInput
+                value={creditPeriodInDays}
+                disabled={disabled} placeholder='Credit Period'
+                error={errors.creditPeriodInDays}
+                onChange={(value) => onChange(value, 'creditPeriodInDays')}
+            />
+        </div>
+    )
+
+    const renderDispenser = () => (
+        <div className='input-container'>
+            <InputLabel name='Dispenser' error={errors.dispenserCount} mandatory />
+            <CustomInput
+                value={dispenserCount}
+                disabled={disabled} placeholder='Dispenser Qty'
+                error={errors.dispenserCount}
+                onChange={(value) => onChange(value, 'dispenserCount')}
+            />
+        </div>
+    )
 
     return (
         <div className='app-form-container'>
@@ -79,7 +114,7 @@ const ApprovalForm = (props) => {
                     <SelectInput
                         value={natureOfBussiness}
                         options={businessOptions}
-                        track disabled={disabled}
+                        track disabled={disabled || !isCorporate}
                         error={errors.natureOfBussiness}
                         onSelect={(value) => onChange(value, 'natureOfBussiness')}
                     />
@@ -97,6 +132,13 @@ const ApprovalForm = (props) => {
             </div>
             <div className='row'>
                 <div className='input-container'>
+                    <InputLabel name='PIN Code' error={errors.pinCode} mandatory />
+                    <CustomInput value={pinCode} placeholder='Add PIN Code'
+                        error={errors.pinCode} maxLength={6} onBlur={(value) => onBlur(value, 'pinCode')}
+                        onChange={(value) => onChange(value, 'pinCode')}
+                    />
+                </div>
+                <div className='input-container'>
                     <InputLabel name='Phone Number' error={errors.mobileNumber} mandatory />
                     <CustomInput
                         maxLength={10}
@@ -105,6 +147,18 @@ const ApprovalForm = (props) => {
                         error={errors.mobileNumber}
                         onBlur={(value) => onBlur(value, 'mobileNumber')}
                         onChange={(value) => onChange(value, 'mobileNumber')}
+                    />
+                </div>
+            </div>
+            <div className='row'>
+                <div className='input-container'>
+                    <InputLabel name='Contact Person' error={errors.customerName} mandatory />
+                    <CustomInput
+                        value={customerName}
+                        disabled={disabled}
+                        placeholder='Contact Person'
+                        error={errors.customerName}
+                        onChange={(value) => onChange(value, 'customerName')}
                     />
                 </div>
                 <div className='input-container'>
@@ -117,31 +171,18 @@ const ApprovalForm = (props) => {
                     />
                 </div>
             </div>
+            {
+                isCorporate ? (
+                    <div className='row'>
+                        {renderDepAmount()}
+                        {renderDispenser()}
+                    </div>
+                ) : null
+            }
             <div className='row'>
-                <div className='input-container'>
-                    <InputLabel name='Account Owner' error={errors.customerName} mandatory />
-                    <CustomInput
-                        value={customerName}
-                        disabled={disabled}
-                        placeholder='Account Owner'
-                        error={errors.customerName}
-                        onChange={(value) => onChange(value, 'customerName')}
-                    />
-                </div>
-                <div className='input-container'>
-                    <InputLabel name='Deposit Amount' error={errors.depositAmount} mandatory />
-                    <CustomInput value={depositAmount}
-                        disabled={disabled} placeholder='Deposit Amount'
-                        error={errors.depositAmount}
-                        onChange={(value) => onChange(value, 'depositAmount')}
-                    />
-                </div>
-            </div>
-            <div className='row'>
-                <div className='input-container'>
-                    <InputLabel name='Registered Date' error={errors.registeredDate} />
-                    <CustomInput value={dayjs(registeredDate).format(DATEFORMAT)} placeholder='Registered Date' disabled />
-                </div>
+                {
+                    isCorporate ? renderCreditDays() : renderDepAmount()
+                }
                 <div className='input-container'>
                     <InputLabel name='Invoice Type' error={errors.invoicetype} mandatory />
                     <SelectInput
@@ -153,18 +194,10 @@ const ApprovalForm = (props) => {
                 </div>
             </div>
             <div className='row'>
-                {
-                    isCorporate ? <div className='input-container'>
-                        <InputLabel name='Credit Period in Days' error={errors.creditPeriodInDays} mandatory />
-                        <CustomInput
-                            value={creditPeriodInDays}
-                            disabled={disabled} placeholder='Credit Period'
-                            error={errors.creditPeriodInDays}
-                            onChange={(value) => onChange(value, 'creditPeriodInDays')}
-                        />
-                    </div> : null
-                }
-
+                <div className='input-container'>
+                    <InputLabel name='Registered Date' error={errors.registeredDate} />
+                    <CustomInput value={dayjs(registeredDate).format(DATEFORMAT)} placeholder='Registered Date' disabled />
+                </div>
                 <div className='input-container'>
                     <InputLabel name='Referred By' error={errors.referredBy} />
                     <CustomInput

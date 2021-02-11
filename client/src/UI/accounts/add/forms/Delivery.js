@@ -14,7 +14,7 @@ const DeliveryForm = (props) => {
         warehouseOptions, routeOptions, sameAddress, onUpload, onRemove, isSuperAdmin } = props
 
     const {
-        gstNo, gstProof, depositAmount, departmentId, routeId, phoneNumber, contactPerson, address, isApproved,
+        gstNo, gstProof, departmentId, routeId, phoneNumber, contactPerson, address, isApproved,
         deliveryLocation, product20L, price20L, product1L, price1L, product500ML, price500ML,
         product250ML, price250ML
     } = data
