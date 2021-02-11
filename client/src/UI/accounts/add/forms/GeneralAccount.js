@@ -17,7 +17,7 @@ const GeneralAccountForm = (props) => {
     const { Front, Back } = IDProofs
 
     const {
-        gstNo, address, natureOfBussiness, depositAmount, customerName, mobileNumber, registeredDate,
+        gstNo, address, natureOfBussiness, depositAmount, customerName, mobileNumber, registeredDate, pinCode,
         invoicetype, EmailId, idProofType, gstProof, referredBy, routeId, departmentId, deliveryLocation,
         product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML
     } = data
@@ -114,13 +114,6 @@ const GeneralAccountForm = (props) => {
                             onChange={(value) => onChange(value, 'customerName')}
                         />
                     </div>
-                    <div className='input-container'>
-                        <InputLabel name='Delivery Location' error={errors.deliveryLocation} mandatory />
-                        <CustomInput value={deliveryLocation} placeholder='Add Location'
-                            disabled={disabled} error={errors.deliveryLocation}
-                            onChange={(value) => onChange(value, 'deliveryLocation')}
-                        />
-                    </div>
                 </div>
                 <div className='row'>
                     <div className='input-container stretch'>
@@ -128,6 +121,23 @@ const GeneralAccountForm = (props) => {
                         <CustomInput value={address} placeholder='Add Address'
                             disabled={disabled} error={errors.address}
                             onChange={(value) => onChange(value, 'address')}
+                        />
+                    </div>
+                </div>
+                <div className='row'>
+                    <div className='input-container'>
+                        <InputLabel name='PIN Code' error={errors.pinCode} mandatory />
+                        <CustomInput value={pinCode} placeholder='Add PIN Code'
+                            error={errors.pinCode} maxLength={6} onBlur={(value) => onBlur(value, 'pinCode')}
+                            onChange={(value) => onChange(value, 'pinCode')}
+                        />
+
+                    </div>
+                    <div className='input-container'>
+                        <InputLabel name='Delivery Location' error={errors.deliveryLocation} mandatory />
+                        <CustomInput value={deliveryLocation} placeholder='Add Location'
+                            disabled={disabled} error={errors.deliveryLocation}
+                            onChange={(value) => onChange(value, 'deliveryLocation')}
                         />
                     </div>
                 </div>
@@ -158,10 +168,10 @@ const GeneralAccountForm = (props) => {
                         <CustomInput value={dayjs(registeredDate).format(DATEFORMAT)} placeholder='Registered Date' disabled />
                     </div>
                     <div className='input-container'>
-                        <InputLabel name='Nature Of Business' error={errors.natureOfBussiness} mandatory />
+                        <InputLabel name='Nature Of Business' error={errors.natureOfBussiness} />
                         <SelectInput
                             track value={natureOfBussiness}
-                            disabled={disabled} options={businessOptions}
+                            disabled options={businessOptions}
                             error={errors.natureOfBussiness} onSelect={(value) => onChange(value, 'natureOfBussiness')}
                         />
                     </div>
