@@ -29,7 +29,7 @@ import ManageDistributor from './UI/distributors/manage';
 import ReceivedEmptyCans from './UI/empty-cans/motherplant';
 import MotherplantDashboard from './UI/dashboard/motherplant';
 import MotherplantMaterials from './UI/materials/motherplant';
-// import SuperAdminDashboard from './UI/dashboard/super-admin';
+import SuperAdminDashboard from './UI/dashboard/super-admin';
 
 const App = () => {
 
@@ -60,7 +60,7 @@ const App = () => {
          if (role === MARKETINGADMIN) return <Redirect to='/manage-accounts' />
          else if (role === WAREHOUSEADMIN) return <Redirect to='/manage-stock' />
          else if (role === MOTHERPLANTADMIN) return <MotherplantDashboard />
-         else if (role === SUPERADMIN) return <Redirect to='/customers' />
+         else if (role === SUPERADMIN) return <SuperAdminDashboard />
          else if (role === ACCOUNTSADMIN) return <Redirect to='/customers' />
          return <NoContent content='Screen Not designed for your role' />
       }

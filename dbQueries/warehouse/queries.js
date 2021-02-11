@@ -10,6 +10,16 @@ warehouseQueries.getDeliveryDetails = (input, callback) => {
     let query = "select c.customerOrderId,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS cans20L,c.1LBoxes AS boxes1L,c.500MLBoxes AS boxes500ML,c.250MLBoxes AS boxes250ML,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE DATE(`deliveryDate`) = ? AND warehouseId=? ORDER BY c.dcNo DESC";
     return executeGetParamsQuery(query, [date, departmentId], callback)
 }
+warehouseQueries.getTotalSales = (input, callback) => {
+    const { startDate, endDate, departmentId } = input
+    let query = "select SUM(c.20LCans) AS product20LCount,SUM(c.1LBoxes) AS product1LCount,SUM(c.500MLBoxes) AS product500MLCount,SUM(c.250MLBoxes) AS product250MLCount FROM customerorderdetails c WHERE DATE(`deliveredDate`) >= ? AND DATE(`deliveredDate`) <= ? AND isDelivered='Completed'";
+    let options = [startDate, endDate]
+    if (departmentId != 'All') {
+        query = "select SUM(c.20LCans) AS product20LCount,SUM(c.1LBoxes) AS product1LCount,SUM(c.500MLBoxes) AS product500MLCount,SUM(c.250MLBoxes) AS product250MLCount FROM customerorderdetails c WHERE DATE(`deliveredDate`) >= ? AND DATE(`deliveredDate`) <= ? AND warehouseId=? AND isDelivered='Completed'";
+        options = [startDate, endDate, departmentId]
+    }
+    return executeGetParamsQuery(query, options, callback)
+}
 warehouseQueries.getDeliverysByCustomerOrderId = (customerOrderId, callback) => {
     let query = "select c.customerOrderId,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS cans20L,c.1LBoxes AS boxes1L,c.500MLBoxes AS boxes500ML,c.250MLBoxes AS boxes250ML,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE customerOrderId=" + customerOrderId;
     return executeGetQuery(query, callback)

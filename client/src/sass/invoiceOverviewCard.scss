@@ -1,0 +1,88 @@
+.invoice-overview-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding:1em 10%;
+    background-color: #fff;
+    border-radius: .6em;
+    margin-top: 1em;
+
+    .heading {
+        display: flex;
+
+        .title, .number {
+            font-family: 'PoppinsSemiBold600';
+            color: #2E384D;
+            font-size: 1.55em;
+        }
+
+        .title {
+            padding-right: .5em;
+        }
+    }
+
+    .pie-chart-stats {
+        display: flex;
+        padding: 1.4em 1em 0 1em;
+        justify-content: center;
+
+        .stats {
+            padding-top: 1em;
+            padding-right: 2em;
+        }
+
+        .stat {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+
+            .title {
+                font-size: .9em;
+                font-family: 'PoppinsRegular400';
+                color: rgba(0,0,0,0.85);
+            }
+            
+            .number {
+                font-family: 'PoppinsSemiBold600';
+                color: #2E384D;
+                font-size: 1.55em;
+                display: flex;
+                align-items: center;
+            }
+        }
+
+        .pending-stats {
+            padding-bottom: 1em;
+        }
+
+        .app-dot {
+            display: inline-block;
+            width: 9px;
+            height: 9px;
+        }
+
+    }
+
+    .pending {
+        padding-top: 1.5em;
+        padding-bottom: .2em;
+        display: flex;
+        align-items: center;
+        
+        .text {
+            font-family: 'PoppinsRegular400';
+            font-size: 1.1em;
+            margin-right: .5em;
+        } 
+        .red-num {
+            font-family: 'PoppinsSemiBold600';
+            color: #FA6400;
+            font-size: 1.55em;
+        } 
+    }
+
+    .chev {
+        padding-left: .5em;
+        transform: scale(.8);
+    }
+}

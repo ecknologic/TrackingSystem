@@ -86,12 +86,21 @@ export const calendarMenu = [
     <Menu.Item key="This Month" >This Month</Menu.Item>,
     <Menu.Item key="Select Date" >Select Date</Menu.Item>
 ]
+export const calendarOptions = [
+    <Option key="1" value="Today">Today</Option>,
+    <Option key="2" value="This Week">This Week</Option>,
+    <Option key="3" value="This Month">This Month</Option>,
+    <Option key="4" value="Select Date">Select Date</Option>,
+]
 export const shiftMenu = [
     <Menu.Item key="Morning" >Morning</Menu.Item>,
     <Menu.Item key="Evening">Evening</Menu.Item>,
     <Menu.Item key="Night" >Night</Menu.Item>,
     <Menu.Item key="All" >All</Menu.Item>
 ]
+export const getDepartmentMenu = (departments = []) => {
+    return departments.map((item) => <Menu.Item key={item.departmentName} >{item.departmentName}</Menu.Item>)
+}
 
 export const getWarehouseOptions = (warehouses = []) => {
     return warehouses.map((item) => <Option key={item.departmentId} value={item.departmentId}>{item.departmentName}</Option>)
@@ -775,3 +784,78 @@ export const getRMColumns = (type, isSuperAdmin) => {
 
     return columns
 }
+
+export const dummyWaterResults = [
+    {
+        "levels": [
+            {
+                "tds": 35,
+                "phLevel": 6.5,
+                "qcLevel": "1",
+                "ozoneLevel": 5.5,
+                "testResult": "Approved",
+                "managerName": "Naveen",
+                "testingDate": "2021-01-30 06:36:59.000000"
+            },
+            {
+                "tds": 45,
+                "phLevel": 5.5,
+                "qcLevel": "2",
+                "ozoneLevel": 6.5,
+                "testResult": "Approved",
+                "managerName": "Chandra",
+                "testingDate": "2021-01-30 06:38:06.000000"
+            }
+        ],
+        "batchId": "A-3001-21",
+        "departmentName": "Patancheruvu Plant"
+    },
+    {
+        "levels": [
+            {
+                "tds": 1,
+                "phLevel": 1,
+                "qcLevel": "1",
+                "ozoneLevel": 1,
+                "testResult": "Approved",
+                "managerName": "MANAGER ",
+                "testingDate": "2021-02-03 16:54:29.000000"
+            },
+            {
+                "tds": 3,
+                "phLevel": 3,
+                "qcLevel": "2",
+                "ozoneLevel": 3,
+                "testResult": "Approved",
+                "managerName": "DESCRIPTION",
+                "testingDate": "2021-02-03 16:56:32.000000"
+            }
+        ],
+        "batchId": "A-0302-22",
+        "departmentName": "Gajuwaka Plant"
+    },
+    {
+        "levels": [
+            {
+                "tds": 1,
+                "phLevel": 1,
+                "qcLevel": "1",
+                "ozoneLevel": 1,
+                "testResult": "Approved",
+                "managerName": "MANAGER ",
+                "testingDate": "2021-02-03 16:54:29.000000"
+            },
+            {
+                "tds": 3,
+                "phLevel": 3,
+                "qcLevel": "2",
+                "ozoneLevel": 3,
+                "testResult": "Approved",
+                "managerName": "DESCRIPTION",
+                "testingDate": "2021-02-03 16:56:32.000000"
+            }
+        ],
+        "batchId": "A-0302-23",
+        "departmentName": "Kukatpally Plant"
+    }
+]

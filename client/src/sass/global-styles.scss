@@ -998,6 +998,16 @@ textarea {
     color: #5C63AB;
     border: 1px solid #5C60B6;
 }
+
+.app-view-btn {
+    font-family: 'PoppinsSemiBold600';
+    background-color: transparent;
+    font-size: .9em;
+    color: #4F63BC;
+    width: fit-content;
+    height: auto;
+    padding: 0;
+}
 // -------------- Various Modal styles ------------------- //
 .app-preview-modal {
     margin-top: 1.8em;
@@ -1351,7 +1361,6 @@ textarea {
     background-color: #F6E9EA;
     padding: 0 .4em;
     border-radius: .4em;
-    height: 1.1em;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1359,7 +1368,7 @@ textarea {
     span {
         font-family: 'PoppinsSemiBold600';
         color: #DC5858;
-        font-size: .7em;
+        font-size: .65em;
     }
 }
 

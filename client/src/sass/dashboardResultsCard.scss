@@ -1,0 +1,14 @@
+.dashboard-results-card {
+    padding: 1em;
+    background-color: #fff;
+    border-radius: .6em;
+    margin-right: 1em;
+    flex: 1;
+    // height: 20em;
+
+    .bar-chart {
+        height: 9em;
+        padding-top: 2em;
+        max-width: 100%;
+    }
+}

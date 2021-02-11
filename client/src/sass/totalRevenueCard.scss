@@ -1,0 +1,55 @@
+.total-revenue-card {
+    display: flex;
+    flex-direction: column;
+    padding: 1em;
+    background-color: #fff;
+    border-radius: .6em;
+    margin-top: 1em;
+
+    .heading {
+        display: flex;
+        padding-left: 1em;
+
+        .title, .number {
+            font-family: 'PoppinsSemiBold600';
+            color: #2E384D;
+            font-size: 1.55em;
+        }
+
+        .title {
+            padding-right: 1em;
+        }
+
+        .number {
+            padding-right: .5em;
+        }
+    }
+
+    .sub-title {
+        font-family: 'PoppinsSemiBold600';
+        color: #B4B3B3;
+        font-size: .9em;
+        padding-left: 1.2em;
+    }
+
+    .empty-bottles-stock-card {
+        flex: 1;
+        align-items: center;
+
+        .app-change-badge {
+            justify-content: flex-start;
+        }
+
+        .footer {
+            font-family: 'PoppinsRegular400';
+            color: rgba(0, 0, 0, 0.5);
+            font-size: .8em;
+            margin-top: 1em;
+        }
+    }
+
+    .sub-panel {
+        display: flex;
+        width: 100%;
+    }
+}

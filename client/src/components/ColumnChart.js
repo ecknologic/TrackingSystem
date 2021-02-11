@@ -4,108 +4,199 @@ import { Column } from "@ant-design/charts";
 const ColumnChart = () => {
   var data = [
     {
-      name: "London",
-      label: "Jan",
-      value: 18.9
-    },
-    {
-      name: "London",
-      label: "Feb",
-      value: 28.8
-    },
-    {
-      name: "London",
-      label: "Mar",
-      value: 39.3
-    },
-    {
-      name: "London",
-      label: "Apr",
-      value: 81.4
-    },
-    {
-      name: "London",
-      label: "May",
-      value: 47
-    },
-    {
-      name: "London",
-      label: "Jun",
-      value: 20.3
-    },
-    {
-      name: "London",
-      label: "Jul",
-      value: 24
-    },
-    {
-      name: "London",
-      label: "Aug",
-      value: 35.6
-    },
-    {
-      name: "Berlin",
-      label: "Jan",
+      name: "20 Ltrs",
+      label: "Mon",
       value: 12.4
     },
     {
-      name: "Berlin",
-      label: "Feb",
-      value: 23.2
+      name: "2 Ltrs",
+      label: "Mon",
+      value: 23.4
     },
     {
-      name: "Berlin",
-      label: "Mar",
-      value: 34.5
+      name: "1 Ltrs",
+      label: "Mon",
+      value: 28.8
     },
     {
-      name: "Berlin",
-      label: "Apr",
-      value: 99.7
+      name: "500 ml",
+      label: "Mon",
+      value: 39.3
     },
     {
-      name: "Berlin",
-      label: "May",
-      value: 52.6
+      name: "300 ml",
+      label: "Mon",
+      value: 59.3
     },
     {
-      name: "Berlin",
-      label: "Jun",
-      value: 35.5
+      name: "20 Ltrs",
+      label: "Tue",
+      value: 32.4
     },
     {
-      name: "Berlin",
-      label: "Jul",
-      value: 37.4
+      name: "2 Ltrs",
+      label: "Tue",
+      value: 23.4
     },
     {
-      name: "Berlin",
-      label: "Aug",
+      name: "1 Ltrs",
+      label: "Tue",
+      value: 40.8
+    },
+    {
+      name: "500 ml",
+      label: "Tue",
+      value: 34.3
+    },
+    {
+      name: "300 ml",
+      label: "Tue",
+      value: 29.3
+    },
+    {
+      name: "20 Ltrs",
+      label: "Wed",
+      value: 32.4
+    },
+    {
+      name: "2 Ltrs",
+      label: "Wed",
+      value: 52.4
+    },
+    {
+      name: "1 Ltrs",
+      label: "Wed",
+      value: 28.8
+    },
+    {
+      name: "500 ml",
+      label: "Wed",
+      value: 59.3
+    },
+    {
+      name: "300 ml",
+      label: "Wed",
+      value: 29.3
+    },
+    {
+      name: "20 Ltrs",
+      label: "Thu",
+      value: 52.4
+    },
+    {
+      name: "2 Ltrs",
+      label: "Thu",
       value: 42.4
-    }
+    },
+    {
+      name: "1 Ltrs",
+      label: "Thu",
+      value: 58.8
+    },
+    {
+      name: "500 ml",
+      label: "Thu",
+      value: 39.3
+    },
+    {
+      name: "300 ml",
+      label: "Thu",
+      value: 19.3
+    },
+    {
+      name: "20 Ltrs",
+      label: "Fri",
+      value: 12.4
+    },
+    {
+      name: "2 Ltrs",
+      label: "Fri",
+      value: 52.4
+    },
+    {
+      name: "1 Ltrs",
+      label: "Fri",
+      value: 18.8
+    },
+    {
+      name: "500 ml",
+      label: "Fri",
+      value: 49.3
+    },
+    {
+      name: "300 ml",
+      label: "Fri",
+      value: 59.3
+    },
+    {
+      name: "20 Ltrs",
+      label: "Sat",
+      value: 42.4
+    },
+    {
+      name: "2 Ltrs",
+      label: "Sat",
+      value: 12.4
+    },
+    {
+      name: "1 Ltrs",
+      label: "Sat",
+      value: 48.8
+    },
+    {
+      name: "500 ml",
+      label: "Sat",
+      value: 29.3
+    },
+    {
+      name: "300 ml",
+      label: "Sat",
+      value: 59.3
+    },
+    {
+      name: "20 Ltrs",
+      label: "Sun",
+      value: 22.4
+    },
+    {
+      name: "2 Ltrs",
+      label: "Sun",
+      value: 12.4
+    },
+    {
+      name: "1 Ltrs",
+      label: "Sun",
+      value: 58.8
+    },
+    {
+      name: "500 ml",
+      label: "Sun",
+      value: 39.3
+    },
+    {
+      name: "300 ml",
+      label: "Sun",
+      value: 49.3
+    },
   ];
   var config = {
     data: data,
-    // height: 200,
-    // autoFit: false,
+    width: '100%',
     isGroup: true,
     xField: "label",
     yField: "value",
     seriesField: "name",
-    color: ["#d62728", "#2ca02c", "#000000"],
+    color: ["#8C54FF", "#2EB3FF", "#F7B500", "#33CBCC", "#62BE9D"],
     legend: false,
     yAxis: false,
-    columnStyle: {
-      cursor: "pointer"
-    },
-    columnWidthRatio: .3,
-    marginRatio: .5,
+    columnWidthRatio: .35,
+    marginRatio: .7,
     xAxis: {
       line: null,
       label: {
         style: {
-          fill: "red",
-          fontSize: 24,
+          fill: "#B0BAC9",
+          fontSize: 15,
           fontFamily: 'PoppinsRegular400',
         }
       }

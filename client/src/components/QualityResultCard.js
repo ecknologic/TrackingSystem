@@ -4,7 +4,7 @@ import '../sass/qualityResultCard.scss';
 const DATETIMEFORMAT = 'DD/MM/YYYY h:mm A'
 
 const QualityResultCard = ({ data }) => {
-    const { batchId, shiftType, levels } = data
+    const { batchId, shiftType, departmentName, levels } = data
     const level = levels[levels.length - 1]
     const { phLevel, ozoneLevel, tds, testingDate } = level
     const time = useMemo(() => dayjs(testingDate).format(DATETIMEFORMAT), [testingDate])
@@ -13,8 +13,13 @@ const QualityResultCard = ({ data }) => {
         <div className='quality-result-card'>
             <div className='title'>{batchId}</div>
             <div className='shift-box'>
-                <span className='shift'>{shiftType} Shift</span>
-                <span className='date'>{time}</span>
+                {
+                    departmentName ? <span className='shift'>{departmentName}</span>
+                        : <>
+                            <span className='shift'>{shiftType} Shift</span>
+                            <span className='date'>{time}</span>
+                        </>
+                }
             </div>
             <div className='panel-details'>
                 <div className='item'>
