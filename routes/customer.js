@@ -502,7 +502,24 @@ router.delete('/deleteCustomer/:customerId', (req, res) => {
     }
   })
 })
-
+router.get('/getCustomersCountDetails', (req, res) => {
+  customerQueries.getTotalActiveCorporateCustomers((err, items) => {
+    if (err) res.status(500).json(dbError(err))
+    else {
+      res.json(items)
+    }
+  })
+  // let activeCustomersCount = customerQueries.getTotalActiveCorporateCustomers()
+  // console.log("activeCustomersCount", activeCustomersCount)
+  // let pendingCustomersCount = customerQueries.getTotalPendingCorporateCustomers()
+  // let activeOtherCustomersCount = customerQueries.getTotalActiveOtherCustomers()
+  // let pendingOtherCustomersCount = customerQueries.getTotalPendingOtherCustomers()
+  // let distributorsCount = customerQueries.getTotalDistributorsCount()
+  // res.json({
+  //   activeCustomersCount, pendingCustomersCount, activeOtherCustomersCount,
+  //   pendingOtherCustomersCount, distributorsCount
+  // })
+})
 router.get('/generatePDF', (req, res) => {
   customerQueries.generatePDF("215", (err, items) => {
     if (err) res.status(500).json(dbError(err))
