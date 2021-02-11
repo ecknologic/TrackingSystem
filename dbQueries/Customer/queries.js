@@ -23,32 +23,66 @@ customerQueries.getTotalActiveCustomers = (callback) => {
     executeGetParamsQuery(query, callback)
 }
 customerQueries.getTotalActiveCorporateCustomers = (callback) => {
+    let { startDate, endDate, fromStart } = input;
     let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND customertype='Corporate'"
-    executeGetParamsQuery(query, callback)
+    if (fromStart !== 'true') {
+        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND customertype='Corporate' AND  DATE(createdDateTime)>=? AND DATE(createdDateTime)<=?"
+        executeGetParamsQuery(query, [startDate, endDate], callback)
+    } else executeGetParamsQuery(query, callback)
 }
-customerQueries.getTotalActiveOtherCustomers = (callback) => {
-    let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND customertype='Individual'"
-    executeGetParamsQuery(query, callback)
+customerQueries.getTotalActiveCustomers = (callback) => {
+    let { startDate, endDate, fromStart } = input;
+    let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0"
+    if (fromStart !== 'true') {
+        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND  DATE(createdDateTime)>=? AND DATE(createdDateTime)<=?"
+        executeGetParamsQuery(query, [startDate, endDate], callback)
+    }
+    else executeGetParamsQuery(query, callback)
 }
 customerQueries.getTotalInActiveCustomers = (callback) => {
+    let { startDate, endDate, fromStart } = input;
     let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND approvedDate!='NULL'"
-    executeGetParamsQuery(query, callback)
-}
-customerQueries.getInActiveCustomers = (callback) => {
-    let query = "SELECT c.organizationName,c.customertype,c.isActive,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.isApproved=0 AND approvedDate!='NULL' and d.deleted=0  GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.customerId,c.registeredDate ORDER BY c.lastDraftedDate DESC"
-    executeGetParamsQuery(query, callback)
+    if (fromStart !== 'true') {
+        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND approvedDate!='NULL' AND DATE(createdDateTime)>=? AND DATE(createdDateTime)<=?"
+        executeGetParamsQuery(query, [startDate, endDate], callback)
+    }
+    else executeGetParamsQuery(query, callback)
 }
 customerQueries.getTotalPendingCorporateCustomers = (callback) => {
+    let { startDate, endDate, fromStart } = input;
     let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND approvedDate IS NULL AND deleted=0 AND customertype='Corporate'"
-    executeGetParamsQuery(query, callback)
+    if (fromStart !== 'true') {
+        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND approvedDate IS NULL AND deleted=0 AND customertype='Corporate' AND DATE(createdDateTime)>=? AND DATE(createdDateTime)<=?"
+        executeGetParamsQuery(query, [startDate, endDate], callback)
+    }
+    else executeGetParamsQuery(query, callback)
+}
+customerQueries.getTotalActiveOtherCustomers = (callback) => {
+    let { startDate, endDate, fromStart } = input;
+    let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND customertype='Individual'"
+    if (fromStart !== 'true') {
+        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND customertype='Individual' AND DATE(createdDateTime)>=? AND DATE(createdDateTime)<=?"
+        executeGetParamsQuery(query, [startDate, endDate], callback)
+    }
+    else executeGetParamsQuery(query, callback)
 }
 customerQueries.getTotalPendingOtherCustomers = (callback) => {
+    let { startDate, endDate, fromStart } = input;
     let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND approvedDate IS NULL AND deleted=0 AND customertype='Individual'"
-    executeGetParamsQuery(query, callback)
+    if (fromStart !== 'true') {
+        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND approvedDate IS NULL AND deleted=0 AND customertype='Individual' AND DATE(createdDateTime)>=? AND DATE(createdDateTime)<=?"
+        executeGetParamsQuery(query, [startDate, endDate], callback)
+    }
+    else executeGetParamsQuery(query, callback)
 }
 customerQueries.getTotalDistributorsCount = (callback) => {
-    let query = " SELECT COUNT(*) as totalCount FROM Distributors WHERE isActive=1 AND deleted=0"
-    executeGetParamsQuery(query, callback)
+    let { startDate, endDate, fromStart } = input;
+    let query = " SELECT COUNT(*) as totalCount FROM Distributors WHERE isActive=1 AND deleted=0";
+    if (fromStart !== 'true') {
+        query = " SELECT COUNT(*) as totalCount FROM Distributors WHERE isActive=1 AND deleted=0 AND DATE(createdDateTime)>=? AND DATE(createdDateTime)<=?";
+        executeGetParamsQuery(query, [startDate, endDate], callback)
+    }
+    else executeGetParamsQuery(query, callback)
 }
 customerQueries.getCustomerDetailsByStatus = (status, callback) => {
     let query = "SELECT c.organizationName,c.customertype,c.isActive,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.isApproved=? and d.deleted=0 AND c.approvedDate IS NULL GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.customerId,c.registeredDate ORDER BY c.registeredDate DESC"
