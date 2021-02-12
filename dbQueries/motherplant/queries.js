@@ -219,6 +219,16 @@ motherPlantDbQueries.getQCLevelsDetails = async (input, callback) => {
     let query = "SELECT JSON_ARRAYAGG(JSON_OBJECT('testedDate',DATE_FORMAT(q.testedDate, '%Y-%m-%dT%H:%i:%s.000Z'),'phLevel',ROUND(q.phLevel,1),'tds',ROUND(q.TDS,1),'ozoneLevel',ROUND(q.ozoneLevel,1),'testResult',q.testResult,'managerName',q.managerName,'description',q.description,'testType',q.testType,'qcLevel',q.qcLevel)) AS QCDetails FROM qualitycheck q  WHERE productionQcId=? AND departmentId=?";
     return executeGetParamsQuery(query, [productionQcId, departmentId], callback)
 }
+motherPlantDbQueries.getTotalRevenue = async (input, callback) => {
+    let { startDate, endDate, fromStart } = input;
+    let options = [endDate]
+    let query = `SELECT SUM(price20L) total20L,SUM(price1L) total1L,SUM(price500ML) total500ML,SUM(price250ML) total250ML FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)<=?`;
+    if (fromStart !== 'true') {
+        options = [startDate, endDate]
+        query = ` SELECT SUM(price20L) total20L,SUM(price1L) total1L,SUM(price500ML) total500ML,SUM(price250ML) total250ML FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)>=? AND DATE(deliveredDate)<=?`;
+    }
+    return executeGetParamsQuery(query, options, callback)
+}
 //POST Request Methods
 motherPlantDbQueries.createQC = async (input, callback) => {
     let query = "insert into qualitycontrol (reportdate,batchId,testType,reportImage,description) values(?,?,?,?,?)";
