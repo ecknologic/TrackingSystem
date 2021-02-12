@@ -502,23 +502,55 @@ router.delete('/deleteCustomer/:customerId', (req, res) => {
     }
   })
 })
-router.get('/getCustomersCountDetails', (req, res) => {
-  customerQueries.getTotalActiveCorporateCustomers((err, items) => {
+router.get('/getActiveCustomersCount', (req, res) => {
+  const result = {}
+  customerQueries.getTotalActiveCustomers((err, active) => {
     if (err) res.status(500).json(dbError(err))
     else {
-      res.json(items)
+      result.totalActiveCustomers = active.length ? active[0].totalCount : 0
+      customerQueries.getTotalActiveCorporateCustomers((err, corporate) => {
+        if (err) res.status(500).json(dbError(err))
+        else {
+          result.totalCorporateCustomers = corporate.length ? corporate[0].totalCount : 0
+          customerQueries.getTotalActiveOtherCustomers((err, other) => {
+            if (err) res.status(500).json(dbError(err))
+            else {
+              result.totalOtherCustomers = other.length ? other[0].totalCount : 0
+              res.json(result)
+            }
+          })
+        }
+      })
     }
   })
-  // let activeCustomersCount = customerQueries.getTotalActiveCorporateCustomers()
-  // console.log("activeCustomersCount", activeCustomersCount)
-  // let pendingCustomersCount = customerQueries.getTotalPendingCorporateCustomers()
-  // let activeOtherCustomersCount = customerQueries.getTotalActiveOtherCustomers()
-  // let pendingOtherCustomersCount = customerQueries.getTotalPendingOtherCustomers()
-  // let distributorsCount = customerQueries.getTotalDistributorsCount()
-  // res.json({
-  //   activeCustomersCount, pendingCustomersCount, activeOtherCustomersCount,
-  //   pendingOtherCustomersCount, distributorsCount
-  // })
+})
+router.get('/getInactiveCustomersCount', (req, res) => {
+  const result = {}
+  customerQueries.getTotalInActiveCustomers((err, active) => {
+    if (err) res.status(500).json(dbError(err))
+    else {
+      result.totalInactiveCustomers = active.length ? active[0].totalCount : 0
+      customerQueries.getTotalPendingCorporateCustomers((err, pendingCorporate) => {
+        if (err) res.status(500).json(dbError(err))
+        else {
+          result.pendingCorporateCustomers = pendingCorporate.length ? pendingCorporate[0].totalCount : 0
+          customerQueries.getTotalPendingOtherCustomers((err, pendingOther) => {
+            if (err) res.status(500).json(dbError(err))
+            else {
+              result.pendingOtherCustomers = pendingOther.length ? pendingOther[0].totalCount : 0
+              customerQueries.getTotalDistributorsCount((err, distributors) => {
+                if (err) res.status(500).json(dbError(err))
+                else {
+                  result.totalDistributors = distributors.length ? distributors[0].totalCount : 0
+                  res.json(result)
+                }
+              })
+            }
+          })
+        }
+      })
+    }
+  })
 })
 router.get('/generatePDF', (req, res) => {
   customerQueries.generatePDF("215", (err, items) => {
