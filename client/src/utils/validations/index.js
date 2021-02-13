@@ -57,15 +57,17 @@ export const validateAccountValues = (data, customerType, isInView) => {
     const text = 'Required'
     const {
         gstNo, panNo, adharNo, licenseNo, natureOfBussiness, organizationName, address, customerName,
-        mobileNumber, invoicetype, creditPeriodInDays = "", EmailId, referredBy, idProofType,
-        registeredDate, gstProof, depositAmount = "", departmentId, routeId, deliveryLocation, ...rest
+        mobileNumber, invoicetype, creditPeriodInDays = "", EmailId, referredBy, idProofType, pinCode,
+        contractPeriod, dispenserCount, registeredDate, gstProof, depositAmount = "", departmentId, routeId, ...rest
     } = data
 
     if (customerType === 'Corporate') {
         if (!organizationName) errors.organizationName = text
+        if (!contractPeriod) errors.contractPeriod = text
+        if (!dispenserCount) errors.dispenserCount = text
         if (creditPeriodInDays === null || !String(creditPeriodInDays)) errors.creditPeriodInDays = text
         else {
-            const error = validateNumber(creditPeriodInDays)
+            const error = compareMaxNumber(creditPeriodInDays, 90, 'days')
             error && (errors.creditPeriodInDays = error)
         }
         if (!gstNo) errors.gstNo = text
@@ -75,11 +77,6 @@ export const validateAccountValues = (data, customerType, isInView) => {
         if (!isInView) { // General account form in add account screen
             if (!departmentId) errors.departmentId = text
             if (!routeId) errors.routeId = text
-            if (!deliveryLocation) errors.deliveryLocation = text
-            else {
-                const error = validateNames(deliveryLocation)
-                error && (errors.deliveryLocation = error)
-            }
             productErrors = validateProductNPrice(rest)
         }
     }
@@ -93,6 +90,11 @@ export const validateAccountValues = (data, customerType, isInView) => {
     if (!registeredDate) errors.registeredDate = text
     if (!natureOfBussiness) errors.natureOfBussiness = text
     if (!customerName) errors.customerName = text
+    if (!pinCode) errors.pinCode = text
+    else {
+        const error = validatePinCode(pinCode)
+        error && (errors.pinCode = error)
+    }
     if (referredBy) {
         const error = validateNames(referredBy)
         error && (errors.referredBy = error)
@@ -158,10 +160,6 @@ export const validateDeliveryValues = (data) => {
         error && (errors.contactPerson = error)
     }
     if (!deliveryLocation) errors.deliveryLocation = text
-    else {
-        const error = validateNames(deliveryLocation)
-        error && (errors.deliveryLocation = error)
-    }
 
     const productErrors = validateProductNPrice(rest)
     return { ...errors, ...productErrors }
@@ -923,6 +921,15 @@ export const validateIDNumbers = (key, value, isBlur) => {
             if (!isValid) return 'Invalid'
         }
     }
+    else if (key === 'rocNo') {
+        if (isBlur && value) {
+            const isValid = isStrictDigit(value)
+            if (!isValid) return 'Invalid'
+        }
+        if (value && !isStrictDigit(value)) {
+            return 'Enter digits only'
+        }
+    }
 
     return ''
 }
@@ -947,6 +954,16 @@ export const validateNumber = (value, isBlur) => {
     if (value && !isStrictDigit(value)) {
         return 'Enter digits only'
     }
+    return ''
+}
+
+export const compareMaxNumber = (value, max, unit) => {
+    const error = validateNumber(value)
+    if (error) return error
+    if (Number(value) > max) {
+        return `Should not exceed ${max} ${unit}`
+    }
+
     return ''
 }
 

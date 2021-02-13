@@ -10,6 +10,10 @@ export const idOptions = [
     <Option key='4' value="licenseNo">Driving License</Option>,
     <Option key='5' value="passportNo">Passport</Option>
 ]
+export const corpIdOptions = [
+    <Option key='1' value="panNo">PAN</Option>,
+    <Option key='2' value="rocNo">ROC</Option>
+]
 export const businessOptions = [
     <Option key='1' value="Residential">Residential</Option>,
     <Option key='2' value="Software">Software</Option>,
@@ -101,7 +105,6 @@ export const shiftMenu = [
 export const getDepartmentMenu = (departments = []) => {
     return departments.map((item) => <Menu.Item key={item.departmentName} >{item.departmentName}</Menu.Item>)
 }
-
 export const getWarehouseOptions = (warehouses = []) => {
     return warehouses.map((item) => <Option key={item.departmentId} value={item.departmentId}>{item.departmentName}</Option>)
 }

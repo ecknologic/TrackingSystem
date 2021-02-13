@@ -130,10 +130,6 @@ const ViewAccount = () => {
             const error = validateIDNumbers(key, value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
-        if (key === 'deliveryLocation') {
-            const error = validateNames(value)
-            setFormErrors(errors => ({ ...errors, [key]: error }))
-        }
         else if (key === 'phoneNumber') {
             const error = validateMobileNumber(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))

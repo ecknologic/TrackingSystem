@@ -28,7 +28,7 @@ import {
 import { getRole, SUPERADMIN, TRACKFORM } from '../../../utils/constants';
 import {
     validateAccountValues, validateAddresses, validateIDNumbers, validateNames, validateNumber,
-    validateMobileNumber, validateEmailId
+    validateMobileNumber, validateEmailId, compareMaxNumber
 } from '../../../utils/validations';
 
 const ApproveAccount = () => {
@@ -59,7 +59,8 @@ const ApproveAccount = () => {
     const confirmMsg = 'Changes you made may not be saved.'
     const showTrashIcon = useMemo(() => addresses.length !== 1, [addresses.length])
     const isSuperAdmin = useMemo(() => getRole() === SUPERADMIN, [])
-    const { organizationName, customerId, customertype, customerName } = accountValues
+    const { organizationName, customerId, customertype, customerName, depositAmount, isSuperAdminApproved } = accountValues
+    const canApprove = isSuperAdmin || isSuperAdminApproved || Number(depositAmount)
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
@@ -134,13 +135,13 @@ const ApproveAccount = () => {
         setAccountValues(data => ({ ...data, [key]: value }))
         setAccountErrors(errors => ({ ...errors, [key]: '' }))
 
-        if (value === 'adharNo' || value === 'panNo' || value === 'licenseNo') {
+        if (value === 'adharNo' || value === 'panNo' || value === 'licenseNo' || key === 'rocNo') {
             setAccountValues(data => ({ ...data, [value]: '' }))
             setAccountErrors(errors => ({ ...errors, [value]: '' }))
         }
 
         // Validations
-        if (key === 'adharNo' || key === 'panNo' || key === 'gstNo' || key === 'licenseNo') {
+        if (key === 'adharNo' || key === 'panNo' || key === 'gstNo' || key === 'licenseNo' || key === 'rocNo') {
             const error = validateIDNumbers(key, value)
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -157,7 +158,7 @@ const ApproveAccount = () => {
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }
         else if (key === 'creditPeriodInDays') {
-            const error = validateNumber(value)
+            const error = compareMaxNumber(value, 90, 'days')
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }
     }
@@ -165,7 +166,7 @@ const ApproveAccount = () => {
     const handleBlur = (value, key) => {
 
         // Validations
-        if (key === 'adharNo' || key === 'panNo' || key === 'gstNo' || key === 'licenseNo') {
+        if (key === 'adharNo' || key === 'panNo' || key === 'gstNo' || key === 'licenseNo' || key === 'rocNo') {
             const error = validateIDNumbers(key, value, true)
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -319,7 +320,8 @@ const ApproveAccount = () => {
         const options = { item: 'Customer', action: 'loading', v1Ing: 'Approving' }
         const url = `/customer/approveCustomer/${customerId}`
         const body = {
-            deliveryDetailsIds: activeAddressIds
+            deliveryDetailsIds: activeAddressIds,
+            isSuperAdminApproved: isSuperAdminApproved || Number(isSuperAdmin)
         }
         try {
             setBtnDisabled(true)
@@ -474,7 +476,7 @@ const ApproveAccount = () => {
                                                 <CustomButton
                                                     onClick={onAccountApprove}
                                                     className={`
-                                                approve-btn footer-btn ${(!isReviewed || btnDisabled) && 'disabled'}
+                                                approve-btn footer-btn ${(!canApprove || !isReviewed || btnDisabled) && 'disabled'}
                                             `}
                                                     text='Approve'
                                                 />

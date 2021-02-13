@@ -13,10 +13,10 @@ import IDProofInfo from '../../../../components/IDProofInfo';
 import ConfirmModal from '../../../../components/CustomModal';
 import CustomButton from '../../../../components/CustomButton';
 import GeneralAccountForm from '../../add/forms/GeneralAccount';
-import CorporateAccountForm from '../../add/forms/CorporateAccount';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
+import CorporateAccountForm from '../../add/forms/CorporateAccount';
 import { base64String, extractCADetails, extractGADetails, getBase64, getIdProofsForDB, getMainPathname, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
-import { validateIDProofs, validateAccountValues, validateIDNumbers, validateMobileNumber, validateNames, validateEmailId, validateNumber } from '../../../../utils/validations';
+import { validateIDProofs, validateAccountValues, validateIDNumbers, validateMobileNumber, validateNames, validateEmailId, validateNumber, compareMaxNumber, validatePinCode } from '../../../../utils/validations';
 
 const AccountOverview = ({ data, onUpdate, isSuperAdmin }) => {
     const { gstProof, idProof_backside, idProof_frontside, isApproved, registeredDate,
@@ -63,13 +63,13 @@ const AccountOverview = ({ data, onUpdate, isSuperAdmin }) => {
         setAccountValues(data => ({ ...data, [key]: value }))
         setAccountErrors(errors => ({ ...errors, [key]: '' }))
 
-        if (value === 'adharNo' || value === 'panNo' || value === 'licenseNo') {
+        if (value === 'adharNo' || value === 'panNo' || value === 'licenseNo' || key === 'rocNo') {
             setAccountValues(data => ({ ...data, [value]: '' }))
             setAccountErrors(errors => ({ ...errors, [value]: '' }))
         }
 
         // Validations
-        if (key === 'adharNo' || key === 'panNo' || key === 'gstNo' || key === 'licenseNo') {
+        if (key === 'adharNo' || key === 'panNo' || key === 'gstNo' || key === 'licenseNo' || key === 'rocNo') {
             const error = validateIDNumbers(key, value)
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -86,13 +86,17 @@ const AccountOverview = ({ data, onUpdate, isSuperAdmin }) => {
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }
         else if (key === 'creditPeriodInDays') {
-            const error = validateNumber(value)
+            const error = compareMaxNumber(value, 90, 'days')
+            setAccountErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'pinCode') {
+            const error = validatePinCode(value)
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }
     }
     const handleBlur = (value, key) => {
         // Validations
-        if (key === 'adharNo' || key === 'panNo' || key === 'gstNo' || key === 'licenseNo') {
+        if (key === 'adharNo' || key === 'panNo' || key === 'gstNo' || key === 'licenseNo' || key === 'rocNo') {
             const error = validateIDNumbers(key, value, true)
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -102,6 +106,10 @@ const AccountOverview = ({ data, onUpdate, isSuperAdmin }) => {
         }
         else if (key === 'EmailId') {
             const error = validateEmailId(value)
+            setAccountErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'pinCode') {
+            const error = validatePinCode(value, true)
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }
     }
@@ -169,6 +177,8 @@ const AccountOverview = ({ data, onUpdate, isSuperAdmin }) => {
             setTimeout(() => setShake(false), 820)
             setIDProofErrors(IDProofError)
             setAccountErrors(accountErrors)
+            console.log('IDProofError', IDProofError)
+            console.log('accountErrors', accountErrors)
             return
         }
         const idProofs = getIdProofsForDB(IDProofs, idProofType)

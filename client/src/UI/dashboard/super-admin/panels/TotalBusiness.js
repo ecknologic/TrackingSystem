@@ -1,39 +1,38 @@
 import axios from 'axios';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
 import PanelHeader from '../../../../components/PanelHeader';
 import { TODAYDATE as d } from '../../../../utils/constants';
-import { dummyWaterResults } from '../../../../assets/fixtures';
 import TotalRevenueCard from '../../../../components/TotalRevenueCard';
 const options = { startDate: d, endDate: d, fromStart: true }
 
 const TotalBusiness = () => {
-    const [results, setResults] = useState(dummyWaterResults)
+    const [business, setBusiness] = useState([])
     const [opData, setOpData] = useState(() => options)
 
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
-        getTestResults(opData)
+        getTotalBusiness(opData)
 
         return () => {
             http.ABORT(source)
         }
     }, [])
 
-    const getTestResults = async ({ startDate, endDate, fromStart }) => {
-        const url = `/motherPlant/getQCTestResults?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}`
+    const getTotalBusiness = async ({ startDate, endDate, fromStart }) => {
+        const url = `/motherPlant/getTotalRevenue?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}`
 
         try {
-            // const data = await http.GET(axios, url, config)
-            // setResults(data)
+            const [data] = await http.GET(axios, url, config)
+            setBusiness(data)
         } catch (error) { }
     }
 
     const handleOperation = useCallback((data) => {
         const newData = { ...opData, ...data }
-        getTestResults(newData)
+        getTotalBusiness(newData)
         setOpData(newData)
     }, [opData])
 
@@ -41,9 +40,9 @@ const TotalBusiness = () => {
     return (
         <div className='total-business-panel'>
             <div className='header'>
-                <PanelHeader title='Total Business' onSelect={handleOperation} showShow />
+                <PanelHeader title='Total Business' onSelect={handleOperation} showShow beginning />
             </div>
-            <TotalRevenueCard />
+            <TotalRevenueCard data={business} />
         </div>
     )
 }

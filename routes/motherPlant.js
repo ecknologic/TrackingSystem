@@ -507,6 +507,13 @@ router.get('/getVehicleDetails', (req, res) => {
         res.json(results);
     });
 });
+router.get('/getTotalRevenue', (req, res) => {
+    motherPlantDbQueries.getTotalRevenue(req.query, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        res.json(results);
+    });
+});
+
 
 router.post('/createVehicle', (req, res) => {
     let input = req.body;
