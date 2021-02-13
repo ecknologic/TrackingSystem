@@ -3,7 +3,7 @@ const { getDeliverysByCustomerOrderId } = require('../warehouse/queries.js');
 let customerQueries = {}
 
 customerQueries.getCustomerDetails = (customerId, callback) => {
-    let query = "SELECT rocNo,depositAmount,customerId,customerName,c.mobileNumber,c.EmailId,c.Address1,c.gstNo,c.panNo,c.adharNo,c.registeredDate,c.invoicetype,c.natureOfBussiness,c.creditPeriodInDays,referredBy,isApproved,customertype,organizationName,idProofType,pincode, dispenserCount, contractPeriod,customer_id_proof,d.idProof_backside,d.idProof_frontside,d.gstProof,u.userName as createdUserName from customerdetails c INNER JOIN customerDocStore d ON c.customer_id_proof=d.docId INNER JOIN usermaster u ON u.userId=c.createdBy WHERE c.customerId=" + customerId
+    let query = "SELECT isSuperAdminApproved,rocNo,depositAmount,customerId,customerName,c.mobileNumber,c.EmailId,c.Address1,c.gstNo,c.panNo,c.adharNo,c.registeredDate,c.invoicetype,c.natureOfBussiness,c.creditPeriodInDays,referredBy,isApproved,customertype,organizationName,idProofType,pincode, dispenserCount, contractPeriod,customer_id_proof,d.idProof_backside,d.idProof_frontside,d.gstProof,u.userName as createdUserName from customerdetails c INNER JOIN customerDocStore d ON c.customer_id_proof=d.docId INNER JOIN usermaster u ON u.userId=c.createdBy WHERE c.customerId=" + customerId
     executeGetQuery(query, callback)
 }
 customerQueries.getOrdersByDepartmentId = (departmentId, callback) => {
@@ -100,9 +100,11 @@ customerQueries.saveCustomerOrderDetails = (input, callback) => {
     let requestBody = [contactPerson, phoneNumber, address, routeId, driverId, customer_Id, latitude, longitude, dcNo, departmentId, customerType, product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML, deliveryLocation]
     executePostOrUpdateQuery(query, requestBody, callback)
 }
-customerQueries.approveCustomer = (customerId, callback) => {
-    let query = `UPDATE customerdetails set isApproved=1,approvedDate=?,lastApprovedDate=? where customerId=?`
-    executePostOrUpdateQuery(query, [new Date(), new Date(), customerId], callback)
+customerQueries.approveCustomer = (input, callback) => {
+    const { customerId, isSuperAdminApproved } = input
+    let query = `UPDATE customerdetails set isApproved=?,approvedDate=?,lastApprovedDate=?,isSuperAdminApproved=? where customerId=?`
+    let options = [isSuperAdminApproved == 1 ? 0 : 1, new Date(), new Date(), isSuperAdminApproved, customerId]
+    executePostOrUpdateQuery(query, options, callback)
 }
 customerQueries.approveDeliveryDetails = (ids, callback) => {
     let query = 'UPDATE DeliveryDetails set isActive=1,approvedDate=? where deliveryDetailsId IN (?)'
