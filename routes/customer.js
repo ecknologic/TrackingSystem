@@ -505,15 +505,16 @@ router.delete('/deleteCustomer/:customerId', (req, res) => {
 })
 router.get('/getActiveCustomersCount', (req, res) => {
   const result = {}
-  customerQueries.getTotalActiveCustomers((err, active) => {
+  let input = req.query
+  customerQueries.getTotalActiveCustomers(input, (err, active) => {
     if (err) res.status(500).json(dbError(err))
     else {
       result.totalActiveCustomers = active.length ? active[0].totalCount : 0
-      customerQueries.getTotalActiveCorporateCustomers((err, corporate) => {
+      customerQueries.getTotalActiveCorporateCustomers(input, (err, corporate) => {
         if (err) res.status(500).json(dbError(err))
         else {
           result.totalCorporateCustomers = corporate.length ? corporate[0].totalCount : 0
-          customerQueries.getTotalActiveOtherCustomers((err, other) => {
+          customerQueries.getTotalActiveOtherCustomers(input, (err, other) => {
             if (err) res.status(500).json(dbError(err))
             else {
               result.totalOtherCustomers = other.length ? other[0].totalCount : 0
@@ -527,19 +528,20 @@ router.get('/getActiveCustomersCount', (req, res) => {
 })
 router.get('/getInactiveCustomersCount', (req, res) => {
   const result = {}
-  customerQueries.getTotalInActiveCustomers((err, active) => {
+  let input = req.query;
+  customerQueries.getTotalInActiveCustomers(input, (err, active) => {
     if (err) res.status(500).json(dbError(err))
     else {
       result.totalInactiveCustomers = active.length ? active[0].totalCount : 0
-      customerQueries.getTotalPendingCorporateCustomers((err, pendingCorporate) => {
+      customerQueries.getTotalPendingCorporateCustomers(input, (err, pendingCorporate) => {
         if (err) res.status(500).json(dbError(err))
         else {
           result.pendingCorporateCustomers = pendingCorporate.length ? pendingCorporate[0].totalCount : 0
-          customerQueries.getTotalPendingOtherCustomers((err, pendingOther) => {
+          customerQueries.getTotalPendingOtherCustomers(input, (err, pendingOther) => {
             if (err) res.status(500).json(dbError(err))
             else {
               result.pendingOtherCustomers = pendingOther.length ? pendingOther[0].totalCount : 0
-              customerQueries.getTotalDistributorsCount((err, distributors) => {
+              customerQueries.getTotalDistributorsCount(input, (err, distributors) => {
                 if (err) res.status(500).json(dbError(err))
                 else {
                   result.totalDistributors = distributors.length ? distributors[0].totalCount : 0

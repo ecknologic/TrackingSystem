@@ -18,11 +18,15 @@ customerQueries.getCustomersByCustomerType = (customerType, callback) => {
     let query = "SELECT c.organizationName,c.isActive,c.customertype,c.isApproved,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.approvedDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.customertype=? and c.isApproved=1 and d.deleted=0  GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.isApproved,c.customerId,c.registeredDate,c.approvedDate ORDER BY c.lastApprovedDate DESC"
     executeGetParamsQuery(query, [customerType], callback)
 }
-customerQueries.getTotalActiveCustomers = (callback) => {
+customerQueries.getTotalActiveCustomers = (input, callback) => {
+    let { startDate, endDate, fromStart } = input;
     let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0"
-    executeGetParamsQuery(query, callback)
+    if (fromStart !== 'true') {
+        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND  DATE(createdDateTime)>=? AND DATE(createdDateTime)<=?"
+        executeGetParamsQuery(query, [startDate, endDate], callback)
+    } else executeGetParamsQuery(query, callback)
 }
-customerQueries.getTotalActiveCorporateCustomers = (callback) => {
+customerQueries.getTotalActiveCorporateCustomers = (input, callback) => {
     let { startDate, endDate, fromStart } = input;
     let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND customertype='Corporate'"
     if (fromStart !== 'true') {
@@ -30,7 +34,7 @@ customerQueries.getTotalActiveCorporateCustomers = (callback) => {
         executeGetParamsQuery(query, [startDate, endDate], callback)
     } else executeGetParamsQuery(query, callback)
 }
-customerQueries.getTotalActiveCustomers = (callback) => {
+customerQueries.getTotalActiveCustomers = (input, callback) => {
     let { startDate, endDate, fromStart } = input;
     let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0"
     if (fromStart !== 'true') {
@@ -39,7 +43,7 @@ customerQueries.getTotalActiveCustomers = (callback) => {
     }
     else executeGetParamsQuery(query, callback)
 }
-customerQueries.getTotalInActiveCustomers = (callback) => {
+customerQueries.getTotalInActiveCustomers = (input, callback) => {
     let { startDate, endDate, fromStart } = input;
     let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND approvedDate!='NULL'"
     if (fromStart !== 'true') {
@@ -48,7 +52,7 @@ customerQueries.getTotalInActiveCustomers = (callback) => {
     }
     else executeGetParamsQuery(query, callback)
 }
-customerQueries.getTotalPendingCorporateCustomers = (callback) => {
+customerQueries.getTotalPendingCorporateCustomers = (input, callback) => {
     let { startDate, endDate, fromStart } = input;
     let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND approvedDate IS NULL AND deleted=0 AND customertype='Corporate'"
     if (fromStart !== 'true') {
@@ -57,7 +61,7 @@ customerQueries.getTotalPendingCorporateCustomers = (callback) => {
     }
     else executeGetParamsQuery(query, callback)
 }
-customerQueries.getTotalActiveOtherCustomers = (callback) => {
+customerQueries.getTotalActiveOtherCustomers = (input, callback) => {
     let { startDate, endDate, fromStart } = input;
     let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND customertype='Individual'"
     if (fromStart !== 'true') {
@@ -66,7 +70,7 @@ customerQueries.getTotalActiveOtherCustomers = (callback) => {
     }
     else executeGetParamsQuery(query, callback)
 }
-customerQueries.getTotalPendingOtherCustomers = (callback) => {
+customerQueries.getTotalPendingOtherCustomers = (input, callback) => {
     let { startDate, endDate, fromStart } = input;
     let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND approvedDate IS NULL AND deleted=0 AND customertype='Individual'"
     if (fromStart !== 'true') {
@@ -75,7 +79,7 @@ customerQueries.getTotalPendingOtherCustomers = (callback) => {
     }
     else executeGetParamsQuery(query, callback)
 }
-customerQueries.getTotalDistributorsCount = (callback) => {
+customerQueries.getTotalDistributorsCount = (input, callback) => {
     let { startDate, endDate, fromStart } = input;
     let query = " SELECT COUNT(*) as totalCount FROM Distributors WHERE isActive=1 AND deleted=0";
     if (fromStart !== 'true') {
