@@ -58,7 +58,7 @@ export const validateAccountValues = (data, customerType, isInView) => {
     const {
         gstNo, panNo, adharNo, licenseNo, natureOfBussiness, organizationName, address, customerName,
         mobileNumber, invoicetype, creditPeriodInDays = "", EmailId, referredBy, idProofType, pinCode,
-        contractPeriod, dispenserCount, registeredDate, gstProof, depositAmount = "", departmentId, routeId, deliveryLocation, ...rest
+        contractPeriod, dispenserCount, registeredDate, gstProof, depositAmount = "", departmentId, routeId, ...rest
     } = data
 
     if (customerType === 'Corporate') {
@@ -85,7 +85,6 @@ export const validateAccountValues = (data, customerType, isInView) => {
     if (!gstNo && gstProof) errors.gstNo = text
     if (!address) errors.address = text
     if (!idProofType) errors.idProofType = text
-    if (!deliveryLocation) errors.deliveryLocation = text
     if (idProofType && !data[idProofType]) errors[idProofType] = text
     if (!invoicetype) errors.invoicetype = text
     if (!registeredDate) errors.registeredDate = text
@@ -920,6 +919,15 @@ export const validateIDNumbers = (key, value, isBlur) => {
         if (String(value).length === 16) {
             const isValid = isDLValid(value)
             if (!isValid) return 'Invalid'
+        }
+    }
+    else if (key === 'rocNo') {
+        if (isBlur && value) {
+            const isValid = isStrictDigit(value)
+            if (!isValid) return 'Invalid'
+        }
+        if (value && !isStrictDigit(value)) {
+            return 'Enter digits only'
         }
     }
 

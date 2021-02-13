@@ -231,13 +231,13 @@ const AddAccount = () => {
         setCorporateErrors(errors => ({ ...errors, [key]: '' }))
         if (sameAddress) preFillDDForm(value, key)
 
-        if (value === 'panNo') {
-            setCorporateValues(data => ({ ...data, [value]: '' }))
-            setCorporateErrors(errors => ({ ...errors, [value]: '' }))
-        }
+        // if (value === 'panNo') {
+        //     setCorporateValues(data => ({ ...data, [value]: '' }))
+        //     setCorporateErrors(errors => ({ ...errors, [value]: '' }))
+        // }
 
         // Validations
-        if (key === 'panNo' || key === 'gstNo') {
+        if (key === 'gstNo' || key === 'licenseNo' || key === 'rocNo') {
             const error = validateIDNumbers(key, value)
             setCorporateErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -266,7 +266,7 @@ const AddAccount = () => {
     const handleCorporateBlur = (value, key) => {
 
         // Validations
-        if (key === 'adharNo' || key === 'panNo' || key === 'gstNo' || key === 'licenseNo') {
+        if (key === 'gstNo' || key === 'licenseNo' || key === 'rocNo') {
             const error = validateIDNumbers(key, value, true)
             setCorporateErrors(errors => ({ ...errors, [key]: error }))
         }

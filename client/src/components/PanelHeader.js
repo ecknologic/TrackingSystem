@@ -19,7 +19,7 @@ const APIDATEFORMAT = 'YYYY-MM-DD'
 
 const PanelHeader = memo((props) => {
     const { title, showShow, showShift, initTime = todayString, showDep, depName, showFooter,
-        depMenu = [], depOptions = [], onSelect = fn, beginning = false } = props
+        depMenu = [], depOptions = [], onSelect = fn, beginning = false, showTitle } = props
     const [show, setShow] = useState(() => beginning ? `till Today` : 'Today')
     const [open, setOpen] = useState(false)
     const [time, setTime] = useState(() => getInitTime(initTime))
@@ -108,7 +108,7 @@ const PanelHeader = memo((props) => {
                 <div className='primary'>
                     <div className='head-container'>
                         <div className='title'>
-                            {title} {showShow && show}
+                            {title} {showTitle && show}
                         </div>
                         <div className='select-options'>
                             {
