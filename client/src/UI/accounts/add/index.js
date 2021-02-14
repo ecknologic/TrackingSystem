@@ -186,6 +186,10 @@ const AddAccount = () => {
             const error = validateNumber(value)
             setGeneralErrors(errors => ({ ...errors, [key]: error }))
         }
+        else if (key === 'creditPeriodInDays') {
+            const error = compareMaxNumber(value, 90, 'days')
+            setGeneralErrors(errors => ({ ...errors, [key]: error }))
+        }
         else if (key.includes('product')) {
             const error = validateNumber(value)
             setGeneralErrors(errors => ({ ...errors, productNPrice: error }))
@@ -230,11 +234,6 @@ const AddAccount = () => {
         setCorporateValues(data => ({ ...data, [key]: value }))
         setCorporateErrors(errors => ({ ...errors, [key]: '' }))
         if (sameAddress) preFillDDForm(value, key)
-
-        // if (value === 'panNo') {
-        //     setCorporateValues(data => ({ ...data, [value]: '' }))
-        //     setCorporateErrors(errors => ({ ...errors, [value]: '' }))
-        // }
 
         // Validations
         if (key === 'gstNo' || key === 'licenseNo' || key === 'rocNo') {

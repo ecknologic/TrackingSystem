@@ -42,6 +42,19 @@ const ApprovalForm = (props) => {
         </div>
     )
 
+    const renderNOB = () => (
+        <div className='input-container'>
+            <InputLabel name='Nature Of Business' error={errors.natureOfBussiness} mandatory />
+            <SelectInput
+                value={natureOfBussiness}
+                options={businessOptions}
+                track disabled={disabled || !isCorporate}
+                error={errors.natureOfBussiness}
+                onSelect={(value) => onChange(value, 'natureOfBussiness')}
+            />
+        </div>
+    )
+
     return (
         <div className='app-form-container'>
             <div className='row'>
@@ -86,16 +99,7 @@ const ApprovalForm = (props) => {
                             />
                         </div>
                 }
-                <div className='input-container'>
-                    <InputLabel name='Nature Of Business' error={errors.natureOfBussiness} mandatory />
-                    <SelectInput
-                        value={natureOfBussiness}
-                        options={businessOptions}
-                        track disabled={disabled || !isCorporate}
-                        error={errors.natureOfBussiness}
-                        onSelect={(value) => onChange(value, 'natureOfBussiness')}
-                    />
-                </div>
+                {isCorporate ? renderNOB() : null}
             </div>
             <div className='row'>
                 <div className='input-container stretch'>
@@ -158,7 +162,7 @@ const ApprovalForm = (props) => {
                     />
                 </div>
                 {
-                    isCorporate ? renderDispenser() : null
+                    isCorporate ? renderDispenser() : renderNOB()
                 }
             </div>
             <div className='row'>

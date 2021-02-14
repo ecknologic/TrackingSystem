@@ -41,6 +41,27 @@ const GeneralAccountForm = (props) => {
         }
     }, [])
 
+    const renderDL = () => (
+        <div className='input-container'>
+            <InputLabel name='Delivery Location' error={errors.deliveryLocation} mandatory />
+            <CustomInput value={deliveryLocation} placeholder='Add Location'
+                disabled={disabled} error={errors.deliveryLocation}
+                onChange={(value) => onChange(value, 'deliveryLocation')}
+            />
+        </div>
+    )
+
+    const renderNOB = () => (
+        <div className='input-container'>
+            <InputLabel name='Nature Of Business' error={errors.natureOfBussiness} />
+            <SelectInput
+                track value={natureOfBussiness}
+                disabled options={businessOptions}
+                error={errors.natureOfBussiness} onSelect={(value) => onChange(value, 'natureOfBussiness')}
+            />
+        </div>
+    )
+
     const idUploadDisable = idProofType !== 'panNo' ? Front && Back : Front
     const gstUploadDisable = gstProof
 
@@ -114,14 +135,7 @@ const GeneralAccountForm = (props) => {
                             onChange={(value) => onChange(value, 'customerName')}
                         />
                     </div>
-                    <div className='input-container'>
-                        <InputLabel name='Nature Of Business' error={errors.natureOfBussiness} />
-                        <SelectInput
-                            track value={natureOfBussiness}
-                            disabled options={businessOptions}
-                            error={errors.natureOfBussiness} onSelect={(value) => onChange(value, 'natureOfBussiness')}
-                        />
-                    </div>
+                    {accountOnly ? null : renderNOB()}
                 </div>
                 <div className='row'>
                     <div className='input-container stretch'>
@@ -141,13 +155,7 @@ const GeneralAccountForm = (props) => {
                         />
 
                     </div>
-                    <div className='input-container'>
-                        <InputLabel name='Delivery Location' error={errors.deliveryLocation} mandatory />
-                        <CustomInput value={deliveryLocation} placeholder='Add Location'
-                            disabled={disabled} error={errors.deliveryLocation}
-                            onChange={(value) => onChange(value, 'deliveryLocation')}
-                        />
-                    </div>
+                    {accountOnly ? renderNOB() : renderDL()}
                 </div>
                 <div className='row'>
                     <div className='input-container'>
