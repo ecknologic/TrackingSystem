@@ -7,7 +7,7 @@ const motherPlantDbQueries = require('../dbQueries/motherplant/queries.js');
 const usersQueries = require('../dbQueries/users/queries.js');
 const warehouseQueries = require('../dbQueries/warehouse/queries.js');
 const { DATEFORMAT, INSERTMESSAGE, UPDATEMESSAGE } = require('../utils/constants.js');
-const { customerProductDetails, dbError } = require('../utils/functions.js');
+const { customerProductDetails, dbError, getCompareData } = require('../utils/functions.js');
 var departmentId;
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -325,14 +325,15 @@ router.get('/getEmptyCansList', (req, res) => {
   })
 })
 router.get('/getTotalEmptyCansCount', (req, res) => {
+  const { type } = req.query
   const input = { departmentId, ...req.query }
-  warehouseQueries.getTotalEmptyCansCount(input, (err, results) => {
+  warehouseQueries.getTotalEmptyCansCount(input, (err, currentValues) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else {
-      warehouseQueries.getTotalEmptyCansChangeCount(input, (err, count) => {
+      warehouseQueries.getTotalEmptyCansChangeCount(input, (err, previousValues) => {
         if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
         else {
-          res.json({ currentValues: results, previousValues: count });
+          res.json({ ...currentValues[0], ...getCompareData(currentValues[0], previousValues[0], type) });
         }
       })
     }

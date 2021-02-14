@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const motherPlantDbQueries = require('../dbQueries/motherplant/queries');
-const { dbError, getBatchId, productionCount } = require('../utils/functions');
+const { dbError, getBatchId, productionCount, getCompareData } = require('../utils/functions');
 const { INSERTMESSAGE, UPDATEMESSAGE } = require('../utils/constants');
 const dayjs = require('dayjs');
 const usersQueries = require('../dbQueries/users/queries');
@@ -467,26 +467,26 @@ router.get('/getTotalProductionDetails', (req, res) => {
     })
 });
 router.get('/getTotalProductionByDate', (req, res) => {
+    const { type } = req.query
     let input = {
         departmentId, ...req.query
     }
     const defaultValues = { product20LCount: 0, product1LCount: 0, product500MLCount: 0, product250MLCount: 0 }
-    motherPlantDbQueries.getTotalProductionByDate(input, (err, productionResult) => {
+    motherPlantDbQueries.getTotalProductionByDate(input, (err, currentResult) => {
         if (err) res.status(500).json(dbError(err));
-        else if (productionResult.length) {
-            let currentValues = productionCount(productionResult);
-            motherPlantDbQueries.getTotalProductionChangeByDate(input, (err, productionResult) => {
+        else if (currentResult.length) {
+            let currentValues = productionCount(currentResult);
+            motherPlantDbQueries.getTotalProductionChangeByDate(input, (err, prevResult) => {
                 if (err) res.status(500).json(dbError(err));
-                else if (productionResult.length) {
-                    let previousValues = productionCount(productionResult);
-                    res.json({ currentValues, previousValues });
+                else if (prevResult.length) {
+                    let previousValues = productionCount(prevResult);
+                    res.json({ ...currentValues, ...getCompareData(currentValues, previousValues, type) });
                 }
-                else res.json({ currentValues: defaultValues, previousValues: defaultValues });
+                else res.json({ ...currentValues, ...getCompareData(currentValues, defaultValues, type) });
             })
         }
-        else res.json({ currentValues: defaultValues, previousValues: defaultValues });
+        else res.json({ ...defaultValues, ...getCompareData(defaultValues, defaultValues, type) });
     })
-
 });
 
 router.get('/getBatchNumbers', (req, res) => {

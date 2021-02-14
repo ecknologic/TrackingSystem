@@ -96,7 +96,7 @@ const PanelHeader = memo((props) => {
         setTime(time)
         setSelectedDate(value)
         setShow(`${beginning ? 'till' : 'on'} ${time}`)
-        onSelect({ startDate: d, endDate: d, fromStart: beginning })
+        onSelect({ startDate: d, endDate: d, fromStart: beginning, type: '' })
     }
 
     const handleDateInputSelect = (value) => {

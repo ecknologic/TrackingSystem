@@ -3,7 +3,7 @@ import { Progress } from 'antd'
 import '../sass/emptyBottlesStockCard.scss';
 import ChangeBadge from './ChangeBadge';
 
-const EmptyBottlesStockCard = ({ title, total, strokeColor, isRs, text }) => {
+const EmptyBottlesStockCard = ({ title, total, strokeColor, percent, isRs, text }) => {
 
 
     return (
@@ -22,7 +22,7 @@ const EmptyBottlesStockCard = ({ title, total, strokeColor, isRs, text }) => {
                 <div className='details'>
                     <span className='title'>{title}</span>
                     <span className='number'>{isRs ? '₹ ' : ''}{total || 0}</span>
-                    <ChangeBadge />
+                    <ChangeBadge percent={percent} />
                 </div>
             </div>
             <span className='footer'>{text}</span>

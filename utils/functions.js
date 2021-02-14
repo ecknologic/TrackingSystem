@@ -105,7 +105,6 @@ var dateComparisions = (startDate, endDate, type) => {
         startDate = dayjs(startDate).subtract(5, 'day').startOf('month').format(DATEFORMAT)
         endDate = dayjs(startDate).endOf('month').format(DATEFORMAT)
     }
-    console.log({ startDate, endDate })
     return { startDate, endDate }
 }
 
@@ -121,7 +120,39 @@ const productionCount = (productionResult) => {
     product250MLCount = total250MLBoxes;
     return { product20LCount, product1LCount, product500MLCount, product250MLCount };
 }
+const getCompareData = (currentValues, previousValues, type) => {
+    const { product20LCount, product1LCount, product500MLCount, product250MLCount } = currentValues
+    const { product20LCount: prev20LCount, product1LCount: prev1LCount,
+        product500MLCount: prev500MLCount, product250MLCount: prev250MLCount } = previousValues
+
+    const product20LPercent = getPercent(product20LCount, prev20LCount)
+    const product20LCompareText = getCompareText(type, prev20LCount)
+    const product1LPercent = getPercent(product1LCount, prev1LCount)
+    const product1LCompareText = getCompareText(type, prev1LCount)
+    const product500MLPercent = getPercent(product500MLCount, prev500MLCount)
+    const product500MLCompareText = getCompareText(type, prev500MLCount)
+    const product250MLPercent = getPercent(product250MLCount, prev250MLCount)
+    const product250MLCompareText = getCompareText(type, prev250MLCount)
+
+    return {
+        product20LPercent, product20LCompareText, product1LPercent, product1LCompareText, product500MLPercent,
+        product500MLCompareText, product250MLPercent, product250MLCompareText
+    }
+}
+
+const getPercent = (current, previous) => {
+    const difference = current - previous
+    const signNum = Math.sign(difference)
+    const sign = signNum === 1 ? '+' : signNum === -1 ? '-' : null
+    if (difference) {
+        return `${sign}${(Math.abs(difference) / (previous || difference) * 100).toFixed(2)}%`
+    } else return '0.00%'
+}
+const getCompareText = (type, previous) => {
+    const day = type == 'Today' ? 'Yesterday' : type == 'This Week' ? 'last Week' : type == 'This Month' ? 'last Month' : ''
+    return type ? `Compared to (${Number(previous)} ${day})` : ''
+}
 module.exports = {
     executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, checkDepartmentExists, productionCount,
-    dateComparisions, checkUserExists, dbError, getBatchId, customerProductDetails, createHash, convertToWords
+    getCompareData, dateComparisions, checkUserExists, dbError, getBatchId, customerProductDetails, createHash, convertToWords
 }
