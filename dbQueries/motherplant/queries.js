@@ -29,6 +29,17 @@ motherPlantDbQueries.getTotalProduction = async (input, callback) => {
     }
     return executeGetParamsQuery(query, options, callback)
 }
+motherPlantDbQueries.getTotalChangeProduction = async (input, callback) => {
+    let { departmentId, startDate, endDate, type } = input
+    const { startDate: newStartDate, endDate: newEndDate } = dateComparisions(startDate, endDate, type)
+    let query = `SELECT SUM(p.product20L) AS product20LCount,SUM(p.product1L) AS product1LCount,SUM(p.product500ML) product500MLCount,SUM(p.product250ML) product250MLCount FROM production p WHERE DATE(productionDate)>=? AND DATE(productionDate)<=?`;
+    let options = [newStartDate, newEndDate]
+    if (departmentId != 'All') {
+        query = `SELECT SUM(p.product20L) AS product20LCount,SUM(p.product1L) AS product1LCount,SUM(p.product500ML) product500MLCount,SUM(p.product250ML) product250MLCount FROM production p WHERE departmentId=? AND DATE(productionDate)>=? AND DATE(productionDate)<=?`;
+        options = [departmentId, newStartDate, newEndDate]
+    }
+    return executeGetParamsQuery(query, options, callback)
+}
 motherPlantDbQueries.getDispatchesByBatch = async (input, callback) => {
     let { departmentId, batchNo } = input
     let query = `SELECT SUM(d.product20L) AS product20LCount,SUM(d.product1L) AS product1LCount,SUM(d.product500ML) product500MLCount,SUM(d.product250ML) product250MLCount FROM dispatches d WHERE departmentId=? AND batchId=?`;

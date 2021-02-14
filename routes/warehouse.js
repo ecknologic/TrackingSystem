@@ -201,7 +201,12 @@ router.get('/getTotalSales', (req, res) => {
   var input = req.query;
   warehouseQueries.getTotalSales(input, (err, results) => {
     if (err) res.status(500).json(err.sqlMessage);
-    else res.json(results);
+    else {
+      warehouseQueries.getTotalSalesChange(input, (err, changedResults) => {
+        if (err) res.status(500).json(err.sqlMessage);
+        else res.json({ currentValues: results, previousValues: changedResults });
+      });
+    }
   });
 });
 
@@ -323,7 +328,14 @@ router.get('/getTotalEmptyCansCount', (req, res) => {
   const input = { departmentId, ...req.query }
   warehouseQueries.getTotalEmptyCansCount(input, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
-    else res.json(results);
+    else {
+      warehouseQueries.getTotalEmptyCansChangeCount(input, (err, count) => {
+        if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+        else {
+          res.json({ currentValues: results, previousValues: count });
+        }
+      })
+    }
   })
 })
 router.get('/getReceivedStock', (req, res) => {
