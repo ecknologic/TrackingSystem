@@ -30,29 +30,6 @@ const ApprovalForm = (props) => {
         }
     }, [])
 
-    const renderDepAmount = () => (
-        <div className='input-container'>
-            <InputLabel name='Deposit Amount' error={errors.depositAmount} mandatory />
-            <CustomInput value={depositAmount}
-                disabled={disabled} placeholder='Deposit Amount'
-                error={errors.depositAmount}
-                onChange={(value) => onChange(value, 'depositAmount')}
-            />
-        </div>
-    )
-
-    const renderCreditDays = () => (
-        <div className='input-container'>
-            <InputLabel name='Credit Period in Days' error={errors.creditPeriodInDays} mandatory />
-            <CustomInput
-                value={creditPeriodInDays}
-                disabled={disabled} placeholder='Credit Period'
-                error={errors.creditPeriodInDays}
-                onChange={(value) => onChange(value, 'creditPeriodInDays')}
-            />
-        </div>
-    )
-
     const renderDispenser = () => (
         <div className='input-container'>
             <InputLabel name='Dispenser' error={errors.dispenserCount} mandatory />
@@ -171,18 +148,29 @@ const ApprovalForm = (props) => {
                     />
                 </div>
             </div>
-            {
-                isCorporate ? (
-                    <div className='row'>
-                        {renderDepAmount()}
-                        {renderDispenser()}
-                    </div>
-                ) : null
-            }
             <div className='row'>
+                <div className='input-container'>
+                    <InputLabel name='Deposit Amount' error={errors.depositAmount} mandatory />
+                    <CustomInput value={depositAmount}
+                        disabled={disabled} placeholder='Deposit Amount'
+                        error={errors.depositAmount}
+                        onChange={(value) => onChange(value, 'depositAmount')}
+                    />
+                </div>
                 {
-                    isCorporate ? renderCreditDays() : renderDepAmount()
+                    isCorporate ? renderDispenser() : null
                 }
+            </div>
+            <div className='row'>
+                <div className='input-container'>
+                    <InputLabel name='Credit Period in Days' error={errors.creditPeriodInDays} mandatory />
+                    <CustomInput
+                        value={creditPeriodInDays}
+                        disabled={disabled} placeholder='Credit Period'
+                        error={errors.creditPeriodInDays}
+                        onChange={(value) => onChange(value, 'creditPeriodInDays')}
+                    />
+                </div>
                 <div className='input-container'>
                     <InputLabel name='Invoice Type' error={errors.invoicetype} mandatory />
                     <SelectInput

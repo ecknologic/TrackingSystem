@@ -19,7 +19,7 @@ const GeneralAccountForm = (props) => {
     const {
         gstNo, address, natureOfBussiness, depositAmount, customerName, mobileNumber, registeredDate, pinCode,
         invoicetype, EmailId, idProofType, gstProof, referredBy, routeId, departmentId, deliveryLocation,
-        product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML
+        creditPeriodInDays, product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML
     } = data
 
     const [proofName, setProofName] = useState('')
@@ -114,6 +114,14 @@ const GeneralAccountForm = (props) => {
                             onChange={(value) => onChange(value, 'customerName')}
                         />
                     </div>
+                    <div className='input-container'>
+                        <InputLabel name='Nature Of Business' error={errors.natureOfBussiness} />
+                        <SelectInput
+                            track value={natureOfBussiness}
+                            disabled options={businessOptions}
+                            error={errors.natureOfBussiness} onSelect={(value) => onChange(value, 'natureOfBussiness')}
+                        />
+                    </div>
                 </div>
                 <div className='row'>
                     <div className='input-container stretch'>
@@ -168,11 +176,12 @@ const GeneralAccountForm = (props) => {
                         <CustomInput value={dayjs(registeredDate).format(DATEFORMAT)} placeholder='Registered Date' disabled />
                     </div>
                     <div className='input-container'>
-                        <InputLabel name='Nature Of Business' error={errors.natureOfBussiness} />
-                        <SelectInput
-                            track value={natureOfBussiness}
-                            disabled options={businessOptions}
-                            error={errors.natureOfBussiness} onSelect={(value) => onChange(value, 'natureOfBussiness')}
+                        <InputLabel name='Credit Period in Days' error={errors.creditPeriodInDays} mandatory />
+                        <CustomInput
+                            value={creditPeriodInDays}
+                            disabled={disabled} placeholder='Credit Period'
+                            error={errors.creditPeriodInDays}
+                            onChange={(value) => onChange(value, 'creditPeriodInDays')}
                         />
                     </div>
                 </div>

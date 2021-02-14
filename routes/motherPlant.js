@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const motherPlantDbQueries = require('../dbQueries/motherplant/queries');
-const { dbError, getBatchId } = require('../utils/functions');
+const { dbError, getBatchId, productionCount } = require('../utils/functions');
 const { INSERTMESSAGE, UPDATEMESSAGE } = require('../utils/constants');
 const dayjs = require('dayjs');
 const usersQueries = require('../dbQueries/users/queries');
@@ -464,27 +464,26 @@ router.get('/getTotalProductionDetails', (req, res) => {
     })
 });
 router.get('/getTotalProductionByDate', (req, res) => {
-    let { startDate, endDate, shiftType } = req.query;
     let input = {
-        departmentId, startDate, endDate, shiftType
+        departmentId, ...req.query
     }
+    const defaultValues = { product20LCount: 0, product1LCount: 0, product500MLCount: 0, product250MLCount: 0 }
     motherPlantDbQueries.getTotalProductionByDate(input, (err, productionResult) => {
         if (err) res.status(500).json(dbError(err));
         else if (productionResult.length) {
-
-            let product20LCount = 0, product1LCount = 0, product500MLCount = 0, product250MLCount = 0
-
-            let productionObj = productionResult[0]
-            let { total20LCans = 0, total1LBoxes = 0, total500MLBoxes = 0, total250MLBoxes = 0 } = productionObj
-
-            product20LCount = total20LCans
-            product1LCount = total1LBoxes
-            product500MLCount = total500MLBoxes
-            product250MLCount = total250MLBoxes
-            res.json({ product20LCount, product1LCount, product500MLCount, product250MLCount });
+            let currentValues = productionCount(productionResult);
+            motherPlantDbQueries.getTotalProductionChangeByDate(input, (err, productionResult) => {
+                if (err) res.status(500).json(dbError(err));
+                else if (productionResult.length) {
+                    let previousValues = productionCount(productionResult);
+                    res.json({ currentValues, previousValues });
+                }
+                else res.json({ currentValues: defaultValues, previousValues: defaultValues });
+            })
         }
-        else res.json({ product20LCount: 0, product1LCount: 0, product500MLCount: 0, product250MLCount: 0 });
+        else res.json({ currentValues: defaultValues, previousValues: defaultValues });
     })
+
 });
 
 router.get('/getBatchNumbers', (req, res) => {
@@ -568,3 +567,4 @@ router.delete('/deleteVehicle/:vehicleId', (req, res) => {
 });
 
 module.exports = router;
+

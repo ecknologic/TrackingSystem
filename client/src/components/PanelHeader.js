@@ -58,7 +58,7 @@ const PanelHeader = memo((props) => {
             return
         }
 
-        const endDate = dayjs().format(APIDATEFORMAT)
+        let endDate = dayjs().format(APIDATEFORMAT)
         let to = dayjs().format(DATEFORMAT)
         let from = dayjs(endDate).format(DATEFORMAT)
         let startDate = endDate
@@ -70,18 +70,20 @@ const PanelHeader = memo((props) => {
         }
         else {
             if (isWeek) {
-                startDate = dayjs().weekday(1).format(APIDATEFORMAT)
+                startDate = dayjs().startOf('week').format(APIDATEFORMAT)
+                endDate = dayjs().endOf('week').format(APIDATEFORMAT)
                 from = dayjs(startDate).format(DATEFORMAT)
             }
             else if (isMonth) {
                 startDate = dayjs().startOf('month').format(APIDATEFORMAT)
+                endDate = dayjs().endOf('month').format(APIDATEFORMAT)
                 from = dayjs(startDate).format(DATEFORMAT)
             }
             setTime(`${from} to ${to}`)
             setShow(value)
         }
 
-        onSelect({ startDate, endDate, fromStart: beginning })
+        onSelect({ startDate, endDate, fromStart: beginning, type: value })
     }
 
     const datePickerStatus = (status) => {

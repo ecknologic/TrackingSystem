@@ -524,7 +524,7 @@ const AddAccount = () => {
         if (formHasChanged) setSwitchModal(true)
         else {
             setCorporate(!corporate)
-            setCorporateValues({ ...defaultValues, natureOfBussiness: '' })
+            setCorporateValues({ ...defaultValues, natureOfBussiness: null })
             setGeneralValues({ ...defaultValues, natureOfBussiness: 'Residential' })
             resetErrorValues()
         }

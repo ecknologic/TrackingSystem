@@ -1,4 +1,4 @@
-const { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery } = require('../../utils/functions.js');
+const { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, dateComparisions } = require('../../utils/functions.js');
 const dayjs = require('dayjs');
 
 var motherPlantDbQueries = {}
@@ -133,10 +133,10 @@ motherPlantDbQueries.getQCTestedBatches = async (departmentId, callback) => {
 motherPlantDbQueries.getQCTestResults = async (input, callback) => {
     let { departmentId, startDate, endDate, fromStart } = input;
     let options = [departmentId, endDate]
-    let query = `SELECT JSON_ARRAYAGG(JSON_OBJECT('phLevel',ROUND(q.phLevel,1),'tds',ROUND(q.TDS,1),'ozoneLevel',ROUND(q.ozoneLevel,1),'qcLevel',q.qcLevel,'testResult',q.testResult,'managerName',q.managerName,'testingDate',q.testedDate)) levels,p.batchId batchId, p.shiftType FROM qualitycheck q INNER JOIN productionQC p ON q.productionQcId=p.productionQcId WHERE q.departmentId=? AND DATE(q.testedDate)<=? GROUP BY q.productionQcId`;
+    let query = `SELECT JSON_ARRAYAGG(JSON_OBJECT('phLevel',ROUND(q.phLevel,1),'tds',ROUND(q.TDS,1),'ozoneLevel',ROUND(q.ozoneLevel,1),'qcLevel',q.qcLevel,'testResult',q.testResult,'managerName',q.managerName,'testingDate',q.testedDate)) levels,p.batchId batchId, p.shiftType FROM qualitycheck q INNER JOIN productionQC p ON q.productionQcId=p.productionQcId WHERE q.departmentId=? AND q.qcLevel=2 AND DATE(q.testedDate)<=? GROUP BY q.productionQcId`;
     if (fromStart !== 'true') {
         options = [departmentId, startDate, endDate]
-        query = `SELECT JSON_ARRAYAGG(JSON_OBJECT('phLevel',ROUND(q.phLevel,1),'tds',ROUND(q.TDS,1),'ozoneLevel',ROUND(q.ozoneLevel,1),'qcLevel',q.qcLevel,'testResult',q.testResult,'managerName',q.managerName,'testingDate',q.testedDate)) levels,p.batchId batchId, p.shiftType FROM qualitycheck q INNER JOIN productionQC p ON q.productionQcId=p.productionQcId WHERE q.departmentId=? AND DATE(q.testedDate)>=? AND DATE(q.testedDate)<=?  GROUP BY q.productionQcId`;
+        query = `SELECT JSON_ARRAYAGG(JSON_OBJECT('phLevel',ROUND(q.phLevel,1),'tds',ROUND(q.TDS,1),'ozoneLevel',ROUND(q.ozoneLevel,1),'qcLevel',q.qcLevel,'testResult',q.testResult,'managerName',q.managerName,'testingDate',q.testedDate)) levels,p.batchId batchId, p.shiftType FROM qualitycheck q INNER JOIN productionQC p ON q.productionQcId=p.productionQcId WHERE q.departmentId=? AND q.qcLevel=2 AND DATE(q.testedDate)>=? AND DATE(q.testedDate)<=?  GROUP BY q.productionQcId`;
     }
     return executeGetParamsQuery(query, options, callback)
 }
@@ -181,6 +181,17 @@ motherPlantDbQueries.getTotalProductionByDate = async (input, callback) => {
     let query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product250ML) total250MLBoxes FROM production p WHERE departmentId=? AND DATE(`productionDate`)>=? AND DATE(`productionDate`)<=?";
     if (input.shiftType !== 'All') {
         options = [departmentId, startDate, endDate, shiftType]
+        query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product250ML) total250MLBoxes FROM production p WHERE departmentId=? AND DATE(`productionDate`)>=? AND DATE(`productionDate`)<=? AND shiftType=?";
+    }
+    return executeGetParamsQuery(query, options, callback)
+}
+motherPlantDbQueries.getTotalProductionChangeByDate = async (input, callback) => {
+    const { departmentId, startDate, endDate, shiftType, type } = input
+    const { startDate: newStartDate, endDate: newEndDate } = dateComparisions(startDate, endDate, type)
+    let options = [departmentId, newStartDate, newEndDate]
+    let query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product250ML) total250MLBoxes FROM production p WHERE departmentId=? AND DATE(`productionDate`)>=? AND DATE(`productionDate`)<=?";
+    if (input.shiftType !== 'All') {
+        options = [departmentId, newStartDate, newEndDate, shiftType]
         query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product250ML) total250MLBoxes FROM production p WHERE departmentId=? AND DATE(`productionDate`)>=? AND DATE(`productionDate`)<=? AND shiftType=?";
     }
     return executeGetParamsQuery(query, options, callback)

@@ -6,10 +6,12 @@ import { TODAYDATE as d } from '../../../../utils/constants';
 import PanelHeader from '../../../../components/PanelHeader';
 import ProductionStatusCard from '../../../../components/ProductionStatusCard';
 import { LeftChevronIconGrey, RightChevronIconGrey } from '../../../../components/SVG_Icons';
+const todayString = 'Today'
+const options = { startDate: d, endDate: d, shift: 'All', type: todayString }
 
 const ProductionStatus = () => {
     const [production, setProduction] = useState({})
-    const [opData, setOpData] = useState(() => ({ startDate: d, endDate: d, shift: 'All' }))
+    const [opData, setOpData] = useState(() => options)
 
     const { product20LCount, product2LCount, product1LCount, product500MLCount, product250MLCount } = production
     const source = useMemo(() => axios.CancelToken.source(), []);
@@ -23,8 +25,8 @@ const ProductionStatus = () => {
         }
     }, [])
 
-    const getProductionStatus = async ({ startDate, endDate, shift }) => {
-        const url = `/motherPlant/getTotalProductionByDate?startDate=${startDate}&endDate=${endDate}&shiftType=${shift}`
+    const getProductionStatus = async ({ startDate, endDate, shift, type }) => {
+        const url = `/motherPlant/getTotalProductionByDate?startDate=${startDate}&endDate=${endDate}&shiftType=${shift}&type=${type}`
 
         try {
             const data = await http.GET(axios, url, config)
