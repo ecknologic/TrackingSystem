@@ -21,7 +21,7 @@ warehouseQueries.getTotalSales = (input, callback) => {
     return executeGetParamsQuery(query, options, callback)
 }
 warehouseQueries.getTotalSalesChange = (input, callback) => {
-    const { startDate, endDate, departmentId, input } = input
+    const { startDate, endDate, departmentId, type } = input
     const { startDate: newStartDate, endDate: newEndDate } = dateComparisions(startDate, endDate, type)
     let query = "select SUM(c.20LCans) AS product20LCount,SUM(c.1LBoxes) AS product1LCount,SUM(c.500MLBoxes) AS product500MLCount,SUM(c.250MLBoxes) AS product250MLCount FROM customerorderdetails c WHERE DATE(`deliveredDate`) >= ? AND DATE(`deliveredDate`) <= ? AND isDelivered='Completed'";
     let options = [newStartDate, newEndDate]
