@@ -510,15 +510,30 @@ router.get('/getActiveCustomersCount', (req, res) => {
     if (err) res.status(500).json(dbError(err))
     else {
       result.totalActiveCustomers = active.length ? active[0].totalCount : 0
+      customerQueries.getTotalActiveCustomers(input, (err, previousactive) => {
+        if (err) res.status(500).json(dbError(err))
+        else result.previousTotalActiveCustomers = previousactive.length ? previousactive[0].totalCount : 0
+      })
       customerQueries.getTotalActiveCorporateCustomers(input, (err, corporate) => {
         if (err) res.status(500).json(dbError(err))
         else {
           result.totalCorporateCustomers = corporate.length ? corporate[0].totalCount : 0
+          customerQueries.getTotalActiveCorporateCustomersChange(input, (err, previousCorporate) => {
+            if (err) res.status(500).json(dbError(err))
+            else result.previousTotalCorporateCustomers = previousCorporate.length ? previousCorporate[0].totalCount : 0
+          })
           customerQueries.getTotalActiveOtherCustomers(input, (err, other) => {
             if (err) res.status(500).json(dbError(err))
             else {
               result.totalOtherCustomers = other.length ? other[0].totalCount : 0
-              res.json(result)
+              customerQueries.getTotalActiveOtherCustomersChange(input, (err, previousOther) => {
+                if (err) res.status(500).json(dbError(err))
+                else if (previousOther.length) {
+                  result.previousTotalOtherCustomers = previousOther.length ? previousOther[0].totalCount : 0
+                  res.json(result)
+                }
+                else res.json(result)
+              })
             }
           })
         }
@@ -526,6 +541,7 @@ router.get('/getActiveCustomersCount', (req, res) => {
     }
   })
 })
+
 router.get('/getInactiveCustomersCount', (req, res) => {
   const result = {}
   let input = req.query;
@@ -533,19 +549,38 @@ router.get('/getInactiveCustomersCount', (req, res) => {
     if (err) res.status(500).json(dbError(err))
     else {
       result.totalInactiveCustomers = active.length ? active[0].totalCount : 0
+      customerQueries.getTotalInActiveCustomersChange(input, (err, previousActive) => {
+        if (err) res.status(500).json(dbError(err))
+        else result.previousTotalInactiveCustomers = previousActive.length ? previousActive[0].totalCount : 0
+      })
       customerQueries.getTotalPendingCorporateCustomers(input, (err, pendingCorporate) => {
         if (err) res.status(500).json(dbError(err))
         else {
           result.pendingCorporateCustomers = pendingCorporate.length ? pendingCorporate[0].totalCount : 0
+          customerQueries.getTotalPendingCorporateCustomersChange(input, (err, previousCorporate) => {
+            if (err) res.status(500).json(dbError(err))
+            else result.previousPendingCorporateCustomers = previousCorporate.length ? previousCorporate[0].totalCount : 0
+          })
           customerQueries.getTotalPendingOtherCustomers(input, (err, pendingOther) => {
             if (err) res.status(500).json(dbError(err))
             else {
               result.pendingOtherCustomers = pendingOther.length ? pendingOther[0].totalCount : 0
+              customerQueries.getTotalPendingOtherCustomersChange(input, (err, previousOther) => {
+                if (err) res.status(500).json(dbError(err))
+                else result.previousPendingOtherCustomers = previousOther.length ? previousOther[0].totalCount : 0
+              })
               customerQueries.getTotalDistributorsCount(input, (err, distributors) => {
                 if (err) res.status(500).json(dbError(err))
                 else {
                   result.totalDistributors = distributors.length ? distributors[0].totalCount : 0
-                  res.json(result)
+                  customerQueries.getTotalDistributorsCount(input, (err, previousDistributors) => {
+                    if (err) res.status(500).json(dbError(err))
+                    else if (previousDistributors.length) {
+                      result.previousTotalDistributors = previousDistributors.length ? previousDistributors[0].totalCount : 0
+                      res.json(result)
+                    }
+                    else res.json(result)
+                  })
                 }
               })
             }
