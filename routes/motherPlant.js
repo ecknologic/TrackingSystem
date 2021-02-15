@@ -389,20 +389,13 @@ router.get('/getProductByBatch/:batchNo', (req, res) => {
 });
 router.get('/getTotalProduction', (req, res) => {
     let input = req.query
-    const defaultValues = { product20LCount, product1LCount, product500MLCount, product250MLCount }
+    const defaultValues = { product20LCount: 0, product1LCount: 0, product500MLCount: 0, product250MLCount: 0 }
     motherPlantDbQueries.getTotalProduction(input, (err, productionResult) => {
         if (err) res.status(500).json(dbError(err));
-        else if (productionResult.length) {
-            let currentValues = productionResult[0]
-            motherPlantDbQueries.getTotalChangeProduction(input, (err, productionResult) => {
-                if (err) res.status(500).json(dbError(err));
-                else {
-                    res.json({ currentValues, previousValues: productionResult[0] || defaultValues });
-                }
-            })
-        } else {
-            res.json({ currentValues: defaultValues, previousValues: defaultValues })
-        }
+        else if (productionResult.length)
+            res.json(productionResult[0]);
+        else
+            res.json(defaultValues)
     })
 });
 

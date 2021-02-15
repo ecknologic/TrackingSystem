@@ -202,10 +202,7 @@ router.get('/getTotalSales', (req, res) => {
   warehouseQueries.getTotalSales(input, (err, results) => {
     if (err) res.status(500).json(err.sqlMessage);
     else {
-      warehouseQueries.getTotalSalesChange(input, (err, changedResults) => {
-        if (err) res.status(500).json(err.sqlMessage);
-        else res.json({ currentValues: results, previousValues: changedResults });
-      });
+      res.json(results);
     }
   });
 });
