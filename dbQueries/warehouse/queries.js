@@ -1,4 +1,4 @@
-const { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery } = require('../../utils/functions.js');
+const { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, dateComparisions } = require('../../utils/functions.js');
 let warehouseQueries = {}
 
 warehouseQueries.getWarehouseList = async (callback) => {
@@ -17,6 +17,17 @@ warehouseQueries.getTotalSales = (input, callback) => {
     if (departmentId != 'All') {
         query = "select SUM(c.20LCans) AS product20LCount,SUM(c.1LBoxes) AS product1LCount,SUM(c.500MLBoxes) AS product500MLCount,SUM(c.250MLBoxes) AS product250MLCount FROM customerorderdetails c WHERE DATE(`deliveredDate`) >= ? AND DATE(`deliveredDate`) <= ? AND warehouseId=? AND isDelivered='Completed'";
         options = [startDate, endDate, departmentId]
+    }
+    return executeGetParamsQuery(query, options, callback)
+}
+warehouseQueries.getTotalSalesChange = (input, callback) => {
+    const { startDate, endDate, departmentId, type } = input
+    const { startDate: newStartDate, endDate: newEndDate } = dateComparisions(startDate, endDate, type)
+    let query = "select SUM(c.20LCans) AS product20LCount,SUM(c.1LBoxes) AS product1LCount,SUM(c.500MLBoxes) AS product500MLCount,SUM(c.250MLBoxes) AS product250MLCount FROM customerorderdetails c WHERE DATE(`deliveredDate`) >= ? AND DATE(`deliveredDate`) <= ? AND isDelivered='Completed'";
+    let options = [newStartDate, newEndDate]
+    if (departmentId != 'All') {
+        query = "select SUM(c.20LCans) AS product20LCount,SUM(c.1LBoxes) AS product1LCount,SUM(c.500MLBoxes) AS product500MLCount,SUM(c.250MLBoxes) AS product250MLCount FROM customerorderdetails c WHERE DATE(`deliveredDate`) >= ? AND DATE(`deliveredDate`) <= ? AND warehouseId=? AND isDelivered='Completed'";
+        options = [newStartDate, newEndDate, departmentId]
     }
     return executeGetParamsQuery(query, options, callback)
 }
@@ -54,6 +65,17 @@ warehouseQueries.getTotalEmptyCansCount = async (input, callback) => {
     let query = "SELECT SUM(emptycans_count) as product20LCount from EmptyCanDetails where warehouseId=? OR motherPlantId=? AND DATE(approvedDate)<=?";
     if (fromStart !== 'true') {
         options = [departmentId, departmentId, startDate, endDate]
+        query = "SELECT SUM(emptycans_count) as product20LCount from EmptyCanDetails where warehouseId=? OR motherPlantId=? AND DATE(approvedDate)>=?  AND DATE(approvedDate)<=?";
+    }
+    return executeGetParamsQuery(query, options, callback)
+}
+warehouseQueries.getTotalEmptyCansChangeCount = async (input, callback) => {
+    let { departmentId, startDate, endDate, fromStart, type } = input;
+    const { startDate: newStartDate, endDate: newEndDate } = dateComparisions(startDate, endDate, type)
+    let options = [departmentId, departmentId, newEndDate]
+    let query = "SELECT SUM(emptycans_count) as product20LCount from EmptyCanDetails where warehouseId=? OR motherPlantId=? AND DATE(approvedDate)<=?";
+    if (fromStart !== 'true') {
+        options = [departmentId, departmentId, newStartDate, newEndDate]
         query = "SELECT SUM(emptycans_count) as product20LCount from EmptyCanDetails where warehouseId=? OR motherPlantId=? AND DATE(approvedDate)>=?  AND DATE(approvedDate)<=?";
     }
     return executeGetParamsQuery(query, options, callback)

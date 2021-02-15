@@ -2,7 +2,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding:1em 10%;
+    padding:1em 10% .7em 10%;
     background-color: #fff;
     border-radius: .6em;
     margin-top: 1.5em;
@@ -64,7 +64,6 @@
     }
 
     .pending {
-        padding-top: 1.5em;
         padding-bottom: .1em;
         display: flex;
         align-items: center;
@@ -74,15 +73,11 @@
             font-size: 1.1em;
             margin-right: .5em;
         } 
+
         .red-num {
             font-family: 'PoppinsSemiBold600';
             color: #FA6400;
             font-size: 1.55em;
         } 
-    }
-
-    .chev {
-        padding-left: .5em;
-        transform: scale(.8);
     }
 }

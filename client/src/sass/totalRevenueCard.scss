@@ -17,7 +17,7 @@
         }
 
         .title {
-            padding-right: 1em;
+            padding-right: .5em;
         }
 
         .number {
@@ -33,12 +33,9 @@
     }
 
     .empty-bottles-stock-card {
-        flex: 1;
+        flex-basis: 50%;
         align-items: center;
-
-        .app-change-badge {
-            justify-content: flex-start;
-        }
+        padding :1em 0;
 
         .footer {
             font-family: 'PoppinsRegular400';

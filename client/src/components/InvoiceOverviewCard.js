@@ -1,11 +1,9 @@
 import React from 'react';
 import PieChart from './PieChart';
-import CustomButton from './CustomButton';
-import { RightChevronIconLight } from './SVG_Icons';
 import '../sass/invoiceOverviewCard.scss'
 
 
-const InvoiceOverviewCard = ({ onClick }) => {
+const InvoiceOverviewCard = () => {
 
     return (
         <div className='invoice-overview-card'>
@@ -22,7 +20,7 @@ const InvoiceOverviewCard = ({ onClick }) => {
                             46
                         </div>
                     </div>
-                    <div className='stat cleared-stats'>
+                    <div className='stat'>
                         <span className='title'>Cleared Invoices</span>
                         <div className='number'>
                             <span className='app-dot' style={{ background: '#34B53A' }}></span>
@@ -35,16 +33,9 @@ const InvoiceOverviewCard = ({ onClick }) => {
                 </div>
             </div>
             <div className='pending'>
-                <span className='text'>Pending to Generate Invoices</span>
+                <span className='text'>Pending to Generating Invoices</span>
                 <span className='red-num'>50</span>
             </div>
-            <CustomButton
-                text='View Details'
-                className='app-view-btn'
-                onClick={onClick}
-                suffix={<RightChevronIconLight className='chev' />}
-            />
-
         </div>
     )
 }

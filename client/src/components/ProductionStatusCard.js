@@ -2,7 +2,7 @@ import React from 'react';
 import '../sass/productionStatusCard.scss';
 import ChangeBadge from './ChangeBadge';
 
-const ProductionStatusCard = ({ title, total }) => {
+const ProductionStatusCard = ({ title, total, compareText, percent }) => {
 
 
     return (
@@ -11,9 +11,9 @@ const ProductionStatusCard = ({ title, total }) => {
             <div className='body'>
                 <div className='stats'>
                     <span className='number'>{total || 0}</span>
-                    <ChangeBadge />
+                    <ChangeBadge percent={percent} />
                 </div>
-                <span className='compare-text'>Compared to (1832 yesterday)</span>
+                <span className='compare-text'>{compareText || '--'}</span>
             </div>
         </div>
     )

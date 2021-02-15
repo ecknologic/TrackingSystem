@@ -1,6 +1,7 @@
 const db = require('../config/db.js');
 var dayjs = require('dayjs');
 var bcrypt = require("bcryptjs");
+const { DATEFORMAT } = require('./constants.js');
 
 const format = 'DDMM-YY'
 const getBatchId = (shiftType) => {
@@ -88,7 +89,70 @@ const convertToWords = (number) => {
     str += (n[5] != 0) ? ((str != '') ? 'and ' : '') + (a[Number(n[5])] || b[n[5][0]] + ' ' + a[n[5][1]]) + 'only ' : '';
     return str.toUpperCase();
 }
-var createHash = function (password) {
+var createHash = (password) => {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(10), null);
 }
-module.exports = { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, checkDepartmentExists, checkUserExists, dbError, getBatchId, customerProductDetails, createHash, convertToWords }
+var dateComparisions = (startDate, endDate, type) => {
+    if (type == 'Today') {
+        startDate = dayjs(startDate).subtract(1, 'day').format(DATEFORMAT)
+        endDate = startDate
+    }
+    else if (type == 'This Week') {
+        startDate = dayjs(startDate).subtract(7, 'day').format(DATEFORMAT)
+        endDate = dayjs(startDate).add(6, 'day').format(DATEFORMAT)
+    }
+    else if (type == 'This Month') {
+        startDate = dayjs(startDate).subtract(5, 'day').startOf('month').format(DATEFORMAT)
+        endDate = dayjs(startDate).endOf('month').format(DATEFORMAT)
+    }
+    return { startDate, endDate }
+}
+
+const productionCount = (productionResult) => {
+    let product20LCount = 0, product1LCount = 0, product500MLCount = 0, product250MLCount = 0;
+
+    let productionObj = productionResult[0];
+    let { total20LCans = 0, total1LBoxes = 0, total500MLBoxes = 0, total250MLBoxes = 0 } = productionObj;
+
+    product20LCount = total20LCans;
+    product1LCount = total1LBoxes;
+    product500MLCount = total500MLBoxes;
+    product250MLCount = total250MLBoxes;
+    return { product20LCount, product1LCount, product500MLCount, product250MLCount };
+}
+const getCompareData = (currentValues, previousValues, type) => {
+    const { product20LCount, product1LCount, product500MLCount, product250MLCount } = currentValues
+    const { product20LCount: prev20LCount, product1LCount: prev1LCount,
+        product500MLCount: prev500MLCount, product250MLCount: prev250MLCount } = previousValues
+
+    const product20LPercent = getPercent(product20LCount, prev20LCount)
+    const product20LCompareText = getCompareText(type, prev20LCount)
+    const product1LPercent = getPercent(product1LCount, prev1LCount)
+    const product1LCompareText = getCompareText(type, prev1LCount)
+    const product500MLPercent = getPercent(product500MLCount, prev500MLCount)
+    const product500MLCompareText = getCompareText(type, prev500MLCount)
+    const product250MLPercent = getPercent(product250MLCount, prev250MLCount)
+    const product250MLCompareText = getCompareText(type, prev250MLCount)
+
+    return {
+        product20LPercent, product20LCompareText, product1LPercent, product1LCompareText, product500MLPercent,
+        product500MLCompareText, product250MLPercent, product250MLCompareText
+    }
+}
+
+const getPercent = (current, previous) => {
+    const difference = current - previous
+    const signNum = Math.sign(difference)
+    const sign = signNum === 1 ? '+' : signNum === -1 ? '-' : null
+    if (difference) {
+        return `${sign}${(Math.abs(difference) / (previous || difference) * 100).toFixed(2)}%`
+    } else return '0.00%'
+}
+const getCompareText = (type, previous) => {
+    const day = type == 'Today' ? 'Yesterday' : type == 'This Week' ? 'last Week' : type == 'This Month' ? 'last Month' : ''
+    return type ? `Compared to (${Number(previous)} ${day})` : ''
+}
+module.exports = {
+    executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, checkDepartmentExists, productionCount,
+    getCompareData, dateComparisions, checkUserExists, dbError, getBatchId, customerProductDetails, createHash, convertToWords
+}

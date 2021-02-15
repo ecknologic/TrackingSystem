@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const motherPlantDbQueries = require('../dbQueries/motherplant/queries');
-const { dbError, getBatchId } = require('../utils/functions');
+const { dbError, getBatchId, productionCount, getCompareData } = require('../utils/functions');
 const { INSERTMESSAGE, UPDATEMESSAGE } = require('../utils/constants');
 const dayjs = require('dayjs');
 const usersQueries = require('../dbQueries/users/queries');
@@ -389,16 +389,19 @@ router.get('/getProductByBatch/:batchNo', (req, res) => {
 });
 router.get('/getTotalProduction', (req, res) => {
     let input = req.query
+    const defaultValues = { product20LCount, product1LCount, product500MLCount, product250MLCount }
     motherPlantDbQueries.getTotalProduction(input, (err, productionResult) => {
         if (err) res.status(500).json(dbError(err));
-        else {
-            let { product20LCount = 0, product1LCount = 0, product500MLCount = 0, product250MLCount = 0 } = productionResult[0]
-
-            product20LCount = product20LCount
-            product1LCount = product1LCount
-            product500MLCount = product500MLCount
-            product250MLCount = product250MLCount
-            res.json({ product20LCount, product1LCount, product500MLCount, product250MLCount });
+        else if (productionResult.length) {
+            let currentValues = productionResult[0]
+            motherPlantDbQueries.getTotalChangeProduction(input, (err, productionResult) => {
+                if (err) res.status(500).json(dbError(err));
+                else {
+                    res.json({ currentValues, previousValues: productionResult[0] || defaultValues });
+                }
+            })
+        } else {
+            res.json({ currentValues: defaultValues, previousValues: defaultValues })
         }
     })
 });
@@ -464,26 +467,25 @@ router.get('/getTotalProductionDetails', (req, res) => {
     })
 });
 router.get('/getTotalProductionByDate', (req, res) => {
-    let { startDate, endDate, shiftType } = req.query;
+    const { type } = req.query
     let input = {
-        departmentId, startDate, endDate, shiftType
+        departmentId, ...req.query
     }
-    motherPlantDbQueries.getTotalProductionByDate(input, (err, productionResult) => {
+    const defaultValues = { product20LCount: 0, product1LCount: 0, product500MLCount: 0, product250MLCount: 0 }
+    motherPlantDbQueries.getTotalProductionByDate(input, (err, currentResult) => {
         if (err) res.status(500).json(dbError(err));
-        else if (productionResult.length) {
-
-            let product20LCount = 0, product1LCount = 0, product500MLCount = 0, product250MLCount = 0
-
-            let productionObj = productionResult[0]
-            let { total20LCans = 0, total1LBoxes = 0, total500MLBoxes = 0, total250MLBoxes = 0 } = productionObj
-
-            product20LCount = total20LCans
-            product1LCount = total1LBoxes
-            product500MLCount = total500MLBoxes
-            product250MLCount = total250MLBoxes
-            res.json({ product20LCount, product1LCount, product500MLCount, product250MLCount });
+        else if (currentResult.length) {
+            let currentValues = productionCount(currentResult);
+            motherPlantDbQueries.getTotalProductionChangeByDate(input, (err, prevResult) => {
+                if (err) res.status(500).json(dbError(err));
+                else if (prevResult.length) {
+                    let previousValues = productionCount(prevResult);
+                    res.json({ ...currentValues, ...getCompareData(currentValues, previousValues, type) });
+                }
+                else res.json({ ...currentValues, ...getCompareData(currentValues, defaultValues, type) });
+            })
         }
-        else res.json({ product20LCount: 0, product1LCount: 0, product500MLCount: 0, product250MLCount: 0 });
+        else res.json({ ...defaultValues, ...getCompareData(defaultValues, defaultValues, type) });
     })
 });
 
@@ -568,3 +570,4 @@ router.delete('/deleteVehicle/:vehicleId', (req, res) => {
 });
 
 module.exports = router;
+

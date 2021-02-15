@@ -65,11 +65,6 @@ export const validateAccountValues = (data, customerType, isInView) => {
         if (!organizationName) errors.organizationName = text
         if (!contractPeriod) errors.contractPeriod = text
         if (!dispenserCount) errors.dispenserCount = text
-        if (creditPeriodInDays === null || !String(creditPeriodInDays)) errors.creditPeriodInDays = text
-        else {
-            const error = compareMaxNumber(creditPeriodInDays, 90, 'days')
-            error && (errors.creditPeriodInDays = error)
-        }
         if (!gstNo) errors.gstNo = text
         if (!gstProof) errors.gstProof = text
     }
@@ -98,6 +93,11 @@ export const validateAccountValues = (data, customerType, isInView) => {
     if (referredBy) {
         const error = validateNames(referredBy)
         error && (errors.referredBy = error)
+    }
+    if (creditPeriodInDays === null || !String(creditPeriodInDays)) errors.creditPeriodInDays = text
+    else {
+        const error = compareMaxNumber(creditPeriodInDays, 90, 'days')
+        error && (errors.creditPeriodInDays = error)
     }
     if (depositAmount === null || !String(depositAmount)) errors.depositAmount = text
     else {
