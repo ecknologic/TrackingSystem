@@ -62,11 +62,12 @@ const PanelHeader = memo((props) => {
         let to = dayjs().format(DATEFORMAT)
         let from = dayjs(endDate).format(DATEFORMAT)
         let startDate = endDate
+        let fromStart = beginning
 
         if (isToday) {
             const todayFull = dayjs().format(DATETIMEFORMAT)
             setTime(todayFull)
-            setShow(beginning ? `till Today` : 'Today')
+            setShow(fromStart ? `till Today` : 'Today')
         }
         else {
             if (isWeek) {
@@ -79,11 +80,12 @@ const PanelHeader = memo((props) => {
                 endDate = dayjs().endOf('month').format(APIDATEFORMAT)
                 from = dayjs(startDate).format(DATEFORMAT)
             }
+            fromStart = false
             setTime(`${from} to ${to}`)
             setShow(value)
         }
 
-        onSelect({ startDate, endDate, fromStart: beginning, type: value })
+        onSelect({ startDate, endDate, fromStart, type: value })
     }
 
     const datePickerStatus = (status) => {
