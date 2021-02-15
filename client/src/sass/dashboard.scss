@@ -229,10 +229,84 @@ $textColor:rgba(0,0,0,0.85);
         .header {
             padding: 0 1em;
         }
+        
+        .second-header {
+            padding: 1em;
+        }
     }
 
     .total-business-panel {
         margin-right: 1em;
     }
     
+}
+
+.total-customer-panel {
+    padding-bottom: 1em;
+
+    .heading {
+        display: flex;
+
+        .title, .number {
+            font-family: 'PoppinsSemiBold600';
+            color: #2E384D;
+            font-size: 1.55em;
+        }
+
+        .title {
+            padding-right: .5em;
+        }
+    }
+
+    .sub-title {
+        font-family: 'PoppinsSemiBold600';
+        color: #B4B3B3;
+        font-size: .9em;
+    }
+}
+
+.second-overview-card {
+    padding:1em;
+    background-color: #fff;
+    border-radius: .6em;
+
+    .heading {
+        display: flex;
+
+        .title, .number {
+            font-family: 'PoppinsSemiBold600';
+            color: #2E384D;
+            font-size: 1.55em;
+        }
+
+        .title {
+            padding-right: .5em;
+        }
+    }
+    .stat {
+        padding-bottom: .2em;
+
+        .title {
+            font-size: .9em;
+            font-family: 'PoppinsRegular400';
+            color: rgba(0,0,0,0.85);
+            padding-right: .5em;
+        }
+        
+        .number {
+            font-family: 'PoppinsSemiBold600';
+            color: #2E384D;
+        }
+    }
+
+    .red-num {
+        font-family: 'PoppinsSemiBold600';
+        color: #FA6400;
+        font-size: 1.55em;
+    } 
+
+    .chev {
+        padding-left: .5em;
+        transform: scale(.8);
+    }
 }

@@ -58,11 +58,16 @@ const CustomersOverview = () => {
 
     return (
         <>
+            <div className='total-customer-panel'>
+                <div className='heading'>
+                    <span className='title'>Total Customers</span>
+                    <span className='number'>{totalActiveCustomers || 0}</span>
+                </div>
+                <span className='sub-title'>Inactive Customers  {totalInactiveCustomers || 0}</span>
+            </div>
             <PanelHeader title='Customers Overview' onSelect={handleOperation} beginning showShow />
             <div className='panel-body quality-testing-panel'>
                 <Slider className='dashboard-slider' {...props} >
-                    <CustomerOverviewCard total={totalActiveCustomers} title='Active Customers' onClick={goToCustomers} />
-                    <CustomerOverviewCard total={totalInactiveCustomers} title='Inactive Customers' onClick={goToCustomers} />
                     <CustomerOverviewCard total={totalCorporateCustomers} pending={pendingCorporateCustomers} title='Corporate Customers' onClick={goToCustomers} />
                     <CustomerOverviewCard total={totalOtherCustomers} pending={pendingOtherCustomers} title='Other Customers' onClick={goToCustomers} />
                     <CustomerOverviewCard title='Memberships' onClick={goToCustomers} />
