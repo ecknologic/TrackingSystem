@@ -251,6 +251,17 @@ motherPlantDbQueries.getTotalRevenue = async (input, callback) => {
     }
     return executeGetParamsQuery(query, options, callback)
 }
+motherPlantDbQueries.getTotalRevenueChange = async (input, callback) => {
+    let { startDate, endDate, fromStart, type } = input;
+    const { startDate: newStartDate, endDate: newEndDate } = dateComparisions(startDate, endDate, type)
+    let options = [newEndDate]
+    let query = `SELECT SUM(price20L) total20L,SUM(price1L) total1L,SUM(price500ML) total500ML,SUM(price250ML) total250ML FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)<=?`;
+    if (fromStart !== 'true') {
+        options = [newStartDate, newEndDate]
+        query = ` SELECT SUM(price20L) total20L,SUM(price1L) total1L,SUM(price500ML) total500ML,SUM(price250ML) total250ML FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)>=? AND DATE(deliveredDate)<=?`;
+    }
+    return executeGetParamsQuery(query, options, callback)
+}
 //POST Request Methods
 motherPlantDbQueries.createQC = async (input, callback) => {
     let query = "insert into qualitycontrol (reportdate,batchId,testType,reportImage,description) values(?,?,?,?,?)";

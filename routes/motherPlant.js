@@ -505,7 +505,12 @@ router.get('/getVehicleDetails', (req, res) => {
 router.get('/getTotalRevenue', (req, res) => {
     motherPlantDbQueries.getTotalRevenue(req.query, (err, results) => {
         if (err) res.status(500).json(dbError(err));
-        res.json(results);
+        else {
+            motherPlantDbQueries.getTotalRevenueChange(req.query, (err, previousResults) => {
+                if (err) res.status(500).json(dbError(err));
+                else res.json({ currentValues: results, previousValues: previousResults });
+            })
+        }
     });
 });
 
