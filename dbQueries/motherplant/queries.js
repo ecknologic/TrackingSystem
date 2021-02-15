@@ -244,10 +244,21 @@ motherPlantDbQueries.getQCLevelsDetails = async (input, callback) => {
 motherPlantDbQueries.getTotalRevenue = async (input, callback) => {
     let { startDate, endDate, fromStart } = input;
     let options = [endDate]
-    let query = `SELECT SUM(price20L) total20L,SUM(price1L) total1L,SUM(price500ML) total500ML,SUM(price250ML) total250ML FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)<=?`;
+    let query = `SELECT SUM(price20L) product20LCount,SUM(price1L) product1LCount,SUM(price500ML) product500MLCount,SUM(price250ML) product250MLCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)<=?`;
     if (fromStart !== 'true') {
         options = [startDate, endDate]
-        query = ` SELECT SUM(price20L) total20L,SUM(price1L) total1L,SUM(price500ML) total500ML,SUM(price250ML) total250ML FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)>=? AND DATE(deliveredDate)<=?`;
+        query = ` SELECT SUM(price20L) product20LCount,SUM(price1L) product1LCount,SUM(price500ML) product500MLCount,SUM(price250ML) product250MLCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)>=? AND DATE(deliveredDate)<=?`;
+    }
+    return executeGetParamsQuery(query, options, callback)
+}
+motherPlantDbQueries.getTotalRevenueChange = async (input, callback) => {
+    let { startDate, endDate, fromStart, type } = input;
+    const { startDate: newStartDate, endDate: newEndDate } = dateComparisions(startDate, endDate, type)
+    let options = [newEndDate]
+    let query = `SELECT SUM(price20L) product20LCount,SUM(price1L) product1LCount,SUM(price500ML) product500MLCount,SUM(price250ML) product250MLCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)<=?`;
+    if (fromStart !== 'true') {
+        options = [newStartDate, newEndDate]
+        query = ` SELECT SUM(price20L) product20LCount,SUM(price1L) product1LCount,SUM(price500ML) product500MLCount,SUM(price250ML) product250MLCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)>=? AND DATE(deliveredDate)<=?`;
     }
     return executeGetParamsQuery(query, options, callback)
 }

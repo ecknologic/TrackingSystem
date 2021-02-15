@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const motherPlantDbQueries = require('../dbQueries/motherplant/queries');
-const { dbError, getBatchId, productionCount, getCompareData } = require('../utils/functions');
+const { dbError, getBatchId, productionCount, getCompareData, getFormatedNumber } = require('../utils/functions');
 const { INSERTMESSAGE, UPDATEMESSAGE } = require('../utils/constants');
 const dayjs = require('dayjs');
 const usersQueries = require('../dbQueries/users/queries');
@@ -389,20 +389,20 @@ router.get('/getProductByBatch/:batchNo', (req, res) => {
 });
 router.get('/getTotalProduction', (req, res) => {
     let input = req.query
-    const defaultValues = { product20LCount, product1LCount, product500MLCount, product250MLCount }
+    const defaultValues = { product20LCount: 0, product1LCount: 0, product500MLCount: 0, product250MLCount: 0 }
     motherPlantDbQueries.getTotalProduction(input, (err, productionResult) => {
         if (err) res.status(500).json(dbError(err));
         else if (productionResult.length) {
-            let currentValues = productionResult[0]
-            motherPlantDbQueries.getTotalChangeProduction(input, (err, productionResult) => {
-                if (err) res.status(500).json(dbError(err));
-                else {
-                    res.json({ currentValues, previousValues: productionResult[0] || defaultValues });
-                }
-            })
-        } else {
-            res.json({ currentValues: defaultValues, previousValues: defaultValues })
+            const { product20LCount: p20L, product1LCount: p1L, product500MLCount: p500ml, product250MLCount: p250ml } = productionResult[0]
+            const data = {
+                product20LCount: getFormatedNumber(p20L),
+                product1LCount: getFormatedNumber(p1L), product500MLCount: getFormatedNumber(p500ml),
+                product250MLCount: getFormatedNumber(p250ml)
+            }
+            res.json(data);
         }
+        else
+            res.json(defaultValues)
     })
 });
 
@@ -510,9 +510,15 @@ router.get('/getVehicleDetails', (req, res) => {
     });
 });
 router.get('/getTotalRevenue', (req, res) => {
-    motherPlantDbQueries.getTotalRevenue(req.query, (err, results) => {
+    const { type } = req.query
+    motherPlantDbQueries.getTotalRevenue(req.query, (err, currentValues) => {
         if (err) res.status(500).json(dbError(err));
-        res.json(results);
+        else {
+            motherPlantDbQueries.getTotalRevenueChange(req.query, (err, previousValues) => {
+                if (err) res.status(500).json(dbError(err));
+                else res.json(getCompareData(currentValues[0], previousValues[0], type, true));
+            })
+        }
     });
 });
 

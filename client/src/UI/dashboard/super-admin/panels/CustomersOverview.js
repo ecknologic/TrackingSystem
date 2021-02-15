@@ -69,7 +69,7 @@ const CustomersOverview = () => {
             <div className='panel-body quality-testing-panel'>
                 <Slider className='dashboard-slider' {...props} >
                     <CustomerOverviewCard total={totalCorporateCustomers} pending={pendingCorporateCustomers} title='Corporate Customers' onClick={goToCustomers} />
-                    <CustomerOverviewCard total={totalOtherCustomers} pending={pendingOtherCustomers} title='Other Customers' onClick={goToCustomers} />
+                    <CustomerOverviewCard total={totalOtherCustomers} pending={pendingOtherCustomers} title='Individual Customers' onClick={goToCustomers} />
                     <CustomerOverviewCard title='Memberships' onClick={goToCustomers} />
                     <CustomerOverviewCard total={totalDistributors} title='Dealerships' onClick={goToCustomers} />
                 </Slider>
