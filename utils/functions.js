@@ -125,23 +125,68 @@ const getCompareData = (currentValues, previousValues, type, isRs) => {
     const { product20LCount: prev20LCount, product1LCount: prev1LCount,
         product500MLCount: prev500MLCount, product250MLCount: prev250MLCount } = previousValues
 
+    const totalProducts = product20LCount + product1LCount + product500MLCount + product250MLCount
+
     const product20LPercent = getPercent(product20LCount, prev20LCount)
+    const product20LPartPercent = getSimplePercent(product20LCount, totalProducts)
     const product20LCompareText = getCompareText(type, prev20LCount, isRs)
     const product1LPercent = getPercent(product1LCount, prev1LCount)
+    const product1LPartPercent = getSimplePercent(product1LCount, totalProducts)
     const product1LCompareText = getCompareText(type, prev1LCount, isRs)
     const product500MLPercent = getPercent(product500MLCount, prev500MLCount)
+    const product500MLPartPercent = getSimplePercent(product500MLCount, totalProducts)
     const product500MLCompareText = getCompareText(type, prev500MLCount, isRs)
     const product250MLPercent = getPercent(product250MLCount, prev250MLCount)
+    const product250MLPartPercent = getSimplePercent(product250MLCount, totalProducts)
     const product250MLCompareText = getCompareText(type, prev250MLCount, isRs)
     const prevTotal = getFormatedNumber(prev20LCount + prev1LCount + prev500MLCount + prev250MLCount)
-    const total = getFormatedNumber(product20LCount + product1LCount + product500MLCount + product250MLCount)
+    const total = getFormatedNumber(totalProducts)
 
     return {
         product20LCount: getFormatedNumber(product20LCount), product1LCount: getFormatedNumber(product1LCount),
         product500MLCount: getFormatedNumber(product500MLCount), product500MLCount: getFormatedNumber(product500MLCount),
         product250MLCount: getFormatedNumber(product250MLCount), product20LPercent, product20LCompareText, product1LPercent,
-        product1LCompareText, product500MLPercent, product500MLCompareText, product250MLPercent, product250MLCompareText, prevTotal, total
+        product1LCompareText, product500MLPercent, product500MLCompareText, product250MLPercent, product250MLCompareText, prevTotal, total,
+        product20LPartPercent, product1LPartPercent, product500MLPartPercent, product250MLPartPercent
     }
+}
+const getCompareCustomersData = (data, type) => {
+    const { totalCustomers, activeCorporateCustomers, prevActiveCorporateCustomers,
+        activeOtherCustomers, prevActiveOtherCustomers, totalDistributors } = data
+
+    const totalCorporateCustomers = getFormatedNumber(activeCorporateCustomers)
+    const totalIndividualCustomers = getFormatedNumber(activeCorporateCustomers)
+    const corporateCustomersPercent = getPercent(activeCorporateCustomers, prevActiveCorporateCustomers)
+    const corporateCustomersCompareText = getCompareText(type, prevActiveCorporateCustomers)
+    const individualCustomersPercent = getPercent(activeOtherCustomers, prevActiveOtherCustomers)
+    const individualCustomersCompareText = getCompareText(type, prevActiveOtherCustomers)
+
+    return {
+        totalCorporateCustomers, totalIndividualCustomers, totalCustomers: getFormatedNumber(totalCustomers + totalDistributors), corporateCustomersPercent, corporateCustomersCompareText,
+        individualCustomersPercent, individualCustomersCompareText
+    }
+}
+
+const getCompareDistributorsData = (data, type) => {
+    const { totalInactiveCustomers, totalInactiveDistributors, pendingCorporateCustomers: pendingCorporate,
+        pendingOtherCustomers, activeDistributors, prevActiveDistributors } = data
+
+    const totalDistributors = getFormatedNumber(activeDistributors)
+    const pendingCorporateCustomers = getFormatedNumber(pendingCorporate)
+    const pendingIndividualCustomers = getFormatedNumber(pendingOtherCustomers)
+    const distributorsPercent = getPercent(activeDistributors, prevActiveDistributors)
+    const distributorsCompareText = getCompareText(type, prevActiveDistributors)
+
+
+    return {
+        distributorsPercent, totalInactiveCustomers: getFormatedNumber(totalInactiveCustomers + totalInactiveDistributors),
+        distributorsCompareText, pendingIndividualCustomers, pendingCorporateCustomers, totalDistributors
+    }
+}
+
+const getSimplePercent = (total = 0, grandTotal = 1) => {
+    const result = Math.round((Number(total) / (Number(grandTotal) || 1)) * 100)
+    return Number(result)
 }
 
 const getPercent = (current, previous) => {
@@ -187,5 +232,5 @@ const getCrores = (amount) => {
 module.exports = {
     executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, checkDepartmentExists, productionCount,
     getCompareData, dateComparisions, checkUserExists, dbError, getBatchId, customerProductDetails, createHash, convertToWords,
-    getFormatedNumber
+    getFormatedNumber, getCompareCustomersData, getCompareDistributorsData
 }
