@@ -56,7 +56,7 @@ const SuperAdminDashboard = () => {
                     <TotalBusiness />
                     <InvoiceOverview />
                 </div>
-                <WaterQualityResults depMenu={motherplantMenu} />
+                <WaterQualityResults depMenu={motherplantMenu} motherplantList={motherplantList} />
             </div>
         </Fragment>
     )

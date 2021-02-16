@@ -7,7 +7,7 @@ import PanelHeader from '../../../../components/PanelHeader';
 import { TODAYDATE as d } from '../../../../utils/constants';
 import CustomerOverviewCard from '../../../../components/CustomerOverviewCard';
 import { LeftChevronIconGrey, RightChevronIconGrey } from '../../../../components/SVG_Icons';
-const options = { startDate: d, endDate: d, fromStart: true }
+const options = { startDate: d, endDate: d, fromStart: true, type: 'Today' }
 
 const CustomersOverview = () => {
     const history = useHistory()
@@ -17,8 +17,10 @@ const CustomersOverview = () => {
 
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
-    const { totalActiveCustomers, totalCorporateCustomers, totalOtherCustomers } = active
-    const { totalInactiveCustomers, pendingCorporateCustomers, pendingOtherCustomers, totalDistributors } = inactive
+    const { totalCustomers, corporateCustomersPercent, corporateCustomersCompareText, totalActiveCustomers,
+        individualCustomersPercent, individualCustomersCompareText, totalCorporateCustomers, totalIndividualCustomers } = active
+    const { distributorsPercent, totalInactiveCustomers, distributorsCompareText, pendingIndividualCustomers,
+        totalDistributors, pendingCorporateCustomers } = inactive
 
     useEffect(() => {
         getActiveData(opData)
@@ -29,8 +31,8 @@ const CustomersOverview = () => {
         }
     }, [])
 
-    const getActiveData = async ({ startDate, endDate, fromStart }) => {
-        const url = `/customer/getActiveCustomersCount?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}`
+    const getActiveData = async ({ startDate, endDate, fromStart, type }) => {
+        const url = `/customer/getActiveCustomersCount?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}&type=${type}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -38,8 +40,8 @@ const CustomersOverview = () => {
         } catch (error) { }
     }
 
-    const getInactiveData = async ({ startDate, endDate, fromStart }) => {
-        const url = `/customer/getInactiveCustomersCount?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}`
+    const getInactiveData = async ({ startDate, endDate, fromStart, type }) => {
+        const url = `/customer/getInactiveCustomersCount?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}&type=${type}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -61,17 +63,18 @@ const CustomersOverview = () => {
             <div className='total-customer-panel'>
                 <div className='heading'>
                     <span className='title'>Total Customers</span>
-                    <span className='number'>{totalActiveCustomers || 0}</span>
+                    <span className='number'>{totalCustomers || 0}</span>
                 </div>
-                <span className='sub-title'>Inactive Customers  {totalInactiveCustomers || 0}</span>
+                <div className='sub-title green'>Active Customers  {totalCustomers - totalInactiveCustomers || 0}</div>
+                <div className='sub-title'>Inactive Customers  {totalInactiveCustomers || 0}</div>
             </div>
             <PanelHeader title='Customers Overview' onSelect={handleOperation} beginning showShow />
             <div className='panel-body quality-testing-panel'>
                 <Slider className='dashboard-slider' {...props} >
-                    <CustomerOverviewCard total={totalCorporateCustomers} pending={pendingCorporateCustomers} title='Corporate Customers' onClick={goToCustomers} />
-                    <CustomerOverviewCard total={totalOtherCustomers} pending={pendingOtherCustomers} title='Individual Customers' onClick={goToCustomers} />
+                    <CustomerOverviewCard compareText={corporateCustomersCompareText} percent={corporateCustomersPercent} total={totalCorporateCustomers} pending={pendingCorporateCustomers} title='Corporate Customers' onClick={goToCustomers} />
+                    <CustomerOverviewCard compareText={individualCustomersCompareText} total={totalIndividualCustomers} pending={pendingIndividualCustomers} percent={individualCustomersPercent} title='Individual Customers' onClick={goToCustomers} />
                     <CustomerOverviewCard title='Memberships' onClick={goToCustomers} />
-                    <CustomerOverviewCard total={totalDistributors} title='Dealerships' onClick={goToCustomers} />
+                    <CustomerOverviewCard compareText={distributorsCompareText} percent={distributorsPercent} total={totalDistributors} title='Dealerships' onClick={goToCustomers} />
                 </Slider>
             </div>
         </>

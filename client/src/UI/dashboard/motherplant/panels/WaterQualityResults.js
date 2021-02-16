@@ -2,9 +2,10 @@ import axios from 'axios';
 import Slider from "react-slick";
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
+import { isEmpty } from '../../../../utils/Functions';
 import PanelHeader from '../../../../components/PanelHeader';
-import { TODAYDATE as d } from '../../../../utils/constants';
 import QualityResultCard from '../../../../components/QualityResultCard';
+import { getWarehoseId, TODAYDATE as d } from '../../../../utils/constants';
 import { LeftChevronIconGrey, RightChevronIconGrey } from '../../../../components/SVG_Icons';
 const options = { startDate: d, endDate: d, fromStart: true }
 
@@ -24,7 +25,8 @@ const WaterQualityResults = () => {
     }, [])
 
     const getTestResults = async ({ startDate, endDate, fromStart }) => {
-        const url = `/motherPlant/getQCTestResults?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}`
+        const departmentId = getWarehoseId()
+        const url = `/motherPlant/getQCTestResults?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}&departmentId=${departmentId}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -42,11 +44,14 @@ const WaterQualityResults = () => {
         <>
             <PanelHeader title='Water Quality Testing Results' onSelect={handleOperation} beginning showShow />
             <div className='panel-body quality-testing-panel'>
-                <Slider className='dashboard-slider' {...props} >
-                    {
-                        results.map((item) => <QualityResultCard key={item.batchId} data={item} />)
-                    }
-                </Slider>
+                {
+                    !isEmpty(results) &&
+                    <Slider className='dashboard-slider' {...props} >
+                        {
+                            results.map((item) => <QualityResultCard key={item.productionQcId} data={item} />)
+                        }
+                    </Slider>
+                }
             </div>
         </>
     )

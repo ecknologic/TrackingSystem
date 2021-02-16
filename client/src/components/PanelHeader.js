@@ -162,7 +162,7 @@ const PanelHeader = memo((props) => {
                                             label='Motherplant'
                                             initValue='All'
                                             options={depMenu}
-                                            onSelect={handleShiftSelect}
+                                            onSelect={handleDepartmentSelect}
                                         />
                                     </div>
                                 ) : null
