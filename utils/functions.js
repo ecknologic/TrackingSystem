@@ -185,7 +185,8 @@ const getCompareDistributorsData = (data, type) => {
 }
 
 const getSimplePercent = (total = 0, grandTotal = 1) => {
-    return (total / grandTotal * 100).toFixed(0)
+    const result = Math.round((Number(total) / (Number(grandTotal) || 1)) * 100)
+    return Number(result)
 }
 
 const getPercent = (current, previous) => {

@@ -88,13 +88,13 @@ export const calendarMenu = [
     <Menu.Item key="Today" >Today</Menu.Item>,
     <Menu.Item key="This Week">This Week</Menu.Item>,
     <Menu.Item key="This Month" >This Month</Menu.Item>,
-    <Menu.Item key="Select Date" >Select Date</Menu.Item>
+    <Menu.Item key="Date Range" >Date Range</Menu.Item>
 ]
 export const calendarOptions = [
     <Option key="1" value="Today">Today</Option>,
     <Option key="2" value="This Week">This Week</Option>,
     <Option key="3" value="This Month">This Month</Option>,
-    <Option key="4" value="Select Date">Select Date</Option>,
+    <Option key="4" value="Date Range">Date Range</Option>,
 ]
 export const shiftMenu = [
     <Menu.Item key="Morning" >Morning</Menu.Item>,

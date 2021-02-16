@@ -4,15 +4,14 @@ import InputLabel from './InputLabel';
 import SelectInput from './SelectInput';
 import PanelDropdown from './PanelDropdown';
 import ReportsDropdown from './ReportsDropdown';
-import { TODAYDATE } from '../utils/constants';
-import CustomDateInput from './CustomDateInput';
+import CustomRangeInput from './CustomRangeInput';
 import { calendarMenu, calendarOptions, shiftMenu } from '../assets/fixtures';
 import { disableFutureDates } from '../utils/Functions';
 const fn = () => { }
 const todayString = 'Today'
 const weekString = 'This Week'
 const monthString = 'This Month'
-const customString = 'Select Date'
+const customString = 'Date Range'
 const DATETIMEFORMAT = 'DD/MM/YYYY h:mm A'
 const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
@@ -23,7 +22,7 @@ const PanelHeader = memo((props) => {
     const [show, setShow] = useState(() => beginning ? `till Today` : 'Today')
     const [open, setOpen] = useState(false)
     const [time, setTime] = useState(() => getInitTime(initTime))
-    const [selectedDate, setSelectedDate] = useState(TODAYDATE)
+    const [selectedRange, setSelectedRange] = useState([])
     const [dateRange, setDateRange] = useState(initTime)
     const [depValue, setDepValue] = useState('All')
 
@@ -84,7 +83,7 @@ const PanelHeader = memo((props) => {
             setTime(`${from} to ${to}`)
             setShow(value)
         }
-
+        setSelectedRange([])
         onSelect({ startDate, endDate, fromStart, type: value })
     }
 
@@ -92,13 +91,15 @@ const PanelHeader = memo((props) => {
         !status && setOpen(false)
     }
 
-    const handleDateSelect = (value) => {
-        const d = dayjs(value).format(APIDATEFORMAT)
-        const time = dayjs(value).format(DATEFORMAT)
-        setTime(time)
-        setSelectedDate(value)
-        setShow(`${beginning ? 'till' : 'on'} ${time}`)
-        onSelect({ startDate: d, endDate: d, fromStart: beginning, type: '' })
+    const handleDateSelect = (selected) => {
+        const [from, to] = selected
+        const startDate = from.format(APIDATEFORMAT)
+        const endDate = to.format(APIDATEFORMAT)
+        setTime(`${from.format(DATEFORMAT)} to ${to.format(DATEFORMAT)}`)
+        setOpen(false)
+        setSelectedRange(selected)
+        onSelect({ startDate, endDate, fromStart: beginning, type: '' })
+        setTimeout(() => setSelectedRange([]), 820)
     }
 
     const handleDateInputSelect = (value) => {
@@ -130,15 +131,15 @@ const PanelHeader = memo((props) => {
                             {
                                 (showShow || showFooter) && (
                                     <div className='app-date-picker-wrapper'>
-                                        <CustomDateInput // Hidden in the DOM
+                                        <CustomRangeInput // Hidden in the DOM
                                             open={open}
-                                            value={selectedDate}
+                                            value={selectedRange}
                                             style={{ left: 0 }}
                                             type='range'
                                             className='date-panel-picker'
                                             onChange={handleDateSelect}
                                             onOpenChange={datePickerStatus}
-                                            disabledDate={disableFutureDates}
+                                        // disabledDate={disableFutureDates}
                                         />
                                     </div>
                                 )
