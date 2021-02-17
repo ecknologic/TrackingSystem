@@ -4,7 +4,7 @@ import { http } from '../../../../modules/http';
 import PanelHeader from '../../../../components/PanelHeader';
 import { TODAYDATE as d } from '../../../../utils/constants';
 import TotalRevenueCard from '../../../../components/TotalRevenueCard';
-const options = { startDate: d, endDate: d, fromStart: true }
+const options = { startDate: d, endDate: d, fromStart: true, type: 'Today' }
 
 const TotalBusiness = () => {
     const [business, setBusiness] = useState([])
@@ -21,11 +21,11 @@ const TotalBusiness = () => {
         }
     }, [])
 
-    const getTotalBusiness = async ({ startDate, endDate, fromStart }) => {
-        const url = `/motherPlant/getTotalRevenue?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}`
+    const getTotalBusiness = async ({ startDate, endDate, fromStart, type }) => {
+        const url = `/motherPlant/getTotalRevenue?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}&type=${type}`
 
         try {
-            const [data] = await http.GET(axios, url, config)
+            const data = await http.GET(axios, url, config)
             setBusiness(data)
         } catch (error) { }
     }

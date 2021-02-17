@@ -78,7 +78,7 @@ motherPlantDbQueries.getProductionQcBatchIds = async (departmentId, callback) =>
     return executeGetParamsQuery(query, [departmentId, "Pending"], callback)
 }
 motherPlantDbQueries.getProductionBatchIds = async (departmentId, callback) => {
-    let query = "select productionQcId,batchId from productionQC where departmentId=? AND status=? AND outOfStock='0' ORDER BY requestedDate DESC";
+    let query = "select productionQcId,batchId from productionQC where departmentId=? AND productionCreated=0 AND status=? AND outOfStock='0' ORDER BY requestedDate DESC";
     return executeGetParamsQuery(query, [departmentId, "Approved"], callback)
 }
 motherPlantDbQueries.getPostProductionBatchIds = async (departmentId, callback) => {
@@ -142,12 +142,33 @@ motherPlantDbQueries.getQCTestedBatches = async (departmentId, callback) => {
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getQCTestResults = async (input, callback) => {
-    let { departmentId, startDate, endDate, fromStart } = input;
-    let options = [departmentId, endDate]
-    let query = `SELECT JSON_ARRAYAGG(JSON_OBJECT('phLevel',ROUND(q.phLevel,1),'tds',ROUND(q.TDS,1),'ozoneLevel',ROUND(q.ozoneLevel,1),'qcLevel',q.qcLevel,'testResult',q.testResult,'managerName',q.managerName,'testingDate',q.testedDate)) levels,p.batchId batchId, p.shiftType FROM qualitycheck q INNER JOIN productionQC p ON q.productionQcId=p.productionQcId WHERE q.departmentId=? AND q.qcLevel=2 AND DATE(q.testedDate)<=? GROUP BY q.productionQcId`;
-    if (fromStart !== 'true') {
-        options = [departmentId, startDate, endDate]
-        query = `SELECT JSON_ARRAYAGG(JSON_OBJECT('phLevel',ROUND(q.phLevel,1),'tds',ROUND(q.TDS,1),'ozoneLevel',ROUND(q.ozoneLevel,1),'qcLevel',q.qcLevel,'testResult',q.testResult,'managerName',q.managerName,'testingDate',q.testedDate)) levels,p.batchId batchId, p.shiftType FROM qualitycheck q INNER JOIN productionQC p ON q.productionQcId=p.productionQcId WHERE q.departmentId=? AND q.qcLevel=2 AND DATE(q.testedDate)>=? AND DATE(q.testedDate)<=?  GROUP BY q.productionQcId`;
+    let { departmentId, startDate, endDate, fromStart, shiftType } = input;
+    let options = [endDate]
+    let query = `SELECT JSON_ARRAYAGG(JSON_OBJECT('phLevel',ROUND(q.phLevel,1),'tds',ROUND(q.TDS,1),'ozoneLevel',ROUND(q.ozoneLevel,1),'qcLevel',q.qcLevel,'testResult',q.testResult,'managerName',q.managerName,'testingDate',q.testedDate)) levels,p.batchId batchId, p.shiftType,p.productionQcId,d.departmentName FROM qualitycheck q INNER JOIN productionQC p ON q.productionQcId=p.productionQcId INNER JOIN departmentmaster d ON p.departmentId=d.departmentId WHERE q.qcLevel=2 AND DATE(q.testedDate)<=? GROUP BY q.productionQcId`;
+
+    if (departmentId !== 'All' && shiftType && shiftType !== 'All') {
+        options = [departmentId, shiftType, endDate]
+        query = `SELECT JSON_ARRAYAGG(JSON_OBJECT('phLevel',ROUND(q.phLevel,1),'tds',ROUND(q.TDS,1),'ozoneLevel',ROUND(q.ozoneLevel,1),'qcLevel',q.qcLevel,'testResult',q.testResult,'managerName',q.managerName,'testingDate',q.testedDate)) levels,p.batchId batchId, p.shiftType,p.productionQcId,d.departmentName FROM qualitycheck q INNER JOIN productionQC p ON q.productionQcId=p.productionQcId INNER JOIN departmentmaster d ON p.departmentId=d.departmentId WHERE q.departmentId=? AND q.qcLevel=2 AND p.shiftType=? AND DATE(q.testedDate)<=? GROUP BY q.productionQcId`;
+        if (fromStart !== 'true') {
+            options = [departmentId, shiftType, startDate, endDate]
+            query = `SELECT JSON_ARRAYAGG(JSON_OBJECT('phLevel',ROUND(q.phLevel,1),'tds',ROUND(q.TDS,1),'ozoneLevel',ROUND(q.ozoneLevel,1),'qcLevel',q.qcLevel,'testResult',q.testResult,'managerName',q.managerName,'testingDate',q.testedDate)) levels,p.batchId batchId, p.shiftType,p.productionQcId,d.departmentName FROM qualitycheck q INNER JOIN productionQC p ON q.productionQcId=p.productionQcId INNER JOIN departmentmaster d ON p.departmentId=d.departmentId WHERE q.departmentId=? AND q.qcLevel=2 AND p.shiftType=? AND DATE(q.testedDate)>=? AND DATE(q.testedDate)<=?  GROUP BY q.productionQcId`;
+        }
+    }
+    else if (departmentId !== 'All') {
+        options = [departmentId, endDate]
+        query = `SELECT JSON_ARRAYAGG(JSON_OBJECT('phLevel',ROUND(q.phLevel,1),'tds',ROUND(q.TDS,1),'ozoneLevel',ROUND(q.ozoneLevel,1),'qcLevel',q.qcLevel,'testResult',q.testResult,'managerName',q.managerName,'testingDate',q.testedDate)) levels,p.batchId batchId, p.shiftType,p.productionQcId,d.departmentName FROM qualitycheck q INNER JOIN productionQC p ON q.productionQcId=p.productionQcId INNER JOIN departmentmaster d ON p.departmentId=d.departmentId WHERE q.departmentId=? AND q.qcLevel=2 AND DATE(q.testedDate)<=? GROUP BY q.productionQcId`;
+        if (fromStart !== 'true') {
+            options = [departmentId, startDate, endDate]
+            query = `SELECT JSON_ARRAYAGG(JSON_OBJECT('phLevel',ROUND(q.phLevel,1),'tds',ROUND(q.TDS,1),'ozoneLevel',ROUND(q.ozoneLevel,1),'qcLevel',q.qcLevel,'testResult',q.testResult,'managerName',q.managerName,'testingDate',q.testedDate)) levels,p.batchId batchId, p.shiftType,p.productionQcId,d.departmentName FROM qualitycheck q INNER JOIN productionQC p ON q.productionQcId=p.productionQcId INNER JOIN departmentmaster d ON p.departmentId=d.departmentId WHERE q.departmentId=? AND q.qcLevel=2 AND DATE(q.testedDate)>=? AND DATE(q.testedDate)<=?  GROUP BY q.productionQcId`;
+        }
+    }
+    else if (shiftType && shiftType !== 'All') {
+        options = [shiftType, endDate]
+        query = `SELECT JSON_ARRAYAGG(JSON_OBJECT('phLevel',ROUND(q.phLevel,1),'tds',ROUND(q.TDS,1),'ozoneLevel',ROUND(q.ozoneLevel,1),'qcLevel',q.qcLevel,'testResult',q.testResult,'managerName',q.managerName,'testingDate',q.testedDate)) levels,p.batchId batchId, p.shiftType,p.productionQcId,d.departmentName FROM qualitycheck q INNER JOIN productionQC p ON q.productionQcId=p.productionQcId INNER JOIN departmentmaster d ON p.departmentId=d.departmentId WHERE p.shiftType=? AND q.qcLevel=2 AND DATE(q.testedDate)<=? GROUP BY q.productionQcId`;
+        if (fromStart !== 'true') {
+            options = [shiftType, startDate, endDate]
+            query = `SELECT JSON_ARRAYAGG(JSON_OBJECT('phLevel',ROUND(q.phLevel,1),'tds',ROUND(q.TDS,1),'ozoneLevel',ROUND(q.ozoneLevel,1),'qcLevel',q.qcLevel,'testResult',q.testResult,'managerName',q.managerName,'testingDate',q.testedDate)) levels,p.batchId batchId, p.shiftType,p.productionQcId,d.departmentName FROM qualitycheck q INNER JOIN productionQC p ON q.productionQcId=p.productionQcId INNER JOIN departmentmaster d ON p.departmentId=d.departmentId WHERE p.shiftType=? AND q.qcLevel=2 AND DATE(q.testedDate)>=? AND DATE(q.testedDate)<=?  GROUP BY q.productionQcId`;
+        }
     }
     return executeGetParamsQuery(query, options, callback)
 }
@@ -244,10 +265,21 @@ motherPlantDbQueries.getQCLevelsDetails = async (input, callback) => {
 motherPlantDbQueries.getTotalRevenue = async (input, callback) => {
     let { startDate, endDate, fromStart } = input;
     let options = [endDate]
-    let query = `SELECT SUM(price20L) total20L,SUM(price1L) total1L,SUM(price500ML) total500ML,SUM(price250ML) total250ML FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)<=?`;
+    let query = `SELECT SUM(price20L) product20LCount,SUM(price1L) product1LCount,SUM(price500ML) product500MLCount,SUM(price250ML) product250MLCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)<=?`;
     if (fromStart !== 'true') {
         options = [startDate, endDate]
-        query = ` SELECT SUM(price20L) total20L,SUM(price1L) total1L,SUM(price500ML) total500ML,SUM(price250ML) total250ML FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)>=? AND DATE(deliveredDate)<=?`;
+        query = ` SELECT SUM(price20L) product20LCount,SUM(price1L) product1LCount,SUM(price500ML) product500MLCount,SUM(price250ML) product250MLCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)>=? AND DATE(deliveredDate)<=?`;
+    }
+    return executeGetParamsQuery(query, options, callback)
+}
+motherPlantDbQueries.getTotalRevenueChange = async (input, callback) => {
+    let { startDate, endDate, fromStart, type } = input;
+    const { startDate: newStartDate, endDate: newEndDate } = dateComparisions(startDate, endDate, type)
+    let options = [newEndDate]
+    let query = `SELECT SUM(price20L) product20LCount,SUM(price1L) product1LCount,SUM(price500ML) product500MLCount,SUM(price250ML) product250MLCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)<=?`;
+    if (fromStart !== 'true') {
+        options = [newStartDate, newEndDate]
+        query = ` SELECT SUM(price20L) product20LCount,SUM(price1L) product1LCount,SUM(price500ML) product500MLCount,SUM(price250ML) product250MLCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)>=? AND DATE(deliveredDate)<=?`;
     }
     return executeGetParamsQuery(query, options, callback)
 }
@@ -283,6 +315,7 @@ motherPlantDbQueries.createQualityCheck = async (input, callback) => {
     let query = "insert into qualitycheck (testedDate,productionQcId,phLevel,TDS,ozoneLevel,testResult,managerName,description,testType,qcLevel,departmentId) values(?,?,?,?,?,?,?,?,?,?,?)";
     let requestBody = [new Date(), productionQcId, phLevel, TDS, ozoneLevel, testResult, managerName, description, testType, qcLevel, departmentId]
     if (qcLevel == 1) motherPlantDbQueries.updateProductionQCStatus({ productionQcId, status: testResult })
+    if (qcLevel != 1 && testResult == 'Approved') motherPlantDbQueries.updateProductioncreatedStatus({ productionQcId })
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.createInternalQC = async (input, callback) => {
@@ -377,6 +410,11 @@ motherPlantDbQueries.updateProductionQC = (input, callback) => {
 motherPlantDbQueries.updateProductionQCStatus = (input, callback) => {
     let query = `update productionQC set status=? where productionQcId=${input.productionQcId}`;
     let requestBody = [input.status]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+motherPlantDbQueries.updateProductioncreatedStatus = (input, callback) => {
+    let query = `update productionQC set productionCreated=? where productionQcId=${input.productionQcId}`;
+    let requestBody = [1]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.deleteVehicle = (vehicleId, callback) => {

@@ -30,7 +30,7 @@ const SalesResults = ({ depOptions }) => {
         const url = `/warehouse/getTotalSales?startDate=${startDate}&endDate=${endDate}&departmentId=${departmentId}`
 
         try {
-            const [data] = await http.GET(axios, url, config)
+            const data = await http.GET(axios, url, config)
             setResults(data)
         } catch (error) { }
     }

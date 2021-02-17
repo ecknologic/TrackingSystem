@@ -1,4 +1,4 @@
-const { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery } = require('../../utils/functions.js');
+const { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, dateComparisions } = require('../../utils/functions.js');
 const { getDeliverysByCustomerOrderId } = require('../warehouse/queries.js');
 let customerQueries = {}
 
@@ -18,27 +18,57 @@ customerQueries.getCustomersByCustomerType = (customerType, callback) => {
     let query = "SELECT c.organizationName,c.isActive,c.customertype,c.isApproved,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.approvedDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.customertype=? and c.isApproved=1 and d.deleted=0  GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.isApproved,c.customerId,c.registeredDate,c.approvedDate ORDER BY c.lastApprovedDate DESC"
     executeGetParamsQuery(query, [customerType], callback)
 }
+customerQueries.getInActiveCustomers = (callback) => {
+    let query = "SELECT c.organizationName,c.customertype,c.isActive,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.isApproved=0 AND approvedDate!='NULL' and d.deleted=0  GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.customerId,c.registeredDate ORDER BY c.lastDraftedDate DESC"
+    executeGetParamsQuery(query, callback)
+}
+customerQueries.getTotalCustomers = (input, callback) => {
+    let { startDate, endDate, fromStart } = input;
+    let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE deleted=0"
+    if (fromStart !== 'true') {
+        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE deleted=0 AND  DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
+        executeGetParamsQuery(query, [startDate, endDate], callback)
+    } else executeGetParamsQuery(query, callback)
+}
 customerQueries.getTotalActiveCustomers = (input, callback) => {
     let { startDate, endDate, fromStart } = input;
     let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0"
     if (fromStart !== 'true') {
-        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND  DATE(createdDateTime)>=? AND DATE(createdDateTime)<=?"
+        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND  DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
         executeGetParamsQuery(query, [startDate, endDate], callback)
+    } else executeGetParamsQuery(query, callback)
+}
+customerQueries.getTotalActiveCustomersChange = (input, callback) => {
+    let { startDate, endDate, fromStart, type } = input;
+    const { startDate: newStartDate, endDate: newEndDate } = dateComparisions(startDate, endDate, type)
+    let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0"
+    if (fromStart !== 'true') {
+        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND  DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
+        executeGetParamsQuery(query, [newStartDate, newEndDate], callback)
     } else executeGetParamsQuery(query, callback)
 }
 customerQueries.getTotalActiveCorporateCustomers = (input, callback) => {
     let { startDate, endDate, fromStart } = input;
     let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND customertype='Corporate'"
     if (fromStart !== 'true') {
-        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND customertype='Corporate' AND  DATE(createdDateTime)>=? AND DATE(createdDateTime)<=?"
+        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND customertype='Corporate' AND  DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
         executeGetParamsQuery(query, [startDate, endDate], callback)
+    } else executeGetParamsQuery(query, callback)
+}
+customerQueries.getTotalActiveCorporateCustomersChange = (input, callback) => {
+    let { startDate, endDate, fromStart, type } = input;
+    const { startDate: newStartDate, endDate: newEndDate } = dateComparisions(startDate, endDate, type)
+    let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND customertype='Corporate'"
+    if (fromStart !== 'true') {
+        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND customertype='Corporate' AND  DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
+        executeGetParamsQuery(query, [newStartDate, newEndDate], callback)
     } else executeGetParamsQuery(query, callback)
 }
 customerQueries.getTotalActiveCustomers = (input, callback) => {
     let { startDate, endDate, fromStart } = input;
     let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0"
     if (fromStart !== 'true') {
-        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND  DATE(createdDateTime)>=? AND DATE(createdDateTime)<=?"
+        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND  DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
         executeGetParamsQuery(query, [startDate, endDate], callback)
     }
     else executeGetParamsQuery(query, callback)
@@ -47,8 +77,18 @@ customerQueries.getTotalInActiveCustomers = (input, callback) => {
     let { startDate, endDate, fromStart } = input;
     let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND approvedDate!='NULL'"
     if (fromStart !== 'true') {
-        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND approvedDate!='NULL' AND DATE(createdDateTime)>=? AND DATE(createdDateTime)<=?"
+        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND approvedDate!='NULL' AND DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
         executeGetParamsQuery(query, [startDate, endDate], callback)
+    }
+    else executeGetParamsQuery(query, callback)
+}
+customerQueries.getTotalInActiveCustomersChange = (input, callback) => {
+    let { startDate, endDate, fromStart, type } = input;
+    const { startDate: newStartDate, endDate: newEndDate } = dateComparisions(startDate, endDate, type)
+    let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND approvedDate!='NULL'"
+    if (fromStart !== 'true') {
+        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND approvedDate!='NULL' AND DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
+        executeGetParamsQuery(query, [newStartDate, newEndDate], callback)
     }
     else executeGetParamsQuery(query, callback)
 }
@@ -56,8 +96,18 @@ customerQueries.getTotalPendingCorporateCustomers = (input, callback) => {
     let { startDate, endDate, fromStart } = input;
     let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND approvedDate IS NULL AND deleted=0 AND customertype='Corporate'"
     if (fromStart !== 'true') {
-        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND approvedDate IS NULL AND deleted=0 AND customertype='Corporate' AND DATE(createdDateTime)>=? AND DATE(createdDateTime)<=?"
+        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND approvedDate IS NULL AND deleted=0 AND customertype='Corporate' AND DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
         executeGetParamsQuery(query, [startDate, endDate], callback)
+    }
+    else executeGetParamsQuery(query, callback)
+}
+customerQueries.getTotalPendingCorporateCustomersChange = (input, callback) => {
+    let { startDate, endDate, fromStart, type } = input;
+    const { startDate: newStartDate, endDate: newEndDate } = dateComparisions(startDate, endDate, type)
+    let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND approvedDate IS NULL AND deleted=0 AND customertype='Corporate'"
+    if (fromStart !== 'true') {
+        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND approvedDate IS NULL AND deleted=0 AND customertype='Corporate' AND DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
+        executeGetParamsQuery(query, [newStartDate, newEndDate], callback)
     }
     else executeGetParamsQuery(query, callback)
 }
@@ -65,8 +115,18 @@ customerQueries.getTotalActiveOtherCustomers = (input, callback) => {
     let { startDate, endDate, fromStart } = input;
     let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND customertype='Individual'"
     if (fromStart !== 'true') {
-        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND customertype='Individual' AND DATE(createdDateTime)>=? AND DATE(createdDateTime)<=?"
+        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND customertype='Individual' AND DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
         executeGetParamsQuery(query, [startDate, endDate], callback)
+    }
+    else executeGetParamsQuery(query, callback)
+}
+customerQueries.getTotalActiveOtherCustomersChange = (input, callback) => {
+    let { startDate, endDate, fromStart, type } = input;
+    const { startDate: newStartDate, endDate: newEndDate } = dateComparisions(startDate, endDate, type)
+    let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND customertype='Individual'"
+    if (fromStart !== 'true') {
+        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND customertype='Individual' AND DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
+        executeGetParamsQuery(query, [newStartDate, newEndDate], callback)
     }
     else executeGetParamsQuery(query, callback)
 }
@@ -74,8 +134,18 @@ customerQueries.getTotalPendingOtherCustomers = (input, callback) => {
     let { startDate, endDate, fromStart } = input;
     let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND approvedDate IS NULL AND deleted=0 AND customertype='Individual'"
     if (fromStart !== 'true') {
-        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND approvedDate IS NULL AND deleted=0 AND customertype='Individual' AND DATE(createdDateTime)>=? AND DATE(createdDateTime)<=?"
+        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND approvedDate IS NULL AND deleted=0 AND customertype='Individual' AND DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
         executeGetParamsQuery(query, [startDate, endDate], callback)
+    }
+    else executeGetParamsQuery(query, callback)
+}
+customerQueries.getTotalPendingOtherCustomersChange = (input, callback) => {
+    let { startDate, endDate, fromStart, type } = input;
+    const { startDate: newStartDate, endDate: newEndDate } = dateComparisions(startDate, endDate, type)
+    let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND approvedDate IS NULL AND deleted=0 AND customertype='Individual'"
+    if (fromStart !== 'true') {
+        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND approvedDate IS NULL AND deleted=0 AND customertype='Individual' AND DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
+        executeGetParamsQuery(query, [newStartDate, newEndDate], callback)
     }
     else executeGetParamsQuery(query, callback)
 }
@@ -84,6 +154,34 @@ customerQueries.getTotalDistributorsCount = (input, callback) => {
     let query = " SELECT COUNT(*) as totalCount FROM Distributors WHERE isActive=1 AND deleted=0";
     if (fromStart !== 'true') {
         query = " SELECT COUNT(*) as totalCount FROM Distributors WHERE isActive=1 AND deleted=0 AND DATE(createdDateTime)>=? AND DATE(createdDateTime)<=?";
+        executeGetParamsQuery(query, [startDate, endDate], callback)
+    }
+    else executeGetParamsQuery(query, callback)
+}
+customerQueries.getTotalDistributorsCountChange = (input, callback) => {
+    let { startDate, endDate, fromStart, type } = input;
+    const { startDate: newStartDate, endDate: newEndDate } = dateComparisions(startDate, endDate, type)
+    let query = " SELECT COUNT(*) as totalCount FROM Distributors WHERE isActive=1 AND deleted=0";
+    if (fromStart !== 'true') {
+        query = " SELECT COUNT(*) as totalCount FROM Distributors WHERE isActive=1 AND deleted=0 AND DATE(createdDateTime)>=? AND DATE(createdDateTime)<=?";
+        executeGetParamsQuery(query, [newStartDate, newEndDate], callback)
+    }
+    else executeGetParamsQuery(query, callback)
+}
+customerQueries.getTotalDistributors = (input, callback) => {
+    let { startDate, endDate, fromStart } = input;
+    let query = " SELECT COUNT(*) as totalCount FROM Distributors WHERE deleted=0";
+    if (fromStart !== 'true') {
+        query = " SELECT COUNT(*) as totalCount FROM Distributors WHERE deleted=0 AND DATE(createdDateTime)>=? AND DATE(createdDateTime)<=?";
+        executeGetParamsQuery(query, [startDate, endDate], callback)
+    }
+    else executeGetParamsQuery(query, callback)
+}
+customerQueries.getTotalInActiveDistributors = (input, callback) => {
+    let { startDate, endDate, fromStart } = input;
+    let query = " SELECT COUNT(*) as totalCount FROM Distributors WHERE deleted=0 AND isActive=0";
+    if (fromStart !== 'true') {
+        query = " SELECT COUNT(*) as totalCount FROM Distributors WHERE deleted=0 AND isActive=0 AND DATE(createdDateTime)>=? AND DATE(createdDateTime)<=?";
         executeGetParamsQuery(query, [startDate, endDate], callback)
     }
     else executeGetParamsQuery(query, callback)
