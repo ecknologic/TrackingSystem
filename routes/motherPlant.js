@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const motherPlantDbQueries = require('../dbQueries/motherplant/queries');
-const { dbError, getBatchId, productionCount, getCompareData } = require('../utils/functions');
+const { dbError, getBatchId, productionCount, getCompareData, getFormatedNumber } = require('../utils/functions');
 const { INSERTMESSAGE, UPDATEMESSAGE } = require('../utils/constants');
 const dayjs = require('dayjs');
 const usersQueries = require('../dbQueries/users/queries');
@@ -119,10 +119,7 @@ router.get('/getProdQCTestedBatches', (req, res) => {
     });
 });
 router.get('/getQCTestResults', (req, res) => {
-    let input = {
-        departmentId, ...req.query
-    }
-    motherPlantDbQueries.getQCTestResults(input, (err, results) => {
+    motherPlantDbQueries.getQCTestResults(req.query, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
             if (results.length) {
@@ -392,8 +389,15 @@ router.get('/getTotalProduction', (req, res) => {
     const defaultValues = { product20LCount: 0, product1LCount: 0, product500MLCount: 0, product250MLCount: 0 }
     motherPlantDbQueries.getTotalProduction(input, (err, productionResult) => {
         if (err) res.status(500).json(dbError(err));
-        else if (productionResult.length)
-            res.json(productionResult[0]);
+        else if (productionResult.length) {
+            const { product20LCount: p20L, product1LCount: p1L, product500MLCount: p500ml, product250MLCount: p250ml } = productionResult[0]
+            const data = {
+                product20LCount: getFormatedNumber(p20L),
+                product1LCount: getFormatedNumber(p1L), product500MLCount: getFormatedNumber(p500ml),
+                product250MLCount: getFormatedNumber(p250ml)
+            }
+            res.json(data);
+        }
         else
             res.json(defaultValues)
     })
@@ -503,12 +507,13 @@ router.get('/getVehicleDetails', (req, res) => {
     });
 });
 router.get('/getTotalRevenue', (req, res) => {
-    motherPlantDbQueries.getTotalRevenue(req.query, (err, results) => {
+    const { type } = req.query
+    motherPlantDbQueries.getTotalRevenue(req.query, (err, currentValues) => {
         if (err) res.status(500).json(dbError(err));
         else {
-            motherPlantDbQueries.getTotalRevenueChange(req.query, (err, previousResults) => {
+            motherPlantDbQueries.getTotalRevenueChange(req.query, (err, previousValues) => {
                 if (err) res.status(500).json(dbError(err));
-                else res.json({ currentValues: results, previousValues: previousResults });
+                else res.json(getCompareData(currentValues[0], previousValues[0], type, true));
             })
         }
     });

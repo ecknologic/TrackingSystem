@@ -2,185 +2,9 @@ import React from "react";
 import { Column } from "@ant-design/charts";
 
 const ColumnChart = () => {
-  var data = [
-    {
-      name: "20 Ltrs",
-      label: "Mon",
-      value: 12.4
-    },
-    {
-      name: "2 Ltrs",
-      label: "Mon",
-      value: 23.4
-    },
-    {
-      name: "1 Ltrs",
-      label: "Mon",
-      value: 28.8
-    },
-    {
-      name: "500 ml",
-      label: "Mon",
-      value: 39.3
-    },
-    {
-      name: "300 ml",
-      label: "Mon",
-      value: 59.3
-    },
-    {
-      name: "20 Ltrs",
-      label: "Tue",
-      value: 32.4
-    },
-    {
-      name: "2 Ltrs",
-      label: "Tue",
-      value: 23.4
-    },
-    {
-      name: "1 Ltrs",
-      label: "Tue",
-      value: 40.8
-    },
-    {
-      name: "500 ml",
-      label: "Tue",
-      value: 34.3
-    },
-    {
-      name: "300 ml",
-      label: "Tue",
-      value: 29.3
-    },
-    {
-      name: "20 Ltrs",
-      label: "Wed",
-      value: 32.4
-    },
-    {
-      name: "2 Ltrs",
-      label: "Wed",
-      value: 52.4
-    },
-    {
-      name: "1 Ltrs",
-      label: "Wed",
-      value: 28.8
-    },
-    {
-      name: "500 ml",
-      label: "Wed",
-      value: 59.3
-    },
-    {
-      name: "300 ml",
-      label: "Wed",
-      value: 29.3
-    },
-    {
-      name: "20 Ltrs",
-      label: "Thu",
-      value: 52.4
-    },
-    {
-      name: "2 Ltrs",
-      label: "Thu",
-      value: 42.4
-    },
-    {
-      name: "1 Ltrs",
-      label: "Thu",
-      value: 58.8
-    },
-    {
-      name: "500 ml",
-      label: "Thu",
-      value: 39.3
-    },
-    {
-      name: "300 ml",
-      label: "Thu",
-      value: 19.3
-    },
-    {
-      name: "20 Ltrs",
-      label: "Fri",
-      value: 12.4
-    },
-    {
-      name: "2 Ltrs",
-      label: "Fri",
-      value: 52.4
-    },
-    {
-      name: "1 Ltrs",
-      label: "Fri",
-      value: 18.8
-    },
-    {
-      name: "500 ml",
-      label: "Fri",
-      value: 49.3
-    },
-    {
-      name: "300 ml",
-      label: "Fri",
-      value: 59.3
-    },
-    {
-      name: "20 Ltrs",
-      label: "Sat",
-      value: 42.4
-    },
-    {
-      name: "2 Ltrs",
-      label: "Sat",
-      value: 12.4
-    },
-    {
-      name: "1 Ltrs",
-      label: "Sat",
-      value: 48.8
-    },
-    {
-      name: "500 ml",
-      label: "Sat",
-      value: 29.3
-    },
-    {
-      name: "300 ml",
-      label: "Sat",
-      value: 59.3
-    },
-    {
-      name: "20 Ltrs",
-      label: "Sun",
-      value: 22.4
-    },
-    {
-      name: "2 Ltrs",
-      label: "Sun",
-      value: 12.4
-    },
-    {
-      name: "1 Ltrs",
-      label: "Sun",
-      value: 58.8
-    },
-    {
-      name: "500 ml",
-      label: "Sun",
-      value: 39.3
-    },
-    {
-      name: "300 ml",
-      label: "Sun",
-      value: 49.3
-    },
-  ];
+
   var config = {
-    data: data,
+    data: monthData,
     width: '100%',
     isGroup: true,
     xField: "label",
@@ -204,5 +28,286 @@ const ColumnChart = () => {
   };
   return <Column {...config} />;
 };
+
+var weekData = [
+  {
+    name: "20 Ltrs",
+    label: "Mon",
+    value: 12.4
+  },
+  {
+    name: "2 Ltrs",
+    label: "Mon",
+    value: 23.4
+  },
+  {
+    name: "1 Ltrs",
+    label: "Mon",
+    value: 28.8
+  },
+  {
+    name: "500 ml",
+    label: "Mon",
+    value: 39.3
+  },
+  {
+    name: "300 ml",
+    label: "Mon",
+    value: 59.3
+  },
+  {
+    name: "20 Ltrs",
+    label: "Tue",
+    value: 32.4
+  },
+  {
+    name: "2 Ltrs",
+    label: "Tue",
+    value: 23.4
+  },
+  {
+    name: "1 Ltrs",
+    label: "Tue",
+    value: 40.8
+  },
+  {
+    name: "500 ml",
+    label: "Tue",
+    value: 34.3
+  },
+  {
+    name: "300 ml",
+    label: "Tue",
+    value: 29.3
+  },
+  {
+    name: "20 Ltrs",
+    label: "Wed",
+    value: 32.4
+  },
+  {
+    name: "2 Ltrs",
+    label: "Wed",
+    value: 52.4
+  },
+  {
+    name: "1 Ltrs",
+    label: "Wed",
+    value: 28.8
+  },
+  {
+    name: "500 ml",
+    label: "Wed",
+    value: 59.3
+  },
+  {
+    name: "300 ml",
+    label: "Wed",
+    value: 29.3
+  },
+  {
+    name: "20 Ltrs",
+    label: "Thu",
+    value: 52.4
+  },
+  {
+    name: "2 Ltrs",
+    label: "Thu",
+    value: 42.4
+  },
+  {
+    name: "1 Ltrs",
+    label: "Thu",
+    value: 58.8
+  },
+  {
+    name: "500 ml",
+    label: "Thu",
+    value: 39.3
+  },
+  {
+    name: "300 ml",
+    label: "Thu",
+    value: 19.3
+  },
+  {
+    name: "20 Ltrs",
+    label: "Fri",
+    value: 12.4
+  },
+  {
+    name: "2 Ltrs",
+    label: "Fri",
+    value: 52.4
+  },
+  {
+    name: "1 Ltrs",
+    label: "Fri",
+    value: 18.8
+  },
+  {
+    name: "500 ml",
+    label: "Fri",
+    value: 49.3
+  },
+  {
+    name: "300 ml",
+    label: "Fri",
+    value: 59.3
+  },
+  {
+    name: "20 Ltrs",
+    label: "Sat",
+    value: 42.4
+  },
+  {
+    name: "2 Ltrs",
+    label: "Sat",
+    value: 12.4
+  },
+  {
+    name: "1 Ltrs",
+    label: "Sat",
+    value: 48.8
+  },
+  {
+    name: "500 ml",
+    label: "Sat",
+    value: 29.3
+  },
+  {
+    name: "300 ml",
+    label: "Sat",
+    value: 59.3
+  },
+  {
+    name: "20 Ltrs",
+    label: "Sun",
+    value: 22.4
+  },
+  {
+    name: "2 Ltrs",
+    label: "Sun",
+    value: 12.4
+  },
+  {
+    name: "1 Ltrs",
+    label: "Sun",
+    value: 58.8
+  },
+  {
+    name: "500 ml",
+    label: "Sun",
+    value: 39.3
+  },
+  {
+    name: "300 ml",
+    label: "Sun",
+    value: 49.3
+  },
+];
+
+var monthData = [
+  {
+    name: "20 Ltrs",
+    label: "Week 1",
+    value: 12.4
+  },
+  {
+    name: "2 Ltrs",
+    label: "Week 1",
+    value: 23.4
+  },
+  {
+    name: "1 Ltrs",
+    label: "Week 1",
+    value: 28.8
+  },
+  {
+    name: "500 ml",
+    label: "Week 1",
+    value: 39.3
+  },
+  {
+    name: "300 ml",
+    label: "Week 1",
+    value: 59.3
+  },
+  {
+    name: "20 Ltrs",
+    label: "Week 2",
+    value: 32.4
+  },
+  {
+    name: "2 Ltrs",
+    label: "Week 2",
+    value: 23.4
+  },
+  {
+    name: "1 Ltrs",
+    label: "Week 2",
+    value: 40.8
+  },
+  {
+    name: "500 ml",
+    label: "Week 2",
+    value: 34.3
+  },
+  {
+    name: "300 ml",
+    label: "Week 2",
+    value: 29.3
+  },
+  {
+    name: "20 Ltrs",
+    label: "Week 3",
+    value: 32.4
+  },
+  {
+    name: "2 Ltrs",
+    label: "Week 3",
+    value: 52.4
+  },
+  {
+    name: "1 Ltrs",
+    label: "Week 3",
+    value: 28.8
+  },
+  {
+    name: "500 ml",
+    label: "Week 3",
+    value: 59.3
+  },
+  {
+    name: "300 ml",
+    label: "Week 3",
+    value: 29.3
+  },
+  {
+    name: "20 Ltrs",
+    label: "Week 4",
+    value: 52.4
+  },
+  {
+    name: "2 Ltrs",
+    label: "Week 4",
+    value: 42.4
+  },
+  {
+    name: "1 Ltrs",
+    label: "Week 4",
+    value: 58.8
+  },
+  {
+    name: "500 ml",
+    label: "Week 4",
+    value: 39.3
+  },
+  {
+    name: "300 ml",
+    label: "Week 4",
+    value: 19.3
+  }
+];
 
 export default ColumnChart;

@@ -4,8 +4,10 @@ import ChangeBadge from './ChangeBadge';
 import '../sass/totalRevenueCard.scss'
 
 const TotalRevenueCard = ({ data }) => {
-    const { total20L = 0, total2L = 0, total1L = 0, total500ML = 0, total250ML = 0 } = data
-    const total = total20L + total2L + total1L + total500ML + total250ML
+    const { product20LCount, product2LCount, product1LCount, product500MLCount, product250MLCount, product2LPercent,
+        product2LCompareText, product20LPercent, product20LCompareText, product1LPercent, product1LCompareText, product500MLPercent,
+        product500MLCompareText, product250MLPercent, product250MLCompareText, prevTotal, total,
+        product20LPartPercent, product1LPartPercent, product2LPartPercent, product500MLPartPercent, product250MLPartPercent } = data
 
     return (
         <div className='total-revenue-card'>
@@ -14,41 +16,51 @@ const TotalRevenueCard = ({ data }) => {
                 <span className='number'>₹ {total || 0}</span>
                 <ChangeBadge />
             </div>
-            <span className='sub-title'>Last Week Revenue ₹ 4,3,560.00</span>
+            <span className='sub-title'>Last Week Revenue ₹ {prevTotal || 0}</span>
             <div className='sub-panel'>
                 <EmptyBottlesStockCard isRs
                     title='20 Ltrs'
-                    total={total20L}
+                    percent={product20LPercent}
+                    partPercent={product20LPartPercent}
+                    total={product20LCount}
                     strokeColor='#F7B500'
-                    text='Compared to (₹ 4,3,560.00 last Week)'
+                    text={product20LCompareText}
                 />
                 <EmptyBottlesStockCard isRs
                     title='2 Ltrs'
-                    total={total2L}
-                    text='Compared to (₹ 4,3,560.00 last Week)'
+                    percent={product2LPercent}
+                    partPercent={product2LPartPercent}
+                    total={product2LCount}
+                    text={product2LCompareText}
                     strokeColor='#FA6400'
                 />
             </div>
             <div className='sub-panel'>
                 <EmptyBottlesStockCard isRs
                     title='1 Ltrs'
-                    total={total1L}
+                    percent={product1LPercent}
+                    partPercent={product1LPartPercent}
+                    total={product1LCount}
                     strokeColor='#0091FF'
-                    text='Compared to (₹ 4,3,560.00 last Week)'
+                    text={product1LCompareText}
                 />
                 <EmptyBottlesStockCard isRs
                     title='500 ml'
-                    total={total500ML}
+                    percent={product500MLPercent}
+                    partPercent={product500MLPartPercent}
+                    total={product500MLCount}
                     strokeColor='#41B9AD'
-                    text='Compared to (₹ 4,3,560.00 last Week)'
+                    text={product500MLCompareText}
                 />
             </div>
             <div className='sub-panel'>
                 <EmptyBottlesStockCard isRs
                     title='300 ml'
-                    total={total250ML}
+                    percent={product250MLPercent}
+                    partPercent={product250MLPartPercent}
+                    total={product250MLCount}
                     strokeColor='#0091FF'
-                    text='Compared to (₹ 4,3,560.00 last Week)'
+                    text={product250MLCompareText}
                 />
             </div>
         </div>

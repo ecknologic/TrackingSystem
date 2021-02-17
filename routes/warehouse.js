@@ -7,7 +7,7 @@ const motherPlantDbQueries = require('../dbQueries/motherplant/queries.js');
 const usersQueries = require('../dbQueries/users/queries.js');
 const warehouseQueries = require('../dbQueries/warehouse/queries.js');
 const { DATEFORMAT, INSERTMESSAGE, UPDATEMESSAGE } = require('../utils/constants.js');
-const { customerProductDetails, dbError, getCompareData } = require('../utils/functions.js');
+const { customerProductDetails, dbError, getCompareData, getFormatedNumber } = require('../utils/functions.js');
 var departmentId;
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -199,10 +199,16 @@ router.get('/deliveryDetails/:date', (req, res) => {
 });
 router.get('/getTotalSales', (req, res) => {
   var input = req.query;
-  warehouseQueries.getTotalSales(input, (err, results) => {
+  warehouseQueries.getTotalSales(input, (err, result) => {
     if (err) res.status(500).json(err.sqlMessage);
     else {
-      res.json(results);
+      const { product20LCount: p20L, product1LCount: p1L, product500MLCount: p500ml, product250MLCount: p250ml } = result[0]
+      const data = {
+        product20LCount: getFormatedNumber(p20L),
+        product1LCount: getFormatedNumber(p1L), product500MLCount: getFormatedNumber(p500ml),
+        product250MLCount: getFormatedNumber(p250ml)
+      }
+      res.json(data);
     }
   });
 });

@@ -2,15 +2,15 @@ import axios from 'axios';
 import Slider from "react-slick";
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
+import { isEmpty } from '../../../../utils/Functions';
 import PanelHeader from '../../../../components/PanelHeader';
 import { TODAYDATE as d } from '../../../../utils/constants';
-import { dummyWaterResults } from '../../../../assets/fixtures';
 import QualityResultCard from '../../../../components/QualityResultCard';
 import { LeftChevronIconGrey, RightChevronIconGrey } from '../../../../components/SVG_Icons';
-const options = { startDate: d, endDate: d, fromStart: true }
+const options = { startDate: d, endDate: d, fromStart: true, departmentId: 'All', shift: 'All' }
 
-const WaterQualityResults = ({ depMenu }) => {
-    const [results, setResults] = useState(dummyWaterResults)
+const WaterQualityResults = ({ depMenu, motherplantList }) => {
+    const [results, setResults] = useState([])
     const [opData, setOpData] = useState(() => options)
 
     const source = useMemo(() => axios.CancelToken.source(), []);
@@ -24,30 +24,38 @@ const WaterQualityResults = ({ depMenu }) => {
         }
     }, [])
 
-    const getTestResults = async ({ startDate, endDate, fromStart }) => {
-        const url = `/motherPlant/getQCTestResults?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}`
+    const getTestResults = async ({ startDate, endDate, fromStart, departmentId, shift }) => {
+        const url = `/motherPlant/getQCTestResults?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}&departmentId=${departmentId}&shiftType=${shift}`
 
         try {
-            // const data = await http.GET(axios, url, config)
-            // setResults(data)
+            const data = await http.GET(axios, url, config)
+            setResults(data)
         } catch (error) { }
     }
 
     const handleOperation = useCallback((data) => {
-        const newData = { ...opData, ...data }
+        let newData = {}
+        newData = { ...opData, ...data }
+        if (data.departmentId) {
+            const departmentId = motherplantList.find(item => item.departmentName === data.departmentId).departmentId
+            newData = { ...opData, departmentId }
+        }
         getTestResults(newData)
         setOpData(newData)
-    }, [opData])
+    }, [opData, motherplantList])
 
     return (
         <>
             <PanelHeader title='Water Quality Testing Results' depMenu={depMenu} onSelect={handleOperation} beginning showShow showShift showDep />
             <div className='panel-body quality-testing-panel'>
-                <Slider className='dashboard-slider' {...props}>
-                    {
-                        results.map((item) => <QualityResultCard key={item.batchId} data={item} />)
-                    }
-                </Slider>
+                {
+                    !isEmpty(results) &&
+                    <Slider className='dashboard-slider' {...props}>
+                        {
+                            results.map((item) => <QualityResultCard key={item.productionQcId} data={item} />)
+                        }
+                    </Slider>
+                }
             </div>
         </>
     )

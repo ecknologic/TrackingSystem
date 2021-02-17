@@ -1,10 +1,9 @@
 import React from 'react';
 import { Progress } from 'antd'
-import '../sass/emptyBottlesStockCard.scss';
 import ChangeBadge from './ChangeBadge';
+import '../sass/emptyBottlesStockCard.scss';
 
-const EmptyBottlesStockCard = ({ title, total, strokeColor, percent, isRs, text }) => {
-
+const EmptyBottlesStockCard = ({ title, total, partPercent = 0, strokeColor, percent, isRs, text }) => {
 
     return (
         <div className='empty-bottles-stock-card'>
@@ -12,7 +11,7 @@ const EmptyBottlesStockCard = ({ title, total, strokeColor, percent, isRs, text 
                 <div className='progress'>
                     <Progress
                         type='circle'
-                        percent={75}
+                        percent={partPercent}
                         strokeColor={strokeColor}
                         format={(percent) => <span style={{ color: strokeColor }} className='progress-percent'>{percent}%</span>}
                         width={50}
@@ -25,7 +24,7 @@ const EmptyBottlesStockCard = ({ title, total, strokeColor, percent, isRs, text 
                     <ChangeBadge percent={percent} />
                 </div>
             </div>
-            <span className='footer'>{text}</span>
+            <span className='footer'>{text || '--'}</span>
         </div>
     )
 }
