@@ -78,7 +78,7 @@ motherPlantDbQueries.getProductionQcBatchIds = async (departmentId, callback) =>
     return executeGetParamsQuery(query, [departmentId, "Pending"], callback)
 }
 motherPlantDbQueries.getProductionBatchIds = async (departmentId, callback) => {
-    let query = "select productionQcId,batchId from productionQC where departmentId=? AND status=? AND outOfStock='0' ORDER BY requestedDate DESC";
+    let query = "select productionQcId,batchId from productionQC where departmentId=? AND productionCreated=0 AND status=? AND outOfStock='0' ORDER BY requestedDate DESC";
     return executeGetParamsQuery(query, [departmentId, "Approved"], callback)
 }
 motherPlantDbQueries.getPostProductionBatchIds = async (departmentId, callback) => {
@@ -294,6 +294,7 @@ motherPlantDbQueries.createQualityCheck = async (input, callback) => {
     let query = "insert into qualitycheck (testedDate,productionQcId,phLevel,TDS,ozoneLevel,testResult,managerName,description,testType,qcLevel,departmentId) values(?,?,?,?,?,?,?,?,?,?,?)";
     let requestBody = [new Date(), productionQcId, phLevel, TDS, ozoneLevel, testResult, managerName, description, testType, qcLevel, departmentId]
     if (qcLevel == 1) motherPlantDbQueries.updateProductionQCStatus({ productionQcId, status: testResult })
+    if (qcLevel != 1 && testResult == 'Approved') motherPlantDbQueries.updateProductioncreatedStatus({ productionQcId })
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.createInternalQC = async (input, callback) => {
@@ -388,6 +389,11 @@ motherPlantDbQueries.updateProductionQC = (input, callback) => {
 motherPlantDbQueries.updateProductionQCStatus = (input, callback) => {
     let query = `update productionQC set status=? where productionQcId=${input.productionQcId}`;
     let requestBody = [input.status]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+motherPlantDbQueries.updateProductioncreatedStatus = (input, callback) => {
+    let query = `update productionQC set productionCreated=? where productionQcId=${input.productionQcId}`;
+    let requestBody = [1]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.deleteVehicle = (vehicleId, callback) => {
