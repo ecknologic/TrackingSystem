@@ -87,11 +87,11 @@ function generateInvoiceTable(doc, invoice) {
     generateHr(doc, invoiceTableTop + 10);
 
     doc.font("Helvetica");
-    let sno = 1, totalPrice20L = 0, totalQuantity20L = 0, totalPrice1L = 0, totalQuantity1L = 0, totalPrice500ML = 0, totalQuantity500ML = 0, totalPrice250ML = 0, totalQuantity250ML = 0;
+    let sno = 1, totalPrice20L = 0, totalQuantity20L = 0, totalPrice1L = 0, totalQuantity1L = 0, totalPrice500ML = 0, totalQuantity500ML = 0, totalPrice300ML = 0, totalQuantity300ML = 0, totalPrice2L = 0, totalQuantity2L = 0;
     for (i = 0; i < invoice.items.length; i++) {
         const item = invoice.items[i];
         let product, quantity, price, address = item.address;
-        let arr = [{ "20LCans": item["20LCans"], price20L: item.price20L }, { "1LBoxes": item["1LBoxes"], "price1L": item.price1L }, { "500MLBoxes": item["500MLBoxes"], "price500ML": item.price500ML }, { "250MLBoxes": item["250MLBoxes"], "price250ML": item.price250ML }]
+        let arr = [{ "20LCans": item["20LCans"], price20L: item.price20L }, { "1LBoxes": item["1LBoxes"], "price1L": item.price1L }, { "500MLBoxes": item["500MLBoxes"], "price500ML": item.price500ML }, { "300MLBoxes": item["300MLBoxes"], "price300ML": item.price300ML }, { "2LBoxes": item["2LBoxes"], "price2L": item.price2L }]
         for (let [index, productInfo] of arr.entries()) {
             if (productInfo["20LCans"] > 0) {
                 product = "20 Lt Bt Jar";
@@ -100,6 +100,14 @@ function generateInvoiceTable(doc, invoice) {
                 totalQuantity20L = totalQuantity20L + productInfo["20LCans"]
                 totalPrice20L = totalPrice20L + productInfo.price20L
                 subTotal = subTotal + productInfo.price20L
+                renderProductRow(doc, invoiceTableTop, jCount, product, quantity, price, address, index, i)
+            } else if (productInfo["2LBoxes"] > 0) {
+                product = "2L Boxes";
+                quantity = productInfo["2LBoxes"];
+                price = productInfo.price2L
+                totalQuantity2L = totalQuantity2L + productInfo["2LBoxes"]
+                totalPrice2L = totalPrice2L + productInfo.price2L
+                subTotal = subTotal + productInfo.price2L
                 renderProductRow(doc, invoiceTableTop, jCount, product, quantity, price, address, index, i)
             } else if (productInfo["1LBoxes"] > 0) {
                 product = "1L Boxes";
@@ -117,21 +125,23 @@ function generateInvoiceTable(doc, invoice) {
                 totalPrice500ML = totalPrice500ML + productInfo.price500ML
                 subTotal = subTotal + productInfo.price500ML
                 renderProductRow(doc, invoiceTableTop, jCount, product, quantity, price, address, index, i)
-            } else if (productInfo["250MLBoxes"] > 0) {
+            } else if (productInfo["300MLBoxes"] > 0) {
                 product = "300ML Boxes";
-                quantity = productInfo["250MLBoxes"];
-                price = productInfo.price250ML
-                totalQuantity250ML = totalQuantity250ML + productInfo["250MLBoxes"]
-                totalPrice250ML = totalPrice250ML + productInfo.price250ML
-                subTotal = subTotal + productInfo.price250ML
+                quantity = productInfo["300MLBoxes"];
+                price = productInfo.price300ML
+                totalQuantity300ML = totalQuantity300ML + productInfo["300MLBoxes"]
+                totalPrice300ML = totalPrice300ML + productInfo.price300ML
+                subTotal = subTotal + productInfo.price300ML
                 renderProductRow(doc, invoiceTableTop, jCount, product, quantity, price, address, index, i)
             }
+
         }
         if (i == (invoice.items.length - 1)) {
             totalArr.push({ product: "20 Lt Bt Jar", price: totalPrice20L, quantity: totalQuantity20L },
                 { product: "1L Boxes", price: totalPrice1L, quantity: totalQuantity1L },
                 { product: "500ML Boxes", price: totalPrice500ML, quantity: totalQuantity500ML },
-                { product: "250ML Boxes", price: totalPrice250ML, quantity: totalQuantity250ML }
+                { product: "300ML Boxes", price: totalPrice300ML, quantity: totalQuantity300ML },
+                { product: "2L Boxes", price: totalPrice2L, quantity: totalQuantity2L }
             )
         }
     }

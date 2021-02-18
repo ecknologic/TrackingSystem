@@ -105,7 +105,7 @@ router.get("/customerOrderDetails/:orderId", (req, res) => {
                         deliveryLocation: i.deliveryLocation,
                         latitude: i.latitude || null,
                         longitude: i.longitude || null,
-                        customerproducts: `20L:${i["20LCans"]};1L:${i["1LBoxes"]};500ML:${i["500MLBoxes"]};250ML:${i["250MLBoxes"]}`
+                        customerproducts: `20L:${i["20LCans"]};1L:${i["1LBoxes"]};500ML:${i["500MLBoxes"]};300ML:${i["300MLBoxes"]};2L:${i["2LBoxes"]}`
                     }
                     arr.push(obj)
                 }

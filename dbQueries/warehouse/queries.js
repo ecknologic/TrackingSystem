@@ -7,15 +7,15 @@ warehouseQueries.getWarehouseList = async (callback) => {
 }
 warehouseQueries.getDeliveryDetails = (input, callback) => {
     const { date, departmentId } = input
-    let query = "select c.customerOrderId,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS cans20L,c.1LBoxes AS boxes1L,c.500MLBoxes AS boxes500ML,c.250MLBoxes AS boxes250ML,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE DATE(`deliveryDate`) = ? AND warehouseId=? ORDER BY c.dcNo DESC";
+    let query = "select c.customerOrderId,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS cans20L,c.1LBoxes AS boxes1L,c.500MLBoxes AS boxes500ML,c.300MLBoxes AS boxes300ML,c.2LBoxes AS boxes2L,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE DATE(`deliveryDate`) = ? AND warehouseId=? ORDER BY c.dcNo DESC";
     return executeGetParamsQuery(query, [date, departmentId], callback)
 }
 warehouseQueries.getTotalSales = (input, callback) => {
     const { startDate, endDate, departmentId } = input
-    let query = "select SUM(c.20LCans) AS product20LCount,SUM(c.1LBoxes) AS product1LCount,SUM(c.500MLBoxes) AS product500MLCount,SUM(c.250MLBoxes) AS product250MLCount FROM customerorderdetails c WHERE DATE(`deliveredDate`) >= ? AND DATE(`deliveredDate`) <= ? AND isDelivered='Completed'";
+    let query = "select SUM(c.20LCans) AS product20LCount,SUM(c.1LBoxes) AS product1LCount,SUM(c.500MLBoxes) AS product500MLCount,SUM(c.300MLBoxes) AS product300MLCount,SUM(c.2LBoxes) AS product2LCount FROM customerorderdetails c WHERE DATE(`deliveredDate`) >= ? AND DATE(`deliveredDate`) <= ? AND isDelivered='Completed'";
     let options = [startDate, endDate]
     if (departmentId != 'All') {
-        query = "select SUM(c.20LCans) AS product20LCount,SUM(c.1LBoxes) AS product1LCount,SUM(c.500MLBoxes) AS product500MLCount,SUM(c.250MLBoxes) AS product250MLCount FROM customerorderdetails c WHERE DATE(`deliveredDate`) >= ? AND DATE(`deliveredDate`) <= ? AND warehouseId=? AND isDelivered='Completed'";
+        query = "select SUM(c.20LCans) AS product20LCount,SUM(c.1LBoxes) AS product1LCount,SUM(c.500MLBoxes) AS product500MLCount,SUM(c.300MLBoxes) AS product300MLCount,SUM(c.2LBoxes) AS product2LCount FROM customerorderdetails c WHERE DATE(`deliveredDate`) >= ? AND DATE(`deliveredDate`) <= ? AND warehouseId=? AND isDelivered='Completed'";
         options = [startDate, endDate, departmentId]
     }
     return executeGetParamsQuery(query, options, callback)
@@ -23,16 +23,16 @@ warehouseQueries.getTotalSales = (input, callback) => {
 warehouseQueries.getTotalSalesChange = (input, callback) => {
     const { startDate, endDate, departmentId, type } = input
     const { startDate: newStartDate, endDate: newEndDate } = dateComparisions(startDate, endDate, type)
-    let query = "select SUM(c.20LCans) AS product20LCount,SUM(c.1LBoxes) AS product1LCount,SUM(c.500MLBoxes) AS product500MLCount,SUM(c.250MLBoxes) AS product250MLCount FROM customerorderdetails c WHERE DATE(`deliveredDate`) >= ? AND DATE(`deliveredDate`) <= ? AND isDelivered='Completed'";
+    let query = "select SUM(c.20LCans) AS product20LCount,SUM(c.1LBoxes) AS product1LCount,SUM(c.500MLBoxes) AS product500MLCount,SUM(c.300MLBoxes) AS product300MLCount,SUM(c.2LBoxes) AS product2LCount FROM customerorderdetails c WHERE DATE(`deliveredDate`) >= ? AND DATE(`deliveredDate`) <= ? AND isDelivered='Completed'";
     let options = [newStartDate, newEndDate]
     if (departmentId != 'All') {
-        query = "select SUM(c.20LCans) AS product20LCount,SUM(c.1LBoxes) AS product1LCount,SUM(c.500MLBoxes) AS product500MLCount,SUM(c.250MLBoxes) AS product250MLCount FROM customerorderdetails c WHERE DATE(`deliveredDate`) >= ? AND DATE(`deliveredDate`) <= ? AND warehouseId=? AND isDelivered='Completed'";
+        query = "select SUM(c.20LCans) AS product20LCount,SUM(c.1LBoxes) AS product1LCount,SUM(c.500MLBoxes) AS product500MLCount,SUM(c.300MLBoxes) AS product300MLCount,SUM(c.2LBoxes) AS product2LCount FROM customerorderdetails c WHERE DATE(`deliveredDate`) >= ? AND DATE(`deliveredDate`) <= ? AND warehouseId=? AND isDelivered='Completed'";
         options = [newStartDate, newEndDate, departmentId]
     }
     return executeGetParamsQuery(query, options, callback)
 }
 warehouseQueries.getDeliverysByCustomerOrderId = (customerOrderId, callback) => {
-    let query = "select c.customerOrderId,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS cans20L,c.1LBoxes AS boxes1L,c.500MLBoxes AS boxes500ML,c.250MLBoxes AS boxes250ML,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE customerOrderId=" + customerOrderId;
+    let query = "select c.customerOrderId,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS cans20L,c.1LBoxes AS boxes1L,c.500MLBoxes AS boxes500ML,c.300MLBoxes AS boxes300ML,c.2LBoxes AS boxes2L,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE customerOrderId=" + customerOrderId;
     return executeGetQuery(query, callback)
 }
 warehouseQueries.getWarehouseById = async (warehouseId, callback) => {
@@ -81,12 +81,12 @@ warehouseQueries.getTotalEmptyCansChangeCount = async (input, callback) => {
     return executeGetParamsQuery(query, options, callback)
 }
 warehouseQueries.getReceivedStock = async (warehouseId, callback) => {
-    let query = "SELECT w.id,w.DCNO as dcNo,w.warehouseId,w.isConfirmed,w.deliveryDate,w.20LCans as product20L,w.1LBoxes as product1L,w.500MLBoxes as product500ML,w.250MLBoxes as product250ML,d.driverName,dri.mobileNumber,dep.address,dep.departmentName from warehousestockdetails w INNER JOIN dispatches d ON w.DCNO=d.DCNO INNER JOIN departmentmaster dep ON d.departmentId=dep.departmentId INNER JOIN driverdetails dri ON d.driverId=dri.driverId where w.warehouseId=? ORDER BY w.deliveryDate DESC";
+    let query = "SELECT w.id,w.DCNO as dcNo,w.warehouseId,w.isConfirmed,w.deliveryDate,w.20LCans as product20L,w.1LBoxes as product1L,w.500MLBoxes as product500ML,w.300MLBoxes as product300ML,w.2LBoxes as product2L,d.driverName,dri.mobileNumber,dep.address,dep.departmentName from warehousestockdetails w INNER JOIN dispatches d ON w.DCNO=d.DCNO INNER JOIN departmentmaster dep ON d.departmentId=dep.departmentId INNER JOIN driverdetails dri ON d.driverId=dri.driverId where w.warehouseId=? ORDER BY w.deliveryDate DESC";
     return executeGetParamsQuery(query, [warehouseId], callback)
 }
 warehouseQueries.getReceivedStockById = async (input, callback) => {
     const { id } = input
-    let query = "SELECT w.id,w.DCNO as dcNo,w.warehouseId,w.isConfirmed,w.deliveryDate,w.damaged20LCans,w.damaged1LBoxes,w.damaged500MLBoxes,w.damaged250MLBoxes,w.20LCans as product20L,w.1LBoxes as product1L,w.500MLBoxes as product500ML,w.250MLBoxes as product250ML,d.driverName,dri.mobileNumber,dep.address,dep.departmentName,v.vehicleType,v.vehicleName,v.vehicleNo from warehousestockdetails w INNER JOIN dispatches d ON w.DCNO=d.DCNO INNER JOIN departmentmaster dep ON d.departmentId=dep.departmentId INNER JOIN driverdetails dri ON d.driverId=dri.driverId INNER JOIN VehicleDetails v ON d.vehicleNo=v.vehicleId where w.id=?";
+    let query = "SELECT w.id,w.DCNO as dcNo,w.warehouseId,w.isConfirmed,w.deliveryDate,w.damaged20LCans,w.damaged1LBoxes,w.damaged500MLBoxes,w.damaged300MLBoxes,w.damaged2LBoxes,w.20LCans as product20L,w.1LBoxes as product1L,w.500MLBoxes as product500ML,w.300MLBoxes as product300ML,w.2LBoxes as product2L,d.driverName,dri.mobileNumber,dep.address,dep.departmentName,v.vehicleType,v.vehicleName,v.vehicleNo from warehousestockdetails w INNER JOIN dispatches d ON w.DCNO=d.DCNO INNER JOIN departmentmaster dep ON d.departmentId=dep.departmentId INNER JOIN driverdetails dri ON d.driverId=dri.driverId INNER JOIN VehicleDetails v ON d.vehicleNo=v.vehicleId where w.id=?";
     return executeGetParamsQuery(query, [id], callback)
 }
 warehouseQueries.getDepartmentStaff = async (warehouseId, callback) => {
@@ -95,16 +95,16 @@ warehouseQueries.getDepartmentStaff = async (warehouseId, callback) => {
 }
 //POST Request Methods
 warehouseQueries.saveWarehouseStockDetails = (input, callback) => {
-    const { isDamaged, departmentId, product20L, product1L, product250ML, product500ML, damaged500MLBoxes, damaged250MLBoxes, damaged20LCans, damaged1LBoxes, deliveryDate, dcNo, damagedDesc } = input
-    let query = "insert into warehousestockdetails (warehouseId,20LCans,1LBoxes,500MLBoxes,250MLBoxes,damaged20LCans,damaged1LBoxes,damaged500MLBoxes,damaged250MLBoxes,deliveryDate,isConfirmed,DCNO,damagedDesc) values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
-    let requestBody = [departmentId, product20L, product1L, product500ML, product250ML, damaged20LCans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes, deliveryDate, '1', dcNo, damagedDesc]
+    const { isDamaged, departmentId, product20L, product1L, product300ML, product2L, product500ML, damaged500MLBoxes, damaged300MLBoxes, damaged2LBoxes, damaged20LCans, damaged1LBoxes, deliveryDate, dcNo, damagedDesc } = input
+    let query = "insert into warehousestockdetails (warehouseId,20LCans,1LBoxes,500MLBoxes,300MLBoxes,2LBoxes,damaged20LCans,damaged1LBoxes,damaged500MLBoxes,damaged300MLBoxes,damaged2LBoxes,deliveryDate,isConfirmed,DCNO,damagedDesc) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    let requestBody = [departmentId, product20L, product1L, product500ML, product300ML, product2L, damaged20LCans, damaged1LBoxes, damaged500MLBoxes, damaged300MLBoxes, damaged2LBoxes, deliveryDate, '1', dcNo, damagedDesc]
 
-    if (isDamaged) requestBody = [departmentId, product20L - damaged20LCans, product1L - damaged1LBoxes, product500ML - damaged500MLBoxes, product250ML - damaged250MLBoxes, damaged20LCans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes, deliveryDate, '1', dcNo, damagedDesc]
+    if (isDamaged) requestBody = [departmentId, product20L - damaged20LCans, product1L - damaged1LBoxes, product500ML - damaged500MLBoxes, product300ML - damaged300MLBoxes, product2L - damaged2LBoxes, damaged20LCans, damaged1LBoxes, damaged500MLBoxes, damaged300MLBoxes, damaged2LBoxes, deliveryDate, '1', dcNo, damagedDesc]
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 warehouseQueries.insertReturnStockDetails = (input, callback) => {
-    let query = "insert into returnstockdetails (damaged20LCans,damaged1LBoxes,damaged500MLBoxes,damaged250MLBoxes,damagedDesc,departmentId,motherplantId) values(?,?,?,?,?,?,?)";
-    let requestBody = [input.damaged20LCans, input.damaged1LBoxes, input.damaged500MLBoxes, input.damaged250MLBoxes, input.damagedDesc, input.departmentId, input.motherplantId]
+    let query = "insert into returnstockdetails (damaged20LCans,damaged1LBoxes,damaged500MLBoxes,damaged300MLBoxes,damaged2LBoxes,damagedDesc,departmentId,motherplantId) values(?,?,?,?,?,?,?,?)";
+    let requestBody = [input.damaged20LCans, input.damaged1LBoxes, input.damaged500MLBoxes, input.damaged300MLBoxes, input.damaged2LBoxes, input.damagedDesc, input.departmentId, input.motherplantId]
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 warehouseQueries.returnEmptyCansToMotherplant = (input, callback) => {

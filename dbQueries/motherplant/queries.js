@@ -16,15 +16,15 @@ motherPlantDbQueries.getProductionDetails = async (departmentId, callback) => {
 }
 motherPlantDbQueries.getProductsByBatch = async (input, callback) => {
     let { departmentId, batchNo } = input
-    let query = `SELECT SUM(p.product20L) AS product20LCount,SUM(p.product1L) AS product1LCount,SUM(p.product500ML) product500MLCount,SUM(p.product250ML) product250MLCount FROM production p WHERE departmentId=? AND batchId=?`;
+    let query = `SELECT SUM(p.product20L) AS product20LCount,SUM(p.product1L) AS product1LCount,SUM(p.product500ML) product500MLCount,SUM(p.product300ML) product300MLCount,SUM(p.product2L) product2LCount FROM production p WHERE departmentId=? AND batchId=?`;
     return executeGetParamsQuery(query, [departmentId, batchNo], callback)
 }
 motherPlantDbQueries.getTotalProduction = async (input, callback) => {
     let { departmentId, startDate, endDate } = input
-    let query = `SELECT SUM(p.product20L) AS product20LCount,SUM(p.product1L) AS product1LCount,SUM(p.product500ML) product500MLCount,SUM(p.product250ML) product250MLCount FROM production p WHERE DATE(productionDate)>=? AND DATE(productionDate)<=?`;
+    let query = `SELECT SUM(p.product20L) AS product20LCount,SUM(p.product1L) AS product1LCount,SUM(p.product500ML) product500MLCount,SUM(p.product300ML) product300MLCount,SUM(p.product2L) product2LCount FROM production p WHERE DATE(productionDate)>=? AND DATE(productionDate)<=?`;
     let options = [startDate, endDate]
     if (departmentId != 'All') {
-        query = `SELECT SUM(p.product20L) AS product20LCount,SUM(p.product1L) AS product1LCount,SUM(p.product500ML) product500MLCount,SUM(p.product250ML) product250MLCount FROM production p WHERE departmentId=? AND DATE(productionDate)>=? AND DATE(productionDate)<=?`;
+        query = `SELECT SUM(p.product20L) AS product20LCount,SUM(p.product1L) AS product1LCount,SUM(p.product500ML) product500MLCount,SUM(p.product300ML) product300MLCount,SUM(p.product2L) product2LCount FROM production p WHERE departmentId=? AND DATE(productionDate)>=? AND DATE(productionDate)<=?`;
         options = [departmentId, startDate, endDate]
     }
     return executeGetParamsQuery(query, options, callback)
@@ -32,17 +32,17 @@ motherPlantDbQueries.getTotalProduction = async (input, callback) => {
 motherPlantDbQueries.getTotalChangeProduction = async (input, callback) => {
     let { departmentId, startDate, endDate, type } = input
     const { startDate: newStartDate, endDate: newEndDate } = dateComparisions(startDate, endDate, type)
-    let query = `SELECT SUM(p.product20L) AS product20LCount,SUM(p.product1L) AS product1LCount,SUM(p.product500ML) product500MLCount,SUM(p.product250ML) product250MLCount FROM production p WHERE DATE(productionDate)>=? AND DATE(productionDate)<=?`;
+    let query = `SELECT SUM(p.product20L) AS product20LCount,SUM(p.product1L) AS product1LCount,SUM(p.product500ML) product500MLCount,SUM(p.product300ML) product300MLCount,,SUM(p.product2L) product2LCount FROM production p WHERE DATE(productionDate)>=? AND DATE(productionDate)<=?`;
     let options = [newStartDate, newEndDate]
     if (departmentId != 'All') {
-        query = `SELECT SUM(p.product20L) AS product20LCount,SUM(p.product1L) AS product1LCount,SUM(p.product500ML) product500MLCount,SUM(p.product250ML) product250MLCount FROM production p WHERE departmentId=? AND DATE(productionDate)>=? AND DATE(productionDate)<=?`;
+        query = `SELECT SUM(p.product20L) AS product20LCount,SUM(p.product1L) AS product1LCount,SUM(p.product500ML) product500MLCount,SUM(p.product300ML) product300MLCount,,SUM(p.product2L) product2LCount FROM production p WHERE departmentId=? AND DATE(productionDate)>=? AND DATE(productionDate)<=?`;
         options = [departmentId, newStartDate, newEndDate]
     }
     return executeGetParamsQuery(query, options, callback)
 }
 motherPlantDbQueries.getDispatchesByBatch = async (input, callback) => {
     let { departmentId, batchNo } = input
-    let query = `SELECT SUM(d.product20L) AS product20LCount,SUM(d.product1L) AS product1LCount,SUM(d.product500ML) product500MLCount,SUM(d.product250ML) product250MLCount FROM dispatches d WHERE departmentId=? AND batchId=?`;
+    let query = `SELECT SUM(d.product20L) AS product20LCount,SUM(d.product1L) AS product1LCount,SUM(d.product500ML) product500MLCount,SUM(d.product300ML) product300MLCount,SUM(d.product2L) product2LCount FROM dispatches d WHERE departmentId=? AND batchId=?`;
     return executeGetParamsQuery(query, [departmentId, batchNo], callback)
 }
 motherPlantDbQueries.getProducedBatchNumbers = async (departmentId, callback) => {
@@ -56,12 +56,12 @@ motherPlantDbQueries.getVehicleDetails = async (callback) => {
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getDispatchDetails = async (departmentId, callback) => {
-    let query = `SELECT d.status,d.dispatchType,d.dispatchAddress,d.DCNO,d.batchId,d.product20L,d.product1L,d.product500ML,d.product250ML,d.driverName,d.dispatchTo,d.dispatchedDate,dri.mobileNumber,v.vehicleType,v.vehicleNo from dispatches d INNER JOIN VehicleDetails v ON d.vehicleNo=v.vehicleId INNER JOIN driverdetails dri on d.driverId=dri.driverId WHERE d.departmentId=${departmentId} ORDER BY d.dispatchedDate DESC`;
+    let query = `SELECT d.status,d.dispatchType,d.dispatchAddress,d.DCNO,d.batchId,d.product20L,d.product1L,d.product500ML,d.product300ML,d.product2L,d.driverName,d.dispatchTo,d.dispatchedDate,dri.mobileNumber,v.vehicleType,v.vehicleNo from dispatches d INNER JOIN VehicleDetails v ON d.vehicleNo=v.vehicleId INNER JOIN driverdetails dri on d.driverId=dri.driverId WHERE d.departmentId=${departmentId} ORDER BY d.dispatchedDate DESC`;
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getDispatchDetailsByDate = async (input, callback) => {
     const { departmentId, date } = input
-    let query = `SELECT d.status,d.dispatchType,d.dispatchAddress,d.DCNO,d.batchId,d.product20L,d.product1L,d.product500ML,d.product250ML,d.driverName,d.dispatchTo,d.dispatchedDate,dri.mobileNumber,v.vehicleType,v.vehicleNo from dispatches d INNER JOIN VehicleDetails v ON d.vehicleNo=v.vehicleId INNER JOIN driverdetails dri on d.driverId=dri.driverId WHERE d.departmentId=? AND DATE(d.dispatchedDate)=? ORDER BY d.dispatchedDate DESC LIMIT 4`;
+    let query = `SELECT d.status,d.dispatchType,d.dispatchAddress,d.DCNO,d.batchId,d.product20L,d.product1L,d.product500ML,d.product300ML,,d.product2L,d.driverName,d.dispatchTo,d.dispatchedDate,dri.mobileNumber,v.vehicleType,v.vehicleNo from dispatches d INNER JOIN VehicleDetails v ON d.vehicleNo=v.vehicleId INNER JOIN driverdetails dri on d.driverId=dri.driverId WHERE d.departmentId=? AND DATE(d.dispatchedDate)=? ORDER BY d.dispatchedDate DESC LIMIT 4`;
     return executeGetParamsQuery(query, [departmentId, date], callback)
 }
 motherPlantDbQueries.getAllQCDetails = async (callback) => {
@@ -177,32 +177,32 @@ motherPlantDbQueries.getProdQCTestedBatches = async (departmentId, callback) => 
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getCurrentProductionDetailsByDate = async (input, callback) => {
-    let query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product250ML) total250MLBoxes,GROUP_CONCAT(p.batchId) AS batchIds FROM production p WHERE departmentId=? AND DATE(`productionDate`)<=?";
+    let query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes,GROUP_CONCAT(p.batchId) AS batchIds FROM production p WHERE departmentId=? AND DATE(`productionDate`)<=?";
     return executeGetParamsQuery(query, [input.departmentId, input.date], callback)
 }
 motherPlantDbQueries.getTotalProductionDetails = async (input, callback) => {
     let { departmentId, startDate, endDate, fromStart, shiftType } = input;
     let options = [departmentId, startDate, endDate]
-    let query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product250ML) total250MLBoxes,GROUP_CONCAT(p.batchId) AS batchIds FROM production p WHERE departmentId=? AND DATE(`productionDate`)<=?";
+    let query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes,GROUP_CONCAT(p.batchId) AS batchIds FROM production p WHERE departmentId=? AND DATE(`productionDate`)<=?";
 
     if (fromStart == 'true') {
         if (shiftType !== 'All') {
             options = [departmentId, endDate, shiftType]
-            query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product250ML) total250MLBoxes,GROUP_CONCAT(p.batchId) AS batchIds FROM production p WHERE departmentId=? AND DATE(`productionDate`)<=?  AND shiftType=?";
+            query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes,GROUP_CONCAT(p.batchId) AS batchIds FROM production p WHERE departmentId=? AND DATE(`productionDate`)<=?  AND shiftType=?";
         }
         else {
             options = [departmentId, endDate]
-            query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product250ML) total250MLBoxes,GROUP_CONCAT(p.batchId) AS batchIds FROM production p WHERE departmentId=? AND DATE(`productionDate`)<=?";
+            query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes,GROUP_CONCAT(p.batchId) AS batchIds FROM production p WHERE departmentId=? AND DATE(`productionDate`)<=?";
         }
     }
     else {
         if (shiftType !== 'All') {
             options = [departmentId, startDate, endDate, shiftType]
-            query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product250ML) total250MLBoxes,GROUP_CONCAT(p.batchId) AS batchIds FROM production p WHERE departmentId=? AND DATE(`productionDate`)>=? AND DATE(`productionDate`)<=? AND shiftType=?";
+            query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes,GROUP_CONCAT(p.batchId) AS batchIds FROM production p WHERE departmentId=? AND DATE(`productionDate`)>=? AND DATE(`productionDate`)<=? AND shiftType=?";
         }
         else {
             options = [departmentId, startDate, endDate]
-            query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product250ML) total250MLBoxes,GROUP_CONCAT(p.batchId) AS batchIds FROM production p WHERE departmentId=? AND DATE(`productionDate`)>=? AND DATE(`productionDate`)<=?";
+            query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes,GROUP_CONCAT(p.batchId) AS batchIds FROM production p WHERE departmentId=? AND DATE(`productionDate`)>=? AND DATE(`productionDate`)<=?";
         }
     }
     return executeGetParamsQuery(query, options, callback)
@@ -210,10 +210,10 @@ motherPlantDbQueries.getTotalProductionDetails = async (input, callback) => {
 motherPlantDbQueries.getTotalProductionByDate = async (input, callback) => {
     const { departmentId, startDate, endDate, shiftType } = input
     let options = [departmentId, startDate, endDate]
-    let query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product250ML) total250MLBoxes FROM production p WHERE departmentId=? AND DATE(`productionDate`)>=? AND DATE(`productionDate`)<=?";
+    let query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM production p WHERE departmentId=? AND DATE(`productionDate`)>=? AND DATE(`productionDate`)<=?";
     if (input.shiftType !== 'All') {
         options = [departmentId, startDate, endDate, shiftType]
-        query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product250ML) total250MLBoxes FROM production p WHERE departmentId=? AND DATE(`productionDate`)>=? AND DATE(`productionDate`)<=? AND shiftType=?";
+        query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM production p WHERE departmentId=? AND DATE(`productionDate`)>=? AND DATE(`productionDate`)<=? AND shiftType=?";
     }
     return executeGetParamsQuery(query, options, callback)
 }
@@ -221,39 +221,38 @@ motherPlantDbQueries.getTotalProductionChangeByDate = async (input, callback) =>
     const { departmentId, startDate, endDate, shiftType, type } = input
     const { startDate: newStartDate, endDate: newEndDate } = dateComparisions(startDate, endDate, type)
     let options = [departmentId, newStartDate, newEndDate]
-    let query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product250ML) total250MLBoxes FROM production p WHERE departmentId=? AND DATE(`productionDate`)>=? AND DATE(`productionDate`)<=?";
+    let query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM production p WHERE departmentId=? AND DATE(`productionDate`)>=? AND DATE(`productionDate`)<=?";
     if (input.shiftType !== 'All') {
         options = [departmentId, newStartDate, newEndDate, shiftType]
-        query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product250ML) total250MLBoxes FROM production p WHERE departmentId=? AND DATE(`productionDate`)>=? AND DATE(`productionDate`)<=? AND shiftType=?";
+        query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM production p WHERE departmentId=? AND DATE(`productionDate`)>=? AND DATE(`productionDate`)<=? AND shiftType=?";
     }
     return executeGetParamsQuery(query, options, callback)
 }
 motherPlantDbQueries.getPDDetailsByDate = async (input, callback) => {
-    let query = "SELECT SUM(d.product20L) AS total20LCans,SUM(d.product1L) AS total1LBoxes,SUM(d.product500ML) total500MLBoxes,SUM(d.product250ML) total250MLBoxes FROM dispatches d WHERE departmentId=? AND DATE(`dispatchedDate`)<=?";
+    let query = "SELECT SUM(d.product20L) AS total20LCans,SUM(d.product1L) AS total1LBoxes,SUM(d.product500ML) total500MLBoxes,SUM(d.product300ML) total300MLBoxes,SUM(d.product2L) total2LBoxes FROM dispatches d WHERE departmentId=? AND DATE(`dispatchedDate`)<=?";
     return executeGetParamsQuery(query, [input.departmentId, input.date], callback)
 }
 motherPlantDbQueries.getTotalPDDetails = async (input, callback) => {
     let { departmentId, startDate, endDate, fromStart, batchIds } = input;
     let options = [departmentId, endDate, batchIds]
-    let query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product250ML) total250MLBoxes FROM dispatches p WHERE departmentId=? AND DATE(`dispatchedDate`)<=? AND batchId IN (?)";
+    let query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM dispatches p WHERE departmentId=? AND DATE(`dispatchedDate`)<=? AND batchId IN (?)";
 
     if (fromStart == 'true') {
         options = [departmentId, endDate, batchIds]
-        query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product250ML) total250MLBoxes FROM dispatches p WHERE departmentId=? AND DATE(dispatchedDate)<=? AND batchId IN (?)";
+        query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM dispatches p WHERE departmentId=? AND DATE(dispatchedDate)<=? AND batchId IN (?)";
     }
     else {
         options = [departmentId, startDate, endDate, batchIds]
-        query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product250ML) total250MLBoxes FROM dispatches p WHERE departmentId=? AND DATE(`dispatchedDate`)>=? AND DATE(`dispatchedDate`)<=? AND batchId IN (?)";
+        query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM dispatches p WHERE departmentId=? AND DATE(`dispatchedDate`)>=? AND DATE(`dispatchedDate`)<=? AND batchId IN (?)";
     }
     return executeGetParamsQuery(query, options, callback)
 }
 motherPlantDbQueries.getCurrentDispatchDetailsByDate = async (input, callback) => {
-    // let query = "SELECT JSON_ARRAYAGG(json_object('dcNo',d.DCNO,'isConfirmed',d.isConfirmed)) as DCDetails,SUM(d.product20L) AS total20LCans,SUM(d.product1L) AS total1LBoxes,SUM(d.product500ML) total500MLBoxes,SUM(d.product250ML) total250MLBoxes FROM dispatches d  WHERE dispatchTo=? AND DATE(`dispatchedDate`)=?";
-    let query = "SELECT JSON_ARRAYAGG(json_object('dcNo',d.DCNO,'isConfirmed',d.isConfirmed)) as DCDetails,SUM(d.product20L) AS total20LCans,SUM(d.product1L) AS total1LBoxes,SUM(d.product500ML) total500MLBoxes,SUM(d.product250ML) total250MLBoxes,SUM(r.damaged20LCans) damaged20LCans,SUM(r.damaged1LBoxes) damaged1LBoxes,SUM(r.damaged500MLBoxes) damaged500MLBoxes,SUM(r.damaged250MLBoxes) damaged250MLBoxes FROM dispatches d Left JOIN returnstockdetails r on d.returnStockId=r.id WHERE d.dispatchType='warehouse' AND dispatchTo=? AND DATE(`dispatchedDate`)=?";
+    let query = "SELECT JSON_ARRAYAGG(json_object('dcNo',d.DCNO,'isConfirmed',d.isConfirmed)) as DCDetails,SUM(d.product20L) AS total20LCans,SUM(d.product1L) AS total1LBoxes,SUM(d.product500ML) total500MLBoxes,SUM(d.product300ML) total300MLBoxes,SUM(d.product2L) total2LBoxes,SUM(r.damaged20LCans) damaged20LCans,SUM(r.damaged1LBoxes) damaged1LBoxes,SUM(r.damaged500MLBoxes) damaged500MLBoxes,SUM(r.damaged300MLBoxes) damaged300MLBoxes,SUM(r.damaged2LBoxes) damaged2LBoxes FROM dispatches d Left JOIN returnstockdetails r on d.returnStockId=r.id WHERE d.dispatchType='warehouse' AND dispatchTo=? AND DATE(`dispatchedDate`)=?";
     return executeGetParamsQuery(query, [input.departmentId, input.date], callback)
 }
 motherPlantDbQueries.getDispatchDetailsByDC = async (dcNo, callback) => {
-    let query = `SELECT SUM(d.product20L) as product20L,SUM(d.product1L) as product1L,SUM(d.product500ML) as product500ML,SUM(d.product250ML) as product250ML,dcNo,GROUP_CONCAT(d.departmentId) as motherplantId,GROUP_CONCAT(v.vehicleType) vehicleType,GROUP_CONCAT(v.vehicleNo) vehicleNo,GROUP_CONCAT(driver.driverName) driverName,GROUP_CONCAT(driver.mobileNumber) mobileNumber,GROUP_CONCAT(dep.address) address,GROUP_CONCAT(dep.departmentName) departmentName
+    let query = `SELECT SUM(d.product20L) as product20L,SUM(d.product1L) as product1L,SUM(d.product500ML) as product500ML,SUM(d.product300ML) as product300ML,SUM(d.product2L) as product2L,dcNo,GROUP_CONCAT(d.departmentId) as motherplantId,GROUP_CONCAT(v.vehicleType) vehicleType,GROUP_CONCAT(v.vehicleNo) vehicleNo,GROUP_CONCAT(driver.driverName) driverName,GROUP_CONCAT(driver.mobileNumber) mobileNumber,GROUP_CONCAT(dep.address) address,GROUP_CONCAT(dep.departmentName) departmentName
     FROM dispatches d INNER JOIN VehicleDetails v on d.vehicleNo=v.vehicleId INNER JOIN driverdetails driver on d.driverId=driver.driverId INNER JOIN departmentmaster dep on d.departmentId=dep.departmentId WHERE DCNO=?`;
     return executeGetParamsQuery(query, [dcNo], callback)
 }
@@ -265,10 +264,10 @@ motherPlantDbQueries.getQCLevelsDetails = async (input, callback) => {
 motherPlantDbQueries.getTotalRevenue = async (input, callback) => {
     let { startDate, endDate, fromStart } = input;
     let options = [endDate]
-    let query = `SELECT SUM(price20L) product20LCount,SUM(price1L) product1LCount,SUM(price500ML) product500MLCount,SUM(price250ML) product250MLCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)<=?`;
+    let query = `SELECT SUM(price20L) product20LCount,SUM(price1L) product1LCount,SUM(price500ML) product500MLCount,SUM(price300ML) product300MLCount,SUM(price2L) product2LCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)<=?`;
     if (fromStart !== 'true') {
         options = [startDate, endDate]
-        query = ` SELECT SUM(price20L) product20LCount,SUM(price1L) product1LCount,SUM(price500ML) product500MLCount,SUM(price250ML) product250MLCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)>=? AND DATE(deliveredDate)<=?`;
+        query = ` SELECT SUM(price20L) product20LCount,SUM(price1L) product1LCount,SUM(price500ML) product500MLCount,SUM(price300ML) product300MLCount,SUM(price2L) product2LCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)>=? AND DATE(deliveredDate)<=?`;
     }
     return executeGetParamsQuery(query, options, callback)
 }
@@ -276,10 +275,10 @@ motherPlantDbQueries.getTotalRevenueChange = async (input, callback) => {
     let { startDate, endDate, fromStart, type } = input;
     const { startDate: newStartDate, endDate: newEndDate } = dateComparisions(startDate, endDate, type)
     let options = [newEndDate]
-    let query = `SELECT SUM(price20L) product20LCount,SUM(price1L) product1LCount,SUM(price500ML) product500MLCount,SUM(price250ML) product250MLCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)<=?`;
+    let query = `SELECT SUM(price20L) product20LCount,SUM(price1L) product1LCount,SUM(price500ML) product500MLCount,SUM(price300ML) product300MLCount,SUM(price2L) product2LCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)<=?`;
     if (fromStart !== 'true') {
         options = [newStartDate, newEndDate]
-        query = ` SELECT SUM(price20L) product20LCount,SUM(price1L) product1LCount,SUM(price500ML) product500MLCount,SUM(price250ML) product250MLCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)>=? AND DATE(deliveredDate)<=?`;
+        query = ` SELECT SUM(price20L) product20LCount,SUM(price1L) product1LCount,SUM(price500ML) product500MLCount,SUM(price300ML) product300MLCount,SUM(price2L) product2LCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)>=? AND DATE(deliveredDate)<=?`;
     }
     return executeGetParamsQuery(query, options, callback)
 }
@@ -324,9 +323,9 @@ motherPlantDbQueries.createInternalQC = async (input, callback) => {
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.addProductionDetails = async (input, callback) => {
-    let query = "insert into production (productionDate,phLevel,TDS,ozoneLevel,product20L, product1L, product500ML, product250ML,managerName,createdBy,shiftType,departmentId,batchId) values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    let query = "insert into production (productionDate,phLevel,TDS,ozoneLevel,product20L, product1L, product500ML, product300ML,product2L,managerName,createdBy,shiftType,departmentId,batchId) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     let productionDate = new Date()
-    let requestBody = [productionDate, input.phLevel, input.TDS, input.ozoneLevel, input.product20L, input.product1L, input.product500ML, input.product250ML, input.managerName, input.createdBy, input.shiftType, input.departmentId, input.batchId]
+    let requestBody = [productionDate, input.phLevel, input.TDS, input.ozoneLevel, input.product20L, input.product1L, input.product500ML, input.product300ML, input.product2L, input.managerName, input.createdBy, input.shiftType, input.departmentId, input.batchId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.addVehicleDetails = async (input, callback) => {
@@ -342,8 +341,8 @@ motherPlantDbQueries.updateVehicleDetails = async (input, callback) => {
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.addDispatchDetails = async (input, callback) => {
-    let query = "insert into dispatches (dispatchedDate,vehicleNo,driverId,driverName,dispatchTo,batchId,product20L,product1L,product500ML,product250ML,dispatchAddress, dispatchType,departmentId) values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
-    let requestBody = [input.dispatchedDate, input.vehicleNo, input.driverId, input.driverName, input.dispatchTo, input.batchId, input.product20L, input.product1L, input.product500ML, input.product250ML, input.dispatchAddress, input.dispatchType, input.departmentId]
+    let query = "insert into dispatches (dispatchedDate,vehicleNo,driverId,driverName,dispatchTo,batchId,product20L,product1L,product500ML,product300ML,product2L,dispatchAddress, dispatchType,departmentId) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    let requestBody = [input.dispatchedDate, input.vehicleNo, input.driverId, input.driverName, input.dispatchTo, input.batchId, input.product20L, input.product1L, input.product500ML, input.product300ML, input.product2L, input.dispatchAddress, input.dispatchType, input.departmentId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.createRM = async (input, callback) => {
@@ -361,8 +360,8 @@ motherPlantDbQueries.createRMReceipt = async (input, callback) => {
 }
 
 motherPlantDbQueries.updateProductionDetails = async (input, callback) => {
-    let query = `update production set batchId=?,phLevel=?,TDS=?,ozoneLevel=?,product20L=?,product1L=?,product500ML=?,product250ML=?,managerName=?,shiftType=? where productionid=${input.productionid}`;
-    let requestBody = [input.batchId, input.phLevel, input.TDS, input.ozoneLevel, input.product20L, input.product1L, input.product500ML, input.product250ML, input.managerName, input.shiftType]
+    let query = `update production set batchId=?,phLevel=?,TDS=?,ozoneLevel=?,product20L=?,product1L=?,product500ML=?,product300ML=?,product2L=?,managerName=?,shiftType=? where productionid=${input.productionid}`;
+    let requestBody = [input.batchId, input.phLevel, input.TDS, input.ozoneLevel, input.product20L, input.product1L, input.product500ML, input.product300ML, input.product2L, input.managerName, input.shiftType]
     return executePostOrUpdateQuery(query, requestBody, (err, data) => {
         if (err) callback(err, data)
         else {
@@ -390,13 +389,13 @@ motherPlantDbQueries.updateRMStatus = async (input, callback) => {
 }
 
 motherPlantDbQueries.updateDispatchDetails = async (input, callback) => {
-    const { dispatchType, DCNO, vehicleNo, driverId, driverName, dispatchTo, batchId, product20L, product1L, product500ML, product250ML, managerName, dispatchAddress } = input
-    let query = `update dispatches SET dispatchType=?,DCNO=?,vehicleNo=?,driverId=?,driverName=?,dispatchTo=?,batchId=?,product20L=?,product1L=?,product500ML=?,product250ML=?,managerName=?,dispatchAddress=? where dispatchId="${input.dispatchId}"`;
-    let requestBody = [dispatchType, DCNO, vehicleNo, driverId, driverName, dispatchTo, batchId, product20L, product1L, product500ML, product250ML, managerName, dispatchAddress]
+    const { dispatchType, DCNO, vehicleNo, driverId, driverName, dispatchTo, batchId, product20L, product1L, product500ML, product300ML, product2L, managerName, dispatchAddress } = input
+    let query = `update dispatches SET dispatchType=?,DCNO=?,vehicleNo=?,driverId=?,driverName=?,dispatchTo=?,batchId=?,product20L=?,product1L=?,product500ML=?,product300ML=?,product2L=?,managerName=?,dispatchAddress=? where dispatchId="${input.dispatchId}"`;
+    let requestBody = [dispatchType, DCNO, vehicleNo, driverId, driverName, dispatchTo, batchId, product20L, product1L, product500ML, product300ML, product2L, managerName, dispatchAddress]
     executePostOrUpdateQuery(query, requestBody, (err, data) => {
         if (err) callback(err, data)
         else {
-            let getQuery = `SELECT d.dispatchAddress,d.dispatchType,d.DCNO,d.batchId,d.product20L,d.product1L,d.product500ML,d.product250ML,d.driverName,d.dispatchTo,d.dispatchedDate,v.vehicleType,v.vehicleNo from dispatches d INNER JOIN VehicleDetails v ON d.vehicleNo=v.vehicleId WHERE dispatchId=${input.dispatchId}`
+            let getQuery = `SELECT d.dispatchAddress,d.dispatchType,d.DCNO,d.batchId,d.product20L,d.product1L,d.product500ML,d.product300ML,d.product2L,d.driverName,d.dispatchTo,d.dispatchedDate,v.vehicleType,v.vehicleNo from dispatches d INNER JOIN VehicleDetails v ON d.vehicleNo=v.vehicleId WHERE dispatchId=${input.dispatchId}`
             executeGetQuery(getQuery, callback)
         }
     })
