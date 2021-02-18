@@ -12,9 +12,9 @@ const ProductionStatus = () => {
     const [production, setProduction] = useState({})
     const [opData, setOpData] = useState(() => options)
 
-    const { product20LCount, product2LCount, product1LCount, product500MLCount, product250MLCount, product2LPercent,
+    const { product20LCount, product2LCount, product1LCount, product500MLCount, product300MLCount, product2LPercent,
         product2LCompareText, product20LPercent, product20LCompareText, product1LPercent, product1LCompareText, product500MLPercent,
-        product500MLCompareText, product250MLPercent, product250MLCompareText } = production
+        product500MLCompareText, product300MLPercent, product300MLCompareText } = production
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
@@ -50,7 +50,7 @@ const ProductionStatus = () => {
                     <ProductionStatusCard title='2 Ltrs' total={product2LCount} compareText={product2LCompareText} percent={product2LPercent} />
                     <ProductionStatusCard title='1 Ltrs' total={product1LCount} compareText={product1LCompareText} percent={product1LPercent} />
                     <ProductionStatusCard title='500 ml' total={product500MLCount} compareText={product500MLCompareText} percent={product500MLPercent} />
-                    <ProductionStatusCard title='300 ml' total={product250MLCount} compareText={product250MLCompareText} percent={product250MLPercent} />
+                    <ProductionStatusCard title='300 ml' total={product300MLCount} compareText={product300MLCompareText} percent={product300MLPercent} />
                 </Slider>
             </div>
         </>

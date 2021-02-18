@@ -37,7 +37,7 @@ const TodayDeliveryDetails = () => {
     }
 
     const dataSource = useMemo(() => dispatches.map((order) => {
-        const { DCNO, dispatchAddress, driverName, product20L, product1L, product500ML, product250ML, status } = order
+        const { DCNO, dispatchAddress, driverName, status, ...rest } = order
         return {
             key: DCNO,
             id: DCNO,
@@ -45,7 +45,7 @@ const TodayDeliveryDetails = () => {
             dispatchAddress,
             driverName: driverName || "Not Assigned",
             status: renderStatus(status),
-            production: renderProductDetails({ product20L, product1L, product500ML, product250ML }),
+            production: renderProductDetails(rest),
         }
     }), [dispatches])
 
@@ -90,10 +90,10 @@ const renderStatus = (status) => {
         </div>
     )
 }
-const renderProductDetails = ({ product20L, product1L, product500ML, product250ML }) => {
+const renderProductDetails = ({ product20L = 0, product2L = 0, product1L = 0, product500ML = 0, product300ML = 0 }) => {
     return `
-    20 lts - ${product20L ? product20L : 0}, 1 ltr - ${product1L ? product1L : 0} boxes, 
-    500 ml - ${product500ML ? product500ML : 0} boxes, 250 ml - ${product250ML ? product250ML : 0} boxes
+    20 ltrs - ${product20L}, 2 ltrs - ${product2L} boxes, 1 ltr - ${product1L} boxes, 
+    500 ml - ${product500ML} boxes, 300 ml - ${product300ML} boxes
     `
 }
 export default TodayDeliveryDetails

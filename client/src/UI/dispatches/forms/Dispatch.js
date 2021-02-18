@@ -11,7 +11,7 @@ const DispatchForm = (props) => {
         onChange, onBlur, distributorOptions } = props
 
     const { batchId, dispatchTo, managerName, vehicleNo, driverId, mobileNumber,
-        product20L, product1L, product500ML, product250ML, dispatchType } = data
+        product20L, product2L, product1L, product500ML, product300ML, dispatchType } = data
 
     useEffect(() => {
         resetTrackForm()
@@ -48,6 +48,13 @@ const DispatchForm = (props) => {
                         </div>
                         <div className='column'>
                             <div className='input-container'>
+                                <InputLabel name='2 Ltrs' />
+                                <CustomInput value={product2L} disabled={disabled}
+                                    placeholder='Qty' onChange={(value) => onChange(value, 'product2L')} />
+                            </div>
+                        </div>
+                        <div className='column'>
+                            <div className='input-container'>
                                 <InputLabel name='1 Ltrs' />
                                 <CustomInput value={product1L} disabled={disabled}
                                     placeholder='Qty' onChange={(value) => onChange(value, 'product1L')} />
@@ -62,9 +69,9 @@ const DispatchForm = (props) => {
                         </div>
                         <div className='column'>
                             <div className='input-container'>
-                                <InputLabel name='250 Ml' />
-                                <CustomInput value={product250ML} disabled={disabled}
-                                    placeholder='Qty' onChange={(value) => onChange(value, 'product250ML')} />
+                                <InputLabel name='300 Ml' />
+                                <CustomInput value={product300ML} disabled={disabled}
+                                    placeholder='Qty' onChange={(value) => onChange(value, 'product300ML')} />
                             </div>
                         </div>
                     </div>

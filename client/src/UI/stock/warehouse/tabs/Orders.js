@@ -375,10 +375,10 @@ const Orders = () => {
     )
 }
 
-const renderOrderDetails = ({ product20L, product1L, product500ML, product250ML }) => {
+const renderOrderDetails = ({ product20L, product2L, product1L, product500ML, product300ML }) => {
     return `
-    20 lts - ${product20L}, 1 ltr - ${product1L} boxes, 
-    500 ml - ${product500ML} boxes, 250 ml - ${product250ML} boxes
+    20 ltrs - ${product20L}, 2 ltrs - ${product2L} boxes, 1 ltr - ${product1L} boxes, 
+    500 ml - ${product500ML} boxes, 300 ml - ${product300ML} boxes
     `
 }
 const getActions = (driverName) => {

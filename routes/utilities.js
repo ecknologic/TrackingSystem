@@ -36,9 +36,12 @@ const insertToCustomerOrderDetails = (result, res, sendResponse) => {
         } else if (product.productName == '500ML') {
           requestBody.product500ML = product.noOfJarsTobePlaced
           requestBody.price500ML = product.productPrice
-        } else if (product.productName == '250ML') {
-          requestBody.product250ML = product.noOfJarsTobePlaced
-          requestBody.price250ML = product.productPrice
+        } else if (product.productName == '300ML') {
+          requestBody.product300ML = product.noOfJarsTobePlaced
+          requestBody.price300ML = product.productPrice
+        } else if (product.productName == '2L') {
+          requestBody.product2L = product.noOfJarsTobePlaced
+          requestBody.price2L = product.productPrice
         }
       })
       customerQueries.saveCustomerOrderDetails(requestBody, (err, results) => {

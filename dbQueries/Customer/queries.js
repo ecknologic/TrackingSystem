@@ -197,9 +197,9 @@ customerQueries.getsqlNo = (tableName, callback) => {
 //POST Request Methods
 customerQueries.saveCustomerOrderDetails = (input, callback) => {
     let { contactPerson, phoneNumber, address, routeId, driverId, customer_Id, latitude, longitude, dcNo, departmentId, customerType, product20L, price20L, product1L, price1L, product500ML, price500ML,
-        product250ML, price250ML, deliveryLocation } = input
-    let query = `insert into customerorderdetails (customerName,phoneNumber,address,routeId,driverId,existingCustomerId,latitude,longitude,dcNo,warehouseId,customerType,20LCans, price20L, 1LBoxes, price1L, 500MLBoxes, price500ML,250MLBoxes, price250ML,deliveryLocation) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
-    let requestBody = [contactPerson, phoneNumber, address, routeId, driverId, customer_Id, latitude, longitude, dcNo, departmentId, customerType, product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML, deliveryLocation]
+        product300ML, price300ML, product2LBoxes, price2L, deliveryLocation } = input
+    let query = `insert into customerorderdetails (customerName,phoneNumber,address,routeId,driverId,existingCustomerId,latitude,longitude,dcNo,warehouseId,customerType,20LCans, price20L, 1LBoxes, price1L, 500MLBoxes, price500ML,300MLBoxes, price300ML,2LBoxes,price2L,deliveryLocation) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
+    let requestBody = [contactPerson, phoneNumber, address, routeId, driverId, customer_Id, latitude, longitude, dcNo, departmentId, customerType, product20L, price20L, product1L, price1L, product500ML, price500ML, product300ML, price300ML, product2LBoxes, price2L, deliveryLocation]
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 customerQueries.approveCustomer = (input, callback) => {
@@ -272,7 +272,7 @@ customerQueries.deleteCustomerDeliveries = (customerId, callback) => {
 }
 customerQueries.generatePDF = (input, callback) => {
     const { customerId = 222, fromDate = '2021-01-21', toDate = '2021-02-05' } = input
-    let query = "SELECT c.customerId,c.customerName,c.organizationName,c.address1,d.address,c.gstNo,c.panNo,c.mobileNumber,co.20LCans,co.price20L,co.1LBoxes,co.price1L, co.500MLBoxes,co.price500ML,co.250MLBoxes,co.price250ML FROM customerdetails c INNER JOIN  customerorderdetails co ON c.customerId=co.existingCustomerId INNER JOIN DeliveryDetails d ON d.customer_Id=c.customerId  WHERE c.customerId=?  AND co.isDelivered='Completed' AND( DATE(co.deliveryDate) BETWEEN ? AND ?)"
+    let query = "SELECT c.customerId,c.customerName,c.organizationName,c.address1,d.address,c.gstNo,c.panNo,c.mobileNumber,co.20LCans,co.price20L,co.1LBoxes,co.price1L, co.500MLBoxes,co.price500ML,co.300MLBoxes,co.price300ML,co.2LBoxes,co.price2L FROM customerdetails c INNER JOIN  customerorderdetails co ON c.customerId=co.existingCustomerId INNER JOIN DeliveryDetails d ON d.customer_Id=c.customerId  WHERE c.customerId=?  AND co.isDelivered='Completed' AND( DATE(co.deliveryDate) BETWEEN ? AND ?)"
     return executeGetParamsQuery(query, [customerId, fromDate, toDate], callback)
 }
 customerQueries.deleteDeliveryAddress = (deliveryId, callback) => {

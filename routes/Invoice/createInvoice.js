@@ -95,13 +95,21 @@ function generateInvoiceTable(doc, invoice) {
     for (i = 0, j = 0; i < invoice.items.length; i++) {
         const item = invoice.items[i];
         let product, quantity, price, address = item.address;
-        let arr = [{ "20LCans": item["20LCans"], price20L: item.price20L }, { "1LBoxes": item["1LBoxes"], "price1L": item.price1L }, { "500MLBoxes": item["500MLBoxes"], "price500ML": item.price500ML }, { "250MLBoxes": item["250MLBoxes"], "price250ML": item.price250ML }]
+        let arr = [{ "20LCans": item["20LCans"], price20L: item.price20L }, { "1LBoxes": item["1LBoxes"], "price1L": item.price1L }, { "500MLBoxes": item["500MLBoxes"], "price500ML": item.price500ML }, { "300MLBoxes": item["300MLBoxes"], "price300ML": item.price300ML }, { "2LBoxes": item["2LBoxes"], "price2L": item.price2L }]
         for (let [index, productInfo] of arr.entries()) {
             if (productInfo["20LCans"] > 0) {
                 product = "20 Lt Bt Jar";
                 quantity = productInfo["20LCans"];
                 price = productInfo.price20L
                 subTotal = subTotal + productInfo.price20L
+                renderProductRow(doc, invoiceTableTop + 27, j, product, quantity, price, address, index, i)
+                j++;
+            }
+            else if (productInfo["2LBoxes"] > 0) {
+                product = "2L Boxes";
+                quantity = productInfo["2LBoxes"];
+                price = productInfo.price2L
+                subTotal = subTotal + productInfo.price2L
                 renderProductRow(doc, invoiceTableTop + 27, j, product, quantity, price, address, index, i)
                 j++;
             } else if (productInfo["1LBoxes"] > 0) {
@@ -118,11 +126,11 @@ function generateInvoiceTable(doc, invoice) {
                 subTotal = subTotal + productInfo.price500ML
                 renderProductRow(doc, invoiceTableTop + 27, j, product, quantity, price, address, index, i)
                 j++;
-            } else if (productInfo["250MLBoxes"] > 0) {
+            } else if (productInfo["300MLBoxes"] > 0) {
                 product = "300ML Boxes";
-                quantity = productInfo["250MLBoxes"];
-                price = productInfo.price250ML
-                subTotal = subTotal + productInfo.price250ML
+                quantity = productInfo["300MLBoxes"];
+                price = productInfo.price300ML
+                subTotal = subTotal + productInfo.price300ML
                 renderProductRow(doc, invoiceTableTop + 27, j, product, quantity, price, address, index, i)
                 j++;
             }

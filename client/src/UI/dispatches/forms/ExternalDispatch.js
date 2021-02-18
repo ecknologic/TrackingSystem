@@ -9,8 +9,8 @@ const ExternalDispatchForm = (props) => {
 
     const { data, errors, batchIdOptions, vehicleOptions, disabled, driverOptions, onChange, onBlur } = props
 
-    const { batchId, dispatchAddress, managerName, vehicleNo, mobileNumber, driverId, product20L, product1L,
-        product500ML, product250ML, price20L, price1L, price500ML, price250ML } = data
+    const { batchId, dispatchAddress, managerName, vehicleNo, mobileNumber, driverId, product20L, product2L,
+        product1L, product500ML, product300ML, price20L, price2L, price1L, price500ML, price300ML } = data
 
     useEffect(() => {
         resetTrackForm()
@@ -51,6 +51,20 @@ const ExternalDispatchForm = (props) => {
                         </div>
                         <div className='column'>
                             <div className='input-container'>
+                                <InputLabel name='2 Ltrs' />
+                                <CustomInput value={product2L} disabled={disabled}
+                                    placeholder='Qty' onChange={(value) => onChange(value, 'product2L')} />
+                            </div>
+                            <div className='input-container'>
+                                <InputLabel name='Price' />
+                                <CustomInput value={price2L} disabled={disabled}
+                                    placeholder='Rs' onChange={(value) => onChange(value, 'price2L')}
+                                    onBlur={(value) => onBlur(value, 'price2L')}
+                                />
+                            </div>
+                        </div>
+                        <div className='column'>
+                            <div className='input-container'>
                                 <InputLabel name='1 Ltrs' />
                                 <CustomInput value={product1L} disabled={disabled}
                                     placeholder='Qty' onChange={(value) => onChange(value, 'product1L')} />
@@ -79,15 +93,15 @@ const ExternalDispatchForm = (props) => {
                         </div>
                         <div className='column'>
                             <div className='input-container'>
-                                <InputLabel name='250 Ml' />
-                                <CustomInput value={product250ML} disabled={disabled}
-                                    placeholder='Qty' onChange={(value) => onChange(value, 'product250ML')} />
+                                <InputLabel name='300 Ml' />
+                                <CustomInput value={product300ML} disabled={disabled}
+                                    placeholder='Qty' onChange={(value) => onChange(value, 'product300ML')} />
                             </div>
                             <div className='input-container'>
                                 <InputLabel name='Price' />
-                                <CustomInput value={price250ML} disabled={disabled}
-                                    placeholder='Rs' onChange={(value) => onChange(value, 'price250ML')}
-                                    onBlur={(value) => onBlur(value, 'price250ML')}
+                                <CustomInput value={price300ML} disabled={disabled}
+                                    placeholder='Rs' onChange={(value) => onChange(value, 'price300ML')}
+                                    onBlur={(value) => onBlur(value, 'price300ML')}
                                 />
                             </div>
                         </div>

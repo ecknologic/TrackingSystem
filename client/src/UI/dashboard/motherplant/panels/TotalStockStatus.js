@@ -11,7 +11,7 @@ const options = { startDate: d, endDate: d, shift: 'All', fromStart: true }
 const TotalStockStatus = () => {
     const [stock, setStock] = useState({})
     const [opData, setOpData] = useState(() => options)
-    const { product20LCount, product2LCount, product1LCount, product500MLCount, product250MLCount } = stock
+    const { product20LCount, product2LCount, product1LCount, product500MLCount, product300MLCount } = stock
 
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
@@ -48,7 +48,7 @@ const TotalStockStatus = () => {
                     <StockCard title='2 Ltrs' total={product2LCount} />
                     <StockCard title='1 Ltrs' total={product1LCount} />
                     <StockCard title='500 ml' total={product500MLCount} />
-                    <StockCard title='300 ml' total={product250MLCount} />
+                    <StockCard title='300 ml' total={product300MLCount} />
                 </Slider>
             </div>
         </>

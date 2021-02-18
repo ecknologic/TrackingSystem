@@ -109,23 +109,24 @@ var dateComparisions = (startDate, endDate, type) => {
 }
 
 const productionCount = (productionResult) => {
-    let product20LCount = 0, product1LCount = 0, product500MLCount = 0, product250MLCount = 0;
+    let product20LCount = 0, product1LCount = 0, product500MLCount = 0, product300MLCount = 0, product2LCount = 0;
 
     let productionObj = productionResult[0];
-    let { total20LCans = 0, total1LBoxes = 0, total500MLBoxes = 0, total250MLBoxes = 0 } = productionObj;
+    let { total20LCans = 0, total1LBoxes = 0, total500MLBoxes = 0, total300MLBoxes = 0, total2LBoxes = 0 } = productionObj;
 
     product20LCount = total20LCans;
     product1LCount = total1LBoxes;
     product500MLCount = total500MLBoxes;
-    product250MLCount = total250MLBoxes;
-    return { product20LCount, product1LCount, product500MLCount, product250MLCount };
+    product300MLCount = total300MLBoxes;
+    product2LCount = total2LBoxes;
+    return { product20LCount, product1LCount, product500MLCount, product300MLCount, product2LCount };
 }
 const getCompareData = (currentValues, previousValues, type, isRs) => {
-    const { product20LCount, product1LCount, product500MLCount, product250MLCount } = currentValues
+    const { product20LCount, product1LCount, product500MLCount, product300MLCount, product2LCount } = currentValues
     const { product20LCount: prev20LCount, product1LCount: prev1LCount,
-        product500MLCount: prev500MLCount, product250MLCount: prev250MLCount } = previousValues
+        product500MLCount: prev500MLCount, product300MLCount: prev300MLCount, product2LCount: prev2LCount } = previousValues
 
-    const totalProducts = product20LCount + product1LCount + product500MLCount + product250MLCount
+    const totalProducts = product20LCount + product1LCount + product500MLCount + product300MLCount + product2LCount
 
     const product20LPercent = getPercent(product20LCount, prev20LCount)
     const product20LPartPercent = getSimplePercent(product20LCount, totalProducts)
@@ -136,18 +137,22 @@ const getCompareData = (currentValues, previousValues, type, isRs) => {
     const product500MLPercent = getPercent(product500MLCount, prev500MLCount)
     const product500MLPartPercent = getSimplePercent(product500MLCount, totalProducts)
     const product500MLCompareText = getCompareText(type, prev500MLCount, isRs)
-    const product250MLPercent = getPercent(product250MLCount, prev250MLCount)
-    const product250MLPartPercent = getSimplePercent(product250MLCount, totalProducts)
-    const product250MLCompareText = getCompareText(type, prev250MLCount, isRs)
-    const prevTotal = getFormatedNumber(prev20LCount + prev1LCount + prev500MLCount + prev250MLCount)
+    const product300MLPercent = getPercent(product300MLCount, prev300MLCount)
+    const product300MLPartPercent = getSimplePercent(product300MLCount, totalProducts)
+    const product300MLCompareText = getCompareText(type, prev300MLCount, isRs)
+
+    const product2LPercent = getPercent(product2LCount, prev2LCount)
+    const product2LPartPercent = getSimplePercent(product2LCount, totalProducts)
+    const product2LCompareText = getCompareText(type, prev2LCount, isRs)
+    const prevTotal = getFormatedNumber(prev20LCount + prev1LCount + prev500MLCount + prev300MLCount + prev2LCount)
     const total = getFormatedNumber(totalProducts)
 
     return {
         product20LCount: getFormatedNumber(product20LCount), product1LCount: getFormatedNumber(product1LCount),
         product500MLCount: getFormatedNumber(product500MLCount), product500MLCount: getFormatedNumber(product500MLCount),
-        product250MLCount: getFormatedNumber(product250MLCount), product20LPercent, product20LCompareText, product1LPercent,
-        product1LCompareText, product500MLPercent, product500MLCompareText, product250MLPercent, product250MLCompareText, prevTotal, total,
-        product20LPartPercent, product1LPartPercent, product500MLPartPercent, product250MLPartPercent
+        product300MLCount: getFormatedNumber(product300MLCount), product2LCount: getFormatedNumber(product2LCount), product20LPercent, product20LCompareText, product1LPercent,
+        product1LCompareText, product500MLPercent, product500MLCompareText, product300MLPercent, product300MLCompareText, product2LPercent, product2LCompareText, prevTotal, total,
+        product20LPartPercent, product1LPartPercent, product500MLPartPercent, product300MLPartPercent, product2LPartPercent
     }
 }
 const getCompareCustomersData = (data, type) => {

@@ -3,11 +3,11 @@ import { message } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import BatchForm from '../forms/Batch';
 import { http } from '../../../../modules/http';
-import CASMPPanel from '../../../../components/CASMPPanel';
-import CustomButton from '../../../../components/CustomButton';
-import FormHeader from '../../../../components/FormHeader';
-import ConfirmModal from '../../../../components/CustomModal';
 import { getUserId } from '../../../../utils/constants';
+import FormHeader from '../../../../components/FormHeader';
+import CASMPPanel from '../../../../components/CASMPPanel';
+import ConfirmModal from '../../../../components/CustomModal';
+import CustomButton from '../../../../components/CustomButton';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import { shiftOptions, getBatchIdOptions } from '../../../../assets/fixtures';
 import { extractValidProductsForDB, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
@@ -15,8 +15,8 @@ import { validateBatchValues, validateIntFloat, validateNames, validateNumber } 
 
 const StockDetails = ({ date, source, goToTab }) => {
     const USERID = getUserId()
-    const [formData, setFormData] = useState({})
     const [stock, setStock] = useState({})
+    const [formData, setFormData] = useState({})
     const [batchList, setBatchList] = useState([])
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
@@ -92,12 +92,12 @@ const StockDetails = ({ date, source, goToTab }) => {
             return
         }
 
-        const { product20L, product1L, product500ML, product250ML } = extractValidProductsForDB(formData)
+        const { product20L, product2L, product1L, product500ML, product300ML } = extractValidProductsForDB(formData)
 
         const url = '/motherPlant/addProductionDetails'
         const body = {
             ...formData, createdBy: USERID,
-            product20L, product1L, product500ML, product250ML
+            product20L, product2L, product1L, product500ML, product300ML
         }
         const options = { item: 'Production Batch', v1Ing: 'Creating', v2: 'created' }
 
