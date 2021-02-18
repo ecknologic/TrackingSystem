@@ -5,16 +5,16 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import BatchForm from '../forms/Batch';
 import { http } from '../../../../modules/http';
 import Spinner from '../../../../components/Spinner';
-import QuitModal from '../../../../components/CustomModal';
 import Actions from '../../../../components/Actions';
-import ConfirmMessage from '../../../../components/ConfirmMessage';
 import { TRACKFORM } from '../../../../utils/constants';
-import CustomPagination from '../../../../components/CustomPagination';
-import { deepClone, getStatusColor, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
+import QuitModal from '../../../../components/CustomModal';
 import CustomModal from '../../../../components/CustomModal';
-import { shiftOptions, productionColumns } from '../../../../assets/fixtures';
-import { validateBatchValues, validateIntFloat, validateNames, validateNumber } from '../../../../utils/validations';
 import { EditIconGrey } from '../../../../components/SVG_Icons';
+import ConfirmMessage from '../../../../components/ConfirmMessage';
+import CustomPagination from '../../../../components/CustomPagination';
+import { shiftOptions, productionColumns } from '../../../../assets/fixtures';
+import { deepClone, getStatusColor, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
+import { validateBatchValues, validateIntFloat, validateNames, validateNumber } from '../../../../utils/validations';
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
 const Production = () => {
@@ -241,10 +241,10 @@ const renderStatus = (status) => {
     )
 }
 
-const renderProductionDetails = ({ product20L, product1L, product500ML, product250ML }) => {
+const renderProductionDetails = ({ product20L, product2L, product1L, product500ML, product300ML }) => {
     return `
-    20 lts - ${product20L}, 1 ltr - ${product1L}, 
-    500 ml - ${product500ML}, 250 ml - ${product250ML}
+    20 ltrs - ${product20L}, 2 ltrs - ${product2L}, 1 ltr - ${product1L}, 
+    500 ml - ${product500ML}, 300 ml - ${product300ML}
     `
 }
 const options = [<Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>]

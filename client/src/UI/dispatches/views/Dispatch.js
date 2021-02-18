@@ -9,7 +9,7 @@ const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 const DispatchView = ({ data }) => {
 
     const { DCNO, batchId, dispatchedDate, vehicleNo, mobileNumber,
-        product20L, product1L, product500ML, product250ML, dispatchAddress, vehicleType, driverName, status } = data
+        product20L, product2L, product1L, product500ML, product300ML, dispatchAddress, vehicleType, driverName, status } = data
 
     const color = getStatusColor(status)
 
@@ -70,6 +70,12 @@ const DispatchView = ({ data }) => {
                     </div>
                     <div className='column'>
                         <div className='input-container'>
+                            <InputLabel name='2 Ltrs (Box-1x12)' />
+                            <InputValue size='smaller' value={product2L} />
+                        </div>
+                    </div>
+                    <div className='column'>
+                        <div className='input-container'>
                             <InputLabel name='1 Ltrs (Box-1x12)' />
                             <InputValue size='smaller' value={product1L} />
                         </div>
@@ -77,12 +83,12 @@ const DispatchView = ({ data }) => {
                     <div className='column'>
                         <div className='input-container'>
                             <InputLabel name='500 Ml (Box-1x12)' />
-                            <InputValue size='smaller' value={product250ML} />
+                            <InputValue size='smaller' value={product300ML} />
                         </div>
                     </div>
                     <div className='column'>
                         <div className='input-container'>
-                            <InputLabel name='250 Ml (Box-1x12)' />
+                            <InputLabel name='300 Ml (Box-1x12)' />
                             <InputValue size='smaller' value={product500ML} />
                         </div>
                     </div>

@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
-import InputWithAddon from '../../../../components/InputWithAddon';
-import SelectInput from '../../../../components/SelectInput';
 import { dayOptions } from '../../../../assets/fixtures'
-import UploadPreviewer from '../../../../components/UploadPreviewer';
-import DraggerInput from '../../../../components/DraggerInput';
 import InputLabel from '../../../../components/InputLabel';
 import CustomInput from '../../../../components/CustomInput';
+import SelectInput from '../../../../components/SelectInput';
+import DraggerInput from '../../../../components/DraggerInput';
+import InputWithAddon from '../../../../components/InputWithAddon';
+import UploadPreviewer from '../../../../components/UploadPreviewer';
 import { resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 
 const DeliveryForm = (props) => {
@@ -15,8 +15,8 @@ const DeliveryForm = (props) => {
 
     const {
         gstNo, gstProof, departmentId, routeId, phoneNumber, contactPerson, address, isApproved,
-        deliveryLocation, product20L, price20L, product1L, price1L, product500ML, price500ML,
-        product250ML, price250ML
+        deliveryLocation, product20L, price20L, product2L, product1L, price2L, price1L, product500ML,
+        price500ML, product300ML, price300ML
     } = data
 
     const gstUploadDisable = gstProof
@@ -132,6 +132,20 @@ const DeliveryForm = (props) => {
                         </div>
                         <div className='column'>
                             <div className='input-container'>
+                                <InputLabel name='2 Ltrs' />
+                                <CustomInput value={product2L} disabled={isDisabled}
+                                    placeholder='Qty' onChange={(value) => onChange(value, 'product2L')}
+                                />
+                            </div>
+                            <div className='input-container'>
+                                <InputLabel name='Price' />
+                                <CustomInput value={price2L} disabled={isDisabled}
+                                    onBlur={(value) => onBlur(value, 'price2L')}
+                                    placeholder='Rs' onChange={(value) => onChange(value, 'price2L')} />
+                            </div>
+                        </div>
+                        <div className='column'>
+                            <div className='input-container'>
                                 <InputLabel name='1 Ltrs' />
                                 <CustomInput value={product1L} disabled={isDisabled}
                                     placeholder='Qty' onChange={(value) => onChange(value, 'product1L')}
@@ -160,16 +174,16 @@ const DeliveryForm = (props) => {
                         </div>
                         <div className='column'>
                             <div className='input-container'>
-                                <InputLabel name='250 Ml' />
-                                <CustomInput value={product250ML} disabled={isDisabled}
-                                    placeholder='Qty' onChange={(value) => onChange(value, 'product250ML')}
+                                <InputLabel name='300 Ml' />
+                                <CustomInput value={product300ML} disabled={isDisabled}
+                                    placeholder='Qty' onChange={(value) => onChange(value, 'product300ML')}
                                 />
                             </div>
                             <div className='input-container'>
                                 <InputLabel name='Price' />
-                                <CustomInput value={price250ML} disabled={isDisabled}
-                                    onBlur={(value) => onBlur(value, 'price250ML')}
-                                    placeholder='Rs' onChange={(value) => onChange(value, 'price250ML')} />
+                                <CustomInput value={price300ML} disabled={isDisabled}
+                                    onBlur={(value) => onBlur(value, 'price300ML')}
+                                    placeholder='Rs' onChange={(value) => onChange(value, 'price300ML')} />
                             </div>
                         </div>
                     </div>

@@ -19,7 +19,7 @@ const GeneralAccountForm = (props) => {
     const {
         gstNo, address, natureOfBussiness, depositAmount, customerName, mobileNumber, registeredDate, pinCode,
         invoicetype, EmailId, idProofType, gstProof, referredBy, routeId, departmentId, deliveryLocation,
-        creditPeriodInDays, product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML
+        creditPeriodInDays, product20L, product2L, price20L, product1L, price2L, price1L, product500ML, price500ML, product300ML, price300ML
     } = data
 
     const [proofName, setProofName] = useState('')
@@ -248,6 +248,21 @@ const GeneralAccountForm = (props) => {
                                     </div>
                                     <div className='column'>
                                         <div className='input-container'>
+                                            <InputLabel name='2 Ltrs' />
+                                            <CustomInput value={product2L} disabled={disabled}
+                                                placeholder='Qty' onChange={(value) => onChange(value, 'product2L')}
+                                            />
+                                        </div>
+                                        <div className='input-container'>
+                                            <InputLabel name='Price' />
+                                            <CustomInput value={price2L} disabled={disabled}
+                                                placeholder='Rs' onChange={(value) => onChange(value, 'price2L')}
+                                                onBlur={(value) => onBlur(value, 'price1L')}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className='column'>
+                                        <div className='input-container'>
                                             <InputLabel name='1 Ltrs' />
                                             <CustomInput value={product1L} disabled={disabled}
                                                 placeholder='Qty' onChange={(value) => onChange(value, 'product1L')}
@@ -278,16 +293,16 @@ const GeneralAccountForm = (props) => {
                                     </div>
                                     <div className='column'>
                                         <div className='input-container'>
-                                            <InputLabel name='250 Ml' />
-                                            <CustomInput value={product250ML} disabled={disabled}
-                                                placeholder='Qty' onChange={(value) => onChange(value, 'product250ML')}
+                                            <InputLabel name='300 Ml' />
+                                            <CustomInput value={product300ML} disabled={disabled}
+                                                placeholder='Qty' onChange={(value) => onChange(value, 'product300ML')}
                                             />
                                         </div>
                                         <div className='input-container'>
                                             <InputLabel name='Price' />
-                                            <CustomInput value={price250ML} disabled={disabled}
-                                                placeholder='Rs' onChange={(value) => onChange(value, 'price250ML')}
-                                                onBlur={(value) => onBlur(value, 'price250ML')}
+                                            <CustomInput value={price300ML} disabled={disabled}
+                                                placeholder='Rs' onChange={(value) => onChange(value, 'price300ML')}
+                                                onBlur={(value) => onBlur(value, 'price300ML')}
                                             />
                                         </div>
                                     </div>

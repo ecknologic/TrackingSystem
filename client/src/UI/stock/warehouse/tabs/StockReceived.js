@@ -72,7 +72,7 @@ const StockReceived = () => {
 
     const dataSource = useMemo(() => stock.map((order) => {
         const { id, dcNo, departmentName, driverName, mobileNumber, product20L, product1L,
-            product250ML, product500ML, isConfirmed } = order
+            product2L, product300ML, product500ML, isConfirmed } = order
         return {
             key: id,
             dcNo,
@@ -80,7 +80,7 @@ const StockReceived = () => {
             driverName,
             mobileNumber,
             status: renderStatus(isConfirmed),
-            stockDetails: renderStockDetails({ product20L, product1L, product250ML, product500ML }),
+            stockDetails: renderStockDetails({ product20L, product1L, product2L, product300ML, product500ML }),
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, id)} />
         }
     }), [stock])
@@ -146,10 +146,10 @@ const renderStatus = (status) => {
         </div>
     )
 }
-const renderStockDetails = ({ product20L, product1L, product500ML, product250ML }) => {
+const renderStockDetails = ({ product20L, product1L, product2L, product500ML, product300ML }) => {
     return `
-    20 lts - ${product20L}, 1 ltr - ${product1L} boxes, 
-    500 ml - ${product500ML} boxes, 250 ml - ${product250ML} boxes
+    20 ltrs - ${product20L}, 2 ltrs - ${product2L} boxes, 1 ltr - ${product1L} boxes,
+    500 ml - ${product500ML} boxes, 300 ml - ${product300ML} boxes
     `
 }
 const options = [<Menu.Item key="view" icon={<EyeIconGrey />}>View</Menu.Item>]

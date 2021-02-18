@@ -133,8 +133,8 @@ const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => 
 
     const {
         gstNo, gstProof, departmentId, routeId, devDays, phoneNumber, contactPerson, address,
-        deliveryLocation, product20L, price20L, product1L, price1L, product500ML, price500ML,
-        product250ML, price250ML
+        deliveryLocation, product20L, price20L, product2L, product1L, price2L, price1L, product500ML,
+        price500ML, product300ML, price300ML
     } = deliveryValues
 
     const gstUploadDisable = gstProof
@@ -237,6 +237,19 @@ const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => 
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='1 Ltrs' />
+                                <CustomInput value={product2L} placeholder='Qty'
+                                    onChange={(value) => onChange(value, 'product2L')} />
+                            </div>
+                            <div className='input-container'>
+                                <InputLabel name='Price' />
+                                <CustomInput value={price2L} placeholder='Rs'
+                                    onBlur={(value) => onBlur(value, 'price2L')}
+                                    onChange={(value) => onChange(value, 'price2L')} />
+                            </div>
+                        </div>
+                        <div className='column'>
+                            <div className='input-container'>
+                                <InputLabel name='1 Ltrs' />
                                 <CustomInput value={product1L} placeholder='Qty'
                                     onChange={(value) => onChange(value, 'product1L')} />
                             </div>
@@ -262,15 +275,15 @@ const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => 
                         </div>
                         <div className='column'>
                             <div className='input-container'>
-                                <InputLabel name='250 Ml' />
-                                <CustomInput value={product250ML} placeholder='Qty'
-                                    onChange={(value) => onChange(value, 'product250ML')} />
+                                <InputLabel name='300 Ml' />
+                                <CustomInput value={product300ML} placeholder='Qty'
+                                    onChange={(value) => onChange(value, 'product300ML')} />
                             </div>
                             <div className='input-container'>
                                 <InputLabel name='Price' />
-                                <CustomInput value={price250ML} placeholder='Rs'
-                                    onBlur={(value) => onBlur(value, 'price250ML')}
-                                    onChange={(value) => onChange(value, 'price250ML')} />
+                                <CustomInput value={price300ML} placeholder='Rs'
+                                    onBlur={(value) => onBlur(value, 'price300ML')}
+                                    onChange={(value) => onChange(value, 'price300ML')} />
                             </div>
                         </div>
                     </div>

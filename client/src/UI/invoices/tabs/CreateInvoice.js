@@ -1,15 +1,14 @@
 import axios from 'axios';
 import { message } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
-import EmptyCansForm from '../forms/EmptyCans';
-import { http } from '../../../../modules/http';
-import { getWarehoseId } from '../../../../utils/constants';
-import CustomButton from '../../../../components/CustomButton';
-import { isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
-import { validateNumber, validateRECValues } from '../../../../utils/validations';
+import InvoiceForm from '../forms/Invoice';
+import { http } from '../../../modules/http';
+import CustomButton from '../../../components/CustomButton';
+import { isAlphaNum, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
+import { validateIntFloat, validateNumber, validateProductValues } from '../../../utils/validations';
+import EditableTable from '../../../components/EditableTable';
 
-const ReturnEmptyCans = ({ goToTab, fetchList, driverList, ...rest }) => {
-    const warehouseId = getWarehoseId()
+const CreateInvoice = ({ goToTab }) => {
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
@@ -19,8 +18,6 @@ const ReturnEmptyCans = ({ goToTab, fetchList, driverList, ...rest }) => {
     const config = { cancelToken: source.token }
 
     useEffect(() => {
-        fetchList()
-
         return () => {
             http.ABORT(source)
         }
@@ -30,35 +27,32 @@ const ReturnEmptyCans = ({ goToTab, fetchList, driverList, ...rest }) => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
-        if (key === 'driverId') {
-            let selectedDriver = driverList.find(driver => driver.driverId === Number(value))
-            let { mobileNumber = null } = selectedDriver || {}
-            setFormData(data => ({ ...data, mobileNumber }))
-            setFormErrors(errors => ({ ...errors, mobileNumber: '' }))
+        // Validations
+        if (key === 'productName') {
+            const isValid = isAlphaNum(value)
+            if (!isValid) setFormErrors(errors => ({ ...errors, [key]: 'Enter aphanumeric only' }))
         }
-        else if (key === 'isDamaged') {
-            if (!value) {
-                let damaged20LCans, damaged2LBoxes, damaged1LBoxes, damaged500MLBoxes, damaged300MLBoxes, damagedDesc;
-                setFormData(data => ({
-                    ...data, damaged20LCans, damaged2LBoxes, damaged1LBoxes, damaged500MLBoxes, damaged300MLBoxes, damagedDesc
-                }))
-                setFormErrors(errors => ({ ...errors, damagedDesc: '', damaged: '' }))
-            }
+        else if (key === 'price' || key === 'tax') {
+            const error = validateIntFloat(value)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
         }
+        else if (key === 'hsnCode') {
+            const error = validateNumber(value)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+    }
+
+    const handleBlur = (value, key) => {
 
         // Validations
-        if (key.includes('Box') || key.includes('Can')) {
-            const error = validateNumber(value)
-            setFormErrors(errors => ({ ...errors, damaged: error }))
-        }
-        else if (key === 'emptycans_count') {
-            const error = validateNumber(value)
-            setFormErrors(errors => ({ ...errors, emptycans_count: error }))
+        if (key === 'price' || key === 'tax') {
+            const error = validateIntFloat(value, true)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
         }
     }
 
     const handleSubmit = async () => {
-        const formErrors = validateRECValues(formData)
+        const formErrors = validateProductValues(formData);
 
         if (!isEmpty(formErrors)) {
             setShake(true)
@@ -67,11 +61,9 @@ const ReturnEmptyCans = ({ goToTab, fetchList, driverList, ...rest }) => {
             return
         }
 
-        let url = '/warehouse/returnEmptyCans'
-        const body = {
-            ...formData, warehouseId
-        }
-        const options = { item: 'Empty Cans', v1Ing: 'Returning', v2: 'returned' }
+        let body = { ...formData }
+        const url = '/products/createProduct'
+        const options = { item: 'Product', v1Ing: 'Adding', v2: 'added' }
 
         try {
             setBtnDisabled(true)
@@ -98,14 +90,15 @@ const ReturnEmptyCans = ({ goToTab, fetchList, driverList, ...rest }) => {
     return (
         <>
             <div className='employee-title-container'>
-                <span className='title'>New Empty Cans Details</span>
+                <span className='title'>New Invoice Details</span>
             </div>
-            <EmptyCansForm
+            <InvoiceForm
                 data={formData}
                 errors={formErrors}
                 onChange={handleChange}
-                {...rest}
+                onBlur={handleBlur}
             />
+            <EditableTable />
             <div className='app-footer-buttons-container'>
                 <CustomButton
                     onClick={handleSubmit}
@@ -113,11 +106,12 @@ const ReturnEmptyCans = ({ goToTab, fetchList, driverList, ...rest }) => {
                     app-create-btn footer-btn ${btnDisabled ? 'disabled' : ''} 
                     ${shake ? 'app-shake' : ''}
                 `}
-                    text='Return'
+                    text='Create'
                 />
             </div>
         </>
     )
 }
 
-export default ReturnEmptyCans
+export default CreateInvoice
+

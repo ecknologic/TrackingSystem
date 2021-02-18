@@ -4,10 +4,10 @@ import ChangeBadge from './ChangeBadge';
 import '../sass/totalRevenueCard.scss'
 
 const TotalRevenueCard = ({ data }) => {
-    const { product20LCount, product2LCount, product1LCount, product500MLCount, product250MLCount, product2LPercent,
+    const { product20LCount, product2LCount, product1LCount, product500MLCount, product300MLCount, product2LPercent,
         product2LCompareText, product20LPercent, product20LCompareText, product1LPercent, product1LCompareText, product500MLPercent,
-        product500MLCompareText, product250MLPercent, product250MLCompareText, prevTotal, total,
-        product20LPartPercent, product1LPartPercent, product2LPartPercent, product500MLPartPercent, product250MLPartPercent } = data
+        product500MLCompareText, product300MLPercent, product300MLCompareText, prevTotal, total,
+        product20LPartPercent, product1LPartPercent, product2LPartPercent, product500MLPartPercent, product300MLPartPercent } = data
 
     return (
         <div className='total-revenue-card'>
@@ -56,11 +56,11 @@ const TotalRevenueCard = ({ data }) => {
             <div className='sub-panel'>
                 <EmptyBottlesStockCard isRs
                     title='300 ml'
-                    percent={product250MLPercent}
-                    partPercent={product250MLPartPercent}
-                    total={product250MLCount}
+                    percent={product300MLPercent}
+                    partPercent={product300MLPartPercent}
+                    total={product300MLCount}
                     strokeColor='#0091FF'
-                    text={product250MLCompareText}
+                    text={product300MLCompareText}
                 />
             </div>
         </div>

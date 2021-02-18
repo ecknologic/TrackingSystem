@@ -11,7 +11,7 @@ const ArrivedStockForm = (props) => {
     const { data, errors = {}, disabled, onChange, viewOnly } = props
 
     const { dcNo = '', damagedDesc, address = '', isDamaged, driverName = '', mobileNumber = '', vehicleNo = '', vehicleType = '', departmentName,
-        damaged20LCans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes, product20L, product1L, product250ML, product500ML } = data
+        damaged20LCans, damaged2LBoxes, damaged1LBoxes, damaged500MLBoxes, damaged300MLBoxes, product20L, product2L, product1L, product300ML, product500ML } = data
 
     useEffect(() => {
         resetTrackForm()
@@ -64,6 +64,12 @@ const ArrivedStockForm = (props) => {
                     </div>
                     <div className='column'>
                         <div className='input-container'>
+                            <InputLabel name='2 Ltrs (Box-1x12)' />
+                            <InputValue size='smaller' value={product2L} />
+                        </div>
+                    </div>
+                    <div className='column'>
+                        <div className='input-container'>
                             <InputLabel name='1 Ltrs (Box-1x12)' />
                             <InputValue size='smaller' value={product1L} />
                         </div>
@@ -76,8 +82,8 @@ const ArrivedStockForm = (props) => {
                     </div>
                     <div className='column'>
                         <div className='input-container'>
-                            <InputLabel name='250 Ml (Box-1x12)' />
-                            <InputValue size='smaller' value={product250ML} />
+                            <InputLabel name='300 Ml (Box-1x12)' />
+                            <InputValue size='smaller' value={product300ML} />
                         </div>
                     </div>
                 </div>
@@ -101,6 +107,15 @@ const ArrivedStockForm = (props) => {
                     </div>
                     <div className='column'>
                         <div className='input-container'>
+                            <InputLabel name='2 Ltrs (Box-1x12)' />
+                            {
+                                viewOnly ? <InputValue size='smaller' value={damaged2LBoxes} />
+                                    : <CustomInput value={damaged2LBoxes} disabled={!isDamaged || disabled}
+                                        placeholder='Qty' onChange={(value) => onChange(value, 'damaged2LBoxes')} />
+                            }</div>
+                    </div>
+                    <div className='column'>
+                        <div className='input-container'>
                             <InputLabel name='1 Ltrs (Box-1x12)' />
                             {
                                 viewOnly ? <InputValue size='smaller' value={damaged1LBoxes} />
@@ -120,11 +135,11 @@ const ArrivedStockForm = (props) => {
                     </div>
                     <div className='column'>
                         <div className='input-container'>
-                            <InputLabel name='250 Ml (Box-1x12)' />
+                            <InputLabel name='300 Ml (Box-1x12)' />
                             {
-                                viewOnly ? <InputValue size='smaller' value={damaged250MLBoxes} />
-                                    : <CustomInput value={damaged250MLBoxes} disabled={!isDamaged || disabled}
-                                        placeholder='Qty' onChange={(value) => onChange(value, 'damaged250MLBoxes')} />
+                                viewOnly ? <InputValue size='smaller' value={damaged300MLBoxes} />
+                                    : <CustomInput value={damaged300MLBoxes} disabled={!isDamaged || disabled}
+                                        placeholder='Qty' onChange={(value) => onChange(value, 'damaged300MLBoxes')} />
                             }
                         </div>
                     </div>
