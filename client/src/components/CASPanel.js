@@ -3,9 +3,9 @@ import CustomButton from './CustomButton';
 
 const CASPanel = ({ data, newStock, onConfirm, arrivedStock, btnDisabled }) => {
 
-    const { total1LBoxes, total20LCans, total250MLBoxes, total500MLBoxes } = data
-    const { total20LCans: newStock20L, total1LBoxes: newStock1L, total500MLBoxes: newStock500ML,
-        total250MLBoxes: newStock250ML, damaged20LCans, damaged1LBoxes, damaged250MLBoxes, damaged500MLBoxes } = newStock
+    const { total1LBoxes, total20LCans, total2LBoxes, total300MLBoxes, total500MLBoxes } = data
+    const { total20LCans: newStock20L, total1LBoxes: newStock1L, total2LBoxes: newStock2L, total500MLBoxes: newStock500ML,
+        total300MLBoxes: newStock300ML, damaged20LCans, damaged1LBoxes, damaged2LBoxes, damaged300MLBoxes, damaged500MLBoxes } = newStock
 
     const isConfirmed = arrivedStock.every(item => item.isConfirmed === 1)
     const style = {
@@ -23,7 +23,7 @@ const CASPanel = ({ data, newStock, onConfirm, arrivedStock, btnDisabled }) => {
                 <span className='title new' style={style}>New Arrived Stock</span>
             </div>
             <div className='box items'>
-                <span className='name'>Total Cans (20 ltr)</span>
+                <span className='name'>Cans (20 ltr)</span>
                 <div className='numbers-container'>
                     <span className='number'>{total20LCans || '--'}</span>
                     <span className='number new' style={style}>{newStock20L || '--'}</span>
@@ -31,7 +31,15 @@ const CASPanel = ({ data, newStock, onConfirm, arrivedStock, btnDisabled }) => {
                 <span className='damaged' style={style}>{damaged20LCans ? `Damaged - ${damaged20LCans}` : ''}</span>
             </div>
             <div className='box items'>
-                <span className='name'>Total 1 Ltr Boxes (1x12)</span>
+                <span className='name'>2 Ltr Boxes (1x9)</span>
+                <div className='numbers-container'>
+                    <span className='number'>{total2LBoxes || '--'}</span>
+                    <span className='number new' style={style}>{newStock2L || '--'}</span>
+                </div>
+                <span className='damaged' style={style}>{damaged2LBoxes ? `Damaged - ${damaged2LBoxes}` : ''}</span>
+            </div>
+            <div className='box items'>
+                <span className='name'>1 Ltr Boxes (1x12)</span>
                 <div className='numbers-container'>
                     <span className='number'>{total1LBoxes || '--'}</span>
                     <span className='number new' style={style}>{newStock1L || '--'}</span>
@@ -39,7 +47,7 @@ const CASPanel = ({ data, newStock, onConfirm, arrivedStock, btnDisabled }) => {
                 <span className='damaged' style={style}>{damaged1LBoxes ? `Damaged - ${damaged1LBoxes}` : ''}</span>
             </div>
             <div className='box items'>
-                <span className='name'>Total 500 ml Boxes (1x12)</span>
+                <span className='name'>500 ml Boxes (1x24)</span>
                 <div className='numbers-container'>
                     <span className='number'>{total500MLBoxes || '--'}</span>
                     <span className='number new' style={style}>{newStock500ML || '--'}</span>
@@ -47,12 +55,12 @@ const CASPanel = ({ data, newStock, onConfirm, arrivedStock, btnDisabled }) => {
                 <span className='damaged' style={style}>{damaged500MLBoxes ? `Damaged - ${damaged500MLBoxes}` : ''}</span>
             </div>
             <div className='box items last'>
-                <span className='name'>Total 250 ml Boxes (1x12)</span>
+                <span className='name'>300 ml Boxes (1x30)</span>
                 <div className='numbers-container'>
-                    <span className='number'>{total250MLBoxes || '--'}</span>
-                    <span className='number new' style={style}>{newStock250ML || '--'}</span>
+                    <span className='number'>{total300MLBoxes || '--'}</span>
+                    <span className='number new' style={style}>{newStock300ML || '--'}</span>
                 </div>
-                <span className='damaged' style={style}>{damaged250MLBoxes ? `Damaged - ${damaged250MLBoxes}` : ''}</span>
+                <span className='damaged' style={style}>{damaged300MLBoxes ? `Damaged - ${damaged300MLBoxes}` : ''}</span>
             </div>
             <div className='buttons'>
                 {

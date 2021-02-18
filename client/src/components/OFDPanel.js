@@ -2,7 +2,7 @@ import React from 'react';
 import CustomButton from './CustomButton';
 
 const OFDPanel = ({ data }) => {
-    const { total1LBoxes, total20LCans, total250MLBoxes, total500MLBoxes } = data
+    const { total1LBoxes, total20LCans, total2LBoxes, total300MLBoxes, total500MLBoxes } = data
 
     return (
         <div className='stock-panel ofd-panel-container'>
@@ -10,27 +10,33 @@ const OFDPanel = ({ data }) => {
                 <span className='title'>Out For Delivery</span>
             </div>
             <div className='box items'>
-                <span className='name'>Total Cans (20 ltr)</span>
+                <span className='name'>Cans (20 ltr)</span>
                 <div className='numbers-container'>
                     <span className='number'>{total20LCans || '--'}</span>
                 </div>
             </div>
             <div className='box items'>
-                <span className='name'>Total 1 Ltr Boxes (1x12)</span>
+                <span className='name'>2 Ltr Boxes (1x9)</span>
+                <div className='numbers-container'>
+                    <span className='number'>{total2LBoxes || '--'}</span>
+                </div>
+            </div>
+            <div className='box items'>
+                <span className='name'>1 Ltr Boxes (1x12)</span>
                 <div className='numbers-container'>
                     <span className='number'>{total1LBoxes || '--'}</span>
                 </div>
             </div>
             <div className='box items'>
-                <span className='name'>Total 500 ml Boxes (1x12)</span>
+                <span className='name'>500 ml Boxes (1x24)</span>
                 <div className='numbers-container'>
                     <span className='number'>{total500MLBoxes || '--'}</span>
                 </div>
             </div>
             <div className='box items last'>
-                <span className='name'>Total 250 ml Boxes (1x12)</span>
+                <span className='name'>300 ml Boxes (1x30)</span>
                 <div className='numbers-container'>
-                    <span className='number'>{total250MLBoxes || '--'}</span>
+                    <span className='number'>{total300MLBoxes || '--'}</span>
                 </div>
             </div>
             <div className='buttons'>

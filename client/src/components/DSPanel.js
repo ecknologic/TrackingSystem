@@ -9,25 +9,31 @@ const DSPanel = () => {
                 <span className='title'>Damaged Stock</span>
             </div>
             <div className='box items'>
-                <span className='name'>Total Cans (20 ltr)</span>
+                <span className='name'>Cans (20 ltr)</span>
                 <div className='numbers-container'>
                     <span className='number'>--</span>
                 </div>
             </div>
             <div className='box items'>
-                <span className='name'>Total 1 Ltr Boxes (1x12)</span>
+                <span className='name'>2 Ltr Boxes (1x9)</span>
                 <div className='numbers-container'>
                     <span className='number'>--</span>
                 </div>
             </div>
             <div className='box items'>
-                <span className='name'>Total 500 ml Boxes (1x12)</span>
+                <span className='name'>1 Ltr Boxes (1x12)</span>
+                <div className='numbers-container'>
+                    <span className='number'>--</span>
+                </div>
+            </div>
+            <div className='box items'>
+                <span className='name'>500 ml Boxes (1x24)</span>
                 <div className='numbers-container'>
                     <span className='number'>--</span>
                 </div>
             </div>
             <div className='box items last'>
-                <span className='name'>Total 250 ml Boxes (1x12)</span>
+                <span className='name'>300 ml Boxes (1x30)</span>
                 <div className='numbers-container'>
                     <span className='number'>--</span>
                 </div>

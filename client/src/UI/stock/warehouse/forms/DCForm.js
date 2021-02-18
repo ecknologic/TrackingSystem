@@ -8,8 +8,8 @@ const DCForm = (props) => {
 
     const { data, errors, routeOptions, disabledItems, onBlur, driverOptions, onChange } = props
 
-    const { routeId, customerName, phoneNumber, address,
-        driverId, cans20L, boxes1L, boxes500ML, boxes250ML } = data
+    const { routeId, customerName, phoneNumber, address, driverId, cans20L, boxes2L, boxes1L,
+        boxes500ML, boxes300ML } = data
 
     const disableAll = disabledItems === 'ALL' && disabledItems !== 'NONE'
     const disableFew = disabledItems === 'FEW'
@@ -82,6 +82,13 @@ const DCForm = (props) => {
                         </div>
                         <div className='column'>
                             <div className='input-container'>
+                                <InputLabel name='2 Ltrs (Box-1x12)' />
+                                <CustomInput value={boxes2L} disabled={disableAll || disableFew}
+                                    placeholder='Qty' onChange={(value) => onChange(value, 'boxes2L')} />
+                            </div>
+                        </div>
+                        <div className='column'>
+                            <div className='input-container'>
                                 <InputLabel name='1 Ltrs (Box-1x12)' />
                                 <CustomInput value={boxes1L} disabled={disableAll || disableFew}
                                     placeholder='Qty' onChange={(value) => onChange(value, 'boxes1L')} />
@@ -96,9 +103,9 @@ const DCForm = (props) => {
                         </div>
                         <div className='column'>
                             <div className='input-container'>
-                                <InputLabel name='250 Ml (Box-1x12)' />
-                                <CustomInput value={boxes250ML} disabled={disableAll || disableFew}
-                                    placeholder='Qty' onChange={(value) => onChange(value, 'boxes250ML')} />
+                                <InputLabel name='300 Ml (Box-1x12)' />
+                                <CustomInput value={boxes300ML} disabled={disableAll || disableFew}
+                                    placeholder='Qty' onChange={(value) => onChange(value, 'boxes300ML')} />
                             </div>
                         </div>
                     </div>

@@ -19,11 +19,11 @@ const ECPanel = ({ confirmed, returned, onAdd }) => {
                 <span className='name'>Return to Mother Plant</span>
                 <div className='return'>
                     {
-                        rec && (
+                        rec ? (
                             <div className='numbers-container'>
                                 <span className='number'>{rec}</span>
                             </div>
-                        )
+                        ) : null
                     }
                     <span className='add' onClick={onAdd}>Add Empty Cans</span>
                 </div>

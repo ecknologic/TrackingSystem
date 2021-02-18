@@ -1,7 +1,7 @@
 import React from 'react';
 
 const PanelStats = ({ title, data }) => {
-    const { product20LCount, product2LCount, product1LCount, product500MLCount, product250MLCount } = data
+    const { product20LCount, product2LCount, product1LCount, product500MLCount, product300MLCount } = data
 
     return (
         <div className='panel-stats'>
@@ -25,7 +25,7 @@ const PanelStats = ({ title, data }) => {
                 </div>
                 <div className='item'>
                     <span className='name'><span className='app-dot' style={{ background: '#62BE9D' }}></span>300 ml</span>
-                    <span className='item-number'>{product250MLCount || 0}</span>
+                    <span className='item-number'>{product300MLCount || 0}</span>
                 </div>
             </div>
         </div>

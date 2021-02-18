@@ -6,8 +6,8 @@ import InputLabel from '../../../../components/InputLabel';
 const DeliveryView = ({ data }) => {
 
     const {
-        gstNo, gstProof, departmentName, devDays, phoneNumber, contactPerson, routeName,
-        product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML
+        gstNo, gstProof, departmentName, devDays, phoneNumber, contactPerson, routeName, product20L, price20L,
+        product2L, product1L, price2L, price1L, product500ML, price500ML, product300ML, price300ML
     } = data
 
     const days = devDays.includes('ALL') ? ['All Days'] : devDays
@@ -62,6 +62,16 @@ const DeliveryView = ({ data }) => {
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='1 Ltrs' />
+                                <InputValue value={product2L} />
+                            </div>
+                            <div className='input-container'>
+                                <InputLabel name='Unit Price' />
+                                <InputValue value={price2L} />
+                            </div>
+                        </div>
+                        <div className='column'>
+                            <div className='input-container'>
+                                <InputLabel name='1 Ltrs' />
                                 <InputValue value={product1L} />
                             </div>
                             <div className='input-container'>
@@ -81,12 +91,12 @@ const DeliveryView = ({ data }) => {
                         </div>
                         <div className='column'>
                             <div className='input-container'>
-                                <InputLabel name='250 Ml' />
-                                <InputValue value={product250ML} />
+                                <InputLabel name='300 Ml' />
+                                <InputValue value={product300ML} />
                             </div>
                             <div className='input-container'>
                                 <InputLabel name='Unit Price' />
-                                <InputValue value={price250ML} />
+                                <InputValue value={price300ML} />
                             </div>
                         </div>
                     </div>

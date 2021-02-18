@@ -241,46 +241,50 @@ export const getDevDays = (data = {}) => {
     return days
 }
 export const extractValidProductsForDB = (data) => {
-    const { product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML } = data
+    const { product20L, price20L, product2L, price2L, product1L, price1L, product500ML, price500ML, product300ML, price300ML } = data
 
     return {
-        product20L: product20L || 0, price20L: price20L || 0, product1L: product1L || 0, price1L: price1L || 0,
-        product500ML: product500ML || 0, price500ML: price500ML || 0, product250ML: product250ML || 0, price250ML: price250ML || 0
+        product20L: product20L || 0, price20L: price20L || 0, product2L: product2L || 0, price2L: price2L || 0, product1L: product1L || 0,
+        price1L: price1L || 0, product500ML: product500ML || 0, price500ML: price500ML || 0, product300ML: product300ML || 0, price300ML: price300ML || 0
     }
 }
 export const extractProductsFromForm = (data) => {
-    const { product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML, product20LId, product1LId, product500MLId, product250MLId } = data
+    const { product20L, price20L, product2L, price2L, product1L, price1L, product500ML, price500ML, product300ML, price300ML, product20LId, product1LId, product500MLId, product300MLId } = data
 
-    return { product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML, product20LId, product1LId, product500MLId, product250MLId }
+    return { product20L, price20L, product2L, price2L, product1L, price1L, product500ML, price500ML, product300ML, price300ML, product20LId, product1LId, product500MLId, product300MLId }
 }
-export const getProductsForDB = ({ product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML }) => {
+export const getProductsForDB = ({ product20L, price20L, product2L, price2L, product1L, price1L, product500ML, price500ML, product300ML, price300ML }) => {
     const products = []
     const item1 = { productName: '20L', productPrice: price20L || 0, noOfJarsTobePlaced: product20L || 0 }
-    const item2 = { productName: '1L', productPrice: price1L || 0, noOfJarsTobePlaced: product1L || 0 }
-    const item3 = { productName: '500ML', productPrice: price500ML || 0, noOfJarsTobePlaced: product500ML || 0 }
-    const item4 = { productName: '250ML', productPrice: price250ML || 0, noOfJarsTobePlaced: product250ML || 0 }
+    const item2 = { productName: '2L', productPrice: price2L || 0, noOfJarsTobePlaced: product2L || 0 }
+    const item3 = { productName: '1L', productPrice: price1L || 0, noOfJarsTobePlaced: product1L || 0 }
+    const item4 = { productName: '500ML', productPrice: price500ML || 0, noOfJarsTobePlaced: product500ML || 0 }
+    const item5 = { productName: '300ML', productPrice: price300ML || 0, noOfJarsTobePlaced: product300ML || 0 }
     products.push(item1)
     products.push(item2)
     products.push(item3)
     products.push(item4)
+    products.push(item5)
 
     return products
 }
-export const getProductsWithIdForDB = ({ product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML, product20LId, product1LId, product500MLId, product250MLId }) => {
+export const getProductsWithIdForDB = ({ product20L, price20L, product2L, price2L, product1L, price1L, product500ML, price500ML, product300ML, price300ML, product20LId, product2LId, product1LId, product500MLId, product300MLId }) => {
     const products = []
     const item1 = { productName: '20L', productPrice: price20L || 0, noOfJarsTobePlaced: product20L || 0, productId: product20LId }
-    const item2 = { productName: '1L', productPrice: price1L || 0, noOfJarsTobePlaced: product1L || 0, productId: product1LId }
-    const item3 = { productName: '500ML', productPrice: price500ML || 0, noOfJarsTobePlaced: product500ML || 0, productId: product500MLId }
-    const item4 = { productName: '250ML', productPrice: price250ML || 0, noOfJarsTobePlaced: product250ML || 0, productId: product250MLId }
+    const item2 = { productName: '2L', productPrice: price2L || 0, noOfJarsTobePlaced: product2L || 0, productId: product2LId }
+    const item3 = { productName: '1L', productPrice: price1L || 0, noOfJarsTobePlaced: product1L || 0, productId: product1LId }
+    const item4 = { productName: '500ML', productPrice: price500ML || 0, noOfJarsTobePlaced: product500ML || 0, productId: product500MLId }
+    const item5 = { productName: '300ML', productPrice: price300ML || 0, noOfJarsTobePlaced: product300ML || 0, productId: product300MLId }
     products.push(item1)
     products.push(item2)
     products.push(item3)
     products.push(item4)
+    products.push(item5)
 
     return products
 }
 export const getProductsForUI = (data) => {
-    let product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML, product20LId, product1LId, product500MLId, product250MLId
+    let product20L, price20L, product2L, price2L, product1L, price1L, product500ML, price500ML, product300ML, price300ML, product20LId, product2LId, product1LId, product500MLId, product300MLId
 
     data.map((item) => {
         const { productName, productPrice, noOfJarsTobePlaced, productId } = item
@@ -288,6 +292,11 @@ export const getProductsForUI = (data) => {
             product20L = noOfJarsTobePlaced
             price20L = productPrice
             product20LId = productId
+        }
+        if (productName === '2L') {
+            product2L = noOfJarsTobePlaced
+            price2L = productPrice
+            product2LId = productId
         }
         if (productName === '1L') {
             product1L = noOfJarsTobePlaced
@@ -299,13 +308,13 @@ export const getProductsForUI = (data) => {
             price500ML = productPrice
             product500MLId = productId
         }
-        if (productName === '250ML') {
-            product250ML = noOfJarsTobePlaced
-            price250ML = productPrice
-            product250MLId = productId
+        if (productName === '300ML') {
+            product300ML = noOfJarsTobePlaced
+            price300ML = productPrice
+            product300MLId = productId
         }
     })
-    const products = { product20L, price20L, product1L, price1L, product500ML, price500ML, product250ML, price250ML, product20LId, product1LId, product500MLId, product250MLId }
+    const products = { product20L, price20L, product2L, price2L, product1L, price1L, product500ML, price500ML, product300ML, price300ML, product20LId, product2LId, product1LId, product500MLId, product300MLId }
     return products
 }
 
@@ -332,17 +341,19 @@ export const extractDeliveryDetails = (data) => {
     delete clone.products
     delete clone.deliveryDays
     delete clone.price1L
+    delete clone.price2L
     delete clone.price20L
     delete clone.price500ML
-    delete clone.price250ML
+    delete clone.price300ML
     delete clone.product1L
     delete clone.product20L
     delete clone.product500ML
-    delete clone.product250ML
+    delete clone.product300ML
     delete clone.product20LId
+    delete clone.product2LId
     delete clone.product1LId
     delete clone.product500MLId
-    delete clone.product250MLId
+    delete clone.product300MLId
     return clone
 }
 
@@ -373,13 +384,15 @@ export const extractGADetails = (data) => {
     delete clone.idProof_frontside
     delete clone.idProof_backside
     delete clone.price1L
+    delete clone.price2L
     delete clone.price20L
     delete clone.price500ML
-    delete clone.price250ML
+    delete clone.price300ML
     delete clone.product1L
+    delete clone.product2L
     delete clone.product20L
     delete clone.product500ML
-    delete clone.product250ML
+    delete clone.product300ML
     delete clone.loading
     return { ...clone, Address1, organizationName }
 }
@@ -398,22 +411,22 @@ export const getAddressesForDB = (data, isUpdate) => {
 export const getDCValuesForDB = (data) => {
 
     const { customerName, phoneNumber, address, routeId, driverId,
-        cans20L = 0, boxes1L = 0, boxes500ML = 0, boxes250ML = 0 } = data
+        cans20L = 0, boxes2L = 0, boxes1L = 0, boxes500ML = 0, boxes300ML = 0 } = data
 
     return {
         customerName, phoneNumber, address, routeId, driverId,
-        cans20L, boxes1L, boxes500ML, boxes250ML
+        cans20L, boxes2L, boxes1L, boxes500ML, boxes300ML
     }
 }
 
 export const getASValuesForDB = (data) => {
 
-    const { dcNo, isDamaged = false, product20L, product1L, product500ML, product250ML,
-        damaged20LCans = 0, damagedDesc = '', damaged1LBoxes = 0, damaged500MLBoxes = 0, damaged250MLBoxes = 0 } = data
+    const { dcNo, isDamaged = false, product20L, product2L, product1L, product500ML, product300ML,
+        damaged20LCans = 0, damagedDesc = '', damaged2LBoxes = 0, damaged1LBoxes = 0, damaged500MLBoxes = 0, damaged300MLBoxes = 0 } = data
 
     return {
-        dcNo, damaged20LCans, damagedDesc, isDamaged, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes,
-        product20L, product1L, product500ML, product250ML
+        dcNo, damaged20LCans, damagedDesc, isDamaged, damaged2LBoxes, damaged1LBoxes, damaged500MLBoxes, damaged300MLBoxes,
+        product20L, product2L, product1L, product500ML, product300ML
     }
 }
 

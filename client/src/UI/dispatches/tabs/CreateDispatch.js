@@ -38,9 +38,9 @@ const CreateDispatch = ({ goToTab, driverList, warehouseList, reFetch, ...rest }
 
         try {
             const data = await http.GET(axios, url, config)
-            const { product20LCount: product20L, product1LCount: product1L,
-                product500MLCount: product500ML, product250MLCount: product250ML } = data
-            const currentStock = { product20L, product1L, product500ML, product250ML }
+            const { product20LCount: product20L, product2LCount: product2L, product1LCount: product1L,
+                product500MLCount: product500ML, product300MLCount: product300ML } = data
+            const currentStock = { product20L, product2L, product1L, product500ML, product300ML }
             setCurrentStock(data)
             setFormData(data => ({ ...data, ...currentStock }))
         } catch (error) { }
@@ -107,11 +107,11 @@ const CreateDispatch = ({ goToTab, driverList, warehouseList, reFetch, ...rest }
         if (dispatchType === 'warehouse') departmentName = warehouseList.find(dep => dep.departmentId === formData.dispatchTo).departmentName
         else departmentName = distributorList.find(dep => dep.distributorId === formData.dispatchTo).agencyName
 
-        const { product20L, product1L, product500ML, product250ML } = extractValidProductsForDB(formData)
+        const { product20L, product2L, product1L, product500ML, product300ML } = extractValidProductsForDB(formData)
         const outOfStock = compareDispatchValues(formData, currentStock)
         let body = {
             ...formData, dispatchAddress: departmentName, outOfStock,
-            product20L, product1L, product500ML, product250ML
+            product20L, product2L, product1L, product500ML, product300ML
         }
         const options = { item: 'Dispatch', v1Ing: 'Creating', v2: 'created' }
         const url = '/motherplant/addDispatchDetails'

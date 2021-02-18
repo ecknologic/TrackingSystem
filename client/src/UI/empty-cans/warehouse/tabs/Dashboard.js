@@ -93,9 +93,9 @@ const Dashboard = ({ reFetch, isFetched, fetchList, driverList, ...rest }) => {
         }
         else if (key === 'isDamaged') {
             if (!value) {
-                let damaged20LCans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes, damagedDesc;
+                let damaged20LCans, damaged2LBoxes, damaged1LBoxes, damaged500MLBoxes, damaged300MLBoxes, damagedDesc;
                 setFormData(data => ({
-                    ...data, damaged20LCans, damaged1LBoxes, damaged500MLBoxes, damaged250MLBoxes, damagedDesc
+                    ...data, damaged20LCans, damaged2LBoxes, damaged1LBoxes, damaged500MLBoxes, damaged300MLBoxes, damagedDesc
                 }))
                 setFormErrors(errors => ({ ...errors, damagedDesc: '', damaged: '' }))
             }

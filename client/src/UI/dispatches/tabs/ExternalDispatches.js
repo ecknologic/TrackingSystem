@@ -207,10 +207,10 @@ const renderStatus = (status) => {
     )
 }
 
-const renderOrderDetails = ({ product20L, product1L, product500ML, product250ML }) => {
+const renderOrderDetails = ({ product20L, product2L, product1L, product500ML, product300ML }) => {
     return `
-    20 lts - ${product20L ? product20L : 0}, 1 ltr - ${product1L ? product1L : 0} boxes, 
-    500 ml - ${product500ML ? product500ML : 0} boxes, 250 ml - ${product250ML ? product250ML : 0} boxes
+    20 ltrs - ${product20L ? product20L : 0}, 2 ltrs - ${product2L ? product2L : 0} boxes, 1 ltr - ${product1L ? product1L : 0} boxes, 
+    500 ml - ${product500ML ? product500ML : 0} boxes, 300 ml - ${product300ML ? product300ML : 0} boxes
     `
 }
 const options = [<Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>]
