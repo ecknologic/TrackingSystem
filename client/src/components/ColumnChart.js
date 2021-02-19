@@ -4,7 +4,7 @@ import { Column } from "@ant-design/charts";
 const ColumnChart = () => {
 
   var config = {
-    data: monthData,
+    data: weekData,
     width: '100%',
     isGroup: true,
     xField: "label",

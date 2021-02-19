@@ -5,7 +5,7 @@ import TotalStockStatus from './panels/TotalStockStatus';
 import RawMaterialStock from './panels/RawMaterialStock';
 import EmptyBottlesStock from './panels/EmptyBottlesStock';
 import WaterQualityResults from './panels/WaterQualityResults';
-import TodayDeliveryDetails from './panels/TodayDeliveryDetails';
+import DispatchDetails from './panels/DispatchDetails';
 import '../../../sass/dashboard.scss'
 
 const MotherplantDashboard = () => {
@@ -20,7 +20,7 @@ const MotherplantDashboard = () => {
                 <WaterQualityResults />
                 <div className='bottom-panels-container'>
                     <RawMaterialStock />
-                    <TodayDeliveryDetails />
+                    <DispatchDetails />
                 </div>
             </div>
         </Fragment>

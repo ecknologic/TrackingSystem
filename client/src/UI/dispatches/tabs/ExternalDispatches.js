@@ -209,8 +209,8 @@ const renderStatus = (status) => {
 
 const renderOrderDetails = ({ product20L, product2L, product1L, product500ML, product300ML }) => {
     return `
-    20 ltrs - ${product20L ? product20L : 0}, 2 ltrs - ${product2L ? product2L : 0} boxes, 1 ltr - ${product1L ? product1L : 0} boxes, 
-    500 ml - ${product500ML ? product500ML : 0} boxes, 300 ml - ${product300ML ? product300ML : 0} boxes
+    20 ltrs - ${Number(product20L)}, 2 ltrs - ${Number(product2L)} boxes, 1 ltr - ${Number(product1L)} boxes, 
+    500 ml - ${Number(product500ML)} boxes, 300 ml - ${Number(product300ML)} boxes
     `
 }
 const options = [<Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>]

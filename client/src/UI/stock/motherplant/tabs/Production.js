@@ -243,8 +243,8 @@ const renderStatus = (status) => {
 
 const renderProductionDetails = ({ product20L, product2L, product1L, product500ML, product300ML }) => {
     return `
-    20 ltrs - ${product20L}, 2 ltrs - ${product2L}, 1 ltr - ${product1L}, 
-    500 ml - ${product500ML}, 300 ml - ${product300ML}
+    20 ltrs - ${Number(product20L)}, 2 ltrs - ${Number(product2L)}, 1 ltr - ${Number(product1L)}, 
+    500 ml - ${Number(product500ML)}, 300 ml - ${Number(product300ML)}
     `
 }
 const options = [<Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>]

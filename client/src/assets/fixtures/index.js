@@ -274,6 +274,38 @@ export const productColumns = [
         key: 'action'
     },
 ]
+export const invoiceColumns = [
+    {
+        title: 'HSN Code',
+        dataIndex: 'hsnCode',
+        key: 'hsnCode',
+    },
+    {
+        title: 'Product Name',
+        dataIndex: 'productName',
+        key: 'productName',
+    },
+    {
+        title: 'Price',
+        dataIndex: 'price',
+        key: 'price',
+    },
+    {
+        title: 'Tax Percentage',
+        dataIndex: 'tax',
+        key: 'tax',
+    },
+    {
+        title: 'Total Amount',
+        dataIndex: 'totalAmount',
+        key: 'totalAmount',
+    },
+    {
+        title: 'Actions',
+        dataIndex: 'action',
+        key: 'action'
+    },
+]
 export const deliveryColumns = [
     {
         title: 'DC Number',

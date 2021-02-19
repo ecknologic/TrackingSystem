@@ -1,0 +1,98 @@
+.invoice-content {
+
+    .stock-delivery-container {
+        padding: 1.5em 2em 2em 2em;
+    }
+    
+    .invoice-title-container {
+        height: 3em;
+        align-items: flex-start;
+    }
+
+    .invoice-title-container.inner {
+        padding-left: 0;
+    }
+
+    .invoice-form-container {
+        width: 80%;
+
+        .columns {
+            width: 80%;
+        }
+
+        .form-divider {
+            margin: 3em 0;
+        }
+    }
+
+    .app-footer-buttons-container {
+        justify-content: flex-end;
+        padding-left: 2em;
+    }
+
+    #no-content {
+        min-height: calc(100vh - 22em);
+    }
+
+    .app-tabs-container .ant-tabs-tabpane {
+        padding: 0 !important;
+    }
+}
+
+// .invoice-manage-content {
+    
+//     .invoice-title-container {
+//         height: 4em;
+//         align-items: center;
+//     }
+    
+//     .invoice-title-container.inner {
+//         padding-left: 0;
+//         height: 3em;
+//         align-items: flex-start;
+//     }
+
+//     .form-divider {
+//         margin: 3em 0;
+//     }
+
+//     .form-divider.inner {
+//         margin-top: 2.5em;
+//     }
+
+//     .app-footer-buttons-container.view {
+//         width: 60%;
+//     }
+
+//     .multi-buttons-container {
+//         flex: 1;
+//         justify-content: flex-end;
+//     }
+
+//     .multi-buttons-container-view {
+//         width: 60%;
+//     }
+
+//     #no-content {
+//         min-height: calc(100vh);
+//     }
+// }
+
+.invoice-content, .invoice-manage-content {
+
+    .invoice-title-container {
+        display: flex;
+
+        .title {
+            color: #1B2125;
+            font-family: 'PoppinsRegular400';
+            font-size: 1.4em;
+            margin-right: 1em;
+        }
+    }
+
+    .half-line {
+        min-width: 60%;
+        max-width: 60%;
+    }
+}

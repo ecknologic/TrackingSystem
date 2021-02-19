@@ -3,7 +3,7 @@ import React, { Fragment, useState } from 'react';
 import Dashboard from './tabs/Dashboard';
 import Header from '../../components/SimpleHeader';
 import CreateInvoice from './tabs/CreateInvoice';
-// import '../../sass/invoices.scss';
+import '../../sass/invoices.scss';
 
 const Invoices = () => {
 
@@ -22,7 +22,7 @@ const Invoices = () => {
     return (
         <Fragment>
             <Header title='Invoices' />
-            <div className='employee-content'>
+            <div className='invoice-content'>
                 <div className='app-tabs-container'>
                     <Tabs
                         onChange={handleTabClick}

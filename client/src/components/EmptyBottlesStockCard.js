@@ -24,7 +24,7 @@ const EmptyBottlesStockCard = ({ title, total, partPercent = 0, strokeColor, per
                     <ChangeBadge percent={percent} />
                 </div>
             </div>
-            <span className='footer'>{text || '--'}</span>
+            <span className='footer'>{text}</span>
         </div>
     )
 }

@@ -236,7 +236,7 @@ const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => 
                         </div>
                         <div className='column'>
                             <div className='input-container'>
-                                <InputLabel name='1 Ltrs' />
+                                <InputLabel name='2 Ltrs' />
                                 <CustomInput value={product2L} placeholder='Qty'
                                     onChange={(value) => onChange(value, 'product2L')} />
                             </div>

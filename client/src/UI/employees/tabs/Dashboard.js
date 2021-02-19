@@ -10,7 +10,7 @@ import EmployeeCard from '../../../components/EmployeeCard';
 import { getRole, SUPERADMIN } from '../../../utils/constants';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import CustomPagination from '../../../components/CustomPagination';
-import { getMainPathname, showToast } from '../../../utils/Functions';
+import { deepClone, getMainPathname, showToast } from '../../../utils/Functions';
 
 const Dashboard = ({ reFetch, isDriver }) => {
     const history = useHistory()
@@ -63,9 +63,29 @@ const Dashboard = ({ reFetch, isDriver }) => {
     }
 
     const handleMenuSelect = (key, id) => {
-        if (key === 'Delete') {
+        if (key === 'Active') {
+            handleStatusUpdate(id, 1)
+        }
+        else if (key === 'Inactive') {
+            handleStatusUpdate(id, 0)
+        }
+        else if (key === 'Delete') {
             setModalDelete(true)
             setCurrentId(id)
+        }
+    }
+
+    const handleStatusUpdate = async (id, status) => {
+        const options = { item: `${employeeType} status`, v1Ing: 'Updating', v2: 'updated' }
+        const url = statusUrl(isDriver)
+        const body = { status, [idKey]: id }
+        try {
+            showToast({ ...options, action: 'loading' })
+            await http.PUT(axios, url, body, config)
+            optimisticApprove(id, status)
+            showToast(options)
+        } catch (error) {
+            message.destroy()
         }
     }
 
@@ -81,6 +101,13 @@ const Dashboard = ({ reFetch, isDriver }) => {
         } catch (error) {
             message.destroy()
         }
+    }
+
+    const optimisticApprove = (id, status) => {
+        let clone = deepClone(employees);
+        const index = clone.findIndex(item => item[idKey] === id)
+        clone[index].isActive = status;
+        setEmployees(clone)
     }
 
     const optimisticDelete = (id) => {
@@ -157,6 +184,14 @@ const getUrl = (isDriver) => {
 const deleteUrl = (isDriver, id) => {
     const staffUrl = `/users/deleteWebUser/${id}`
     const driverUrl = `/driver/deleteDriver/${id}`
+
+    if (isDriver) return driverUrl
+    return staffUrl
+}
+
+const statusUrl = (isDriver) => {
+    const staffUrl = `/users/updateUserStatus`
+    const driverUrl = `/driver/updateDriverStatus`
 
     if (isDriver) return driverUrl
     return staffUrl
