@@ -61,8 +61,8 @@ motherPlantDbQueries.getDispatchDetails = async (departmentId, callback) => {
 }
 motherPlantDbQueries.getDispatchDetailsByDate = async (input, callback) => {
     const { departmentId, date } = input
-    let query = `SELECT d.status,d.dispatchType,d.dispatchAddress,d.DCNO,d.batchId,d.product20L,d.product1L,d.product500ML,d.product300ML,d.product2L,d.driverName,d.dispatchTo,d.dispatchedDate,dri.mobileNumber,v.vehicleType,v.vehicleNo from dispatches d INNER JOIN VehicleDetails v ON d.vehicleNo=v.vehicleId INNER JOIN driverdetails dri on d.driverId=dri.driverId WHERE d.departmentId=? AND DATE(d.dispatchedDate)=? ORDER BY d.dispatchedDate DESC LIMIT 4`;
-    return executeGetParamsQuery(query, [departmentId, date], callback)
+    let query = `SELECT d.status,d.dispatchType,d.dispatchAddress,d.DCNO,d.batchId,d.product20L,d.product1L,d.product500ML,d.product300ML,d.product2L,d.driverName,d.dispatchTo,d.dispatchedDate,dri.mobileNumber,v.vehicleType,v.vehicleNo from dispatches d INNER JOIN VehicleDetails v ON d.vehicleNo=v.vehicleId INNER JOIN driverdetails dri on d.driverId=dri.driverId WHERE d.departmentId=? ORDER BY d.dispatchedDate DESC LIMIT 4`;
+    return executeGetParamsQuery(query, [departmentId], callback)
 }
 motherPlantDbQueries.getAllQCDetails = async (callback) => {
     let query = "select * from qualitycontrol";
