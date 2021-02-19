@@ -51,6 +51,12 @@ driverQueries.updateDeliveryStatus = (input, callback) => {
     }
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
+driverQueries.updateDriverActiveStatus = (input, callback) => {
+    const { driverId, status } = input
+    let query = "update driverdetails set isActive=? where driverId=?"
+    let requestBody = [status, driverId];
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
 driverQueries.deleteDriver = (driverId, callback) => {
     let query = "update driverdetails set deleted=? where driverId=?"
     let requestBody = [1, driverId];

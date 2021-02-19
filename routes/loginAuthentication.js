@@ -21,8 +21,8 @@ router.post('/login', (req, res) => {
 
     let loginQuery;
     if (req.query.webUser) loginQuery = `SELECT u.RoleId,u.userId,u.departmentId,u.userName,u.password,r.RoleName FROM usermaster u INNER JOIN rolemaster r ON u.roleId=r.RoleId LEFT JOIN departmentmaster d 
-    ON u.departmentId=d.departmentId WHERE  ( u.departmentId IS NULL OR (d.deleted='0' AND d.isApproved='1')) AND (u.emailid=? OR u.loginId=?) AND u.deleted='0'`;
-    else loginQuery = "SELECT d.driverId,d.driverName,d.password,d.departmentId FROM driverdetails d WHERE (emailid=? OR loginId=?) AND deleted='0'"
+    ON u.departmentId=d.departmentId WHERE  ( u.departmentId IS NULL OR (d.deleted='0' AND d.isApproved='1')) AND (u.emailid=? OR u.loginId=?) AND u.isActive=1 AND u.deleted='0'`;
+    else loginQuery = "SELECT d.driverId,d.driverName,d.password,d.departmentId FROM driverdetails d WHERE (emailid=? OR loginId=?) AND isActive=1 AND deleted='0'"
     let reqBody = [username, username]
     let result = db.query(loginQuery, reqBody, (err, results) => {
         //var  passwordIsValid= bcrypt.compareSync(password,encryptedPassword);

@@ -49,6 +49,12 @@ usersQueries.deleteWebUser = (userId, callback) => {
     let requestBody = [1, userId];
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
+usersQueries.updateWebUserActiveStatus = (input, callback) => {
+    const { userId, status } = input
+    let query = "update usermaster set isActive=? where userId=?"
+    let requestBody = [status, userId];
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
 usersQueries.removeDepartmentAdmin = async (departmentId) => {
     let query = "UPDATE departmentmaster SET adminId=? WHERE departmentId=?";
     return executeGetParamsQuery(query, [null, departmentId])

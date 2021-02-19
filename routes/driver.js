@@ -151,6 +151,14 @@ router.post('/createDriver', (req, res) => {
         }
     })
 })
+
+router.put('/updateDriverStatus', (req, res) => {
+    driverQueries.updateDriverActiveStatus(req.body, (err, results) => {
+        if (err) res.json(err);
+        else res.json(results)
+    })
+})
+
 router.post('/updateDriver', (req, res) => {
     driverQueries.updateDriver(req.body, (err, results) => {
         if (err) res.json(dbError(err))
