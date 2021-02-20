@@ -6,7 +6,6 @@ import { http } from '../../../modules/http';
 import CustomButton from '../../../components/CustomButton';
 import { isAlphaNum, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
 import { validateIntFloat, validateNumber, validateProductValues } from '../../../utils/validations';
-import EditableTable from '../../../components/EditableTable';
 
 const CreateInvoice = ({ goToTab }) => {
     const [formData, setFormData] = useState({})
@@ -88,8 +87,8 @@ const CreateInvoice = ({ goToTab }) => {
     }
 
     return (
-        <>
-            <div className='employee-title-container'>
+        <div className='stock-delivery-container'>
+            <div className='invoice-title-container'>
                 <span className='title'>New Invoice Details</span>
             </div>
             <InvoiceForm
@@ -98,7 +97,6 @@ const CreateInvoice = ({ goToTab }) => {
                 onChange={handleChange}
                 onBlur={handleBlur}
             />
-            <EditableTable />
             <div className='app-footer-buttons-container'>
                 <CustomButton
                     onClick={handleSubmit}
@@ -109,7 +107,7 @@ const CreateInvoice = ({ goToTab }) => {
                     text='Create'
                 />
             </div>
-        </>
+        </div>
     )
 }
 

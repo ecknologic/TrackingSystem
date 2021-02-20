@@ -56,7 +56,7 @@ const TodayDeliveryDetails = () => {
             <div className='panel-header'>
                 <div className='head-container'>
                     <div className='title'>
-                        Today Dispatch Details
+                        Dispatch Details
                     </div>
                     <CustomButton
                         text='View All'
@@ -90,10 +90,10 @@ const renderStatus = (status) => {
         </div>
     )
 }
-const renderProductDetails = ({ product20L = 0, product2L = 0, product1L = 0, product500ML = 0, product300ML = 0 }) => {
+const renderProductDetails = ({ product20L, product2L, product1L, product500ML, product300ML }) => {
     return `
-    20 ltrs - ${product20L}, 2 ltrs - ${product2L} boxes, 1 ltr - ${product1L} boxes, 
-    500 ml - ${product500ML} boxes, 300 ml - ${product300ML} boxes
+    20 ltrs - ${Number(product20L)}, 2 ltrs - ${Number(product2L)} boxes, 1 ltr - ${Number(product1L)} boxes, 
+    500 ml - ${Number(product500ML)} boxes, 300 ml - ${Number(product300ML)} boxes
     `
 }
 export default TodayDeliveryDetails

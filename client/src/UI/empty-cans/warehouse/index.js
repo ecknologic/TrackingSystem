@@ -1,11 +1,10 @@
 import axios from 'axios';
-import { message, Tabs } from 'antd';
+import { Tabs } from 'antd';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import Dashboard from './tabs/Dashboard';
 import { http } from '../../../modules/http';
-import { showToast } from '../../../utils/Functions';
 import ReturnEmptyCans from './tabs/ReturnEmptyCans';
-import Header from '../../../components/SimpleHeader';
+import Header from '../../../components/ContentHeader';
 import { getWarehoseId } from '../../../utils/constants';
 import { getDepartmentOptions, getDriverOptions, getVehicleOptions, getWarehouseOptions } from '../../../assets/fixtures';
 import '../../../sass/products.scss';

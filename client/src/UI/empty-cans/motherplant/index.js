@@ -1,14 +1,14 @@
 import { Tabs } from 'antd';
 import React, { Fragment } from 'react';
 import Dashboard from './tabs/Dashboard';
-import Header from '../../../components/SimpleHeader';
+import Header from '../../../components/ContentHeader';
 import '../../../sass/products.scss';
 
 const EmptyCans = () => {
 
     return (
         <Fragment>
-            <Header title='Empty Cans' />
+            <Header />
             <div className='employee-content'>
                 <div className='app-tabs-container'>
                     <Tabs >

@@ -274,6 +274,48 @@ export const productColumns = [
         key: 'action'
     },
 ]
+export const invoiceColumns = [
+    {
+        title: 'Date',
+        dataIndex: 'date',
+        key: 'date',
+    },
+    {
+        title: 'Invoice Number',
+        dataIndex: 'invoiceNo',
+        key: 'invoiceNo',
+    },
+    {
+        title: 'Customer Name',
+        dataIndex: 'customerName',
+        key: 'customerName',
+    },
+    {
+        title: 'Due Date',
+        dataIndex: 'dueDate',
+        key: 'dueDate',
+    },
+    {
+        title: 'Amount',
+        dataIndex: 'amount',
+        key: 'amount',
+    },
+    {
+        title: 'Balance Due',
+        dataIndex: 'balanceDue',
+        key: 'balanceDue',
+    },
+    {
+        title: 'Status',
+        dataIndex: 'status',
+        key: 'status',
+    },
+    {
+        title: 'Actions',
+        dataIndex: 'action',
+        key: 'action'
+    },
+]
 export const deliveryColumns = [
     {
         title: 'DC Number',

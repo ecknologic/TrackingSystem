@@ -72,6 +72,12 @@ router.get('/getUser/:userId', (req, res) => {
     else res.json(results)
   })
 })
+router.put('/updateUserStatus', (req, res) => {
+  usersQueries.updateWebUserActiveStatus(req.body, (err, results) => {
+    if (err) res.json(err);
+    else res.json(results)
+  })
+})
 router.post('/updateWebUser', (req, res) => {
   let query = "UPDATE usermaster SET userName=?,roleId=?,departmentId=?,emailid=?, mobileNumber=?, joinedDate=?, parentName=?, gender=?, dob=?, adharNo=?, address=?, permanentAddress=?,adhar_frontside=?,adhar_backside=?,accountNo=?,bankName=?,branchName=?,ifscCode=?,recommendedBy=?,recruitedBy=?  where userId=?";
   const { userName, roleId, departmentId, emailid, mobileNumber, userId, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, adharProof, dependentDetails, accountNo, bankName, branchName, ifscCode, recommendedBy, recruitedBy, removedDepartmentId } = req.body
@@ -84,6 +90,8 @@ router.post('/updateWebUser', (req, res) => {
       if (removedDepartmentId) {
         usersQueries.removeDepartmentAdmin(removedDepartmentId)
       }
+
+      usersQueries.addDepartmentAdmin({ userId, departmentId })
       usersQueries.updateDependentDetails(dependentDetails, "staffDependentDetails", (err, success) => {
         if (err) console.log("Update Staff Dependent Err", err)
       })

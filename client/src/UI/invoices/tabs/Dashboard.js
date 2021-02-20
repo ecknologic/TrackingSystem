@@ -1,22 +1,28 @@
 import axios from 'axios';
+import dayjs from 'dayjs';
 import { Menu, message, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import InvoiceForm from '../forms/Invoice';
 import { http } from '../../../modules/http'
 import Actions from '../../../components/Actions';
 import Spinner from '../../../components/Spinner';
-import { TRACKFORM } from '../../../utils/constants';
+import { TODAYDATE, TRACKFORM } from '../../../utils/constants';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import CustomModal from '../../../components/CustomModal';
-import { productColumns } from '../../../assets/fixtures';
-import { EditIconGrey } from '../../../components/SVG_Icons';
+import { invoiceColumns } from '../../../assets/fixtures';
+import { EditIconGrey, ScheduleIcon } from '../../../components/SVG_Icons';
 import ConfirmModal from '../../../components/CustomModal';
 import CustomPagination from '../../../components/CustomPagination';
-import { deepClone, isAlphaNum, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
+import { deepClone, disableFutureDates, isAlphaNum, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
 import { validateIntFloat, validateNumber, validateProductValues } from '../../../utils/validations';
+import DateValue from '../../../components/DateValue';
+import CustomDateInput from '../../../components/CustomDateInput';
+import SearchInput from '../../../components/SearchInput';
+const DATEFORMAT = 'DD-MM-YYYY'
+const format = 'YYYY-MM-DD'
 
 const Dashboard = ({ reFetch }) => {
-    const [products, setProducts] = useState([])
+    const [invoices, setInvoices] = useState([])
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [loading, setLoading] = useState(true)
@@ -26,6 +32,8 @@ const Dashboard = ({ reFetch }) => {
     const [editModal, setEditModal] = useState(false)
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
+    const [selectedDate, setSelectedDate] = useState(TODAYDATE)
+    const [open, setOpen] = useState(false)
     const [shake, setShake] = useState(false)
 
     const source = useMemo(() => axios.CancelToken.source(), []);
@@ -39,16 +47,16 @@ const Dashboard = ({ reFetch }) => {
 
     useEffect(() => {
         setLoading(true)
-        getProducts()
+        getInvoices()
     }, [reFetch])
 
-    const getProducts = async () => {
-        const url = '/products/getProducts'
+    const getInvoices = async () => {
+        const url = '/invoices/getInvoices'
 
         try {
-            const data = await http.GET(axios, url, config)
-            setProducts(data)
-            setTotalCount(data.length)
+            // const data = await http.GET(axios, url, config)
+            // setInvoices(data)
+            // setTotalCount(data.length)
             setLoading(false)
         } catch (error) { }
     }
@@ -108,8 +116,8 @@ const Dashboard = ({ reFetch }) => {
         }
 
         let body = { ...formData }
-        const url = '/products/updateProduct'
-        const options = { item: 'Product', v1Ing: 'Updating', v2: 'updated' }
+        const url = '/invoices/updateInvoice'
+        const options = { item: 'Invoice', v1Ing: 'Updating', v2: 'updated' }
 
         try {
             setBtnDisabled(true)
@@ -138,18 +146,31 @@ const Dashboard = ({ reFetch }) => {
         setBtnDisabled(false)
     }
 
+    const datePickerStatus = (status) => {
+        !status && setOpen(false)
+    }
+
+    const handleDateSelect = (value) => {
+        setOpen(false)
+        setSelectedDate(dayjs(value).format(format))
+        // const filtered = RMClone.filter(item => dayjs(value).format(DATEFORMAT) === dayjs(item.requestedDate).format(DATEFORMAT))
+        // setRM(filtered)
+        // setTotalCount(filtered.length)
+        setPageNumber(1)
+    }
+
     const optimisticUpdate = (data) => {
-        let clone = deepClone(products);
+        let clone = deepClone(invoices);
         const index = clone.findIndex(item => item.productId === data.productId)
         const { price, tax } = data
         const totalAmount = (price * tax) / 100 + Number(price)
         data.totalAmount = totalAmount.toFixed(2)
         clone[index] = data;
-        setProducts(clone)
+        setInvoices(clone)
     }
 
-    const dataSource = useMemo(() => products.map((product) => {
-        const { productId: key, productName, price, tax, totalAmount, hsnCode } = product
+    const dataSource = useMemo(() => invoices.map((invoice) => {
+        const { invoiceId: key, productName, price, tax, totalAmount, hsnCode } = invoice
 
         return {
             key,
@@ -158,9 +179,9 @@ const Dashboard = ({ reFetch }) => {
             hsnCode,
             totalAmount,
             productName,
-            action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, product)} />
+            action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, invoice)} />
         }
-    }), [products])
+    }), [invoices])
 
     const handleConfirmModalOk = useCallback(() => {
         setConfirmModal(false)
@@ -174,12 +195,39 @@ const Dashboard = ({ reFetch }) => {
     const sliceTo = sliceFrom + pageSize
 
     return (
-        <div className='product-container'>
+        <div className='stock-delivery-container'>
+            <div className='header'>
+                <div className='left'>
+                    <DateValue date={selectedDate} />
+                    <div className='app-date-picker-wrapper'>
+                        <div className='date-picker' onClick={() => setOpen(true)}>
+                            <ScheduleIcon />
+                            <span>Select Date</span>
+                        </div>
+                        <CustomDateInput // Hidden in the DOM
+                            open={open}
+                            style={{ left: 0 }}
+                            value={selectedDate}
+                            className='date-panel-picker'
+                            onChange={handleDateSelect}
+                            onOpenChange={datePickerStatus}
+                            disabledDate={disableFutureDates}
+                        />
+                    </div>
+                </div>
+                <div className='right'>
+                    <SearchInput
+                        placeholder='Search Invoice'
+                        className='delivery-search'
+                        width='50%'
+                    />
+                </div>
+            </div>
             <div className='app-table dispatch-table'>
                 <Table
                     loading={{ spinning: loading, indicator: <Spinner /> }}
                     dataSource={dataSource.slice(sliceFrom, sliceTo)}
-                    columns={productColumns}
+                    columns={invoiceColumns}
                     pagination={false}
                     scroll={{ x: true }}
                 />
@@ -224,5 +272,5 @@ const Dashboard = ({ reFetch }) => {
     )
 }
 
-const options = [<Menu.Item key="edit" icon={<EditIconGrey />}>Edit</Menu.Item>]
+const options = [<Menu.Item key="edit" icon={<EditIconGrey />}>View/Edit</Menu.Item>]
 export default Dashboard

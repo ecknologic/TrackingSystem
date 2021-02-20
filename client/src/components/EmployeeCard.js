@@ -1,7 +1,7 @@
 import React from 'react';
 import { Menu } from 'antd';
 import Actions from './Actions';
-import { TrashIconGrey } from './SVG_Icons';
+import { BlockIconGrey, TickIconGrey, TrashIconGrey } from './SVG_Icons';
 import PrimaryButton from './PrimaryButton';
 import { getRoleLabel } from '../utils/Functions';
 import '../sass/accountCard.scss'
@@ -20,6 +20,14 @@ const EmployeeCard = ({ data, onClick, btnTxt = 'Manage Account', isDriver, isSu
         label = departmentName ? 'Assigned To' : 'Role'
         role = departmentName ? departmentName : getRoleLabel(RoleId)
     }
+
+    const optionOne = isActive ? 'Inactive' : 'Active'
+    const iconOne = isActive ? <BlockIconGrey /> : <TickIconGrey />
+
+    const options = [
+        <Menu.Item key={optionOne} icon={iconOne}>{optionOne}</Menu.Item>,
+        <Menu.Item key="Delete" icon={<TrashIconGrey />}>Delete</Menu.Item>
+    ]
 
     const handleSelect = ({ key }) => {
         onSelect(key, employeeId)
@@ -61,5 +69,5 @@ const EmployeeCard = ({ data, onClick, btnTxt = 'Manage Account', isDriver, isSu
         </div>
     )
 }
-const options = [<Menu.Item key="Delete" icon={<TrashIconGrey />}>Delete</Menu.Item>]
+
 export default EmployeeCard

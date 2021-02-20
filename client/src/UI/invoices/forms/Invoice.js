@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import ProductsTable from './ProductsTable';
 import InputLabel from '../../../components/InputLabel';
 import { genderOptions } from '../../../assets/fixtures';
 import CustomInput from '../../../components/CustomInput';
@@ -6,11 +7,11 @@ import SelectInput from '../../../components/SelectInput';
 import CustomTextArea from '../../../components/CustomTextArea';
 import CustomDateInput from '../../../components/CustomDateInput';
 import { resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
-import EditableTable from '../../../components/EditableTable';
+import InputValue from '../../../components/InputValue';
 
 const InvoiceForm = ({ data, errors, onChange, onBlur }) => {
 
-    const { customerName, price, tax, hsnCode, subject, invoiceDate, dueDate } = data
+    const { customerName, price, tax, hsnCode, subject, invoiceDate, dueDate, customerNotes, totalAmount } = data
 
     useEffect(() => {
         resetTrackForm()
@@ -22,7 +23,7 @@ const InvoiceForm = ({ data, errors, onChange, onBlur }) => {
     }, [])
 
     return (
-        <div className='app-form-container employee-form-container'>
+        <div className='app-form-container invoice-form-container'>
             <div className='row'>
                 <div className='input-container'>
                     <InputLabel name='Customer Name' error={errors.customerName} mandatory />
@@ -78,9 +79,9 @@ const InvoiceForm = ({ data, errors, onChange, onBlur }) => {
                     />
                 </div>
                 <div className='input-container'>
-                    <InputLabel name='P No' error={errors.tax} mandatory />
+                    <InputLabel name='PO Number' error={errors.tax} mandatory />
                     <CustomInput value={tax}
-                        error={errors.tax} placeholder='P Number'
+                        error={errors.tax} placeholder='PO Number'
                         onChange={(value) => onChange(value, 'tax')}
                         onBlur={(value) => onBlur(value, 'tax')}
                     />
@@ -95,7 +96,15 @@ const InvoiceForm = ({ data, errors, onChange, onBlur }) => {
                 </div>
             </div>
             <div className='row'>
-
+                <ProductsTable />
+            </div>
+            <div className='row'>
+                <div className='input-container'>
+                    <InputLabel name='Customer Notes' error={errors.customerNotes} mandatory />
+                    <CustomTextArea maxLength={100} error={errors.customerNotes} placeholder='Add Notes' value={customerNotes}
+                        maxRows={4} onChange={(value) => onChange(value, 'customerNotes')}
+                    />
+                </div>
             </div>
         </div>
     )
