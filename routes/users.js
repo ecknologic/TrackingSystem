@@ -90,6 +90,8 @@ router.post('/updateWebUser', (req, res) => {
       if (removedDepartmentId) {
         usersQueries.removeDepartmentAdmin(removedDepartmentId)
       }
+
+      usersQueries.addDepartmentAdmin({ userId, departmentId })
       usersQueries.updateDependentDetails(dependentDetails, "staffDependentDetails", (err, success) => {
         if (err) console.log("Update Staff Dependent Err", err)
       })

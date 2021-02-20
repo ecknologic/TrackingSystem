@@ -59,4 +59,9 @@ usersQueries.removeDepartmentAdmin = async (departmentId) => {
     let query = "UPDATE departmentmaster SET adminId=? WHERE departmentId=?";
     return executeGetParamsQuery(query, [null, departmentId])
 }
+usersQueries.addDepartmentAdmin = async (input) => {
+    const { departmentId, userId } = input
+    let query = "UPDATE departmentmaster SET adminId=? WHERE departmentId=?";
+    return executeGetParamsQuery(query, [userId, departmentId])
+}
 module.exports = usersQueries
