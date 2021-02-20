@@ -264,10 +264,10 @@ motherPlantDbQueries.getQCLevelsDetails = async (input, callback) => {
 motherPlantDbQueries.getTotalRevenue = async (input, callback) => {
     let { startDate, endDate, fromStart } = input;
     let options = [endDate]
-    let query = `SELECT (SUM(20LCans) * SUM(price20L)) product20LCount,(SUM(1LBoxes) * SUM(price1L)) product1LCount,(SUM(500MLBoxes) * SUM(price500ML)) product500MLCount,(SUM(300MLBoxes) * SUM(price300ML)) product300MLCount,(SUM(2LBoxes) * SUM(price2L)) product2LCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)<=?`;
+    let query = `SELECT (SUM(20LCans * price20L)) product20LCount,(SUM(1LBoxes * price1L)) product1LCount,(SUM(500MLBoxes * price500ML)) product500MLCount,(SUM(300MLBoxes * price300ML)) product300MLCount,(SUM(2LBoxes * price2L)) product2LCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)<=?`;
     if (fromStart !== 'true') {
         options = [startDate, endDate]
-        query = ` SELECT (SUM(20LCans) * SUM(price20L)) product20LCount,(SUM(1LBoxes) * SUM(price1L)) product1LCount,(SUM(500MLBoxes) * SUM(price500ML)) product500MLCount,(SUM(300MLBoxes) * SUM(price300ML)) product300MLCount,(SUM(2LBoxes) * SUM(price2L)) product2LCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)>=? AND DATE(deliveredDate)<=?`;
+        query = ` SELECT (SUM(20LCans * price20L)) product20LCount,(SUM(1LBoxes * price1L)) product1LCount,(SUM(500MLBoxes * price500ML)) product500MLCount,(SUM(300MLBoxes * price300ML)) product300MLCount,(SUM(2LBoxes * price2L)) product2LCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)>=? AND DATE(deliveredDate)<=?`;
     }
     return executeGetParamsQuery(query, options, callback)
 }
@@ -275,10 +275,10 @@ motherPlantDbQueries.getTotalRevenueChange = async (input, callback) => {
     let { startDate, endDate, fromStart, type } = input;
     const { startDate: newStartDate, endDate: newEndDate } = dateComparisions(startDate, endDate, type)
     let options = [newEndDate]
-    let query = `SELECT (SUM(20LCans) * SUM(price20L)) product20LCount,(SUM(1LBoxes) * SUM(price1L)) product1LCount,(SUM(500MLBoxes) * SUM(price500ML)) product500MLCount,(SUM(300MLBoxes) * SUM(price300ML)) product300MLCount,(SUM(2LBoxes) * SUM(price2L)) product2LCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)<=?`;
+    let query = `SELECT (SUM(20LCans * price20L)) product20LCount,(SUM(1LBoxes * price1L)) product1LCount,(SUM(500MLBoxes * price500ML)) product500MLCount,(SUM(300MLBoxes * price300ML)) product300MLCount,(SUM(2LBoxes * price2L)) product2LCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)<=?`;
     if (fromStart !== 'true') {
         options = [newStartDate, newEndDate]
-        query = ` SELECT (SUM(20LCans) * SUM(price20L)) product20LCount,(SUM(1LBoxes) * SUM(price1L)) product1LCount,(SUM(500MLBoxes) * SUM(price500ML)) product500MLCount,(SUM(300MLBoxes) * SUM(price300ML)) product300MLCount,(SUM(2LBoxes) * SUM(price2L)) product2LCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)>=? AND DATE(deliveredDate)<=?`;
+        query = ` SELECT (SUM(20LCans * price20L)) product20LCount,(SUM(1LBoxes * price1L)) product1LCount,(SUM(500MLBoxes * price500ML)) product500MLCount,(SUM(300MLBoxes * price300ML)) product300MLCount,(SUM(2LBoxes * price2L)) product2LCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)>=? AND DATE(deliveredDate)<=?`;
     }
     return executeGetParamsQuery(query, options, callback)
 }
