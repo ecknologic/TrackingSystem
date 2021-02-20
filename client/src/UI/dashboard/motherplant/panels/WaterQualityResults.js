@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
 import { isEmpty } from '../../../../utils/Functions';
 import PanelHeader from '../../../../components/PanelHeader';
+import CustomPlaceholder from '../../../../components/CustomPlaceholder';
 import QualityResultCard from '../../../../components/QualityResultCard';
 import { getWarehoseId, TODAYDATE as d } from '../../../../utils/constants';
 import { LeftChevronIconGrey, RightChevronIconGrey } from '../../../../components/SVG_Icons';
@@ -45,12 +46,12 @@ const WaterQualityResults = () => {
             <PanelHeader title='Water Quality Testing Results' onSelect={handleOperation} beginning showShow />
             <div className='panel-body quality-testing-panel'>
                 {
-                    !isEmpty(results) &&
-                    <Slider className='dashboard-slider' {...props} >
-                        {
-                            results.map((item) => <QualityResultCard key={item.productionQcId} data={item} />)
-                        }
-                    </Slider>
+                    !isEmpty(results) ? <CustomPlaceholder />
+                        : <Slider className='dashboard-slider' {...props} >
+                            {
+                                results.map((item) => <QualityResultCard key={item.productionQcId} data={item} />)
+                            }
+                        </Slider>
                 }
             </div>
         </>

@@ -105,6 +105,12 @@ const InvoiceForm = ({ data, errors, onChange, onBlur }) => {
                         maxRows={4} onChange={(value) => onChange(value, 'customerNotes')}
                     />
                 </div>
+                <div className='input-container'>
+                    <InputLabel name='Terms & Conditions' error={errors.customerNotes} mandatory />
+                    <CustomTextArea maxLength={100} error={errors.customerNotes} placeholder='Add T & C' value={customerNotes}
+                        maxRows={4} onChange={(value) => onChange(value, 'customerNotes')}
+                    />
+                </div>
             </div>
         </div>
     )

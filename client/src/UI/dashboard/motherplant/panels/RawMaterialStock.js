@@ -1,6 +1,8 @@
 import axios from 'axios';
 import React, { useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
+import { isEmpty } from '../../../../utils/Functions';
+import CustomPlaceholder from '../../../../components/CustomPlaceholder';
 import RawMaterialStockCard from '../../../../components/RawMaterialStockCard';
 
 const RawMaterialStock = () => {
@@ -35,7 +37,10 @@ const RawMaterialStock = () => {
                 </div>
             </div>
             <div className='panel-body'>
-                <RawMaterialStockCard data={RMStock} />
+                {
+                    isEmpty(RMStock) ? <CustomPlaceholder />
+                        : <RawMaterialStockCard data={RMStock} />
+                }
             </div>
         </div>
     )
