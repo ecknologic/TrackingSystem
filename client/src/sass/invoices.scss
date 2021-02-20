@@ -37,6 +37,32 @@
     .app-tabs-container .ant-tabs-tabpane {
         padding: 0 !important;
     }
+
+    .product-table-container {
+        width: 100%;
+
+        .app-add-new-btn {
+            margin-top: 1.5em;
+            width: fit-content;
+
+        }
+
+        .table-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            .input-container {
+                width: fit-content;
+
+                .app-input-value-large {
+                    display: flex;
+                    justify-content: flex-end;
+
+                }
+            }
+        }
+    }
 }
 
 // .invoice-manage-content {

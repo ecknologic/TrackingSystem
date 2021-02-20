@@ -22,7 +22,7 @@ const DATEFORMAT = 'DD-MM-YYYY'
 const format = 'YYYY-MM-DD'
 
 const Dashboard = ({ reFetch }) => {
-    const [products, setProducts] = useState([])
+    const [invoices, setInvoices] = useState([])
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [loading, setLoading] = useState(true)
@@ -47,16 +47,16 @@ const Dashboard = ({ reFetch }) => {
 
     useEffect(() => {
         setLoading(true)
-        getProducts()
+        getInvoices()
     }, [reFetch])
 
-    const getProducts = async () => {
-        const url = '/products/getProducts'
+    const getInvoices = async () => {
+        const url = '/invoices/getInvoices'
 
         try {
-            const data = await http.GET(axios, url, config)
-            setProducts(data)
-            setTotalCount(data.length)
+            // const data = await http.GET(axios, url, config)
+            // setInvoices(data)
+            // setTotalCount(data.length)
             setLoading(false)
         } catch (error) { }
     }
@@ -116,8 +116,8 @@ const Dashboard = ({ reFetch }) => {
         }
 
         let body = { ...formData }
-        const url = '/products/updateProduct'
-        const options = { item: 'Product', v1Ing: 'Updating', v2: 'updated' }
+        const url = '/invoices/updateInvoice'
+        const options = { item: 'Invoice', v1Ing: 'Updating', v2: 'updated' }
 
         try {
             setBtnDisabled(true)
@@ -160,17 +160,17 @@ const Dashboard = ({ reFetch }) => {
     }
 
     const optimisticUpdate = (data) => {
-        let clone = deepClone(products);
+        let clone = deepClone(invoices);
         const index = clone.findIndex(item => item.productId === data.productId)
         const { price, tax } = data
         const totalAmount = (price * tax) / 100 + Number(price)
         data.totalAmount = totalAmount.toFixed(2)
         clone[index] = data;
-        setProducts(clone)
+        setInvoices(clone)
     }
 
-    const dataSource = useMemo(() => products.map((product) => {
-        const { productId: key, productName, price, tax, totalAmount, hsnCode } = product
+    const dataSource = useMemo(() => invoices.map((invoice) => {
+        const { invoiceId: key, productName, price, tax, totalAmount, hsnCode } = invoice
 
         return {
             key,
@@ -179,9 +179,9 @@ const Dashboard = ({ reFetch }) => {
             hsnCode,
             totalAmount,
             productName,
-            action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, product)} />
+            action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, invoice)} />
         }
-    }), [products])
+    }), [invoices])
 
     const handleConfirmModalOk = useCallback(() => {
         setConfirmModal(false)
@@ -272,5 +272,5 @@ const Dashboard = ({ reFetch }) => {
     )
 }
 
-const options = [<Menu.Item key="edit" icon={<EditIconGrey />}>Edit</Menu.Item>]
+const options = [<Menu.Item key="edit" icon={<EditIconGrey />}>View/Edit</Menu.Item>]
 export default Dashboard

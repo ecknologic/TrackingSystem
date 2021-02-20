@@ -114,7 +114,7 @@ const App = () => {
                   <Route path='/staff' render={byRole(<Staff />)} />
                   <Route path='/routes' render={byRole(<Transport />)} />
                   <Route path='/drivers' render={byRole(<Drivers />)} />
-                  {/* <Route path='/invoices' render={byRole(<Invoices />)} /> */}
+                  <Route path='/invoices' render={byRole(<Invoices />)} />
                   <Route path='/products' render={byRole(<Products />)} />
                   <Route path='/distributors' render={byRole(<Distributors />)} />
                   <Route path='/motherplants' render={byRole(<Motherplants />)} />
