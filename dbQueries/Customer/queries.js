@@ -75,9 +75,9 @@ customerQueries.getTotalActiveCustomers = (input, callback) => {
 }
 customerQueries.getTotalInActiveCustomers = (input, callback) => {
     let { startDate, endDate, fromStart } = input;
-    let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND approvedDate!='NULL'"
+    let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND deleted=0 AND approvedDate!='NULL'"
     if (fromStart !== 'true') {
-        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND approvedDate!='NULL' AND DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
+        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND deleted=0 AND approvedDate!='NULL' AND DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
         executeGetParamsQuery(query, [startDate, endDate], callback)
     }
     else executeGetParamsQuery(query, callback)
@@ -85,9 +85,9 @@ customerQueries.getTotalInActiveCustomers = (input, callback) => {
 customerQueries.getTotalInActiveCustomersChange = (input, callback) => {
     let { startDate, endDate, fromStart, type } = input;
     const { startDate: newStartDate, endDate: newEndDate } = dateComparisions(startDate, endDate, type)
-    let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND approvedDate!='NULL'"
+    let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND deleted=0 AND approvedDate!='NULL'"
     if (fromStart !== 'true') {
-        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND approvedDate!='NULL' AND DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
+        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND deleted=0 AND approvedDate!='NULL' AND DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
         executeGetParamsQuery(query, [newStartDate, newEndDate], callback)
     }
     else executeGetParamsQuery(query, callback)
@@ -199,7 +199,7 @@ customerQueries.saveCustomerOrderDetails = (input, callback) => {
     let { contactPerson, phoneNumber, address, routeId, driverId, customer_Id, latitude, longitude, dcNo, departmentId, customerType, product20L, price20L, product1L, price1L, product500ML, price500ML,
         product300ML, price300ML, product2LBoxes, price2L, deliveryLocation } = input
     let query = `insert into customerorderdetails (customerName,phoneNumber,address,routeId,driverId,existingCustomerId,latitude,longitude,dcNo,warehouseId,customerType,20LCans, price20L, 1LBoxes, price1L, 500MLBoxes, price500ML,300MLBoxes, price300ML,2LBoxes,price2L,deliveryLocation) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
-    let requestBody = [contactPerson, phoneNumber, address, routeId, driverId, customer_Id, latitude, longitude, dcNo, departmentId, customerType, product20L, price20L, product1L, price1L, product500ML, price500ML, product300ML, price300ML, product2LBoxes, price2L, deliveryLocation]
+    let requestBody = [contactPerson, phoneNumber, address, routeId, driverId, customer_Id, latitude, longitude, dcNo, departmentId, customerType, product20L, price20L, product1L, price1L, product500ML, price500ML, product300ML, price300ML, product2L, price2L, deliveryLocation]
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 customerQueries.approveCustomer = (input, callback) => {
