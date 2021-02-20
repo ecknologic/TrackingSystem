@@ -7,10 +7,11 @@ import SelectInput from '../../../components/SelectInput';
 import CustomTextArea from '../../../components/CustomTextArea';
 import CustomDateInput from '../../../components/CustomDateInput';
 import { resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
+import InputValue from '../../../components/InputValue';
 
 const InvoiceForm = ({ data, errors, onChange, onBlur }) => {
 
-    const { customerName, price, tax, hsnCode, subject, invoiceDate, dueDate } = data
+    const { customerName, price, tax, hsnCode, subject, invoiceDate, dueDate, customerNotes, totalAmount } = data
 
     useEffect(() => {
         resetTrackForm()
@@ -96,6 +97,14 @@ const InvoiceForm = ({ data, errors, onChange, onBlur }) => {
             </div>
             <div className='row'>
                 <ProductsTable />
+            </div>
+            <div className='row'>
+                <div className='input-container'>
+                    <InputLabel name='Customer Notes' error={errors.customerNotes} mandatory />
+                    <CustomTextArea maxLength={100} error={errors.customerNotes} placeholder='Add Notes' value={customerNotes}
+                        maxRows={4} onChange={(value) => onChange(value, 'customerNotes')}
+                    />
+                </div>
             </div>
         </div>
     )

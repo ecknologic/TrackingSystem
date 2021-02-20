@@ -4,7 +4,7 @@ import { DDownIcon } from './SVG_Icons';
 import { setTrackForm } from '../utils/Functions';
 
 const SelectInput = ({ options, mode, onSelect, onDeselect, value, disabled,
-    placeholder = 'Select', track, error = '', className, suffixIcon = <DDownIcon /> }) => {
+    placeholder = 'Select', track, error = '', className, suffixIcon = <DDownIcon />, ref }) => {
     const [hasTracked, setHasTracked] = useState(false)
 
     const handleSelect = (value) => {
@@ -40,6 +40,7 @@ const SelectInput = ({ options, mode, onSelect, onDeselect, value, disabled,
 
     return (
         <Select
+            ref={ref}
             showArrow
             mode={mode}
             size='large'

@@ -1,5 +1,6 @@
-import { Input, Form } from 'antd';
+import { Input, Form, Select } from 'antd';
 import React, { useContext, useState, useEffect, useRef } from 'react';
+import { DDownIcon } from './SVG_Icons';
 const EditableContext = React.createContext(null);
 
 export const EditableRow = ({ index, ...props }) => {
@@ -13,13 +14,14 @@ export const EditableRow = ({ index, ...props }) => {
     );
 };
 
-export const EditableCell = ({ title, editable, children, dataIndex, record, handleSave, ...restProps }) => {
+export const EditableCell = ({ title, editable, children, dataIndex,
+    record, handleSave, inputType, options = [], ...restProps }) => {
     const [editing, setEditing] = useState(false);
     const inputRef = useRef(null);
     const form = useContext(EditableContext);
 
     useEffect(() => {
-        if (editing) {
+        if (editing && inputType !== 'select') {
             inputRef.current.focus();
         }
     }, [editing]);
@@ -57,14 +59,24 @@ export const EditableCell = ({ title, editable, children, dataIndex, record, han
                     },
                 ]}
             >
-                <Input ref={inputRef} onPressEnter={save} onBlur={save} />
+                {
+                    inputType === 'select' ? (
+                        <Select
+                            placeholder='Select'
+                            onSelect={save}
+                            onBlur={save}
+                            suffixIcon={<DDownIcon />}
+                            getPopupContainer={node => node.parentNode}
+                        >
+                            {options}
+                        </Select>
+                    )
+                        : <Input ref={inputRef} onPressEnter={save} onBlur={save} />
+                }
             </Form.Item>
         ) : (
                 <div
                     className="editable-cell-value-wrap"
-                    style={{
-                        paddingRight: 24,
-                    }}
                     onClick={toggleEdit}
                 >
                     {children}

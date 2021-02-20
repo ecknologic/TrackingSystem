@@ -276,29 +276,39 @@ export const productColumns = [
 ]
 export const invoiceColumns = [
     {
-        title: 'HSN Code',
-        dataIndex: 'hsnCode',
-        key: 'hsnCode',
+        title: 'Date',
+        dataIndex: 'date',
+        key: 'date',
     },
     {
-        title: 'Product Name',
-        dataIndex: 'productName',
-        key: 'productName',
+        title: 'Invoice Number',
+        dataIndex: 'invoiceNo',
+        key: 'invoiceNo',
     },
     {
-        title: 'Price',
-        dataIndex: 'price',
-        key: 'price',
+        title: 'Customer Name',
+        dataIndex: 'customerName',
+        key: 'customerName',
     },
     {
-        title: 'Tax Percentage',
-        dataIndex: 'tax',
-        key: 'tax',
+        title: 'Due Date',
+        dataIndex: 'dueDate',
+        key: 'dueDate',
     },
     {
-        title: 'Total Amount',
-        dataIndex: 'totalAmount',
-        key: 'totalAmount',
+        title: 'Amount',
+        dataIndex: 'amount',
+        key: 'amount',
+    },
+    {
+        title: 'Balance Due',
+        dataIndex: 'balanceDue',
+        key: 'balanceDue',
+    },
+    {
+        title: 'Status',
+        dataIndex: 'status',
+        key: 'status',
     },
     {
         title: 'Actions',

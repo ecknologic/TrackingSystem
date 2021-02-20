@@ -1,6 +1,11 @@
 import React, { Component } from 'react';
-import { Table, Button, Popconfirm } from 'antd';
+import { Table, Popconfirm } from 'antd';
+import { genderOptions } from '../../../assets/fixtures';
+import { PlusIcon } from '../../../components/SVG_Icons';
+import CustomButton from '../../../components/CustomButton';
 import { EditableCell, EditableRow } from '../../../components/EditableCell';
+import InputLabel from '../../../components/InputLabel';
+import InputValue from '../../../components/InputValue';
 
 class ProductsTable extends Component {
     constructor(props) {
@@ -11,6 +16,8 @@ class ProductsTable extends Component {
                 dataIndex: 'name',
                 width: '30%',
                 editable: true,
+                inputType: 'select',
+                options: genderOptions
             },
             {
                 title: 'Quantity',
@@ -23,12 +30,12 @@ class ProductsTable extends Component {
                 editable: true,
             },
             {
-                title: 'Discount',
+                title: 'Discount (%)',
                 dataIndex: 'discount',
                 editable: true,
             },
             {
-                title: 'Tax',
+                title: 'Tax (%)',
                 dataIndex: 'tax',
                 editable: true,
             },
@@ -49,21 +56,16 @@ class ProductsTable extends Component {
             },
         ];
         this.state = {
-            dataSource: [
-                {
-                    key: '0',
-                    name: 'Edward King 0',
-                    age: '32',
-                    address: 'London, Park Lane no. 0',
-                },
-                {
-                    key: '1',
-                    name: 'Edward King 1',
-                    age: '32',
-                    address: 'London, Park Lane no. 1',
-                },
-            ],
-            count: 2,
+            dataSource: [{
+                key: '0',
+                name: '',
+                qty: 1,
+                rate: 0,
+                discount: 0,
+                tax: 18,
+                amount: 28,
+            }],
+            count: 0,
         };
     }
 
@@ -77,9 +79,12 @@ class ProductsTable extends Component {
         const { count, dataSource } = this.state;
         const newData = {
             key: count,
-            name: `Edward King ${count}`,
-            age: '32',
-            address: `London, Park Lane no. ${count}`,
+            name: '',
+            qty: 1,
+            rate: 0,
+            discount: 0,
+            tax: 18,
+            amount: 28,
         };
         this.setState({
             dataSource: [...dataSource, newData],
@@ -97,7 +102,7 @@ class ProductsTable extends Component {
     };
 
     render() {
-        const { dataSource } = this.state;
+        const { dataSource, totalAmount } = this.state;
         const components = {
             body: {
                 row: EditableRow,
@@ -114,14 +119,16 @@ class ProductsTable extends Component {
                 onCell: (record) => ({
                     record,
                     editable: col.editable,
+                    inputType: col.inputType,
                     dataIndex: col.dataIndex,
                     title: col.title,
+                    options: col.options,
                     handleSave: this.handleSave,
                 }),
             };
         });
         return (
-            <div style={{ width: '100%' }}>
+            <div className='product-table-container'>
                 <Table
                     pagination={false}
                     className='app-table'
@@ -130,15 +137,13 @@ class ProductsTable extends Component {
                     dataSource={dataSource}
                     columns={columns}
                 />
-                <Button
-                    onClick={this.handleAdd}
-                    type="primary"
-                    style={{
-                        marginTop: 16,
-                    }}
-                >
-                    Add a row
-                </Button>
+                <div className='table-footer'>
+                    <CustomButton onClick={this.handleAdd} text='Add Another Item' className='app-add-new-btn' icon={<PlusIcon />} />
+                    <div className='input-container'>
+                        <InputLabel name='Total (₹)' />
+                        <InputValue size='large' value={totalAmount || 0} />
+                    </div>
+                </div>
             </div >
         );
     }

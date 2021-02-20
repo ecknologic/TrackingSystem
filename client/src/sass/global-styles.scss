@@ -660,7 +660,7 @@ textarea {
 
     .columns-container {
         display: flex;
-        justify-content: center;
+        flex-wrap: wrap;
         width: 100%;
     }
 
@@ -668,6 +668,8 @@ textarea {
         display: flex;
         flex: 1;
         margin-right: 1em;
+        min-width: 148px;
+        max-width: 148px;
     }
 
     .input-container {
@@ -1399,14 +1401,17 @@ textarea {
 }
   
 .editable-cell-value-wrap {
-    padding: 5px 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 2.7em;
     cursor: pointer;
 }
   
 .editable-row:hover .editable-cell-value-wrap {
-    padding: 4px 11px;
+    // padding: 4px 11px;
     border: 1px solid #d9d9d9;
-    border-radius: 4px;
+    border-radius: .6em;
 }
   
 [data-theme='dark'] .editable-row:hover .editable-cell-value-wrap {
