@@ -187,7 +187,7 @@ const Delivery = ({ date, source }) => {
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
-            let [data = {}] = await http[method](url, body)
+            let [data = {}] = await http[method](axios, url, body, config)
             showToast(options)
             optimisticUpdate(data, method)
             onModalClose(true)
