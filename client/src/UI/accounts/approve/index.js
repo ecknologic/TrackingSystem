@@ -251,11 +251,7 @@ const ApproveAccount = () => {
         }
     }
 
-    const updateAddresses = async (deliveries) => {
-        const body = deliveries.map(item => {
-            // delete item.isApproved //should not send isApproved while update
-            return item
-        })
+    const updateAddresses = async (body) => {
 
         try {
             const url = '/customer/updateDeliveryDetails'
@@ -321,7 +317,7 @@ const ApproveAccount = () => {
         const url = `/customer/approveCustomer/${customerId}`
         const body = {
             deliveryDetailsIds: activeAddressIds,
-            isSuperAdminApproved: isSuperAdminApproved || Number(isSuperAdmin)
+            isSuperAdminApproved: isSuperAdminApproved || (Number(depositAmount) === 0 ? Number(isSuperAdmin) : 0)
         }
         try {
             setBtnDisabled(true)

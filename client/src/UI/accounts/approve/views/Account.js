@@ -13,6 +13,13 @@ const AccountView = ({ data }) => {
 
     const isCorporate = customertype === 'Corporate'
 
+    const renderDA = () => (
+        <div className='input-container'>
+            <InputValue size='smaller' value='Deposit Amount' />
+            <InputValue size='large' value={depositAmount} />
+        </div>
+    )
+
     return (
         <>
             <div className='app-view-info'>
@@ -51,10 +58,12 @@ const AccountView = ({ data }) => {
                     </div>
                 </div>
                 <div className='row half-stretch'>
-                    <div className='input-container'>
-                        <InputValue size='smaller' value='Referred By' />
-                        <InputValue size='large' value={referredBy} />
-                    </div>
+                    {
+                        referredBy ? <div className='input-container'>
+                            <InputValue size='smaller' value='Referred By' />
+                            <InputValue size='large' value={referredBy} />
+                        </div> : renderDA()
+                    }
                     <div className='input-container'>
                         <InputValue size='smaller' value='Created By' />
                         <InputValue size='large' value={createdUserName} />
@@ -67,10 +76,9 @@ const AccountView = ({ data }) => {
                             <InputValue size='large' value={creditPeriodInDays} />
                         </div> : null
                     }
-                    <div className='input-container'>
-                        <InputValue size='smaller' value='Deposit Amount' />
-                        <InputValue size='large' value={depositAmount} />
-                    </div>
+                    {
+                        referredBy ? renderDA() : null
+                    }
                 </div>
             </div>
         </>
