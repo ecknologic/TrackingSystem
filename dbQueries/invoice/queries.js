@@ -6,6 +6,11 @@ invoiceQueries.getInvoices = async (callback) => {
     return executeGetQuery(query, callback)
 }
 
+invoiceQueries.getInvoiceId = async (callback) => {
+    let query = "SELECT COUNT(invoiceId) AS invoiceId FROM  Invoice";
+    return executeGetQuery(query, callback)
+}
+
 //POST Request Methods
 invoiceQueries.createInvoice = (input, callback) => {
     const { customerId, invoiceDate, dueDate, salesPerson, mailSubject, mailIds, tAndc, invoicePdf } = input

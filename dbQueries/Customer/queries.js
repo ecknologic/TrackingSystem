@@ -23,7 +23,7 @@ customerQueries.getInActiveCustomers = (callback) => {
     executeGetParamsQuery(query, callback)
 }
 customerQueries.getCustomerBillingAddress = (customerId, callback) => {
-    let query = "SELECT organizationName as customerName,gstNo,customerId,customerName,address1 AS address FROM customerdetails c WHERE customerId=" + customerId
+    let query = "SELECT organizationName as customerName,EmailId,gstNo,customerId,customerName,address1 AS address FROM customerdetails c WHERE customerId=" + customerId
     executeGetParamsQuery(query, [customerId], callback)
 }
 customerQueries.getCustomerNames = (callback) => {
