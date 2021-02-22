@@ -198,6 +198,7 @@ const Orders = () => {
 
     const handleView = async (id) => {
         const delivery = viewedArr.find(item => item.deliveryDetailsId === id)
+        isEmpty(warehouseList) && getWarehouseList()
 
         if (delivery) {
             const { departmentId } = delivery

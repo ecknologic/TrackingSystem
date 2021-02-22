@@ -3,12 +3,16 @@ import { message } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import InvoiceForm from '../forms/Invoice';
 import { http } from '../../../modules/http';
+import ProductsTable from '../forms/ProductsTable';
+import InvoiceRestForm from '../forms/InvoiceRest';
+import { TODAYDATE } from '../../../utils/constants';
 import CustomButton from '../../../components/CustomButton';
-import { isAlphaNum, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
-import { validateIntFloat, validateNumber, validateProductValues } from '../../../utils/validations';
+import { isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
+import { validateIntFloat, validateNames, validateNumber, validateProductValues } from '../../../utils/validations';
 
 const CreateInvoice = ({ goToTab }) => {
-    const [formData, setFormData] = useState({})
+    const defaultValues = useMemo(() => ({ invoiceDate: TODAYDATE }), [])
+    const [formData, setFormData] = useState(defaultValues)
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [shake, setShake] = useState(false)
@@ -27,15 +31,11 @@ const CreateInvoice = ({ goToTab }) => {
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
         // Validations
-        if (key === 'productName') {
-            const isValid = isAlphaNum(value)
-            if (!isValid) setFormErrors(errors => ({ ...errors, [key]: 'Enter aphanumeric only' }))
-        }
-        else if (key === 'price' || key === 'tax') {
-            const error = validateIntFloat(value)
+        if (key === 'salesPerson') {
+            const error = validateNames(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key === 'hsnCode') {
+        else if (key === 'hsnCode' || key === 'poNo') {
             const error = validateNumber(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -92,6 +92,13 @@ const CreateInvoice = ({ goToTab }) => {
                 <span className='title'>New Invoice Details</span>
             </div>
             <InvoiceForm
+                data={formData}
+                errors={formErrors}
+                onChange={handleChange}
+                onBlur={handleBlur}
+            />
+            <ProductsTable />
+            <InvoiceRestForm
                 data={formData}
                 errors={formErrors}
                 onChange={handleChange}

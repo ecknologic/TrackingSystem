@@ -47,13 +47,29 @@
 
         }
 
-        .table-footer {
+        .table-footer-container {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+        }
+
+        .table-footer {
+            width: 40%;
+            margin-left: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: flex-end;
+            background-color: #fff;
+            border-radius: .6em;
+            padding: 1em;
+            margin-top: 1.5em;
 
             .input-container {
-                width: fit-content;
+                width: 100%;
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                padding-bottom: .5em;
 
                 .app-input-value-large {
                     display: flex;

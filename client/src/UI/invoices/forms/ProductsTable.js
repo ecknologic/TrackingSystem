@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import { Table, Popconfirm } from 'antd';
+import InputValue from '../../../components/InputValue';
 import { genderOptions } from '../../../assets/fixtures';
 import { PlusIcon } from '../../../components/SVG_Icons';
 import CustomButton from '../../../components/CustomButton';
 import { EditableCell, EditableRow } from '../../../components/EditableCell';
-import InputLabel from '../../../components/InputLabel';
-import InputValue from '../../../components/InputValue';
 
 class ProductsTable extends Component {
     constructor(props) {
@@ -13,7 +12,7 @@ class ProductsTable extends Component {
         this.columns = [
             {
                 title: 'Item Details',
-                dataIndex: 'name',
+                dataIndex: 'productName',
                 width: '30%',
                 editable: true,
                 inputType: 'select',
@@ -21,12 +20,12 @@ class ProductsTable extends Component {
             },
             {
                 title: 'Quantity',
-                dataIndex: 'qty',
-                editable: true,
+                dataIndex: 'quantity',
+                editable: true
             },
             {
                 title: 'Rate',
-                dataIndex: 'rate',
+                dataIndex: 'productPrice',
                 editable: true,
             },
             {
@@ -38,11 +37,24 @@ class ProductsTable extends Component {
                 title: 'Tax (%)',
                 dataIndex: 'tax',
                 editable: true,
+                inputType: 'select',
+                options: genderOptions
             },
             {
                 title: 'Amount',
                 dataIndex: 'amount',
-                editable: true,
+            },
+            {
+                title: 'CGST',
+                dataIndex: 'cgst',
+            },
+            {
+                title: 'SGST',
+                dataIndex: 'sgst',
+            },
+            {
+                title: 'IGST',
+                dataIndex: 'igst',
             },
             {
                 title: 'Action',
@@ -58,9 +70,9 @@ class ProductsTable extends Component {
         this.state = {
             dataSource: [{
                 key: '0',
-                name: '',
-                qty: 1,
-                rate: 0,
+                productName: '',
+                quantity: 1,
+                productPrice: 0,
                 discount: 0,
                 tax: 18,
                 amount: 28,
@@ -79,9 +91,9 @@ class ProductsTable extends Component {
         const { count, dataSource } = this.state;
         const newData = {
             key: count,
-            name: '',
-            qty: 1,
-            rate: 0,
+            productName: '',
+            quantity: 1,
+            productPrice: 0,
             discount: 0,
             tax: 18,
             amount: 28,
@@ -137,11 +149,29 @@ class ProductsTable extends Component {
                     dataSource={dataSource}
                     columns={columns}
                 />
-                <div className='table-footer'>
+                <div className='table-footer-container'>
                     <CustomButton onClick={this.handleAdd} text='Add Another Item' className='app-add-new-btn' icon={<PlusIcon />} />
-                    <div className='input-container'>
-                        <InputLabel name='Total (₹)' />
-                        <InputValue size='large' value={totalAmount || 0} />
+                    <div className='table-footer'>
+                        <div className='input-container'>
+                            <InputValue size='smaller' value='Sub Total' />
+                            <InputValue size='smaller' value={totalAmount || 0} />
+                        </div>
+                        <div className='input-container'>
+                            <InputValue size='smaller' value='CGST' />
+                            <InputValue size='smaller' value={totalAmount || 0} />
+                        </div>
+                        <div className='input-container'>
+                            <InputValue size='smaller' value='SGST' />
+                            <InputValue size='smaller' value={totalAmount || 0} />
+                        </div>
+                        <div className='input-container'>
+                            <InputValue size='smaller' value='IGST' />
+                            <InputValue size='smaller' value={totalAmount || 0} />
+                        </div>
+                        <div className='input-container'>
+                            <InputValue size='larger' value='Total (₹)' />
+                            <InputValue size='larger' value={totalAmount || 0} />
+                        </div>
                     </div>
                 </div>
             </div >
