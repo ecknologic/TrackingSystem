@@ -13,6 +13,7 @@ const { customerProductDetails, dbError, getCompareCustomersData, getCompareDist
 const { saveToCustomerOrderDetails } = require('./utilities');
 const { createInvoice } = require('./Invoice/invoice');
 const { UPDATEMESSAGE, DELETEMESSAGE } = require('../utils/constants.js');
+const usersQueries = require('../dbQueries/users/queries.js');
 let departmentId;
 
 var storage = multer.diskStorage({
@@ -647,4 +648,35 @@ router.post('/updateDeliveryDetails', (req, res) => {
     }
   }
 })
+router.get("/getCustomerNames", (req, res) => {
+  customerQueries.getCustomerNames((err, data) => {
+    if (err) res.json({ status: 500, message: err.sqlMessage });
+    else {
+      res.json(data)
+    }
+  })
+});
+
+router.get("/getCustomerBillingAddress/:customerId", (req, res) => {
+  customerQueries.getCustomerBillingAddress(req.params.customerId, (err, data) => {
+    if (err) res.json({ status: 500, message: err.sqlMessage });
+    else {
+      if (data.length) {
+        let result = data[0]
+        result.isLocal = result.gstNo.startsWith('36')
+        res.json(result)
+      }
+      else res.json(data)
+    }
+  })
+});
+
+router.get("/getSalesPersons", (req, res) => {
+  usersQueries.getSalesPersons((err, data) => {
+    if (err) res.json({ status: 500, message: err.sqlMessage });
+    else {
+      res.json(data)
+    }
+  })
+});
 module.exports = router;
