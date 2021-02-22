@@ -15,10 +15,12 @@ export const corpIdOptions = [
     <Option key='2' value="rocNo">ROC</Option>
 ]
 export const businessOptions = [
-    <Option key='1' value="Residential">Residential</Option>,
-    <Option key='2' value="Software">Software</Option>,
-    <Option key='3' value="Corporate">Corporate</Option>,
-    <Option key='4' value="Traders">Traders</Option>
+    <Option key='1' value="SoftwareAndIT">Software & IT</Option>,
+    <Option key='2' value="HealthAndPharma">Health & Pharma</Option>,
+    <Option key='3' value="RestaurantAndHospitality">Restaurant & Hospitality</Option>,
+    <Option key='4' value="MediaAndAdvertising">Media & Advertising</Option>,
+    <Option key='5' value="Manufacturers">Manufacturers</Option>,
+    <Option key='6' value="Corporate Offices">Corporate Offices</Option>,
 ]
 export const statusOptions = [
     <Option key='1' value={1}>Active</Option>,

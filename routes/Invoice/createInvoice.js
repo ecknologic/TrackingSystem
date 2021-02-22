@@ -5,17 +5,20 @@ const HSNCODE = 22011010;
 const GST20L = 12, GSTOthers = 18, CGST20L = 6, CGSTOthers = 9;
 var totalTaxValue = 0
 var totalCGSTValue = 0
-function createInvoice(invoice, path) {
-    let doc = new PDFDocument({ size: "A4", margin: 50 });
+function createSingleDeliveryInvoice(invoice, path) {
+    return new Promise((resolve) => {
+        let doc = new PDFDocument({ size: "A4", margin: 50 });
 
-    generateHeader(doc);
-    generateCustomerInformation(doc, invoice);
-    billingTable(doc, invoice);
-    generateInvoiceTable(doc, invoice);
-    generateFooter(doc);
+        generateHeader(doc);
+        generateCustomerInformation(doc, invoice);
+        billingTable(doc, invoice);
+        generateInvoiceTable(doc, invoice);
+        generateFooter(doc);
 
-    doc.end();
-    doc.pipe(fs.createWriteStream(path));
+        doc.end();
+        doc.pipe(fs.createWriteStream(path));
+        resolve({ message: 'Success' })
+    })
 }
 
 
@@ -293,5 +296,5 @@ function formatDate(date) {
 }
 
 module.exports = {
-    createInvoice
+    createSingleDeliveryInvoice
 };

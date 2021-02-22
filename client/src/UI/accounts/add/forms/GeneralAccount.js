@@ -54,11 +54,7 @@ const GeneralAccountForm = (props) => {
     const renderNOB = () => (
         <div className='input-container'>
             <InputLabel name='Nature Of Business' error={errors.natureOfBussiness} />
-            <SelectInput
-                track value={natureOfBussiness}
-                disabled options={businessOptions}
-                error={errors.natureOfBussiness} onSelect={(value) => onChange(value, 'natureOfBussiness')}
-            />
+            <CustomInput value={natureOfBussiness} disabled error={errors.natureOfBussiness} />
         </div>
     )
 

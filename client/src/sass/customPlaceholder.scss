@@ -1,0 +1,12 @@
+.custom-placeholder-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .ant-empty-description {
+        font-family: 'PoppinsMedium500';
+        color: rgba(0, 0, 0, 0.25);
+    }
+    
+}

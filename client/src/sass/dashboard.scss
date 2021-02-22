@@ -193,6 +193,10 @@ $textColor:rgba(0,0,0,0.85);
 
 .quality-testing-panel {
     justify-content: space-between;
+
+    .custom-placeholder-container {
+        min-height: 13em;
+    }
 }
 
 .bottom-panels-container {
@@ -236,6 +240,8 @@ $textColor:rgba(0,0,0,0.85);
     }
 
     .total-business-panel {
+        display: flex;
+        flex-direction: column;
         margin-right: 1em;
     }
     

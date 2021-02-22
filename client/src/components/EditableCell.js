@@ -1,5 +1,6 @@
 import { Input, Form, Select } from 'antd';
 import React, { useContext, useState, useEffect, useRef } from 'react';
+import { validateNumber } from '../utils/validations';
 import { DDownIcon } from './SVG_Icons';
 const EditableContext = React.createContext(null);
 
@@ -54,17 +55,20 @@ export const EditableCell = ({ title, editable, children, dataIndex,
                 name={dataIndex}
                 rules={[
                     {
-                        required: true,
-                        message: `${title} is required.`,
+                        validator: async (rule, value) => {
+                            let error = inputType !== 'select' ? validateNumber(value) : ''
+                            if (!String(value)) error = 'Required'
+                            if (error) throw new Error(error)
+                        }
                     },
                 ]}
             >
                 {
                     inputType === 'select' ? (
                         <Select
-                            placeholder='Select'
-                            onSelect={save}
                             onBlur={save}
+                            onSelect={save}
+                            placeholder='Select'
                             suffixIcon={<DDownIcon />}
                             getPopupContainer={node => node.parentNode}
                         >

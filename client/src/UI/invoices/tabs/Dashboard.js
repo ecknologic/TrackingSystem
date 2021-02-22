@@ -51,12 +51,12 @@ const Dashboard = ({ reFetch }) => {
     }, [reFetch])
 
     const getInvoices = async () => {
-        const url = '/invoices/getInvoices'
+        const url = '/invoice/getInvoices'
 
         try {
-            // const data = await http.GET(axios, url, config)
-            // setInvoices(data)
-            // setTotalCount(data.length)
+            const data = await http.GET(axios, url, config)
+            setInvoices(data)
+            setTotalCount(data.length)
             setLoading(false)
         } catch (error) { }
     }

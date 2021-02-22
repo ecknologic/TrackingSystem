@@ -5,6 +5,7 @@ import { http } from '../../../../modules/http';
 import { isEmpty } from '../../../../utils/Functions';
 import PanelHeader from '../../../../components/PanelHeader';
 import { TODAYDATE as d } from '../../../../utils/constants';
+import CustomPlaceholder from '../../../../components/CustomPlaceholder';
 import QualityResultCard from '../../../../components/QualityResultCard';
 import { LeftChevronIconGrey, RightChevronIconGrey } from '../../../../components/SVG_Icons';
 const options = { startDate: d, endDate: d, fromStart: true, departmentId: 'All', shift: 'All' }
@@ -49,12 +50,12 @@ const WaterQualityResults = ({ depMenu, motherplantList }) => {
             <PanelHeader title='Water Quality Testing Results' depMenu={depMenu} onSelect={handleOperation} beginning showShow showShift showDep />
             <div className='panel-body quality-testing-panel'>
                 {
-                    !isEmpty(results) &&
-                    <Slider className='dashboard-slider' {...props}>
-                        {
-                            results.map((item) => <QualityResultCard key={item.productionQcId} data={item} />)
-                        }
-                    </Slider>
+                    !isEmpty(results) ? <CustomPlaceholder />
+                        : <Slider className='dashboard-slider' {...props}>
+                            {
+                                results.map((item) => <QualityResultCard key={item.productionQcId} data={item} />)
+                            }
+                        </Slider>
                 }
             </div>
         </>

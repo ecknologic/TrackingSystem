@@ -56,6 +56,8 @@ app.use("/products", checkUserExists, require('./routes/products'));
 //Products Rest Services
 app.use("/distributor", checkUserExists, require('./routes/distributor'));
 
+app.use("/invoice", checkUserExists, require('./routes/Invoice'));
+
 
 app.use("/bibo", require('./routes/loginAuthentication.js'));
 
