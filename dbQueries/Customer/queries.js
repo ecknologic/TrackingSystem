@@ -220,7 +220,7 @@ customerQueries.approveCustomer = (input, callback) => {
 customerQueries.approveDeliveryDetails = (ids, callback) => {
     let currentDate = new Date();
     let query = 'UPDATE DeliveryDetails set isActive=1,approvedDate=?,lastApprovedDate=? where deliveryDetailsId IN (?)'
-    executePostOrUpdateQuery(query, [ids, currentDate, currentDate], callback)
+    executePostOrUpdateQuery(query, [currentDate, currentDate, ids], callback)
 }
 customerQueries.updateDCNo = (insertedId, callback) => {
     let query = "UPDATE customerorderdetails SET DCNO=? WHERE customerOrderId=?"
