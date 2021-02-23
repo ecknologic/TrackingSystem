@@ -14,21 +14,21 @@ invoiceQueries.getInvoiceId = async (callback) => {
 //POST Request Methods
 invoiceQueries.createInvoice = (input, callback) => {
     const { customerId, invoiceDate, dueDate, salesPerson, mailSubject, mailIds, tAndc, invoicePdf } = input
-    let query = "insert into Invoice (customerId,invoiceDate,dueDate,salesPerson,mailSubject,mailIds,tAndc,invoicePdf) values(?,?,?,?,?,?,?)";
+    let query = "insert into Invoice (customerId,invoiceDate,dueDate,salesPerson,mailSubject,mailIds,tAndc,invoicePdf) values(?,?,?,?,?,?,?,?)";
     // var gstProofImage = Buffer.from(gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-    let requestBody = [customerId, invoiceDate, dueDate, salesPerson, mailSubject, mailIds, tAndc, invoicePdf]
+    let requestBody = [customerId, new Date(invoiceDate), new Date(dueDate), salesPerson, mailSubject, mailIds, tAndc, invoicePdf]
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 invoiceQueries.saveInvoiceProducts = (input, callback) => {
     const { invoiceId = 1, products } = input
     // const sql = products.map(item => `(${invoiceId},${String(item.productName)}, ${item.productPrice}, ${item.discount}, ${item.quantity}, ${item.tax})`)
-    const sql = products.map(item => "(" + invoiceId + ", '" + item.productName + "', " + item.productPrice + ", " + item.discount + ", " + item.quantity + ", " + item.tax + ")")
-    let query = "insert into invoiceProductsDetails (invoiceId, productName, productPrice, discount, quantity, tax) values " + sql;
+    const sql = products.map(item => "(" + invoiceId + ", '" + item.productName + "', " + item.productPrice + ", " + item.discount + ", " + item.quantity + ", " + item.tax + ", " + item.cgst + ", " + item.sgst + ", " + item.igst + ")")
+    let query = "insert into invoiceProductsDetails (invoiceId, productName, productPrice, discount, quantity, tax,cgst,sgst,igst) values " + sql;
     // var gstProofImage = Buffer.from(gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
     // let requestBody = [invoiceId, productName, productPrice, discount, quantity, tax]
     console.log(query)
     executeGetQuery(query, (err, data) => {
-        if (err) console.log("ddd", err)
+        if (err) console.log("Saving invoice products", err)
         else console.log("Data", data)
     })
 }
