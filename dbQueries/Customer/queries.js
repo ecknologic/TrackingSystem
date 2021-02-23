@@ -22,6 +22,14 @@ customerQueries.getInActiveCustomers = (callback) => {
     let query = "SELECT c.organizationName,c.customertype,c.isActive,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.isApproved=0 AND approvedDate!='NULL' and d.deleted=0  GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.customerId,c.registeredDate ORDER BY c.lastDraftedDate DESC"
     executeGetParamsQuery(query, callback)
 }
+customerQueries.getCustomerBillingAddress = (customerId, callback) => {
+    let query = "SELECT organizationName as customerName,EmailId,gstNo,customerId,customerName,address1 AS address FROM customerdetails c WHERE customerId=" + customerId
+    executeGetParamsQuery(query, [customerId], callback)
+}
+customerQueries.getCustomerNames = (callback) => {
+    let query = "SELECT organizationName as customerName,customerId FROM customerdetails c WHERE isApproved=1 and deleted=0 ORDER BY lastDraftedDate DESC"
+    executeGetParamsQuery(query, callback)
+}
 customerQueries.getTotalCustomers = (input, callback) => {
     let { startDate, endDate, fromStart } = input;
     let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE deleted=0"
@@ -204,13 +212,15 @@ customerQueries.saveCustomerOrderDetails = (input, callback) => {
 }
 customerQueries.approveCustomer = (input, callback) => {
     const { customerId, isSuperAdminApproved } = input
+    let currentDate = new Date();
     let query = `UPDATE customerdetails set isApproved=?,approvedDate=?,lastApprovedDate=?,isSuperAdminApproved=? where customerId=?`
-    let options = [isSuperAdminApproved == 1 ? 0 : 1, new Date(), new Date(), isSuperAdminApproved, customerId]
+    let options = [isSuperAdminApproved == 1 ? 0 : 1, currentDate, currentDate, isSuperAdminApproved, customerId]
     executePostOrUpdateQuery(query, options, callback)
 }
 customerQueries.approveDeliveryDetails = (ids, callback) => {
-    let query = 'UPDATE DeliveryDetails set isActive=1,approvedDate=? where deliveryDetailsId IN (?)'
-    executePostOrUpdateQuery(query, [ids, new Date()], callback)
+    let currentDate = new Date();
+    let query = 'UPDATE DeliveryDetails set isActive=1,approvedDate=?,lastApprovedDate=? where deliveryDetailsId IN (?)'
+    executePostOrUpdateQuery(query, [currentDate, currentDate, ids], callback)
 }
 customerQueries.updateDCNo = (insertedId, callback) => {
     let query = "UPDATE customerorderdetails SET DCNO=? WHERE customerOrderId=?"

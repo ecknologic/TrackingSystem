@@ -1,6 +1,6 @@
 import { Input, Form, Select } from 'antd';
 import React, { useContext, useState, useEffect, useRef } from 'react';
-import { validateNumber } from '../utils/validations';
+import { validateIntFloat } from '../utils/validations';
 import { DDownIcon } from './SVG_Icons';
 const EditableContext = React.createContext(null);
 
@@ -16,7 +16,7 @@ export const EditableRow = ({ index, ...props }) => {
 };
 
 export const EditableCell = ({ title, editable, children, dataIndex,
-    record, handleSave, inputType, options = [], ...restProps }) => {
+    record, onSave, inputType, options = [], ...restProps }) => {
     const [editing, setEditing] = useState(false);
     const inputRef = useRef(null);
     const form = useContext(EditableContext);
@@ -37,11 +37,10 @@ export const EditableCell = ({ title, editable, children, dataIndex,
     const save = async () => {
         try {
             const values = await form.validateFields();
+            console.log('data Index Inside', dataIndex)
             toggleEdit();
-            handleSave({ ...record, ...values });
-        } catch (errInfo) {
-            console.log('Save failed:', errInfo);
-        }
+            onSave({ ...record, ...values }, dataIndex);
+        } catch (error) { }
     };
 
     let childNode = children;
@@ -56,8 +55,14 @@ export const EditableCell = ({ title, editable, children, dataIndex,
                 rules={[
                     {
                         validator: async (rule, value) => {
-                            let error = inputType !== 'select' ? validateNumber(value) : ''
-                            if (!String(value)) error = 'Required'
+                            let error = inputType !== 'select' ? validateIntFloat(value) : ''
+                            if (value !== 0 && !value) error = 'Required'
+                            else if (dataIndex === 'quantity' || dataIndex === 'productPrice') {
+                                if (value == 0) error = 'Invalid'
+                            }
+                            else if (dataIndex === 'discount') {
+                                if (value > 100) error = 'Invalid'
+                            }
                             if (error) throw new Error(error)
                         }
                     },

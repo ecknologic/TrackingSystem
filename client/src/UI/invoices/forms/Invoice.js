@@ -1,15 +1,19 @@
+import dayjs from 'dayjs';
 import React, { useEffect } from 'react';
+import InputValue from '../../../components/InputValue';
 import InputLabel from '../../../components/InputLabel';
-import { genderOptions } from '../../../assets/fixtures';
 import CustomInput from '../../../components/CustomInput';
 import SelectInput from '../../../components/SelectInput';
 import CustomTextArea from '../../../components/CustomTextArea';
 import CustomDateInput from '../../../components/CustomDateInput';
 import { resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
+import NoContent from '../../../components/NoContent';
+import Spinner from '../../../components/Spinner';
 
-const InvoiceForm = ({ data, errors, onChange, onBlur }) => {
+const InvoiceForm = ({ data, invoiceNumber, salesPersonOptions, billingAddress, customerOptions, errors, onChange }) => {
 
-    const { customerId, salesPerson, price, poNo, hsnCode, mailSubject, invoiceDate, dueDate } = data
+    const { customerId, salesPerson, poNo, hsnCode, mailSubject, invoiceDate, dueDate } = data
+    const { loading, loaded, address, gstNo } = billingAddress
 
     useEffect(() => {
         resetTrackForm()
@@ -20,28 +24,52 @@ const InvoiceForm = ({ data, errors, onChange, onBlur }) => {
         }
     }, [])
 
+    const disableDates = (current) => {
+        if (!current) return false
+        return current.valueOf() <= dayjs(invoiceDate)
+    }
+
     return (
         <div className='app-form-container invoice-form-container'>
             <div className='row'>
                 <div className='input-container'>
                     <InputLabel name='Customer Name' error={errors.customerId} mandatory />
                     <SelectInput track showSearch
-                        options={genderOptions} value={customerId} placeholder='Search & Select'
+                        options={customerOptions} value={customerId} placeholder='Search & Select'
                         error={errors.customerId} onSelect={(value) => onChange(value, 'customerId')}
                     />
                 </div>
             </div>
+            {
+                loading ? <NoContent style={{ minHeight: '10.36em', width: '50%' }} content={<Spinner />} />
+                    : loaded ? (
+                        <>
+                            <div className='row'>
+                                <div className='input-container'>
+                                    <InputLabel name='Billing Address' />
+                                    <InputValue size='large' value={address} />
+                                </div>
+                            </div>
+                            <div className='row'>
+                                <div className='input-container'>
+                                    <InputLabel name='GST Number' />
+                                    <InputValue size='large' value={gstNo} />
+                                </div>
+                            </div>
+                        </>
+                    ) : null
+            }
             <div className='row'>
                 <div className='input-container'>
                     <InputLabel name='Sales Person' error={errors.salesPerson} mandatory />
                     <SelectInput track
-                        options={genderOptions} value={salesPerson}
+                        options={salesPersonOptions} value={salesPerson}
                         error={errors.salesPerson} onSelect={(value) => onChange(value, 'salesPerson')}
                     />
                 </div>
                 <div className='input-container'>
-                    <InputLabel name="Invoice Number" error={errors.price} mandatory />
-                    <CustomInput value={price} disabled error={errors.price} placeholder="Invoice Number" />
+                    <InputLabel name="Invoice Number" />
+                    <CustomInput value={invoiceNumber} disabled placeholder="Invoice Number" />
                 </div>
             </div>
             <div className='row'>
@@ -57,7 +85,7 @@ const InvoiceForm = ({ data, errors, onChange, onBlur }) => {
                     <InputLabel name='Due Date' error={errors.tax} mandatory />
                     <CustomDateInput
                         track error={errors.dueDate}
-                        value={dueDate}
+                        value={dueDate} disabledDate={disableDates}
                         onChange={(value) => onChange(value, 'dueDate')}
                     />
                 </div>
@@ -68,7 +96,6 @@ const InvoiceForm = ({ data, errors, onChange, onBlur }) => {
                     <CustomInput value={hsnCode}
                         error={errors.hsnCode} placeholder='HSN Code'
                         onChange={(value) => onChange(value, 'hsnCode')}
-                        onBlur={(value) => onBlur(value, 'hsnCode')}
                     />
                 </div>
                 <div className='input-container'>
@@ -76,7 +103,6 @@ const InvoiceForm = ({ data, errors, onChange, onBlur }) => {
                     <CustomInput value={poNo}
                         error={errors.poNo} placeholder='PO Number'
                         onChange={(value) => onChange(value, 'poNo')}
-                        onBlur={(value) => onBlur(value, 'poNo')}
                     />
                 </div>
             </div>

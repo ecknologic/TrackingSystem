@@ -124,5 +124,12 @@ router.get('/getroutes', (req, res) => {
         res.send(JSON.stringify(results));
     });
 });
+router.get('/getList/:type', (req, res) => {
+    let query = "select dropdownId,value FROM DropdownsData WHERE label=?";
+    db.query(query, [req.params.type], (err, results) => {
+        if (err) res.status(500).json(err.sqlMessage);
+        res.json(results);
+    });
+});
 
 module.exports = router;

@@ -13,6 +13,10 @@ usersQueries.getUsersByRole = async (roleName, callback) => {
     let query = "SELECT u.userId,u.userName,u.emailid,u.mobileNumber,r.RoleId as roleId,r.RoleName from usermaster u INNER JOIN rolemaster r on u.RoleId=r.RoleId where r.RoleName=? AND u.deleted='0' ORDER BY createdDateTime DESC";
     return executeGetParamsQuery(query, [roleName], callback)
 }
+usersQueries.getSalesPersons = async (callback) => {
+    let query = "SELECT userId,userName from usermaster u where (roleId=4 or roleId=5) AND isActive=1 AND deleted='0' ORDER BY createdDateTime DESC";
+    return executeGetParamsQuery(query, callback)
+}
 usersQueries.getUsersById = async (userId, callback) => {
     let query = "SELECT u.*,s.adharNo as dependentAdharNo,s.adhar_frontside as dependentFrontProof,s.adhar_backside as dependentBackProof,JSON_OBJECT('name',s.name,'userId',s.userId,'dob',s.dob,'gender',s.gender,'mobileNumber',s.mobileNumber,'relation',s.relation,'dependentId',s.dependentId) dependentDetails from usermaster u INNER JOIN staffDependentDetails s on u.userId=s.userId where u.userId=" + userId;
     return executeGetQuery(query, callback)

@@ -11,6 +11,7 @@ import Dispatches from './UI/dispatches';
 import PageLayout from './UI/page-layout';
 import Staff from './UI/employees/Staff';
 import AddAccount from './UI/accounts/add';
+import EditInvoice from './UI/invoices/edit';
 import ViewAccount from './UI/accounts/view';
 import ManagePlant from './UI/plants/manage';
 import Drivers from './UI/employees/Drivers';
@@ -114,6 +115,7 @@ const App = () => {
                   <Route path='/staff' render={byRole(<Staff />)} />
                   <Route path='/routes' render={byRole(<Transport />)} />
                   <Route path='/drivers' render={byRole(<Drivers />)} />
+                  <Route path='/invoices/edit/:invoiceId' render={byRole(<EditInvoice />)} />
                   <Route path='/invoices' render={byRole(<Invoices />)} />
                   <Route path='/products' render={byRole(<Products />)} />
                   <Route path='/distributors' render={byRole(<Distributors />)} />

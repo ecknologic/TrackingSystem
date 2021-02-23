@@ -15,6 +15,12 @@ router.get('/getInvoices', (req, res) => {
     });
 });
 
+router.get('/getInvoiceId', (req, res) => {
+    invoiceQueries.getInvoiceId((err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.send(`INV00${results[0].invoiceId + 1}`);
+    });
+});
 router.post("/createInvoice", (req, res) => {
     customerQueries.generatePDF(req.body, (err, items) => {
         if (err) res.status(500).json(dbError(err))
