@@ -1,8 +1,9 @@
 import axios from 'axios';
+import { Empty } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
 import { isEmpty } from '../../../../utils/Functions';
-import CustomPlaceholder from '../../../../components/CustomPlaceholder';
+import NoContent from '../../../../components/NoContent';
 import RawMaterialStockCard from '../../../../components/RawMaterialStockCard';
 
 const RawMaterialStock = () => {
@@ -38,7 +39,7 @@ const RawMaterialStock = () => {
             </div>
             <div className='panel-body'>
                 {
-                    isEmpty(RMStock) ? <CustomPlaceholder />
+                    isEmpty(RMStock) ? <NoContent content={<Empty />} />
                         : <RawMaterialStockCard data={RMStock} />
                 }
             </div>

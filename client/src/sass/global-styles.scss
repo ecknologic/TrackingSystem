@@ -18,7 +18,7 @@ $textColorDisabled:rgba(0,0,0,0.55);
     background-color: #FAFAFB;
 }
 
-#no-content {
+.no-content {
     width: 100%;
 }
 
@@ -774,7 +774,7 @@ textarea {
         min-height: calc(100vh - 14.5em);
         padding: 3em 1em 2em 2em;
 
-        #no-content {
+        .no-content {
             min-height: calc(100vh - 20em);
         }
     }
@@ -1357,6 +1357,10 @@ textarea {
     font-family: 'PoppinsSemiBold600';
 }
 
+.app-date-value.middle {
+    margin: 0 .5em;
+}
+
 // -------------- Various Badge styles ------------------- //
 .app-stock-badge {
     border: 1px solid #DC5858;
@@ -1405,12 +1409,13 @@ textarea {
     justify-content: center;
     align-items: center;
     min-height: 2.7em;
+    padding: 1px 1em;
     cursor: pointer;
 }
   
 .editable-row:hover .editable-cell-value-wrap {
-    // padding: 4px 11px;
     border: 1px solid #d9d9d9;
+    padding: 0 calc(1em - 1px);
     border-radius: .6em;
 }
   
@@ -1706,7 +1711,7 @@ textarea {
         }
     }
     
-    #no-content {
+    .no-content {
         min-height: calc(100vh - 13.8em);
     }
 }

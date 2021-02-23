@@ -1,27 +1,30 @@
 import axios from 'axios';
 import dayjs from 'dayjs';
 import { Menu, message, Table } from 'antd';
+import { useHistory } from 'react-router-dom';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import InvoiceForm from '../forms/Invoice';
 import { http } from '../../../modules/http'
 import Actions from '../../../components/Actions';
 import Spinner from '../../../components/Spinner';
+import DateValue from '../../../components/DateValue';
+import { invoiceColumns } from '../../../assets/fixtures';
+import SearchInput from '../../../components/SearchInput';
+import CustomModal from '../../../components/CustomModal';
+import ConfirmModal from '../../../components/CustomModal';
+import CustomButton from '../../../components/CustomButton';
 import { TODAYDATE, TRACKFORM } from '../../../utils/constants';
 import ConfirmMessage from '../../../components/ConfirmMessage';
-import CustomModal from '../../../components/CustomModal';
-import { invoiceColumns } from '../../../assets/fixtures';
-import { EditIconGrey, ScheduleIcon } from '../../../components/SVG_Icons';
-import ConfirmModal from '../../../components/CustomModal';
+import CustomRangeInput from '../../../components/CustomRangeInput';
 import CustomPagination from '../../../components/CustomPagination';
-import { deepClone, disableFutureDates, isAlphaNum, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
 import { validateIntFloat, validateNumber, validateProductValues } from '../../../utils/validations';
-import DateValue from '../../../components/DateValue';
-import CustomDateInput from '../../../components/CustomDateInput';
-import SearchInput from '../../../components/SearchInput';
-const DATEFORMAT = 'DD-MM-YYYY'
-const format = 'YYYY-MM-DD'
+import { DocIconGrey, EditIconGrey, EyeIconGrey, ScheduleIcon, TickIconGrey } from '../../../components/SVG_Icons';
+import { deepClone, getStatusColor, isAlphaNum, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
+const DATEFORMAT = 'DD/MM/YYYY'
+const APIDATEFORMAT = 'YYYY-MM-DD'
 
 const Dashboard = ({ reFetch }) => {
+    const history = useHistory()
     const [invoices, setInvoices] = useState([])
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
@@ -32,7 +35,10 @@ const Dashboard = ({ reFetch }) => {
     const [editModal, setEditModal] = useState(false)
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
-    const [selectedDate, setSelectedDate] = useState(TODAYDATE)
+    const [selectedRange, setSelectedRange] = useState([])
+    const [startDate, setStartDate] = useState(TODAYDATE)
+    const [generateDisabled, setGenerateDisabled] = useState(true)
+    const [endDate, setEndDate] = useState(TODAYDATE)
     const [open, setOpen] = useState(false)
     const [shake, setShake] = useState(false)
 
@@ -72,8 +78,7 @@ const Dashboard = ({ reFetch }) => {
 
     const handleMenuSelect = (key, data) => {
         if (key === 'edit') {
-            setFormData(data)
-            setEditModal(true)
+            history.push(`/invoices/edit/${data.invoiceId}`)
         }
     }
 
@@ -103,6 +108,10 @@ const Dashboard = ({ reFetch }) => {
             const error = validateIntFloat(value, true)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
+    }
+
+    const handleGenerateInvoices = () => {
+
     }
 
     const handleSubmit = async () => {
@@ -150,12 +159,14 @@ const Dashboard = ({ reFetch }) => {
         !status && setOpen(false)
     }
 
-    const handleDateSelect = (value) => {
+    const handleDateSelect = (selected) => {
+        const [from, to] = selected
+        setStartDate(from.format(APIDATEFORMAT))
+        setEndDate(to.format(APIDATEFORMAT))
         setOpen(false)
-        setSelectedDate(dayjs(value).format(format))
-        // const filtered = RMClone.filter(item => dayjs(value).format(DATEFORMAT) === dayjs(item.requestedDate).format(DATEFORMAT))
-        // setRM(filtered)
-        // setTotalCount(filtered.length)
+        setSelectedRange(selected)
+        setGenerateDisabled(false)
+        setTimeout(() => setSelectedRange([]), 820)
         setPageNumber(1)
     }
 
@@ -170,15 +181,22 @@ const Dashboard = ({ reFetch }) => {
     }
 
     const dataSource = useMemo(() => invoices.map((invoice) => {
-        const { invoiceId: key, productName, price, tax, totalAmount, hsnCode } = invoice
+        const { invoiceId, createdDateTime, customerName, dueDate, status } = invoice
+
+        const options = [
+            <Menu.Item key="view" icon={<EyeIconGrey />}>View</Menu.Item>,
+            <Menu.Item key="edit" icon={<EditIconGrey />}>Edit</Menu.Item>,
+            <Menu.Item key="paid" className={status === 'Paid' ? 'disabled' : ''} icon={<TickIconGrey />}>Paid</Menu.Item>,
+            <Menu.Item key="due" className={status === 'Pending' ? 'disabled' : ''} icon={<DocIconGrey />}>Due</Menu.Item>
+        ]
 
         return {
-            key,
-            price,
-            tax,
-            hsnCode,
-            totalAmount,
-            productName,
+            key: invoiceId,
+            invoiceId,
+            customerName,
+            dueDate: dayjs(dueDate).format(DATEFORMAT),
+            date: dayjs(createdDateTime).format(DATEFORMAT),
+            status: renderStatus(status),
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, invoice)} />
         }
     }), [invoices])
@@ -198,20 +216,26 @@ const Dashboard = ({ reFetch }) => {
         <div className='stock-delivery-container'>
             <div className='header'>
                 <div className='left'>
-                    <DateValue date={selectedDate} />
+                    <DateValue date={startDate} to={endDate} />
                     <div className='app-date-picker-wrapper'>
                         <div className='date-picker' onClick={() => setOpen(true)}>
                             <ScheduleIcon />
                             <span>Select Date</span>
                         </div>
-                        <CustomDateInput // Hidden in the DOM
+                        <CustomButton
+                            style={{ marginLeft: '1em' }}
+                            className={`${generateDisabled ? 'disabled' : ''}`}
+                            text='Generate'
+                            onClick={handleGenerateInvoices}
+                        />
+                        <CustomRangeInput // Hidden in the DOM
                             open={open}
+                            value={selectedRange}
                             style={{ left: 0 }}
-                            value={selectedDate}
+                            type='range'
                             className='date-panel-picker'
                             onChange={handleDateSelect}
                             onOpenChange={datePickerStatus}
-                            disabledDate={disableFutureDates}
                         />
                     </div>
                 </div>
@@ -271,6 +295,13 @@ const Dashboard = ({ reFetch }) => {
         </div>
     )
 }
-
-const options = [<Menu.Item key="edit" icon={<EditIconGrey />}>View/Edit</Menu.Item>]
+const renderStatus = (status) => {
+    const color = getStatusColor(status)
+    return (
+        <div className='status'>
+            <span className='app-dot' style={{ background: color }}></span>
+            <span className='status-text'>{status}</span>
+        </div>
+    )
+}
 export default Dashboard
