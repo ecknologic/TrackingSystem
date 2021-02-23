@@ -1,5 +1,6 @@
 .invoice-content {
-
+    background-color: #FAFAFB;
+    
     .stock-delivery-container {
         padding: 1.5em 2em 2em 2em;
     }
@@ -30,8 +31,8 @@
         padding-left: 2em;
     }
 
-    #no-content {
-        min-height: calc(100vh - 22em);
+    .no-content {
+        min-height: calc(100vh - 10.7em);
     }
 
     .app-tabs-container .ant-tabs-tabpane {
@@ -39,7 +40,11 @@
     }
 
     .product-table-container {
-        width: 100%;
+        padding-top: 1em;
+        
+        .ant-select {
+            max-width: 19vw;
+        }
 
         .app-add-new-btn {
             margin-top: 1.5em;
@@ -115,7 +120,7 @@
 //         width: 60%;
 //     }
 
-//     #no-content {
+//     .no-content {
 //         min-height: calc(100vh);
 //     }
 // }

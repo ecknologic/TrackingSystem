@@ -453,6 +453,48 @@ export const validateProductValues = (data) => {
     return errors
 }
 
+export const validateInvoiceValues = (data) => {
+    let errors = {};
+    const text = 'Required'
+    const { customerId, salesPerson, poNo, hsnCode, invoiceDate, dueDate, TAndC, products } = data;
+    if (!customerId) errors.customerId = text;
+    if (!salesPerson) errors.salesPerson = text;
+    if (!invoiceDate) errors.invoiceDate = text;
+    if (!dueDate) errors.dueDate = text;
+    if (!TAndC) errors.TAndC = text;
+    if (poNo) {
+        const error = validateNumber(poNo);
+        error && (errors.poNo = error)
+    }
+    if (!hsnCode) errors.hsnCode = text;
+    else {
+        const error = validateNumber(hsnCode);
+        error && (errors.hsnCode = error)
+    }
+    if (isEmpty(products)) errors.products = 'Atleast 1 product is required'
+    else {
+        const error = validateTableProducts(products)
+        if (error) errors.products = error
+    }
+
+    return errors
+}
+
+const validateTableProducts = (products) => {
+    let error = ''
+    const length = products.length
+    for (let index = 0; index < length; index++) {
+        const element = products[index];
+        const { productName } = element
+        if (!productName) {
+            error = 'One or more fields in the table are empty'
+            break
+        }
+    }
+
+    return error
+}
+
 export const validateQCcheckValues = (data, type) => {
     let errors = {};
     const text = 'Required'

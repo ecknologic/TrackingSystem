@@ -107,6 +107,15 @@ export const shiftMenu = [
 export const getDepartmentMenu = (departments = []) => {
     return departments.map((item) => <Menu.Item key={item.departmentName} >{item.departmentName}</Menu.Item>)
 }
+export const getProductOptions = (products = []) => {
+    return products.map((item) => <Option key={item.productId} value={item.productName}>{item.productName}</Option>)
+}
+export const getDDownOptions = (options = []) => {
+    return options.map((item) => <Option key={item.dropdownId} value={item.value}>{item.value}</Option>)
+}
+export const getCustomerOptions = (customers = []) => {
+    return customers.map((item) => <Option key={item.customerId} value={item.customerId}>{item.customerName}</Option>)
+}
 export const getWarehouseOptions = (warehouses = []) => {
     return warehouses.map((item) => <Option key={item.departmentId} value={item.departmentId}>{item.departmentName}</Option>)
 }
@@ -284,8 +293,8 @@ export const invoiceColumns = [
     },
     {
         title: 'Invoice Number',
-        dataIndex: 'invoiceNo',
-        key: 'invoiceNo',
+        dataIndex: 'invoiceId',
+        key: 'invoiceId',
     },
     {
         title: 'Customer Name',

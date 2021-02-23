@@ -548,6 +548,9 @@ export const getStatusColor = (status) => {
         case 'Delivered':
             return '#0EDD4D'
 
+        case 'Paid':
+            return '#0EDD4D'
+
         case 'Completed':
             return '#0EDD4D'
 

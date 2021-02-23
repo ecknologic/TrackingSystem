@@ -1,14 +1,14 @@
 import React from 'react';
 
-const NoContent = ({ content }) => {
+const NoContent = ({ content, style }) => {
     return (
-        <div style={style} id='no-content'>
+        <div style={{ ...defaultStyle, ...style }} className='no-content'>
             {content}
         </div>
     )
 }
 
-const style = {
+const defaultStyle = {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',

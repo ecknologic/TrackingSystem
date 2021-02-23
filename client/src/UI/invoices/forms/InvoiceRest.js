@@ -2,10 +2,12 @@ import React, { useEffect } from 'react';
 import InputLabel from '../../../components/InputLabel';
 import CustomTextArea from '../../../components/CustomTextArea';
 import { resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
+import InputValue from '../../../components/InputValue';
 
-const InvoiceRestForm = ({ data, errors, onChange }) => {
+const InvoiceRestForm = ({ data, billingAddress, errors, onChange }) => {
 
     const { TAndC } = data
+    const { emailLabel } = billingAddress
 
     useEffect(() => {
         resetTrackForm()
@@ -28,10 +30,8 @@ const InvoiceRestForm = ({ data, errors, onChange }) => {
             </div>
             <div className='row'>
                 <div className='input-container stretch'>
-                    <InputLabel name='Email To' error={errors.TAndC} />
-                    <div className='checkbox-container'>
-                        <span className='text'>{`Customer Name <customer@gmail.com>`}</span>
-                    </div>
+                    <InputLabel name='Email To' error={errors.emailId} />
+                    <InputValue size='large' value={emailLabel} />
                 </div>
             </div>
         </div>

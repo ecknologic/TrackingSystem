@@ -663,9 +663,8 @@ router.get("/getCustomerBillingAddress/:customerId", (req, res) => {
     else {
       if (data.length) {
         let result = data[0]
-        result.isLocal = result.gstNo ? result.gstNo.startsWith('36') : false
-        result.emailId = `${result.customerName} <${result.EmailId}>`
-        delete result.EmailId
+        result.isLocal = result.gstNo.startsWith('36')
+        result.emailLabel = `${result.customerName} <${result.EmailId}>`
         res.json(result)
       }
       else res.json(data)

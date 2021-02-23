@@ -22,10 +22,11 @@ invoiceQueries.createInvoice = (input, callback) => {
 invoiceQueries.saveInvoiceProducts = (input, callback) => {
     const { invoiceId = 1, products } = input
     // const sql = products.map(item => `(${invoiceId},${String(item.productName)}, ${item.productPrice}, ${item.discount}, ${item.quantity}, ${item.tax})`)
-    const sql = products.map(item => "('" + invoiceId + "', '" + item.productName + "', " + item.productPrice + ", " + item.discount + ", " + item.quantity + ", " + item.tax + ")")
-    let query = "insert into invoiceProductsDetails (invoiceId, productName, productPrice, discount, quantity, tax) values " + sql;
+    const sql = products.map(item => "(" + invoiceId + ", '" + item.productName + "', " + item.productPrice + ", " + item.discount + ", " + item.quantity + ", " + item.tax + ", " + item.cgst + ", " + item.sgst + ", " + item.igst + ")")
+    let query = "insert into invoiceProductsDetails (invoiceId, productName, productPrice, discount, quantity, tax,cgst,sgst,igst) values " + sql;
     // var gstProofImage = Buffer.from(gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
     // let requestBody = [invoiceId, productName, productPrice, discount, quantity, tax]
+    console.log(query)
     executeGetQuery(query, callback)
 }
 module.exports = invoiceQueries

@@ -12,13 +12,14 @@
     "dayjs": "^1.9.7",
     "node-sass": "^4.14.1",
     "react": "^17.0.1",
-    "react-dom": "^17.0.1",
     "react-custom-scrollbars-2": "^4.2.4",
+    "react-dom": "^17.0.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.1",
-    "web-vitals": "^0.2.4",
     "react-slick": "^0.27.13",
-    "slick-carousel": "^1.8.1"
+    "slick-carousel": "^1.8.1",
+    "uuid": "^8.3.2",
+    "web-vitals": "^0.2.4"
   },
   "scripts": {
     "start": "SET REACT_APP_API_HOST=http://localhost:8888/&&react-scripts start",

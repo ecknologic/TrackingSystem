@@ -195,6 +195,7 @@ const NotificationSvgGrey = () => <NotificationComponent color={greyColor} />
 const ChatSvgGrey = () => <ChatComponent color={greyColor} />
 const DocSvgWhite = () => <DocComponent color={whiteColor} />
 const DocSvgLight = () => <DocComponent color={secondaryColor} />
+const DocSvgGrey = () => <DocComponent color={greyColor} />
 const DocSvg = () => <DocComponent color={primaryColor} />
 const MoreSvgGrey = () => <MoreComponent color={greyColor} />
 const EyeSvgWhite = () => <EyeComponent color={whiteColor} />
@@ -240,6 +241,7 @@ export const NotificationIconGrey = props => <Icon component={NotificationSvgGre
 export const ChatIconGrey = props => <Icon component={ChatSvgGrey} {...props} />
 export const DocIconWhite = props => <Icon component={DocSvgWhite} {...props} />
 export const DocIconLight = props => <Icon component={DocSvgLight} {...props} />
+export const DocIconGrey = props => <Icon component={DocSvgGrey} {...props} />
 export const DocIcon = props => <Icon component={DocSvg} {...props} />
 export const MoreIconGrey = props => <Icon component={MoreSvgGrey} {...props} />
 export const EyeIconWhite = props => <Icon component={EyeSvgWhite} {...props} />
