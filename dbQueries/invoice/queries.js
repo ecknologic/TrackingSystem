@@ -7,7 +7,7 @@ invoiceQueries.getInvoices = async (callback) => {
 }
 
 invoiceQueries.getInvoiceById = async (invoiceId, callback) => {
-    let query = `select i.*,JSON_ARRAYAGG(json_object('key',p.id,'discount',p.discount,'productName',p.productName,'productPrice',p.productPrice,'quantity',p.quantity,'tax',p.tax,'amount',p.amount,'cgst',p.cgst,'sgst',p.sgst,'igst',p.igst)) as products from Invoice i INNER JOIN invoiceProductsDetails p ON i.invoiceId=p.invoiceId where i.invoiceId=?`;
+    let query = `select i.*,JSON_ARRAYAGG(json_object('key',p.id,'discount',p.discount,'productName',p.productName,'productPrice',p.productPrice,'quantity',p.quantity,'tax',p.tax,'amount',p.amount,'cgst',p.cgst,'sgst',p.sgst,'igst',p.igst)) as products from Invoice i INNER JOIN invoiceProductsDetails p ON i.invoiceId=p.invoiceId where i.invoiceId=? AND p.deleted=0`;
     return executeGetParamsQuery(query, [invoiceId], callback)
 }
 
@@ -40,16 +40,31 @@ invoiceQueries.updateInvoice = (input, callback) => {
 }
 
 invoiceQueries.updateInvoiceProducts = (input, callback) => {
-    const { products } = input
+    const { invoiceId, products } = input
     for (let i = 0; i < products.length; i++) {
-        const { productName, productPrice, discount, quantity, tax, cgst, sgst, igst, amount, key } = products[i]
-        let query = "update invoiceProductsDetails SET productName=?, productPrice=?, discount=?, quantity=?, tax=?,cgst=?,sgst=?,igst=?,amount=? WHERE id=?";
-        if (i === products.length - 1) {
-            return executeGetParamsQuery(query, [productName, productPrice, discount, quantity, tax, cgst, sgst, igst, amount, key], callback)
+        const { productName, productPrice, discount, quantity, tax, cgst, sgst, igst, amount, key, isNew = 0 } = products[i]
+        if (isNew == 1) {
+            let query = "insert into invoiceProductsDetails (invoiceId, productName, productPrice, discount, quantity, tax,cgst,sgst,igst,amount)";
+            let requestBody = [invoiceId, productName, productPrice, discount, quantity, tax, cgst, sgst, igst, amount]
+            if (i === products.length - 1) {
+                executePostOrUpdateQuery(query, requestBody, callback)
+            } else {
+                executePostOrUpdateQuery(query, requestBody)
+            }
         } else {
-            executeGetParamsQuery(query, [productName, productPrice, discount, quantity, tax, cgst, sgst, igst, amount, key])
+            let query = "update invoiceProductsDetails SET productName=?, productPrice=?, discount=?, quantity=?, tax=?,cgst=?,sgst=?,igst=?,amount=? WHERE id=?";
+            if (i === products.length - 1) {
+                return executeGetParamsQuery(query, [productName, productPrice, discount, quantity, tax, cgst, sgst, igst, amount, key], callback)
+            } else {
+                executeGetParamsQuery(query, [productName, productPrice, discount, quantity, tax, cgst, sgst, igst, amount, key])
+            }
         }
     }
     // const sql = products.map(item => "('" + item.productName + "', " + item.productPrice + ", " + item.discount + ", " + item.quantity + ", " + item.tax + ", " + item.cgst + ", " + item.sgst + ", " + item.igst + ", " + item.amount + ", " + item.key + ")")
+}
+
+invoiceQueries.deleteInvoiceProducts = (ids, callback) => {
+    let query = "update invoiceProductsDetails SET deleted=? WHERE id IN (?)";
+    executePostOrUpdateQuery(query, [ids], callback)
 }
 module.exports = invoiceQueries

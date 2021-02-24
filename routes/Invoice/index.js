@@ -27,6 +27,12 @@ router.get('/getInvoiceId', (req, res) => {
         else res.send(`INV00${results[0].invoiceId + 1}`);
     });
 });
+router.put('/deleteInvoiceProducts', (req, res) => {
+    invoiceQueries.deleteInvoiceProducts(req.body.deleted, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.send("Deleted successfully");
+    });
+});
 router.post("/createInvoice", (req, res) => {
     let { customerId, invoiceId, customerName, organizationName, address, gstNo, panNo, mobileNumber, products } = req.body
     let obj = {
