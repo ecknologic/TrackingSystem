@@ -6,9 +6,9 @@ import PanelDropdown from './PanelDropdown';
 import ReportsDropdown from './ReportsDropdown';
 import CustomRangeInput from './CustomRangeInput';
 import { calendarMenu, calendarOptions, shiftMenu } from '../assets/fixtures';
-import { disableFutureDates } from '../utils/Functions';
 const fn = () => { }
 const todayString = 'Today'
+const tillNowString = 'Till Now'
 const weekString = 'This Week'
 const monthString = 'This Month'
 const customString = 'Date Range'

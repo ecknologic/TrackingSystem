@@ -206,7 +206,7 @@ function billingTable(doc, invoice) {
     const item = invoice.items.length ? invoice.items[0] : {}
     const { customerId = "", customerName = "", organizationName = "", address1 = "", address = "", gstNo = "", mobileNumber = "" } = item
     const billingInfoTop = 160;
-    const statusCode = gstNo.slice(0, 2)
+    const statusCode = (gstNo || '').slice(0, 2)
 
     doc
         .text("Details of receiver ( Billed to)", 30, billingInfoTop + 5)

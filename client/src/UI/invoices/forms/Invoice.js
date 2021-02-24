@@ -9,11 +9,10 @@ import SelectInput from '../../../components/SelectInput';
 import CustomTextArea from '../../../components/CustomTextArea';
 import CustomDateInput from '../../../components/CustomDateInput';
 import { resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
-const APIDATEFORMAT = 'YYYY-MM-DD'
 
 const InvoiceForm = ({ data, salesPersonOptions, billingAddress, customerOptions, errors, onChange }) => {
 
-    const { customerId, salesPerson, poNo, hsnCode, mailSubject, invoiceNumber, invoiceDate, dueDate } = data
+    const { customerId, salesPerson, poNo, hsnCode, mailSubject, invoiceId, invoiceDate, dueDate } = data
     const { loading, loaded, address, gstNo } = billingAddress
 
     useEffect(() => {
@@ -54,7 +53,7 @@ const InvoiceForm = ({ data, salesPersonOptions, billingAddress, customerOptions
                             <div className='row'>
                                 <div className='input-container'>
                                     <InputLabel name='GST Number' />
-                                    <InputValue size='large' value={gstNo} />
+                                    <InputValue size='large' value={gstNo || 'NA'} />
                                 </div>
                             </div>
                         </>
@@ -62,7 +61,7 @@ const InvoiceForm = ({ data, salesPersonOptions, billingAddress, customerOptions
             }
             <div className='row'>
                 <div className='input-container'>
-                    <InputLabel name='Sales Person' error={errors.salesPerson} mandatory />
+                    <InputLabel name='Sales Person' error={errors.salesPerson} />
                     <SelectInput track
                         options={salesPersonOptions} value={salesPerson}
                         error={errors.salesPerson} onSelect={(value) => onChange(value, 'salesPerson')}
@@ -70,7 +69,7 @@ const InvoiceForm = ({ data, salesPersonOptions, billingAddress, customerOptions
                 </div>
                 <div className='input-container'>
                     <InputLabel name="Invoice Number" />
-                    <CustomInput value={invoiceNumber} disabled placeholder="Invoice Number" />
+                    <CustomInput value={invoiceId} disabled placeholder="Invoice Number" />
                 </div>
             </div>
             <div className='row'>
@@ -79,7 +78,7 @@ const InvoiceForm = ({ data, salesPersonOptions, billingAddress, customerOptions
                     <CustomDateInput
                         track
                         value={invoiceDate} error={errors.invoiceDate}
-                        onChange={(value) => onChange(dayjs(value).format(APIDATEFORMAT), 'invoiceDate')}
+                        onChange={(value) => onChange(value, 'invoiceDate')}
                     />
                 </div>
                 <div className='input-container'>
@@ -87,7 +86,7 @@ const InvoiceForm = ({ data, salesPersonOptions, billingAddress, customerOptions
                     <CustomDateInput
                         track error={errors.dueDate}
                         value={dueDate} disabledDate={disableDates}
-                        onChange={(value) => onChange(dayjs(value).format(APIDATEFORMAT), 'dueDate')}
+                        onChange={(value) => onChange(value, 'dueDate')}
                     />
                 </div>
             </div>

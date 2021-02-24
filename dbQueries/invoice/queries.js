@@ -7,7 +7,7 @@ invoiceQueries.getInvoices = async (callback) => {
 }
 
 invoiceQueries.getInvoiceById = async (invoiceId, callback) => {
-    let query = `select i.*,JSON_ARRAYAGG(json_object('key',p.id,'discount',p.discount,'productName',p.productName,'productPrice',p.productPrice,'quantity',p.quantity,'tax',p.tax,'amount',p.amount,'cgst',p.cgst,'sgst',p.sgst,'igst',p.igst)) as products from Invoice i INNER JOIN invoiceProductsDetails p ON i.invoiceId=p.invoiceId where i.invoiceId=? AND p.deleted=0`;
+    let query = `select i.*,JSON_ARRAYAGG(json_object('key',p.id,'discount',p.discount,'productName',p.productName,'productPrice',ROUND(p.productPrice,1),'quantity',p.quantity,'tax',p.tax,'amount',p.amount,'cgst',p.cgst,'sgst',p.sgst,'igst',p.igst)) as products from Invoice i INNER JOIN invoiceProductsDetails p ON i.invoiceId=p.invoiceId where i.invoiceId=? AND p.deleted=0`;
     return executeGetParamsQuery(query, [invoiceId], callback)
 }
 
@@ -44,7 +44,7 @@ invoiceQueries.updateInvoiceProducts = (input, callback) => {
     for (let i = 0; i < products.length; i++) {
         const { productName, productPrice, discount, quantity, tax, cgst, sgst, igst, amount, key, isNew = 0 } = products[i]
         if (isNew == 1) {
-            let query = "insert into invoiceProductsDetails (invoiceId, productName, productPrice, discount, quantity, tax,cgst,sgst,igst,amount)";
+            let query = "insert into invoiceProductsDetails (invoiceId, productName, productPrice, discount, quantity, tax,cgst,sgst,igst,amount) values(?,?,?,?,?,?,?,?,?,?)";
             let requestBody = [invoiceId, productName, productPrice, discount, quantity, tax, cgst, sgst, igst, amount]
             if (i === products.length - 1) {
                 executePostOrUpdateQuery(query, requestBody, callback)
@@ -64,7 +64,11 @@ invoiceQueries.updateInvoiceProducts = (input, callback) => {
 }
 
 invoiceQueries.deleteInvoiceProducts = (ids, callback) => {
-    let query = "update invoiceProductsDetails SET deleted=? WHERE id IN (?)";
+    let query = "update invoiceProductsDetails SET deleted=1 WHERE id IN (?)";
     executePostOrUpdateQuery(query, [ids], callback)
+}
+invoiceQueries.updateInvoiceStatus = ({ invoiceId, status }, callback) => {
+    let query = "update Invoice SET status=? WHERE invoiceId=?";
+    executePostOrUpdateQuery(query, [status, invoiceId], callback)
 }
 module.exports = invoiceQueries

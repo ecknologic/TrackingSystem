@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { message } from 'antd';
 import { v4 as uuidv4 } from 'uuid';
+import { useHistory, useParams } from 'react-router-dom';
 import React, { useEffect, useMemo, useState } from 'react';
 import InvoiceForm from '../forms/Invoice';
 import { http } from '../../../modules/http';
@@ -13,9 +14,13 @@ import CustomButton from '../../../components/CustomButton';
 import { isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
 import { validateNumber, validateInvoiceValues } from '../../../utils/validations';
 import { getProductOptions, getCustomerOptions, getStaffOptions, getDDownOptions } from '../../../assets/fixtures';
+import dayjs from 'dayjs';
+const APIDATEFORMAT = 'YYYY-MM-DD'
 
 const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
-    const defaultValues = useMemo(() => ({ invoiceDate: TODAYDATE }), [])
+    const defaultValues = useMemo(() => ({ invoiceDate: TODAYDATE, hsnCode: 22011010 }), [])
+    const history = useHistory()
+    const { invoiceId } = useParams()
     const [formData, setFormData] = useState(defaultValues)
     const [GSTList, setGSTList] = useState([])
     const [formErrors, setFormErrors] = useState({})
@@ -24,8 +29,9 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
     const [salesPersonList, setSalesPersonList] = useState([])
     const [customerList, setCustomerList] = useState([])
     const [billingAddress, setBillingAddress] = useState({})
-    const [dataSource, setDataSource] = useState(initData)
+    const [dataSource, setDataSource] = useState(editMode ? [] : initData)
     const [shake, setShake] = useState(false)
+    const [deleted, setDeleted] = useState([])
     const [loading, setLoading] = useState(false)
 
     const GSTOptions = useMemo(() => getDDownOptions(GSTList), [GSTList])
@@ -38,7 +44,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
 
     useEffect(() => {
         if (editMode) getInvoice()
-        else getInvoiceNumber()
+        else getInvoiceId()
         getCustomerList()
         getSalesPersonList()
         getProductList()
@@ -54,67 +60,27 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
     }, [billingAddress.isLocal])
 
     const getInvoice = async () => {
-        setLoading(true)
-        const url = '/invoice/getInvoiceId'
-
-        const data = {
-            "invoiceDate": "2021-02-23",
-            "customerId": 248,
-            "salesPerson": 26,
-            "dueDate": "2021-02-26T03:31:13.580Z",
-            "hsnCode": "12345",
-            "poNo": "12",
-            "mailSubject": "Hello",
-            "TAndC": "hi",
-            "invoiceNumber": "INV004",
-            "emailIds": "intel@gmail.com",
-            "products": [
-                {
-                    "key": "2b90d02",
-                    "productName": "20 Lt Bibo Water Jar",
-                    "quantity": 1,
-                    "productPrice": 53.57,
-                    "discount": 0,
-                    "tax": 12,
-                    "amount": 60,
-                    "cgst": 0,
-                    "sgst": 0,
-                    "igst": 0.77
-                },
-                {
-                    "key": "415bf0d",
-                    "productName": "500 ML Bibo Water Cases - 24 Bottles",
-                    "quantity": 1,
-                    "productPrice": 244.1,
-                    "discount": 0,
-                    "tax": 18,
-                    "amount": 288.04,
-                    "cgst": 0,
-                    "sgst": 0,
-                    "igst": 7.91
-                }
-            ]
-        }
+        const url = `/invoice/getInvoiceById/${invoiceId}`
 
         try {
-            // const data = await http.GET(axios, url, config)
-
-            setTimeout(() => {
-                setFormData(data)
-                setHeader({ title: data.invoiceNumber })
-                getBillingAddress(data.customerId)
-                setDataSource(data.products)
-                setLoading(false)
-            }, 1000)
+            setLoading(true)
+            const [data] = await http.GET(axios, url, config)
+            const { products, ...rest } = data
+            const { invoiceId, customerId } = rest
+            getBillingAddress(customerId)
+            setHeader({ title: `Invoice - ${invoiceId}` })
+            setDataSource(JSON.parse(products))
+            setFormData(rest)
+            setLoading(false)
         } catch (error) { }
     }
 
-    const getInvoiceNumber = async () => {
+    const getInvoiceId = async () => {
         const url = '/invoice/getInvoiceId'
 
         try {
-            const invoiceNumber = await http.GET(axios, url, config)
-            setFormData(prev => ({ ...prev, invoiceNumber }))
+            const invoiceId = await http.GET(axios, url, config)
+            setFormData(prev => ({ ...prev, invoiceId }))
         } catch (error) { }
     }
 
@@ -168,12 +134,16 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
 
     const handleAddProduct = () => {
         resetProductErr()
-        const newData = { ...initData()[0], key: uuidv4().slice(0, 7) };
+        const newData = { ...initData()[0], key: uuidv4().slice(0, 7), isNew: editMode ? 1 : 0 };
         setDataSource([...dataSource, newData])
     };
 
     const handleProductsDelete = (key) => {
         resetProductErr()
+        if (editMode) {
+            deleted.push(key)
+            setDeleted(deleted)
+        }
         const filtered = dataSource.filter((item) => item.key !== key)
         setDataSource(filtered)
     }
@@ -214,12 +184,12 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
         const { isLocal } = billingAddress
         let { quantity, productPrice, discount, tax, cgst, sgst, igst } = row
         const priceAfterDiscount = productPrice - (productPrice / 100 * discount)
-        const taxAmount = (priceAfterDiscount / 100 * tax)
-        const priceAfterTax = priceAfterDiscount + taxAmount
+        const priceAfterTax = priceAfterDiscount + (priceAfterDiscount / 100 * tax)
         const amount = Number((priceAfterTax * quantity).toFixed(2))
-        cgst = isLocal ? Number((taxAmount * tax / 200).toFixed(2)) : 0.00
-        sgst = isLocal ? Number((taxAmount * tax / 200).toFixed(2)) : 0.00
-        igst = isLocal ? 0.00 : Number((taxAmount * tax / 100).toFixed(2))
+        const totalTax = (amount / 100 * tax)
+        cgst = isLocal ? Number((totalTax * tax / 200).toFixed(2)) : 0.00
+        sgst = isLocal ? Number((totalTax * tax / 200).toFixed(2)) : 0.00
+        igst = isLocal ? 0.00 : Number((totalTax * tax / 100).toFixed(2))
         return { amount, cgst, sgst, igst }
     };
 
@@ -242,6 +212,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
         const formErrors = validateInvoiceValues({ ...formData, products: dataSource });
         const { EmailId: emailId, customerName, panNo, mobileNumber, address, gstNo } = billingAddress
         const { totalAmount } = footerValues
+        const { invoiceDate, dueDate } = formData
 
         if (!isEmpty(formErrors)) {
             setShake(true)
@@ -250,21 +221,36 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
             return
         }
 
+
+        if (editMode && !isEmpty(deleted)) {
+            const url = '/invoice/deleteInvoiceProducts'
+            const body = { deleted }
+            try {
+                http.PUT(axios, url, body, config)
+            } catch (error) { }
+        }
+
         let body = {
-            ...formData, mailIds: emailId, products: dataSource,
+            ...formData, invoiceDate: dayjs(invoiceDate).format(APIDATEFORMAT),
+            mailIds: emailId, products: dataSource, dueDate: dayjs(dueDate).format(APIDATEFORMAT),
             totalAmount, customerName, panNo, mobileNumber, address, gstNo
         }
-        const url = '/invoice/createInvoice'
-        const options = { item: 'Invoice', v1Ing: 'Creating', v2: 'created' }
+
+        const url = getUrl(editMode)
+        const options = { item: 'Invoice', ...getVerbs(editMode) }
 
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
             await http.POST(axios, url, body, config)
             showToast(options)
-            goToTab('1')
-            resetForm()
-            getInvoiceNumber()
+            if (!editMode) {
+                resetForm()
+                goToTab('1')
+                getInvoiceId()
+            } else {
+                history.push('/invoices')
+            }
         } catch (error) {
             message.destroy()
             if (!axios.isCancel(error)) {
@@ -325,6 +311,22 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
             </div>
         </div>
     )
+}
+
+const getVerbs = (editMode) => {
+    let v1Ing = 'Creating'
+    let v2 = 'created'
+    if (editMode) {
+        v1Ing = 'Updating'
+        v2 = 'updated'
+    }
+
+    return { v1Ing, v2 }
+}
+const getUrl = (editMode) => {
+    const createUrl = '/invoice/createInvoice'
+    const updateUrl = '/invoice/updateInvoice'
+    return editMode ? updateUrl : createUrl
 }
 const initData = () => ([{
     key: uuidv4().slice(0, 7),

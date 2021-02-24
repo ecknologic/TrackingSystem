@@ -33,6 +33,12 @@ router.put('/deleteInvoiceProducts', (req, res) => {
         else res.send("Deleted successfully");
     });
 });
+router.put('/updateInvoiceStatus', (req, res) => {
+    invoiceQueries.updateInvoiceStatus(req.body, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.send("Updated successfully");
+    });
+});
 router.post("/createInvoice", (req, res) => {
     let { customerId, invoiceId, customerName, organizationName, address, gstNo, panNo, mobileNumber, products } = req.body
     let obj = {
@@ -129,9 +135,9 @@ const updateInvoice = (req, res, pdfData) => {
     invoiceQueries.updateInvoice(req.body, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
-            let { products } = req.body;
+            let { products, invoiceId } = req.body;
             if (products.length) {
-                invoiceQueries.updateInvoiceProducts({ products }, (err, data) => {
+                invoiceQueries.updateInvoiceProducts({ products, invoiceId }, (err, data) => {
                     if (err) res.status(500).json(dbError(err));
                     else res.json({ message: 'Invoice updated successfully' })
                 })

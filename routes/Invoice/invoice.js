@@ -294,7 +294,7 @@ function generateTableRow(
 function billingTable(doc, invoice) {
     const item = invoice.items.length ? invoice.items[0] : {}
     const { customerId = "", customerName = "", panNo = "", organizationName = "", address1 = "", address = "", gstNo = "", mobileNumber = "" } = item
-    const stateCode = gstNo.substring(0, 2)
+    const stateCode = (gstNo || '').substring(0, 2)
     const billingInfoTop = 170;
     // const address = "1st Floor Solitaire Building Plot no 14 & 15,software unit layout, Madhapur , Hyderabad,500081 "
 
