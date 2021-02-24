@@ -68,7 +68,7 @@ const CustomersOverview = () => {
                 <div className='sub-title green'>Active Customers  {totalCustomers - totalInactiveCustomers || 0}</div>
                 <div className='sub-title'>Inactive Customers  {totalInactiveCustomers || 0}</div>
             </div>
-            <PanelHeader title='Customers Overview' onSelect={handleOperation} beginning showShow />
+            <PanelHeader title='Customers Overview' onSelect={handleOperation} showShow />
             <div className='panel-body quality-testing-panel'>
                 <Slider className='dashboard-slider' {...props} >
                     <CustomerOverviewCard compareText={corporateCustomersCompareText} percent={corporateCustomersPercent} total={totalCorporateCustomers} pending={pendingCorporateCustomers} title='Corporate Customers' onClick={goToCustomers} />

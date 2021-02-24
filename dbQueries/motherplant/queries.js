@@ -20,12 +20,23 @@ motherPlantDbQueries.getProductsByBatch = async (input, callback) => {
     return executeGetParamsQuery(query, [departmentId, batchNo], callback)
 }
 motherPlantDbQueries.getTotalProduction = async (input, callback) => {
-    let { departmentId, startDate, endDate } = input
-    let query = `SELECT SUM(p.product20L) AS product20LCount,SUM(p.product1L) AS product1LCount,SUM(p.product500ML) product500MLCount,SUM(p.product300ML) product300MLCount,SUM(p.product2L) product2LCount FROM production p WHERE DATE(productionDate)>=? AND DATE(productionDate)<=?`;
-    let options = [startDate, endDate]
+    let { departmentId, startDate, endDate, fromStart } = input
+    let query = `SELECT SUM(p.product20L) AS product20LCount,SUM(p.product1L) AS product1LCount,SUM(p.product500ML) product500MLCount,SUM(p.product300ML) product300MLCount,SUM(p.product2L) product2LCount FROM production p WHERE DATE(productionDate)<=?`;
+    let options = [endDate]
+
+    if (fromStart !== 'true') {
+        query = `SELECT SUM(p.product20L) AS product20LCount,SUM(p.product1L) AS product1LCount,SUM(p.product500ML) product500MLCount,SUM(p.product300ML) product300MLCount,SUM(p.product2L) product2LCount FROM production p WHERE DATE(productionDate)>=? AND DATE(productionDate)<=?`;
+        options = [startDate, endDate]
+    }
+
     if (departmentId != 'All') {
-        query = `SELECT SUM(p.product20L) AS product20LCount,SUM(p.product1L) AS product1LCount,SUM(p.product500ML) product500MLCount,SUM(p.product300ML) product300MLCount,SUM(p.product2L) product2LCount FROM production p WHERE departmentId=? AND DATE(productionDate)>=? AND DATE(productionDate)<=?`;
-        options = [departmentId, startDate, endDate]
+        query = `SELECT SUM(p.product20L) AS product20LCount,SUM(p.product1L) AS product1LCount,SUM(p.product500ML) product500MLCount,SUM(p.product300ML) product300MLCount,SUM(p.product2L) product2LCount FROM production p WHERE departmentId=? AND DATE(productionDate)<=?`;
+        options = [departmentId, endDate]
+
+        if (fromStart !== 'true') {
+            query = `SELECT SUM(p.product20L) AS product20LCount,SUM(p.product1L) AS product1LCount,SUM(p.product500ML) product500MLCount,SUM(p.product300ML) product300MLCount,SUM(p.product2L) product2LCount FROM production p WHERE departmentId=? AND DATE(productionDate)>=? AND DATE(productionDate)<=?`;
+            options = [departmentId, startDate, endDate]
+        }
     }
     return executeGetParamsQuery(query, options, callback)
 }
@@ -146,7 +157,11 @@ motherPlantDbQueries.getQCTestResults = async (input, callback) => {
     let options = [endDate]
     let query = `SELECT JSON_ARRAYAGG(JSON_OBJECT('phLevel',ROUND(q.phLevel,1),'tds',ROUND(q.TDS,1),'ozoneLevel',ROUND(q.ozoneLevel,1),'qcLevel',q.qcLevel,'testResult',q.testResult,'managerName',q.managerName,'testingDate',q.testedDate)) levels,p.batchId batchId, p.shiftType,p.productionQcId,d.departmentName FROM qualitycheck q INNER JOIN productionQC p ON q.productionQcId=p.productionQcId INNER JOIN departmentmaster d ON p.departmentId=d.departmentId WHERE q.qcLevel=2 AND DATE(q.testedDate)<=? GROUP BY q.productionQcId`;
 
-    if (departmentId !== 'All' && shiftType && shiftType !== 'All') {
+    if (departmentId === 'All' && shiftType === 'All' && fromStart != 'true') {
+        options = [startDate, endDate]
+        query = `SELECT JSON_ARRAYAGG(JSON_OBJECT('phLevel',ROUND(q.phLevel,1),'tds',ROUND(q.TDS,1),'ozoneLevel',ROUND(q.ozoneLevel,1),'qcLevel',q.qcLevel,'testResult',q.testResult,'managerName',q.managerName,'testingDate',q.testedDate)) levels,p.batchId batchId, p.shiftType,p.productionQcId,d.departmentName FROM qualitycheck q INNER JOIN productionQC p ON q.productionQcId=p.productionQcId INNER JOIN departmentmaster d ON p.departmentId=d.departmentId WHERE q.qcLevel=2 AND DATE(q.testedDate)>=? AND DATE(q.testedDate)<=? GROUP BY q.productionQcId`;
+    }
+    else if (departmentId !== 'All' && shiftType && shiftType !== 'All') {
         options = [departmentId, shiftType, endDate]
         query = `SELECT JSON_ARRAYAGG(JSON_OBJECT('phLevel',ROUND(q.phLevel,1),'tds',ROUND(q.TDS,1),'ozoneLevel',ROUND(q.ozoneLevel,1),'qcLevel',q.qcLevel,'testResult',q.testResult,'managerName',q.managerName,'testingDate',q.testedDate)) levels,p.batchId batchId, p.shiftType,p.productionQcId,d.departmentName FROM qualitycheck q INNER JOIN productionQC p ON q.productionQcId=p.productionQcId INNER JOIN departmentmaster d ON p.departmentId=d.departmentId WHERE q.departmentId=? AND q.qcLevel=2 AND p.shiftType=? AND DATE(q.testedDate)<=? GROUP BY q.productionQcId`;
         if (fromStart !== 'true') {
@@ -208,23 +223,44 @@ motherPlantDbQueries.getTotalProductionDetails = async (input, callback) => {
     return executeGetParamsQuery(query, options, callback)
 }
 motherPlantDbQueries.getTotalProductionByDate = async (input, callback) => {
-    const { departmentId, startDate, endDate, shiftType } = input
-    let options = [departmentId, startDate, endDate]
-    let query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM production p WHERE departmentId=? AND DATE(`productionDate`)>=? AND DATE(`productionDate`)<=?";
+    const { departmentId, startDate, endDate, shiftType, fromStart } = input
+    let options = [departmentId, endDate]
+    let query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM production p WHERE departmentId=? AND DATE(`productionDate`)<=?";
+
+    if (fromStart != 'true') {
+        options = [departmentId, startDate, endDate]
+        query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM production p WHERE departmentId=? AND DATE(`productionDate`)>=? AND DATE(`productionDate`)<=?";
+    }
+
     if (input.shiftType !== 'All') {
-        options = [departmentId, startDate, endDate, shiftType]
-        query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM production p WHERE departmentId=? AND DATE(`productionDate`)>=? AND DATE(`productionDate`)<=? AND shiftType=?";
+        options = [departmentId, endDate, shiftType]
+        query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM production p WHERE departmentId=? AND DATE(`productionDate`)<=? AND shiftType=?";
+
+        if (fromStart != 'true') {
+            options = [departmentId, startDate, endDate, shiftType]
+            query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM production p WHERE departmentId=? AND DATE(`productionDate`)>=? AND DATE(`productionDate`)<=? AND shiftType=?";
+        }
     }
     return executeGetParamsQuery(query, options, callback)
 }
 motherPlantDbQueries.getTotalProductionChangeByDate = async (input, callback) => {
-    const { departmentId, startDate, endDate, shiftType, type } = input
+    const { departmentId, startDate, endDate, shiftType, type, fromStart } = input
     const { startDate: newStartDate, endDate: newEndDate } = dateComparisions(startDate, endDate, type)
-    let options = [departmentId, newStartDate, newEndDate]
-    let query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM production p WHERE departmentId=? AND DATE(`productionDate`)>=? AND DATE(`productionDate`)<=?";
+    let options = [departmentId, newEndDate]
+    let query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM production p WHERE departmentId=? AND DATE(`productionDate`)<=?";
+
+    if (fromStart != 'true') {
+        options = [departmentId, newStartDate, newEndDate]
+        query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM production p WHERE departmentId=? AND DATE(`productionDate`)>=? AND DATE(`productionDate`)<=?";
+    }
+
     if (input.shiftType !== 'All') {
-        options = [departmentId, newStartDate, newEndDate, shiftType]
-        query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM production p WHERE departmentId=? AND DATE(`productionDate`)>=? AND DATE(`productionDate`)<=? AND shiftType=?";
+        options = [departmentId, newEndDate, shiftType]
+        query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM production p WHERE departmentId=? AND DATE(`productionDate`)<=? AND shiftType=?";
+        if (fromStart != 'true') {
+            options = [departmentId, newStartDate, newEndDate, shiftType]
+            query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM production p WHERE departmentId=? AND DATE(`productionDate`)>=? AND DATE(`productionDate`)<=? AND shiftType=?";
+        }
     }
     return executeGetParamsQuery(query, options, callback)
 }

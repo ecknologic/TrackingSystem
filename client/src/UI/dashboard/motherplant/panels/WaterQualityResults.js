@@ -44,7 +44,7 @@ const WaterQualityResults = () => {
 
     return (
         <>
-            <PanelHeader title='Water Quality Testing Results' onSelect={handleOperation} beginning showShow />
+            <PanelHeader title='Water Quality Testing Results' onSelect={handleOperation} showShow />
             <div className='panel-body quality-testing-panel'>
                 {
                     isEmpty(results) ? <NoContent content={<Empty />} />
