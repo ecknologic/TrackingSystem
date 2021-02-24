@@ -181,7 +181,7 @@ const Dashboard = ({ reFetch }) => {
     }
 
     const dataSource = useMemo(() => invoices.map((invoice) => {
-        const { invoiceId, createdDateTime, customerName, dueDate, status } = invoice
+        const { invoiceId, createdDateTime, totalAmount, customerName, dueDate, status } = invoice
 
         const options = [
             <Menu.Item key="view" icon={<EyeIconGrey />}>View</Menu.Item>,
@@ -194,6 +194,7 @@ const Dashboard = ({ reFetch }) => {
             key: invoiceId,
             invoiceId,
             customerName,
+            totalAmount,
             dueDate: dayjs(dueDate).format(DATEFORMAT),
             date: dayjs(createdDateTime).format(DATEFORMAT),
             status: renderStatus(status),

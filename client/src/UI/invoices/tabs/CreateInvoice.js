@@ -14,7 +14,7 @@ import { isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
 import { validateNumber, validateInvoiceValues } from '../../../utils/validations';
 import { getProductOptions, getCustomerOptions, getStaffOptions, getDDownOptions } from '../../../assets/fixtures';
 
-const CreateInvoice = ({ goToTab, editMode }) => {
+const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
     const defaultValues = useMemo(() => ({ invoiceDate: TODAYDATE }), [])
     const [formData, setFormData] = useState(defaultValues)
     const [GSTList, setGSTList] = useState([])
@@ -23,7 +23,6 @@ const CreateInvoice = ({ goToTab, editMode }) => {
     const [productList, setProductList] = useState([])
     const [salesPersonList, setSalesPersonList] = useState([])
     const [customerList, setCustomerList] = useState([])
-    const [invoiceNumber, setInvoiceNumber] = useState(null)
     const [billingAddress, setBillingAddress] = useState({})
     const [dataSource, setDataSource] = useState(initData)
     const [shake, setShake] = useState(false)
@@ -38,15 +37,10 @@ const CreateInvoice = ({ goToTab, editMode }) => {
     const config = { cancelToken: source.token }
 
     useEffect(() => {
-        if (editMode) {
-            getInvoice()
-        }
-    }, [])
-
-    useEffect(() => {
+        if (editMode) getInvoice()
+        else getInvoiceNumber()
         getCustomerList()
         getSalesPersonList()
-        getInvoiceNumber()
         getProductList()
         getGSTList()
 
@@ -61,20 +55,66 @@ const CreateInvoice = ({ goToTab, editMode }) => {
 
     const getInvoice = async () => {
         setLoading(true)
-        // const url = '/invoice/getInvoiceId'
+        const url = '/invoice/getInvoiceId'
 
-        // try {
-        //     const data = await http.GET(axios, url, config)
-        //     setInvoiceNumber(data)
-        // } catch (error) { }
+        const data = {
+            "invoiceDate": "2021-02-23",
+            "customerId": 248,
+            "salesPerson": 26,
+            "dueDate": "2021-02-26T03:31:13.580Z",
+            "hsnCode": "12345",
+            "poNo": "12",
+            "mailSubject": "Hello",
+            "TAndC": "hi",
+            "invoiceNumber": "INV004",
+            "emailIds": "intel@gmail.com",
+            "products": [
+                {
+                    "key": "2b90d02",
+                    "productName": "20 Lt Bibo Water Jar",
+                    "quantity": 1,
+                    "productPrice": 53.57,
+                    "discount": 0,
+                    "tax": 12,
+                    "amount": 60,
+                    "cgst": 0,
+                    "sgst": 0,
+                    "igst": 0.77
+                },
+                {
+                    "key": "415bf0d",
+                    "productName": "500 ML Bibo Water Cases - 24 Bottles",
+                    "quantity": 1,
+                    "productPrice": 244.1,
+                    "discount": 0,
+                    "tax": 18,
+                    "amount": 288.04,
+                    "cgst": 0,
+                    "sgst": 0,
+                    "igst": 7.91
+                }
+            ]
+        }
+
+        try {
+            // const data = await http.GET(axios, url, config)
+
+            setTimeout(() => {
+                setFormData(data)
+                setHeader({ title: data.invoiceNumber })
+                getBillingAddress(data.customerId)
+                setDataSource(data.products)
+                setLoading(false)
+            }, 1000)
+        } catch (error) { }
     }
 
     const getInvoiceNumber = async () => {
         const url = '/invoice/getInvoiceId'
 
         try {
-            const data = await http.GET(axios, url, config)
-            setInvoiceNumber(data)
+            const invoiceNumber = await http.GET(axios, url, config)
+            setFormData(prev => ({ ...prev, invoiceNumber }))
         } catch (error) { }
     }
 
@@ -200,7 +240,7 @@ const CreateInvoice = ({ goToTab, editMode }) => {
 
     const handleSubmit = async () => {
         const formErrors = validateInvoiceValues({ ...formData, products: dataSource });
-        const { EmailId: emailId } = billingAddress
+        const { EmailId: emailId, customerName, panNo, mobileNumber, address, gstNo } = billingAddress
         const { totalAmount } = footerValues
 
         if (!isEmpty(formErrors)) {
@@ -211,9 +251,8 @@ const CreateInvoice = ({ goToTab, editMode }) => {
         }
 
         let body = {
-            ...formData, invoiceNumber,
-            mailIds: emailId, products: dataSource,
-            totalAmount
+            ...formData, mailIds: emailId, products: dataSource,
+            totalAmount, customerName, panNo, mobileNumber, address, gstNo
         }
         const url = '/invoice/createInvoice'
         const options = { item: 'Invoice', v1Ing: 'Creating', v2: 'created' }
@@ -237,7 +276,8 @@ const CreateInvoice = ({ goToTab, editMode }) => {
     const resetForm = () => {
         setBtnDisabled(false)
         resetTrackForm()
-        setFormData({})
+        setFormData(defaultValues)
+        setDataSource(initData)
         setFormErrors({})
     }
 
@@ -252,7 +292,6 @@ const CreateInvoice = ({ goToTab, editMode }) => {
                 data={formData}
                 errors={formErrors}
                 customerList={customerList}
-                invoiceNumber={invoiceNumber}
                 billingAddress={billingAddress}
                 customerOptions={customerOptions}
                 salesPersonOptions={salesPersonOptions}
@@ -281,7 +320,7 @@ const CreateInvoice = ({ goToTab, editMode }) => {
                     app-create-btn footer-btn ${btnDisabled ? 'disabled' : ''} 
                     ${shake ? 'app-shake' : ''}
                 `}
-                    text='Create'
+                    text={editMode ? 'Update' : 'Create'}
                 />
             </div>
         </div>

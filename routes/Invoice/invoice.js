@@ -49,13 +49,14 @@ function generateCustomerInformation(doc, invoice) {
         .rect(25, 105, 545, 0)
 
     const customerInformationTop = 110;
+    const { invoiceId } = invoice
 
     doc
         .fontSize(10)
         .text("Original for receipient", 0, customerInformationTop, { align: "right" })
         .text("Duplicate for transporter", { align: "right" })
         .text("Triplicate for supplier", { align: "right" })
-        .text("Invoice No:", 40, customerInformationTop)
+        .text("Invoice No:" + invoiceId, 40, customerInformationTop)
         .font("Helvetica-Bold")
         .text(invoice.invoice_nr, 150, customerInformationTop)
         .font("Helvetica")
@@ -292,8 +293,8 @@ function generateTableRow(
 
 function billingTable(doc, invoice) {
     const item = invoice.items.length ? invoice.items[0] : {}
-    const { customerId = "", customerName = "", panNo = "", organizationName = "", address1 = "", address = "", gstNO = "", mobileNumber = "" } = item
-
+    const { customerId = "", customerName = "", panNo = "", organizationName = "", address1 = "", address = "", gstNo = "", mobileNumber = "" } = item
+    const stateCode = gstNo.substring(0, 2)
     const billingInfoTop = 170;
     // const address = "1st Floor Solitaire Building Plot no 14 & 15,software unit layout, Madhapur , Hyderabad,500081 "
 
@@ -310,16 +311,16 @@ function billingTable(doc, invoice) {
         .text(organizationName || customerName, 30, billingInfoTop + 30)
         .fontSize(8)
         .text(`${address} , Contact No: ${mobileNumber}`, 30, billingInfoTop + 42, { width: 200 })
-        .text(`GST NO: ${gstNO} `, 30, billingInfoTop + 80)
-        .text(`State Code: ${gstNO.substring(0, 2)}`, 190, billingInfoTop + 80)
+        .text(`GST NO: ${gstNo} `, 30, billingInfoTop + 80)
+        .text(`State Code: ${stateCode}`, 190, billingInfoTop + 80)
         .text(`PAN NO: ${panNo}`, 30, billingInfoTop + 100)
         .text(`PO NO:`, 30, billingInfoTop + 110)
         .fontSize(10)
         .text(organizationName || customerName, 310, billingInfoTop + 30)
         .fontSize(8)
         .text(`${address} , Contact No: ${mobileNumber}`, 310, billingInfoTop + 42, { width: 200 })
-        .text(`GST NO: ${gstNO} `, 310, billingInfoTop + 80)
-        .text(`State Code: ${gstNO.substring(0, 2)}`, 480, billingInfoTop + 80)
+        .text(`GST NO: ${gstNo} `, 310, billingInfoTop + 80)
+        .text(`State Code: ${stateCode}`, 480, billingInfoTop + 80)
         .text(`PAN NO: ${panNo}`, 310, billingInfoTop + 100)
         .text(`PO NO:`, 310, billingInfoTop + 110)
 
