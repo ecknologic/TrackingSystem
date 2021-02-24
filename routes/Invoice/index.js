@@ -31,6 +31,9 @@ router.post("/createInvoice", (req, res) => {
             if (i.productName.includes('20')) {
                 obj['20LCans'] = i.quantity
                 obj['price20L'] = i.productPrice
+            } else if (i.productName.includes('1L')) {
+                obj['1LBoxes'] = i.quantity
+                obj['price1L'] = i.productPrice
             } else if (i.productName.includes('500')) {
                 obj['500MLBoxes'] = i.quantity
                 obj['price500ML'] = i.productPrice

@@ -13,9 +13,8 @@ import '../../../sass/employees.scss'
 const EditInvoice = () => {
     const history = useHistory()
     const { pathname } = useLocation()
-    const [headerContent] = useState({})
+    const [headerContent, setHeaderContent] = useState({})
     const [confirmModal, setConfirmModal] = useState(false)
-
 
     const mainUrl = useMemo(() => getMainPathname(pathname), [pathname])
     const source = useMemo(() => axios.CancelToken.source(), []);
@@ -49,7 +48,7 @@ const EditInvoice = () => {
         <Fragment>
             <Header data={headerContent} onClick={handleBack} />
             <div className='invoice-content'>
-                <CreateInvoice editMode />
+                <CreateInvoice editMode setHeader={setHeaderContent} />
             </div>
             <QuitModal
                 visible={confirmModal}

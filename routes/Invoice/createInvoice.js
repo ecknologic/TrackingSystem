@@ -204,8 +204,9 @@ function generateInvoiceTable(doc, invoice) {
 }
 function billingTable(doc, invoice) {
     const item = invoice.items.length ? invoice.items[0] : {}
-    const { customerId = "", customerName = "", organizationName = "", address1 = "", address = "", gstNO = "", mobileNumber = "" } = item
+    const { customerId = "", customerName = "", organizationName = "", address1 = "", address = "", gstNo = "", mobileNumber = "" } = item
     const billingInfoTop = 160;
+    const statusCode = gstNo.slice(0, 2)
 
     doc
         .text("Details of receiver ( Billed to)", 30, billingInfoTop + 5)
@@ -219,14 +220,14 @@ function billingTable(doc, invoice) {
         .text(`${organizationName || customerName} `, 30, billingInfoTop + 30)
         .fontSize(8)
         .text(`${address1} , Contact No: ${mobileNumber} `, 30, billingInfoTop + 42, { width: 200 })
-        .text(`GST NO: ${gstNO} `, 30, billingInfoTop + 100)
-        .text(`State Code: 36`, 30, billingInfoTop + 115)
+        .text(`GST NO: ${gstNo} `, 30, billingInfoTop + 100)
+        .text(`State Code: ${statusCode}`, 30, billingInfoTop + 115)
         .fontSize(10)
         .text(`${organizationName || customerName} `, 310, billingInfoTop + 30)
         .fontSize(8)
         .text(`${address} , Contact No: ${mobileNumber} `, 310, billingInfoTop + 42, { width: 200 })
-        .text(`GST NO: ${gstNO} `, 310, billingInfoTop + 100)
-        .text(`State Code: 36`, 310, billingInfoTop + 115)
+        .text(`GST NO: ${gstNo} `, 310, billingInfoTop + 100)
+        .text(`State Code: ${statusCode}`, 310, billingInfoTop + 115)
 
 }
 function generateFooter(doc) {

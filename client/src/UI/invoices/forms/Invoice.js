@@ -1,5 +1,7 @@
 import dayjs from 'dayjs';
 import React, { useEffect } from 'react';
+import Spinner from '../../../components/Spinner';
+import NoContent from '../../../components/NoContent';
 import InputValue from '../../../components/InputValue';
 import InputLabel from '../../../components/InputLabel';
 import CustomInput from '../../../components/CustomInput';
@@ -7,12 +9,11 @@ import SelectInput from '../../../components/SelectInput';
 import CustomTextArea from '../../../components/CustomTextArea';
 import CustomDateInput from '../../../components/CustomDateInput';
 import { resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
-import NoContent from '../../../components/NoContent';
-import Spinner from '../../../components/Spinner';
+const APIDATEFORMAT = 'YYYY-MM-DD'
 
-const InvoiceForm = ({ data, invoiceNumber, salesPersonOptions, billingAddress, customerOptions, errors, onChange }) => {
+const InvoiceForm = ({ data, salesPersonOptions, billingAddress, customerOptions, errors, onChange }) => {
 
-    const { customerId, salesPerson, poNo, hsnCode, mailSubject, invoiceDate, dueDate } = data
+    const { customerId, salesPerson, poNo, hsnCode, mailSubject, invoiceNumber, invoiceDate, dueDate } = data
     const { loading, loaded, address, gstNo } = billingAddress
 
     useEffect(() => {
@@ -78,7 +79,7 @@ const InvoiceForm = ({ data, invoiceNumber, salesPersonOptions, billingAddress, 
                     <CustomDateInput
                         track
                         value={invoiceDate} error={errors.invoiceDate}
-                        onChange={(value) => onChange(value, 'invoiceDate')}
+                        onChange={(value) => onChange(dayjs(value).format(APIDATEFORMAT), 'invoiceDate')}
                     />
                 </div>
                 <div className='input-container'>
@@ -86,7 +87,7 @@ const InvoiceForm = ({ data, invoiceNumber, salesPersonOptions, billingAddress, 
                     <CustomDateInput
                         track error={errors.dueDate}
                         value={dueDate} disabledDate={disableDates}
-                        onChange={(value) => onChange(value, 'dueDate')}
+                        onChange={(value) => onChange(dayjs(value).format(APIDATEFORMAT), 'dueDate')}
                     />
                 </div>
             </div>

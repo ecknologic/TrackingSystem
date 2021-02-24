@@ -13,10 +13,10 @@ invoiceQueries.getInvoiceId = async (callback) => {
 
 //POST Request Methods
 invoiceQueries.createInvoice = (input, callback) => {
-    const { customerId, invoiceDate, dueDate, salesPerson, mailSubject, mailIds, tAndc, invoicePdf, invoiceNumber, hsnCode, poNo } = input
-    let query = "insert into Invoice (customerId,invoiceDate,dueDate,salesPerson,mailSubject,mailIds,tAndc,invoicePdf,invoiceId,hsnCode,poNo) values(?,?,?,?,?,?,?,?,?,?,?)";
+    const { customerId, invoiceDate, dueDate, salesPerson, mailSubject, mailIds, TAndC, invoicePdf, invoiceNumber, hsnCode, poNo, totalAmount, customerName } = input
+    let query = "insert into Invoice (customerId,invoiceDate,dueDate,salesPerson,mailSubject,mailIds,TAndC,invoicePdf,invoiceId,hsnCode,poNo,totalAmount,customerName) values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
     // var gstProofImage = Buffer.from(gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-    let requestBody = [customerId, invoiceDate, dueDate, salesPerson, mailSubject, mailIds, tAndc, invoicePdf, invoiceNumber, hsnCode, poNo]
+    let requestBody = [customerId, invoiceDate, dueDate, salesPerson, mailSubject, mailIds, TAndC, invoicePdf, invoiceNumber, hsnCode, poNo, totalAmount, customerName]
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 invoiceQueries.saveInvoiceProducts = (input, callback) => {
@@ -26,7 +26,6 @@ invoiceQueries.saveInvoiceProducts = (input, callback) => {
     let query = "insert into invoiceProductsDetails (invoiceId, productName, productPrice, discount, quantity, tax,cgst,sgst,igst) values " + sql;
     // var gstProofImage = Buffer.from(gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
     // let requestBody = [invoiceId, productName, productPrice, discount, quantity, tax]
-    console.log(query)
     executeGetQuery(query, callback)
 }
 module.exports = invoiceQueries
