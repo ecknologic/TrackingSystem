@@ -28,7 +28,7 @@ router.get('/getInvoiceId', (req, res) => {
     });
 });
 router.post("/createInvoice", (req, res) => {
-    let { customerId, invoiceNumber, customerName, organizationName, address, gstNo, panNo, mobileNumber, products } = req.body
+    let { customerId, invoiceId, customerName, organizationName, address, gstNo, panNo, mobileNumber, products } = req.body
     let obj = {
         customerId, customerName, organizationName, address, gstNo, panNo, mobileNumber
     }
@@ -54,7 +54,7 @@ router.post("/createInvoice", (req, res) => {
         }
     }
     let invoice = {
-        items: [obj], invoiceNumber
+        items: [obj], invoiceId
     }
     createSingleDeliveryInvoice(invoice, "invoice.pdf").then(response => {
         fs.readFile("invoice.pdf", (err, result) => {
@@ -66,7 +66,7 @@ router.post("/createInvoice", (req, res) => {
     })
 });
 router.post("/updateInvoice", (req, res) => {
-    let { customerId, invoiceNumber, customerName, organizationName, address, gstNo, panNo, mobileNumber, products } = req.body
+    let { customerId, invoiceId, customerName, organizationName, address, gstNo, panNo, mobileNumber, products } = req.body
     let obj = {
         customerId, customerName, organizationName, address, gstNo, panNo, mobileNumber
     }
@@ -92,7 +92,7 @@ router.post("/updateInvoice", (req, res) => {
         }
     }
     let invoice = {
-        items: [obj], invoiceNumber
+        items: [obj], invoiceId
     }
     createSingleDeliveryInvoice(invoice, "invoice.pdf").then(response => {
         fs.readFile("invoice.pdf", (err, result) => {
@@ -108,9 +108,9 @@ const saveInvoice = (req, res, pdfData) => {
     invoiceQueries.createInvoice(req.body, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
-            let { products } = req.body;
+            let { products, invoiceId } = req.body;
             if (products.length) {
-                invoiceQueries.saveInvoiceProducts({ products, invoiceId: req.body.invoiceNumber }, (err, data) => {
+                invoiceQueries.saveInvoiceProducts({ products, invoiceId }, (err, data) => {
                     if (err) res.status(500).json(dbError(err));
                     else res.json({ message: 'Invoice created successfully' })
                 })
@@ -127,7 +127,7 @@ const updateInvoice = (req, res, pdfData) => {
             if (products.length) {
                 invoiceQueries.updateInvoiceProducts({ products }, (err, data) => {
                     if (err) res.status(500).json(dbError(err));
-                    else res.json({ message: 'Invoice created successfully' })
+                    else res.json({ message: 'Invoice updated successfully' })
                 })
             } else res.status(500).json({ message: "Products should not be empty" })
         }

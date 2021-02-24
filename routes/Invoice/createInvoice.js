@@ -46,7 +46,7 @@ function generateHeader(doc) {
 }
 
 function generateCustomerInformation(doc, invoice) {
-    const { invoiceNumber } = invoice
+    const { invoiceId } = invoice
     doc
         .fillColor("#444444")
     generateHr(doc, 100);
@@ -58,7 +58,7 @@ function generateCustomerInformation(doc, invoice) {
         .text("Original for receipient", 0, customerInformationTop, { align: "right" })
         .text("Duplicate for transporter", { align: "right" })
         .text("Triplicate for supplier", { align: "right" })
-        .text("Invoice No:" + invoiceNumber, 40, customerInformationTop)
+        .text("Invoice No:" + invoiceId, 40, customerInformationTop)
         .font("Helvetica-Bold")
         .text(invoice.invoice_nr, 150, customerInformationTop)
         .font("Helvetica")

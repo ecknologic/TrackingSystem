@@ -18,10 +18,10 @@ invoiceQueries.getInvoiceId = async (callback) => {
 
 //POST Request Methods
 invoiceQueries.createInvoice = (input, callback) => {
-    const { customerId, invoiceDate, dueDate, salesPerson, mailSubject, mailIds, TAndC, invoicePdf, invoiceNumber, hsnCode, poNo, totalAmount, customerName } = input
+    const { customerId, invoiceDate, dueDate, salesPerson, mailSubject, mailIds, TAndC, invoicePdf, invoiceId, hsnCode, poNo, totalAmount, customerName } = input
     let query = "insert into Invoice (customerId,invoiceDate,dueDate,salesPerson,mailSubject,mailIds,TAndC,invoicePdf,invoiceId,hsnCode,poNo,totalAmount,customerName) values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
     // var gstProofImage = Buffer.from(gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-    let requestBody = [customerId, invoiceDate, dueDate, salesPerson, mailSubject, mailIds, TAndC, invoicePdf, invoiceNumber, hsnCode, poNo, totalAmount, customerName]
+    let requestBody = [customerId, invoiceDate, dueDate, salesPerson, mailSubject, mailIds, TAndC, invoicePdf, invoiceId, hsnCode, poNo, totalAmount, customerName]
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 invoiceQueries.saveInvoiceProducts = (input, callback) => {
@@ -32,17 +32,24 @@ invoiceQueries.saveInvoiceProducts = (input, callback) => {
 }
 
 invoiceQueries.updateInvoice = (input, callback) => {
-    const { customerId, invoiceDate, dueDate, salesPerson, mailSubject, mailIds, TAndC, invoicePdf, invoiceNumber, hsnCode, poNo, totalAmount, customerName } = input
+    const { customerId, invoiceDate, dueDate, salesPerson, mailSubject, mailIds, TAndC, invoicePdf, invoiceId, hsnCode, poNo, totalAmount, customerName } = input
     let query = "Update Invoice SET customerId=?,invoiceDate=?,dueDate=?,salesPerson=?,mailSubject=?,mailIds=?,TAndC=?,invoicePdf=?,hsnCode=?,poNo=?,totalAmount=?,customerName=? where invoiceId=?"
     // var gstProofImage = Buffer.from(gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-    let requestBody = [customerId, invoiceDate, dueDate, salesPerson, mailSubject, mailIds, TAndC, invoicePdf, hsnCode, poNo, totalAmount, customerName, invoiceNumber]
+    let requestBody = [customerId, invoiceDate, dueDate, salesPerson, mailSubject, mailIds, TAndC, invoicePdf, hsnCode, poNo, totalAmount, customerName, invoiceId]
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 
 invoiceQueries.updateInvoiceProducts = (input, callback) => {
-    const { invoiceId, products } = input
-    const sql = products.map(item => "('" + item.productName + "', " + item.productPrice + ", " + item.discount + ", " + item.quantity + ", " + item.tax + ", " + item.cgst + ", " + item.sgst + ", " + item.igst + ", " + item.amount + ", " + item.key + ")")
-    let query = "update invoiceProductsDetails SET (productName=?, productPrice=?, discount=?, quantity=?, tax=?,cgst=?,sgst=?,igst=?,amount=? WHERE id=?) values " + sql;
-    executeGetQuery(query, callback)
+    const { products } = input
+    for (let i = 0; i < products.length; i++) {
+        const { productName, productPrice, discount, quantity, tax, cgst, sgst, igst, amount, key } = products[i]
+        let query = "update invoiceProductsDetails SET productName=?, productPrice=?, discount=?, quantity=?, tax=?,cgst=?,sgst=?,igst=?,amount=? WHERE id=?";
+        if (i === products.length - 1) {
+            return executeGetParamsQuery(query, [productName, productPrice, discount, quantity, tax, cgst, sgst, igst, amount, key], callback)
+        } else {
+            executeGetParamsQuery(query, [productName, productPrice, discount, quantity, tax, cgst, sgst, igst, amount, key])
+        }
+    }
+    // const sql = products.map(item => "('" + item.productName + "', " + item.productPrice + ", " + item.discount + ", " + item.quantity + ", " + item.tax + ", " + item.cgst + ", " + item.sgst + ", " + item.igst + ", " + item.amount + ", " + item.key + ")")
 }
 module.exports = invoiceQueries
