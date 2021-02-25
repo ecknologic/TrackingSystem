@@ -1,9 +1,9 @@
 const { executeGetQuery, executePostOrUpdateQuery, executeGetParamsQuery } = require('../../utils/functions.js');
 let invoiceQueries = {}
 
-invoiceQueries.getInvoices = async (callback) => {
-    let query = `select * from Invoice ORDER BY createdDateTime DESC`;
-    return executeGetQuery(query, callback)
+invoiceQueries.getInvoices = async (status, callback) => {
+    let query = `select * from Invoice where status=? ORDER BY createdDateTime DESC`;
+    return executeGetParamsQuery(query, [status], callback)
 }
 
 invoiceQueries.getInvoiceById = async (invoiceId, callback) => {
