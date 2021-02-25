@@ -6,9 +6,9 @@ import PanelDropdown from './PanelDropdown';
 import ReportsDropdown from './ReportsDropdown';
 import CustomRangeInput from './CustomRangeInput';
 import { calendarMenu, calendarOptions, shiftMenu } from '../assets/fixtures';
-import { disableFutureDates } from '../utils/Functions';
 const fn = () => { }
 const todayString = 'Today'
+const tillNowString = 'Till Now'
 const weekString = 'This Week'
 const monthString = 'This Month'
 const customString = 'Date Range'
@@ -17,9 +17,8 @@ const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
 const PanelHeader = memo((props) => {
-    const { title, showShow, showShift, initTime = todayString, showDep, depName, showFooter,
-        depMenu = [], depOptions = [], onSelect = fn, beginning = false, showTitle } = props
-    const [show, setShow] = useState(() => beginning ? `till Today` : 'Today')
+    const { title, showShow, showShift, initTime = tillNowString, showDep, depName, showFooter,
+        depMenu = [], depOptions = [], onSelect = fn } = props
     const [open, setOpen] = useState(false)
     const [time, setTime] = useState(() => getInitTime(initTime))
     const [selectedRange, setSelectedRange] = useState([])
@@ -47,6 +46,7 @@ const PanelHeader = memo((props) => {
     }
 
     const handleCalendarSelect = (value) => {
+        const isTillNow = value === tillNowString
         const isToday = value === todayString
         const isWeek = value === weekString
         const isMonth = value === monthString
@@ -61,12 +61,14 @@ const PanelHeader = memo((props) => {
         let to = dayjs().format(DATEFORMAT)
         let from = dayjs(endDate).format(DATEFORMAT)
         let startDate = endDate
-        let fromStart = beginning
+        let fromStart = false
 
-        if (isToday) {
+        if (isTillNow) {
+            fromStart = true
+        }
+        else if (isToday) {
             const todayFull = dayjs().format(DATETIMEFORMAT)
             setTime(todayFull)
-            setShow(fromStart ? `till Today` : 'Today')
         }
         else {
             if (isWeek) {
@@ -79,9 +81,7 @@ const PanelHeader = memo((props) => {
                 endDate = dayjs().endOf('month').format(APIDATEFORMAT)
                 from = dayjs(startDate).format(DATEFORMAT)
             }
-            fromStart = false
             setTime(`${from} to ${to}`)
-            setShow(value)
         }
         setSelectedRange([])
         onSelect({ startDate, endDate, fromStart, type: value })
@@ -98,7 +98,7 @@ const PanelHeader = memo((props) => {
         setTime(`${from.format(DATEFORMAT)} to ${to.format(DATEFORMAT)}`)
         setOpen(false)
         setSelectedRange(selected)
-        onSelect({ startDate, endDate, fromStart: beginning, type: '' })
+        onSelect({ startDate, endDate, fromStart: false, type: '' })
         setTimeout(() => setSelectedRange([]), 820)
     }
 
@@ -113,7 +113,7 @@ const PanelHeader = memo((props) => {
                 <div className='primary'>
                     <div className='head-container'>
                         <div className='title'>
-                            {title} {showTitle && show}
+                            {title}
                         </div>
                         <div className='select-options'>
                             {

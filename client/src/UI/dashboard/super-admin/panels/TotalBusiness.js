@@ -40,7 +40,7 @@ const TotalBusiness = () => {
     return (
         <div className='total-business-panel'>
             <div className='header'>
-                <PanelHeader title='Total Business' onSelect={handleOperation} showShow beginning />
+                <PanelHeader title='Total Business' onSelect={handleOperation} showShow />
             </div>
             <TotalRevenueCard data={business} />
         </div>

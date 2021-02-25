@@ -1,15 +1,15 @@
 import axios from 'axios';
-import { Col, Row } from 'antd';
+import { Col, Empty, Row } from 'antd';
 import { useHistory } from 'react-router-dom';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import Header from './header';
-import AccountCard from '../../../components/AccountCard';
+import { http } from '../../../modules/http'
 import Spinner from '../../../components/Spinner';
 import NoContent from '../../../components/NoContent';
 import { getUserId } from '../../../utils/constants';
-import { complexDateSort, complexSort, doubleKeyComplexSearch, filterAccounts } from '../../../utils/Functions'
+import AccountCard from '../../../components/AccountCard';
 import CustomPagination from '../../../components/CustomPagination';
-import { http } from '../../../modules/http'
+import { complexDateSort, complexSort, doubleKeyComplexSearch, filterAccounts } from '../../../utils/Functions'
 
 const Accounts = () => {
     const USERID = getUserId()
@@ -145,7 +145,7 @@ const Accounts = () => {
                                 <Col lg={{ span: 12 }} xl={{ span: 8 }} xxl={{ span: 6 }} key={account.customerId}>
                                     <AccountCard data={account} onClick={goToViewAccount} />
                                 </Col>
-                            )) : <NoContent content='No accounts to show' />
+                            )) : <NoContent content={<Empty />} />
                     }
                 </Row>
                 {

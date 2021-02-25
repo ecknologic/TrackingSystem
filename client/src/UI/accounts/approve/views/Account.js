@@ -8,7 +8,7 @@ const AccountView = ({ data }) => {
 
     const {
         natureOfBussiness, address, customerName, mobileNumber, invoicetype, creditPeriodInDays,
-        customertype, EmailId, registeredDate, depositAmount, referredBy, createdUserName
+        customertype, EmailId, registeredDate, depositAmount, referredBy, createdUserName, contractPeriod
     } = data
 
     const isCorporate = customertype === 'Corporate'
@@ -80,6 +80,14 @@ const AccountView = ({ data }) => {
                         referredBy ? renderDA() : null
                     }
                 </div>
+                {
+                    isCorporate ? <div className='row half-stretch'>
+                        <div className='input-container'>
+                            <InputValue size='smaller' value='Contract Period' />
+                            <InputValue size='large' value={contractPeriod} />
+                        </div>
+                    </div> : null
+                }
             </div>
         </>
     )

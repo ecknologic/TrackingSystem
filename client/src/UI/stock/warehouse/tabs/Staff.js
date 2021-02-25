@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Col, Row } from 'antd';
+import { Col, Empty, Row } from 'antd';
 import { useHistory } from 'react-router-dom';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http'
@@ -68,7 +68,7 @@ const Staff = () => {
                                         onClick={goToManageEmployee}
                                     />
                                 </Col>
-                            )) : <NoContent content='No Staff to show' />
+                            )) : <NoContent content={<Empty />} />
                     }
                 </Row>
                 {

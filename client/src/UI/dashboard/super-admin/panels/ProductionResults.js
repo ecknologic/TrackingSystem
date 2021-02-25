@@ -1,4 +1,3 @@
-import dayjs from 'dayjs';
 import axios from 'axios';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
@@ -7,11 +6,9 @@ import ColumnChart from '../../../../components/ColumnChart';
 import { TODAYDATE as d } from '../../../../utils/constants';
 import PanelHeader from '../../../../components/PanelHeader';
 import DashboardResultsCard from '../../../../components/DashboardResultsCard';
-const APIDATEFORMAT = 'YYYY-MM-DD'
 
 const ProductionResults = ({ depOptions }) => {
-    const startDate = useMemo(() => dayjs().weekday(1).format(APIDATEFORMAT), [])
-    const options = { startDate, endDate: d, departmentId: 'All' }
+    const options = { startDate: d, endDate: d, departmentId: 'All', fromStart: true }
     const [results, setResults] = useState({})
     const [opData, setOpData] = useState(() => options)
 
@@ -26,8 +23,8 @@ const ProductionResults = ({ depOptions }) => {
         }
     }, [])
 
-    const getResults = async ({ startDate, endDate, departmentId }) => {
-        const url = `/motherPlant/getTotalProduction?startDate=${startDate}&endDate=${endDate}&departmentId=${departmentId}`
+    const getResults = async ({ startDate, endDate, departmentId, fromStart }) => {
+        const url = `/motherPlant/getTotalProduction?startDate=${startDate}&endDate=${endDate}&departmentId=${departmentId}&fromStart=${fromStart}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -47,7 +44,7 @@ const ProductionResults = ({ depOptions }) => {
             onSelect={handleOperation}
             depName='Mother Plant'
             depOptions={depOptions}
-            initTime='This Week'
+            initTime='Till Now'
             showFooter
         />
     )

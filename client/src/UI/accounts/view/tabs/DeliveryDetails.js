@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Col, message, Row } from 'antd';
+import { Col, Empty, message, Row } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { http } from '../../../../modules/http';
@@ -330,7 +330,7 @@ const DeliveryDetails = ({ isSuperAdmin, recentDelivery, ...rest }) => {
                             <Col lg={{ span: 12 }} xl={{ span: 8 }} xxl={{ span: 6 }} key={item.deliveryDetailsId}>
                                 <AddressCard data={item} onClick={handleClick} onSelect={handleMenuSelect} />
                             </Col>
-                        )) : <NoContent content='No delivery details to show' />
+                        )) : <NoContent content={<Empty />} />
                 }
             </Row>
             <CustomModal

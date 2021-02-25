@@ -28,7 +28,7 @@ import {
 import { getRole, SUPERADMIN, TRACKFORM } from '../../../utils/constants';
 import {
     validateAccountValues, validateAddresses, validateIDNumbers, validateNames, validateNumber,
-    validateMobileNumber, validateEmailId, compareMaxNumber
+    validateMobileNumber, validateEmailId, compareMaxNumber, validateIDProofs
 } from '../../../utils/validations';
 
 const ApproveAccount = () => {
@@ -44,6 +44,7 @@ const ApproveAccount = () => {
     const [successModal, setSucessModal] = useState(false)
     const [accountErrors, setAccountErrors] = useState({})
     const [IDProofs, setIDProofs] = useState({})
+    const [IDProofErrors, setIDProofErrors] = useState({})
     const [gstProof, setGstProof] = useState({})
     const [addresses, setAddresses] = useState([])
     const [addressesErrors, setAddressesErrors] = useState({})
@@ -182,8 +183,30 @@ const ApproveAccount = () => {
 
     const handleUpload = (file, name) => {
         getBase64(file, async (buffer) => {
-            setAccountValues(data => ({ ...data, [name]: buffer }))
-            setAccountErrors(errors => ({ ...errors, [name]: '' }))
+
+            if (name === 'gstProof') {
+                setAccountValues(data => ({ ...data, [name]: buffer }))
+                setAccountErrors(errors => ({ ...errors, [name]: '' }))
+            }
+            else if (name === 'idProofs') {
+                const clone = { ...IDProofs }
+                const { Front } = clone
+                if (Front) {
+                    clone.Back = buffer
+                    setIDProofErrors(errors => ({ ...errors, Back: '' }))
+                }
+                else {
+                    clone.Front = buffer
+                    setIDProofErrors(errors => ({ ...errors, Front: '' }))
+                }
+                setIDProofs(clone)
+            }
+            else if (name === 'Front' || name === 'Back') {
+                setIDProofErrors(errors => ({ ...errors, [name]: '' }))
+                const clone = { ...IDProofs }
+                clone[name] = buffer
+                setIDProofs(clone)
+            }
         })
     }
 
@@ -194,17 +217,19 @@ const ApproveAccount = () => {
     const handleAccountSave = async () => {
         const { idProofType } = accountValues
         const sessionAddresses = getSessionItems('address')
+        const IDProofError = validateIDProofs(IDProofs, idProofType)
 
         const accountErrors = validateAccountValues(accountValues, customertype, true)
         const addressErrors = validateAddresses(sessionAddresses)
 
-        if (!isEmpty(accountErrors) || !isEmpty(addressErrors)) {
+        if (!isEmpty(accountErrors) || !isEmpty(addressErrors) || !isEmpty(IDProofError)) {
             setShake(true)
             setTimeout(() => {
                 setShake(false)
                 const { key } = addressErrors
                 if (key) setActiveKey(key) // opens accordion on error
             }, 820)
+            setIDProofErrors(IDProofError)
             setAddressesErrors(addressErrors)
             setAccountErrors(accountErrors)
             return
@@ -385,13 +410,18 @@ const ApproveAccount = () => {
                             {
                                 editMode ? (
                                     <ApprovalForm
+                                        IDProofs={IDProofs}
+                                        IDProofErrors={IDProofErrors}
                                         data={accountValues}
                                         errors={accountErrors}
                                         onChange={handleChange}
                                         onBlur={handleBlur}
                                         onUpload={handleUpload}
                                         onRemove={handleRemove}
-                                        disabledItems={{ gstDisable: gstProof.Front && !isSuperAdmin }}
+                                        disabledItems={{
+                                            gstDisable: gstProof.Front && !isSuperAdmin,
+                                            idDisable: IDProofs.Front && !isSuperAdmin
+                                        }}
                                     />
                                 ) : <>
                                         <IDProofInfo data={IDProofs} />

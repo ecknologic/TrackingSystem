@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Col, message, Row } from 'antd';
+import { Col, Empty, message, Row } from 'antd';
 import { useHistory } from 'react-router-dom';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../modules/http'
@@ -141,7 +141,7 @@ const Dashboard = ({ reFetch }) => {
                                         onSelect={handleMenuSelect}
                                     />
                                 </Col>
-                            )) : <NoContent content={`No Distributors to show`} />
+                            )) : <NoContent content={<Empty />} />
                     }
                 </Row>
                 {

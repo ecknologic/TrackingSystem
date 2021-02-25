@@ -6,7 +6,7 @@ import { TODAYDATE as d } from '../../../../utils/constants';
 import PanelHeader from '../../../../components/PanelHeader';
 import ProductionStatusCard from '../../../../components/ProductionStatusCard';
 import { LeftChevronIconGrey, RightChevronIconGrey } from '../../../../components/SVG_Icons';
-const options = { startDate: d, endDate: d, shift: 'All', type: 'Today' }
+const options = { startDate: d, endDate: d, shift: 'All', type: 'Today', fromStart: true }
 
 const ProductionStatus = () => {
     const [production, setProduction] = useState({})
@@ -26,8 +26,8 @@ const ProductionStatus = () => {
         }
     }, [])
 
-    const getProductionStatus = async ({ startDate, endDate, shift, type }) => {
-        const url = `/motherPlant/getTotalProductionByDate?startDate=${startDate}&endDate=${endDate}&shiftType=${shift}&type=${type}`
+    const getProductionStatus = async ({ startDate, endDate, shift, type, fromStart }) => {
+        const url = `/motherPlant/getTotalProductionByDate?startDate=${startDate}&endDate=${endDate}&shiftType=${shift}&type=${type}&fromStart=${fromStart}`
 
         try {
             const data = await http.GET(axios, url, config)

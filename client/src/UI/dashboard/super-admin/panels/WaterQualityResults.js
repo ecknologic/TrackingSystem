@@ -48,10 +48,10 @@ const WaterQualityResults = ({ depMenu, motherplantList }) => {
 
     return (
         <>
-            <PanelHeader title='Water Quality Testing Results' depMenu={depMenu} onSelect={handleOperation} beginning showShow showShift showDep />
+            <PanelHeader title='Water Quality Testing Results' depMenu={depMenu} onSelect={handleOperation} showShow showShift showDep />
             <div className='panel-body quality-testing-panel'>
                 {
-                    isEmpty(results) ? <NoContent content={<Empty />} />
+                    !isEmpty(results) ? <NoContent content={<Empty />} />
                         : <Slider className='dashboard-slider' {...props}>
                             {
                                 results.map((item) => <QualityResultCard key={item.productionQcId} data={item} />)

@@ -57,6 +57,13 @@ $textColorDisabled:rgba(0,0,0,0.55);
     background-color: #CCD3D6 !important;
 }
 
+// -------------- antd Empty styles ------------------- //
+
+.ant-empty-description {
+    font-family: 'PoppinsMedium500';
+    color: rgba(0,0,0,0.25);
+}
+
 // -------------- antd Popconfirm styles ------------------- //
 
 .ant-popover-inner {

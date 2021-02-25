@@ -11,6 +11,7 @@ const Actions = ({ onSelect, options = [] }) => {
 
     return (
         <Dropdown
+            overlayStyle={{ minWidth: '7.5em' }}
             overlay={menu}
             trigger={['click']}
             getPopupContainer={node => node.parentNode}
