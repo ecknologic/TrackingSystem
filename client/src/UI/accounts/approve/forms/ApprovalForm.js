@@ -1,25 +1,37 @@
 import dayjs from 'dayjs';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import InputLabel from '../../../../components/InputLabel';
 import CustomInput from '../../../../components/CustomInput';
 import SelectInput from '../../../../components/SelectInput';
 import DraggerInput from '../../../../components/DraggerInput';
 import InputWithAddon from '../../../../components/InputWithAddon';
 import UploadPreviewer from '../../../../components/UploadPreviewer';
-import { invoiceOptions, businessOptions } from '../../../../assets/fixtures'
-import { resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
+import { invoiceOptions, businessOptions, corpIdOptions } from '../../../../assets/fixtures'
+import { getIDInputValidationProps, getIdProofName, resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 const DATEFORMAT = 'DD/MM/YYYY'
 
 const ApprovalForm = (props) => {
-    const { data, errors, onChange, onBlur, onUpload, disabledItems, disabled, onRemove } = props
+    const { data, errors, onChange, onBlur, onUpload, IDProofErrors, IDProofs, disabledItems, disabled, onRemove } = props
 
     const {
         gstNo, natureOfBussiness, organizationName, address, customerName, mobileNumber, invoicetype,
         creditPeriodInDays, EmailId, referredBy, registeredDate, gstProof, customertype, depositAmount,
-        pinCode, contractPeriod, dispenserCount } = data
+        pinCode, contractPeriod, idProofType, dispenserCount } = data
 
-    const { gstDisable } = disabledItems
+    const [proofName, setProofName] = useState('')
+    const [idProps, setIdProps] = useState({})
+
+    const { gstDisable, idDisable } = disabledItems
+    const { Front, Back } = IDProofs
+    const { maxLength } = idProps
+    const idUploadDisable = idProofType !== 'panNo' ? Front && Back : Front
     const isCorporate = customertype === 'Corporate'
+
+    useEffect(() => {
+        setProofName(getIdProofName(idProofType))
+        const props = getIDInputValidationProps(idProofType)
+        setIdProps(props)
+    }, [idProofType])
 
     useEffect(() => {
         resetTrackForm()
@@ -57,6 +69,38 @@ const ApprovalForm = (props) => {
 
     return (
         <div className='app-form-container'>
+            <div className='app-identity-proof-container identity-proof-container'>
+                <div className='row'>
+                    <div className='input-container'>
+                        <InputLabel name='Select Id Proof' error={errors.idProofType} mandatory />
+                        <SelectInput track value={idProofType} options={corpIdOptions} disabled={disabled || idDisable} error={errors.idProofType} onSelect={(value) => onChange(value, 'idProofType')} />
+                    </div>
+                    {
+                        idProofType && (
+                            <div className='input-container'>
+                                <InputLabel name={proofName} error={errors[idProofType]} mandatory />
+                                <CustomInput
+                                    disabled={disabled || idDisable} maxLength={maxLength} uppercase
+                                    value={data[idProofType]} error={errors[idProofType]}
+                                    placeholder={`Add ${proofName}`}
+                                    onChange={(value) => onChange(value, idProofType)}
+                                    onBlur={(value) => onBlur(value, idProofType)}
+                                />
+                            </div>
+                        )
+                    }
+                </div>
+                <div className='upload-container'>
+                    <DraggerInput onUpload={(file) => onUpload(file, 'idProofs')} disabled={idUploadDisable || disabled} />
+                    <div className='upload-preview-container'>
+                        <UploadPreviewer track value={Front} title='Front' disabled={disabled || idDisable} onUpload={(file) => onUpload(file, 'Front')} onRemove={() => onRemove('Front')} error={IDProofErrors.Front} />
+                        {
+                            idProofType !== 'panNo' &&
+                            <UploadPreviewer track value={Back} title='Back' disabled={disabled || idDisable} onUpload={(file) => onUpload(file, 'Back')} onRemove={() => onRemove('Back')} className='last' error={IDProofErrors.Back} />
+                        }
+                    </div>
+                </div>
+            </div>
             <div className='row'>
                 <div className='input-container'>
                     <InputLabel name='GST Number' error={errors.gstNo} mandatory={isCorporate} />
@@ -165,6 +209,21 @@ const ApprovalForm = (props) => {
                     isCorporate ? renderDispenser() : renderNOB()
                 }
             </div>
+            {
+                isCorporate ? (
+                    <div className='row'>
+                        <div className='input-container'>
+                            <InputLabel name='Contract Period' error={errors.contractPeriod} mandatory />
+                            <CustomInput
+                                value={contractPeriod}
+                                disabled={disabled} placeholder='Contract Period'
+                                error={errors.contractPeriod}
+                                onChange={(value) => onChange(value, 'contractPeriod')}
+                            />
+                        </div>
+                    </div>
+                ) : null
+            }
             <div className='row'>
                 <div className='input-container'>
                     <InputLabel name='Credit Period in Days' error={errors.creditPeriodInDays} mandatory />
