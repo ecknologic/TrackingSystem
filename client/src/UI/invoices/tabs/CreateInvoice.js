@@ -187,9 +187,9 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
         const priceAfterTax = priceAfterDiscount + (priceAfterDiscount / 100 * tax)
         const amount = Number((priceAfterTax * quantity).toFixed(2))
         const totalTax = (amount / 100 * tax)
-        cgst = isLocal ? Number((totalTax * tax / 200).toFixed(2)) : 0.00
-        sgst = isLocal ? Number((totalTax * tax / 200).toFixed(2)) : 0.00
-        igst = isLocal ? 0.00 : Number((totalTax * tax / 100).toFixed(2))
+        cgst = isLocal ? Number((totalTax / 2).toFixed(2)) : 0.00
+        sgst = isLocal ? Number((totalTax / 2).toFixed(2)) : 0.00
+        igst = isLocal ? 0.00 : Number((totalTax).toFixed(2))
         return { amount, cgst, sgst, igst }
     };
 
