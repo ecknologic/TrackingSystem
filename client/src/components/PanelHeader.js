@@ -30,9 +30,10 @@ const PanelHeader = memo((props) => {
     }
 
     function getInitTime(value) {
+        const isTillNow = value === tillNowString
         const isToday = value === todayString
         const isWeek = value === weekString
-        if (isToday) return dayjs().format(DATETIMEFORMAT)
+        if (isToday || isTillNow) return dayjs().format(DATETIMEFORMAT)
         else if (isWeek) {
             const from = dayjs().weekday(1).format(DATEFORMAT)
             const to = dayjs().format(DATEFORMAT)
@@ -60,15 +61,16 @@ const PanelHeader = memo((props) => {
         let endDate = dayjs().format(APIDATEFORMAT)
         let to = dayjs().format(DATEFORMAT)
         let from = dayjs(endDate).format(DATEFORMAT)
+        const todayFull = dayjs().format(DATETIMEFORMAT)
         let startDate = endDate
         let fromStart = false
 
         if (isTillNow) {
-            fromStart = true
+            setTime(tillNowString)
+            setTime(todayFull)
         }
         else if (isToday) {
-            const todayFull = dayjs().format(DATETIMEFORMAT)
-            setTime(todayFull)
+            setTime(to)
         }
         else {
             if (isWeek) {
@@ -117,18 +119,6 @@ const PanelHeader = memo((props) => {
                         </div>
                         <div className='select-options'>
                             {
-                                showShow && (
-                                    <div className='option show'>
-                                        <PanelDropdown
-                                            label='Show'
-                                            initValue={initTime}
-                                            options={calendarMenu}
-                                            onSelect={handleCalendarSelect}
-                                        />
-                                    </div>
-                                )
-                            }
-                            {
                                 (showShow || showFooter) && (
                                     <div className='app-date-picker-wrapper'>
                                         <CustomRangeInput // Hidden in the DOM
@@ -139,6 +129,18 @@ const PanelHeader = memo((props) => {
                                             className='date-panel-picker'
                                             onChange={handleDateSelect}
                                             onOpenChange={datePickerStatus}
+                                        />
+                                    </div>
+                                )
+                            }
+                            {
+                                showShow && (
+                                    <div className='option show'>
+                                        <PanelDropdown
+                                            label='Show'
+                                            initValue={initTime}
+                                            options={calendarMenu}
+                                            onSelect={handleCalendarSelect}
                                         />
                                     </div>
                                 )

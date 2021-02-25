@@ -1405,6 +1405,21 @@ textarea {
     }
 }
 
+// -------------- Various Link styles ------------------- //
+
+.app-link {
+    cursor: pointer;
+    color: $primaryColor;
+    transition: 300ms;
+    border-bottom: 1.5px solid transparent;
+
+    &:hover {
+        border-color: $primaryColor;
+    }
+}
+
+
+
 // -------------- Various Table styles ------------------- //
 
 .editable-cell {

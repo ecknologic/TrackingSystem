@@ -211,7 +211,11 @@ const ApproveAccount = () => {
     }
 
     const handleRemove = (name) => {
-        setAccountValues(data => ({ ...data, [name]: '' }))
+        if (name === 'gstProof') {
+            setAccountValues(data => ({ ...data, [name]: '' }))
+        }
+        else if (name === 'Front') setIDProofs(data => ({ ...data, Front: '' }))
+        else if (name === 'Back') setIDProofs(data => ({ ...data, Back: '' }))
     }
 
     const handleAccountSave = async () => {

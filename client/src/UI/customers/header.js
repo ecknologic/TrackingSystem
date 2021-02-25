@@ -1,5 +1,6 @@
 import { Tabs } from 'antd';
 import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import SortBy from '../../components/SortByDropdown';
 import SearchInput from '../../components/SearchInput';
 import ViewsComponent from '../../components/ViewsComponent';
@@ -7,7 +8,7 @@ import AccountsFilter from '../../components/AccountsFilter';
 import { PlusIconGrey } from '../../components/SVG_Icons';
 import CustomButton from '../../components/CustomButton';
 
-const Header = ({ onChange, onSearch, onSort, onFilter, onClick }) => {
+const Header = ({ activeTab, onChange, onSearch, onSort, onFilter, onClick }) => {
     const [view, setView] = useState('card')
 
     return (
@@ -22,6 +23,7 @@ const Header = ({ onChange, onSearch, onSort, onFilter, onClick }) => {
             </div>
             <div className='app-tabs-container app-hidden-panes'>
                 <Tabs
+                    activeKey={activeTab}
                     onChange={onChange}
                 >
                     <TabPane tab="Corporate Customers" key="1" />

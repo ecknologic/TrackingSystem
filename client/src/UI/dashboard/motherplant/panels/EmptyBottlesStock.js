@@ -6,7 +6,7 @@ import EmptyBottlesStockCard from '../../../../components/EmptyBottlesStockCard'
 import { LeftChevronIconGrey, RightChevronIconGrey } from '../../../../components/SVG_Icons';
 import { TODAYDATE as d } from '../../../../utils/constants';
 import { http } from '../../../../modules/http';
-const options = { startDate: d, endDate: d, fromStart: true, type: 'Today', fromStart: true }
+const options = { startDate: d, endDate: d, fromStart: true, type: 'Till Now', fromStart: true }
 
 const EmptyBottlesStock = () => {
     const [emptyCans, setEmptyCans] = useState({})

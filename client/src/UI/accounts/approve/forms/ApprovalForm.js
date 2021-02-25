@@ -6,7 +6,7 @@ import SelectInput from '../../../../components/SelectInput';
 import DraggerInput from '../../../../components/DraggerInput';
 import InputWithAddon from '../../../../components/InputWithAddon';
 import UploadPreviewer from '../../../../components/UploadPreviewer';
-import { invoiceOptions, businessOptions, corpIdOptions } from '../../../../assets/fixtures'
+import { invoiceOptions, businessOptions, corpIdOptions, idOptions } from '../../../../assets/fixtures'
 import { getIDInputValidationProps, getIdProofName, resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 const DATEFORMAT = 'DD/MM/YYYY'
 
@@ -26,6 +26,7 @@ const ApprovalForm = (props) => {
     const { maxLength } = idProps
     const idUploadDisable = idProofType !== 'panNo' ? Front && Back : Front
     const isCorporate = customertype === 'Corporate'
+    const IDOptions = isCorporate ? corpIdOptions : idOptions
 
     useEffect(() => {
         setProofName(getIdProofName(idProofType))
@@ -73,7 +74,7 @@ const ApprovalForm = (props) => {
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Select Id Proof' error={errors.idProofType} mandatory />
-                        <SelectInput track value={idProofType} options={corpIdOptions} disabled={disabled || idDisable} error={errors.idProofType} onSelect={(value) => onChange(value, 'idProofType')} />
+                        <SelectInput track value={idProofType} options={IDOptions} disabled={disabled || idDisable} error={errors.idProofType} onSelect={(value) => onChange(value, 'idProofType')} />
                     </div>
                     {
                         idProofType && (

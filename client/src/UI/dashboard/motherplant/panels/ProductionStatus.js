@@ -6,7 +6,7 @@ import { TODAYDATE as d } from '../../../../utils/constants';
 import PanelHeader from '../../../../components/PanelHeader';
 import ProductionStatusCard from '../../../../components/ProductionStatusCard';
 import { LeftChevronIconGrey, RightChevronIconGrey } from '../../../../components/SVG_Icons';
-const options = { startDate: d, endDate: d, shift: 'All', type: 'Today', fromStart: true }
+const options = { startDate: d, endDate: d, shift: 'All', type: 'Till Now', fromStart: true }
 
 const ProductionStatus = () => {
     const [production, setProduction] = useState({})

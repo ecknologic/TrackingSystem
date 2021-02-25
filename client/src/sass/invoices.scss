@@ -85,6 +85,14 @@
         }
     }
 }
+.manage-invoices-header {
+    justify-content: space-between;
+
+    .left {
+        display: flex;
+        align-items: center;
+    }
+}
 
 // .invoice-manage-content {
     

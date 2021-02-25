@@ -27,8 +27,9 @@ router.get('/getQCBatchIds', (req, res) => {
         else res.json(results);
     });
 });
-router.get('/getProductionBatchIds', (req, res) => {
-    motherPlantDbQueries.getProductionBatchIds(departmentId, (err, results) => {
+router.get('/getProductionBatchIds/:shiftType', (req, res) => {
+    const { shiftType } = req.params
+    motherPlantDbQueries.getProductionBatchIds({ departmentId, shiftType }, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else res.json(results);
     });

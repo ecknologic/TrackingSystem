@@ -204,7 +204,7 @@ const getPercent = (current, previous) => {
 }
 const getCompareText = (type, previous, isRs) => {
     const day = type == 'Today' ? 'Yesterday' : type == 'This Week' ? 'last Week' : type == 'This Month' ? 'last Month' : ''
-    return type ? `Compared to (${isRs ? '₹ ' : ''}${getFormatedNumber(Number(previous))} ${day})` : ''
+    return type && type !== 'Till Now' ? `Compared to (${isRs ? '₹ ' : ''}${getFormatedNumber(Number(previous))} ${day})` : ''
 }
 const getFormatedNumber = (number) => {
     number = number || 0

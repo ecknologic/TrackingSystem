@@ -30,15 +30,14 @@ const StockDetails = ({ date, source, goToTab }) => {
     useEffect(() => {
         resetForm()
         getActiveStockByDate(date)
-        isEmpty(batchList) && getBatchesList()
 
         return () => {
             http.ABORT(source)
         }
     }, [date])
 
-    const getBatchesList = async () => {
-        const url = '/motherPlant/getProductionBatchIds'
+    const getBatchesList = async (shiftType) => {
+        const url = `/motherPlant/getProductionBatchIds/${shiftType}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -58,6 +57,11 @@ const StockDetails = ({ date, source, goToTab }) => {
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
+
+        if (key === 'shiftType') {
+            setFormData(data => ({ ...data, batchId: null }))
+            getBatchesList(value)
+        }
 
         // Validations
         if (key === 'managerName') {

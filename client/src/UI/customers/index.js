@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Col, Empty, message, Row } from 'antd';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import Header from './header';
 import { http } from '../../modules/http'
@@ -16,6 +16,7 @@ import '../../sass/customers.scss'
 
 const Customers = () => {
     const history = useHistory()
+    const { active = '1' } = useParams()
     const [accountsClone, setAccountsClone] = useState([])
     const [filteredClone, setFilteredClone] = useState([])
     const [cardBtnTxt, setCardBtnTxt] = useState('Manage Account')
@@ -27,7 +28,7 @@ const Customers = () => {
     const [filterON, setFilterON] = useState(false)
     const [searchON, setSeachON] = useState(false)
     const [sortBy, setSortBy] = useState('NEW')
-    const [activeTab, setActiveTab] = useState('1')
+    const [activeTab, setActiveTab] = useState(active)
     const [modalDelete, setModalDelete] = useState(false)
     const [currentId, setCurrentId] = useState('')
 
@@ -224,7 +225,7 @@ const Customers = () => {
 
     return (
         <Fragment>
-            <Header onSearch={handleSearch} onSort={onSort} onFilter={onFilterChange} onChange={handleTabChange} onClick={goToAddAccount} />
+            <Header activeTab={activeTab} onSearch={handleSearch} onSort={onSort} onFilter={onFilterChange} onChange={handleTabChange} onClick={goToAddAccount} />
             <div className='account-manager-content'>
                 <Row gutter={[{ lg: 32, xl: 16 }, { lg: 32, xl: 32 }]}>
                     {

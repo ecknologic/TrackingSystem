@@ -88,9 +88,9 @@ motherPlantDbQueries.getProductionQcBatchIds = async (departmentId, callback) =>
     let query = "select productionQcId,batchId from productionQC where departmentId=? AND status=? ORDER BY requestedDate DESC";
     return executeGetParamsQuery(query, [departmentId, "Pending"], callback)
 }
-motherPlantDbQueries.getProductionBatchIds = async (departmentId, callback) => {
-    let query = "select productionQcId,batchId from productionQC where departmentId=? AND productionCreated=0 AND status=? AND outOfStock='0' ORDER BY requestedDate DESC";
-    return executeGetParamsQuery(query, [departmentId, "Approved"], callback)
+motherPlantDbQueries.getProductionBatchIds = async ({ departmentId, shiftType }, callback) => {
+    let query = "select productionQcId,batchId from productionQC where departmentId=? AND shiftType=? AND productionCreated=0 AND status=? AND outOfStock='0' ORDER BY requestedDate DESC";
+    return executeGetParamsQuery(query, [departmentId, shiftType, "Approved"], callback)
 }
 motherPlantDbQueries.getPostProductionBatchIds = async (departmentId, callback) => {
     let query = "select q.productionQcId,p.batchId from qualitycheck q INNER JOIN productionQC p ON q.productionQcId=p.productionQcId where q.departmentId=? AND q.testResult=? AND p.status='Approved' AND q.qcLevel != '1' AND p.outOfStock='0' ORDER BY q.testedDate DESC";
@@ -225,20 +225,20 @@ motherPlantDbQueries.getTotalProductionDetails = async (input, callback) => {
 motherPlantDbQueries.getTotalProductionByDate = async (input, callback) => {
     const { departmentId, startDate, endDate, shiftType, fromStart } = input
     let options = [departmentId, endDate]
-    let query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM production p WHERE departmentId=? AND DATE(`productionDate`)<=?";
+    let query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM production p WHERE departmentId=? AND isApproved=1 AND DATE(`productionDate`)<=?";
 
     if (fromStart != 'true') {
         options = [departmentId, startDate, endDate]
-        query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM production p WHERE departmentId=? AND DATE(`productionDate`)>=? AND DATE(`productionDate`)<=?";
+        query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM production p WHERE departmentId=? AND isApproved=1 AND DATE(`productionDate`)>=? AND DATE(`productionDate`)<=?";
     }
 
     if (input.shiftType !== 'All') {
         options = [departmentId, endDate, shiftType]
-        query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM production p WHERE departmentId=? AND DATE(`productionDate`)<=? AND shiftType=?";
+        query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM production p WHERE departmentId=? AND isApproved=1 AND DATE(`productionDate`)<=? AND shiftType=?";
 
         if (fromStart != 'true') {
             options = [departmentId, startDate, endDate, shiftType]
-            query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM production p WHERE departmentId=? AND DATE(`productionDate`)>=? AND DATE(`productionDate`)<=? AND shiftType=?";
+            query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM production p WHERE departmentId=? AND isApproved=1 AND DATE(`productionDate`)>=? AND DATE(`productionDate`)<=? AND shiftType=?";
         }
     }
     return executeGetParamsQuery(query, options, callback)
@@ -247,19 +247,19 @@ motherPlantDbQueries.getTotalProductionChangeByDate = async (input, callback) =>
     const { departmentId, startDate, endDate, shiftType, type, fromStart } = input
     const { startDate: newStartDate, endDate: newEndDate } = dateComparisions(startDate, endDate, type)
     let options = [departmentId, newEndDate]
-    let query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM production p WHERE departmentId=? AND DATE(`productionDate`)<=?";
+    let query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM production p WHERE departmentId=? AND isApproved=1 AND DATE(`productionDate`)<=?";
 
     if (fromStart != 'true') {
         options = [departmentId, newStartDate, newEndDate]
-        query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM production p WHERE departmentId=? AND DATE(`productionDate`)>=? AND DATE(`productionDate`)<=?";
+        query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM production p WHERE departmentId=? AND isApproved=1 AND DATE(`productionDate`)>=? AND DATE(`productionDate`)<=?";
     }
 
     if (input.shiftType !== 'All') {
         options = [departmentId, newEndDate, shiftType]
-        query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM production p WHERE departmentId=? AND DATE(`productionDate`)<=? AND shiftType=?";
+        query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM production p WHERE departmentId=? AND isApproved=1 AND DATE(`productionDate`)<=? AND shiftType=?";
         if (fromStart != 'true') {
             options = [departmentId, newStartDate, newEndDate, shiftType]
-            query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM production p WHERE departmentId=? AND DATE(`productionDate`)>=? AND DATE(`productionDate`)<=? AND shiftType=?";
+            query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM production p WHERE departmentId=? AND isApproved=1 AND DATE(`productionDate`)>=? AND DATE(`productionDate`)<=? AND shiftType=?";
         }
     }
     return executeGetParamsQuery(query, options, callback)
@@ -346,11 +346,16 @@ motherPlantDbQueries.createProductionQC = async (input, callback) => {
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.createQualityCheck = async (input, callback) => {
-    const { productionQcId, phLevel, TDS, ozoneLevel, testResult, managerName, description, testType, departmentId, qcLevel } = input
-    let query = "insert into qualitycheck (testedDate,productionQcId,phLevel,TDS,ozoneLevel,testResult,managerName,description,testType,qcLevel,departmentId) values(?,?,?,?,?,?,?,?,?,?,?)";
-    let requestBody = [new Date(), productionQcId, phLevel, TDS, ozoneLevel, testResult, managerName, description, testType, qcLevel, departmentId]
+    const { productionQcId, phLevel, approveProd, batchId, TDS, ozoneLevel, testResult, managerName, description, testType, departmentId, qcLevel } = input
+    let query = "insert into qualitycheck (testedDate,batchId,productionQcId,phLevel,TDS,ozoneLevel,testResult,managerName,description,testType,qcLevel,departmentId) values(?,?,?,?,?,?,?,?,?,?,?,?)";
+    let requestBody = [new Date(), batchId, productionQcId, phLevel, TDS, ozoneLevel, testResult, managerName, description, testType, qcLevel, departmentId]
     if (qcLevel == 1) motherPlantDbQueries.updateProductionQCStatus({ productionQcId, status: testResult })
-    if (qcLevel != 1 && testResult == 'Approved') motherPlantDbQueries.updateProductioncreatedStatus({ productionQcId })
+    if (qcLevel != 1 && testResult == 'Approved') {
+        if (approveProd == 1) {
+            motherPlantDbQueries.updateProductionQcCreatedStatus({ productionQcId })
+            motherPlantDbQueries.updateProductionApprovedStatus({ batchId })
+        }
+    }
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.createInternalQC = async (input, callback) => {
@@ -447,9 +452,14 @@ motherPlantDbQueries.updateProductionQCStatus = (input, callback) => {
     let requestBody = [input.status]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
-motherPlantDbQueries.updateProductioncreatedStatus = (input, callback) => {
+motherPlantDbQueries.updateProductionQcCreatedStatus = (input, callback) => {
     let query = `update productionQC set productionCreated=? where productionQcId=${input.productionQcId}`;
     let requestBody = [1]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+motherPlantDbQueries.updateProductionApprovedStatus = (input, callback) => {
+    let query = `update production set isApproved=? where batchId=?`;
+    let requestBody = [1, input.batchId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.deleteVehicle = (vehicleId, callback) => {

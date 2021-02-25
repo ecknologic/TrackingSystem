@@ -329,6 +329,48 @@ export const invoiceColumns = [
         key: 'action'
     },
 ]
+export const paymentColumns = [
+    {
+        title: 'Date',
+        dataIndex: 'date',
+        key: 'date',
+    },
+    {
+        title: 'Payment No',
+        dataIndex: 'paymentNo',
+        key: 'paymentNo',
+    },
+    {
+        title: 'Reference No',
+        dataIndex: 'referenceNo',
+        key: 'referenceNo',
+    },
+    {
+        title: 'Customer Name',
+        dataIndex: 'customerName',
+        key: 'customerName',
+    },
+    {
+        title: 'Invoice Number',
+        dataIndex: 'invoiceId',
+        key: 'invoiceId',
+    },
+    {
+        title: 'Mode',
+        dataIndex: 'paymentMode',
+        key: 'paymentMode',
+    },
+    {
+        title: 'Amount',
+        dataIndex: 'totalAmount',
+        key: 'totalAmount',
+    },
+    {
+        title: 'Unused Amount',
+        dataIndex: 'unusedAmount',
+        key: 'unusedAmount',
+    }
+]
 export const deliveryColumns = [
     {
         title: 'DC Number',

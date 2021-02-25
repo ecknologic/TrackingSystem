@@ -78,6 +78,8 @@ const ProductionQC = ({ goToTab }) => {
 
     const handleSubmit = async () => {
         const formErrors = validateQCcheckValues(formData, 'prod')
+        const { productionQcId } = formData
+        let approveProd = 1
 
         if (!isEmpty(formErrors)) {
             setShake(true)
@@ -86,9 +88,16 @@ const ProductionQC = ({ goToTab }) => {
             return
         }
 
+        QCList.map((item) => {
+            if (item.qcLevel !== 1 && item.testResult === 'Approved') {
+                approveProd = 0
+            }
+        })
+
+        const { batchId } = batchList.find(item => item.productionQcId === productionQcId)
         const qcLevel = QCList.length + 1
         let body = {
-            ...formData, qcLevel
+            ...formData, qcLevel, batchId, approveProd
         }
         const url = '/motherplant/createQualityCheck'
         const options = { item: 'QC Report', v1Ing: 'Sending', v2: 'sent' }
