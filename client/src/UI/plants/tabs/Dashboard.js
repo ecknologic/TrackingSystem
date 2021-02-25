@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Col, message, Row } from 'antd';
+import { Col, Empty, message, Row } from 'antd';
 import { useHistory, useLocation } from 'react-router-dom';
 import React, { Fragment, useEffect, useMemo, useState, useCallback } from 'react';
 import { http } from '../../../modules/http'
@@ -150,7 +150,7 @@ const Dashboard = ({ reFetch }) => {
                                         onClick={goToManageEmployee}
                                     />
                                 </Col>
-                            )) : <NoContent content={`No ${plantType}s to show`} />
+                            )) : <NoContent content={<Empty />} />
                     }
                 </Row>
                 {

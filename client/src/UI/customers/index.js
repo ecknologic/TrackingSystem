@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Col, message, Row } from 'antd';
+import { Col, Empty, message, Row } from 'antd';
 import { useHistory } from 'react-router-dom';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import Header from './header';
@@ -239,7 +239,7 @@ const Customers = () => {
                                         onClick={handleManageAccount}
                                     />
                                 </Col>
-                            )) : <NoContent content='No accounts to show' />
+                            )) : <NoContent content={<Empty />} />
                     }
                 </Row>
                 {
