@@ -46,7 +46,7 @@ const Dashboard = ({ reFetch }) => {
     }, [reFetch])
 
     const getInvoices = async () => {
-        const url = '/invoice/getInvoices'
+        const url = '/invoice/getInvoices/Pending'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -75,7 +75,7 @@ const Dashboard = ({ reFetch }) => {
         else handleStatusUpdate(key, data.invoiceId)
     }
 
-    const handleViewInvoice = () => history.push('/invoices/manage')
+    const handleViewInvoice = (invoice) => history.push('/invoices/manage', { invoice })
 
     const handleGenerateInvoices = () => {
 
@@ -135,7 +135,7 @@ const Dashboard = ({ reFetch }) => {
             status: renderStatus(status),
             dueDate: dayjs(dueDate).format(DATEFORMAT),
             date: dayjs(createdDateTime).format(DATEFORMAT),
-            invoiceId: <span className='app-link' onClick={handleViewInvoice}>{invoiceId}</span>,
+            invoiceId: <span className='app-link' onClick={() => handleViewInvoice(invoice)}>{invoiceId}</span>,
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, invoice)} />
         }
     }), [invoices])

@@ -75,8 +75,8 @@ export const getBase64 = (img, callback) => {
     reader.readAsDataURL(img);
 }
 
-export const base64String = (buffer = []) => {
-    if (!isEmpty(buffer)) return "data:image/png;base64," + btoa(
+export const base64String = (buffer = [], format = 'image/png') => {
+    if (!isEmpty(buffer)) return `data:${format};base64,` + btoa(
         new Uint8Array(buffer)
             .reduce((data, byte) => data + String.fromCharCode(byte), '')
     );

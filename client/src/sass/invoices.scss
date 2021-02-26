@@ -85,6 +85,14 @@
         }
     }
 }
+
+.manage-invoice {
+
+    .no-content {
+        min-height: calc(100vh - 10.5em);
+    }
+}
+
 .manage-invoices-header {
     justify-content: space-between;
 
@@ -94,46 +102,92 @@
     }
 }
 
-// .invoice-manage-content {
+.invoice-manage-content {
+    display: flex;
     
-//     .invoice-title-container {
-//         height: 4em;
-//         align-items: center;
-//     }
+    .left-panel, .right-panel {
+        min-height: calc(100vh - 10.05em);
+        max-height: calc(100vh - 10.05em);
+    }
     
-//     .invoice-title-container.inner {
-//         padding-left: 0;
-//         height: 3em;
-//         align-items: flex-start;
-//     }
+    .left-panel {
+        flex-basis: 33%;
+        user-select: none;
+        padding-left:.25em;
+        border-right: 1px solid #E9E9E9;
+        
+        & > div > div {
+            padding:.25em 0;
+            scroll-behavior: smooth;
+        }
 
-//     .form-divider {
-//         margin: 3em 0;
-//     }
+        .message-list {
+            padding-right: .25em;
+        }
+    }
+    
+    .right-panel {
+        flex: 1;
 
-//     .form-divider.inner {
-//         margin-top: 2.5em;
-//     }
+        .content-header-bar {
+            height: 3.5em;
+            display: flex;
+            align-items: center;
+            padding:0 1em;
+            color: #323130;
+            font-family: 'PoppinsMedium500';
+            border-bottom: 1px solid #E9E9E9;
 
-//     .app-footer-buttons-container.view {
-//         width: 60%;
-//     }
+            .title {
+                font-size: 1.2em;
+            }
 
-//     .multi-buttons-container {
-//         flex: 1;
-//         justify-content: flex-end;
-//     }
+            .menu-panel {
+                flex: 1;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
 
-//     .multi-buttons-container-view {
-//         width: 60%;
-//     }
+                .app-cancel-btn {
+                    svg {
+                        transform: scale(.7);
+                    }
+                }
+            }
+        }
 
-//     .no-content {
-//         min-height: calc(100vh);
-//     }
-// }
+        .content-body {
+            height: calc(100% - 3.5em);
+            max-height: calc(100% - 3.5em);
 
-.invoice-content, .invoice-manage-content {
+            & > div > div {
+                scroll-behavior: smooth;
+            }
+
+            .document-viewer {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 1em 0;
+                
+                .react-pdf__Page {
+                    margin-bottom: 1em;
+                    box-shadow: 0px 1.6px 3.6px 0px  rgba(0,0,0,0.1), 
+                            0px 0.3px 0.9px 0px rgba(0,0,0,0.1);
+
+
+                    &:hover {
+                        box-shadow: 0px 6.4px 14.4px 0px  rgba(0,0,0,0.1), 
+                                    0px 1.2px 3.6px 0px rgba(0,0,0,0.1);
+                    }
+                }
+            }
+
+        }
+    }
+}
+
+.invoice-content {
 
     .invoice-title-container {
         display: flex;

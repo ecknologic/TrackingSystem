@@ -1,35 +1,16 @@
-import axios from 'axios';
-import { useHistory, useLocation } from 'react-router-dom';
-import React, { Fragment, useEffect, useMemo, useState, useCallback } from 'react';
+import { useHistory } from 'react-router-dom';
+import React, { Fragment, useState, useCallback } from 'react';
 import Header from './header';
-import { http } from '../../../modules/http'
 import CreateInvoice from '../tabs/CreateInvoice';
 import QuitModal from '../../../components/CustomModal';
 import ConfirmMessage from '../../../components/ConfirmMessage';
-import { getMainPathname } from '../../../utils/Functions';
 import { TRACKFORM } from '../../../utils/constants';
 import '../../../sass/employees.scss'
 
 const EditInvoice = () => {
     const history = useHistory()
-    const { pathname } = useLocation()
     const [headerContent, setHeaderContent] = useState({})
     const [confirmModal, setConfirmModal] = useState(false)
-
-    const mainUrl = useMemo(() => getMainPathname(pathname), [pathname])
-    const source = useMemo(() => axios.CancelToken.source(), []);
-
-    useEffect(() => {
-        getInvoice()
-
-        return () => {
-            http.ABORT(source)
-        }
-    }, [])
-
-    const getInvoice = async () => {
-
-    }
 
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
     const handleConfirmModalOk = useCallback(() => { setConfirmModal(false); goBack() }, [])
@@ -42,7 +23,7 @@ const EditInvoice = () => {
         else goBack()
     }
 
-    const goBack = () => history.push(mainUrl)
+    const goBack = () => history.push('/invoices')
 
     return (
         <Fragment>

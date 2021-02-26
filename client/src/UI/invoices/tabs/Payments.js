@@ -41,7 +41,7 @@ const Payments = ({ reFetch }) => {
     }, [reFetch])
 
     const getInvoices = async () => {
-        const url = '/invoice/getInvoices'
+        const url = '/invoice/getInvoices/Paid'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -64,6 +64,8 @@ const Payments = ({ reFetch }) => {
         !status && setOpen(false)
     }
 
+    const handleViewInvoice = (invoice) => history.push('/invoices/manage', { invoice })
+
     const handleDateSelect = (value) => {
         setOpen(false)
         setSelectedDate(dayjs(value).format(APIDATEFORMAT))
@@ -78,12 +80,12 @@ const Payments = ({ reFetch }) => {
 
         return {
             key: invoiceId,
-            invoiceId,
             customerName,
             totalAmount,
             dueDate: dayjs(dueDate).format(DATEFORMAT),
             date: dayjs(createdDateTime).format(DATEFORMAT),
-            status: renderStatus(status)
+            status: renderStatus(status),
+            invoiceId: <span className='app-link' onClick={() => handleViewInvoice(invoice)}>{invoiceId}</span>
         }
     }), [invoices])
 

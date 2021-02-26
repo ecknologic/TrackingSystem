@@ -336,24 +336,14 @@ export const paymentColumns = [
         key: 'date',
     },
     {
-        title: 'Payment No',
-        dataIndex: 'paymentNo',
-        key: 'paymentNo',
-    },
-    {
-        title: 'Reference No',
-        dataIndex: 'referenceNo',
-        key: 'referenceNo',
+        title: 'Invoice Number',
+        dataIndex: 'invoiceId',
+        key: 'invoiceId',
     },
     {
         title: 'Customer Name',
         dataIndex: 'customerName',
         key: 'customerName',
-    },
-    {
-        title: 'Invoice Number',
-        dataIndex: 'invoiceId',
-        key: 'invoiceId',
     },
     {
         title: 'Mode',
@@ -369,6 +359,11 @@ export const paymentColumns = [
         title: 'Unused Amount',
         dataIndex: 'unusedAmount',
         key: 'unusedAmount',
+    },
+    {
+        title: 'Status',
+        dataIndex: 'status',
+        key: 'status',
     }
 ]
 export const deliveryColumns = [
