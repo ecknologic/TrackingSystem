@@ -184,8 +184,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
         const { isLocal } = billingAddress
         let { quantity, productPrice, discount, tax, cgst, sgst, igst } = row
         const priceAfterDiscount = productPrice - (productPrice / 100 * discount)
-        const priceAfterTax = priceAfterDiscount + (priceAfterDiscount / 100 * tax)
-        const amount = Number((priceAfterTax * quantity).toFixed(2))
+        const amount = Number((priceAfterDiscount * quantity).toFixed(2))
         const totalTax = (amount / 100 * tax)
         cgst = isLocal ? Number((totalTax / 2).toFixed(2)) : 0.00
         sgst = isLocal ? Number((totalTax / 2).toFixed(2)) : 0.00

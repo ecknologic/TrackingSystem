@@ -14,7 +14,7 @@ import CustomButton from '../../../components/CustomButton';
 import CustomRangeInput from '../../../components/CustomRangeInput';
 import CustomPagination from '../../../components/CustomPagination';
 import { deepClone, getStatusColor, showToast } from '../../../utils/Functions';
-import { DocIconGrey, EditIconGrey, EyeIconGrey, ScheduleIcon, TickIconGrey } from '../../../components/SVG_Icons';
+import { DocIconGrey, EditIconGrey, ScheduleIcon, TickIconGrey } from '../../../components/SVG_Icons';
 const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
@@ -40,8 +40,7 @@ const Dashboard = ({ reFetch }) => {
         }
     }, [])
 
-    useEffect(() => {
-        setLoading(true)
+    useEffect(async () => {
         getInvoices()
     }, [reFetch])
 
@@ -53,6 +52,15 @@ const Dashboard = ({ reFetch }) => {
             setInvoices(data)
             setTotalCount(data.length)
             setLoading(false)
+        } catch (error) { }
+    }
+
+    const generateInvoices = async () => {
+        const url = '/invoice/generateMultipleInvoices'
+        const body = { fromDate: startDate, toDate: endDate }
+
+        try {
+            await http.POST(axios, url, body, config)
         } catch (error) { }
     }
 
@@ -77,7 +85,16 @@ const Dashboard = ({ reFetch }) => {
 
     const handleViewInvoice = (invoice) => history.push('/invoices/manage', { invoice })
 
-    const handleGenerateInvoices = () => {
+    const handleGenerateInvoices = async () => {
+        try {
+            setLoading(true)
+            setGenerateDisabled(true)
+            await generateInvoices()
+            await getInvoices()
+        } catch (error) {
+            setGenerateDisabled(false)
+            setLoading(false)
+        }
 
     }
 
@@ -122,7 +139,6 @@ const Dashboard = ({ reFetch }) => {
         const { invoiceId, createdDateTime, totalAmount, customerName, dueDate, status } = invoice
 
         const options = [
-            // <Menu.Item key="view" icon={<EyeIconGrey />}>View</Menu.Item>,
             <Menu.Item key="edit" icon={<EditIconGrey />}>Edit</Menu.Item>,
             <Menu.Item key="paid" className={status === 'Paid' ? 'disabled' : ''} icon={<TickIconGrey />}>Paid</Menu.Item>,
             <Menu.Item key="due" className={status === 'Pending' ? 'disabled' : ''} icon={<DocIconGrey />}>Due</Menu.Item>

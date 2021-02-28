@@ -13,6 +13,7 @@ const Invoices = () => {
     const history = useHistory()
     const { state } = useLocation()
     const [loading, setLoading] = useState(true)
+    const [isLoading, setIsLoading] = useState(false)
     const [invoices, setInvoices] = useState([])
     const [activeMsg, setActiveMsg] = useState(state ? state.invoice : {})
 
@@ -20,11 +21,23 @@ const Invoices = () => {
     const config = { cancelToken: source.token }
 
     useEffect(() => {
+        state && getInvoice(state.invoice.invoiceId)
         getInvoices()
     }, [])
 
+    const getInvoice = async (id) => {
+        const url = `/invoice/getInvoiceById/${id}`
+
+        try {
+            setIsLoading(true)
+            const data = await http.GET(axios, url, config)
+            setActiveMsg(data)
+            setIsLoading(false)
+        } catch (error) { }
+    }
+
     const getInvoices = async () => {
-        const url = `/invoice/getInvoices/Paid`
+        const url = `/invoice/getInvoices`
 
         try {
             setLoading(true)
@@ -36,11 +49,17 @@ const Invoices = () => {
 
     const handleMsgSelect = (msg) => {
         setActiveMsg(msg)
+        getInvoice(msg.invoiceId)
     }
 
     const onAdd = () => history.push('/invoices/2')
     const onEdit = (id) => history.push(`/invoices/edit/${id}`)
     const handleBack = () => history.push('/invoices')
+
+    const handlePrint = (event, pdf) => {
+        event.preventDefault();
+        window.open(pdf, "PRINT", "height=400,width=600");
+    }
 
     return (
         <div className='manage-invoice'>
@@ -53,7 +72,7 @@ const Invoices = () => {
                                 <ListPanel data={invoices} onSelect={handleMsgSelect} active={activeMsg} />
                             </div>
                             <div className='right-panel'>
-                                <ContentPanel data={activeMsg} onEdit={onEdit} />
+                                <ContentPanel isLoading={isLoading} data={activeMsg} onEdit={onEdit} onPrint={handlePrint} />
                             </div>
                         </div >
                     )

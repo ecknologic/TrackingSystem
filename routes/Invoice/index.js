@@ -28,7 +28,7 @@ router.get('/getInvoiceById/:invoiceId', (req, res) => {
             const { customerId, customerName, organizationName, address, gstNo, panNo, mobileNumber, invoiceId } = results[0]
             let products = JSON.parse(results[0].products)
             let obj = {
-                customerId, customerName, organizationName, address, gstNo, panNo, mobileNumber
+                customerId, customerName, organizationName, address, gstNo, panNo, mobileNumber, invoiceId
             }
             obj.products = products
             if (obj.products.length) {
@@ -53,7 +53,7 @@ router.get('/getInvoiceById/:invoiceId', (req, res) => {
                 }
             }
             let invoice = {
-                items: [obj], invoiceId
+                items: [obj], invoiceId, gstNo
             }
             createSingleDeliveryInvoice(invoice, "invoice.pdf").then(response => {
                 setTimeout(() => {
@@ -70,7 +70,7 @@ router.get('/getInvoiceById/:invoiceId', (req, res) => {
 router.get('/getInvoiceId', (req, res) => {
     invoiceQueries.getInvoiceId((err, results) => {
         if (err) res.status(500).json(dbError(err));
-        else res.send(`INV00${results[0].invoiceId + 1}`);
+        else res.send(getInvoiceNumber(results[0].invoiceId + 1));
     });
 });
 router.put('/deleteInvoiceProducts', (req, res) => {
@@ -85,87 +85,90 @@ router.put('/updateInvoiceStatus', (req, res) => {
         else res.send("Updated successfully");
     });
 });
-router.post("/generateInvoices", (req, res) => {
+router.post("/generateMultipleInvoices", (req, res) => {
     invoiceQueries.getInvoiceId((err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
             generatePDF(req.body, async (err, data) => {
                 if (err) res.status(500).json(dbError(err));
                 else {
-                    let arr = []
-                    for (let [index, i] of data.entries()) {
-                        let { gstNo, customerId, customerName, EmailId, createdBy, price20L, price1L, price500ML, price300ML, price2L } = i
-                        let products = []
-                        let obj = {
-                            customerName,
-                            gstNo,
-                            invoiceDate: new Date(),
-                            customerId: customerId,
-                            salesPerson: createdBy,
-                            dueDate: "2021-02-26",
-                            hsnCode: 12345,
-                            poNo: 12,
-                            mailSubject: "Hello",
-                            TAndC: "hi",
-                            invoiceId: `INV00${results[0].invoiceId + (index + 1)}`,
-                            emailIds: EmailId
-                        }
-                        if (i['20LCans'] > 0) {
-                            products.push({
-                                "productName": "20 Lt Bibo Water Jar",
-                                "quantity": i['20LCans'],
-                                "productPrice": price20L,
-                                "discount": 0,
-                                "tax": 12,
-                                ...getResults({ gstNo, quantity: i['20LCans'], productPrice: price20L, discount: 0, tax: 12 })
-                            })
-                        }
-                        if (i['1LBoxes'] > 0) {
-                            products.push({
-                                "productName": "1 Lt Bibo Water Jar",
-                                "quantity": i['1LBoxes'],
-                                "productPrice": price1L,
-                                "discount": 0,
-                                "tax": 18,
-                                ...getResults({ gstNo, quantity: i['1LBoxes'], productPrice: price1L, discount: 0, tax: 12 })
+                    if (!data.length) res.status(404).json('No data found')
+                    else {
+                        let arr = []
+                        for (let [index, i] of data.entries()) {
+                            let { gstNo, customerId, customerName, EmailId, createdBy, price20L, price1L, price500ML, price300ML, price2L } = i
+                            let products = []
+                            let obj = {
+                                customerName,
+                                gstNo,
+                                invoiceDate: new Date(),
+                                customerId: customerId,
+                                salesPerson: createdBy,
+                                dueDate: "2021-02-26",
+                                hsnCode: 12345,
+                                poNo: 12,
+                                mailSubject: "Hello",
+                                TAndC: "hi",
+                                invoiceId: getInvoiceNumber(results[0].invoiceId + (index + 1)),
+                                emailIds: EmailId
+                            }
+                            if (i['20LCans'] > 0) {
+                                products.push({
+                                    "productName": "20 Lt Bibo Water Jar",
+                                    "quantity": i['20LCans'],
+                                    "productPrice": price20L,
+                                    "discount": 0,
+                                    "tax": 12,
+                                    ...getResults({ gstNo, quantity: i['20LCans'], productPrice: price20L, discount: 0, tax: 12 })
+                                })
+                            }
+                            if (i['1LBoxes'] > 0) {
+                                products.push({
+                                    "productName": "1 Lt Bibo Water Jar",
+                                    "quantity": i['1LBoxes'],
+                                    "productPrice": price1L,
+                                    "discount": 0,
+                                    "tax": 18,
+                                    ...getResults({ gstNo, quantity: i['1LBoxes'], productPrice: price1L, discount: 0, tax: 12 })
 
-                            })
-                        }
-                        if (i['500MLBoxes'] > 0) {
-                            products.push({
-                                "productName": "500ML Bibo Water Jar",
-                                "quantity": i['500MLBoxes'],
-                                "productPrice": price500ML,
-                                "discount": 0,
-                                "tax": 18,
-                                ...getResults({ gstNo, quantity: i['500MLBoxes'], productPrice: price500ML, discount: 0, tax: 12 })
+                                })
+                            }
+                            if (i['500MLBoxes'] > 0) {
+                                products.push({
+                                    "productName": "500ML Bibo Water Jar",
+                                    "quantity": i['500MLBoxes'],
+                                    "productPrice": price500ML,
+                                    "discount": 0,
+                                    "tax": 18,
+                                    ...getResults({ gstNo, quantity: i['500MLBoxes'], productPrice: price500ML, discount: 0, tax: 12 })
 
-                            })
+                                })
+                            }
+                            if (i['300MLBoxes'] > 0) {
+                                products.push({
+                                    "productName": "300ML Lt Bibo Water Jar",
+                                    "quantity": i['300MLBoxes'],
+                                    "productPrice": price300ML,
+                                    "discount": 0,
+                                    "tax": 18,
+                                    ...getResults({ gstNo, quantity: i['300MLBoxes'], productPrice: price300ML, discount: 0, tax: 12 })
+                                })
+                            }
+                            if (i['2LBoxes'] > 0) {
+                                products.push({
+                                    "productName": "2 Lt Bibo Water Jar",
+                                    "quantity": i['2LBoxes'],
+                                    "productPrice": price2L,
+                                    "discount": 0,
+                                    "tax": 18,
+                                    ...getResults({ gstNo, quantity: i['2LBoxes'], productPrice: price2L, discount: 0, tax: 12 })
+                                })
+                            }
+                            obj.products = products
+                            obj.totalAmount = computeTotalAmount(products)
+                            await saveInvoice(obj, res, index == (data.length - 1) ? true : false)
+                            arr.push(obj)
                         }
-                        if (i['300MLBoxes'] > 0) {
-                            products.push({
-                                "productName": "300ML Lt Bibo Water Jar",
-                                "quantity": i['300MLBoxes'],
-                                "productPrice": price300ML,
-                                "discount": 0,
-                                "tax": 18,
-                                ...getResults({ gstNo, quantity: i['300MLBoxes'], productPrice: price300ML, discount: 0, tax: 12 })
-                            })
-                        }
-                        if (i['2LBoxes'] > 0) {
-                            products.push({
-                                "productName": "2 Lt Bibo Water Jar",
-                                "quantity": i['2LBoxes'],
-                                "productPrice": price2L,
-                                "discount": 0,
-                                "tax": 18,
-                                ...getResults({ gstNo, quantity: i['2LBoxes'], productPrice: price2L, discount: 0, tax: 12 })
-                            })
-                        }
-                        obj.products = products
-                        obj.totalAmount = computeTotalAmount(products)
-                        await saveInvoice(obj, res, index == (data.length - 1) ? true : false)
-                        arr.push(obj)
                     }
                 }
             })
@@ -199,10 +202,10 @@ router.post("/createInvoice", (req, res) => {
         }
     }
     let invoice = {
-        items: [obj], invoiceId
+        items: [obj], invoiceId, gstNo
     }
     createSingleDeliveryInvoice(invoice, "invoice.pdf").then(response => {
-        saveInvoice(req.body, res)
+        saveInvoice(req.body, res, true)
     })
 });
 router.post("/updateInvoice", (req, res) => {
@@ -232,7 +235,7 @@ router.post("/updateInvoice", (req, res) => {
         }
     }
     let invoice = {
-        items: [obj], invoiceId
+        items: [obj], invoiceId, gstNo
     }
     createSingleDeliveryInvoice(invoice, "invoice.pdf").then(response => {
         updateInvoice(req, res, result)
@@ -281,11 +284,10 @@ const updateInvoice = (req, res, pdfData) => {
     })
 }
 const getResults = (row) => {
-    let { quantity, productPrice, discount, tax, cgst, sgst, igst, gstNo } = row
+    let { quantity, productPrice, discount = 0, tax, cgst, sgst, igst, gstNo } = row
     const isLocal = gstNo && gstNo.startsWith('36')
     const priceAfterDiscount = productPrice - (productPrice / 100 * discount)
-    const priceAfterTax = priceAfterDiscount + (priceAfterDiscount / 100 * tax)
-    const amount = Number((priceAfterTax * quantity).toFixed(2))
+    const amount = Number((priceAfterDiscount * quantity).toFixed(2))
     const totalTax = (amount / 100 * tax)
     cgst = isLocal ? Number((totalTax / 2).toFixed(2)) : 0.00
     sgst = isLocal ? Number((totalTax / 2).toFixed(2)) : 0.00
@@ -303,5 +305,11 @@ const computeTotalAmount = (data) => {
     const totalAmount = Number((amount + cgstAmount + sgstAmount + igstAmount).toFixed(2))
 
     return totalAmount
+}
+
+const getInvoiceNumber = (number) => {
+    if (number < 10) return `INV00${number}`
+    else if (number < 100) return `INV0${number}`
+    else return `INV${number}`
 }
 module.exports = router;

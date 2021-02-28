@@ -5,9 +5,13 @@ const HSNCODE = 22011010;
 const GST20L = 12, GSTOthers = 18, CGST20L = 6, CGSTOthers = 9;
 var totalTaxValue = 0
 var totalCGSTValue = 0
+var totalIGSTValue = 0
 function createSingleDeliveryInvoice(invoice, path) {
     return new Promise((resolve) => {
         let doc = new PDFDocument({ size: "A4", margin: 50 });
+        totalCGSTValue = 0
+        totalTaxValue = 0
+        totalIGSTValue = 0
 
         generateHeader(doc);
         generateCustomerInformation(doc, invoice);
@@ -97,7 +101,8 @@ function generateInvoiceTable(doc, invoice) {
     doc.font("Helvetica");
 
     for (i = 0, j = 0; i < invoice.items.length; i++) {
-        const item = invoice.items[i];
+        const { items, gstNo } = invoice;
+        const item = items[i];
         let product, quantity, price, address = item.address;
         let arr = [{ "20LCans": item["20LCans"], price20L: item.price20L }, { "1LBoxes": item["1LBoxes"], "price1L": item.price1L }, { "500MLBoxes": item["500MLBoxes"], "price500ML": item.price500ML }, { "300MLBoxes": item["300MLBoxes"], "price300ML": item.price300ML }, { "2LBoxes": item["2LBoxes"], "price2L": item.price2L }]
         for (let [index, productInfo] of arr.entries()) {
@@ -106,7 +111,7 @@ function generateInvoiceTable(doc, invoice) {
                 quantity = productInfo["20LCans"];
                 price = productInfo.price20L
                 subTotal = subTotal + productInfo.price20L
-                renderProductRow(doc, invoiceTableTop + 27, j, product, quantity, price, address, index, i)
+                renderProductRow(doc, invoiceTableTop + 27, j, product, quantity, price, address, index, i, gstNo)
                 j++;
             }
             else if (productInfo["2LBoxes"] > 0) {
@@ -114,34 +119,34 @@ function generateInvoiceTable(doc, invoice) {
                 quantity = productInfo["2LBoxes"];
                 price = productInfo.price2L
                 subTotal = subTotal + productInfo.price2L
-                renderProductRow(doc, invoiceTableTop + 27, j, product, quantity, price, address, index, i)
+                renderProductRow(doc, invoiceTableTop + 27, j, product, quantity, price, address, index, i, gstNo)
                 j++;
             } else if (productInfo["1LBoxes"] > 0) {
                 product = "1L Boxes";
                 quantity = productInfo["1LBoxes"];
                 price = productInfo.price1L
                 subTotal = subTotal + productInfo.price1L
-                renderProductRow(doc, invoiceTableTop + 27, j, product, quantity, price, address, index, i)
+                renderProductRow(doc, invoiceTableTop + 27, j, product, quantity, price, address, index, i, gstNo)
                 j++;
             } else if (productInfo["500MLBoxes"] > 0) {
                 product = "500ML Boxes";
                 quantity = productInfo["500MLBoxes"];
                 price = productInfo.price500ML
                 subTotal = subTotal + productInfo.price500ML
-                renderProductRow(doc, invoiceTableTop + 27, j, product, quantity, price, address, index, i)
+                renderProductRow(doc, invoiceTableTop + 27, j, product, quantity, price, address, index, i, gstNo)
                 j++;
             } else if (productInfo["300MLBoxes"] > 0) {
                 product = "300ML Boxes";
                 quantity = productInfo["300MLBoxes"];
                 price = productInfo.price300ML
                 subTotal = subTotal + productInfo.price300ML
-                renderProductRow(doc, invoiceTableTop + 27, j, product, quantity, price, address, index, i)
+                renderProductRow(doc, invoiceTableTop + 27, j, product, quantity, price, address, index, i, gstNo)
                 j++;
             }
         }
     }
 
-    function renderProductRow(doc, invoiceTableTop, j, product, quantity, price, address, index, i) {
+    function renderProductRow(doc, invoiceTableTop, j, product, quantity, price, address, index, i, gstNo) {
         const position = invoiceTableTop + j * 30;
         if (position == 60) {
             doc.addPage();
@@ -151,9 +156,10 @@ function generateInvoiceTable(doc, invoice) {
             j = 0;
         }
         let taxValue = quantity * price
-        let cgst = product == "20 Lt Bt Jar" ? CGST20L : CGSTOthers
+        // let cgst = product == "20 Lt Bt Jar" ? CGST20L : CGSTOthers
         let gst = product == "20 Lt Bt Jar" ? GST20L : GSTOthers
-        let cgstValue = (taxValue * cgst) / 100
+        // let cgstValue = (taxValue * cgst) / 100
+        const { amount, cgst, sgst, igst } = getResults({ quantity, price, gst, gstNo })
         generateIndividualTableRow(
             doc,
             position,
@@ -162,15 +168,16 @@ function generateInvoiceTable(doc, invoice) {
             gst,
             quantity,
             price,
-            taxValue,
-            cgstValue,
-            cgstValue,
-            0.00
+            amount,
+            cgst,
+            sgst,
+            igst
         )
-        totalTaxValue = totalTaxValue + taxValue
-        totalCGSTValue = totalCGSTValue + cgstValue
+        totalTaxValue = totalTaxValue + amount
+        totalCGSTValue = totalCGSTValue + cgst
+        totalIGSTValue = totalIGSTValue + igst
     }
-    let totalAmount = totalTaxValue + (2 * totalCGSTValue)
+    let totalAmount = totalTaxValue + (2 * totalCGSTValue) + totalIGSTValue
     const subtotalPosition = (invoiceTableTop + (j + 1) * 30) + 98;
     generateHr(doc, subtotalPosition)
     doc
@@ -296,7 +303,17 @@ function formatDate(date) {
 
     return year + "/" + month + "/" + day;
 }
-
+const getResults = (row) => {
+    let { quantity, price, discount = 0, gst, cgst, sgst, igst, gstNo } = row
+    const isLocal = gstNo && gstNo.startsWith('36')
+    const priceAfterDiscount = price - (price / 100 * discount)
+    const amount = Number((priceAfterDiscount * quantity).toFixed(2))
+    const totalTax = (amount / 100 * gst)
+    cgst = isLocal ? Number((totalTax / 2).toFixed(2)) : 0.00
+    sgst = isLocal ? Number((totalTax / 2).toFixed(2)) : 0.00
+    igst = isLocal ? 0.00 : Number((totalTax).toFixed(2))
+    return { amount, cgst, sgst, igst }
+}
 module.exports = {
     createSingleDeliveryInvoice
 };
