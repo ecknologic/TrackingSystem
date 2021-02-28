@@ -6,7 +6,7 @@ const { UPDATEMESSAGE } = require('../../utils/constants');
 const customerQueries = require('../../dbQueries/Customer/queries.js');
 const { createSingleDeliveryInvoice } = require('./createInvoice.js');
 const { createMultiDeliveryInvoice } = require('./invoice.js');
-const fs = require('fs')
+const fs = require('fs');
 
 router.get('/getInvoices/:status', (req, res) => {
     invoiceQueries.getInvoices(req.params.status, (err, results) => {
@@ -69,12 +69,7 @@ router.post("/createInvoice", (req, res) => {
         items: [obj], invoiceId
     }
     createSingleDeliveryInvoice(invoice, "invoice.pdf").then(response => {
-        fs.readFile("invoice.pdf", (err, result) => {
-            if (err) console.log("ERR", err)
-            else {
-                saveInvoice(req, res, result)
-            }
-        })
+        saveInvoice(req, res, result)
     })
 });
 router.post("/updateInvoice", (req, res) => {
@@ -107,12 +102,7 @@ router.post("/updateInvoice", (req, res) => {
         items: [obj], invoiceId
     }
     createSingleDeliveryInvoice(invoice, "invoice.pdf").then(response => {
-        fs.readFile("invoice.pdf", (err, result) => {
-            if (err) console.log("ERR", err)
-            else {
-                updateInvoice(req, res, result)
-            }
-        })
+        updateInvoice(req, res, result)
     })
 });
 const saveInvoice = (req, res, pdfData) => {
@@ -124,7 +114,12 @@ const saveInvoice = (req, res, pdfData) => {
             if (products.length) {
                 invoiceQueries.saveInvoiceProducts({ products, invoiceId }, (err, data) => {
                     if (err) res.status(500).json(dbError(err));
-                    else res.json({ message: 'Invoice created successfully' })
+                    else {
+                        invoiceQueries.saveInvoicePdf({ invoiceId }, (err, data) => {
+                            if (err) res.status(500).json(dbError(err));
+                            else res.json({ message: 'Invoice created successfully' })
+                        })
+                    }
                 })
             } else res.status(500).json({ message: "Products should not be empty" })
         }
@@ -139,7 +134,12 @@ const updateInvoice = (req, res, pdfData) => {
             if (products.length) {
                 invoiceQueries.updateInvoiceProducts({ products, invoiceId }, (err, data) => {
                     if (err) res.status(500).json(dbError(err));
-                    else res.json({ message: 'Invoice updated successfully' })
+                    else {
+                        invoiceQueries.saveInvoicePdf({ invoiceId }, (err, data) => {
+                            if (err) res.status(500).json(dbError(err));
+                            else res.json({ message: 'Invoice updated successfully' })
+                        })
+                    }
                 })
             } else res.status(500).json({ message: "Products should not be empty" })
         }
