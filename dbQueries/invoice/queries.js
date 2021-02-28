@@ -2,6 +2,11 @@ const { executeGetQuery, executePostOrUpdateQuery, executeGetParamsQuery } = req
 let invoiceQueries = {}
 
 invoiceQueries.getInvoices = async (status, callback) => {
+    let query = `select * from Invoice ORDER BY createdDateTime DESC`;
+    return executeGetQuery(query, callback)
+}
+
+invoiceQueries.getInvoiceByStatus = async (status, callback) => {
     let query = `select * from Invoice where status=? ORDER BY createdDateTime DESC`;
     return executeGetParamsQuery(query, [status], callback)
 }

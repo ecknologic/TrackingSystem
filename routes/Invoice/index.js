@@ -8,8 +8,14 @@ const { createSingleDeliveryInvoice } = require('./createInvoice.js');
 const { createMultiDeliveryInvoice } = require('./invoice.js');
 const fs = require('fs')
 
-router.get('/getInvoices/:status', (req, res) => {
+router.get('/getInvoices', (req, res) => {
     invoiceQueries.getInvoices(req.params.status, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.send(results);
+    });
+});
+router.get('/getInvoices/:status', (req, res) => {
+    invoiceQueries.getInvoiceByStatus(req.params.status, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else res.send(results);
     });
