@@ -10,6 +10,10 @@ warehouseQueries.getDeliveryDetails = (input, callback) => {
     let query = "select c.customerOrderId,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS cans20L,c.1LBoxes AS boxes1L,c.500MLBoxes AS boxes500ML,c.300MLBoxes AS boxes300ML,c.2LBoxes AS boxes2L,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE DATE(`deliveryDate`) = ? AND warehouseId=? ORDER BY c.dcNo DESC";
     return executeGetParamsQuery(query, [date, departmentId], callback)
 }
+warehouseQueries.getCustomerDcDetails = (customerId, callback) => {
+    let query = "select c.customerOrderId,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS cans20L,c.1LBoxes AS boxes1L,c.500MLBoxes AS boxes500ML,c.300MLBoxes AS boxes300ML,c.2LBoxes AS boxes2L,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE existingCustomerId=? ORDER BY c.dcNo DESC";
+    return executeGetParamsQuery(query, [customerId], callback)
+}
 warehouseQueries.getTotalSales = (input, callback) => {
     const { startDate, endDate, departmentId, fromStart } = input
     let query = "select SUM(c.20LCans) AS product20LCount,SUM(c.1LBoxes) AS product1LCount,SUM(c.500MLBoxes) AS product500MLCount,SUM(c.300MLBoxes) AS product300MLCount,SUM(c.2LBoxes) AS product2LCount FROM customerorderdetails c WHERE DATE(`deliveredDate`) <= ? AND isDelivered='Completed'";

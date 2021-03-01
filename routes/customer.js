@@ -14,6 +14,7 @@ const { saveToCustomerOrderDetails } = require('./utilities');
 const { createInvoice } = require('./Invoice/invoice');
 const { UPDATEMESSAGE, DELETEMESSAGE } = require('../utils/constants.js');
 const usersQueries = require('../dbQueries/users/queries.js');
+const warehouseQueries = require('../dbQueries/warehouse/queries.js');
 let departmentId;
 
 var storage = multer.diskStorage({
@@ -679,5 +680,12 @@ router.get("/getSalesPersons", (req, res) => {
       res.json(data)
     }
   })
+});
+router.get('/customerDCDetails/:customerId', (req, res) => {
+  var customerId = req.params.customerId;
+  warehouseQueries.getCustomerDcDetails(customerId, (err, results) => {
+    if (err) res.status(500).json(err.sqlMessage);
+    res.send(JSON.stringify(results));
+  });
 });
 module.exports = router;
