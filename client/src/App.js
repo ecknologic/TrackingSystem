@@ -5,25 +5,26 @@ import { getMainPathname, resetTrackForm } from './utils/Functions';
 import Login from './UI/auth/Login';
 import Products from './UI/products';
 import Invoices from './UI/invoices';
-import Customers from './UI/customers';
 import Transport from './UI/transport';
+import Customers from './UI/customers';
 import Dispatches from './UI/dispatches';
-import PageLayout from './UI/page-layout';
 import Staff from './UI/employees/Staff';
+import PageLayout from './UI/page-layout';
 import AddAccount from './UI/accounts/add';
-import EditInvoice from './UI/invoices/edit';
-import ViewAccount from './UI/accounts/view';
 import ManagePlant from './UI/plants/manage';
 import Drivers from './UI/employees/Drivers';
 import Distributors from './UI/distributors';
-import Warehouses from './UI/plants/Warehouses';
+import EditInvoice from './UI/invoices/edit';
+import ViewAccount from './UI/accounts/view';
 import NoContent from './components/NoContent';
+import Warehouses from './UI/plants/Warehouses';
+import ManageInvoices from './UI/invoices/manage';
 import QualityControl from './UI/quality-control';
 import WarehouseStock from './UI/stock/warehouse';
-import Motherplants from './UI/plants/Motherplants';
 import ManageEmployee from './UI/employees/manage';
 import ApproveAccount from './UI/accounts/approve';
 import Materials from './UI/materials/super-admin';
+import Motherplants from './UI/plants/Motherplants';
 import MotherplantStock from './UI/stock/motherplant';
 import AccountsDashboard from './UI/accounts/dashboard';
 import ReturnEmptyCans from './UI/empty-cans/warehouse';
@@ -115,8 +116,9 @@ const App = () => {
                   <Route path='/staff' render={byRole(<Staff />)} />
                   <Route path='/routes' render={byRole(<Transport />)} />
                   <Route path='/drivers' render={byRole(<Drivers />)} />
+                  <Route path='/invoices/manage' render={byRole(<ManageInvoices />)} />
                   <Route path='/invoices/edit/:invoiceId' render={byRole(<EditInvoice />)} />
-                  <Route path='/invoices' render={byRole(<Invoices />)} />
+                  <Route path='/invoices/:active?' render={byRole(<Invoices />)} />
                   <Route path='/products' render={byRole(<Products />)} />
                   <Route path='/distributors' render={byRole(<Distributors />)} />
                   <Route path='/motherplants' render={byRole(<Motherplants />)} />
@@ -124,7 +126,7 @@ const App = () => {
                   <Route path='/customers/add-account' render={byRole(<AddAccount />)} />
                   <Route path='/customers/approval/:accountId' render={byRole(<ApproveAccount />)} />
                   <Route path='/customers/manage/:accountId' render={byRole(<ViewAccount />)} />
-                  <Route path='/customers' render={byRole(<Customers />)} />
+                  <Route path='/customers/:active?' render={byRole(<Customers />)} />
                   <Route path='/unauthorized' render={Unauthorized} />
                   <Route render={noMatchAuth} />
                </Switch>

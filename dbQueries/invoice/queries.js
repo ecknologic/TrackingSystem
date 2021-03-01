@@ -1,13 +1,19 @@
+var fs = require('fs')
 const { executeGetQuery, executePostOrUpdateQuery, executeGetParamsQuery } = require('../../utils/functions.js');
 let invoiceQueries = {}
 
-invoiceQueries.getInvoices = async (callback) => {
-    let query = `select * from Invoice ORDER BY createdDateTime DESC`;
+invoiceQueries.getInvoices = async (status, callback) => {
+    let query = `select * from Invoice ORDER BY invoiceId DESC`;
     return executeGetQuery(query, callback)
 }
 
+invoiceQueries.getInvoiceByStatus = async (status, callback) => {
+    let query = `select * from Invoice where status=? ORDER BY invoiceId DESC`;
+    return executeGetParamsQuery(query, [status], callback)
+}
+
 invoiceQueries.getInvoiceById = async (invoiceId, callback) => {
-    let query = `select i.*,JSON_ARRAYAGG(json_object('key',p.id,'discount',p.discount,'productName',p.productName,'productPrice',ROUND(p.productPrice,1),'quantity',p.quantity,'tax',p.tax,'amount',p.amount,'cgst',p.cgst,'sgst',p.sgst,'igst',p.igst)) as products from Invoice i INNER JOIN invoiceProductsDetails p ON i.invoiceId=p.invoiceId where i.invoiceId=? AND p.deleted=0`;
+    let query = `select i.*,JSON_ARRAYAGG(json_object('key',p.id,'discount',p.discount,'productName',p.productName,'productPrice',ROUND(p.productPrice,1),'quantity',p.quantity,'tax',p.tax,'amount',ROUND(p.amount),'cgst',ROUND(p.cgst),'sgst',ROUND(p.sgst),'igst',ROUND(p.igst))) as products,c.organizationName, c.Address1 as address, c.gstNo, c.panNo, c.mobileNumber from Invoice i INNER JOIN invoiceProductsDetails p ON i.invoiceId=p.invoiceId INNER JOIN customerdetails c ON c.customerId=i.customerId where i.invoiceId=? AND p.deleted=0`;
     return executeGetParamsQuery(query, [invoiceId], callback)
 }
 
@@ -18,12 +24,13 @@ invoiceQueries.getInvoiceId = async (callback) => {
 
 //POST Request Methods
 invoiceQueries.createInvoice = (input, callback) => {
-    const { customerId, invoiceDate, dueDate, salesPerson, mailSubject, mailIds, TAndC, invoicePdf, invoiceId, hsnCode, poNo, totalAmount, customerName } = input
-    let query = "insert into Invoice (customerId,invoiceDate,dueDate,salesPerson,mailSubject,mailIds,TAndC,invoicePdf,invoiceId,hsnCode,poNo,totalAmount,customerName) values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    const { customerId, invoiceDate, dueDate, salesPerson, mailSubject, mailIds, TAndC, invoiceId, hsnCode, poNo, totalAmount, customerName } = input
+    let query = "insert into Invoice (customerId,invoiceDate,dueDate,salesPerson,mailSubject,mailIds,TAndC,invoiceId,hsnCode,poNo,totalAmount,customerName) values(?,?,?,?,?,?,?,?,?,?,?,?)";
     // var gstProofImage = Buffer.from(gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-    let requestBody = [customerId, invoiceDate, dueDate, salesPerson, mailSubject, mailIds, TAndC, invoicePdf, invoiceId, hsnCode, poNo, totalAmount, customerName]
+    let requestBody = [customerId, invoiceDate, dueDate, salesPerson, mailSubject, mailIds, TAndC, invoiceId, hsnCode, poNo, totalAmount, customerName]
     executePostOrUpdateQuery(query, requestBody, callback)
 }
+
 invoiceQueries.saveInvoiceProducts = (input, callback) => {
     const { invoiceId, products } = input
     const sql = products.map(item => "('" + invoiceId + "', '" + item.productName + "', " + item.productPrice + ", " + item.discount + ", " + item.quantity + ", " + item.tax + ", " + item.cgst + ", " + item.sgst + ", " + item.igst + ", " + item.amount + ")")
@@ -31,11 +38,19 @@ invoiceQueries.saveInvoiceProducts = (input, callback) => {
     executeGetQuery(query, callback)
 }
 
+invoiceQueries.saveInvoicePdf = (input, callback) => {
+    const { invoiceId } = input
+    let query = "update Invoice set invoicePdf=? where invoiceId='" + invoiceId + "'"
+    fs.readFile("invoice.pdf", (err, result) => {
+        executePostOrUpdateQuery(query, [result], callback)
+    })
+}
+
 invoiceQueries.updateInvoice = (input, callback) => {
-    const { customerId, invoiceDate, dueDate, salesPerson, mailSubject, mailIds, TAndC, invoicePdf, invoiceId, hsnCode, poNo, totalAmount, customerName } = input
-    let query = "Update Invoice SET customerId=?,invoiceDate=?,dueDate=?,salesPerson=?,mailSubject=?,mailIds=?,TAndC=?,invoicePdf=?,hsnCode=?,poNo=?,totalAmount=?,customerName=? where invoiceId=?"
+    const { customerId, invoiceDate, dueDate, salesPerson, mailSubject, mailIds, TAndC, invoiceId, hsnCode, poNo, totalAmount, customerName } = input
+    let query = "Update Invoice SET customerId=?,invoiceDate=?,dueDate=?,salesPerson=?,mailSubject=?,mailIds=?,TAndC=?,hsnCode=?,poNo=?,totalAmount=?,customerName=? where invoiceId=?"
     // var gstProofImage = Buffer.from(gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-    let requestBody = [customerId, invoiceDate, dueDate, salesPerson, mailSubject, mailIds, TAndC, invoicePdf, hsnCode, poNo, totalAmount, customerName, invoiceId]
+    let requestBody = [customerId, invoiceDate, dueDate, salesPerson, mailSubject, mailIds, TAndC, hsnCode, poNo, totalAmount, customerName, invoiceId]
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 

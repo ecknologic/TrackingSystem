@@ -1,10 +1,11 @@
 import { useEffect } from "react";
 
-export default function ScrollUp({ dep }) {
+export default function ScrollUp({ dep, parent = '#content' }) {
 
     useEffect(() => {
         let divElem, chElem, topPos;
-        divElem = document.querySelector('#content').parentNode;
+        const el = document.querySelector(parent)
+        if (el) divElem = el.parentNode;
 
         if (divElem) chElem = divElem;
         if (chElem) {

@@ -1,13 +1,15 @@
 import { Tabs } from 'antd';
+import { useParams } from 'react-router-dom';
 import React, { Fragment, useState } from 'react';
 import Dashboard from './tabs/Dashboard';
 import Header from '../../components/SimpleHeader';
 import CreateInvoice from './tabs/CreateInvoice';
 import '../../sass/invoices.scss';
+import Payments from './tabs/Payments';
 
 const Invoices = () => {
-
-    const [activeTab, setActiveTab] = useState('1')
+    const { active = '1' } = useParams()
+    const [activeTab, setActiveTab] = useState(active)
     const [reFetch, setreFetch] = useState(false)
 
     const handleGoToTab = (key) => {
@@ -33,6 +35,9 @@ const Invoices = () => {
                         </TabPane>
                         <TabPane tab="Create New Invoice" key="2">
                             <CreateInvoice goToTab={handleGoToTab} />
+                        </TabPane>
+                        <TabPane tab="Received Payments" key="3">
+                            <Payments />
                         </TabPane>
                     </Tabs>
                 </div>

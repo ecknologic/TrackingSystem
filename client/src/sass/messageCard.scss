@@ -1,0 +1,62 @@
+.message-card {
+    width: 100%;
+    min-height: 5em;
+    background-color: #fff;
+    border-radius: .1em;
+    transition: all .3s;
+    padding: 1em;
+    border-bottom: 1px solid #E9E9E9;
+    
+    &:hover {
+        background-color: #faf9f8;
+    }
+
+    .time {
+        color: #605e5c;
+        font-family: 'PoppinsRegular400';
+        font-size: .8em;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        color: #323130;
+        font-family: 'PoppinsMedium500';
+        padding-bottom: .2em;
+    }
+
+    .footer {
+        display: flex;
+        justify-content: space-between;
+        color: #605e5c;
+        font-family: 'PoppinsRegular400';
+
+        .left-part {
+            
+            .app-link {
+                padding-right: .5em;
+                cursor: default;
+                border: none;
+            }
+            
+            .date {
+                border-left: 1px solid #d1d1d1;
+                padding-left: .5em;
+            }
+        }
+
+        .status {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .app-link, .date, .status {
+            font-size: .9em;
+        }
+    }
+}
+
+.message-card.selected {
+    background-color: #DEECF9;
+}

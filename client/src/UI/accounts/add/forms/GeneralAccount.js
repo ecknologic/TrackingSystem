@@ -6,7 +6,7 @@ import InputWithAddon from '../../../../components/InputWithAddon';
 import UploadPreviewer from '../../../../components/UploadPreviewer';
 import InputLabel from '../../../../components/InputLabel';
 import CustomInput from '../../../../components/CustomInput';
-import { dayOptions, invoiceOptions, idOptions, businessOptions } from '../../../../assets/fixtures'
+import { dayOptions, invoiceOptions, idOptions } from '../../../../assets/fixtures'
 import { getIDInputValidationProps, getIdProofName, resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 const DATEFORMAT = 'DD/MM/YYYY'
 

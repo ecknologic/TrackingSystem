@@ -44,16 +44,11 @@ $textColor:rgba(0,0,0,0.85);
                 .option {
                     margin-right: 1em;
                 }
-
-                .show {
-                    margin-right: 0;
-                }
             }
     }
 
     .app-date-picker-wrapper {
         margin: 0;
-        padding-right: 1em;
 
         svg {
             transform: scale(.8);

@@ -7,7 +7,7 @@ import PanelHeader from '../../../../components/PanelHeader';
 import { TODAYDATE as d } from '../../../../utils/constants';
 import CustomerOverviewCard from '../../../../components/CustomerOverviewCard';
 import { LeftChevronIconGrey, RightChevronIconGrey } from '../../../../components/SVG_Icons';
-const options = { startDate: d, endDate: d, fromStart: true, type: 'Today' }
+const options = { startDate: d, endDate: d, fromStart: true, type: 'Till Now' }
 
 const CustomersOverview = () => {
     const history = useHistory()
@@ -56,7 +56,8 @@ const CustomersOverview = () => {
         setOpData(newData)
     }, [opData])
 
-    const goToCustomers = () => history.push('/customers')
+    const goToCustomers = (active) => history.push(`/customers/${active}`)
+    const goToDistributors = () => history.push('/distributors')
 
     return (
         <>
@@ -71,10 +72,10 @@ const CustomersOverview = () => {
             <PanelHeader title='Customers Overview' onSelect={handleOperation} showShow />
             <div className='panel-body quality-testing-panel'>
                 <Slider className='dashboard-slider' {...props} >
-                    <CustomerOverviewCard compareText={corporateCustomersCompareText} percent={corporateCustomersPercent} total={totalCorporateCustomers} pending={pendingCorporateCustomers} title='Corporate Customers' onClick={goToCustomers} />
-                    <CustomerOverviewCard compareText={individualCustomersCompareText} total={totalIndividualCustomers} pending={pendingIndividualCustomers} percent={individualCustomersPercent} title='Individual Customers' onClick={goToCustomers} />
-                    <CustomerOverviewCard title='Memberships' onClick={goToCustomers} />
-                    <CustomerOverviewCard compareText={distributorsCompareText} percent={distributorsPercent} total={totalDistributors} title='Dealerships' onClick={goToCustomers} />
+                    <CustomerOverviewCard compareText={corporateCustomersCompareText} percent={corporateCustomersPercent} total={totalCorporateCustomers} pending={pendingCorporateCustomers} title='Corporate Customers' onClick={() => goToCustomers('1')} />
+                    <CustomerOverviewCard compareText={individualCustomersCompareText} total={totalIndividualCustomers} pending={pendingIndividualCustomers} percent={individualCustomersPercent} title='Individual Customers' onClick={() => goToCustomers('2')} />
+                    <CustomerOverviewCard title='Memberships' onClick={() => { }} />
+                    <CustomerOverviewCard compareText={distributorsCompareText} percent={distributorsPercent} total={totalDistributors} title='Dealerships' onClick={goToDistributors} />
                 </Slider>
             </div>
         </>

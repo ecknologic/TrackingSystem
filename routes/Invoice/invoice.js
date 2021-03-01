@@ -7,6 +7,8 @@ var totalCGSTValue = 0
 function createMultiDeliveryInvoice(invoice, path) {
     return new Promise((resolve) => {
         let doc = new PDFDocument({ size: "A4", margin: 50 });
+        totalCGSTValue = 0
+        totalTaxValue = 0
 
         generateHeader(doc, invoice);
         generateCustomerInformation(doc, invoice);

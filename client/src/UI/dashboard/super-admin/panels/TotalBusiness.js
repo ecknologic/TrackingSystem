@@ -4,7 +4,7 @@ import { http } from '../../../../modules/http';
 import PanelHeader from '../../../../components/PanelHeader';
 import { TODAYDATE as d } from '../../../../utils/constants';
 import TotalRevenueCard from '../../../../components/TotalRevenueCard';
-const options = { startDate: d, endDate: d, fromStart: true, type: 'Today' }
+const options = { startDate: d, endDate: d, fromStart: true, type: 'Till Now' }
 
 const TotalBusiness = () => {
     const [business, setBusiness] = useState([])
