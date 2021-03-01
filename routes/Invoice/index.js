@@ -15,6 +15,14 @@ router.get('/getInvoices', (req, res) => {
         else res.send(results);
     });
 });
+
+router.get('/getCustomerInvoices/:customerId', (req, res) => {
+    invoiceQueries.getCustomerInvoices(req.params.customerId, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.send(results);
+    });
+});
+
 router.get('/getInvoices/:status', (req, res) => {
     invoiceQueries.getInvoiceByStatus(req.params.status, (err, results) => {
         if (err) res.status(500).json(dbError(err));
@@ -234,12 +242,12 @@ router.post("/updateInvoice", (req, res) => {
             }
         }
     }
-    let invoice = {
-        items: [obj], invoiceId, gstNo
-    }
-    createSingleDeliveryInvoice(invoice, "invoice.pdf").then(response => {
+    // let invoice = {
+    //     items: [obj], invoiceId, gstNo
+    // }
+    // createSingleDeliveryInvoice(invoice, "invoice.pdf").then(response => {
         updateInvoice(req, res, result)
-    })
+    // })
 });
 const saveInvoice = async (requestObj, res, response) => {
     // req.body.invoicePdf = pdfData.toString('base64')
