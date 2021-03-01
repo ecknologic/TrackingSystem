@@ -12,16 +12,16 @@ warehouseQueries.getDeliveryDetails = (input, callback) => {
 }
 
 warehouseQueries.getAllDcDetails = (input, callback) => {
-    const { fromDate, toDate, departmentId, customerId } = input
+    const { fromDate, toDate, departmentId, customerIds } = input
     let query = "select c.customerOrderId,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS cans20L,c.1LBoxes AS boxes1L,c.500MLBoxes AS boxes500ML,c.300MLBoxes AS boxes300ML,c.2LBoxes AS boxes2L,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE warehouseId=? ORDER BY c.dcNo DESC";
     let options = [departmentId]
-    if (customerId && fromDate && toDate) {
-        query = "select c.customerOrderId,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS cans20L,c.1LBoxes AS boxes1L,c.500MLBoxes AS boxes500ML,c.300MLBoxes AS boxes300ML,c.2LBoxes AS boxes2L,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE existingCustomerId=? AND (DATE(deliveryDate) BETWEEN ? AND ?) AND warehouseId=? ORDER BY c.dcNo DESC";
-        options = [customerId, fromDate, toDate, departmentId]
+    if (customerIds && fromDate && toDate) {
+        query = "select c.customerOrderId,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS cans20L,c.1LBoxes AS boxes1L,c.500MLBoxes AS boxes500ML,c.300MLBoxes AS boxes300ML,c.2LBoxes AS boxes2L,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE existingCustomerId IN (?) AND (DATE(deliveryDate) BETWEEN ? AND ?) AND warehouseId=? ORDER BY c.dcNo DESC";
+        options = [customerIds, fromDate, toDate, departmentId]
     }
-    else if (customerId) {
-        query = "select c.customerOrderId,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS cans20L,c.1LBoxes AS boxes1L,c.500MLBoxes AS boxes500ML,c.300MLBoxes AS boxes300ML,c.2LBoxes AS boxes2L,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE existingCustomerId=? AND warehouseId=? ORDER BY c.dcNo DESC";
-        options = [customerId, departmentId]
+    else if (customerIds) {
+        query = "select c.customerOrderId,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS cans20L,c.1LBoxes AS boxes1L,c.500MLBoxes AS boxes500ML,c.300MLBoxes AS boxes300ML,c.2LBoxes AS boxes2L,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE existingCustomerId IN (?) AND warehouseId=? ORDER BY c.dcNo DESC";
+        options = [customerIds, departmentId]
     }
     return executeGetParamsQuery(query, options, callback)
 }
