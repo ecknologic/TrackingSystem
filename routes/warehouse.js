@@ -197,6 +197,13 @@ router.get('/deliveryDetails/:date', (req, res) => {
     res.send(JSON.stringify(results));
   });
 });
+
+router.get('/getAllDcDetails', (req, res) => {
+  warehouseQueries.getAllDcDetails({ departmentId, ...req.query }, (err, results) => {
+    if (err) res.status(500).json(err.sqlMessage);
+    res.send(JSON.stringify(results));
+  });
+});
 router.get('/getTotalSales', (req, res) => {
   var input = req.query;
   warehouseQueries.getTotalSales(input, (err, result) => {
