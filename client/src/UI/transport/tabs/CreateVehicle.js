@@ -90,7 +90,7 @@ const CreateVehicle = ({ goToTab }) => {
     }
 
     return (
-        <>
+        <div className='employee-manager-content'>
             <div className='employee-title-container'>
                 <span className='title'>New Vehicle Details</span>
             </div>
@@ -109,7 +109,7 @@ const CreateVehicle = ({ goToTab }) => {
                     text='Create'
                 />
             </div>
-        </>
+        </div>
     )
 }
 

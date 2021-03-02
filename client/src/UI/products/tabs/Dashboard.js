@@ -157,7 +157,7 @@ const Dashboard = ({ reFetch }) => {
     const handleModalCancel = useCallback(() => onModalClose(), [])
 
     return (
-        <div className='product-container'>
+        <div className='product-container employee-manager-content'>
             <div className='app-table dispatch-table'>
                 <Table
                     loading={{ spinning: loading, indicator: <Spinner /> }}

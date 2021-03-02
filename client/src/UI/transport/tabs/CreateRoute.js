@@ -73,7 +73,7 @@ const CreateRoute = ({ goToTab, fetchList, departmentOptions }) => {
     }
 
     return (
-        <>
+        <div className='employee-manager-content'>
             <div className='employee-title-container'>
                 <span className='title'>New Route Details</span>
             </div>
@@ -94,7 +94,7 @@ const CreateRoute = ({ goToTab, fetchList, departmentOptions }) => {
                     text='Create'
                 />
             </div>
-        </>
+        </div>
     )
 }
 

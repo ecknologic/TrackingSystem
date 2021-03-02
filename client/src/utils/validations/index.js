@@ -456,10 +456,12 @@ export const validateProductValues = (data) => {
 export const validateInvoiceValues = (data) => {
     let errors = {};
     const text = 'Required'
-    const { customerId, poNo, hsnCode, invoiceDate, dueDate, TAndC, products } = data;
+    const { customerId, poNo, hsnCode, invoiceDate, dueDate, TAndC, fromDate, toDate, products } = data;
     if (!customerId) errors.customerId = text;
     if (!invoiceDate) errors.invoiceDate = text;
     if (!dueDate) errors.dueDate = text;
+    if (!fromDate) errors.fromDate = text;
+    if (!toDate) errors.toDate = text;
     if (!TAndC) errors.TAndC = text;
     if (poNo) {
         const error = validateNumber(poNo);
