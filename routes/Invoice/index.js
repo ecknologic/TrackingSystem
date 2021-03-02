@@ -246,20 +246,17 @@ router.post("/updateInvoice", (req, res) => {
     //     items: [obj], invoiceId, gstNo
     // }
     // createSingleDeliveryInvoice(invoice, "invoice.pdf").then(response => {
-        updateInvoice(req, res, result)
+    updateInvoice(req, res, result)
     // })
 });
 const saveInvoice = async (requestObj, res, response) => {
     // req.body.invoicePdf = pdfData.toString('base64')
-    console.log('response>>>', response)
     invoiceQueries.createInvoice(requestObj, (err, results) => {
-        console.log('createInvoice error>>>', err)
         if (err) res.status(500).json(dbError(err));
         else {
             let { products, invoiceId } = requestObj;
             if (products.length) {
                 invoiceQueries.saveInvoiceProducts({ products, invoiceId }, (err, data) => {
-                    console.log('saveInvoiceProducts error>>>', err)
                     if (err) res.status(500).json(dbError(err));
                     else {
                         response && res.json({ message: 'Invoice created successfully' })

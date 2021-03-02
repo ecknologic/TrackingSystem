@@ -4,7 +4,7 @@ import { LinesIconGrey } from './SVG_Icons';
 import CheckboxOption from './CheckboxOption';
 import '../sass/routesDropdown.scss'
 
-const RoutesDropdown = ({ routes, onChange }) => {
+const RoutesDropdown = ({ data, onChange, title, keyValue, keyLabel }) => {
 
     const dataRef = useRef([])
     const [visible, setVisible] = useState(false)
@@ -22,14 +22,14 @@ const RoutesDropdown = ({ routes, onChange }) => {
 
     const reportsMenu = (
         <Menu>
-            <Menu.ItemGroup title='Select Routes'>
+            <Menu.ItemGroup title={title}>
                 {
-                    routes.map((item) => {
+                    data.map((item) => {
                         return (
-                            <Menu.Item key={item.RouteId}>
+                            <Menu.Item key={item[keyValue]}>
                                 <CheckboxOption
-                                    value={item.RouteId}
-                                    option={item.RouteName}
+                                    value={item[keyValue]}
+                                    option={item[keyLabel]}
                                     onSelect={handleSelect}
                                     onDeselect={handleDeselect}
                                 />
@@ -51,7 +51,7 @@ const RoutesDropdown = ({ routes, onChange }) => {
             onVisibleChange={(bool) => setVisible(bool)}
         >
             <div>
-                <span className='text' >Select Routes</span>
+                <span className='text' >{title}</span>
                 <LinesIconGrey />
             </div>
         </Dropdown>

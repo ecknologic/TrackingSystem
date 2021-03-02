@@ -64,12 +64,12 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
 
         try {
             setLoading(true)
-            const [data] = await http.GET(axios, url, config)
+            const data = await http.GET(axios, url, config)
             const { products, ...rest } = data
             const { invoiceId, customerId } = rest
             getBillingAddress(customerId)
             setHeader({ title: `Invoice - ${invoiceId}` })
-            setDataSource(JSON.parse(products))
+            setDataSource(products)
             setFormData(rest)
             setLoading(false)
         } catch (error) { }

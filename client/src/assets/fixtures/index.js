@@ -314,11 +314,6 @@ export const invoiceColumns = [
         key: 'totalAmount',
     },
     {
-        title: 'Balance Due',
-        dataIndex: 'totalAmount',
-        key: 'totalAmount',
-    },
-    {
         title: 'Status',
         dataIndex: 'status',
         key: 'status',

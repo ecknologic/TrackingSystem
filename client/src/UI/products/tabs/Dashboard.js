@@ -11,7 +11,6 @@ import CustomModal from '../../../components/CustomModal';
 import { productColumns } from '../../../assets/fixtures';
 import { EditIconGrey } from '../../../components/SVG_Icons';
 import ConfirmModal from '../../../components/CustomModal';
-import CustomPagination from '../../../components/CustomPagination';
 import { deepClone, isAlphaNum, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
 import { validateIntFloat, validateNumber, validateProductValues } from '../../../utils/validations';
 
@@ -20,9 +19,6 @@ const Dashboard = ({ reFetch }) => {
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [loading, setLoading] = useState(true)
-    const [pageSize, setPageSize] = useState(12)
-    const [pageNumber, setPageNumber] = useState(1)
-    const [totalCount, setTotalCount] = useState(null)
     const [editModal, setEditModal] = useState(false)
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
@@ -48,18 +44,8 @@ const Dashboard = ({ reFetch }) => {
         try {
             const data = await http.GET(axios, url, config)
             setProducts(data)
-            setTotalCount(data.length)
             setLoading(false)
         } catch (error) { }
-    }
-
-    const handlePageChange = (number) => {
-        setPageNumber(number)
-    }
-
-    const handleSizeChange = (number, size) => {
-        setPageSize(size)
-        setPageNumber(number)
     }
 
     const handleMenuSelect = (key, data) => {
@@ -170,31 +156,17 @@ const Dashboard = ({ reFetch }) => {
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
     const handleModalCancel = useCallback(() => onModalClose(), [])
 
-    const sliceFrom = (pageNumber - 1) * pageSize
-    const sliceTo = sliceFrom + pageSize
-
     return (
         <div className='product-container'>
             <div className='app-table dispatch-table'>
                 <Table
                     loading={{ spinning: loading, indicator: <Spinner /> }}
-                    dataSource={dataSource.slice(sliceFrom, sliceTo)}
+                    dataSource={dataSource}
                     columns={productColumns}
                     pagination={false}
                     scroll={{ x: true }}
                 />
             </div>
-            {
-                !!totalCount && (
-                    <CustomPagination
-                        total={totalCount}
-                        pageSize={pageSize}
-                        current={pageNumber}
-                        onChange={handlePageChange}
-                        pageSizeOptions={['10', '20', '30', '40', '50']}
-                        onPageSizeChange={handleSizeChange}
-                    />)
-            }
             <CustomModal
                 okTxt='Update'
                 title='Product Details'

@@ -283,8 +283,10 @@
             width: 40%;
             display: flex;
             align-items: center;
+        }
 
-            
+        .fit {
+            width:fit-content;
         }
 
         .right {
