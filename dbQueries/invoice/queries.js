@@ -29,10 +29,10 @@ invoiceQueries.getInvoiceId = async (callback) => {
 
 //POST Request Methods
 invoiceQueries.createInvoice = (input, callback) => {
-    const { customerId, invoiceDate, dueDate, salesPerson, mailSubject, mailIds, TAndC, invoiceId, hsnCode, poNo, totalAmount, customerName } = input
-    let query = "insert into Invoice (customerId,invoiceDate,dueDate,salesPerson,mailSubject,mailIds,TAndC,invoiceId,hsnCode,poNo,totalAmount,customerName) values(?,?,?,?,?,?,?,?,?,?,?,?)";
+    const { customerId, invoiceDate, dueDate, fromDate, toDate, salesPerson, mailSubject, mailIds, TAndC, invoiceId, hsnCode, poNo, totalAmount, customerName } = input
+    let query = "insert into Invoice (customerId,invoiceDate,dueDate,salesPerson,mailSubject,mailIds,TAndC,invoiceId,hsnCode,poNo,totalAmount,customerName,fromDate,toDate) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     // var gstProofImage = Buffer.from(gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-    let requestBody = [customerId, invoiceDate, dueDate, salesPerson, mailSubject, mailIds, TAndC, invoiceId, hsnCode, poNo, totalAmount, customerName]
+    let requestBody = [customerId, invoiceDate, dueDate, salesPerson, mailSubject, mailIds, TAndC, invoiceId, hsnCode, poNo, totalAmount, customerName, fromDate, toDate]
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 
@@ -52,10 +52,10 @@ invoiceQueries.saveInvoicePdf = (input, callback) => {
 }
 
 invoiceQueries.updateInvoice = (input, callback) => {
-    const { customerId, invoiceDate, dueDate, salesPerson, mailSubject, mailIds, TAndC, invoiceId, hsnCode, poNo, totalAmount, customerName } = input
-    let query = "Update Invoice SET customerId=?,invoiceDate=?,dueDate=?,salesPerson=?,mailSubject=?,mailIds=?,TAndC=?,hsnCode=?,poNo=?,totalAmount=?,customerName=? where invoiceId=?"
+    const { customerId, invoiceDate, dueDate, fromDate, toDate, salesPerson, mailSubject, mailIds, TAndC, invoiceId, hsnCode, poNo, totalAmount, customerName } = input
+    let query = "Update Invoice SET customerId=?,invoiceDate=?,dueDate=?,salesPerson=?,mailSubject=?,mailIds=?,TAndC=?,hsnCode=?,poNo=?,totalAmount=?,customerName=?,fromDate=?,toDate=? where invoiceId=?"
     // var gstProofImage = Buffer.from(gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-    let requestBody = [customerId, invoiceDate, dueDate, salesPerson, mailSubject, mailIds, TAndC, hsnCode, poNo, totalAmount, customerName, invoiceId]
+    let requestBody = [customerId, invoiceDate, dueDate, salesPerson, mailSubject, mailIds, TAndC, hsnCode, poNo, totalAmount, customerName, fromDate, toDate, invoiceId]
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 
