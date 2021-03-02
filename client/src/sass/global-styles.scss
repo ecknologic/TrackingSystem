@@ -844,30 +844,37 @@ textarea {
     color: #4D5775;
     text-transform: uppercase;
     font-family: 'PoppinsSemiBold600';
+    white-space: nowrap;
     font-size: .86em;
 }
+
 .app-input-value-larger {
     color: #2A2D37;
     font-family: 'PoppinsBold700';
 }
+
 .app-input-value-large {
     color: #171725;
     font-family: 'PoppinsSemiBold600';
 }
+
 .app-input-value-smaller {
     color: #535353;
     font-family: 'PoppinsMedium500';
     font-size: 12px;
 }
+
 .label-mandatory::after {
     content:'*';
     color:  $errorColor;
 }
+
 .app-label-error {
     color: $errorColor;
     float: right;
     font-family: 'PoppinsItalic400';
 }
+
 .app-input-addon-button {
     display: flex;
     justify-content: center;
@@ -877,6 +884,12 @@ textarea {
     font-family: 'PoppinsSemiBold600';
     font-size: 1.6ch;
     background-color: #FCFDFE !important;
+}
+
+// -------------- Various Global styles ------------------- //
+
+.flex-grow {
+    flex: 1;
 }
 
 // -------------- Various Transform styles ------------------- //
@@ -1362,6 +1375,7 @@ textarea {
 .app-date-value {
     color: rgba(0,0,0,0.65);
     font-family: 'PoppinsSemiBold600';
+    white-space: nowrap;
 }
 
 .app-date-value.middle {

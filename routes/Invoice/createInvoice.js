@@ -185,7 +185,7 @@ function generateInvoiceTable(doc, invoice) {
         .text(totalTaxValue, 380, subtotalPosition + 10)
         .text(totalCGSTValue, 445, subtotalPosition + 10)
         .text(totalCGSTValue, 488, subtotalPosition + 10)
-        .text("0.00", 525, subtotalPosition + 10, { align: "right" })
+        .text(totalIGSTValue, 525, subtotalPosition + 10, { align: "right" })
     generateHr(doc, subtotalPosition + 30)
     doc
         .text("Invoice Value in Words Rs :", 30, subtotalPosition + 40)
@@ -261,7 +261,7 @@ function generateIndividualTableRow(
     SGST = 280,
     IGST = 280
 ) {
-    console.log("y value:::" + y + "item:::");
+    // console.log("y value:::" + y + "item:::");
     generateVr(doc, 125, y - 10, 140)
     generateVr(doc, 188, y - 10, 140)
     generateVr(doc, 240, y - 10, 140)

@@ -7,6 +7,11 @@ invoiceQueries.getInvoices = async (status, callback) => {
     return executeGetQuery(query, callback)
 }
 
+invoiceQueries.getCustomerInvoices = async (customerId, callback) => {
+    let query = `select * from Invoice where customerId=? ORDER BY invoiceId DESC`;
+    return executeGetParamsQuery(query, [customerId], callback)
+}
+
 invoiceQueries.getInvoiceByStatus = async (status, callback) => {
     let query = `select * from Invoice where status=? ORDER BY invoiceId DESC`;
     return executeGetParamsQuery(query, [status], callback)

@@ -174,11 +174,17 @@ const TickComponent = ({ color }) => (
         <path fill={color} fillRule="evenodd" d="M1.7 3.97A1 1 0 00.3 5.4l5.82 5.77a1 1 0 001.46-.06l8.18-9.45a1 1 0 00-1.52-1.3L6.77 8.99 1.7 3.97z" />
     </svg>
 )
+const SendComponent = ({ color }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="21" height="22">
+        <path fill={color} fill-rule="evenodd" d="M10.51 19.76l-.9 1.46a1 1 0 01-.2.24 2.4 2.4 0 01-3.16-.1 2.05 2.05 0 01-.66-1.57v-3.85l-4.4-3.58a3.22 3.22 0 01.87-5.5L19.63.07a.97.97 0 01.91.1 1 1 0 01.42 1.11l-4.79 17.26a3.23 3.23 0 01-5.14 1.64l-.52-.42zm-1.57-1.27L7.6 17.4v2.45c0 .01 0 .04.04.07.1.09.26.1.4.06l.91-1.49zm-.83-3.23l4.18 3.36a1.23 1.23 0 001.96-.61l3.7-13.33L8.1 15.26zm-1.63-1.18L16.32 3.5 2.78 8.73a1.22 1.22 0 00-.33 2.08l4.03 3.27z" />
+    </svg>
+)
 
 const RightChevronSvgLight = () => <RightChevronComponent color={purpleColor} />
 const RightChevronSvgGrey = () => <RightChevronComponent color={greyColor} />
 const LeftChevronSvgGrey = () => <LeftChevronComponent color={greyColor} />
 const BlockSvgGrey = () => <BlockComponent color={greyColor} />
+const SendSvgGrey = () => <SendComponent color={greyColor} />
 const ArrowSvg = () => <ArrowComponent color={primaryColor} />
 const ArrowSvgGrey = () => <ArrowComponent color={greyColor} />
 const ArrowSvgDanger = () => <ArrowComponent color={dangerColor} />
@@ -231,6 +237,7 @@ const TickSvgGrey = () => <TickComponent color={greyColor} />
 export const RightChevronIconGrey = ({ currentSlide, slideCount, ...props }) => <Icon component={RightChevronSvgGrey} {...props} />
 export const LeftChevronIconGrey = ({ currentSlide, slideCount, ...props }) => <Icon component={LeftChevronSvgGrey} {...props} />
 export const RightChevronIconLight = props => <Icon component={RightChevronSvgLight} {...props} />
+export const SendIconGrey = props => <Icon component={SendSvgGrey} {...props} />
 export const ScheduleIcon = props => <Icon component={ScheduleSvg} {...props} />
 export const ScheduleIconGrey = props => <Icon component={ScheduleSvgGrey} {...props} />
 export const TrashIconLight = props => <Icon component={TrashSvgLight} {...props} />

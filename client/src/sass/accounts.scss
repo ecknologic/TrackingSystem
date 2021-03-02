@@ -92,6 +92,14 @@ $primary-color: #0062FF;
     flex: 1;
     display: flex;
     flex-direction: column;
+
+    .stock-delivery-container {
+        padding: 0;
+
+        .header {
+            justify-content: flex-end;
+        }
+    }
 }
 
 .account-add-content, .app-manage-content {

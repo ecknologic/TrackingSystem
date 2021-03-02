@@ -15,6 +15,14 @@ router.get('/getInvoices', (req, res) => {
         else res.send(results);
     });
 });
+
+router.get('/getCustomerInvoices/:customerId', (req, res) => {
+    invoiceQueries.getCustomerInvoices(req.params.customerId, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.send(results);
+    });
+});
+
 router.get('/getInvoices/:status', (req, res) => {
     invoiceQueries.getInvoiceByStatus(req.params.status, (err, results) => {
         if (err) res.status(500).json(dbError(err));
@@ -33,20 +41,20 @@ router.get('/getInvoiceById/:invoiceId', (req, res) => {
             obj.products = products
             if (obj.products.length) {
                 for (let i of obj.products) {
-                    if (i.productName.includes('20')) {
+                    if (i.productName.startsWith('20')) {
                         obj['20LCans'] = i.quantity
                         obj['price20L'] = i.productPrice
-                    } else if (i.productName.includes('1L')) {
+                    } else if (i.productName.startsWith('1')) {
                         obj['1LBoxes'] = i.quantity
                         obj['price1L'] = i.productPrice
-                    } else if (i.productName.includes('500')) {
+                    } else if (i.productName.startsWith('500')) {
                         obj['500MLBoxes'] = i.quantity
                         obj['price500ML'] = i.productPrice
-                    } else if (i.productName.includes('300')) {
+                    } else if (i.productName.startsWith('300')) {
                         obj['300MLBoxes'] = i.quantity
                         obj['price300ML'] = i.productPrice
                     }
-                    else if (i.productName.includes('2 L')) {
+                    else if (i.productName.startsWith('2')) {
                         obj['2LBoxes'] = i.quantity
                         obj['price2L'] = i.productPrice
                     }
@@ -129,7 +137,7 @@ router.post("/generateMultipleInvoices", (req, res) => {
                                     "productPrice": price1L,
                                     "discount": 0,
                                     "tax": 18,
-                                    ...getResults({ gstNo, quantity: i['1LBoxes'], productPrice: price1L, discount: 0, tax: 12 })
+                                    ...getResults({ gstNo, quantity: i['1LBoxes'], productPrice: price1L, discount: 0, tax: 18 })
 
                                 })
                             }
@@ -140,7 +148,7 @@ router.post("/generateMultipleInvoices", (req, res) => {
                                     "productPrice": price500ML,
                                     "discount": 0,
                                     "tax": 18,
-                                    ...getResults({ gstNo, quantity: i['500MLBoxes'], productPrice: price500ML, discount: 0, tax: 12 })
+                                    ...getResults({ gstNo, quantity: i['500MLBoxes'], productPrice: price500ML, discount: 0, tax: 18 })
 
                                 })
                             }
@@ -151,7 +159,7 @@ router.post("/generateMultipleInvoices", (req, res) => {
                                     "productPrice": price300ML,
                                     "discount": 0,
                                     "tax": 18,
-                                    ...getResults({ gstNo, quantity: i['300MLBoxes'], productPrice: price300ML, discount: 0, tax: 12 })
+                                    ...getResults({ gstNo, quantity: i['300MLBoxes'], productPrice: price300ML, discount: 0, tax: 18 })
                                 })
                             }
                             if (i['2LBoxes'] > 0) {
@@ -161,7 +169,7 @@ router.post("/generateMultipleInvoices", (req, res) => {
                                     "productPrice": price2L,
                                     "discount": 0,
                                     "tax": 18,
-                                    ...getResults({ gstNo, quantity: i['2LBoxes'], productPrice: price2L, discount: 0, tax: 12 })
+                                    ...getResults({ gstNo, quantity: i['2LBoxes'], productPrice: price2L, discount: 0, tax: 18 })
                                 })
                             }
                             obj.products = products
@@ -182,31 +190,31 @@ router.post("/createInvoice", (req, res) => {
     }
     if (products.length) {
         for (let i of products) {
-            if (i.productName.includes('20')) {
+            if (i.productName.startsWith('20')) {
                 obj['20LCans'] = i.quantity
                 obj['price20L'] = i.productPrice
-            } else if (i.productName.includes('1L')) {
+            } else if (i.productName.startsWith('1')) {
                 obj['1LBoxes'] = i.quantity
                 obj['price1L'] = i.productPrice
-            } else if (i.productName.includes('500')) {
+            } else if (i.productName.startsWith('500')) {
                 obj['500MLBoxes'] = i.quantity
                 obj['price500ML'] = i.productPrice
-            } else if (i.productName.includes('300')) {
+            } else if (i.productName.startsWith('300')) {
                 obj['300MLBoxes'] = i.quantity
                 obj['price300ML'] = i.productPrice
             }
-            else if (i.productName.includes('2 L')) {
+            else if (i.productName.startsWith('2')) {
                 obj['2LBoxes'] = i.quantity
                 obj['price2L'] = i.productPrice
             }
         }
     }
-    let invoice = {
-        items: [obj], invoiceId, gstNo
-    }
-    createSingleDeliveryInvoice(invoice, "invoice.pdf").then(response => {
-        saveInvoice(req.body, res, true)
-    })
+    // let invoice = {
+    //     items: [obj], invoiceId, gstNo
+    // }
+    // createSingleDeliveryInvoice(invoice, "invoice.pdf").then(response => {
+    // })
+    saveInvoice(req.body, res, true)
 });
 router.post("/updateInvoice", (req, res) => {
     let { customerId, invoiceId, customerName, organizationName, address, gstNo, panNo, mobileNumber, products } = req.body
@@ -234,12 +242,12 @@ router.post("/updateInvoice", (req, res) => {
             }
         }
     }
-    let invoice = {
-        items: [obj], invoiceId, gstNo
-    }
-    createSingleDeliveryInvoice(invoice, "invoice.pdf").then(response => {
-        updateInvoice(req, res, result)
-    })
+    // let invoice = {
+    //     items: [obj], invoiceId, gstNo
+    // }
+    // createSingleDeliveryInvoice(invoice, "invoice.pdf").then(response => {
+    updateInvoice(req, res, result)
+    // })
 });
 const saveInvoice = async (requestObj, res, response) => {
     // req.body.invoicePdf = pdfData.toString('base64')

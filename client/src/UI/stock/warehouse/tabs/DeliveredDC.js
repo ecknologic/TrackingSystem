@@ -1,27 +1,28 @@
 import axios from 'axios';
 import { Menu, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import DCForm from '../forms/DCForm';
 import { http } from '../../../../modules/http';
 import Spinner from '../../../../components/Spinner';
 import Actions from '../../../../components/Actions';
+import DateValue from '../../../../components/DateValue';
 import QuitModal from '../../../../components/CustomModal';
 import SearchInput from '../../../../components/SearchInput';
 import CustomModal from '../../../../components/CustomModal';
-import CustomButton from '../../../../components/CustomButton';
+import { deliveryColumns } from '../../../../assets/fixtures';
 import RoutesFilter from '../../../../components/RoutesFilter';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
-import { getWarehoseId, TRACKFORM } from '../../../../utils/constants';
 import CustomPagination from '../../../../components/CustomPagination';
-import { EditIconGrey, PlusIcon } from '../../../../components/SVG_Icons';
-import { deliveryColumns, getRouteOptions, getDriverOptions } from '../../../../assets/fixtures';
+import CustomRangeInput from '../../../../components/CustomRangeInput';
+import { EyeIconGrey, ScheduleIcon } from '../../../../components/SVG_Icons';
+import { getWarehoseId, TODAYDATE, TRACKFORM } from '../../../../utils/constants';
 import { validateMobileNumber, validateNames, validateNumber, validateDCValues } from '../../../../utils/validations';
 import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone, getStatusColor } from '../../../../utils/Functions';
+import DCView from '../../../accounts/view/views/DCView';
+const APIDATEFORMAT = 'YYYY-MM-DD'
 
-const Delivery = ({ date, source }) => {
+const DeliveredDC = () => {
     const warehouseId = getWarehoseId()
-    const [routes, setRoutes] = useState([])
-    const [drivers, setDrivers] = useState([])
+    const [customerList, setCustomerList] = useState([])
     const [loading, setLoading] = useState(true)
     const [deliveriesClone, setDeliveriesClone] = useState([])
     const [deliveries, setDeliveries] = useState([])
@@ -33,47 +34,41 @@ const Delivery = ({ date, source }) => {
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [DCModal, setDCModal] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
+    const [startDate, setStartDate] = useState(TODAYDATE)
+    const [generateDisabled, setGenerateDisabled] = useState(true)
+    const [endDate, setEndDate] = useState(TODAYDATE)
+    const [selectedRange, setSelectedRange] = useState([])
     const [filterInfo, setFilterInfo] = useState([])
+    const [open, setOpen] = useState(false)
     const [shake, setShake] = useState(false)
     const [okTxt, setOkTxt] = useState('')
     const [title, setTitle] = useState('')
     const [mode, setMode] = useState(false)
 
-    const routeOptions = useMemo(() => getRouteOptions(routes), [routes])
-    const driverOptions = useMemo(() => getDriverOptions(drivers), [drivers])
+    const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
         setLoading(true)
         getDeliveries()
-        isEmpty(routes) && getRoutes()
-        isEmpty(drivers) && getDrivers()
+        getRoutes()
 
         return () => {
             http.ABORT(source)
         }
-    }, [date])
+    }, [])
 
     const getRoutes = async () => {
-        const url = `/customer/getRoutes/${warehouseId}`
+        const url = `/customer/getCustomers`
 
         try {
             const data = await http.GET(axios, url, config)
-            setRoutes(data)
-        } catch (error) { }
-    }
-
-    const getDrivers = async () => {
-        const url = `/bibo/getdriverDetails/${warehouseId}`
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setDrivers(data)
+            setCustomerList(data)
         } catch (error) { }
     }
 
     const getDeliveries = async () => {
-        const url = `/warehouse/deliveryDetails/${date}`
+        const url = `/warehouse/getAllDcDetails?fromDate=${startDate}&toDate=${endDate}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -90,33 +85,6 @@ const Delivery = ({ date, source }) => {
         } catch (error) { }
     }
 
-    const handleChange = (value, key) => {
-        setFormData(data => ({ ...data, [key]: value }))
-        setFormErrors(errors => ({ ...errors, [key]: '' }))
-
-        // Validations
-        if (key === 'customerName') {
-            const error = validateNames(value)
-            setFormErrors(errors => ({ ...errors, [key]: error }))
-        }
-        else if (key === 'mobileNumber') {
-            const error = validateMobileNumber(value)
-            setFormErrors(errors => ({ ...errors, [key]: error }))
-        }
-        else if (key.includes('box') || key.includes('can')) {
-            const error = validateNumber(value)
-            setFormErrors(errors => ({ ...errors, products: error }))
-        }
-    }
-
-    const handleBlur = (value, key) => {
-        // Validations
-        if (key === 'mobileNumber') {
-            const error = validateMobileNumber(value, true)
-            setFormErrors(errors => ({ ...errors, [key]: error }))
-        }
-    }
-
     const onFilterChange = (data) => {
         setPageNumber(1)
         setFilterInfo(data)
@@ -128,21 +96,32 @@ const Delivery = ({ date, source }) => {
     }
 
     const generateFiltered = (original, filterInfo) => {
-        const filtered = original.filter((item) => filterInfo.includes(item.RouteId))
+        const filtered = original.filter((item) => filterInfo.includes(item.customerId))
         setDeliveries(filtered)
         setTotalCount(filtered.length)
     }
 
     const handleMenuSelect = (key, data) => {
         if (key === 'view') {
-            const { dcNo, isDelivered } = data
-            setTitle(dcNo)
-            const isDisabled = isDelivered === 'Completed'
-            setOkTxt(isDisabled ? 'Close' : 'Update')
-            setMode(isDisabled ? 'view' : 'edit')
+            setTitle(data.dcNo)
             setFormData(data)
             setDCModal(true)
         }
+    }
+
+    const datePickerStatus = (status) => {
+        !status && setOpen(false)
+    }
+
+    const handleDateSelect = (selected) => {
+        const [from, to] = selected
+        setStartDate(from.format(APIDATEFORMAT))
+        setEndDate(to.format(APIDATEFORMAT))
+        setOpen(false)
+        setSelectedRange(selected)
+        setGenerateDisabled(false)
+        setTimeout(() => setSelectedRange([]), 820)
+        setPageNumber(1)
     }
 
     const handlePageChange = (number) => {
@@ -152,48 +131,6 @@ const Delivery = ({ date, source }) => {
     const handleSizeChange = (number, size) => {
         setPageSize(size)
         setPageNumber(number)
-    }
-
-    const handleSubmit = async () => {
-        const formErrors = validateDCValues(formData)
-
-        if (!isEmpty(formErrors)) {
-            setShake(true)
-            setTimeout(() => setShake(false), 820)
-            setFormErrors(formErrors)
-            return
-        }
-
-        const dcValues = getDCValuesForDB(formData)
-        const { customerOrderId } = formData
-
-        let url = '/warehouse/createDC'
-        let method = 'POST'
-        let v1Ing = 'Creating'
-        let v2 = 'created'
-
-        if (customerOrderId) {
-            url = '/customer/updateCustomerOrderDetails'
-            method = 'PUT'
-            v1Ing = 'Updating'
-            v2 = 'updated'
-        }
-
-        const body = {
-            ...dcValues, warehouseId, customerOrderId
-        }
-        const options = { item: 'DC', v1Ing, v2 }
-
-        try {
-            setBtnDisabled(true)
-            showToast({ ...options, action: 'loading' })
-            let [data = {}] = await http[method](axios, url, body, config)
-            showToast(options)
-            optimisticUpdate(data, method)
-            onModalClose(true)
-        } catch (error) {
-            setBtnDisabled(false)
-        }
     }
 
     const optimisticUpdate = (data, method) => {
@@ -254,15 +191,36 @@ const Delivery = ({ date, source }) => {
     return (
         <div className='stock-delivery-container'>
             <div className='header'>
-                <div className='left'>
+                <div className='left fit'>
                     <RoutesFilter
-                        data={routes}
-                        keyValue='RouteId'
-                        keyLabel='RouteName'
-                        title='Select Routes'
+                        data={customerList}
+                        title='Select Customers'
+                        keyValue='customerId'
+                        keyLabel='customerName'
                         onChange={onFilterChange}
                     />
-                    <CustomButton text='Create New DC' onClick={onCreateDC} className='app-add-new-btn' icon={<PlusIcon />} />
+                    <DateValue date={startDate} to={endDate} />
+                    <div className='app-date-picker-wrapper'>
+                        <div className='date-picker' onClick={() => setOpen(true)}>
+                            <ScheduleIcon />
+                            <span>Select Date</span>
+                        </div>
+                        {/* <CustomButton
+                            style={{ marginLeft: '1em' }}
+                            className={`${generateDisabled ? 'disabled' : ''}`}
+                            text='Generate'
+                        onClick={handleGenerateInvoices}
+                        /> */}
+                        <CustomRangeInput // Hidden in the DOM
+                            open={open}
+                            value={selectedRange}
+                            style={{ left: 0 }}
+                            type='range'
+                            className='date-panel-picker'
+                            onChange={handleDateSelect}
+                            onOpenChange={datePickerStatus}
+                        />
+                    </div>
                 </div>
                 <div className='right'>
                     <SearchInput
@@ -296,21 +254,13 @@ const Delivery = ({ date, source }) => {
                 className={`app-form-modal ${shake ? 'app-shake' : ''}`}
                 visible={DCModal}
                 btnDisabled={btnDisabled}
-                onOk={mode === 'view' ? handleDCModalCancel : handleSubmit}
+                onOk={handleDCModalCancel}
                 onCancel={handleDCModalCancel}
                 title={title}
-                okTxt={okTxt}
-                hideCancel={mode === 'view'}
+                okTxt='Close'
+                hideCancel
             >
-                <DCForm
-                    data={formData}
-                    errors={formErrors}
-                    disabledItems={disabledItems}
-                    driverOptions={driverOptions}
-                    routeOptions={routeOptions}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                />
+                <DCView data={formData} />
             </CustomModal>
             <QuitModal
                 visible={confirmModal}
@@ -336,11 +286,11 @@ const renderStatus = (status) => {
     )
 }
 
-const renderOrderDetails = ({ cans20L, boxes2L, boxes1L, boxes500ML, boxes300ML }) => {
+const renderOrderDetails = ({ product20L, product2L, product1L, product500ML, product300ML }) => {
     return `
-    20 ltrs - ${Number(cans20L)}, 2 ltrs - ${Number(boxes2L)} boxes, 1 ltr - ${Number(boxes1L)} boxes, 
-    500 ml - ${Number(boxes500ML)} boxes, 300 ml - ${Number(boxes300ML)} boxes
+    20 ltrs - ${Number(product20L)}, 2 ltrs - ${Number(product2L)} boxes, 1 ltr - ${Number(product1L)} boxes, 
+    500 ml - ${Number(product500ML)} boxes, 300 ml - ${Number(product300ML)} boxes
     `
 }
-const options = [<Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>]
-export default Delivery
+const options = [<Menu.Item key="view" icon={<EyeIconGrey />}>View</Menu.Item>]
+export default DeliveredDC

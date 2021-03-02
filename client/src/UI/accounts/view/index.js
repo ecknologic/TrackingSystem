@@ -3,9 +3,11 @@ import { message, Tabs } from 'antd';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import Header from './header';
+import Invoice from './tabs/Invoice';
 import { http } from '../../../modules/http';
 import DeliveryForm from '../add/forms/Delivery';
 import AccountOverview from './tabs/AccountOverview';
+import DeliveryChallan from './tabs/DeliveryChallan';
 import DeliveryDetails from './tabs/DeliveryDetails';
 import NoContent from '../../../components/NoContent';
 import QuitModal from '../../../components/CustomModal';
@@ -286,10 +288,13 @@ const ViewAccount = () => {
                                 warehouseOptions={warehouseOptions}
                             />
                         </TabPane>
-                        <TabPane tab="Invoice" key="3" disabled>
-                            <NoContent content='Design in progress' />
+                        <TabPane tab="Delivery Challan" key="3">
+                            <DeliveryChallan accountId={accountId} />
                         </TabPane>
-                        <TabPane tab="Report Log" key="4" disabled>
+                        <TabPane tab="Invoice" key="4">
+                            <Invoice accountId={accountId} />
+                        </TabPane>
+                        <TabPane tab="Report Log" key="5" disabled>
                             <NoContent content='Design in progress' />
                         </TabPane>
                     </Tabs>
