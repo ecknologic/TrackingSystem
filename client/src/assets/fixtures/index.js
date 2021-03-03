@@ -20,7 +20,7 @@ export const businessOptions = [
     <Option key='3' value="RestaurantAndHospitality">Restaurant & Hospitality</Option>,
     <Option key='4' value="MediaAndAdvertising">Media & Advertising</Option>,
     <Option key='5' value="Manufacturers">Manufacturers</Option>,
-    <Option key='6' value="Corporate Offices">Corporate Offices</Option>,
+    <Option key='6' value="CorporateOffices">Corporate Offices</Option>,
 ]
 export const statusOptions = [
     <Option key='1' value={1}>Active</Option>,
@@ -40,10 +40,12 @@ export const accountFilterOptions = [
     { value: 'Individual', option: 'Individual' }
 ]
 export const businessFilterOptions = [
-    { value: 'Residential', option: 'Residential' },
-    { value: 'Software', option: 'Software' },
-    { value: 'Corporate', option: 'Corporate' },
-    { value: 'Traders', option: 'Traders' }
+    { value: 'SoftwareAndIT', option: 'Software & IT' },
+    { value: 'HealthAndPharma', option: 'Health & Pharma' },
+    { value: 'RestaurantAndHospitality', option: 'Restaurant & Hospitality' },
+    { value: 'MediaAndAdvertising', option: 'Media & Advertising' },
+    { value: 'Manufacturers', option: 'Manufacturers' },
+    { value: 'CorporateOffices', option: 'Corporate Offices' },
 ]
 export const shiftOptions = [
     <Option key="1" value="Morning">Morning</Option>,
@@ -139,7 +141,7 @@ export const getRoleOptions = (roles = []) => {
 export const getBatchOptions = (batches = []) => {
     return batches.map((item) => <Option key={item.productionQcId} value={item.productionQcId}>{item.batchId}</Option>)
 }
-export const getMaterialOpitons = (materials = [{ name: 'Caps' }, { name: 'Bottles' }]) => {
+export const getMaterialOptions = (materials = [{ name: 'Caps' }, { name: 'Bottles' }]) => {
     return materials.map((item, index) => <Option key={index} value={item.name}>{item.name}</Option>)
 }
 export const getVendorOptions = (vendors = [{ name: 'Balaji Industries' }, { name: 'Praveen Builders' }]) => {
@@ -354,7 +356,12 @@ export const paymentColumns = [
         title: 'Status',
         dataIndex: 'status',
         key: 'status',
-    }
+    },
+    {
+        title: 'Actions',
+        dataIndex: 'action',
+        key: 'action'
+    },
 ]
 export const deliveryColumns = [
     {

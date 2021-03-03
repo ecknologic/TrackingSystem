@@ -217,6 +217,23 @@ export const getIdProofName = (type) => {
     }
 }
 
+export const getBusinessTypes = (type) => {
+    switch (type) {
+        case 'SoftwareAndIT':
+            return 'Software & IT'
+        case 'HealthAndPharma':
+            return 'Health & Pharma'
+        case 'RestaurantAndHospitality':
+            return 'Restaurant & Hospitality'
+        case 'MediaAndAdvertising':
+            return 'Media & Advertising'
+        case 'Manufacturers':
+            return 'Manufacturers'
+        case 'CorporateOffices':
+            return 'Corporate Offices'
+    }
+}
+
 export const getIdProofKey = (data) => {
     const { panNo, adharNo, licenseNo, passportNo } = data
 

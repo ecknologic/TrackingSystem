@@ -37,7 +37,7 @@ const Invoices = () => {
                             <CreateInvoice goToTab={handleGoToTab} />
                         </TabPane>
                         <TabPane tab="Received Payments" key="3">
-                            <Payments reFetch={reFetch} />
+                            <Payments reFetch={reFetch} onUpdate={() => setreFetch(!reFetch)} />
                         </TabPane>
                     </Tabs>
                 </div>

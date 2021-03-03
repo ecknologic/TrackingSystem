@@ -1,7 +1,7 @@
 import React from 'react';
 import dayjs from 'dayjs';
 import InputValue from '../../../../components/InputValue';
-import { getInvoiceLabel } from '../../../../utils/Functions';
+import { getBusinessTypes, getInvoiceLabel } from '../../../../utils/Functions';
 const DATEFORMAT = 'DD/MM/YYYY'
 
 const AccountView = ({ data }) => {
@@ -12,6 +12,7 @@ const AccountView = ({ data }) => {
     } = data
 
     const isCorporate = customertype === 'Corporate'
+    const NOB = getBusinessTypes(natureOfBussiness)
 
     const renderDA = () => (
         <div className='input-container'>
@@ -44,7 +45,7 @@ const AccountView = ({ data }) => {
                     </div>
                     <div className='input-container'>
                         <InputValue size='smaller' value='Nature of Business' />
-                        <InputValue size='large' value={natureOfBussiness} />
+                        <InputValue size='large' value={NOB} />
                     </div>
                 </div>
                 <div className='row half-stretch'>

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import dayjs from 'dayjs';
-import { Table } from 'antd';
+import { Menu, message, Table } from 'antd';
 import { useHistory } from 'react-router-dom';
 import React, { useEffect, useMemo, useState } from 'react';
 import { http } from '../../../modules/http'
@@ -9,14 +9,15 @@ import { TODAYDATE } from '../../../utils/constants';
 import DateValue from '../../../components/DateValue';
 import { paymentColumns } from '../../../assets/fixtures';
 import SearchInput from '../../../components/SearchInput';
-import { getStatusColor } from '../../../utils/Functions';
-import { ScheduleIcon } from '../../../components/SVG_Icons';
+import { deepClone, getStatusColor, showToast } from '../../../utils/Functions';
+import { DocIconGrey, ListViewIconGrey, ScheduleIcon, SendIconGrey } from '../../../components/SVG_Icons';
 import CustomDateInput from '../../../components/CustomDateInput';
 import CustomPagination from '../../../components/CustomPagination';
+import Actions from '../../../components/Actions';
 const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
-const Payments = ({ reFetch }) => {
+const Payments = ({ reFetch, onUpdate }) => {
     const history = useHistory()
     const [invoices, setInvoices] = useState([])
     const [loading, setLoading] = useState(true)
@@ -75,8 +76,46 @@ const Payments = ({ reFetch }) => {
         setPageNumber(1)
     }
 
+    const handleMenuSelect = (key, data) => {
+        if (key === 'resend') {
+        }
+        else if (key === 'dcList') {
+            history.push(`/invoices/delivery-challan/${data.invoiceId}`, data)
+        }
+        else handleStatusUpdate(data.invoiceId)
+    }
+
+    const handleStatusUpdate = async (invoiceId) => {
+        const status = 'Pending'
+        const options = { item: 'Invoice status', v1Ing: 'Updating', v2: 'updated' }
+        const url = `/invoice/updateInvoiceStatus`
+        const body = { status, invoiceId }
+        try {
+            showToast({ ...options, action: 'loading' })
+            await http.PUT(axios, url, body, config)
+            optimisticUpdate(invoiceId, status)
+            showToast(options)
+        } catch (error) {
+            message.destroy()
+        }
+    }
+
+    const optimisticUpdate = (id, status) => {
+        let clone = deepClone(invoices);
+        const index = clone.findIndex(item => item.invoiceId === id)
+        clone[index].status = status;
+        setInvoices(clone)
+        onUpdate()
+    }
+
     const dataSource = useMemo(() => invoices.map((invoice) => {
         const { invoiceId, createdDateTime, totalAmount, customerName, dueDate, status } = invoice
+
+        const options = [
+            <Menu.Item key="resend" icon={<SendIconGrey />}>Resend</Menu.Item>,
+            <Menu.Item key="dcList" icon={<ListViewIconGrey />}>DC List</Menu.Item>,
+            <Menu.Item key="due" icon={<DocIconGrey />}>Due</Menu.Item>
+        ]
 
         return {
             key: invoiceId,
@@ -85,7 +124,8 @@ const Payments = ({ reFetch }) => {
             dueDate: dayjs(dueDate).format(DATEFORMAT),
             date: dayjs(createdDateTime).format(DATEFORMAT),
             status: renderStatus(status),
-            invoiceId: <span className='app-link' onClick={() => handleViewInvoice(invoice)}>{invoiceId}</span>
+            invoiceId: <span className='app-link' onClick={() => handleViewInvoice(invoice)}>{invoiceId}</span>,
+            action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, invoice)} />
         }
     }), [invoices])
 

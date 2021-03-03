@@ -41,6 +41,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
     }, [])
 
     useEffect(async () => {
+        setLoading(true)
         getInvoices()
     }, [reFetch])
 
@@ -79,7 +80,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
         else if (key === 'dcList') {
             history.push(`/invoices/delivery-challan/${data.invoiceId}`, data)
         }
-        else handleStatusUpdate(key, data.invoiceId)
+        else handleStatusUpdate(data.invoiceId)
     }
 
     const handleViewInvoice = (invoice) => history.push('/invoices/manage', { invoice })
@@ -119,8 +120,8 @@ const Dashboard = ({ reFetch, onUpdate }) => {
         onUpdate()
     }
 
-    const handleStatusUpdate = async (action, invoiceId) => {
-        const status = action === 'paid' ? 'Paid' : 'Pending'
+    const handleStatusUpdate = async (invoiceId) => {
+        const status = 'Paid'
         const options = { item: 'Invoice status', v1Ing: 'Updating', v2: 'updated' }
         const url = `/invoice/updateInvoiceStatus`
         const body = { status, invoiceId }
@@ -140,8 +141,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
         const options = [
             <Menu.Item key="resend" icon={<SendIconGrey />}>Resend</Menu.Item>,
             <Menu.Item key="dcList" icon={<ListViewIconGrey />}>DC List</Menu.Item>,
-            <Menu.Item key="paid" className={status === 'Paid' ? 'disabled' : ''} icon={<TickIconGrey />}>Paid</Menu.Item>,
-            <Menu.Item key="due" className={status === 'Pending' ? 'disabled' : ''} icon={<DocIconGrey />}>Due</Menu.Item>
+            <Menu.Item key="paid" icon={<TickIconGrey />}>Paid</Menu.Item>,
         ]
 
         return {
