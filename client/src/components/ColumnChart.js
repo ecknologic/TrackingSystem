@@ -4,7 +4,7 @@ import { Column } from "@ant-design/charts";
 const ColumnChart = () => {
 
   var config = {
-    data: weekData,
+    data: monthData,
     width: '100%',
     isGroup: true,
     xField: "label",
@@ -210,103 +210,28 @@ var weekData = [
 var monthData = [
   {
     name: "20 Ltrs",
-    label: "Week 1",
+    label: "20 Ltrs",
     value: 12.4
   },
   {
     name: "2 Ltrs",
-    label: "Week 1",
+    label: "2 Ltrs",
     value: 23.4
   },
   {
     name: "1 Ltrs",
-    label: "Week 1",
+    label: "1 Ltrs",
     value: 28.8
   },
   {
     name: "500 ml",
-    label: "Week 1",
+    label: "500 ml",
     value: 39.3
   },
   {
     name: "300 ml",
-    label: "Week 1",
+    label: "300 ml",
     value: 59.3
-  },
-  {
-    name: "20 Ltrs",
-    label: "Week 2",
-    value: 32.4
-  },
-  {
-    name: "2 Ltrs",
-    label: "Week 2",
-    value: 23.4
-  },
-  {
-    name: "1 Ltrs",
-    label: "Week 2",
-    value: 40.8
-  },
-  {
-    name: "500 ml",
-    label: "Week 2",
-    value: 34.3
-  },
-  {
-    name: "300 ml",
-    label: "Week 2",
-    value: 29.3
-  },
-  {
-    name: "20 Ltrs",
-    label: "Week 3",
-    value: 32.4
-  },
-  {
-    name: "2 Ltrs",
-    label: "Week 3",
-    value: 52.4
-  },
-  {
-    name: "1 Ltrs",
-    label: "Week 3",
-    value: 28.8
-  },
-  {
-    name: "500 ml",
-    label: "Week 3",
-    value: 59.3
-  },
-  {
-    name: "300 ml",
-    label: "Week 3",
-    value: 29.3
-  },
-  {
-    name: "20 Ltrs",
-    label: "Week 4",
-    value: 52.4
-  },
-  {
-    name: "2 Ltrs",
-    label: "Week 4",
-    value: 42.4
-  },
-  {
-    name: "1 Ltrs",
-    label: "Week 4",
-    value: 58.8
-  },
-  {
-    name: "500 ml",
-    label: "Week 4",
-    value: 39.3
-  },
-  {
-    name: "300 ml",
-    label: "Week 4",
-    value: 19.3
   }
 ];
 

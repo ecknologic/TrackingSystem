@@ -58,7 +58,9 @@ const Invoices = () => {
 
     const handlePrint = (event, pdf) => {
         event.preventDefault();
-        window.open(pdf, "PRINT", "height=400,width=600");
+        // window.open(pdf, "PRINT", "height=400,width=600");
+        window.print()
+
     }
 
     return (
