@@ -20,8 +20,8 @@ motherPlantDbQueries.getProductsByBatch = async (input, callback) => {
     return executeGetParamsQuery(query, [departmentId, batchNo], callback)
 }
 motherPlantDbQueries.getTotalProduction = async (input, callback) => {
-    let { departmentId, startDate, endDate, fromStart } = input
-    let query = `SELECT SUM(p.product20L) AS product20LCount,SUM(p.product1L) AS product1LCount,SUM(p.product500ML) product500MLCount,SUM(p.product300ML) product300MLCount,SUM(p.product2L) product2LCount FROM production p WHERE DATE(productionDate)<=?`;
+    let { departmentId, startDate, endDate, fromStart, type } = input
+    let query = `SELECT SUM(p.product20L) AS product20LCount,SUM(p.product1L) AS product1LCount,SUM(p.product500ML) product500MLCount,SUM(p.product300ML) product300MLCount,SUM(p.product2L) product2LCount,productionDate FROM production p WHERE DATE(productionDate)<=?`;
     let options = [endDate]
 
     if (fromStart !== 'true') {
@@ -38,6 +38,7 @@ motherPlantDbQueries.getTotalProduction = async (input, callback) => {
             options = [departmentId, startDate, endDate]
         }
     }
+    if (type == "This Week") query = query.concat(" GROUP BY productionDate")
     return executeGetParamsQuery(query, options, callback)
 }
 motherPlantDbQueries.getTotalChangeProduction = async (input, callback) => {
