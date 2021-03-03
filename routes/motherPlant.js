@@ -407,21 +407,26 @@ router.get('/getTotalProduction', (req, res) => {
                 product2LCount: getFormatedNumber(p2l)
             }
             if (input.type == "This Week") {
+                let arr = []
                 productionResult.map(product => {
                     const { product20LCount: p20L, product1LCount: p1L, product500MLCount: p500ml, product300MLCount: p300ml, product2LCount: p2l } = product
-                    product.product20LCount = getFormatedNumber(p20L)
-                    product.product1LCount = getFormatedNumber(p1L)
-                    product.product500MLCount = getFormatedNumber(p500ml)
-                    product.product300MLCount = getFormatedNumber(p300ml)
-                    product.product2LCount = getFormatedNumber(p2l)
-                    product.label = WEEKDAYS[dayjs(product.productionDate).day()]
-                    delete product.productionDate
+                    const data = {
+                        product20LCount: getFormatedNumber(p20L),
+                        product1LCount: getFormatedNumber(p1L), product500MLCount: getFormatedNumber(p500ml),
+                        product300MLCount: getFormatedNumber(p300ml),
+                        product2LCount: getFormatedNumber(p2l),
+                    }
+                    let label = WEEKDAYS[dayjs(product.productionDate).day()]
+                    const { product20LCount, product2LCount, product1LCount, product500MLCount, product300MLCount, label } = data
+                    data.graph = getGraphData(product20LCount, product2LCount, product1LCount, product500MLCount, product300MLCount, label)
+                    arr.push(data)
                 })
+                res.json(arr)
             } else {
                 const { product20LCount, product2LCount, product1LCount, product500MLCount, product300MLCount } = data
                 data.graph = getGraphData(product20LCount, product2LCount, product1LCount, product500MLCount, product300MLCount)
+                res.json(data);
             }
-            res.json(productionResult);
         }
         else
             res.json(defaultValues)
