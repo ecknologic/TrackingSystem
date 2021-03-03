@@ -351,11 +351,6 @@ export const paymentColumns = [
         key: 'totalAmount',
     },
     {
-        title: 'Unused Amount',
-        dataIndex: 'unusedAmount',
-        key: 'unusedAmount',
-    },
-    {
         title: 'Status',
         dataIndex: 'status',
         key: 'status',

@@ -33,6 +33,7 @@ import ReceivedEmptyCans from './UI/empty-cans/motherplant';
 import MotherplantDashboard from './UI/dashboard/motherplant';
 import MotherplantMaterials from './UI/materials/motherplant';
 import SuperAdminDashboard from './UI/dashboard/super-admin';
+import DeliveredDC from './UI/invoices/delivered-dc';
 
 const App = () => {
 
@@ -117,6 +118,7 @@ const App = () => {
                   <Route path='/routes' render={byRole(<Transport />)} />
                   <Route path='/drivers' render={byRole(<Drivers />)} />
                   <Route path='/invoices/manage' render={byRole(<ManageInvoices />)} />
+                  <Route path='/invoices/delivery-challan/:invoiceId' render={byRole(<DeliveredDC />)} />
                   <Route path='/invoices/edit/:invoiceId' render={byRole(<EditInvoice />)} />
                   <Route path='/invoices/:active?' render={byRole(<Invoices />)} />
                   <Route path='/products' render={byRole(<Products />)} />

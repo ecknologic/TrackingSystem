@@ -8,6 +8,7 @@ const { createSingleDeliveryInvoice } = require('./createInvoice.js');
 const { createMultiDeliveryInvoice } = require('./invoice.js');
 const fs = require('fs');
 const { generatePDF } = require('../../dbQueries/Customer/queries.js');
+const dayjs = require('dayjs');
 
 router.get('/getInvoices', (req, res) => {
     invoiceQueries.getInvoices(req.params.status, (err, results) => {
@@ -33,10 +34,10 @@ router.get('/getInvoiceById/:invoiceId', (req, res) => {
     invoiceQueries.getInvoiceById(req.params.invoiceId, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
-            const { customerId, customerName, organizationName, address, gstNo, panNo, mobileNumber, invoiceId } = results[0]
+            const { gstNo, invoiceId, ...rest } = results[0]
             let products = JSON.parse(results[0].products)
             let obj = {
-                customerId, customerName, organizationName, address, gstNo, panNo, mobileNumber, invoiceId
+                gstNo, invoiceId, ...rest
             }
             obj.products = products
             if (obj.products.length) {
@@ -115,7 +116,7 @@ router.post("/generateMultipleInvoices", (req, res) => {
                         })
                         let arr = []
                         for (let [index, i] of customersArr.entries()) {
-                            let { gstNo, products, customerId, customerName, EmailId, createdBy, price20L, price1L, price500ML, price300ML, price2L } = i
+                            let { gstNo, products, customerId, creditPeriodInDays, customerName, EmailId, createdBy } = i
                             let finalProducts = []
                             let obj = {
                                 customerName,
@@ -123,9 +124,9 @@ router.post("/generateMultipleInvoices", (req, res) => {
                                 invoiceDate: new Date(),
                                 customerId: customerId,
                                 salesPerson: createdBy,
-                                dueDate: "2021-02-26",
-                                hsnCode: 12345,
-                                poNo: 12,
+                                dueDate: dayjs().add(creditPeriodInDays, 'day'),
+                                hsnCode: 22011010,
+                                poNo: 0,
                                 mailSubject: "Hello",
                                 TAndC: "hi",
                                 invoiceId: getInvoiceNumber(results[0].invoiceId + (index + 1)),
@@ -204,7 +205,7 @@ router.post("/generateMultipleInvoices", (req, res) => {
     })
 });
 router.post("/createInvoice", (req, res) => {
-    let { customerId, invoiceId, customerName, organizationName, address, gstNo, panNo, mobileNumber, products } = req.body
+    let { customerId, customerName, organizationName, address, gstNo, panNo, mobileNumber, products } = req.body
     let obj = {
         customerId, customerName, organizationName, address, gstNo, panNo, mobileNumber
     }
@@ -266,7 +267,7 @@ router.post("/updateInvoice", (req, res) => {
     //     items: [obj], invoiceId, gstNo
     // }
     // createSingleDeliveryInvoice(invoice, "invoice.pdf").then(response => {
-    updateInvoice(req, res, result)
+    updateInvoice(req, res)
     // })
 });
 const saveInvoice = async (requestObj, res, response) => {
@@ -290,7 +291,7 @@ const saveInvoice = async (requestObj, res, response) => {
         }
     })
 }
-const updateInvoice = (req, res, pdfData) => {
+const updateInvoice = (req, res) => {
     // req.body.invoicePdf = pdfData.toString('base64')
     invoiceQueries.updateInvoice(req.body, (err, results) => {
         if (err) res.status(500).json(dbError(err));

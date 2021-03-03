@@ -3,6 +3,10 @@
     
     .stock-delivery-container {
         padding: 1.5em 2em 2em 2em;
+
+        .header {
+            justify-content: flex-end;
+        }
     }
     
     .invoice-title-container {
@@ -94,11 +98,16 @@
 }
 
 .manage-invoices-header {
+    
     justify-content: space-between;
 
     .left {
         display: flex;
         align-items: center;
+
+        .title {
+            color: #171725;
+        }
     }
 }
 

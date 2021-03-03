@@ -10,7 +10,7 @@ const RoutesDropdown = ({ data, onChange, title, keyValue, keyLabel }) => {
     const [visible, setVisible] = useState(false)
 
     const handleSelect = (option) => {
-        dataRef.current.push(option)
+        dataRef.current = [...dataRef.current, option]
         onChange(dataRef.current)
     }
 

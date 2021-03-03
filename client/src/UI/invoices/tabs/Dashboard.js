@@ -14,11 +14,11 @@ import CustomButton from '../../../components/CustomButton';
 import CustomRangeInput from '../../../components/CustomRangeInput';
 import CustomPagination from '../../../components/CustomPagination';
 import { deepClone, getStatusColor, showToast } from '../../../utils/Functions';
-import { ArrowIconGrey, DocIconGrey, ScheduleIcon, SendIconGrey, TickIconGrey } from '../../../components/SVG_Icons';
+import { ListViewIconGrey, DocIconGrey, ScheduleIcon, SendIconGrey, TickIconGrey } from '../../../components/SVG_Icons';
 const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
-const Dashboard = ({ reFetch }) => {
+const Dashboard = ({ reFetch, onUpdate }) => {
     const history = useHistory()
     const [invoices, setInvoices] = useState([])
     const [loading, setLoading] = useState(true)
@@ -77,6 +77,7 @@ const Dashboard = ({ reFetch }) => {
         if (key === 'resend') {
         }
         else if (key === 'dcList') {
+            history.push(`/invoices/delivery-challan/${data.invoiceId}`, data)
         }
         else handleStatusUpdate(key, data.invoiceId)
     }
@@ -115,6 +116,7 @@ const Dashboard = ({ reFetch }) => {
         const index = clone.findIndex(item => item.invoiceId === id)
         clone[index].status = status;
         setInvoices(clone)
+        onUpdate()
     }
 
     const handleStatusUpdate = async (action, invoiceId) => {
@@ -137,7 +139,7 @@ const Dashboard = ({ reFetch }) => {
 
         const options = [
             <Menu.Item key="resend" icon={<SendIconGrey />}>Resend</Menu.Item>,
-            <Menu.Item key="dcList" icon={<ArrowIconGrey className='rotate-180' />}>DC List</Menu.Item>,
+            <Menu.Item key="dcList" icon={<ListViewIconGrey />}>DC List</Menu.Item>,
             <Menu.Item key="paid" className={status === 'Paid' ? 'disabled' : ''} icon={<TickIconGrey />}>Paid</Menu.Item>,
             <Menu.Item key="due" className={status === 'Pending' ? 'disabled' : ''} icon={<DocIconGrey />}>Due</Menu.Item>
         ]

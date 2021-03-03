@@ -199,7 +199,7 @@ router.get('/deliveryDetails/:date', (req, res) => {
 });
 
 router.get('/getAllDcDetails', (req, res) => {
-  warehouseQueries.getAllDcDetails({ departmentId, ...req.query }, (err, results) => {
+  warehouseQueries.getAllDcDetails(req.query, (err, results) => {
     if (err) res.status(500).json(err.sqlMessage);
     res.send(JSON.stringify(results));
   });

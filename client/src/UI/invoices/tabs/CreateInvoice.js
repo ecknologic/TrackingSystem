@@ -211,7 +211,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
         const formErrors = validateInvoiceValues({ ...formData, products: dataSource });
         const { EmailId: emailId, customerName, panNo, mobileNumber, address, gstNo } = billingAddress
         const { totalAmount } = footerValues
-        const { invoiceDate, dueDate } = formData
+        const { invoiceDate, dueDate, fromDate, toDate } = formData
 
         if (!isEmpty(formErrors)) {
             setShake(true)
@@ -231,6 +231,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
 
         let body = {
             ...formData, invoiceDate: dayjs(invoiceDate).format(APIDATEFORMAT),
+            fromDate: dayjs(fromDate).format(APIDATEFORMAT), toDate: dayjs(toDate).format(APIDATEFORMAT),
             mailIds: emailId, products: dataSource, dueDate: dayjs(dueDate).format(APIDATEFORMAT),
             totalAmount, customerName, panNo, mobileNumber, address, gstNo
         }
