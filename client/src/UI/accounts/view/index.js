@@ -294,9 +294,6 @@ const ViewAccount = () => {
                         <TabPane tab="Invoice" key="4">
                             <Invoice accountId={accountId} />
                         </TabPane>
-                        <TabPane tab="Report Log" key="5" disabled>
-                            <NoContent content='Design in progress' />
-                        </TabPane>
                     </Tabs>
                 </div>
             </div>

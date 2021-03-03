@@ -23,7 +23,7 @@ const Accounts = () => {
     const [totalCount, setTotalCount] = useState(null)
     const [filterON, setFilterON] = useState(false)
     const [searchON, setSeachON] = useState(false)
-    const [sortBy, setSortBy] = useState('NEW')
+    const [sortBy, setSortBy] = useState('NEW - OLD')
 
     const pageSizeOptions = useMemo(() => generatePageSizeOptions(), [window.innerWidth])
     const source = useMemo(() => axios.CancelToken.source(), []);
@@ -77,7 +77,7 @@ const Accounts = () => {
         else if (type === 'A - Z') {
             complexSort(clone, 'organizationName')
         }
-        else if (type === 'OLD') {
+        else if (type === 'OLD - NEW') {
             complexDateSort(clone, 'registeredDate')
         }
         else {

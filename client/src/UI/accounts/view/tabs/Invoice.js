@@ -10,7 +10,7 @@ import { invoiceColumns } from '../../../../assets/fixtures';
 import SearchInput from '../../../../components/SearchInput';
 import CustomPagination from '../../../../components/CustomPagination';
 import { deepClone, getStatusColor, showToast } from '../../../../utils/Functions';
-import { ArrowIconGrey, DocIconGrey, SendIconGrey, TickIconGrey } from '../../../../components/SVG_Icons';
+import { DocIconGrey, ListViewIconGrey, SendIconGrey, TickIconGrey } from '../../../../components/SVG_Icons';
 const DATEFORMAT = 'DD/MM/YYYY'
 
 const Invoice = ({ reFetch, accountId }) => {
@@ -58,6 +58,7 @@ const Invoice = ({ reFetch, accountId }) => {
         if (key === 'resend') {
         }
         else if (key === 'dcList') {
+            history.push(`/invoices/delivery-challan/${data.invoiceId}`, data)
         }
         else handleStatusUpdate(key, data.invoiceId)
     }
@@ -91,7 +92,7 @@ const Invoice = ({ reFetch, accountId }) => {
 
         const options = [
             <Menu.Item key="resend" icon={<SendIconGrey />}>Resend</Menu.Item>,
-            <Menu.Item key="dcList" icon={<ArrowIconGrey className='rotate-180' />}>DC List</Menu.Item>,
+            <Menu.Item key="dcList" icon={<ListViewIconGrey />}>DC List</Menu.Item>,
             <Menu.Item key="paid" className={status === 'Paid' ? 'disabled' : ''} icon={<TickIconGrey />}>Paid</Menu.Item>,
             <Menu.Item key="due" className={status === 'Pending' ? 'disabled' : ''} icon={<DocIconGrey />}>Due</Menu.Item>
         ]

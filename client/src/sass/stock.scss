@@ -36,6 +36,12 @@
     padding-bottom: 3em;
     background-color: #FAFAFB;
 
+    .stock-delivery-container {
+        .header {
+            justify-content: flex-end;
+        }
+    }
+
     .date-picker-panel {
         height: 6.5em;
         width: 100%;
@@ -297,6 +303,14 @@
             .delivery-search {
                 max-width: 22em;
                 min-width: 14em;
+            }
+        }
+
+        .more {
+            width: 50%;
+            
+            .delivery-search {
+                width: 80% !important;
             }
         }
 

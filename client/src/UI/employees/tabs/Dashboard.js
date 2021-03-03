@@ -3,6 +3,7 @@ import { Col, Empty, message, Row } from 'antd';
 import { useHistory, useLocation } from 'react-router-dom';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../modules/http'
+import MenuBar from '../../../components/MenuBar';
 import Spinner from '../../../components/Spinner';
 import NoContent from '../../../components/NoContent';
 import DeleteModal from '../../../components/CustomModal';
@@ -10,11 +11,13 @@ import EmployeeCard from '../../../components/EmployeeCard';
 import { getRole, SUPERADMIN } from '../../../utils/constants';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import CustomPagination from '../../../components/CustomPagination';
-import { deepClone, getMainPathname, showToast } from '../../../utils/Functions';
+import { deepClone, doubleKeyComplexSearch, getMainPathname, showToast, complexSort, complexDateSort, isEmpty } from '../../../utils/Functions';
 
 const Dashboard = ({ reFetch, isDriver }) => {
     const history = useHistory()
     const { pathname } = useLocation()
+    const [employeesClone, setEmployeesClone] = useState([])
+    const [filteredClone, setFilteredClone] = useState([])
     const [employees, setEmployees] = useState([])
     const [loading, setLoading] = useState(true)
     const [pageSize, setPageSize] = useState(12)
@@ -22,7 +25,9 @@ const Dashboard = ({ reFetch, isDriver }) => {
     const [totalCount, setTotalCount] = useState(null)
     const [modalDelete, setModalDelete] = useState(false)
     const [currentId, setCurrentId] = useState('')
-
+    const [filterON, setFilterON] = useState(false)
+    const [searchON, setSeachON] = useState(false)
+    const [sortBy, setSortBy] = useState('NEW - OLD')
     const mainUrl = useMemo(() => getMainPathname(pathname), [pathname])
     const isSuperAdmin = useMemo(() => getRole() === SUPERADMIN, [])
     const [employeeType] = useState(() => getEmployeeType(isDriver))
@@ -48,6 +53,7 @@ const Dashboard = ({ reFetch, isDriver }) => {
         try {
             const data = await http.GET(axios, url, config)
             setEmployees(data)
+            setEmployeesClone(data)
             setTotalCount(data.length)
             setLoading(false)
         } catch (error) { }
@@ -108,11 +114,91 @@ const Dashboard = ({ reFetch, isDriver }) => {
         const index = clone.findIndex(item => item[idKey] === id)
         clone[index].isActive = status;
         setEmployees(clone)
+
+        if (searchON || filterON) {
+            let clone = deepClone(employeesClone);
+            const index = clone.findIndex(item => item[idKey] === id)
+            clone[index].isActive = status;
+            setEmployeesClone(clone)
+        }
+        else setEmployeesClone(clone)
+
+    }
+
+    const handleSearch = (value) => {
+        setPageNumber(1)
+        if (value === "") {
+            setTotalCount(employeesClone.length)
+            setEmployees(employeesClone)
+            setSeachON(false)
+            return
+        }
+        const result = doubleKeyComplexSearch(employeesClone, value, 'userName', 'departmentName')
+        setTotalCount(result.length)
+        setEmployees(result)
+        setSeachON(true)
+    }
+
+    const onSort = (type) => {
+        handleSort(type, filterON)
+    }
+
+    const handleSort = (type, filterON) => {
+        const clone = [...(filterON ? filteredClone : employeesClone)]
+
+        if (type === 'Z - A') {
+            complexSort(clone, 'userName', 'desc')
+        }
+        else if (type === 'A - Z') {
+            complexSort(clone, 'userName')
+        }
+        else if (type === 'OLD - NEW') {
+            complexDateSort(clone, 'createdDateTime')
+        }
+        else {
+            complexDateSort(clone, 'createdDateTime', 'desc')
+        }
+
+        filterON ? setFilteredClone(clone) : setEmployeesClone(clone)
+        setTotalCount(clone.length)
+        setEmployees(clone)
+        setSortBy(type)
+    }
+
+    const onFilterChange = (data) => {
+        const { status } = data
+        if (isEmpty(status)) handleFilterClear()
+        else handleFilter(data)
+    }
+
+    const handleFilter = (filterInfo) => {
+        const { status } = filterInfo
+        const filtered = employeesClone.filter((item) => status.includes(item.isActive))
+        setFilterON(true)
+        setPageNumber(1)
+        setEmployees(filtered)
+        setFilteredClone(filtered)
+        setTotalCount(filtered.length)
+    }
+
+    const handleFilterClear = () => {
+        setPageNumber(1)
+        setEmployees(employeesClone)
+        setTotalCount(employeesClone.length)
+        setFilteredClone([])
+        setFilterON(false)
+        handleSort(sortBy, false)
     }
 
     const optimisticDelete = (id) => {
         const filtered = employees.filter(item => item[idKey] !== id)
         setEmployees(filtered)
+
+        if (searchON || filterON) {
+            const filtered = employeesClone.filter(item => item[idKey] !== id)
+            setEmployeesClone(filtered)
+        }
+        else setEmployeesClone(filtered)
     }
 
     const handleDeleteModalOk = useCallback(() => {
@@ -131,7 +217,8 @@ const Dashboard = ({ reFetch, isDriver }) => {
 
     return (
         <Fragment>
-            <div className='plant-manager-content'>
+            <MenuBar searchText={`Search ${employeeType}`} onSearch={handleSearch} onSort={onSort} onFilter={onFilterChange} />
+            <div className='employee-manager-content'>
                 <Row gutter={[{ lg: 32, xl: 16 }, { lg: 32, xl: 32 }]}>
                     {
                         loading ? <NoContent content={<Spinner />} />

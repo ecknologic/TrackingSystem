@@ -1,6 +1,5 @@
 import { Tabs } from 'antd';
 import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
 import SortBy from '../../components/SortByDropdown';
 import SearchInput from '../../components/SearchInput';
 import ViewsComponent from '../../components/ViewsComponent';

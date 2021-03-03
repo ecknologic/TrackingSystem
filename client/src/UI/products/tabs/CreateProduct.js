@@ -87,7 +87,7 @@ const CreateProduct = ({ goToTab }) => {
     }
 
     return (
-        <>
+        <div className='employee-manager-content'>
             <div className='employee-title-container'>
                 <span className='title'>New Product Details</span>
             </div>
@@ -107,7 +107,7 @@ const CreateProduct = ({ goToTab }) => {
                     text='Create'
                 />
             </div>
-        </>
+        </div>
     )
 }
 

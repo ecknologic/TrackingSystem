@@ -5,7 +5,7 @@ import '../sass/sortByDropdown.scss'
 import { DDownIcon } from './SVG_Icons';
 
 const DropdownSelect = ({ width = '200px', onSelect }) => {
-    const [value, setValue] = useState('NEW')
+    const [value, setValue] = useState('NEW - OLD')
 
     const handleSelect = ({ key }) => {
         setValue(key)
@@ -20,11 +20,11 @@ const DropdownSelect = ({ width = '200px', onSelect }) => {
             <Menu.Item key="Z - A" icon={<SortDescendingOutlined />}>
                 Z - A
           </Menu.Item>
-            <Menu.Item key="NEW" >
-                NEW
+            <Menu.Item key="NEW - OLD" >
+                NEW - OLD
           </Menu.Item>
-            <Menu.Item key="OLD" >
-                OLD
+            <Menu.Item key="OLD - NEW" >
+                OLD - NEW
           </Menu.Item>
         </Menu>
     );

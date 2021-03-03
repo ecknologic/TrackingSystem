@@ -296,7 +296,6 @@ const Orders = () => {
     return (
         <div className='stock-delivery-container'>
             <div className='header'>
-                <div></div>
                 <div className='right'>
                     <SearchInput
                         placeholder='Search Delivery Challan'

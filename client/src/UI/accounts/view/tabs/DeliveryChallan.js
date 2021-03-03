@@ -155,7 +155,7 @@ const DeliveryChallan = ({ accountId }) => {
                     />)
             }
             <CustomModal
-                className={`app-form-modal ${shake ? 'app-shake' : ''}`}
+                className={`app-form-modal app-view-modal ${shake ? 'app-shake' : ''}`}
                 visible={DCModal}
                 btnDisabled={btnDisabled}
                 onOk={handleDCModalCancel}

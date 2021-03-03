@@ -12,7 +12,7 @@ import { resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
 
 const InvoiceForm = ({ data, salesPersonOptions, billingAddress, customerOptions, errors, onChange }) => {
 
-    const { customerId, salesPerson, poNo, hsnCode, mailSubject, invoiceId, invoiceDate, dueDate } = data
+    const { customerId, salesPerson, poNo, hsnCode, mailSubject, invoiceId, invoiceDate, dueDate, fromDate, toDate } = data
     const { loading, loaded, address, gstNo } = billingAddress
 
     useEffect(() => {
@@ -103,6 +103,24 @@ const InvoiceForm = ({ data, salesPersonOptions, billingAddress, customerOptions
                     <CustomInput value={poNo}
                         error={errors.poNo} placeholder='PO Number'
                         onChange={(value) => onChange(value, 'poNo')}
+                    />
+                </div>
+            </div>
+            <div className='row'>
+                <div className='input-container'>
+                    <InputLabel name='Invoice Period Start Date' error={errors.fromDate} mandatory />
+                    <CustomDateInput
+                        track
+                        value={fromDate} error={errors.fromDate}
+                        onChange={(value) => onChange(value, 'fromDate')}
+                    />
+                </div>
+                <div className='input-container'>
+                    <InputLabel name='Invoice Period End Date' error={errors.toDate} mandatory />
+                    <CustomDateInput
+                        track
+                        value={toDate} error={errors.toDate}
+                        onChange={(value) => onChange(value, 'toDate')}
                     />
                 </div>
             </div>

@@ -1,31 +1,26 @@
+import dayjs from 'dayjs';
 import axios from 'axios';
 import { Menu, Table } from 'antd';
+import { useLocation, useParams } from 'react-router-dom';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
 import Spinner from '../../../../components/Spinner';
 import Actions from '../../../../components/Actions';
 import DCView from '../../../accounts/view/views/DCView';
-import DateValue from '../../../../components/DateValue';
 import QuitModal from '../../../../components/CustomModal';
 import SearchInput from '../../../../components/SearchInput';
 import CustomModal from '../../../../components/CustomModal';
 import { deliveryColumns } from '../../../../assets/fixtures';
-import CustomButton from '../../../../components/CustomButton';
-import RoutesFilter from '../../../../components/RoutesFilter';
+import { EyeIconGrey } from '../../../../components/SVG_Icons';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomPagination from '../../../../components/CustomPagination';
-import CustomRangeInput from '../../../../components/CustomRangeInput';
-import { EyeIconGrey, ScheduleIcon } from '../../../../components/SVG_Icons';
-import { getWarehoseId, TODAYDATE, TRACKFORM } from '../../../../utils/constants';
+import { TODAYDATE, TRACKFORM } from '../../../../utils/constants';
 import { isEmpty, resetTrackForm, getStatusColor } from '../../../../utils/Functions';
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
 const DeliveredDC = () => {
-    const departmentId = getWarehoseId()
-    const [customerList, setCustomerList] = useState([])
+    const { state: urlState = {} } = useLocation()
     const [loading, setLoading] = useState(true)
-    const [customerIds, setCustomerIds] = useState([])
-    const [filterBtnDisabled, setFilterBtnDisabled] = useState(true)
     const [deliveries, setDeliveries] = useState([])
     const [formData, setFormData] = useState({})
     const [pageSize, setPageSize] = useState(10)
@@ -34,36 +29,27 @@ const DeliveredDC = () => {
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [DCModal, setDCModal] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
-    const [startDate, setStartDate] = useState(TODAYDATE)
-    const [endDate, setEndDate] = useState(TODAYDATE)
-    const [selectedRange, setSelectedRange] = useState([])
-    const [open, setOpen] = useState(false)
     const [title, setTitle] = useState('')
 
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
+    const { fromDate, toDate, customerId } = urlState
 
     useEffect(() => {
         setLoading(true)
         getDeliveries()
-        getCustomerList()
 
         return () => {
             http.ABORT(source)
         }
     }, [])
 
-    const getCustomerList = async () => {
-        const url = `/customer/getCustomers`
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setCustomerList(data)
-        } catch (error) { }
-    }
 
     const getDeliveries = async () => {
-        const url = `/warehouse/getAllDcDetails?fromDate=${startDate}&toDate=${endDate}&departmentId=${departmentId}&customerIds=${customerIds}`
+        const startDate = dayjs(fromDate).format(APIDATEFORMAT)
+        const endDate = dayjs(toDate).format(APIDATEFORMAT)
+
+        const url = `/warehouse/getAllDcDetails?fromDate=${startDate}&toDate=${endDate}&customerIds=${[customerId]}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -74,39 +60,12 @@ const DeliveredDC = () => {
         } catch (error) { }
     }
 
-    const onFilterChange = (data) => {
-        setPageNumber(1)
-        setCustomerIds(data)
-        setFilterBtnDisabled(false)
-    }
-
     const handleMenuSelect = (key, data) => {
         if (key === 'view') {
             setTitle(data.dcNo)
             setFormData(data)
             setDCModal(true)
         }
-    }
-
-    const datePickerStatus = (status) => {
-        !status && setOpen(false)
-    }
-
-    const handleDateSelect = (selected) => {
-        const [from, to] = selected
-        setStartDate(from.format(APIDATEFORMAT))
-        setEndDate(to.format(APIDATEFORMAT))
-        setOpen(false)
-        setSelectedRange(selected)
-        setTimeout(() => setSelectedRange([]), 820)
-        setPageNumber(1)
-        setFilterBtnDisabled(false)
-    }
-
-    const handleFilter = () => {
-        setFilterBtnDisabled(true)
-        setLoading(true)
-        getDeliveries()
     }
 
     const handlePageChange = (number) => {
@@ -154,42 +113,10 @@ const DeliveredDC = () => {
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
-
     return (
         <div className='stock-delivery-container'>
             <div className='header'>
-                <div className='left fit'>
-                    <RoutesFilter
-                        data={customerList}
-                        title='Select Customers'
-                        keyValue='customerId'
-                        keyLabel='customerName'
-                        onChange={onFilterChange}
-                    />
-                    <DateValue date={startDate} to={endDate} />
-                    <div className='app-date-picker-wrapper'>
-                        <div className='date-picker' onClick={() => setOpen(true)}>
-                            <ScheduleIcon />
-                            <span>Select Date</span>
-                        </div>
-                        <CustomButton
-                            style={{ marginLeft: '1em' }}
-                            className={`${filterBtnDisabled ? 'disabled' : ''}`}
-                            text='Apply'
-                            onClick={handleFilter}
-                        />
-                        <CustomRangeInput // Hidden in the DOM
-                            open={open}
-                            value={selectedRange}
-                            style={{ left: 0 }}
-                            type='range'
-                            className='date-panel-picker'
-                            onChange={handleDateSelect}
-                            onOpenChange={datePickerStatus}
-                        />
-                    </div>
-                </div>
-                <div className='right more'>
+                <div className='right'>
                     <SearchInput
                         placeholder='Search Delivery Challan'
                         className='delivery-search'
