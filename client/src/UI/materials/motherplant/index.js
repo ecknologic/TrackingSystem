@@ -8,14 +8,14 @@ import ReceivedMaterials from './tabs/ReceivedMaterials';
 import ReportsDropdown from '../../../components/ReportsDropdown';
 import RequestedMaterialStatus from './tabs/RequestedMaterialStatus';
 import React, { Fragment, useState, useCallback, useMemo } from 'react';
-import { getMaterialOpitons, getVendorOptions } from '../../../assets/fixtures';
+import { getMaterialOptions, getVendorOptions } from '../../../assets/fixtures';
 import '../../../sass/materials.scss'
 
 const Materials = () => {
     const [activeTab, setActiveTab] = useState('1')
     const [reFetch, setreFetch] = useState(false)
 
-    const materialOptions = useMemo(() => getMaterialOpitons(), [])
+    const materialOptions = useMemo(() => getMaterialOptions(), [])
     const vendorOptions = useMemo(() => getVendorOptions(), [])
     const childProps = useMemo(() => ({ materialOptions, vendorOptions }), [materialOptions, vendorOptions])
 

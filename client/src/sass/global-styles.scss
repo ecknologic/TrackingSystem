@@ -405,7 +405,7 @@ $textColorDisabled:rgba(0,0,0,0.55);
 }
 // -------------- antd Text Area styles ------------------- //
 
-textarea {
+textarea, .ant-dropdown-menu {
     &::-webkit-scrollbar {
         width: .5em;
         height: .5em;
@@ -830,8 +830,10 @@ textarea {
 .ant-dropdown-menu-item-group-list {
     margin: 0;
 }
-.app-accounts-filter {
-    width: 12em;
+.ant-dropdown-menu {
+    background-clip: border-box;
+    max-height: 20em;
+    overflow-y: auto;
 }
 .ant-tabs-dropdown-menu-item {
     color: #333333;

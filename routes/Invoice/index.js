@@ -103,10 +103,21 @@ router.post("/generateMultipleInvoices", (req, res) => {
                 else {
                     if (!data.length) res.status(404).json('No data found')
                     else {
+                        let customersArr = []
+                        data.map(item => {
+                            let index = customersArr.findIndex(customer => item.customerId == customer.customerId)
+                            if (index >= 0) {
+                                let products = addProducts(JSON.parse(item.products))
+                                customersArr[index].products = customersArr[index].products.concat(products)
+                            } else {
+                                let products = addProducts(JSON.parse(item.products))
+                                customersArr.push({ ...item, products })
+                            }
+                        })
                         let arr = []
-                        for (let [index, i] of data.entries()) {
-                            let { gstNo, customerId, creditPeriodInDays, customerName, EmailId, createdBy, price20L, price1L, price500ML, price300ML, price2L } = i
-                            let products = []
+                        for (let [index, i] of customersArr.entries()) {
+                            let { gstNo, products, customerId, creditPeriodInDays, customerName, EmailId, createdBy } = i
+                            let finalProducts = []
                             let obj = {
                                 customerName,
                                 gstNo,
@@ -121,61 +132,70 @@ router.post("/generateMultipleInvoices", (req, res) => {
                                 invoiceId: getInvoiceNumber(results[0].invoiceId + (index + 1)),
                                 mailIds: EmailId
                             }
-                            if (i['20LCans'] > 0) {
-                                products.push({
-                                    "productName": "20 Lt Bibo Water Jar",
-                                    "quantity": i['20LCans'],
-                                    "productPrice": price20L,
-                                    "discount": 0,
-                                    "tax": 12,
-                                    ...getResults({ gstNo, quantity: i['20LCans'], productPrice: price20L, discount: 0, tax: 12 })
-                                })
-                            }
-                            if (i['1LBoxes'] > 0) {
-                                products.push({
-                                    "productName": "1 Lt Bibo Water Jar",
-                                    "quantity": i['1LBoxes'],
-                                    "productPrice": price1L,
-                                    "discount": 0,
-                                    "tax": 18,
-                                    ...getResults({ gstNo, quantity: i['1LBoxes'], productPrice: price1L, discount: 0, tax: 18 })
+                            products.map(product => {
+                                const { address, price20L, price2L, price1L, price500ML, price300ML } = product
+                                if (product['20LCans'] > 0) {
+                                    finalProducts.push({
+                                        "productName": "20 Lt Bibo Water Jar",
+                                        "quantity": product['20LCans'],
+                                        "productPrice": price20L,
+                                        "discount": 0,
+                                        "tax": 12,
+                                        address,
+                                        ...getResults({ gstNo, quantity: product['20LCans'], productPrice: price20L, discount: 0, tax: 12 })
+                                    })
+                                }
+                                if (product['1LBoxes'] > 0) {
+                                    finalProducts.push({
+                                        "productName": "1 Lt Bibo Water Jar",
+                                        "quantity": product['1LBoxes'],
+                                        "productPrice": price1L,
+                                        "discount": 0,
+                                        "tax": 18,
+                                        address,
+                                        ...getResults({ gstNo, quantity: product['1LBoxes'], productPrice: price1L, discount: 0, tax: 18 })
 
-                                })
-                            }
-                            if (i['500MLBoxes'] > 0) {
-                                products.push({
-                                    "productName": "500ML Bibo Water Jar",
-                                    "quantity": i['500MLBoxes'],
-                                    "productPrice": price500ML,
-                                    "discount": 0,
-                                    "tax": 18,
-                                    ...getResults({ gstNo, quantity: i['500MLBoxes'], productPrice: price500ML, discount: 0, tax: 18 })
+                                    })
+                                }
+                                if (product['500MLBoxes'] > 0) {
+                                    finalProducts.push({
+                                        "productName": "500ML Bibo Water Jar",
+                                        "quantity": product['500MLBoxes'],
+                                        "productPrice": price500ML,
+                                        "discount": 0,
+                                        "tax": 18,
+                                        address,
+                                        ...getResults({ gstNo, quantity: product['500MLBoxes'], productPrice: price500ML, discount: 0, tax: 18 })
 
-                                })
-                            }
-                            if (i['300MLBoxes'] > 0) {
-                                products.push({
-                                    "productName": "300ML Lt Bibo Water Jar",
-                                    "quantity": i['300MLBoxes'],
-                                    "productPrice": price300ML,
-                                    "discount": 0,
-                                    "tax": 18,
-                                    ...getResults({ gstNo, quantity: i['300MLBoxes'], productPrice: price300ML, discount: 0, tax: 18 })
-                                })
-                            }
-                            if (i['2LBoxes'] > 0) {
-                                products.push({
-                                    "productName": "2 Lt Bibo Water Jar",
-                                    "quantity": i['2LBoxes'],
-                                    "productPrice": price2L,
-                                    "discount": 0,
-                                    "tax": 18,
-                                    ...getResults({ gstNo, quantity: i['2LBoxes'], productPrice: price2L, discount: 0, tax: 18 })
-                                })
-                            }
-                            obj.products = products
-                            obj.totalAmount = computeTotalAmount(products)
-                            await saveInvoice(obj, res, index == (data.length - 1) ? true : false)
+                                    })
+                                }
+                                if (product['300MLBoxes'] > 0) {
+                                    finalProducts.push({
+                                        "productName": "300ML Lt Bibo Water Jar",
+                                        "quantity": product['300MLBoxes'],
+                                        "productPrice": price300ML,
+                                        "discount": 0,
+                                        "tax": 18,
+                                        address,
+                                        ...getResults({ gstNo, quantity: product['300MLBoxes'], productPrice: price300ML, discount: 0, tax: 18 })
+                                    })
+                                }
+                                if (product['2LBoxes'] > 0) {
+                                    finalProducts.push({
+                                        "productName": "2 Lt Bibo Water Jar",
+                                        "quantity": product['2LBoxes'],
+                                        "productPrice": price2L,
+                                        "discount": 0,
+                                        "tax": 18,
+                                        address,
+                                        ...getResults({ gstNo, quantity: product['2LBoxes'], productPrice: price2L, discount: 0, tax: 18 })
+                                    })
+                                }
+                            })
+
+                            obj.products = finalProducts
+                            obj.totalAmount = computeTotalAmount(finalProducts)
+                            await saveInvoice(obj, res, index == (customersArr.length - 1) ? true : false)
                             arr.push(obj)
                         }
                     }
@@ -320,5 +340,25 @@ const getInvoiceNumber = (number) => {
     if (number < 10) return `INV00${number}`
     else if (number < 100) return `INV0${number}`
     else return `INV${number}`
+}
+const addProducts = (products) => {
+    const newData = products[0]
+
+    products.map((item, index) => {
+        if (index >= 0) {
+            newData["1LBoxes"] += item["1LBoxes"]
+            newData["20LCans"] += item["20LCans"]
+            newData["2LBoxes"] += item["2LBoxes"]
+            newData["300MLBoxes"] += item["300MLBoxes"]
+            newData["500MLBoxes"] += item["500MLBoxes"]
+            newData["price1L"] += item["price1L"]
+            newData["price2L"] += item["price2L"]
+            newData["price20L"] += item["price20L"]
+            newData["price300ML"] += item["price300ML"]
+            newData["price500ML"] += item["price500ML"]
+            newData["address"] = item["address"]
+        }
+    })
+    return [newData]
 }
 module.exports = router;

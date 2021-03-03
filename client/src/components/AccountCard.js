@@ -3,6 +3,7 @@ import { Menu } from 'antd';
 import Actions from './Actions';
 import NameCard from './NameCard';
 import PrimaryButton from './PrimaryButton';
+import { getBusinessTypes } from '../utils/Functions';
 import { FriendsIconGrey, FriendIconGrey, TrashIconGrey, TickIconGrey, BlockIconGrey } from './SVG_Icons';
 import '../sass/accountCard.scss'
 
@@ -15,6 +16,7 @@ const AccountCard = ({ data, onClick, btnTxt = 'Manage Account', onSelect, isSup
     const contacts = names.length
 
     const extra = contacts > 3 ? <span className='extra'>{`+${contacts - 3}`}</span> : null
+    const NOB = getBusinessTypes(natureOfBussiness)
 
     const handleSelect = ({ key }) => {
         onSelect(key, customerId)
@@ -54,7 +56,7 @@ const AccountCard = ({ data, onClick, btnTxt = 'Manage Account', onSelect, isSup
                 </div>
                 <div className='business'>
                     <span className='type1'>Business Type</span>
-                    <span className='value'>{natureOfBussiness}</span>
+                    <span className='value'>{NOB}</span>
                 </div>
             </div>
             <div className='footer'>

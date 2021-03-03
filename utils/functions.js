@@ -234,8 +234,37 @@ const getCrores = (amount) => {
     }
     return `${minified.toLocaleString('en-IN')} Cr`;
 }
+const getGraphData = (product20LCount, product2LCount, product1LCount, product500MLCount, product300MLCount, label) => {
+    return [
+        {
+            name: "20 Ltrs",
+            label: label || "20 Ltrs",
+            value: product20LCount
+        },
+        {
+            name: "2 Ltrs",
+            label: label || "2 Ltrs",
+            value: product2LCount
+        },
+        {
+            name: "1 Ltrs",
+            label: label || "1 Ltrs",
+            value: product1LCount
+        },
+        {
+            name: "500 ml",
+            label: label || "500 ml",
+            value: product500MLCount
+        },
+        {
+            name: "300 ml",
+            label: label || "300 ml",
+            value: product300MLCount
+        }
+    ]
+}
 module.exports = {
     executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, checkDepartmentExists, productionCount,
     getCompareData, dateComparisions, checkUserExists, dbError, getBatchId, customerProductDetails, createHash, convertToWords,
-    getFormatedNumber, getCompareCustomersData, getCompareDistributorsData
+    getFormatedNumber, getCompareCustomersData, getCompareDistributorsData, getGraphData
 }

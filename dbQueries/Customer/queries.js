@@ -282,7 +282,14 @@ customerQueries.deleteCustomerDeliveries = (customerId, callback) => {
 }
 customerQueries.generatePDF = (input, callback) => {
     const { fromDate, toDate } = input
-    let query = "SELECT c.gstNo,c.customerId,c.creditPeriodInDays,c.createdBy,c.EmailId,c.customerName,c.organizationName,c.address1,d.address,c.gstNo,c.panNo,c.mobileNumber,co.20LCans,co.price20L,co.1LBoxes,co.price1L, co.500MLBoxes,co.price500ML,co.300MLBoxes,co.price300ML,co.2LBoxes,co.price2L FROM customerdetails c INNER JOIN  customerorderdetails co ON c.customerId=co.existingCustomerId INNER JOIN DeliveryDetails d ON d.customer_Id=c.customerId  WHERE co.isDelivered='Completed' AND( DATE(co.deliveryDate) BETWEEN ? AND ?)"
+    let query = `SELECT c.gstNo,c.customerId,c.createdBy,c.EmailId,c.customerName,c.organizationName,
+    c.address1,c.gstNo,c.panNo,c.mobileNumber,
+    JSON_ARRAYAGG(JSON_OBJECT('address',d.address,'20LCans',co.20LCans,'price20L',co.price20L,'1LBoxes',co.1LBoxes,
+    'price1L',co.price1L, '500MLBoxes',co.500MLBoxes,'price500ML',co.price500ML,'300MLBoxes',co.300MLBoxes,'price300ML',co.price300ML,'2LBoxes',co.2LBoxes,'price2L',co.price2L)) as products
+    FROM customerdetails c INNER JOIN  customerorderdetails co ON c.customerId=co.existingCustomerId
+    INNER JOIN DeliveryDetails d ON d.customer_Id=c.customerId  WHERE co.isDelivered='Completed'
+    AND( DATE(co.deliveryDate) BETWEEN ? AND ?) GROUP BY c.customerId,d.address`
+    // "SELECT c.gstNo,c.customerId,c.creditPeriodInDays,c.createdBy,c.EmailId,c.customerName,c.organizationName,c.address1,d.address,c.gstNo,c.panNo,c.mobileNumber,co.20LCans,co.price20L,co.1LBoxes,co.price1L, co.500MLBoxes,co.price500ML,co.300MLBoxes,co.price300ML,co.2LBoxes,co.price2L FROM customerdetails c INNER JOIN  customerorderdetails co ON c.customerId=co.existingCustomerId INNER JOIN DeliveryDetails d ON d.customer_Id=c.customerId  WHERE co.isDelivered='Completed' AND( DATE(co.deliveryDate) BETWEEN ? AND ?)"
     return executeGetParamsQuery(query, [fromDate, toDate], callback)
 }
 customerQueries.deleteDeliveryAddress = (deliveryId, callback) => {

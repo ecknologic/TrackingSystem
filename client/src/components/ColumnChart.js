@@ -1,10 +1,10 @@
 import React from "react";
 import { Column } from "@ant-design/charts";
 
-const ColumnChart = () => {
+const ColumnChart = ({ data, columnWidthRatio = .35 }) => {
 
   var config = {
-    data: weekData,
+    data,
     width: '100%',
     isGroup: true,
     xField: "label",
@@ -13,7 +13,7 @@ const ColumnChart = () => {
     color: ["#8C54FF", "#2EB3FF", "#F7B500", "#33CBCC", "#62BE9D"],
     legend: false,
     yAxis: false,
-    columnWidthRatio: .35,
+    columnWidthRatio,
     marginRatio: .7,
     xAxis: {
       line: null,
@@ -29,7 +29,7 @@ const ColumnChart = () => {
   return <Column {...config} />;
 };
 
-var weekData = [
+const weekData = [
   {
     name: "20 Ltrs",
     label: "Mon",
@@ -205,109 +205,6 @@ var weekData = [
     label: "Sun",
     value: 49.3
   },
-];
-
-var monthData = [
-  {
-    name: "20 Ltrs",
-    label: "Week 1",
-    value: 12.4
-  },
-  {
-    name: "2 Ltrs",
-    label: "Week 1",
-    value: 23.4
-  },
-  {
-    name: "1 Ltrs",
-    label: "Week 1",
-    value: 28.8
-  },
-  {
-    name: "500 ml",
-    label: "Week 1",
-    value: 39.3
-  },
-  {
-    name: "300 ml",
-    label: "Week 1",
-    value: 59.3
-  },
-  {
-    name: "20 Ltrs",
-    label: "Week 2",
-    value: 32.4
-  },
-  {
-    name: "2 Ltrs",
-    label: "Week 2",
-    value: 23.4
-  },
-  {
-    name: "1 Ltrs",
-    label: "Week 2",
-    value: 40.8
-  },
-  {
-    name: "500 ml",
-    label: "Week 2",
-    value: 34.3
-  },
-  {
-    name: "300 ml",
-    label: "Week 2",
-    value: 29.3
-  },
-  {
-    name: "20 Ltrs",
-    label: "Week 3",
-    value: 32.4
-  },
-  {
-    name: "2 Ltrs",
-    label: "Week 3",
-    value: 52.4
-  },
-  {
-    name: "1 Ltrs",
-    label: "Week 3",
-    value: 28.8
-  },
-  {
-    name: "500 ml",
-    label: "Week 3",
-    value: 59.3
-  },
-  {
-    name: "300 ml",
-    label: "Week 3",
-    value: 29.3
-  },
-  {
-    name: "20 Ltrs",
-    label: "Week 4",
-    value: 52.4
-  },
-  {
-    name: "2 Ltrs",
-    label: "Week 4",
-    value: 42.4
-  },
-  {
-    name: "1 Ltrs",
-    label: "Week 4",
-    value: 58.8
-  },
-  {
-    name: "500 ml",
-    label: "Week 4",
-    value: 39.3
-  },
-  {
-    name: "300 ml",
-    label: "Week 4",
-    value: 19.3
-  }
 ];
 
 export default ColumnChart;

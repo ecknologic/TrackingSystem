@@ -1,8 +1,8 @@
 var express = require('express');
 var router = express.Router();
 const motherPlantDbQueries = require('../dbQueries/motherplant/queries');
-const { dbError, getBatchId, productionCount, getCompareData, getFormatedNumber } = require('../utils/functions');
-const { INSERTMESSAGE, UPDATEMESSAGE } = require('../utils/constants');
+const { dbError, getBatchId, productionCount, getCompareData, getFormatedNumber, getGraphData } = require('../utils/functions');
+const { INSERTMESSAGE, UPDATEMESSAGE, WEEKDAYS } = require('../utils/constants');
 const dayjs = require('dayjs');
 const usersQueries = require('../dbQueries/users/queries');
 let departmentId;
@@ -276,7 +276,14 @@ router.get('/getReceiptDetails/:RMId', (req, res) => {
 router.get('/getRMTotalCount', (req, res) => {
     motherPlantDbQueries.getRMTotalCount(departmentId, (err, results) => {
         if (err) res.status(500).json(dbError(err));
-        else res.json(results);
+        else {
+            const data = results.map(item => {
+                const newItem = { ...item }
+                newItem.itemCount = getFormatedNumber(parseInt(newItem.itemCount))
+                return newItem
+            })
+            res.json(data);
+        }
     });
 });
 
@@ -399,7 +406,29 @@ router.get('/getTotalProduction', (req, res) => {
                 product300MLCount: getFormatedNumber(p300ml),
                 product2LCount: getFormatedNumber(p2l)
             }
-            res.json(data);
+            if (input.type == "This Week") {
+                let graph = [], product20LCount = 0, product2LCount = 0, product1LCount = 0, product500MLCount = 0, product300MLCount = 0;
+                WEEKDAYS.map((day) => {
+                    const index = productionResult.findIndex((item) => WEEKDAYS[dayjs(item.productionDate).day()] === day)
+                    if (index >= 0) {
+                        const { product20LCount: p20L, product1LCount: p1L, product500MLCount: p500ml, product300MLCount: p300ml, product2LCount: p2l } = productionResult[index]
+                        graph = [...graph, ...getGraphData(p20L, p2l, p1L, p500ml, p300ml, day)]
+                    }
+                    else graph = [...graph, ...getGraphData(0, 0, 0, 0, 0, day)]
+                })
+                productionResult.map(product => {
+                    const { product20LCount: p20L, product1LCount: p1L, product500MLCount: p500ml, product300MLCount: p300ml, product2LCount: p2l } = product
+                    product20LCount += p20L
+                    product1LCount += p1L
+                    product500MLCount += p500ml
+                    product300MLCount += p300ml
+                    product2LCount += p2l
+                })
+                res.json({ product20LCount: getFormatedNumber(product20LCount), product2LCount: getFormatedNumber(product2LCount), product1LCount: getFormatedNumber(product1LCount), product500MLCount: getFormatedNumber(product500MLCount), product300MLCount: getFormatedNumber(product300MLCount), graph })
+            } else {
+                data.graph = getGraphData(p20L, p2l, p1L, p500ml, p300ml)
+                res.json(data);
+            }
         }
         else
             res.json(defaultValues)

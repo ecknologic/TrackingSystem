@@ -96,7 +96,7 @@ const ReturnEmptyCans = ({ goToTab, fetchList, driverList, ...rest }) => {
     }
 
     return (
-        <>
+        <div className='employee-manager-content'>
             <div className='employee-title-container'>
                 <span className='title'>New Empty Cans Details</span>
             </div>
@@ -116,7 +116,7 @@ const ReturnEmptyCans = ({ goToTab, fetchList, driverList, ...rest }) => {
                     text='Return'
                 />
             </div>
-        </>
+        </div>
     )
 }
 
