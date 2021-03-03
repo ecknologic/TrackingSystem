@@ -5,11 +5,14 @@ import PanelStats from '../../../../components/PanelStats';
 import ColumnChart from '../../../../components/ColumnChart';
 import { TODAYDATE as d } from '../../../../utils/constants';
 import PanelHeader from '../../../../components/PanelHeader';
+import { defaultBars } from '../../../../assets/fixtures';
 import DashboardResultsCard from '../../../../components/DashboardResultsCard';
 
 const SalesResults = ({ depOptions }) => {
-    const options = { startDate: d, endDate: d, departmentId: 'All', fromStart: true }
+    const options = { startDate: d, endDate: d, departmentId: 'All', fromStart: true, type: 'Till Now' }
     const [results, setResults] = useState({})
+    const [graph, setGraph] = useState(defaultBars)
+    const [columnWidthRatio, setColumnWidthRatio] = useState()
     const [opData, setOpData] = useState(() => options)
 
     const source = useMemo(() => axios.CancelToken.source(), []);
@@ -23,12 +26,15 @@ const SalesResults = ({ depOptions }) => {
         }
     }, [])
 
-    const getResults = async ({ startDate, endDate, departmentId, fromStart }) => {
-        const url = `/warehouse/getTotalSales?startDate=${startDate}&endDate=${endDate}&departmentId=${departmentId}&fromStart=${fromStart}`
+    const getResults = async ({ startDate, endDate, departmentId, fromStart, type }) => {
+        const url = `/warehouse/getTotalSales?startDate=${startDate}&endDate=${endDate}&departmentId=${departmentId}&fromStart=${fromStart}&type=${type}`
 
         try {
-            const data = await http.GET(axios, url, config)
-            setResults(data)
+            const { graph = [], ...rest } = await http.GET(axios, url, config)
+            setResults(rest)
+            setGraph(graph)
+            if (type !== 'This Week') setColumnWidthRatio(1)
+            else setColumnWidthRatio()
         } catch (error) { }
     }
 
@@ -54,7 +60,7 @@ const SalesResults = ({ depOptions }) => {
     )
 
     const Chart = (
-        <ColumnChart />
+        <ColumnChart data={graph} columnWidthRatio={columnWidthRatio} />
     )
 
     return <DashboardResultsCard Header={Header} Stats={Stats} Chart={Chart} />

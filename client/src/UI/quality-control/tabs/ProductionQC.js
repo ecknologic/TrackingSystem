@@ -89,7 +89,7 @@ const ProductionQC = ({ goToTab }) => {
         }
 
         QCList.map((item) => {
-            if (item.qcLevel !== 1 && item.testResult === 'Approved') {
+            if (item.qcLevel != 1 && item.testResult === 'Approved') {
                 approveProd = 0
             }
         })

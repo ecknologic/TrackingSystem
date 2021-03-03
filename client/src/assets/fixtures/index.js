@@ -87,17 +87,17 @@ export const testResultOptions = [
     <Option key="2" value="Rejected">Reject</Option>
 ]
 export const calendarMenu = [
+    <Menu.Item key="Till Now" >Till Now</Menu.Item>,
     <Menu.Item key="Today" >Today</Menu.Item>,
     <Menu.Item key="This Week">This Week</Menu.Item>,
     <Menu.Item key="This Month" >This Month</Menu.Item>,
-    <Menu.Item key="Till Now" >Till Now</Menu.Item>,
     <Menu.Item key="Date Range" >Date Range</Menu.Item>
 ]
 export const calendarOptions = [
-    <Option key="1" value="Today">Today</Option>,
-    <Option key="2" value="This Week">This Week</Option>,
-    <Option key="3" value="This Month">This Month</Option>,
-    <Option key="4" value="Till Now">Till Now</Option>,
+    <Option key="1" value="Till Now">Till Now</Option>,
+    <Option key="2" value="Today">Today</Option>,
+    <Option key="3" value="This Week">This Week</Option>,
+    <Option key="4" value="This Month">This Month</Option>,
     <Option key="5" value="Date Range">Date Range</Option>
 ]
 export const shiftMenu = [
@@ -869,6 +869,34 @@ export const getRMColumns = (type, isSuperAdmin) => {
 
     return columns
 }
+
+export const defaultBars = [
+    {
+        name: "20 Ltrs",
+        label: "20 Ltrs",
+        value: 0
+    },
+    {
+        name: "2 Ltrs",
+        label: "2 Ltrs",
+        value: 0
+    },
+    {
+        name: "1 Ltrs",
+        label: "1 Ltrs",
+        value: 0
+    },
+    {
+        name: "500 ml",
+        label: "500 ml",
+        value: 0
+    },
+    {
+        name: "300 ml",
+        label: "300 ml",
+        value: 0
+    }
+]
 
 export const dummyWaterResults = [
     {

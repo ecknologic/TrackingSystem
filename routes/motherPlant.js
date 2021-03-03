@@ -407,24 +407,26 @@ router.get('/getTotalProduction', (req, res) => {
                 product2LCount: getFormatedNumber(p2l)
             }
             if (input.type == "This Week") {
-                let arr = []
+                let graph = [], product20LCount = 0, product2LCount = 0, product1LCount = 0, product500MLCount = 0, product300MLCount = 0;
+                WEEKDAYS.map((day) => {
+                    const index = productionResult.findIndex((item) => WEEKDAYS[dayjs(item.productionDate).day()] === day)
+                    if (index >= 0) {
+                        const { product20LCount: p20L, product1LCount: p1L, product500MLCount: p500ml, product300MLCount: p300ml, product2LCount: p2l } = productionResult[index]
+                        graph = [...graph, ...getGraphData(p20L, p2l, p1L, p500ml, p300ml, day)]
+                    }
+                    else graph = [...graph, ...getGraphData(0, 0, 0, 0, 0, day)]
+                })
                 productionResult.map(product => {
                     const { product20LCount: p20L, product1LCount: p1L, product500MLCount: p500ml, product300MLCount: p300ml, product2LCount: p2l } = product
-                    const data = {
-                        product20LCount: getFormatedNumber(p20L),
-                        product1LCount: getFormatedNumber(p1L), product500MLCount: getFormatedNumber(p500ml),
-                        product300MLCount: getFormatedNumber(p300ml),
-                        product2LCount: getFormatedNumber(p2l),
-                    }
-                    let label = WEEKDAYS[dayjs(product.productionDate).day()]
-                    const { product20LCount, product2LCount, product1LCount, product500MLCount, product300MLCount, label } = data
-                    data.graph = getGraphData(product20LCount, product2LCount, product1LCount, product500MLCount, product300MLCount, label)
-                    arr.push(data)
+                    product20LCount += p20L
+                    product1LCount += p1L
+                    product500MLCount += p500ml
+                    product300MLCount += p300ml
+                    product2LCount += p2l
                 })
-                res.json(arr)
+                res.json({ product20LCount: getFormatedNumber(product20LCount), product2LCount: getFormatedNumber(product2LCount), product1LCount: getFormatedNumber(product1LCount), product500MLCount: getFormatedNumber(product500MLCount), product300MLCount: getFormatedNumber(product300MLCount), graph })
             } else {
-                const { product20LCount, product2LCount, product1LCount, product500MLCount, product300MLCount } = data
-                data.graph = getGraphData(product20LCount, product2LCount, product1LCount, product500MLCount, product300MLCount)
+                data.graph = getGraphData(p20L, p2l, p1L, p500ml, p300ml)
                 res.json(data);
             }
         }
