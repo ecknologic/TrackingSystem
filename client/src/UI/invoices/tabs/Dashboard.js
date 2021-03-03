@@ -18,7 +18,7 @@ import { ListViewIconGrey, DocIconGrey, ScheduleIcon, SendIconGrey, TickIconGrey
 const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
-const Dashboard = ({ reFetch }) => {
+const Dashboard = ({ reFetch, onUpdate }) => {
     const history = useHistory()
     const [invoices, setInvoices] = useState([])
     const [loading, setLoading] = useState(true)
@@ -116,6 +116,7 @@ const Dashboard = ({ reFetch }) => {
         const index = clone.findIndex(item => item.invoiceId === id)
         clone[index].status = status;
         setInvoices(clone)
+        onUpdate()
     }
 
     const handleStatusUpdate = async (action, invoiceId) => {

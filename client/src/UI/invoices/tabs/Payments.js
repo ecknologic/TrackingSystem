@@ -1,6 +1,6 @@
 import axios from 'axios';
 import dayjs from 'dayjs';
-import { message, Table } from 'antd';
+import { Table } from 'antd';
 import { useHistory } from 'react-router-dom';
 import React, { useEffect, useMemo, useState } from 'react';
 import { http } from '../../../modules/http'
@@ -9,10 +9,10 @@ import { TODAYDATE } from '../../../utils/constants';
 import DateValue from '../../../components/DateValue';
 import { paymentColumns } from '../../../assets/fixtures';
 import SearchInput from '../../../components/SearchInput';
+import { getStatusColor } from '../../../utils/Functions';
 import { ScheduleIcon } from '../../../components/SVG_Icons';
 import CustomDateInput from '../../../components/CustomDateInput';
 import CustomPagination from '../../../components/CustomPagination';
-import { deepClone, getStatusColor, showToast } from '../../../utils/Functions';
 const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
