@@ -1,8 +1,8 @@
 var express = require('express');
 var router = express.Router();
 const motherPlantDbQueries = require('../dbQueries/motherplant/queries');
-const { dbError, getBatchId, productionCount, getCompareData, getFormatedNumber } = require('../utils/functions');
-const { INSERTMESSAGE, UPDATEMESSAGE } = require('../utils/constants');
+const { dbError, getBatchId, productionCount, getCompareData, getFormatedNumber, getGraphData } = require('../utils/functions');
+const { INSERTMESSAGE, UPDATEMESSAGE, WEEKDAYS } = require('../utils/constants');
 const dayjs = require('dayjs');
 const usersQueries = require('../dbQueries/users/queries');
 let departmentId;
@@ -406,7 +406,22 @@ router.get('/getTotalProduction', (req, res) => {
                 product300MLCount: getFormatedNumber(p300ml),
                 product2LCount: getFormatedNumber(p2l)
             }
-            res.json(data);
+            if (input.type == "This Week") {
+                productionResult.map(product => {
+                    const { product20LCount: p20L, product1LCount: p1L, product500MLCount: p500ml, product300MLCount: p300ml, product2LCount: p2l } = product
+                    product.product20LCount = getFormatedNumber(p20L)
+                    product.product1LCount = getFormatedNumber(p1L)
+                    product.product500MLCount = getFormatedNumber(p500ml)
+                    product.product300MLCount = getFormatedNumber(p300ml)
+                    product.product2LCount = getFormatedNumber(p2l)
+                    product.label = WEEKDAYS[dayjs(product.productionDate).day()]
+                    delete product.productionDate
+                })
+            } else {
+                const { product20LCount, product2LCount, product1LCount, product500MLCount, product300MLCount } = data
+                data.graph = getGraphData(product20LCount, product2LCount, product1LCount, product500MLCount, product300MLCount)
+            }
+            res.json(productionResult);
         }
         else
             res.json(defaultValues)
