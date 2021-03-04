@@ -4,11 +4,13 @@ const { convertToWords } = require("../../utils/functions");
 const GST20L = 12, GSTOthers = 18, CGST20L = 6, CGSTOthers = 9;
 var totalTaxValue = 0
 var totalCGSTValue = 0
+var totalIGSTValue = 0
 function createMultiDeliveryInvoice(invoice, path) {
     return new Promise((resolve) => {
         let doc = new PDFDocument({ size: "A4", margin: 50 });
         totalCGSTValue = 0
         totalTaxValue = 0
+        totalIGSTValue = 0
 
         generateHeader(doc, invoice);
         generateCustomerInformation(doc, invoice);
@@ -198,31 +200,33 @@ function generateInvoiceTable(doc, invoice) {
     if (totalArr.length) {
         totalArr.map((item, index) => {
             let taxValue = item.quantity * item.price
-            let cgst = item.product == "20 Lt Bt Jar" ? CGST20L : CGSTOthers
+            // let cgst = item.product == "20 Lt Bt Jar" ? CGST20L : CGSTOthers
             let gst = item.product == "20 Lt Bt Jar" ? GST20L : GSTOthers
-            let cgstValue = (taxValue * cgst) / 100
+            // let cgstValue = (taxValue * cgst) / 100
+            const { amount, cgst, sgst, igst } = getResults({ quantity, price, gst, gstNo })
             generateSummaryRow(doc, subtotalPosition + (index + 1) * 15,
                 item.product,
                 "22011010",
                 gst,
                 item.quantity,
                 item.price,
-                taxValue,
-                cgstValue,
-                cgstValue,
-                0
+                amount,
+                cgst,
+                sgst,
+                igst
             )
-            totalTaxValue = totalTaxValue + taxValue
-            totalCGSTValue = totalCGSTValue + cgstValue
+            totalTaxValue = totalTaxValue + amount
+            totalCGSTValue = totalCGSTValue + cgst
+            totalIGSTValue = totalIGSTValue + igst
         })
     }
-    let totalAmount = totalTaxValue + (2 * totalCGSTValue)
+    let totalAmount = totalTaxValue + (2 * totalCGSTValue) + totalIGSTValue
     doc
         .text("Totals :", 290, subtotalPosition + 80)
         .text(totalTaxValue, 340, subtotalPosition + 80)
         .text(totalCGSTValue, 415, subtotalPosition + 80)
         .text(totalCGSTValue, 480, subtotalPosition + 80)
-        .text("0.00", 500, subtotalPosition + 80, { align: "right" })
+        .text(totalIGSTValue, 500, subtotalPosition + 80, { align: "right" })
     generateHr(doc, subtotalPosition + 70)
     doc
         .text("Total Invoice Value Round off To :", 350, subtotalPosition + 100)
@@ -231,7 +235,7 @@ function generateInvoiceTable(doc, invoice) {
         .fillColor("black")
         .text("Invoice Value in Wards Rs :", 30, subtotalPosition + 120)
         .stroke()
-        .text(convertToWords(totalAmount), 160, subtotalPosition + 120)
+        .text(convertToWords(Math.round(totalAmount)), 160, subtotalPosition + 120)
     doc
         .fillColor("black")
         .fontSize(8)
@@ -355,7 +359,17 @@ function formatDate(date) {
 
     return year + "/" + month + "/" + day;
 }
-
+const getResults = (row) => {
+    let { quantity, price, discount = 0, gst, cgst, sgst, igst, gstNo } = row
+    const isLocal = gstNo && gstNo.startsWith('36')
+    const priceAfterDiscount = price - (price / 100 * discount)
+    const amount = Number((priceAfterDiscount * quantity).toFixed(2))
+    const totalTax = (amount / 100 * gst)
+    cgst = isLocal ? Number((totalTax / 2).toFixed(2)) : 0.00
+    sgst = isLocal ? Number((totalTax / 2).toFixed(2)) : 0.00
+    igst = isLocal ? 0.00 : Number((totalTax).toFixed(2))
+    return { amount, cgst, sgst, igst }
+}
 module.exports = {
     createMultiDeliveryInvoice
 };

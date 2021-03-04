@@ -38,8 +38,8 @@ invoiceQueries.createInvoice = (input, callback) => {
 
 invoiceQueries.saveInvoiceProducts = (input, callback) => {
     const { invoiceId, products } = input
-    const sql = products.map(item => "('" + invoiceId + "', '" + item.productName + "', " + item.productPrice + ", " + item.discount + ", " + item.quantity + ", " + item.tax + ", " + item.cgst + ", " + item.sgst + ", " + item.igst + ", " + item.amount + ")")
-    let query = "insert into invoiceProductsDetails (invoiceId, productName, productPrice, discount, quantity, tax,cgst,sgst,igst,amount) values " + sql;
+    const sql = products.map(item => "('" + invoiceId + "', '" + item.productName + "', " + item.productPrice + ", " + item.discount + ", " + item.quantity + ", " + item.tax + ", " + item.cgst + ", " + item.sgst + ", " + item.igst + ", " + item.amount + ",'" + item.address + "')")
+    let query = "insert into invoiceProductsDetails (invoiceId, productName, productPrice, discount, quantity, tax,cgst,sgst,igst,amount,address) values " + sql;
     executeGetQuery(query, callback)
 }
 
@@ -62,10 +62,10 @@ invoiceQueries.updateInvoice = (input, callback) => {
 invoiceQueries.updateInvoiceProducts = (input, callback) => {
     const { invoiceId, products } = input
     for (let i = 0; i < products.length; i++) {
-        const { productName, productPrice, discount, quantity, tax, cgst, sgst, igst, amount, key, isNew = 0 } = products[i]
+        const { productName, productPrice, discount, quantity, tax, cgst, sgst, igst, amount, key, isNew = 0, address } = products[i]
         if (isNew == 1) {
-            let query = "insert into invoiceProductsDetails (invoiceId, productName, productPrice, discount, quantity, tax,cgst,sgst,igst,amount) values(?,?,?,?,?,?,?,?,?,?)";
-            let requestBody = [invoiceId, productName, productPrice, discount, quantity, tax, cgst, sgst, igst, amount]
+            let query = "insert into invoiceProductsDetails (invoiceId, productName, productPrice, discount, quantity, tax,cgst,sgst,igst,amount,address) values(?,?,?,?,?,?,?,?,?,?,?)";
+            let requestBody = [invoiceId, productName, productPrice, discount, quantity, tax, cgst, sgst, igst, amount, address]
             if (i === products.length - 1) {
                 executePostOrUpdateQuery(query, requestBody, callback)
             } else {

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { SearchIconGrey } from './SVG_Icons';
 import '../sass/searchInput.scss'
+const fn = () => { }
 
-const SearchInput = ({ placeholder, onSearch = () => { }, onChange = () => { }, width = '300px', className }) => {
+const SearchInput = ({ placeholder, onSearch = fn, onChange = fn, width = '300px', className }) => {
     const [input, setInput] = useState('')
 
     const handleChange = ({ currentTarget: { value } }) => {

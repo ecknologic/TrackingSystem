@@ -346,7 +346,7 @@ const computeFinalAmounts = (data) => {
         sgstAmount = Number((sgstAmount + item.sgst).toFixed(2))
         igstAmount = Number((igstAmount + item.igst).toFixed(2))
     })
-    const totalAmount = Number((subTotal + cgstAmount + sgstAmount + igstAmount).toFixed(2))
+    const totalAmount = Math.round((subTotal + cgstAmount + sgstAmount + igstAmount))
 
     return { subTotal, cgstAmount, sgstAmount, igstAmount, totalAmount }
 }
