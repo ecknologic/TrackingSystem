@@ -124,7 +124,7 @@ router.post("/generateMultipleInvoices", (req, res) => {
                                 invoiceDate: new Date(),
                                 customerId: customerId,
                                 salesPerson: createdBy,
-                                dueDate: dayjs().add(creditPeriodInDays, 'day'),
+                                dueDate: creditPeriodInDays ? dayjs().add(creditPeriodInDays, 'day').format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'),
                                 hsnCode: 22011010,
                                 poNo: 0,
                                 mailSubject: "Hello",

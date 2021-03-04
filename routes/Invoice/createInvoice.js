@@ -192,7 +192,7 @@ function generateInvoiceTable(doc, invoice) {
         .text("Total Invoice Value Round off To :", 350, subtotalPosition + 40)
         .fillColor("red")
         .text(totalAmount, 500, subtotalPosition + 40, { align: "right" })
-        .text(convertToWords(totalAmount), 30, subtotalPosition + 60)
+        .text(convertToWords(Math.round(totalAmount)), 30, subtotalPosition + 60)
     generateHr(doc, subtotalPosition + 80)
     doc
         .fillColor("black")
