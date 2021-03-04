@@ -17,7 +17,7 @@ import CustomPagination from '../../../../components/CustomPagination';
 import CustomRangeInput from '../../../../components/CustomRangeInput';
 import { EyeIconGrey, ScheduleIcon } from '../../../../components/SVG_Icons';
 import { getWarehoseId, TODAYDATE, TRACKFORM } from '../../../../utils/constants';
-import { isEmpty, resetTrackForm, getStatusColor } from '../../../../utils/Functions';
+import { resetTrackForm, getStatusColor } from '../../../../utils/Functions';
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
 const DeliveredDC = () => {
