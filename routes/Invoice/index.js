@@ -34,7 +34,7 @@ router.get('/getInvoiceById/:invoiceId', (req, res) => {
     invoiceQueries.getInvoiceById(req.params.invoiceId, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
-            const { gstNo, invoiceId, ...rest } = results[0]
+            const { gstNo, invoiceId, fromDate, toDate, ...rest } = results[0]
             let products = JSON.parse(results[0].products)
             let obj = {
                 gstNo, invoiceId, ...rest
@@ -62,7 +62,7 @@ router.get('/getInvoiceById/:invoiceId', (req, res) => {
                 }
             }
             let invoice = {
-                items: [obj], invoiceId, gstNo
+                items: [obj], invoiceId, gstNo, fromDate, toDate
             }
             createSingleDeliveryInvoice(invoice, "invoice.pdf").then(response => {
                 setTimeout(() => {
@@ -115,6 +115,7 @@ router.post("/generateMultipleInvoices", (req, res) => {
                             }
                         })
                         let arr = []
+                        const { fromDate, toDate } = req.body
                         for (let [index, i] of customersArr.entries()) {
                             let { gstNo, products, customerId, creditPeriodInDays, customerName, EmailId, createdBy } = i
                             let finalProducts = []
@@ -129,6 +130,8 @@ router.post("/generateMultipleInvoices", (req, res) => {
                                 poNo: 0,
                                 mailSubject: "Hello",
                                 TAndC: "hi",
+                                fromDate,
+                                toDate,
                                 invoiceId: getInvoiceNumber(results[0].invoiceId + (index + 1)),
                                 mailIds: EmailId
                             }

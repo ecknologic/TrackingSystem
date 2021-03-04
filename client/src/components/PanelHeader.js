@@ -5,6 +5,7 @@ import SelectInput from './SelectInput';
 import PanelDropdown from './PanelDropdown';
 import ReportsDropdown from './ReportsDropdown';
 import CustomRangeInput from './CustomRangeInput';
+import { disableFutureDates } from '../utils/Functions';
 import { calendarMenu, calendarOptions, shiftMenu } from '../assets/fixtures';
 const fn = () => { }
 const todayString = 'Today'
@@ -66,8 +67,8 @@ const PanelHeader = memo((props) => {
         let fromStart = false
 
         if (isTillNow) {
-            setTime(tillNowString)
             setTime(todayFull)
+            fromStart = true
         }
         else if (isToday) {
             setTime(to)
@@ -129,6 +130,7 @@ const PanelHeader = memo((props) => {
                                             className='date-panel-picker'
                                             onChange={handleDateSelect}
                                             onOpenChange={datePickerStatus}
+                                            disabledDate={disableFutureDates}
                                         />
                                     </div>
                                 )
