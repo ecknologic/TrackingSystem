@@ -82,6 +82,19 @@ router.get('/getInvoiceId', (req, res) => {
         else res.send(getInvoiceNumber(results[0].invoiceId + 1));
     });
 });
+router.get('/getTotalInvoicesCount', (req, res) => {
+    invoiceQueries.getInvoivesCount((err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else {
+            let pendingCount = 0, paidCount = 0
+            results.map(item => {
+                if (item.status == "Pending") pendingCount = item.totalCount
+                if (item.status == "Paid") paidCount = item.totalCount
+            })
+            res.json({ paidCount, pendingCount, totalCount: paidCount + pendingCount })
+        }
+    });
+});
 router.put('/deleteInvoiceProducts', (req, res) => {
     invoiceQueries.deleteInvoiceProducts(req.body.deleted, (err, results) => {
         if (err) res.status(500).json(dbError(err));

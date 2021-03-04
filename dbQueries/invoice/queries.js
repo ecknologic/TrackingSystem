@@ -26,6 +26,10 @@ invoiceQueries.getInvoiceId = async (callback) => {
     let query = "SELECT COUNT(invoiceId) AS invoiceId FROM  Invoice";
     return executeGetQuery(query, callback)
 }
+invoiceQueries.getInvoivesCount = async (callback) => {
+    let query = "SELECT COUNT(*) AS totalCount,status FROM Invoice GROUP BY status";
+    return executeGetQuery(query, callback)
+}
 
 //POST Request Methods
 invoiceQueries.createInvoice = (input, callback) => {
