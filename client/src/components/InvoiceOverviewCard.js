@@ -2,14 +2,15 @@ import React from 'react';
 import PieChart from './PieChart';
 import '../sass/invoiceOverviewCard.scss'
 
+const InvoiceOverviewCard = ({ data, graph }) => {
 
-const InvoiceOverviewCard = () => {
+    const { paidCount, pendingCount, totalCount } = data
 
     return (
         <div className='invoice-overview-card'>
             <div className='heading'>
                 <span className='title'>Total Generated Invoices</span>
-                <span className='number'>500</span>
+                <span className='number'>{totalCount || 0}</span>
             </div>
             <div className='pie-chart-stats'>
                 <div className='stats'>
@@ -17,24 +18,24 @@ const InvoiceOverviewCard = () => {
                         <span className='title'>Pending to Clear</span>
                         <div className='number'>
                             <span className='app-dot' style={{ background: '#FFB200' }}></span>
-                            46
+                            {pendingCount || 0}
                         </div>
                     </div>
                     <div className='stat'>
                         <span className='title'>Cleared Invoices</span>
                         <div className='number'>
                             <span className='app-dot' style={{ background: '#34B53A' }}></span>
-                            192
+                            {paidCount || 0}
                         </div>
                     </div>
                 </div>
                 <div className='pie-chart'>
-                    <PieChart />
+                    <PieChart data={graph} />
                 </div>
             </div>
             <div className='pending'>
                 <span className='text'>Pending to Generating Invoices</span>
-                <span className='red-num'>50</span>
+                <span className='red-num'>0</span>
             </div>
         </div>
     )
