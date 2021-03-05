@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { http } from '../../../../modules/http';
 import PanelHeader from '../../../../components/PanelHeader';
 import { TODAYDATE as d } from '../../../../utils/constants';
-import { dummyWaterResults } from '../../../../assets/fixtures';
+import { defaultPie, dummyWaterResults } from '../../../../assets/fixtures';
 import InvoiceOverviewCard from '../../../../components/InvoiceOverviewCard';
 import CustomButton from '../../../../components/CustomButton';
 import { RightChevronIconLight } from '../../../../components/SVG_Icons';
@@ -12,9 +12,10 @@ const options = { startDate: d, endDate: d, fromStart: true }
 const InvoiceOverview = () => {
     const [results, setResults] = useState(dummyWaterResults)
     const [opData, setOpData] = useState(() => options)
-
+    const [graph, setGraph] = useState(defaultPie)
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
+
 
     useEffect(() => {
         getTestResults(opData)
@@ -24,12 +25,14 @@ const InvoiceOverview = () => {
         }
     }, [])
 
-    const getTestResults = async ({ startDate, endDate, fromStart }) => {
-        const url = `/motherPlant/getQCTestResults?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}`
+    const getTestResults = async () => {
+        const url = '/invoice/getTotalInvoicesCount'
 
         try {
-            // const data = await http.GET(axios, url, config)
-            // setResults(data)
+            const data = await http.GET(axios, url, config)
+            setResults(data)
+            const graph = getPieData(data)
+            setGraph(graph)
         } catch (error) { }
     }
 
@@ -46,7 +49,7 @@ const InvoiceOverview = () => {
             <div className='header'>
                 <PanelHeader title='Invoice Overview' onSelect={handleOperation} showShow />
             </div>
-            <InvoiceOverviewCard />
+            <InvoiceOverviewCard data={results} graph={graph} />
             <div className='second-header'>
                 <PanelHeader title='Invoice Overview' onSelect={handleOperation} showShow />
             </div>
@@ -68,6 +71,22 @@ const InvoiceOverview = () => {
             </div>
         </div>
     )
+}
+
+const getPieData = ({ paidCount, totalCount }) => {
+    const cleared = Math.round(paidCount / (totalCount || 1) * 100)
+    const pending = 100 - cleared
+
+    return [
+        {
+            type: 'Cleared Invoices',
+            value: cleared,
+        },
+        {
+            type: 'Pending to Clear',
+            value: pending,
+        }
+    ]
 }
 
 export default InvoiceOverview
