@@ -184,9 +184,9 @@ const SideMenu = () => {
                                 {selected === '/customers' ? <FriendIcon /> : <FriendIconLight />}
                                 <span>Customers</span>
                             </Item>
-                            <Item key='/invoice' style={{ pointerEvents: 'none' }}>
-                                {selected === '/invoice' ? <DocIcon /> : <DocIconLight />}
-                                <span>Invoice</span>
+                            <Item key='/invoices' >
+                                {selected === '/invoices' ? <DocIcon /> : <DocIconLight />}
+                                <span>Invoices</span>
                             </Item>
                             <Item key='/settings' style={{ pointerEvents: 'none' }}>
                                 {selected === '/settings' ? <SettingIcon /> : <SettingIconLight />}
