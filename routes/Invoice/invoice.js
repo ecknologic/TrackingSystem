@@ -53,7 +53,7 @@ function generateCustomerInformation(doc, invoice) {
         .rect(25, 105, 545, 0)
 
     const customerInformationTop = 110;
-    const { invoiceId } = invoice
+    const { invoiceId, fromDate, toDate } = invoice
 
     doc
         .fontSize(10)
@@ -68,7 +68,7 @@ function generateCustomerInformation(doc, invoice) {
         .text(formatDate(new Date()), 150, customerInformationTop + 15)
         .text("Period of supply:", 40, customerInformationTop + 30)
         .text(
-            formatDate(new Date()) + '  to  ' + formatDate(new Date()),
+            formatDate(new Date(fromDate)) + '  to  ' + formatDate(new Date(toDate)),
             150,
             customerInformationTop + 30
         )

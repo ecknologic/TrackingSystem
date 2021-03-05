@@ -905,6 +905,17 @@ export const defaultBars = [
     }
 ]
 
+export const defaultPie = [
+    {
+        type: 'Cleared Invoices',
+        value: 0,
+    },
+    {
+        type: 'Pending to Clear',
+        value: 0,
+    }
+]
+
 export const dummyWaterResults = [
     {
         "levels": [

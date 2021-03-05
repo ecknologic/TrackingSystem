@@ -1,22 +1,9 @@
 import React from 'react';
 import { Pie } from '@ant-design/charts'
 
-const PieChart = () => {
-
-    var data = [
-        {
-            type: 'Cleared Invoices',
-            value: 65,
-        },
-        {
-            type: 'Pending to Clear',
-            value: 35,
-        }
-    ];
+const PieChart = ({ data }) => {
     var config = {
         appendPadding: 10,
-        // startAngle: 90,
-        // endAngle: 360,
         width: 170,
         height: 170,
         autoFit: false,
@@ -33,14 +20,14 @@ const PieChart = () => {
         },
         label: {
             type: 'inner',
-            offset: '-50%',
+            offset: '-45%',
             autoRotate: false,
             content: function content(_ref) {
                 var percent = _ref.percent;
                 return ''.concat(percent * 100, '%');
             },
             style: {
-                fontSize: 24,
+                fontSize: 22,
                 textAlign: 'center',
                 fontWeight: 600,
             },
