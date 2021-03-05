@@ -16,7 +16,7 @@ import { getRouteOptions, WEEKDAYS } from '../../../../assets/fixtures';
 import { getDevDays, getProductsWithIdForDB, getProductsForUI, isEmpty, extractDeliveryDetails, extractProductsFromForm, deepClone, getBase64, getDevDaysForDB, base64String, resetTrackForm, showToast } from '../../../../utils/Functions';
 import { validateDeliveryValues, validateDevDays, validateIDNumbers, validateIntFloat, validateMobileNumber, validateNames, validateNumber } from '../../../../utils/validations';
 
-const DeliveryDetails = ({ isSuperAdmin, recentDelivery, ...rest }) => {
+const DeliveryDetails = ({ isAdmin, recentDelivery, ...rest }) => {
     const { accountId } = useParams()
     const [delivery, setDelivery] = useState([])
     const [loading, setLoading] = useState(true)
@@ -319,7 +319,7 @@ const DeliveryDetails = ({ isSuperAdmin, recentDelivery, ...rest }) => {
     }, [])
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
     const handleModalCancel = useCallback(() => onModalClose(), [])
-    const canView = !isSuperAdmin && formData.isApproved
+    const canView = !isAdmin && formData.isApproved
 
     return (
         <div className='account-view-delivery-details'>
@@ -346,7 +346,7 @@ const DeliveryDetails = ({ isSuperAdmin, recentDelivery, ...rest }) => {
                     data={formData}
                     errors={formErrors}
                     devDays={devDays}
-                    isSuperAdmin={isSuperAdmin}
+                    isAdmin={isAdmin}
                     devDaysError={devDaysError}
                     routeOptions={routeOptions}
                     onChange={handleChange}

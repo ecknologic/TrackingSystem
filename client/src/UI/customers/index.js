@@ -5,7 +5,7 @@ import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'reac
 import Header from './header';
 import { http } from '../../modules/http'
 import Spinner from '../../components/Spinner';
-import { getRole, SUPERADMIN } from '../../utils/constants';
+import { ACCOUNTSADMIN, getRole, SUPERADMIN } from '../../utils/constants';
 import NoContent from '../../components/NoContent';
 import AccountCard from '../../components/AccountCard';
 import DeleteModal from '../../components/CustomModal';
@@ -17,6 +17,7 @@ import '../../sass/customers.scss'
 const Customers = () => {
     const history = useHistory()
     const { active = '1' } = useParams()
+    const [role] = useState(() => getRole())
     const [accountsClone, setAccountsClone] = useState([])
     const [filteredClone, setFilteredClone] = useState([])
     const [cardBtnTxt, setCardBtnTxt] = useState('Manage Account')
@@ -33,7 +34,7 @@ const Customers = () => {
     const [currentId, setCurrentId] = useState('')
 
     const pageSizeOptions = useMemo(() => generatePageSizeOptions(), [window.innerWidth])
-    const isSuperAdmin = useMemo(() => getRole() === SUPERADMIN, [])
+    const isAdmin = useMemo(() => role === SUPERADMIN || role === ACCOUNTSADMIN, [])
     const source = useMemo(() => axios.CancelToken.source(), [activeTab]);
     const config = { cancelToken: source.token }
 
@@ -235,7 +236,7 @@ const Customers = () => {
                                     <AccountCard
                                         data={account}
                                         btnTxt={cardBtnTxt}
-                                        isSuperAdmin={isSuperAdmin}
+                                        isAdmin={isAdmin}
                                         onSelect={handleMenuSelect}
                                         onClick={handleManageAccount}
                                     />
