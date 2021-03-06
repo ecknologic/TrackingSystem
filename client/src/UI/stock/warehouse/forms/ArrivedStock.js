@@ -64,25 +64,25 @@ const ArrivedStockForm = (props) => {
                     </div>
                     <div className='column'>
                         <div className='input-container'>
-                            <InputLabel name='2 Ltrs (Box-1x12)' />
+                            <InputLabel name='2 Ltrs (Box-1&times;12)' />
                             <InputValue size='smaller' value={product2L} />
                         </div>
                     </div>
                     <div className='column'>
                         <div className='input-container'>
-                            <InputLabel name='1 Ltrs (Box-1x12)' />
+                            <InputLabel name='1 Ltrs (Box-1&times;12)' />
                             <InputValue size='smaller' value={product1L} />
                         </div>
                     </div>
                     <div className='column'>
                         <div className='input-container'>
-                            <InputLabel name='500 Ml (Box-1x12)' />
+                            <InputLabel name='500 Ml (Box-1&times;12)' />
                             <InputValue size='smaller' value={product500ML} />
                         </div>
                     </div>
                     <div className='column'>
                         <div className='input-container'>
-                            <InputLabel name='300 Ml (Box-1x12)' />
+                            <InputLabel name='300 Ml (Box-1&times;12)' />
                             <InputValue size='smaller' value={product300ML} />
                         </div>
                     </div>
@@ -107,7 +107,7 @@ const ArrivedStockForm = (props) => {
                     </div>
                     <div className='column'>
                         <div className='input-container'>
-                            <InputLabel name='2 Ltrs (Box-1x12)' />
+                            <InputLabel name='2 Ltrs (Box-1&times;12)' />
                             {
                                 viewOnly ? <InputValue size='smaller' value={damaged2LBoxes} />
                                     : <CustomInput value={damaged2LBoxes} disabled={!isDamaged || disabled}
@@ -116,7 +116,7 @@ const ArrivedStockForm = (props) => {
                     </div>
                     <div className='column'>
                         <div className='input-container'>
-                            <InputLabel name='1 Ltrs (Box-1x12)' />
+                            <InputLabel name='1 Ltrs (Box-1&times;12)' />
                             {
                                 viewOnly ? <InputValue size='smaller' value={damaged1LBoxes} />
                                     : <CustomInput value={damaged1LBoxes} disabled={!isDamaged || disabled}
@@ -125,7 +125,7 @@ const ArrivedStockForm = (props) => {
                     </div>
                     <div className='column'>
                         <div className='input-container'>
-                            <InputLabel name='500 Ml (Box-1x12)' />
+                            <InputLabel name='500 Ml (Box-1&times;12)' />
                             {
                                 viewOnly ? <InputValue size='smaller' value={damaged500MLBoxes} />
                                     : <CustomInput value={damaged500MLBoxes} disabled={!isDamaged || disabled}
@@ -135,7 +135,7 @@ const ArrivedStockForm = (props) => {
                     </div>
                     <div className='column'>
                         <div className='input-container'>
-                            <InputLabel name='300 Ml (Box-1x12)' />
+                            <InputLabel name='300 Ml (Box-1&times;12)' />
                             {
                                 viewOnly ? <InputValue size='smaller' value={damaged300MLBoxes} />
                                     : <CustomInput value={damaged300MLBoxes} disabled={!isDamaged || disabled}
