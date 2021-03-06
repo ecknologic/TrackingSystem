@@ -328,7 +328,7 @@ const DeliveryDetails = ({ isAdmin, recentDelivery, ...rest }) => {
                     loading ? <NoContent content={<Spinner />} />
                         : delivery.length ? delivery.map((item) => (
                             <Col lg={{ span: 12 }} xl={{ span: 8 }} xxl={{ span: 6 }} key={item.deliveryDetailsId}>
-                                <AddressCard data={item} onClick={handleClick} onSelect={handleMenuSelect} />
+                                <AddressCard data={item} isAdmin={isAdmin} onClick={handleClick} onSelect={handleMenuSelect} />
                             </Col>
                         )) : <NoContent content={<Empty />} />
                 }

@@ -603,23 +603,23 @@ const AddAccount = () => {
                             onBlur={handleCorporateBlur}
                         />
                     ) : (
-                            <GeneralAccount
-                                data={generalValues}
-                                errors={generalErrors}
-                                devDays={devDays}
-                                devDaysError={devDaysError}
-                                IDProofs={IDProofs}
-                                IDProofErrors={IDProofErrors}
-                                routeOptions={routeOptions}
-                                warehouseOptions={warehouseOptions}
-                                onUpload={handleProofUpload}
-                                onRemove={handleProofRemove}
-                                onBlur={handleGeneralBlur}
-                                onChange={handleGeneralValues}
-                                onSelect={handleDevDaysSelect}
-                                onDeselect={handleDevDaysDeselect}
-                            />
-                        )
+                        <GeneralAccount
+                            data={generalValues}
+                            errors={generalErrors}
+                            devDays={devDays}
+                            devDaysError={devDaysError}
+                            IDProofs={IDProofs}
+                            IDProofErrors={IDProofErrors}
+                            routeOptions={routeOptions}
+                            warehouseOptions={warehouseOptions}
+                            onUpload={handleProofUpload}
+                            onRemove={handleProofRemove}
+                            onBlur={handleGeneralBlur}
+                            onChange={handleGeneralValues}
+                            onSelect={handleDevDaysSelect}
+                            onDeselect={handleDevDaysDeselect}
+                        />
+                    )
                 }
                 {
                     corporate ? (

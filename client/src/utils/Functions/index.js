@@ -231,6 +231,8 @@ export const getBusinessTypes = (type) => {
             return 'Manufacturers'
         case 'CorporateOffices':
             return 'Corporate Offices'
+        case 'Residential':
+            return 'Residential'
     }
 }
 
