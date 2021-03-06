@@ -2,14 +2,12 @@ import React from 'react';
 import { Menu } from 'antd';
 import NameCard from './NameCard';
 import PrimaryButton from './PrimaryButton';
-import { FriendIconGrey, TrashIconGrey, TickIconGrey, BlockIconGrey } from './SVG_Icons';
-import { getRole, SUPERADMIN } from '../utils/constants';
 import Actions from '../components/Actions'
+import { FriendIconGrey, TrashIconGrey, TickIconGrey, BlockIconGrey } from './SVG_Icons';
 import '../sass/accountCard.scss'
 import '../sass/addressCard.scss'
 
-const AddressCard = ({ data, onClick, onSelect }) => {
-    const role = getRole()
+const AddressCard = ({ data, isAdmin, onClick, onSelect }) => {
     const { isApproved, departmentName, phoneNumber, location, contactPerson, deliveryDetailsId } = data
     const optionOne = isApproved ? 'Draft' : 'Active'
     const iconOne = isApproved ? <BlockIconGrey /> : <TickIconGrey />
@@ -50,8 +48,7 @@ const AddressCard = ({ data, onClick, onSelect }) => {
             <div className='footer'>
                 <PrimaryButton text='View Details' onClick={() => onClick(deliveryDetailsId)} />
                 {
-                    role === SUPERADMIN &&
-                    <Actions options={options} onSelect={handleSelect} />
+                    isAdmin && <Actions options={options} onSelect={handleSelect} />
                 }
             </div>
         </div>
