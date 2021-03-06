@@ -79,11 +79,11 @@ const getPieData = ({ paidCount, totalCount }) => {
 
     return [
         {
-            type: 'Cleared Invoices',
+            type: 'Cleared',
             value: cleared,
         },
         {
-            type: 'Pending to Clear',
+            type: 'Pending',
             value: pending,
         }
     ]

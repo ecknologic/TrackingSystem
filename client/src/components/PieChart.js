@@ -18,6 +18,9 @@ const PieChart = ({ data }) => {
             lineDash: [0, 0],
             strokeOpacity: 0.5
         },
+        tooltip: {
+            formatter: (datum) => ({ name: datum.type, value: datum.value + '%' })
+        },
         label: {
             type: 'inner',
             offset: '-45%',
