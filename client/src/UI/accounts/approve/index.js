@@ -25,7 +25,7 @@ import {
     getIdProofsForDB, getAddressesForDB, isEmpty, showToast, extractCADetails, base64String, getDevDays,
     getProductsForUI, resetSessionItems, getSessionItems, resetTrackForm, getBase64
 } from '../../../utils/Functions';
-import { getRole, SUPERADMIN, TRACKFORM } from '../../../utils/constants';
+import { ACCOUNTSADMIN, getRole, SUPERADMIN, TRACKFORM } from '../../../utils/constants';
 import {
     validateAccountValues, validateAddresses, validateIDNumbers, validateNames, validateNumber,
     validateMobileNumber, validateEmailId, compareMaxNumber, validateIDProofs
@@ -34,6 +34,7 @@ import {
 const ApproveAccount = () => {
     const { accountId } = useParams()
     const history = useHistory()
+    const [role] = useState(() => getRole())
     const [accountValues, setAccountValues] = useState({ loading: true })
     const [headerContent, setHeaderContent] = useState({})
     const [loading, setLoading] = useState(true)
@@ -59,9 +60,9 @@ const ApproveAccount = () => {
 
     const confirmMsg = 'Changes you made may not be saved.'
     const showTrashIcon = useMemo(() => addresses.length !== 1, [addresses.length])
-    const isSuperAdmin = useMemo(() => getRole() === SUPERADMIN, [])
+    const isAdmin = useMemo(() => role === SUPERADMIN || role === ACCOUNTSADMIN, [])
     const { organizationName, customerId, customertype, customerName, depositAmount, isSuperAdminApproved } = accountValues
-    const canApprove = isSuperAdmin || isSuperAdminApproved || Number(depositAmount)
+    const canApprove = isAdmin || isSuperAdminApproved || Number(depositAmount)
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
@@ -103,7 +104,7 @@ const ApproveAccount = () => {
     }
 
     const getAddresses = async () => {
-        const url = `/customer/getCustomerDeliveryDetails/${accountId}?isSuperAdmin=${isSuperAdmin}`
+        const url = `/customer/getCustomerDeliveryDetails/${accountId}?isSuperAdmin=${isAdmin}`
         try {
             const { data: [data = {}] } = await http.GET(axios, url, config)
             const { deliveryDetails = [] } = data
@@ -346,7 +347,7 @@ const ApproveAccount = () => {
         const url = `/customer/approveCustomer/${customerId}`
         const body = {
             deliveryDetailsIds: activeAddressIds,
-            isSuperAdminApproved: isSuperAdminApproved || (Number(depositAmount) === 0 ? Number(isSuperAdmin) : 0)
+            isSuperAdminApproved: isSuperAdminApproved || (Number(depositAmount) === 0 ? Number(isAdmin) : 0)
         }
         try {
             setBtnDisabled(true)
@@ -423,15 +424,15 @@ const ApproveAccount = () => {
                                         onUpload={handleUpload}
                                         onRemove={handleRemove}
                                         disabledItems={{
-                                            gstDisable: gstProof.Front && !isSuperAdmin,
-                                            idDisable: IDProofs.Front && !isSuperAdmin
+                                            gstDisable: gstProof.Front && !isAdmin,
+                                            idDisable: IDProofs.Front && !isAdmin
                                         }}
                                     />
                                 ) : <>
-                                        <IDProofInfo data={IDProofs} />
-                                        <IDProofInfo data={gstProof} />
-                                        <AccountView data={accountValues} />
-                                    </>
+                                    <IDProofInfo data={IDProofs} />
+                                    <IDProofInfo data={gstProof} />
+                                    <AccountView data={accountValues} />
+                                </>
                             }
                             <div className='heading-container'>
                                 <span className='heading'>Delivery Details</span>
@@ -491,27 +492,27 @@ const ApproveAccount = () => {
                                             text='Save'
                                         />
                                     ) : (
-                                            <div className='multi-buttons-container'>
-                                                <div className='check-confirm'>
-                                                    <Checkbox onChange={({ target: { checked } }) => setIsReviewed(checked)} checked={isReviewed} />
-                                                    <span className='text'>I reviewed the above details for customer onboarding.</span>
-                                                </div>
-                                                <CustomButton
-                                                    onClick={handleAccountEdit}
-                                                    className={`
+                                        <div className='multi-buttons-container'>
+                                            <div className='check-confirm'>
+                                                <Checkbox onChange={({ target: { checked } }) => setIsReviewed(checked)} checked={isReviewed} />
+                                                <span className='text'>I reviewed the above details for customer onboarding.</span>
+                                            </div>
+                                            <CustomButton
+                                                onClick={handleAccountEdit}
+                                                className={`
                                                 footer-btn ${btnDisabled && 'disabled'}
                                             `}
-                                                    text='Edit'
-                                                />
-                                                <CustomButton
-                                                    onClick={onAccountApprove}
-                                                    className={`
+                                                text='Edit'
+                                            />
+                                            <CustomButton
+                                                onClick={onAccountApprove}
+                                                className={`
                                                 approve-btn footer-btn ${(!canApprove || !isReviewed || btnDisabled) && 'disabled'}
                                             `}
-                                                    text='Approve'
-                                                />
-                                            </div>
-                                        )
+                                                text='Approve'
+                                            />
+                                        </div>
+                                    )
                                 }
                             </div>
                         </>

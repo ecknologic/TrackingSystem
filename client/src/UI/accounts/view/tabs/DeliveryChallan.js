@@ -10,28 +10,22 @@ import QuitModal from '../../../../components/CustomModal';
 import SearchInput from '../../../../components/SearchInput';
 import CustomModal from '../../../../components/CustomModal';
 import { deliveryColumns } from '../../../../assets/fixtures';
-import { EditIconGrey, EyeIconGrey } from '../../../../components/SVG_Icons';
+import { EyeIconGrey } from '../../../../components/SVG_Icons';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomPagination from '../../../../components/CustomPagination';
-import { isEmpty, resetTrackForm, getStatusColor } from '../../../../utils/Functions';
+import { resetTrackForm, getStatusColor } from '../../../../utils/Functions';
 
 const DeliveryChallan = ({ accountId }) => {
     const [loading, setLoading] = useState(true)
-    const [deliveriesClone, setDeliveriesClone] = useState([])
     const [deliveries, setDeliveries] = useState([])
     const [formData, setFormData] = useState({})
-    const [formErrors, setFormErrors] = useState({})
     const [pageSize, setPageSize] = useState(10)
     const [totalCount, setTotalCount] = useState(null)
     const [pageNumber, setPageNumber] = useState(1)
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [DCModal, setDCModal] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
-    const [filterInfo, setFilterInfo] = useState([])
-    const [shake, setShake] = useState(false)
-    const [okTxt, setOkTxt] = useState('')
     const [title, setTitle] = useState('')
-    const [mode, setMode] = useState(false)
 
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
@@ -51,22 +45,10 @@ const DeliveryChallan = ({ accountId }) => {
         try {
             const data = await http.GET(axios, url, config)
             setPageNumber(1)
-            setDeliveriesClone(data)
             setLoading(false)
-            if (!isEmpty(filterInfo)) {
-                generateFiltered(data, filterInfo)
-            }
-            else {
-                setTotalCount(data.length)
-                setDeliveries(data)
-            }
+            setTotalCount(data.length)
+            setDeliveries(data)
         } catch (error) { }
-    }
-
-    const generateFiltered = (original, filterInfo) => {
-        const filtered = original.filter((item) => filterInfo.includes(item.RouteId))
-        setDeliveries(filtered)
-        setTotalCount(filtered.length)
     }
 
     const handleMenuSelect = (key, data) => {
@@ -94,7 +76,6 @@ const DeliveryChallan = ({ accountId }) => {
         setDCModal(false)
         setBtnDisabled(false)
         setFormData({})
-        setFormErrors({})
     }
 
     const dataSource = useMemo(() => deliveries.map((dc) => {
@@ -155,7 +136,7 @@ const DeliveryChallan = ({ accountId }) => {
                     />)
             }
             <CustomModal
-                className={`app-form-modal app-view-modal ${shake ? 'app-shake' : ''}`}
+                className='app-form-modal app-view-modal'
                 visible={DCModal}
                 btnDisabled={btnDisabled}
                 onOk={handleDCModalCancel}

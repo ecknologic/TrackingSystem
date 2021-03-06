@@ -18,7 +18,7 @@ import CorporateAccountForm from '../../add/forms/CorporateAccount';
 import { base64String, extractCADetails, extractGADetails, getBase64, getIdProofsForDB, getMainPathname, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 import { validateIDProofs, validateAccountValues, validateIDNumbers, validateMobileNumber, validateNames, validateEmailId, validateNumber, compareMaxNumber, validatePinCode } from '../../../../utils/validations';
 
-const AccountOverview = ({ data, onUpdate, isSuperAdmin }) => {
+const AccountOverview = ({ data, onUpdate, isAdmin }) => {
     const { gstProof, idProof_backside, idProof_frontside, isApproved, registeredDate,
         customertype, Address1, loading, adharNo, idProofType, panNo, gstNo } = data
 
@@ -240,7 +240,7 @@ const AccountOverview = ({ data, onUpdate, isSuperAdmin }) => {
                                     onChange={handleChange}
                                     onUpload={handleProofUpload}
                                     onRemove={handleProofRemove}
-                                    disabled={isApproved && !isSuperAdmin}
+                                    disabled={isApproved && !isAdmin}
                                 />
                                 : <GeneralAccountForm
                                     IDProofs={IDProofs}
@@ -251,16 +251,16 @@ const AccountOverview = ({ data, onUpdate, isSuperAdmin }) => {
                                     onChange={handleChange}
                                     onUpload={handleProofUpload}
                                     onRemove={handleProofRemove}
-                                    disabled={isApproved && !isSuperAdmin}
+                                    disabled={isApproved && !isAdmin}
                                     accountOnly
                                 /> : <>
-                                    <IDProofInfo data={IDProofs} />
-                                    <IDProofInfo data={gstProofs} />
-                                    <AccountView data={accountValues} />
-                                </>
+                                <IDProofInfo data={IDProofs} />
+                                <IDProofInfo data={gstProofs} />
+                                <AccountView data={accountValues} />
+                            </>
                         }
                         {
-                            isApproved && !isSuperAdmin ? null : renderFooter()
+                            isApproved && !isAdmin ? null : renderFooter()
                         }
                     </>
             }

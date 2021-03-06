@@ -7,7 +7,7 @@ import { getBusinessTypes } from '../utils/Functions';
 import { FriendsIconGrey, FriendIconGrey, TrashIconGrey, TickIconGrey, BlockIconGrey } from './SVG_Icons';
 import '../sass/accountCard.scss'
 
-const AccountCard = ({ data, onClick, btnTxt = 'Manage Account', onSelect, isSuperAdmin }) => {
+const AccountCard = ({ data, onClick, btnTxt = 'Manage Account', onSelect, isAdmin }) => {
     const { customerId, isApproved, contactpersons, customerName, organizationName, address, natureOfBussiness } = data
 
     const optionOne = isApproved ? 'Draft' : 'Active'
@@ -62,7 +62,7 @@ const AccountCard = ({ data, onClick, btnTxt = 'Manage Account', onSelect, isSup
             <div className='footer'>
                 <PrimaryButton text={btnTxt} onClick={() => onClick(customerId)} />
                 {
-                    isSuperAdmin &&
+                    isAdmin &&
                     <Actions options={options} onSelect={handleSelect} />
                 }
             </div>

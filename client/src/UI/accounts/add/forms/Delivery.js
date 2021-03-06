@@ -11,7 +11,7 @@ import { resetTrackForm, trackAccountFormOnce } from '../../../../utils/Function
 const DeliveryForm = (props) => {
 
     const { data, errors, devDays, onBlur, devDaysError = {}, disabled, onChange, onSelect, onDeselect,
-        warehouseOptions, routeOptions, sameAddress, onUpload, onRemove, isSuperAdmin } = props
+        warehouseOptions, routeOptions, sameAddress, onUpload, onRemove, isAdmin } = props
 
     const {
         gstNo, gstProof, departmentId, routeId, phoneNumber, contactPerson, address, isApproved,
@@ -20,7 +20,7 @@ const DeliveryForm = (props) => {
     } = data
 
     const gstUploadDisable = gstProof
-    const isDisabled = disabled || (isApproved && !isSuperAdmin)
+    const isDisabled = disabled || (isApproved && !isAdmin)
 
     useEffect(() => {
         resetTrackForm()

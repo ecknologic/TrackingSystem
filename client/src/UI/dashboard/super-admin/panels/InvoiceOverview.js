@@ -73,15 +73,18 @@ const InvoiceOverview = () => {
     )
 }
 
-const getPieData = ({ paidCount, pendingCount, totalCount }) => {
+const getPieData = ({ paidCount, totalCount }) => {
+    const cleared = Math.round(paidCount / (totalCount || 1) * 100)
+    const pending = 100 - cleared
+
     return [
         {
             type: 'Cleared Invoices',
-            value: Math.round(paidCount / (totalCount || 1) * 100),
+            value: cleared,
         },
         {
             type: 'Pending to Clear',
-            value: Math.round(pendingCount / (totalCount || 1) * 100),
+            value: pending,
         }
     ]
 }
