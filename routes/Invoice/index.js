@@ -123,17 +123,17 @@ router.post("/generateMultipleInvoices", (req, res) => {
                                 let products = addProducts(JSON.parse(item.products))
                                 customersArr[index].products = customersArr[index].products.concat(products)
                             } else {
-                                let products = addProducts(JSON.parse(item.products))
+                                let products = JSON.parse(item.products)
                                 customersArr.push({ ...item, products })
                             }
                         })
                         let arr = []
                         const { fromDate, toDate } = req.body
                         for (let [index, i] of customersArr.entries()) {
-                            let { gstNo, products, customerId, creditPeriodInDays, customerName, EmailId, createdBy } = i
+                            let { gstNo, products, customerId, creditPeriodInDays, organizationName, EmailId, createdBy } = i
                             let finalProducts = []
                             let obj = {
-                                customerName,
+                                customerName:organizationName,
                                 gstNo,
                                 invoiceDate: new Date(),
                                 customerId: customerId,
