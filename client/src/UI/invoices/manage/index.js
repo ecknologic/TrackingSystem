@@ -4,9 +4,9 @@ import { useHistory, useLocation } from 'react-router-dom';
 import React, { useEffect, useMemo, useState } from 'react';
 import Header from './header';
 import ListPanel from './panels/ListPanel';
-import NoContent from '../../../components/NoContent'
-import Spinner from '../../../components/Spinner'
 import ContentPanel from './panels/ContentPanel';
+import Spinner from '../../../components/Spinner'
+import NoContent from '../../../components/NoContent'
 import '../../../sass/invoices.scss';
 
 const Invoices = () => {
@@ -53,7 +53,6 @@ const Invoices = () => {
     }
 
     const onAdd = () => history.push('/invoices/2')
-    const onEdit = (id) => history.push(`/invoices/edit/${id}`)
     const handleBack = () => history.push('/invoices')
 
     const handlePrint = (event, pdf) => {
@@ -74,7 +73,7 @@ const Invoices = () => {
                                 <ListPanel data={invoices} onSelect={handleMsgSelect} active={activeMsg} />
                             </div>
                             <div className='right-panel'>
-                                <ContentPanel isLoading={isLoading} data={activeMsg} onEdit={onEdit} onPrint={handlePrint} />
+                                <ContentPanel isLoading={isLoading} data={activeMsg} onPrint={handlePrint} />
                             </div>
                         </div >
                     )

@@ -289,43 +289,53 @@ export const productColumns = [
         key: 'action'
     },
 ]
-export const invoiceColumns = [
-    {
-        title: 'Date',
-        dataIndex: 'date',
-        key: 'date',
-    },
-    {
-        title: 'Invoice Number',
-        dataIndex: 'invoiceId',
-        key: 'invoiceId',
-    },
-    {
-        title: 'Customer Name',
-        dataIndex: 'customerName',
-        key: 'customerName',
-    },
-    {
-        title: 'Due Date',
-        dataIndex: 'dueDate',
-        key: 'dueDate',
-    },
-    {
-        title: 'Amount',
-        dataIndex: 'totalAmount',
-        key: 'totalAmount',
-    },
-    {
-        title: 'Status',
-        dataIndex: 'status',
-        key: 'status',
-    },
-    {
-        title: 'Actions',
-        dataIndex: 'action',
-        key: 'action'
-    },
-]
+
+export const getInvoiceColumns = (type) => {
+    const columns = [
+        {
+            title: 'Date',
+            dataIndex: 'date',
+            key: 'date',
+        },
+        {
+            title: 'Invoice Number',
+            dataIndex: 'invoiceId',
+            key: 'invoiceId',
+        },
+        {
+            title: 'Customer Name',
+            dataIndex: 'organizationName',
+            key: 'organizationName',
+        },
+        {
+            title: 'Due Date',
+            dataIndex: 'dueDate',
+            key: 'dueDate',
+        },
+        {
+            title: 'Amount',
+            dataIndex: 'totalAmount',
+            key: 'totalAmount',
+        },
+        {
+            title: 'Status',
+            dataIndex: 'status',
+            key: 'status',
+        },
+        {
+            title: 'Actions',
+            dataIndex: 'action',
+            key: 'action'
+        },
+    ]
+
+    if (type === 'single') {
+        columns.splice(2, 1)
+    }
+
+    return columns
+}
+
 export const paymentColumns = [
     {
         title: 'Date',
@@ -339,8 +349,8 @@ export const paymentColumns = [
     },
     {
         title: 'Customer Name',
-        dataIndex: 'customerName',
-        key: 'customerName',
+        dataIndex: 'organizationName',
+        key: 'organizationName',
     },
     {
         title: 'Mode',

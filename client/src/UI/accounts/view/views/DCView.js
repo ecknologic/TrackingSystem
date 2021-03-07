@@ -63,25 +63,25 @@ const DCView = ({ data }) => {
                     </div>
                     <div className='column'>
                         <div className='input-container'>
-                            <InputLabel name='2 Ltrs (Box-1x9)' />
+                            <InputLabel name='2 Ltrs (Box-1&times;9)' />
                             <InputValue size='smaller' value={product2L || 0} />
                         </div>
                     </div>
                     <div className='column'>
                         <div className='input-container'>
-                            <InputLabel name='1 Ltrs (Box-1x12)' />
+                            <InputLabel name='1 Ltrs (Box-1&times;12)' />
                             <InputValue size='smaller' value={product1L || 0} />
                         </div>
                     </div>
                     <div className='column'>
                         <div className='input-container'>
-                            <InputLabel name='500 Ml (Box-1x24)' />
+                            <InputLabel name='500 Ml (Box-1&times;24)' />
                             <InputValue size='smaller' value={product300ML || 0} />
                         </div>
                     </div>
                     <div className='column'>
                         <div className='input-container'>
-                            <InputLabel name='300 Ml (Box-1x30)' />
+                            <InputLabel name='300 Ml (Box-1&times;30)' />
                             <InputValue size='smaller' value={product500ML || 0} />
                         </div>
                     </div>

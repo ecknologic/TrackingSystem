@@ -6,7 +6,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http'
 import Actions from '../../../../components/Actions';
 import Spinner from '../../../../components/Spinner';
-import { invoiceColumns } from '../../../../assets/fixtures';
+import { getInvoiceColumns } from '../../../../assets/fixtures';
 import SearchInput from '../../../../components/SearchInput';
 import CustomPagination from '../../../../components/CustomPagination';
 import { deepClone, getStatusColor, showToast } from '../../../../utils/Functions';
@@ -21,6 +21,7 @@ const Invoice = ({ reFetch, accountId }) => {
     const [pageNumber, setPageNumber] = useState(1)
     const [totalCount, setTotalCount] = useState(null)
 
+    const invoiceColumns = useMemo(() => getInvoiceColumns('single'), [])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
@@ -88,7 +89,7 @@ const Invoice = ({ reFetch, accountId }) => {
     }
 
     const dataSource = useMemo(() => invoices.map((invoice) => {
-        const { invoiceId, createdDateTime, totalAmount, customerName, dueDate, status } = invoice
+        const { invoiceId, createdDateTime, totalAmount, organizationName, dueDate, status } = invoice
 
         const options = [
             <Menu.Item key="resend" icon={<SendIconGrey />}>Resend</Menu.Item>,
@@ -99,7 +100,7 @@ const Invoice = ({ reFetch, accountId }) => {
 
         return {
             key: invoiceId,
-            customerName,
+            organizationName,
             totalAmount,
             status: renderStatus(status),
             dueDate: dayjs(dueDate).format(DATEFORMAT),

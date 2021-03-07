@@ -8,9 +8,10 @@ import Actions from '../../../components/Actions';
 import Spinner from '../../../components/Spinner';
 import { TODAYDATE } from '../../../utils/constants';
 import DateValue from '../../../components/DateValue';
-import { invoiceColumns } from '../../../assets/fixtures';
+import { getInvoiceColumns } from '../../../assets/fixtures';
 import SearchInput from '../../../components/SearchInput';
 import CustomButton from '../../../components/CustomButton';
+import RoutesFilter from '../../../components/RoutesFilter';
 import CustomRangeInput from '../../../components/CustomRangeInput';
 import CustomPagination from '../../../components/CustomPagination';
 import { deepClone, getStatusColor, showToast } from '../../../utils/Functions';
@@ -24,17 +25,22 @@ const Dashboard = ({ reFetch, onUpdate }) => {
     const [loading, setLoading] = useState(true)
     const [pageSize, setPageSize] = useState(12)
     const [pageNumber, setPageNumber] = useState(1)
+    const [customerIds, setCustomerIds] = useState([])
     const [totalCount, setTotalCount] = useState(null)
+    const [customerList, setCustomerList] = useState([])
     const [selectedRange, setSelectedRange] = useState([])
     const [startDate, setStartDate] = useState(TODAYDATE)
     const [generateDisabled, setGenerateDisabled] = useState(true)
     const [endDate, setEndDate] = useState(TODAYDATE)
     const [open, setOpen] = useState(false)
 
+    const invoiceColumns = useMemo(() => getInvoiceColumns(), [])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
+        getCustomerList()
+
         return () => {
             http.ABORT(source)
         }
@@ -56,9 +62,18 @@ const Dashboard = ({ reFetch, onUpdate }) => {
         } catch (error) { }
     }
 
+    const getCustomerList = async () => {
+        const url = `/customer/getCustomers`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setCustomerList(data)
+        } catch (error) { }
+    }
+
     const generateInvoices = async () => {
         const url = '/invoice/generateMultipleInvoices'
-        const body = { fromDate: startDate, toDate: endDate }
+        const body = { fromDate: startDate, toDate: endDate, customerIds }
 
         try {
             await http.POST(axios, url, body, config)
@@ -72,6 +87,18 @@ const Dashboard = ({ reFetch, onUpdate }) => {
     const handleSizeChange = (number, size) => {
         setPageSize(size)
         setPageNumber(number)
+    }
+
+    const onFilterChange = (data) => {
+        setPageNumber(1)
+        setCustomerIds(data)
+        setGenerateDisabled(false)
+    }
+
+    const handleFilter = () => {
+        setGenerateDisabled(true)
+        setLoading(true)
+        generateInvoices()
     }
 
     const handleMenuSelect = (key, data) => {
@@ -110,6 +137,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
         setGenerateDisabled(false)
         setTimeout(() => setSelectedRange([]), 820)
         setPageNumber(1)
+        setGenerateDisabled(false)
     }
 
     const optimisticUpdate = (id, status) => {
@@ -136,7 +164,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
     }
 
     const dataSource = useMemo(() => invoices.map((invoice) => {
-        const { invoiceId, createdDateTime, totalAmount, customerName, dueDate, status } = invoice
+        const { invoiceId, createdDateTime, totalAmount, organizationName, dueDate, status } = invoice
 
         const options = [
             <Menu.Item key="resend" icon={<SendIconGrey />}>Resend</Menu.Item>,
@@ -146,7 +174,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
 
         return {
             key: invoiceId,
-            customerName,
+            organizationName,
             totalAmount,
             status: renderStatus(status),
             dueDate: dayjs(dueDate).format(DATEFORMAT),
@@ -163,6 +191,13 @@ const Dashboard = ({ reFetch, onUpdate }) => {
         <div className='stock-delivery-container'>
             <div className='header'>
                 <div className='left'>
+                    <RoutesFilter
+                        data={customerList}
+                        title='Select Customers'
+                        keyValue='customerId'
+                        keyLabel='customerName'
+                        onChange={onFilterChange}
+                    />
                     <DateValue date={startDate} to={endDate} />
                     <div className='app-date-picker-wrapper'>
                         <div className='date-picker' onClick={() => setOpen(true)}>
@@ -173,7 +208,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
                             style={{ marginLeft: '1em' }}
                             className={`${generateDisabled ? 'disabled' : ''}`}
                             text='Generate'
-                            onClick={handleGenerateInvoices}
+                            onClick={handleFilter}
                         />
                         <CustomRangeInput // Hidden in the DOM
                             open={open}

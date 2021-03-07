@@ -11,7 +11,7 @@ import NoContent from '../../../../components/NoContent';
 class ContentPanel extends Component {
 
     render() {
-        const { data, onEdit, onPrint, isLoading } = this.props
+        const { data, onPrint, isLoading } = this.props
         const { invoiceId, invoicePdf } = data
         const pdf = base64String(invoicePdf?.data, 'application/pdf')
 
@@ -20,7 +20,6 @@ class ContentPanel extends Component {
                 <div className='content-header-bar'>
                     <span className='title'>{invoiceId}</span>
                     <div className='menu-panel'>
-                        <CustomButton onClick={() => onEdit(invoiceId)} className='app-cancel-btn' text='Edit' />
                         <ReactToPrint content={() => this.componentRef} trigger={() => <CustomButton onClick={(e) => onPrint(e, pdf)} className='app-cancel-btn' text='Print' />} />
                     </div>
                 </div>
