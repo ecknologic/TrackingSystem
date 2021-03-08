@@ -34,44 +34,88 @@ router.get('/getInvoiceById/:invoiceId', (req, res) => {
     invoiceQueries.getInvoiceById(req.params.invoiceId, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
-            const { gstNo, invoiceId, fromDate, toDate, ...rest } = results[0]
+            const { gstNo, invoiceId, customerType, fromDate, toDate, ...rest } = results[0]
             let products = JSON.parse(results[0].products)
             let obj = {
                 gstNo, invoiceId, ...rest
             }
             obj.products = products
-            if (obj.products.length) {
-                for (let i of obj.products) {
-                    if (i.productName.startsWith('20')) {
-                        obj['20LCans'] = i.quantity
-                        obj['price20L'] = i.productPrice
-                    } else if (i.productName.startsWith('1')) {
-                        obj['1LBoxes'] = i.quantity
-                        obj['price1L'] = i.productPrice
-                    } else if (i.productName.startsWith('500')) {
-                        obj['500MLBoxes'] = i.quantity
-                        obj['price500ML'] = i.productPrice
-                    } else if (i.productName.startsWith('300')) {
-                        obj['300MLBoxes'] = i.quantity
-                        obj['price300ML'] = i.productPrice
+            if (products.length) {
+                if (customerType == 'Corporate') {
+                    let arr = []
+                    for (let [index, i] of products.entries()) {
+                        i = {
+                            gstNo, invoiceId, ...rest, ...i,
+                        }
+                        if (i.productName.startsWith('20')) {
+                            i['20LCans'] = i.quantity
+                            i['price20L'] = i.productPrice
+                        } else if (i.productName.startsWith('1')) {
+                            i['1LBoxes'] = i.quantity
+                            i['price1L'] = i.productPrice
+                        } else if (i.productName.startsWith('500')) {
+                            i['500MLBoxes'] = i.quantity
+                            i['price500ML'] = i.productPrice
+                        } else if (i.productName.startsWith('300')) {
+                            i['300MLBoxes'] = i.quantity
+                            i['price300ML'] = i.productPrice
+                        }
+                        else if (i.productName.startsWith('2')) {
+                            i['2LBoxes'] = i.quantity
+                            i['price2L'] = i.productPrice
+                        }
+                        arr.push(i)
+                        if (obj.products.length == index + 1) obj.products = arr
                     }
-                    else if (i.productName.startsWith('2')) {
-                        obj['2LBoxes'] = i.quantity
-                        obj['price2L'] = i.productPrice
+                } else {
+                    for (let i of obj.products) {
+                        if (i.productName.startsWith('20')) {
+                            obj['20LCans'] = i.quantity
+                            obj['price20L'] = i.productPrice
+                        } else if (i.productName.startsWith('1')) {
+                            obj['1LBoxes'] = i.quantity
+                            obj['price1L'] = i.productPrice
+                        } else if (i.productName.startsWith('500')) {
+                            obj['500MLBoxes'] = i.quantity
+                            obj['price500ML'] = i.productPrice
+                        } else if (i.productName.startsWith('300')) {
+                            obj['300MLBoxes'] = i.quantity
+                            obj['price300ML'] = i.productPrice
+                        }
+                        else if (i.productName.startsWith('2')) {
+                            obj['2LBoxes'] = i.quantity
+                            obj['price2L'] = i.productPrice
+                        }
                     }
                 }
             }
-            let invoice = {
-                items: [obj], invoiceId, gstNo, fromDate, toDate
+            console.log("obj", obj.products.length)
+
+            if (customerType == 'Corporate') {
+                let invoice = {
+                    items: obj.products, customerType, invoiceId, gstNo, fromDate, toDate
+                }
+                createMultiDeliveryInvoice(invoice, "invoice.pdf").then(response => {
+                    setTimeout(() => {
+                        fs.readFile("invoice.pdf", (err, result) => {
+                            obj.invoicePdf = result
+                            res.json(obj)
+                        })
+                    }, 1500)
+                })
+            } else {
+                let invoice = {
+                    items: [obj], invoiceId, gstNo, fromDate, toDate
+                }
+                createSingleDeliveryInvoice(invoice, "invoice.pdf").then(response => {
+                    setTimeout(() => {
+                        fs.readFile("invoice.pdf", (err, result) => {
+                            obj.invoicePdf = result
+                            res.json(obj)
+                        })
+                    }, 1500)
+                })
             }
-            createSingleDeliveryInvoice(invoice, "invoice.pdf").then(response => {
-                setTimeout(() => {
-                    fs.readFile("invoice.pdf", (err, result) => {
-                        obj.invoicePdf = result
-                        res.json(obj)
-                    })
-                }, 1500)
-            })
         };
     });
 });
@@ -133,7 +177,7 @@ router.post("/generateMultipleInvoices", (req, res) => {
                             let { gstNo, products, customerId, creditPeriodInDays, organizationName, EmailId, createdBy } = i
                             let finalProducts = []
                             let obj = {
-                                customerName:organizationName,
+                                customerName: organizationName,
                                 gstNo,
                                 invoiceDate: new Date(),
                                 customerId: customerId,
