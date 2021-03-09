@@ -268,9 +268,9 @@ export const extractValidProductsForDB = (data) => {
     }
 }
 export const extractProductsFromForm = (data) => {
-    const { product20L, price20L, product2L, price2L, product1L, price1L, product500ML, price500ML, product300ML, price300ML, product20LId, product1LId, product500MLId, product300MLId } = data
+    const { product20L, price20L, product2L, price2L, product1L, price1L, product500ML, price500ML, product300ML, price300ML, product20LId, product2LId, product1LId, product500MLId, product300MLId } = data
 
-    return { product20L, price20L, product2L, price2L, product1L, price1L, product500ML, price500ML, product300ML, price300ML, product20LId, product1LId, product500MLId, product300MLId }
+    return { product20L, price20L, product2L, price2L, product1L, price1L, product500ML, price500ML, product300ML, price300ML, product20LId, product2LId, product1LId, product500MLId, product300MLId }
 }
 export const getProductsForDB = ({ product20L, price20L, product2L, price2L, product1L, price1L, product500ML, price500ML, product300ML, price300ML }) => {
     const products = []
