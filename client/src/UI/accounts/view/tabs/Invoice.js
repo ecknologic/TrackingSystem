@@ -89,7 +89,7 @@ const Invoice = ({ reFetch, accountId }) => {
     }
 
     const dataSource = useMemo(() => invoices.map((invoice) => {
-        const { invoiceId, createdDateTime, totalAmount, organizationName, dueDate, status } = invoice
+        const { invoiceId, createdDateTime, totalAmount, customerName, dueDate, status } = invoice
 
         const options = [
             <Menu.Item key="resend" icon={<SendIconGrey />}>Resend</Menu.Item>,
@@ -100,7 +100,7 @@ const Invoice = ({ reFetch, accountId }) => {
 
         return {
             key: invoiceId,
-            organizationName,
+            customerName,
             totalAmount,
             status: renderStatus(status),
             dueDate: dayjs(dueDate).format(DATEFORMAT),

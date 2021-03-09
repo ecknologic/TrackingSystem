@@ -8,14 +8,14 @@ import Actions from '../../../components/Actions';
 import Spinner from '../../../components/Spinner';
 import { TODAYDATE } from '../../../utils/constants';
 import DateValue from '../../../components/DateValue';
-import { getInvoiceColumns } from '../../../assets/fixtures';
 import SearchInput from '../../../components/SearchInput';
 import CustomButton from '../../../components/CustomButton';
 import RoutesFilter from '../../../components/RoutesFilter';
+import { getInvoiceColumns } from '../../../assets/fixtures';
 import CustomRangeInput from '../../../components/CustomRangeInput';
 import CustomPagination from '../../../components/CustomPagination';
 import { deepClone, getStatusColor, showToast } from '../../../utils/Functions';
-import { ListViewIconGrey, DocIconGrey, ScheduleIcon, SendIconGrey, TickIconGrey } from '../../../components/SVG_Icons';
+import { ListViewIconGrey, ScheduleIcon, SendIconGrey, TickIconGrey } from '../../../components/SVG_Icons';
 const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
@@ -112,18 +112,6 @@ const Dashboard = ({ reFetch, onUpdate }) => {
 
     const handleViewInvoice = (invoice) => history.push('/invoices/manage', { invoice })
 
-    const handleGenerateInvoices = async () => {
-        try {
-            setLoading(true)
-            setGenerateDisabled(true)
-            await generateInvoices()
-            await getInvoices()
-        } catch (error) {
-            setGenerateDisabled(false)
-            setLoading(false)
-        }
-    }
-
     const datePickerStatus = (status) => {
         !status && setOpen(false)
     }
@@ -164,7 +152,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
     }
 
     const dataSource = useMemo(() => invoices.map((invoice) => {
-        const { invoiceId, createdDateTime, totalAmount, organizationName, dueDate, status } = invoice
+        const { invoiceId, createdDateTime, totalAmount, customerName, dueDate, status } = invoice
 
         const options = [
             <Menu.Item key="resend" icon={<SendIconGrey />}>Resend</Menu.Item>,
@@ -174,7 +162,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
 
         return {
             key: invoiceId,
-            organizationName,
+            customerName,
             totalAmount,
             status: renderStatus(status),
             dueDate: dayjs(dueDate).format(DATEFORMAT),
@@ -195,7 +183,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
                         data={customerList}
                         title='Select Customers'
                         keyValue='customerId'
-                        keyLabel='customerName'
+                        keyLabel='organizationName'
                         onChange={onFilterChange}
                     />
                     <DateValue date={startDate} to={endDate} />

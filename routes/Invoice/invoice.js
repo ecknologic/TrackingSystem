@@ -105,51 +105,52 @@ function generateInvoiceTable(doc, invoice) {
                 product = "20 Lt Bt Jar";
                 quantity = productInfo["20LCans"];
                 price = productInfo.price20L
-                totalQuantity20L = totalQuantity20L + productInfo["20LCans"]
-                totalPrice20L = totalPrice20L + productInfo.price20L
-                subTotal = subTotal + productInfo.price20L
+                totalQuantity20L += productInfo["20LCans"]
+                totalPrice20L += productInfo.price20L
+                subTotal += productInfo.price20L
                 renderProductRow(doc, invoiceTableTop, jCount, product, quantity, price, address, index, i)
             } else if (productInfo["2LBoxes"] > 0) {
                 product = "2L Boxes";
                 quantity = productInfo["2LBoxes"];
                 price = productInfo.price2L
-                totalQuantity2L = totalQuantity2L + productInfo["2LBoxes"]
-                totalPrice2L = totalPrice2L + productInfo.price2L
-                subTotal = subTotal + productInfo.price2L
+                totalQuantity2L += productInfo["2LBoxes"]
+                totalPrice2L += productInfo.price2L
+                subTotal += productInfo.price2L
                 renderProductRow(doc, invoiceTableTop, jCount, product, quantity, price, address, index, i)
             } else if (productInfo["1LBoxes"] > 0) {
                 product = "1L Boxes";
                 quantity = productInfo["1LBoxes"];
                 price = productInfo.price1L
-                totalQuantity1L = totalQuantity1L + productInfo["1LBoxes"]
-                totalPrice1L = totalPrice1L + productInfo.price1L
-                subTotal = subTotal + productInfo.price1L
+                totalQuantity1L += productInfo["1LBoxes"]
+                totalPrice1L += productInfo.price1L
+                subTotal += productInfo.price1L
                 renderProductRow(doc, invoiceTableTop, jCount, product, quantity, price, address, index, i)
             } else if (productInfo["500MLBoxes"] > 0) {
                 product = "500ML Boxes";
                 quantity = productInfo["500MLBoxes"];
                 price = productInfo.price500ML
-                totalQuantity500ML = totalQuantity500ML + productInfo["500MLBoxes"]
-                totalPrice500ML = totalPrice500ML + productInfo.price500ML
-                subTotal = subTotal + productInfo.price500ML
+                totalQuantity500ML += productInfo["500MLBoxes"]
+                totalPrice500ML += productInfo.price500ML
+                subTotal += productInfo.price500ML
                 renderProductRow(doc, invoiceTableTop, jCount, product, quantity, price, address, index, i)
             } else if (productInfo["300MLBoxes"] > 0) {
                 product = "300ML Boxes";
                 quantity = productInfo["300MLBoxes"];
                 price = productInfo.price300ML
-                totalQuantity300ML = totalQuantity300ML + productInfo["300MLBoxes"]
-                totalPrice300ML = totalPrice300ML + productInfo.price300ML
-                subTotal = subTotal + productInfo.price300ML
+                totalQuantity300ML += productInfo["300MLBoxes"]
+                totalPrice300ML += productInfo.price300ML
+                subTotal += productInfo.price300ML
                 renderProductRow(doc, invoiceTableTop, jCount, product, quantity, price, address, index, i)
             }
 
         }
         if (i == (invoice.items.length - 1)) {
-            totalArr.push({ product: "20 Lt Bt Jar", price: totalPrice20L, quantity: totalQuantity20L },
-                { product: "1L Boxes", price: totalPrice1L, quantity: totalQuantity1L },
-                { product: "500ML Boxes", price: totalPrice500ML, quantity: totalQuantity500ML },
-                { product: "300ML Boxes", price: totalPrice300ML, quantity: totalQuantity300ML },
-                { product: "2L Boxes", price: totalPrice2L, quantity: totalQuantity2L }
+            const { gstNo } = i
+            totalArr.push({ gstNo,  product: "20 Lt Bt Jar", price: totalPrice20L, quantity: totalQuantity20L },
+                { gstNo,  product: "1L Boxes", price: totalPrice1L, quantity: totalQuantity1L },
+                { gstNo,  product: "500ML Boxes", price: totalPrice500ML, quantity: totalQuantity500ML },
+                { gstNo,  product: "300ML Boxes", price: totalPrice300ML, quantity: totalQuantity300ML },
+                { gstNo,  product: "2L Boxes", price: totalPrice2L, quantity: totalQuantity2L }
             )
         }
     }
@@ -199,7 +200,8 @@ function generateInvoiceTable(doc, invoice) {
     )
     if (totalArr.length) {
         totalArr.map((item, index) => {
-            let taxValue = item.quantity * item.price
+            const { quantity, price, gstNo } = item
+            // let taxValue = item.quantity * item.price
             // let cgst = item.product == "20 Lt Bt Jar" ? CGST20L : CGSTOthers
             let gst = item.product == "20 Lt Bt Jar" ? GST20L : GSTOthers
             // let cgstValue = (taxValue * cgst) / 100
@@ -220,18 +222,18 @@ function generateInvoiceTable(doc, invoice) {
             totalIGSTValue = totalIGSTValue + igst
         })
     }
-    let totalAmount = totalTaxValue + (2 * totalCGSTValue) + totalIGSTValue
+    let totalAmount = Math.round(totalTaxValue + (2 * totalCGSTValue) + totalIGSTValue)
     doc
         .text("Totals :", 290, subtotalPosition + 80)
-        .text(totalTaxValue, 340, subtotalPosition + 80)
-        .text(totalCGSTValue, 415, subtotalPosition + 80)
-        .text(totalCGSTValue, 480, subtotalPosition + 80)
-        .text(totalIGSTValue, 500, subtotalPosition + 80, { align: "right" })
+        .text(Math.round(totalTaxValue), 340, subtotalPosition + 80)
+        .text(Math.round(totalCGSTValue), 415, subtotalPosition + 80)
+        .text(Math.round(totalCGSTValue), 480, subtotalPosition + 80)
+        .text(Math.round(totalIGSTValue), 500, subtotalPosition + 80, { align: "right" })
     generateHr(doc, subtotalPosition + 70)
     doc
         .text("Total Invoice Value Round off To :", 350, subtotalPosition + 100)
         .fillColor("red")
-        .text(totalAmount, 500, subtotalPosition + 100, { align: "right" })
+        .text(Math.round(totalAmount), 500, subtotalPosition + 100, { align: "right" })
         .fillColor("black")
         .text("Invoice Value in Wards Rs :", 30, subtotalPosition + 120)
         .stroke()
@@ -249,9 +251,7 @@ function generateInvoiceTable(doc, invoice) {
         .image("signature.png", 460, subtotalPosition + 150, { width: 80 })
         .text("Authorized Signatory", 0, subtotalPosition + 170, { align: "right" })
 }
-const calculateSubTotal = (total, num) => {
-    return { price20L: total.price20L + num.price20L }
-}
+
 function generateSummaryRow(doc, subtotalPosition, product, hsnCode, gst, quantity, price, taxAmount, cgst, sgst, igst) {
     doc
         .text(product, 30, subtotalPosition - 20)

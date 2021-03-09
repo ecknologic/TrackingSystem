@@ -304,8 +304,8 @@ export const getInvoiceColumns = (type) => {
         },
         {
             title: 'Customer Name',
-            dataIndex: 'organizationName',
-            key: 'organizationName',
+            dataIndex: 'customerName',
+            key: 'customerName',
         },
         {
             title: 'Due Date',
