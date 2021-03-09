@@ -234,6 +234,13 @@ const getCrores = (amount) => {
     }
     return `${minified.toLocaleString('en-IN')} Cr`;
 }
+const formatDate = (date) => {
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+
+    return year + "/" + month + "/" + day;
+}
 const getGraphData = (product20LCount, product2LCount, product1LCount, product500MLCount, product300MLCount, label) => {
     return [
         {
@@ -266,5 +273,5 @@ const getGraphData = (product20LCount, product2LCount, product1LCount, product50
 module.exports = {
     executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, checkDepartmentExists, productionCount,
     getCompareData, dateComparisions, checkUserExists, dbError, getBatchId, customerProductDetails, createHash, convertToWords,
-    getFormatedNumber, getCompareCustomersData, getCompareDistributorsData, getGraphData
+    getFormatedNumber, getCompareCustomersData, getCompareDistributorsData, getGraphData, formatDate
 }
