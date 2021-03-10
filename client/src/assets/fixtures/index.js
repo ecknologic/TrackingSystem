@@ -349,8 +349,8 @@ export const paymentColumns = [
     },
     {
         title: 'Customer Name',
-        dataIndex: 'organizationName',
-        key: 'organizationName',
+        dataIndex: 'customerName',
+        key: 'customerName',
     },
     {
         title: 'Mode',

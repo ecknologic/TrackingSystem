@@ -241,8 +241,16 @@ router.get('/getTotalSales', (req, res) => {
         res.json(data);
       }
     }
-    else
-      res.json(defaultValues)
+    else {
+      if (input.type == "This Week") {
+        let graph = []
+        WEEKDAYS.map((day) => {
+          graph = [...graph, ...getGraphData(0, 0, 0, 0, 0, day)]
+        })
+        res.json({ ...defaultValues, graph })
+      }
+      else res.json({ ...defaultValues, graph: getGraphData(0, 0, 0, 0, 0) })
+    }
   });
 });
 

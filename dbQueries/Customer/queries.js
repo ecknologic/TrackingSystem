@@ -234,6 +234,13 @@ customerQueries.updateOrderDetails = (input, callback) => {
         return getDeliverysByCustomerOrderId(customerOrderId, callback)
     })
 }
+customerQueries.updateWHDeliveryDetails = (input, callback) => {
+    let { address, boxes1L, boxes2L, boxes300ML, boxes500ML, cans20L, customerName, driverId, phoneNumber, routeId, customer_Id } = input
+    // let query = `update customerorderdetails SET address=?,1LBoxes=?,2LBoxes=?,300MLBoxes=?,500MLBoxes=?,20LCans=?,customerName=?,driverId=?,phoneNumber=?,routeId=? where address=? AND isDelivered='Inprogress' AND existingCustomerId=? AND CONVERT(DATE,'deliveryDate')=?`;
+    let query = `update customerorderdetails SET address=?,1LBoxes=?,2LBoxes=?,300MLBoxes=?,500MLBoxes=?,20LCans=?,customerName=?,driverId=?,phoneNumber=?,routeId=? where address=? AND isDelivered='Inprogress' AND existingCustomerId=?`;
+    let requestBody = [address, boxes1L, boxes2L, boxes300ML, boxes500ML, cans20L, customerName, driverId, phoneNumber, routeId, address, customer_Id]
+    executePostOrUpdateQuery(query, requestBody, callback)
+}
 customerQueries.updateCustomerStatus = (input, callback) => {
     let { status, customerId } = input
     let query, requestBody;

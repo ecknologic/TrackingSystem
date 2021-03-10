@@ -619,6 +619,7 @@ router.post('/updateDeliveryDetails', (req, res) => {
               saveProductDetails(i.products, results.insertId, i.customer_Id).then(async (productDetails) => {
                 if (count == deliveryDetails.length) {
                   let data = await getAddedDeliveryDetails(results.insertId)
+                  updateWHDelivery(req)
                   res.json({ status: 200, message: "Delivery Details Updated Successfully", data });
                 }
               })
@@ -638,6 +639,7 @@ router.post('/updateDeliveryDetails', (req, res) => {
               updateProductDetails(i.products).then(async (productDetails) => {
                 if (count == deliveryDetails.length) {
                   let data = await getAddedDeliveryDetails(i.deliveryDetailsId)
+                  updateWHDelivery(req)
                   res.json({ status: 200, message: "Delivery Details Updated Successfully", data });
                 }
                 // res.json({ status: 200, message: "Delivery Details Updated Successfully", data: getAddedDeliveryDetails(i.deliveryDetailsId) });
@@ -688,4 +690,22 @@ router.get('/customerDCDetails/:customerId', (req, res) => {
     res.send(JSON.stringify(results));
   });
 });
+const updateWHDelivery = (req) => {
+  const { address, products, phoneNumber, driverId, routeId, contactPerson: customerName, customer_Id } = req.body[0]
+  let obj = { address, phoneNumber, driverId, routeId, customer_Id, customerName, boxes1L: 0, boxes2L: 0, boxes300ML: 0, boxes500ML: 0, cans20L: 0 }
+  products.map(product => {
+    const { productName, noOfJarsTobePlaced } = product
+    if (productName.startsWith('20')) obj.cans20L = noOfJarsTobePlaced
+    if (productName.startsWith('2')) obj.boxes2L = noOfJarsTobePlaced
+    if (productName.startsWith('1')) obj.boxes1L = noOfJarsTobePlaced
+    if (productName.startsWith('500')) obj.boxes500ML = noOfJarsTobePlaced
+    if (productName.startsWith('300')) obj.boxes300ML = noOfJarsTobePlaced
+  })
+  customerQueries.updateWHDeliveryDetails(obj, (err, update) => {
+    if (err) console.log("Err", err)
+    else {
+      console.log("Update", update)
+    }
+  })
+}
 module.exports = router;

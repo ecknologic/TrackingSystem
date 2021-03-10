@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const invoiceQueries = require('../../dbQueries/invoice/queries.js');
-const { dbError, base64String } = require('../../utils/functions.js');
+const { dbError, base64String, formatDate } = require('../../utils/functions.js');
 const { UPDATEMESSAGE } = require('../../utils/constants');
 const customerQueries = require('../../dbQueries/Customer/queries.js');
 const { createSingleDeliveryInvoice } = require('./createInvoice.js');
@@ -179,7 +179,7 @@ router.post("/generateMultipleInvoices", (req, res) => {
                             let obj = {
                                 customerName: organizationName,
                                 gstNo,
-                                invoiceDate: new Date(),
+                                invoiceDate: formatDate(new Date()),
                                 customerId: customerId,
                                 salesPerson: createdBy,
                                 dueDate: creditPeriodInDays ? dayjs().add(creditPeriodInDays, 'day').format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'),
@@ -421,4 +421,5 @@ const addProducts = (products) => {
     })
     return [newData]
 }
+
 module.exports = router;
