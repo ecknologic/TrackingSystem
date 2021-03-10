@@ -77,6 +77,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
 
         try {
             await http.POST(axios, url, body, config)
+            setLoading(false)
         } catch (error) { }
     }
 
