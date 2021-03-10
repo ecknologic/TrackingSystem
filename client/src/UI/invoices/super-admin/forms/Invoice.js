@@ -1,19 +1,18 @@
 import dayjs from 'dayjs';
 import React, { useEffect } from 'react';
-import Spinner from '../../../components/Spinner';
-import NoContent from '../../../components/NoContent';
-import InputValue from '../../../components/InputValue';
-import InputLabel from '../../../components/InputLabel';
-import CustomInput from '../../../components/CustomInput';
-import SelectInput from '../../../components/SelectInput';
-import CustomTextArea from '../../../components/CustomTextArea';
-import CustomDateInput from '../../../components/CustomDateInput';
-import { resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
+import Spinner from '../../../../components/Spinner';
+import NoContent from '../../../../components/NoContent';
+import InputValue from '../../../../components/InputValue';
+import InputLabel from '../../../../components/InputLabel';
+import CustomInput from '../../../../components/CustomInput';
+import SelectInput from '../../../../components/SelectInput';
+import CustomDateInput from '../../../../components/CustomDateInput';
+import { resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 
 const InvoiceForm = ({ data, salesPersonOptions, billingAddress, customerOptions, errors, onChange }) => {
 
-    const { customerId, salesPerson, poNo, hsnCode, mailSubject, invoiceId, invoiceDate, dueDate, fromDate, toDate } = data
-    const { loading, loaded, address, gstNo } = billingAddress
+    const { customerId, salesPerson, poNo, hsnCode, invoiceId, invoiceDate, fromDate, toDate, dueDate } = data
+    const { loading, loaded, address, gstNo, creditPeriodInDays = 0 } = billingAddress
 
     useEffect(() => {
         resetTrackForm()
@@ -82,9 +81,9 @@ const InvoiceForm = ({ data, salesPersonOptions, billingAddress, customerOptions
                     />
                 </div>
                 <div className='input-container'>
-                    <InputLabel name='Due Date' error={errors.tax} mandatory />
+                    <InputLabel name='Due Date' error={errors.dueDate} mandatory />
                     <CustomDateInput
-                        track error={errors.dueDate}
+                        track error={errors.dueDate} disabled
                         value={dueDate} disabledDate={disableDates}
                         onChange={(value) => onChange(value, 'dueDate')}
                     />
@@ -121,14 +120,6 @@ const InvoiceForm = ({ data, salesPersonOptions, billingAddress, customerOptions
                         track
                         value={toDate} error={errors.toDate}
                         onChange={(value) => onChange(value, 'toDate')}
-                    />
-                </div>
-            </div>
-            <div className='row'>
-                <div className='input-container stretch'>
-                    <InputLabel name='Subject' error={errors.mailSubject} />
-                    <CustomTextArea maxLength={100} error={errors.mailSubject} placeholder='Add Subject' value={mailSubject}
-                        maxRows={4} onChange={(value) => onChange(value, 'mailSubject')}
                     />
                 </div>
             </div>

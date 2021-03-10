@@ -2,7 +2,7 @@ import React from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import Header from './header';
 import Dashboard from './panels/Dashboard';
-import '../../../sass/invoices.scss';
+import '../../../../sass/invoices.scss';
 
 const DeliveredDC = () => {
     const history = useHistory()

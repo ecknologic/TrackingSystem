@@ -3,51 +3,80 @@ import dayjs from 'dayjs';
 import { Menu, message, Table } from 'antd';
 import { useHistory } from 'react-router-dom';
 import React, { useEffect, useMemo, useState } from 'react';
-import { http } from '../../../modules/http'
-import Spinner from '../../../components/Spinner';
-import { TODAYDATE } from '../../../utils/constants';
-import DateValue from '../../../components/DateValue';
-import { paymentColumns } from '../../../assets/fixtures';
-import SearchInput from '../../../components/SearchInput';
-import { deepClone, getStatusColor, showToast } from '../../../utils/Functions';
-import { DocIconGrey, ListViewIconGrey, ScheduleIcon, SendIconGrey } from '../../../components/SVG_Icons';
-import CustomDateInput from '../../../components/CustomDateInput';
-import CustomPagination from '../../../components/CustomPagination';
-import Actions from '../../../components/Actions';
+import { http } from '../../../../modules/http'
+import Actions from '../../../../components/Actions';
+import Spinner from '../../../../components/Spinner';
+import { TODAYDATE } from '../../../../utils/constants';
+import DateValue from '../../../../components/DateValue';
+import SearchInput from '../../../../components/SearchInput';
+import CustomButton from '../../../../components/CustomButton';
+import RoutesFilter from '../../../../components/RoutesFilter';
+import { getInvoiceColumns } from '../../../../assets/fixtures';
+import CustomRangeInput from '../../../../components/CustomRangeInput';
+import CustomPagination from '../../../../components/CustomPagination';
+import { deepClone, getStatusColor, showToast } from '../../../../utils/Functions';
+import { ListViewIconGrey, ScheduleIcon, SendIconGrey, TickIconGrey } from '../../../../components/SVG_Icons';
 const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
-const Payments = ({ reFetch, onUpdate }) => {
+const Dashboard = ({ reFetch, onUpdate }) => {
     const history = useHistory()
     const [invoices, setInvoices] = useState([])
     const [loading, setLoading] = useState(true)
     const [pageSize, setPageSize] = useState(12)
     const [pageNumber, setPageNumber] = useState(1)
+    const [customerIds, setCustomerIds] = useState([])
     const [totalCount, setTotalCount] = useState(null)
-    const [selectedDate, setSelectedDate] = useState(TODAYDATE)
+    const [customerList, setCustomerList] = useState([])
+    const [selectedRange, setSelectedRange] = useState([])
+    const [startDate, setStartDate] = useState(TODAYDATE)
+    const [generateDisabled, setGenerateDisabled] = useState(true)
+    const [endDate, setEndDate] = useState(TODAYDATE)
     const [open, setOpen] = useState(false)
 
+    const invoiceColumns = useMemo(() => getInvoiceColumns(), [])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
+        getCustomerList()
+
         return () => {
             http.ABORT(source)
         }
     }, [])
 
-    useEffect(() => {
+    useEffect(async () => {
         setLoading(true)
         getInvoices()
     }, [reFetch])
 
     const getInvoices = async () => {
-        const url = '/invoice/getInvoices/Paid'
+        const url = '/invoice/getInvoices/Pending'
 
         try {
             const data = await http.GET(axios, url, config)
             setInvoices(data)
             setTotalCount(data.length)
+            setLoading(false)
+        } catch (error) { }
+    }
+
+    const getCustomerList = async () => {
+        const url = `/customer/getCustomerNames`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setCustomerList(data)
+        } catch (error) { }
+    }
+
+    const generateInvoices = async () => {
+        const url = '/invoice/generateMultipleInvoices'
+        const body = { fromDate: startDate, toDate: endDate, customerIds }
+
+        try {
+            await http.POST(axios, url, body, config)
             setLoading(false)
         } catch (error) { }
     }
@@ -61,19 +90,16 @@ const Payments = ({ reFetch, onUpdate }) => {
         setPageNumber(number)
     }
 
-    const datePickerStatus = (status) => {
-        !status && setOpen(false)
+    const onFilterChange = (data) => {
+        setPageNumber(1)
+        setCustomerIds(data)
+        setGenerateDisabled(false)
     }
 
-    const handleViewInvoice = (invoice) => history.push('/invoices/manage', { invoice })
-
-    const handleDateSelect = (value) => {
-        setOpen(false)
-        setSelectedDate(dayjs(value).format(APIDATEFORMAT))
-        const filtered = invoices.filter(item => dayjs(value).format(DATEFORMAT) === dayjs(item.createdDateTime).format(DATEFORMAT))
-        setInvoices(filtered)
-        setTotalCount(filtered.length)
-        setPageNumber(1)
+    const handleFilter = () => {
+        setGenerateDisabled(true)
+        setLoading(true)
+        generateInvoices()
     }
 
     const handleMenuSelect = (key, data) => {
@@ -85,8 +111,34 @@ const Payments = ({ reFetch, onUpdate }) => {
         else handleStatusUpdate(data.invoiceId)
     }
 
+    const handleViewInvoice = (invoice) => history.push('/invoices/manage', { invoice })
+
+    const datePickerStatus = (status) => {
+        !status && setOpen(false)
+    }
+
+    const handleDateSelect = (selected) => {
+        const [from, to] = selected
+        setStartDate(from.format(APIDATEFORMAT))
+        setEndDate(to.format(APIDATEFORMAT))
+        setOpen(false)
+        setSelectedRange(selected)
+        setGenerateDisabled(false)
+        setTimeout(() => setSelectedRange([]), 820)
+        setPageNumber(1)
+        setGenerateDisabled(false)
+    }
+
+    const optimisticUpdate = (id, status) => {
+        let clone = deepClone(invoices);
+        const index = clone.findIndex(item => item.invoiceId === id)
+        clone[index].status = status;
+        setInvoices(clone)
+        onUpdate()
+    }
+
     const handleStatusUpdate = async (invoiceId) => {
-        const status = 'Pending'
+        const status = 'Paid'
         const options = { item: 'Invoice status', v1Ing: 'Updating', v2: 'updated' }
         const url = `/invoice/updateInvoiceStatus`
         const body = { status, invoiceId }
@@ -100,30 +152,22 @@ const Payments = ({ reFetch, onUpdate }) => {
         }
     }
 
-    const optimisticUpdate = (id, status) => {
-        let clone = deepClone(invoices);
-        const index = clone.findIndex(item => item.invoiceId === id)
-        clone[index].status = status;
-        setInvoices(clone)
-        onUpdate()
-    }
-
     const dataSource = useMemo(() => invoices.map((invoice) => {
         const { invoiceId, createdDateTime, totalAmount, customerName, dueDate, status } = invoice
 
         const options = [
             <Menu.Item key="resend" icon={<SendIconGrey />}>Resend</Menu.Item>,
             <Menu.Item key="dcList" icon={<ListViewIconGrey />}>DC List</Menu.Item>,
-            <Menu.Item key="due" icon={<DocIconGrey />}>Due</Menu.Item>
+            <Menu.Item key="paid" icon={<TickIconGrey />}>Paid</Menu.Item>,
         ]
 
         return {
             key: invoiceId,
             customerName,
             totalAmount,
+            status: renderStatus(status),
             dueDate: dayjs(dueDate).format(DATEFORMAT),
             date: dayjs(createdDateTime).format(DATEFORMAT),
-            status: renderStatus(status),
             invoiceId: <span className='app-link' onClick={() => handleViewInvoice(invoice)}>{invoiceId}</span>,
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, invoice)} />
         }
@@ -136,16 +180,30 @@ const Payments = ({ reFetch, onUpdate }) => {
         <div className='stock-delivery-container'>
             <div className='header'>
                 <div className='left'>
-                    <DateValue date={selectedDate} />
+                    <RoutesFilter
+                        data={customerList}
+                        title='Select Customers'
+                        keyValue='customerId'
+                        keyLabel='customerName'
+                        onChange={onFilterChange}
+                    />
+                    <DateValue date={startDate} to={endDate} />
                     <div className='app-date-picker-wrapper'>
                         <div className='date-picker' onClick={() => setOpen(true)}>
                             <ScheduleIcon />
                             <span>Select Date</span>
                         </div>
-                        <CustomDateInput // Hidden in the DOM
+                        <CustomButton
+                            style={{ marginLeft: '1em' }}
+                            className={`${generateDisabled ? 'disabled' : ''}`}
+                            text='Generate'
+                            onClick={handleFilter}
+                        />
+                        <CustomRangeInput // Hidden in the DOM
                             open={open}
+                            value={selectedRange}
                             style={{ left: 0 }}
-                            value={selectedDate}
+                            type='range'
                             className='date-panel-picker'
                             onChange={handleDateSelect}
                             onOpenChange={datePickerStatus}
@@ -164,7 +222,7 @@ const Payments = ({ reFetch, onUpdate }) => {
                 <Table
                     loading={{ spinning: loading, indicator: <Spinner /> }}
                     dataSource={dataSource.slice(sliceFrom, sliceTo)}
-                    columns={paymentColumns}
+                    columns={invoiceColumns}
                     pagination={false}
                     scroll={{ x: true }}
                 />
@@ -192,4 +250,4 @@ const renderStatus = (status) => {
         </div>
     )
 }
-export default Payments
+export default Dashboard

@@ -63,7 +63,7 @@ export const getRoutesByRole = (role) => {
             return ['/customers', '/invoices']
 
         case WAREHOUSEADMIN:
-            return ['/manage-stock', '/manage-routes', '/manage-empty-cans', '/drivers']
+            return ['/manage-stock', '/manage-routes', '/manage-empty-cans', '/drivers', '/manage-invoices']
 
         case MOTHERPLANTADMIN:
             return ['/manage-production', '/manage-dispatches', '/manage-materials', '/manage-qc', '/manage-return-cans']

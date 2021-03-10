@@ -3,43 +3,36 @@ import dayjs from 'dayjs';
 import { Menu, message, Table } from 'antd';
 import { useHistory } from 'react-router-dom';
 import React, { useEffect, useMemo, useState } from 'react';
-import { http } from '../../../modules/http'
-import Actions from '../../../components/Actions';
-import Spinner from '../../../components/Spinner';
-import { TODAYDATE } from '../../../utils/constants';
-import DateValue from '../../../components/DateValue';
-import SearchInput from '../../../components/SearchInput';
-import CustomButton from '../../../components/CustomButton';
-import RoutesFilter from '../../../components/RoutesFilter';
-import { getInvoiceColumns } from '../../../assets/fixtures';
-import CustomRangeInput from '../../../components/CustomRangeInput';
-import CustomPagination from '../../../components/CustomPagination';
-import { deepClone, getStatusColor, showToast } from '../../../utils/Functions';
-import { ListViewIconGrey, ScheduleIcon, SendIconGrey, TickIconGrey } from '../../../components/SVG_Icons';
+import { http } from '../../../../modules/http'
+import Actions from '../../../../components/Actions';
+import Spinner from '../../../../components/Spinner';
+import { TODAYDATE } from '../../../../utils/constants';
+import DateValue from '../../../../components/DateValue';
+import SearchInput from '../../../../components/SearchInput';
+import { getInvoiceColumns } from '../../../../assets/fixtures';
+import CustomDateInput from '../../../../components/CustomDateInput';
+import CustomPagination from '../../../../components/CustomPagination';
+import { deepClone, disableFutureDates, getStatusColor, showToast } from '../../../../utils/Functions';
+import { ListViewIconGrey, ScheduleIcon, SendIconGrey, TickIconGrey } from '../../../../components/SVG_Icons';
 const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
 const Dashboard = ({ reFetch, onUpdate }) => {
     const history = useHistory()
     const [invoices, setInvoices] = useState([])
+    const [invoicesClone, setInvoicesClone] = useState([])
     const [loading, setLoading] = useState(true)
     const [pageSize, setPageSize] = useState(12)
     const [pageNumber, setPageNumber] = useState(1)
-    const [customerIds, setCustomerIds] = useState([])
     const [totalCount, setTotalCount] = useState(null)
-    const [customerList, setCustomerList] = useState([])
-    const [selectedRange, setSelectedRange] = useState([])
-    const [startDate, setStartDate] = useState(TODAYDATE)
-    const [generateDisabled, setGenerateDisabled] = useState(true)
-    const [endDate, setEndDate] = useState(TODAYDATE)
+    const [selectedDate, setSelectedDate] = useState(TODAYDATE)
     const [open, setOpen] = useState(false)
 
-    const invoiceColumns = useMemo(() => getInvoiceColumns(), [])
+    const invoiceColumns = useMemo(() => getInvoiceColumns('dcNo'), [])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
-        getCustomerList()
 
         return () => {
             http.ABORT(source)
@@ -57,26 +50,8 @@ const Dashboard = ({ reFetch, onUpdate }) => {
         try {
             const data = await http.GET(axios, url, config)
             setInvoices(data)
+            setInvoicesClone(data)
             setTotalCount(data.length)
-            setLoading(false)
-        } catch (error) { }
-    }
-
-    const getCustomerList = async () => {
-        const url = `/customer/getCustomers`
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setCustomerList(data)
-        } catch (error) { }
-    }
-
-    const generateInvoices = async () => {
-        const url = '/invoice/generateMultipleInvoices'
-        const body = { fromDate: startDate, toDate: endDate, customerIds }
-
-        try {
-            await http.POST(axios, url, body, config)
             setLoading(false)
         } catch (error) { }
     }
@@ -88,18 +63,6 @@ const Dashboard = ({ reFetch, onUpdate }) => {
     const handleSizeChange = (number, size) => {
         setPageSize(size)
         setPageNumber(number)
-    }
-
-    const onFilterChange = (data) => {
-        setPageNumber(1)
-        setCustomerIds(data)
-        setGenerateDisabled(false)
-    }
-
-    const handleFilter = () => {
-        setGenerateDisabled(true)
-        setLoading(true)
-        generateInvoices()
     }
 
     const handleMenuSelect = (key, data) => {
@@ -117,16 +80,13 @@ const Dashboard = ({ reFetch, onUpdate }) => {
         !status && setOpen(false)
     }
 
-    const handleDateSelect = (selected) => {
-        const [from, to] = selected
-        setStartDate(from.format(APIDATEFORMAT))
-        setEndDate(to.format(APIDATEFORMAT))
+    const handleDateSelect = (value) => {
         setOpen(false)
-        setSelectedRange(selected)
-        setGenerateDisabled(false)
-        setTimeout(() => setSelectedRange([]), 820)
+        setSelectedDate(dayjs(value).format(APIDATEFORMAT))
+        const filtered = invoicesClone.filter(item => dayjs(value).format(DATEFORMAT) == dayjs(item.createdDateTime).format(DATEFORMAT))
+        setInvoices(filtered)
+        setTotalCount(filtered.length)
         setPageNumber(1)
-        setGenerateDisabled(false)
     }
 
     const optimisticUpdate = (id, status) => {
@@ -180,33 +140,20 @@ const Dashboard = ({ reFetch, onUpdate }) => {
         <div className='stock-delivery-container'>
             <div className='header'>
                 <div className='left'>
-                    <RoutesFilter
-                        data={customerList}
-                        title='Select Customers'
-                        keyValue='customerId'
-                        keyLabel='organizationName'
-                        onChange={onFilterChange}
-                    />
-                    <DateValue date={startDate} to={endDate} />
+                    <DateValue date={selectedDate} />
                     <div className='app-date-picker-wrapper'>
                         <div className='date-picker' onClick={() => setOpen(true)}>
                             <ScheduleIcon />
                             <span>Select Date</span>
                         </div>
-                        <CustomButton
-                            style={{ marginLeft: '1em' }}
-                            className={`${generateDisabled ? 'disabled' : ''}`}
-                            text='Generate'
-                            onClick={handleFilter}
-                        />
-                        <CustomRangeInput // Hidden in the DOM
+                        <CustomDateInput // Hidden in the DOM
                             open={open}
-                            value={selectedRange}
                             style={{ left: 0 }}
-                            type='range'
+                            value={selectedDate}
                             className='date-panel-picker'
                             onChange={handleDateSelect}
                             onOpenChange={datePickerStatus}
+                            disabledDate={disableFutureDates}
                         />
                     </div>
                 </div>

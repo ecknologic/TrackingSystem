@@ -332,6 +332,13 @@ export const getInvoiceColumns = (type) => {
     if (type === 'single') {
         columns.splice(2, 1)
     }
+    else if (type === 'dcNo') {
+        columns.splice(3, 1, {
+            title: 'DC Number',
+            dataIndex: 'dcNo',
+            key: 'dcNo',
+        })
+    }
 
     return columns
 }

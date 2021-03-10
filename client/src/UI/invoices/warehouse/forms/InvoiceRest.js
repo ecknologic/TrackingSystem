@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
-import InputLabel from '../../../components/InputLabel';
-import CustomTextArea from '../../../components/CustomTextArea';
-import { resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
-import InputValue from '../../../components/InputValue';
+import InputLabel from '../../../../components/InputLabel';
+import InputValue from '../../../../components/InputValue';
+import CustomTextArea from '../../../../components/CustomTextArea';
+import { resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 
 const InvoiceRestForm = ({ data, billingAddress, errors, onChange }) => {
 

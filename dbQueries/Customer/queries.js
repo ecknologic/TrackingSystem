@@ -1,9 +1,11 @@
+var dayjs = require('dayjs')
+const { FULLTIMEFORMAT } = require('../../utils/constants.js');
 const { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, dateComparisions } = require('../../utils/functions.js');
 const { getDeliverysByCustomerOrderId } = require('../warehouse/queries.js');
 let customerQueries = {}
 
 customerQueries.getCustomerDetails = (customerId, callback) => {
-    let query = "SELECT isSuperAdminApproved,rocNo,depositAmount,customerId,customerName,c.mobileNumber,c.EmailId,c.Address1,c.gstNo,c.panNo,c.adharNo,c.registeredDate,c.invoicetype,c.natureOfBussiness,c.creditPeriodInDays,referredBy,isApproved,customertype,organizationName,idProofType,pincode as pinCode, dispenserCount, contractPeriod,customer_id_proof,d.idProof_backside,d.idProof_frontside,d.gstProof,u.userName as createdUserName from customerdetails c INNER JOIN customerDocStore d ON c.customer_id_proof=d.docId INNER JOIN usermaster u ON u.userId=c.createdBy WHERE c.customerId=" + customerId
+    let query = "SELECT isSuperAdminApproved,rocNo,poNo,depositAmount,customerId,customerName,c.mobileNumber,c.EmailId,c.Address1,c.gstNo,c.panNo,c.adharNo,c.registeredDate,c.invoicetype,c.natureOfBussiness,c.creditPeriodInDays,referredBy,isApproved,customertype,organizationName,idProofType,pincode as pinCode, dispenserCount, contractPeriod,customer_id_proof,d.idProof_backside,d.idProof_frontside,d.gstProof,u.userName as createdUserName from customerdetails c INNER JOIN customerDocStore d ON c.customer_id_proof=d.docId INNER JOIN usermaster u ON u.userId=c.createdBy WHERE c.customerId=" + customerId
     executeGetQuery(query, callback)
 }
 customerQueries.getOrdersByDepartmentId = (departmentId, callback) => {
@@ -23,7 +25,7 @@ customerQueries.getInActiveCustomers = (callback) => {
     executeGetParamsQuery(query, callback)
 }
 customerQueries.getCustomerBillingAddress = (customerId, callback) => {
-    let query = "SELECT organizationName as customerName,EmailId,gstNo,panNo,customerId,customerName,mobileNumber,address1 AS address FROM customerdetails c WHERE customerId=" + customerId
+    let query = "SELECT organizationName as customerName,creditPeriodInDays,EmailId,gstNo,panNo,customerId,customerName,mobileNumber,address1 AS address FROM customerdetails c WHERE customerId=" + customerId
     executeGetParamsQuery(query, [customerId], callback)
 }
 customerQueries.getCustomerNames = (callback) => {
@@ -237,8 +239,8 @@ customerQueries.updateOrderDetails = (input, callback) => {
 customerQueries.updateWHDeliveryDetails = (input, callback) => {
     let { address, boxes1L, boxes2L, boxes300ML, boxes500ML, cans20L, customerName, driverId, phoneNumber, routeId, customer_Id } = input
     // let query = `update customerorderdetails SET address=?,1LBoxes=?,2LBoxes=?,300MLBoxes=?,500MLBoxes=?,20LCans=?,customerName=?,driverId=?,phoneNumber=?,routeId=? where address=? AND isDelivered='Inprogress' AND existingCustomerId=? AND CONVERT(DATE,'deliveryDate')=?`;
-    let query = `update customerorderdetails SET address=?,1LBoxes=?,2LBoxes=?,300MLBoxes=?,500MLBoxes=?,20LCans=?,customerName=?,driverId=?,phoneNumber=?,routeId=? where address=? AND isDelivered='Inprogress' AND existingCustomerId=?`;
-    let requestBody = [address, boxes1L, boxes2L, boxes300ML, boxes500ML, cans20L, customerName, driverId, phoneNumber, routeId, address, customer_Id]
+    let query = `update customerorderdetails SET address=?,1LBoxes=?,2LBoxes=?,300MLBoxes=?,500MLBoxes=?,20LCans=?,customerName=?,driverId=?,phoneNumber=?,routeId=? where address=? AND isDelivered='Inprogress' AND existingCustomerId=? AND( DATE(deliveryDate) BETWEEN ? AND ?)`;
+    let requestBody = [address, boxes1L, boxes2L, boxes300ML, boxes500ML, cans20L, customerName, driverId, phoneNumber, routeId, address, customer_Id, dayjs().startOf('day').format(FULLTIMEFORMAT), dayjs().endOf('day').format(FULLTIMEFORMAT)]
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 customerQueries.updateCustomerStatus = (input, callback) => {

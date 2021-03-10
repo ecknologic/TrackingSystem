@@ -453,16 +453,30 @@ export const validateProductValues = (data) => {
     return errors
 }
 
-export const validateInvoiceValues = (data) => {
+export const validateInvoiceValues = (data, isWHAdmin) => {
     let errors = {};
     const text = 'Required'
-    const { customerId, poNo, hsnCode, invoiceDate, dueDate, TAndC, fromDate, toDate, products } = data;
-    if (!customerId) errors.customerId = text;
+    const { customerId, customerName, poNo, hsnCode, invoiceDate, dueDate,
+        TAndC, fromDate, toDate, products, dcNo } = data;
+
+    if (isWHAdmin) {
+        if (!customerName) errors.customerName = text;
+        if (!dcNo) errors.dcNo = text;
+        if (!TAndC) errors.TAndC = text;
+        if (isEmpty(products)) errors.products = 'Atleast 1 product is required'
+        else {
+            const error = validateTableProducts(products)
+            if (error) errors.products = error
+        }
+    }
+    else {
+        if (!customerId) errors.customerId = text;
+        if (!dueDate) errors.dueDate = text;
+        if (!fromDate) errors.fromDate = text;
+        if (!toDate) errors.toDate = text;
+    }
+
     if (!invoiceDate) errors.invoiceDate = text;
-    if (!dueDate) errors.dueDate = text;
-    if (!fromDate) errors.fromDate = text;
-    if (!toDate) errors.toDate = text;
-    if (!TAndC) errors.TAndC = text;
     if (poNo) {
         const error = validateNumber(poNo);
         error && (errors.poNo = error)
@@ -471,11 +485,6 @@ export const validateInvoiceValues = (data) => {
     else {
         const error = validateNumber(hsnCode);
         error && (errors.hsnCode = error)
-    }
-    if (isEmpty(products)) errors.products = 'Atleast 1 product is required'
-    else {
-        const error = validateTableProducts(products)
-        if (error) errors.products = error
     }
 
     return errors

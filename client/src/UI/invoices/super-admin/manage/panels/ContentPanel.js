@@ -1,12 +1,12 @@
 import React, { Component, Fragment, useRef } from 'react';
 import ReactToPrint from "react-to-print";
 import Scrollbars from 'react-custom-scrollbars-2';
-import ScrollUp from '../../../../components/ScrollUp';
-import PDFViewer from '../../../../components/PDFViewer';
-import { base64String } from '../../../../utils/Functions';
-import CustomButton from '../../../../components/CustomButton';
-import Spinner from '../../../../components/Spinner';
-import NoContent from '../../../../components/NoContent';
+import ScrollUp from '../../../../../components/ScrollUp';
+import PDFViewer from '../../../../../components/PDFViewer';
+import { base64String } from '../../../../../utils/Functions';
+import CustomButton from '../../../../../components/CustomButton';
+import Spinner from '../../../../../components/Spinner';
+import NoContent from '../../../../../components/NoContent';
 
 class ContentPanel extends Component {
 

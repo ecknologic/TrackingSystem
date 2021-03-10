@@ -244,7 +244,7 @@ const AddAccount = () => {
             const error = validateNames(value)
             setCorporateErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key === 'depositAmount') {
+        else if (key === 'depositAmount' || key === 'poNo') {
             const error = validateNumber(value)
             setCorporateErrors(errors => ({ ...errors, [key]: error }))
         }

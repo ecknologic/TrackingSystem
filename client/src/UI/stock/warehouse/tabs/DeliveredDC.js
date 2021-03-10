@@ -54,7 +54,7 @@ const DeliveredDC = () => {
     }, [])
 
     const getCustomerList = async () => {
-        const url = `/customer/getCustomers`
+        const url = `/customer/getCustomerNames`
 
         try {
             const data = await http.GET(axios, url, config)

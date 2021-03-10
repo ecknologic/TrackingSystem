@@ -3,19 +3,19 @@ import axios from 'axios';
 import { Menu, Table } from 'antd';
 import { useLocation } from 'react-router-dom';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { http } from '../../../../modules/http';
-import Spinner from '../../../../components/Spinner';
-import Actions from '../../../../components/Actions';
-import { TRACKFORM } from '../../../../utils/constants';
-import DCView from '../../../accounts/view/views/DCView';
-import QuitModal from '../../../../components/CustomModal';
-import SearchInput from '../../../../components/SearchInput';
-import CustomModal from '../../../../components/CustomModal';
-import { deliveryColumns } from '../../../../assets/fixtures';
-import { EyeIconGrey } from '../../../../components/SVG_Icons';
-import ConfirmMessage from '../../../../components/ConfirmMessage';
-import CustomPagination from '../../../../components/CustomPagination';
-import { resetTrackForm, getStatusColor } from '../../../../utils/Functions';
+import { http } from '../../../../../modules/http';
+import Spinner from '../../../../../components/Spinner';
+import Actions from '../../../../../components/Actions';
+import DCView from '../../../../accounts/view/views/DCView';
+import { TRACKFORM } from '../../../../../utils/constants';
+import QuitModal from '../../../../../components/CustomModal';
+import SearchInput from '../../../../../components/SearchInput';
+import CustomModal from '../../../../../components/CustomModal';
+import { deliveryColumns } from '../../../../../assets/fixtures';
+import { EyeIconGrey } from '../../../../../components/SVG_Icons';
+import ConfirmMessage from '../../../../../components/ConfirmMessage';
+import CustomPagination from '../../../../../components/CustomPagination';
+import { resetTrackForm, getStatusColor } from '../../../../../utils/Functions';
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
 const DeliveredDC = () => {

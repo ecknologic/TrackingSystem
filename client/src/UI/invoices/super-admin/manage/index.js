@@ -1,13 +1,13 @@
 import axios from 'axios';
-import { http } from '../../../modules/http';
+import { http } from '../../../../modules/http';
 import { useHistory, useLocation } from 'react-router-dom';
 import React, { useEffect, useMemo, useState } from 'react';
 import Header from './header';
 import ListPanel from './panels/ListPanel';
 import ContentPanel from './panels/ContentPanel';
-import Spinner from '../../../components/Spinner'
-import NoContent from '../../../components/NoContent'
-import '../../../sass/invoices.scss';
+import Spinner from '../../../../components/Spinner'
+import NoContent from '../../../../components/NoContent'
+import '../../../../sass/invoices.scss';
 
 const Invoices = () => {
     const history = useHistory()
