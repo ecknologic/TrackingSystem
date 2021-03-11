@@ -13,7 +13,7 @@ invoiceQueries.getCustomerInvoices = async (customerId, callback) => {
 }
 
 invoiceQueries.getInvoiceByStatus = async (status, callback) => {
-    let query = `select * from Invoice where status=? ORDER BY invoiceId DESC`;
+    let query = `select * from Invoice where status=? ORDER BY updatedDateTime DESC`;
     return executeGetParamsQuery(query, [status], callback)
 }
 
@@ -92,7 +92,7 @@ invoiceQueries.deleteInvoiceProducts = (ids, callback) => {
     executePostOrUpdateQuery(query, [ids], callback)
 }
 invoiceQueries.updateInvoiceStatus = ({ invoiceId, status }, callback) => {
-    let query = "update Invoice SET status=? WHERE invoiceId=?";
-    executePostOrUpdateQuery(query, [status, invoiceId], callback)
+    let query = "update Invoice SET updatedDateTime=?, status=? WHERE invoiceId=?";
+    executePostOrUpdateQuery(query, [new Date(), status, invoiceId], callback)
 }
 module.exports = invoiceQueries

@@ -14,7 +14,7 @@ import RoutesFilter from '../../../../components/RoutesFilter';
 import { getInvoiceColumns } from '../../../../assets/fixtures';
 import CustomRangeInput from '../../../../components/CustomRangeInput';
 import CustomPagination from '../../../../components/CustomPagination';
-import { deepClone, doubleKeyComplexSearch, getStatusColor, showToast } from '../../../../utils/Functions';
+import { deepClone, disableFutureDates, doubleKeyComplexSearch, getStatusColor, showToast } from '../../../../utils/Functions';
 import { ListViewIconGrey, ScheduleIcon, SendIconGrey, TickIconGrey } from '../../../../components/SVG_Icons';
 const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
@@ -234,6 +234,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
                             type='range'
                             className='date-panel-picker'
                             onChange={handleDateSelect}
+                            disabledDate={disableFutureDates}
                             onOpenChange={datePickerStatus}
                         />
                     </div>

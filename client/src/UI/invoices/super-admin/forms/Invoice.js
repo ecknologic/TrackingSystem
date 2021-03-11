@@ -7,12 +7,12 @@ import InputLabel from '../../../../components/InputLabel';
 import CustomInput from '../../../../components/CustomInput';
 import SelectInput from '../../../../components/SelectInput';
 import CustomDateInput from '../../../../components/CustomDateInput';
-import { resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
+import { disableFutureDates, resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 
 const InvoiceForm = ({ data, salesPersonOptions, billingAddress, customerOptions, errors, onChange }) => {
 
     const { customerId, salesPerson, poNo, hsnCode, invoiceId, invoiceDate, fromDate, toDate, dueDate } = data
-    const { loading, loaded, address, gstNo, creditPeriodInDays = 0 } = billingAddress
+    const { loading, loaded, address, gstNo } = billingAddress
 
     useEffect(() => {
         resetTrackForm()
@@ -112,6 +112,7 @@ const InvoiceForm = ({ data, salesPersonOptions, billingAddress, customerOptions
                         track
                         value={fromDate} error={errors.fromDate}
                         onChange={(value) => onChange(value, 'fromDate')}
+                        disabledDate={disableFutureDates}
                     />
                 </div>
                 <div className='input-container'>
@@ -120,6 +121,7 @@ const InvoiceForm = ({ data, salesPersonOptions, billingAddress, customerOptions
                         track
                         value={toDate} error={errors.toDate}
                         onChange={(value) => onChange(value, 'toDate')}
+                        disabledDate={disableFutureDates}
                     />
                 </div>
             </div>
