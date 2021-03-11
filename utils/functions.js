@@ -20,7 +20,8 @@ const checkUserExists = (req, res, next) => {
 }
 const checkDepartmentExists = (req, res, next) => {
     let isSuperAdmin = req.headers['issuperadmin']
-    if (isSuperAdmin == 'true') {
+    let isAccountsAdmin = req.headers['isaccountsadmin']
+    if (isSuperAdmin == 'true' || isAccountsAdmin == 'true') {
         next()
     } else {
         let departmentid = req.headers['departmentid']

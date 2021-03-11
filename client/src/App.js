@@ -4,7 +4,6 @@ import { isLogged, getRole, getRoutesByRole, MARKETINGADMIN, MOTHERPLANTADMIN, S
 import { getMainPathname, resetTrackForm } from './utils/Functions';
 import Login from './UI/auth/Login';
 import Products from './UI/products';
-import Invoices from './UI/invoices';
 import Transport from './UI/transport';
 import Customers from './UI/customers';
 import Dispatches from './UI/dispatches';
@@ -14,11 +13,10 @@ import AddAccount from './UI/accounts/add';
 import ManagePlant from './UI/plants/manage';
 import Drivers from './UI/employees/Drivers';
 import Distributors from './UI/distributors';
-import EditInvoice from './UI/invoices/edit';
 import ViewAccount from './UI/accounts/view';
-import NoContent from './components/NoContent';
 import Warehouses from './UI/plants/Warehouses';
-import ManageInvoices from './UI/invoices/manage';
+import NoContent from './components/NoContent';
+import Invoices from './UI/invoices/super-admin';
 import QualityControl from './UI/quality-control';
 import WarehouseStock from './UI/stock/warehouse';
 import ManageEmployee from './UI/employees/manage';
@@ -26,14 +24,17 @@ import ApproveAccount from './UI/accounts/approve';
 import Materials from './UI/materials/super-admin';
 import Motherplants from './UI/plants/Motherplants';
 import MotherplantStock from './UI/stock/motherplant';
+import WarehouseInvoices from './UI/invoices/warehouse';
 import AccountsDashboard from './UI/accounts/dashboard';
 import ReturnEmptyCans from './UI/empty-cans/warehouse';
+import EditInvoice from './UI/invoices/super-admin/edit';
 import ManageDistributor from './UI/distributors/manage';
 import ReceivedEmptyCans from './UI/empty-cans/motherplant';
+import ManageInvoices from './UI/invoices/super-admin/manage';
 import MotherplantDashboard from './UI/dashboard/motherplant';
 import MotherplantMaterials from './UI/materials/motherplant';
 import SuperAdminDashboard from './UI/dashboard/super-admin';
-import DeliveredDC from './UI/invoices/delivered-dc';
+import DeliveredDC from './UI/invoices/super-admin/delivered-dc';
 
 const App = () => {
 
@@ -105,6 +106,7 @@ const App = () => {
                   <Route path='/manage-materials' render={byRole(<MotherplantMaterials />)} />
                   <Route path='/manage-routes' render={byRole(<Transport />)} />
                   <Route path='/manage-return-cans' render={byRole(<ReceivedEmptyCans />)} />
+                  <Route path='/manage-invoices' render={byRole(<WarehouseInvoices />)} />
                   <Route path='/manage-empty-cans' render={byRole(<ReturnEmptyCans />)} />
                   <Route path='/manage-stock/staff/:employeeId' render={byRole(<ManageEmployee isDriver />)} />
                   <Route path='/manage-stock' render={byRole(<WarehouseStock />)} />

@@ -16,7 +16,7 @@ import CustomPagination from '../../../../components/CustomPagination';
 import { EditIconGrey, PlusIcon } from '../../../../components/SVG_Icons';
 import { deliveryColumns, getRouteOptions, getDriverOptions } from '../../../../assets/fixtures';
 import { validateMobileNumber, validateNames, validateNumber, validateDCValues } from '../../../../utils/validations';
-import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone, getStatusColor } from '../../../../utils/Functions';
+import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone, getStatusColor, doubleKeyComplexSearch } from '../../../../utils/Functions';
 
 const Delivery = ({ date, source }) => {
     const warehouseId = getWarehoseId()
@@ -24,6 +24,7 @@ const Delivery = ({ date, source }) => {
     const [drivers, setDrivers] = useState([])
     const [loading, setLoading] = useState(true)
     const [deliveriesClone, setDeliveriesClone] = useState([])
+    const [filteredClone, setFilteredClone] = useState([])
     const [deliveries, setDeliveries] = useState([])
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
@@ -31,9 +32,12 @@ const Delivery = ({ date, source }) => {
     const [totalCount, setTotalCount] = useState(null)
     const [pageNumber, setPageNumber] = useState(1)
     const [btnDisabled, setBtnDisabled] = useState(false)
-    const [DCModal, setDCModal] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
+    const [resetSearch, setResetSearch] = useState(false)
     const [filterInfo, setFilterInfo] = useState([])
+    const [filterON, setFilterON] = useState(false)
+    const [searchON, setSeachON] = useState(false)
+    const [DCModal, setDCModal] = useState(false)
     const [shake, setShake] = useState(false)
     const [okTxt, setOkTxt] = useState('')
     const [title, setTitle] = useState('')
@@ -123,6 +127,7 @@ const Delivery = ({ date, source }) => {
         if (isEmpty(data)) {
             setDeliveries(deliveriesClone)
             setTotalCount(deliveriesClone.length)
+            setFilterON(false)
         }
         else generateFiltered(deliveriesClone, data)
     }
@@ -130,7 +135,10 @@ const Delivery = ({ date, source }) => {
     const generateFiltered = (original, filterInfo) => {
         const filtered = original.filter((item) => filterInfo.includes(item.RouteId))
         setDeliveries(filtered)
+        setFilteredClone(filtered)
         setTotalCount(filtered.length)
+        setFilterON(true)
+        searchON && setResetSearch(!resetSearch)
     }
 
     const handleMenuSelect = (key, data) => {
@@ -217,6 +225,21 @@ const Delivery = ({ date, source }) => {
         setFormErrors({})
     }
 
+    const handleSearch = (value) => {
+        setPageNumber(1)
+        if (value === "") {
+            setTotalCount(deliveriesClone.length)
+            setDeliveries(deliveriesClone)
+            setSeachON(false)
+            return
+        }
+        const data = filterON ? filteredClone : deliveriesClone
+        const result = doubleKeyComplexSearch(data, value, 'dcNo', 'customerName')
+        setTotalCount(result.length)
+        setDeliveries(result)
+        setSeachON(true)
+    }
+
     const dataSource = useMemo(() => deliveries.map((dc) => {
         const { dcNo, customerOrderId, address, RouteName, driverName, customerName, isDelivered } = dc
         return {
@@ -268,6 +291,8 @@ const Delivery = ({ date, source }) => {
                     <SearchInput
                         placeholder='Search Delivery Challan'
                         className='delivery-search'
+                        reset={resetSearch}
+                        onChange={handleSearch}
                         width='50%'
                     />
                 </div>

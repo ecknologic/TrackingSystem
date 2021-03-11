@@ -1,11 +1,11 @@
 import { Tabs } from 'antd';
 import { useParams } from 'react-router-dom';
 import React, { Fragment, useState } from 'react';
-import Dashboard from './tabs/Dashboard';
-import Header from '../../components/SimpleHeader';
-import CreateInvoice from './tabs/CreateInvoice';
-import '../../sass/invoices.scss';
 import Payments from './tabs/Payments';
+import Dashboard from './tabs/Dashboard';
+import CreateInvoice from './tabs/CreateInvoice';
+import Header from '../../../components/SimpleHeader';
+import '../../../sass/invoices.scss';
 
 const Invoices = () => {
     const { active = '1' } = useParams()

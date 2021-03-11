@@ -3,29 +3,34 @@ import dayjs from 'dayjs';
 import { Menu, message, Table } from 'antd';
 import { useHistory } from 'react-router-dom';
 import React, { useEffect, useMemo, useState } from 'react';
-import { http } from '../../../modules/http'
-import Spinner from '../../../components/Spinner';
-import { TODAYDATE } from '../../../utils/constants';
-import DateValue from '../../../components/DateValue';
-import { paymentColumns } from '../../../assets/fixtures';
-import SearchInput from '../../../components/SearchInput';
-import { deepClone, getStatusColor, showToast } from '../../../utils/Functions';
-import { DocIconGrey, ListViewIconGrey, ScheduleIcon, SendIconGrey } from '../../../components/SVG_Icons';
-import CustomDateInput from '../../../components/CustomDateInput';
-import CustomPagination from '../../../components/CustomPagination';
-import Actions from '../../../components/Actions';
+import { http } from '../../../../modules/http'
+import Actions from '../../../../components/Actions';
+import Spinner from '../../../../components/Spinner';
+import { TODAYDATE } from '../../../../utils/constants';
+import DateValue from '../../../../components/DateValue';
+import { paymentColumns } from '../../../../assets/fixtures';
+import SearchInput from '../../../../components/SearchInput';
+import CustomDateInput from '../../../../components/CustomDateInput';
+import CustomPagination from '../../../../components/CustomPagination';
+import { deepClone, doubleKeyComplexSearch, getStatusColor, showToast } from '../../../../utils/Functions';
+import { DocIconGrey, ListViewIconGrey, ScheduleIcon, SendIconGrey } from '../../../../components/SVG_Icons';
 const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
 const Payments = ({ reFetch, onUpdate }) => {
     const history = useHistory()
     const [invoices, setInvoices] = useState([])
+    const [invoicesClone, setInvoicesClone] = useState([])
     const [loading, setLoading] = useState(true)
     const [pageSize, setPageSize] = useState(12)
     const [pageNumber, setPageNumber] = useState(1)
+    const [filteredClone, setFilteredClone] = useState([])
     const [totalCount, setTotalCount] = useState(null)
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
     const [open, setOpen] = useState(false)
+    const [resetSearch, setResetSearch] = useState(false)
+    const [searchON, setSeachON] = useState(false)
+    const [filterON, setFilterON] = useState(false)
 
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
@@ -48,6 +53,7 @@ const Payments = ({ reFetch, onUpdate }) => {
             const data = await http.GET(axios, url, config)
             setInvoices(data)
             setTotalCount(data.length)
+            setInvoicesClone(data)
             setLoading(false)
         } catch (error) { }
     }
@@ -72,8 +78,11 @@ const Payments = ({ reFetch, onUpdate }) => {
         setSelectedDate(dayjs(value).format(APIDATEFORMAT))
         const filtered = invoices.filter(item => dayjs(value).format(DATEFORMAT) === dayjs(item.createdDateTime).format(DATEFORMAT))
         setInvoices(filtered)
+        setFilteredClone(filtered)
         setTotalCount(filtered.length)
         setPageNumber(1)
+        setFilterON(true)
+        searchON && setResetSearch(!resetSearch)
     }
 
     const handleMenuSelect = (key, data) => {
@@ -106,6 +115,21 @@ const Payments = ({ reFetch, onUpdate }) => {
         clone[index].status = status;
         setInvoices(clone)
         onUpdate()
+    }
+
+    const handleSearch = (value) => {
+        setPageNumber(1)
+        if (value === "") {
+            setTotalCount(invoicesClone.length)
+            setInvoices(invoicesClone)
+            setSeachON(false)
+            return
+        }
+        const data = filterON ? filteredClone : invoicesClone
+        const result = doubleKeyComplexSearch(data, value, 'invoiceId', 'customerName')
+        setTotalCount(result.length)
+        setInvoices(result)
+        setSeachON(true)
     }
 
     const dataSource = useMemo(() => invoices.map((invoice) => {
@@ -156,6 +180,8 @@ const Payments = ({ reFetch, onUpdate }) => {
                     <SearchInput
                         placeholder='Search Invoice'
                         className='delivery-search'
+                        reset={resetSearch}
+                        onChange={handleSearch}
                         width='50%'
                     />
                 </div>

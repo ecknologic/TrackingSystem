@@ -14,7 +14,7 @@ import ConfirmMessage from '../../../../components/ConfirmMessage';
 import { getWarehoseId, TRACKFORM } from '../../../../utils/constants';
 import CustomPagination from '../../../../components/CustomPagination';
 import { orderColumns, getRouteOptions, getDriverOptions, getVehicleOptions, getWarehouseOptions } from '../../../../assets/fixtures';
-import { isEmpty, resetTrackForm, showToast, deepClone, getProductsForUI, base64String, getDevDays } from '../../../../utils/Functions';
+import { isEmpty, resetTrackForm, showToast, deepClone, getProductsForUI, base64String, getDevDays, doubleKeyComplexSearch } from '../../../../utils/Functions';
 
 const Orders = () => {
     const warehouseId = getWarehoseId()
@@ -23,6 +23,7 @@ const Orders = () => {
     const [vehicles, setVehicles] = useState([])
     const [loading, setLoading] = useState(true)
     const [orders, setOrders] = useState([])
+    const [ordersClone, setOrdersClone] = useState([])
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [pageSize, setPageSize] = useState(10)
@@ -136,6 +137,7 @@ const Orders = () => {
             setPageNumber(1)
             setLoading(false)
             setTotalCount(data.length)
+            setOrdersClone(data)
             setOrders(data)
         } catch (error) { }
     }
@@ -266,6 +268,18 @@ const Orders = () => {
         setLabel("Create")
     }
 
+    const handleSearch = (value) => {
+        setPageNumber(1)
+        if (value === "") {
+            setTotalCount(ordersClone.length)
+            setOrders(ordersClone)
+            return
+        }
+        const result = doubleKeyComplexSearch(ordersClone, value, 'deliveryDetailsId', 'contactPerson')
+        setTotalCount(result.length)
+        setOrders(result)
+    }
+
     const dataSource = useMemo(() => orders.map((order) => {
         const { deliveryDetailsId: key, contactPerson, address, routeName, driverName, products } = order
         return {
@@ -300,6 +314,7 @@ const Orders = () => {
                     <SearchInput
                         placeholder='Search Delivery Challan'
                         className='delivery-search'
+                        onChange={handleSearch}
                         width='50%'
                     />
                 </div>

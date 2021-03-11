@@ -1,6 +1,6 @@
 import React from 'react';
-import BackButton from '../../../components/BackButton';
-import '../../../sass/accounts.scss'
+import BackButton from '../../../../components/BackButton';
+import '../../../../sass/accounts.scss'
 
 const Header = ({ data, onClick }) => {
     const { title } = data

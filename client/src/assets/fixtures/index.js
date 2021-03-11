@@ -332,6 +332,13 @@ export const getInvoiceColumns = (type) => {
     if (type === 'single') {
         columns.splice(2, 1)
     }
+    else if (type === 'dcNo') {
+        columns.splice(3, 1, {
+            title: 'DC Number',
+            dataIndex: 'dcNo',
+            key: 'dcNo',
+        })
+    }
 
     return columns
 }
@@ -693,7 +700,7 @@ export const getReceivedRMColumns = (isSuperAdmin) => {
 
 export const internalQCColumns = [
     {
-        title: 'Batch Id',
+        title: 'Batch ID',
         dataIndex: 'batchId',
         key: 'batchId',
     },
@@ -741,7 +748,7 @@ export const internalQCColumns = [
 
 export const testedBatchesColumns = [
     {
-        title: 'Batch Id',
+        title: 'Batch ID',
         dataIndex: 'batchId',
         key: 'batchId',
     },
@@ -779,7 +786,7 @@ export const testedBatchesColumns = [
 
 export const productionTBColumns = [
     {
-        title: 'Batch Id',
+        title: 'Batch ID',
         dataIndex: 'batchId',
         key: 'batchId',
     },

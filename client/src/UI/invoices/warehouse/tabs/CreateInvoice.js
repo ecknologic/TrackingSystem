@@ -1,20 +1,20 @@
+import dayjs from 'dayjs';
 import axios from 'axios';
 import { message } from 'antd';
 import { v4 as uuidv4 } from 'uuid';
 import { useHistory, useParams } from 'react-router-dom';
 import React, { useEffect, useMemo, useState } from 'react';
 import InvoiceForm from '../forms/Invoice';
-import { http } from '../../../modules/http';
-import Spinner from '../../../components/Spinner';
+import { http } from '../../../../modules/http';
 import ProductsTable from '../forms/ProductsTable';
 import InvoiceRestForm from '../forms/InvoiceRest';
-import { TODAYDATE } from '../../../utils/constants';
-import NoContent from '../../../components/NoContent';
-import CustomButton from '../../../components/CustomButton';
-import { isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
-import { validateNumber, validateInvoiceValues } from '../../../utils/validations';
-import { getProductOptions, getCustomerOptions, getStaffOptions, getDDownOptions } from '../../../assets/fixtures';
-import dayjs from 'dayjs';
+import Spinner from '../../../../components/Spinner';
+import { TODAYDATE } from '../../../../utils/constants';
+import NoContent from '../../../../components/NoContent';
+import CustomButton from '../../../../components/CustomButton';
+import { isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
+import { validateNumber, validateInvoiceValues } from '../../../../utils/validations';
+import { getProductOptions, getCustomerOptions, getStaffOptions, getDDownOptions } from '../../../../assets/fixtures';
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
 const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
@@ -55,10 +55,6 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
         }
     }, [])
 
-    useEffect(() => {
-        handleCustomerChange()
-    }, [billingAddress.isLocal])
-
     const getInvoice = async () => {
         const url = `/invoice/getInvoiceById/${invoiceId}`
 
@@ -67,7 +63,6 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
             const data = await http.GET(axios, url, config)
             const { products, ...rest } = data
             const { invoiceId, customerId } = rest
-            getBillingAddress(customerId)
             setHeader({ title: `Invoice - ${invoiceId}` })
             setDataSource(products)
             setFormData(rest)
@@ -120,16 +115,6 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
         } catch (error) { }
     }
 
-    const getBillingAddress = async (customerId) => {
-        setBillingAddress({ loading: true })
-        const url = `/customer/getCustomerBillingAddress/${customerId}`
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setBillingAddress({ loading: false, ...data, loaded: true })
-        } catch (error) { }
-    }
-
     const resetProductErr = () => setFormErrors(errors => ({ ...errors, products: '' }))
 
     const handleAddProduct = () => {
@@ -172,14 +157,6 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
         return row
     };
 
-    const handleCustomerChange = () => {
-        const newData = dataSource.map((item) => {
-            const newItem = { ...item, ...getResults(item) }
-            return newItem
-        })
-        setDataSource(newData)
-    }
-
     const getResults = (row) => {
         const { isLocal } = billingAddress
         let { quantity, productPrice, discount, tax, cgst, sgst, igst } = row
@@ -196,10 +173,6 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
-        if (key === 'customerId') {
-            getBillingAddress(value)
-        }
-
         // Validations
         if (key === 'hsnCode' || key === 'poNo') {
             const error = validateNumber(value)
@@ -208,7 +181,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
     }
 
     const handleSubmit = async () => {
-        const formErrors = validateInvoiceValues({ ...formData, products: dataSource });
+        const formErrors = validateInvoiceValues({ ...formData, products: dataSource }, true);
         const { EmailId: emailId, customerName, panNo, mobileNumber, address, gstNo } = billingAddress
         const { totalAmount } = footerValues
         const { invoiceDate, dueDate, fromDate, toDate } = formData
@@ -278,9 +251,6 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
                 data={formData}
                 errors={formErrors}
                 customerList={customerList}
-                billingAddress={billingAddress}
-                customerOptions={customerOptions}
-                salesPersonOptions={salesPersonOptions}
                 onChange={handleChange}
             />
             <ProductsTable

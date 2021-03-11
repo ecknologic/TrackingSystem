@@ -14,7 +14,7 @@ const CorporateAccountForm = (props) => {
     const { data, errors, IDProofs = {}, IDProofErrors, onChange, onBlur, onUpload, disabled, onRemove } = props
 
     const {
-        gstNo, natureOfBussiness, organizationName, address, customerName,
+        gstNo, natureOfBussiness, organizationName, address, customerName, poNo,
         mobileNumber, invoicetype, creditPeriodInDays, EmailId, referredBy, idProofType,
         registeredDate, gstProof, depositAmount, pinCode, dispenserCount, contractPeriod
     } = data
@@ -218,6 +218,13 @@ const CorporateAccountForm = (props) => {
                         disabled={disabled} placeholder='Dispenser Qty'
                         error={errors.dispenserCount}
                         onChange={(value) => onChange(value, 'dispenserCount')}
+                    />
+                </div>
+                <div className='input-container'>
+                    <InputLabel name='PO Number' error={errors.poNo} />
+                    <CustomInput value={poNo}
+                        error={errors.poNo} placeholder='PO Number'
+                        onChange={(value) => onChange(value, 'poNo')}
                     />
                 </div>
             </div>

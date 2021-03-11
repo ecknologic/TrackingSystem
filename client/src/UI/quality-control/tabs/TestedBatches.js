@@ -11,7 +11,7 @@ import { ScheduleIcon } from '../../../components/SVG_Icons';
 import { testedBatchesColumns } from '../../../assets/fixtures';
 import CustomPagination from '../../../components/CustomPagination';
 import CustomDateInput from '../../../components/CustomDateInput';
-import { disableFutureDates, getStatusColor } from '../../../utils/Functions';
+import { disableFutureDates, doubleKeyComplexSearch, getStatusColor } from '../../../utils/Functions';
 const DATEFORMAT = 'DD-MM-YYYY'
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 const format = 'YYYY-MM-DD'
@@ -21,10 +21,14 @@ const TestedBatches = ({ reFetch }) => {
     const [pageSize, setPageSize] = useState(10)
     const [totalCount, setTotalCount] = useState(null)
     const [pageNumber, setPageNumber] = useState(1)
+    const [filteredClone, setFilteredClone] = useState([])
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
     const [open, setOpen] = useState(false)
     const [TB, setTB] = useState([])
     const [TBClone, setTBClone] = useState([])
+    const [resetSearch, setResetSearch] = useState(false)
+    const [searchON, setSeachON] = useState(false)
+    const [filterON, setFilterON] = useState(false)
 
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
@@ -62,7 +66,10 @@ const TestedBatches = ({ reFetch }) => {
         const filtered = TBClone.filter(item => dayjs(value).format(DATEFORMAT) === dayjs(item.dispatchedDate).format(DATEFORMAT))
         setTB(filtered)
         setTotalCount(filtered.length)
+        setFilteredClone(filtered)
         setPageNumber(1)
+        setFilterON(true)
+        searchON && setResetSearch(!resetSearch)
     }
 
     const handlePageChange = (number) => {
@@ -72,6 +79,21 @@ const TestedBatches = ({ reFetch }) => {
     const handleSizeChange = (number, size) => {
         setPageSize(size)
         setPageNumber(number)
+    }
+
+    const handleSearch = (value) => {
+        setPageNumber(1)
+        if (value === "") {
+            setTotalCount(TBClone.length)
+            setTB(TBClone)
+            setSeachON(false)
+            return
+        }
+        const data = filterON ? filteredClone : TBClone
+        const result = doubleKeyComplexSearch(data, value, 'batchId', 'managerName')
+        setTotalCount(result.length)
+        setTB(result)
+        setSeachON(true)
     }
 
     const dataSource = useMemo(() => TB.map((tb) => {
@@ -116,11 +138,12 @@ const TestedBatches = ({ reFetch }) => {
                 </div>
                 <div className='right'>
                     <SearchInput
-                        placeholder='Search Delivery Challan'
+                        placeholder='Search Batch'
                         className='delivery-search'
+                        reset={resetSearch}
+                        onChange={handleSearch}
                         width='50%'
                     />
-
                 </div>
             </div>
             <div className='app-table dispatch-table'>

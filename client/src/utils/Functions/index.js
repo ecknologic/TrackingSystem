@@ -163,8 +163,8 @@ export const complexDateSort = (data, key, type) => {
 }
 export const doubleKeyComplexSearch = (data, matcher, key1, key2) => {
     return data.filter((item) => {
-        const match1 = item[key1] && item[key1].toLowerCase().includes(matcher.toLowerCase())
-        const match2 = item[key2] && item[key2].toLowerCase().includes(matcher.toLowerCase())
+        const match1 = item[key1] && String(item[key1]).toLowerCase().includes(matcher.toLowerCase())
+        const match2 = item[key2] && String(item[key2]).toLowerCase().includes(matcher.toLowerCase())
         return (match1 || match2)
     })
 }

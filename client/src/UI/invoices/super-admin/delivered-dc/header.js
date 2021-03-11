@@ -1,6 +1,6 @@
 import React from 'react';
-import BackButton from '../../../components/BackButton';
-import '../../../sass/invoices.scss'
+import BackButton from '../../../../components/BackButton';
+import '../../../../sass/invoices.scss'
 
 const Header = ({ onClick, invoiceId }) => {
 

@@ -16,7 +16,7 @@ import CustomDateInput from '../../../../components/CustomDateInput';
 import CustomPagination from '../../../../components/CustomPagination';
 import RequestedMaterialStatusView from '../views/RequestedMaterialStatus';
 import { EditIconGrey, ScheduleIcon } from '../../../../components/SVG_Icons';
-import { deepClone, disableFutureDates, getStatusColor, resetTrackForm, showToast } from '../../../../utils/Functions';
+import { deepClone, disableFutureDates, doubleKeyComplexSearch, getStatusColor, resetTrackForm, showToast } from '../../../../utils/Functions';
 const DATEFORMAT = 'DD-MM-YYYY'
 const format = 'YYYY-MM-DD'
 
@@ -28,6 +28,7 @@ const MaterialStatus = ({ reFetch, isSuperAdmin = false }) => {
     const [pageNumber, setPageNumber] = useState(1)
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
+    const [filteredClone, setFilteredClone] = useState([])
     const [viewModal, setViewModal] = useState(false)
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
     const [confirmModal, setConfirmModal] = useState(false)
@@ -36,6 +37,9 @@ const MaterialStatus = ({ reFetch, isSuperAdmin = false }) => {
     const [RM, setRM] = useState([])
     const [RMClone, setRMClone] = useState([])
     const [formTitle, setFormTitle] = useState('')
+    const [resetSearch, setResetSearch] = useState(false)
+    const [searchON, setSeachON] = useState(false)
+    const [filterON, setFilterON] = useState(false)
 
     const RMColumns = useMemo(() => getRMColumns(null, isSuperAdmin), [])
     const source = useMemo(() => axios.CancelToken.source(), []);
@@ -74,7 +78,10 @@ const MaterialStatus = ({ reFetch, isSuperAdmin = false }) => {
         const filtered = RMClone.filter(item => dayjs(value).format(DATEFORMAT) === dayjs(item.requestedDate).format(DATEFORMAT))
         setRM(filtered)
         setTotalCount(filtered.length)
+        setFilteredClone(filtered)
         setPageNumber(1)
+        setFilterON(true)
+        searchON && setResetSearch(!resetSearch)
     }
 
     const handleMenuSelect = (key, data) => {
@@ -147,6 +154,21 @@ const MaterialStatus = ({ reFetch, isSuperAdmin = false }) => {
         setRM(clone)
     }
 
+    const handleSearch = (value) => {
+        setPageNumber(1)
+        if (value === "") {
+            setTotalCount(RMClone.length)
+            setRM(RMClone)
+            setSeachON(false)
+            return
+        }
+        const data = filterON ? filteredClone : RMClone
+        const result = doubleKeyComplexSearch(data, value, 'orderId', 'itemName')
+        setTotalCount(result.length)
+        setRM(result)
+        setSeachON(true)
+    }
+
     const dataSource = useMemo(() => RM.map((dispatch) => {
         const { rawmaterialid: key, orderId, itemName, requestedDate, reorderLevel,
             minOrderLevel, vendorName, itemQty, status, departmentName } = dispatch
@@ -216,8 +238,10 @@ const MaterialStatus = ({ reFetch, isSuperAdmin = false }) => {
                 </div>
                 <div className='right'>
                     <SearchInput
-                        placeholder='Search Delivery Challan'
+                        placeholder='Search Material'
                         className='delivery-search'
+                        reset={resetSearch}
+                        onChange={handleSearch}
                         width='50%'
                     />
                 </div>

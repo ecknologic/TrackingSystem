@@ -1,8 +1,8 @@
 import React from 'react';
-import BackButton from '../../../components/BackButton';
-import CustomButton from '../../../components/CustomButton';
-import { PlusIconGrey } from '../../../components/SVG_Icons';
-import '../../../sass/invoices.scss'
+import BackButton from '../../../../components/BackButton';
+import CustomButton from '../../../../components/CustomButton';
+import { PlusIconGrey } from '../../../../components/SVG_Icons';
+import '../../../../sass/invoices.scss'
 
 const Header = ({ onClick, onAdd }) => {
 

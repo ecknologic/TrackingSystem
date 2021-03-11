@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
 import { Table, Popconfirm } from 'antd';
-import InputValue from '../../../components/InputValue';
-import InputLabel from '../../../components/InputLabel';
-import { PlusIcon } from '../../../components/SVG_Icons';
-import CustomButton from '../../../components/CustomButton';
-import { EditableCell, EditableRow } from '../../../components/EditableCell';
+import InputValue from '../../../../components/InputValue';
+import InputLabel from '../../../../components/InputLabel';
+import { PlusIcon } from '../../../../components/SVG_Icons';
+import CustomButton from '../../../../components/CustomButton';
+import { EditableCell, EditableRow } from '../../../../components/EditableCell';
 
 const ProductsTable = ({
     dataSource,

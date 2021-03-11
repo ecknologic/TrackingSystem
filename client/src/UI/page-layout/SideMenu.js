@@ -91,6 +91,10 @@ const SideMenu = () => {
                                 {selected === '/manage-empty-cans' ? <ProjectIcon /> : <ProjectIconLight />}
                                 <span>Empty Cans</span>
                             </Item>
+                            <Item key='/manage-invoices'>
+                                {selected === '/manage-invoices' ? <DocIcon /> : <DocIconLight />}
+                                <span>Invoices</span>
+                            </Item>
                             <Item key='/manage-routes'>
                                 {selected === '/manage-routes' ? <FriendsIcon /> : <FriendsIconLight />}
                                 <span>Routes</span>

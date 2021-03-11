@@ -2,10 +2,10 @@ import { useHistory } from 'react-router-dom';
 import React, { Fragment, useState, useCallback } from 'react';
 import Header from './header';
 import CreateInvoice from '../tabs/CreateInvoice';
-import QuitModal from '../../../components/CustomModal';
-import ConfirmMessage from '../../../components/ConfirmMessage';
-import { TRACKFORM } from '../../../utils/constants';
-import '../../../sass/employees.scss'
+import { TRACKFORM } from '../../../../utils/constants';
+import QuitModal from '../../../../components/CustomModal';
+import ConfirmMessage from '../../../../components/ConfirmMessage';
+import '../../../../sass/employees.scss'
 
 const EditInvoice = () => {
     const history = useHistory()

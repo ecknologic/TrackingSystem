@@ -1,9 +1,11 @@
+var dayjs = require('dayjs')
+const { FULLTIMEFORMAT } = require('../../utils/constants.js');
 const { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, dateComparisions } = require('../../utils/functions.js');
 const { getDeliverysByCustomerOrderId } = require('../warehouse/queries.js');
 let customerQueries = {}
 
 customerQueries.getCustomerDetails = (customerId, callback) => {
-    let query = "SELECT isSuperAdminApproved,rocNo,depositAmount,customerId,customerName,c.mobileNumber,c.EmailId,c.Address1,c.gstNo,c.panNo,c.adharNo,c.registeredDate,c.invoicetype,c.natureOfBussiness,c.creditPeriodInDays,referredBy,isApproved,customertype,organizationName,idProofType,pincode as pinCode, dispenserCount, contractPeriod,customer_id_proof,d.idProof_backside,d.idProof_frontside,d.gstProof,u.userName as createdUserName from customerdetails c INNER JOIN customerDocStore d ON c.customer_id_proof=d.docId INNER JOIN usermaster u ON u.userId=c.createdBy WHERE c.customerId=" + customerId
+    let query = "SELECT isSuperAdminApproved,rocNo,poNo,depositAmount,customerId,customerName,c.mobileNumber,c.EmailId,c.Address1,c.gstNo,c.panNo,c.adharNo,c.registeredDate,c.invoicetype,c.natureOfBussiness,c.creditPeriodInDays,referredBy,isApproved,customertype,organizationName,idProofType,pincode as pinCode, dispenserCount, contractPeriod,customer_id_proof,d.idProof_backside,d.idProof_frontside,d.gstProof,u.userName as createdUserName from customerdetails c INNER JOIN customerDocStore d ON c.customer_id_proof=d.docId INNER JOIN usermaster u ON u.userId=c.createdBy WHERE c.customerId=" + customerId
     executeGetQuery(query, callback)
 }
 customerQueries.getOrdersByDepartmentId = (departmentId, callback) => {
@@ -23,7 +25,7 @@ customerQueries.getInActiveCustomers = (callback) => {
     executeGetParamsQuery(query, callback)
 }
 customerQueries.getCustomerBillingAddress = (customerId, callback) => {
-    let query = "SELECT organizationName as customerName,EmailId,gstNo,panNo,customerId,customerName,mobileNumber,address1 AS address FROM customerdetails c WHERE customerId=" + customerId
+    let query = "SELECT organizationName as customerName,creditPeriodInDays,EmailId,gstNo,panNo,customerId,customerName,mobileNumber,address1 AS address FROM customerdetails c WHERE customerId=" + customerId
     executeGetParamsQuery(query, [customerId], callback)
 }
 customerQueries.getCustomerNames = (callback) => {
@@ -237,8 +239,8 @@ customerQueries.updateOrderDetails = (input, callback) => {
 customerQueries.updateWHDeliveryDetails = (input, callback) => {
     let { address, boxes1L, boxes2L, boxes300ML, boxes500ML, cans20L, customerName, driverId, phoneNumber, routeId, customer_Id } = input
     // let query = `update customerorderdetails SET address=?,1LBoxes=?,2LBoxes=?,300MLBoxes=?,500MLBoxes=?,20LCans=?,customerName=?,driverId=?,phoneNumber=?,routeId=? where address=? AND isDelivered='Inprogress' AND existingCustomerId=? AND CONVERT(DATE,'deliveryDate')=?`;
-    let query = `update customerorderdetails SET address=?,1LBoxes=?,2LBoxes=?,300MLBoxes=?,500MLBoxes=?,20LCans=?,customerName=?,driverId=?,phoneNumber=?,routeId=? where address=? AND isDelivered='Inprogress' AND existingCustomerId=?`;
-    let requestBody = [address, boxes1L, boxes2L, boxes300ML, boxes500ML, cans20L, customerName, driverId, phoneNumber, routeId, address, customer_Id]
+    let query = `update customerorderdetails SET address=?,1LBoxes=?,2LBoxes=?,300MLBoxes=?,500MLBoxes=?,20LCans=?,customerName=?,driverId=?,phoneNumber=?,routeId=? where address=? AND isDelivered='Inprogress' AND existingCustomerId=? AND( DATE(deliveryDate) BETWEEN ? AND ?)`;
+    let requestBody = [address, boxes1L, boxes2L, boxes300ML, boxes500ML, cans20L, customerName, driverId, phoneNumber, routeId, address, customer_Id, dayjs().startOf('day').format(FULLTIMEFORMAT), dayjs().endOf('day').format(FULLTIMEFORMAT)]
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 customerQueries.updateCustomerStatus = (input, callback) => {
@@ -310,5 +312,17 @@ customerQueries.updateOrderDelivery = (input, callback) => {
         let getQuery = 'SELECT d.registeredDate,d.location,d.contactPerson,d.deliveryDetailsId,d.isActive as isApproved,d.vehicleId,r.routeName,r.routeId,dri.driverName,dri.driverId,dri.mobileNumber FROM DeliveryDetails d INNER JOIN routes r ON d.routeId=r.routeId left JOIN driverdetails dri ON d.driverId=dri.driverid WHERE d.deliveryDetailsId=' + deliveryDetailsId
         return executeGetQuery(getQuery, callback)
     })
+}
+customerQueries.generateCustomerPDF = (input, callback) => {
+    const { fromDate, toDate, customerId } = input
+    let query = `SELECT c.gstNo,c.customerId,c.createdBy,c.EmailId,c.customerName,c.organizationName,
+    c.address1,c.gstNo,c.panNo,c.mobileNumber,
+    JSON_ARRAYAGG(JSON_OBJECT('address',d.address,'20LCans',co.20LCans,'price20L',co.price20L,'1LBoxes',co.1LBoxes,
+    'price1L',co.price1L, '500MLBoxes',co.500MLBoxes,'price500ML',co.price500ML,'300MLBoxes',co.300MLBoxes,'price300ML',co.price300ML,'2LBoxes',co.2LBoxes,'price2L',co.price2L)) as products
+    FROM customerdetails c INNER JOIN  customerorderdetails co ON c.customerId=co.existingCustomerId
+    INNER JOIN DeliveryDetails d ON d.customer_Id=c.customerId  WHERE co.isDelivered='Completed' AND customerId NOT IN (SELECT customerId FROM Invoice WHERE fromDate=? AND toDate=?)
+    AND( DATE(co.deliveryDate) BETWEEN ? AND ?) AND c.customerId=?`
+    // "SELECT c.gstNo,c.customerId,c.creditPeriodInDays,c.createdBy,c.EmailId,c.customerName,c.organizationName,c.address1,d.address,c.gstNo,c.panNo,c.mobileNumber,co.20LCans,co.price20L,co.1LBoxes,co.price1L, co.500MLBoxes,co.price500ML,co.300MLBoxes,co.price300ML,co.2LBoxes,co.price2L FROM customerdetails c INNER JOIN  customerorderdetails co ON c.customerId=co.existingCustomerId INNER JOIN DeliveryDetails d ON d.customer_Id=c.customerId  WHERE co.isDelivered='Completed' AND( DATE(co.deliveryDate) BETWEEN ? AND ?)"
+    return executeGetParamsQuery(query, [fromDate, toDate, fromDate, toDate, customerId], callback)
 }
 module.exports = customerQueries

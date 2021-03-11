@@ -2,7 +2,7 @@ import { Dropdown, Menu } from 'antd';
 import React, { useState, useRef } from 'react';
 import { FilterIconGrey } from './SVG_Icons';
 import CheckboxOption from './CheckboxOption';
-import { accountFilterOptions, businessFilterOptions, statusFilterOptions } from '../assets/fixtures'
+import { statusFilterOptions } from '../assets/fixtures'
 
 const StatusFilter = ({ onChange }) => {
 

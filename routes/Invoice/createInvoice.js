@@ -67,11 +67,11 @@ function generateCustomerInformation(doc, invoice) {
         .text(invoice.invoice_nr, 150, customerInformationTop)
         .font("Helvetica")
         .text("Invoice Date:", 40, customerInformationTop + 15)
-        .text(formatDate(new Date()), 150, customerInformationTop + 15)
+        .text(formatDate(new Date()), 100, customerInformationTop + 15)
         .text("Period of supply:", 40, customerInformationTop + 30)
         .text(
             formatDate(new Date(fromDate)) + '  to  ' + formatDate(new Date(toDate)),
-            150,
+            115,
             customerInformationTop + 30
         )
         .moveDown();
@@ -182,16 +182,16 @@ function generateInvoiceTable(doc, invoice) {
     generateHr(doc, subtotalPosition)
     doc
         .text(`Total:`, 320, subtotalPosition + 10)
-        .text(totalTaxValue, 380, subtotalPosition + 10)
-        .text(totalCGSTValue, 445, subtotalPosition + 10)
-        .text(totalCGSTValue, 488, subtotalPosition + 10)
-        .text(totalIGSTValue, 525, subtotalPosition + 10, { align: "right" })
+        .text(Math.round(totalTaxValue), 380, subtotalPosition + 10)
+        .text(Math.round(totalCGSTValue), 445, subtotalPosition + 10)
+        .text(Math.round(totalCGSTValue), 488, subtotalPosition + 10)
+        .text(Math.round(totalIGSTValue), 525, subtotalPosition + 10, { align: "right" })
     generateHr(doc, subtotalPosition + 30)
     doc
         .text("Invoice Value in Words Rs :", 30, subtotalPosition + 40)
         .text("Total Invoice Value Round off To :", 350, subtotalPosition + 40)
         .fillColor("red")
-        .text(totalAmount, 500, subtotalPosition + 40, { align: "right" })
+        .text(Math.round(totalAmount), 500, subtotalPosition + 40, { align: "right" })
         .text(convertToWords(Math.round(totalAmount)), 30, subtotalPosition + 60)
     generateHr(doc, subtotalPosition + 80)
     doc
@@ -226,14 +226,16 @@ function billingTable(doc, invoice) {
         .fontSize(10)
         .text(`${organizationName || customerName} `, 30, billingInfoTop + 30)
         .fontSize(8)
-        .text(`${address1} , Contact No: ${mobileNumber} `, 30, billingInfoTop + 42, { width: 200 })
-        .text(`GST NO: ${gstNo} `, 30, billingInfoTop + 100)
+        .text(`${address}`, 30, billingInfoTop + 42, { width: 200 })
+        .text(`Contact No: ${mobileNumber} `, 30, billingInfoTop + 50, { width: 200 })
+        .text(`GST NO: ${gstNo || "NA"} `, 30, billingInfoTop + 100)
         .text(`State Code: ${statusCode}`, 30, billingInfoTop + 115)
         .fontSize(10)
         .text(`${organizationName || customerName} `, 310, billingInfoTop + 30)
         .fontSize(8)
-        .text(`${address} , Contact No: ${mobileNumber} `, 310, billingInfoTop + 42, { width: 200 })
-        .text(`GST NO: ${gstNo} `, 310, billingInfoTop + 100)
+        .text(`${address}`, 310, billingInfoTop + 42, { width: 200 })
+        .text(`Contact No: ${mobileNumber} `, 310, billingInfoTop + 50, { width: 200 })
+        .text(`GST NO: ${gstNo || "NA"} `, 310, billingInfoTop + 100)
         .text(`State Code: ${statusCode}`, 310, billingInfoTop + 115)
 
 }
