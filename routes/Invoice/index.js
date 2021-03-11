@@ -453,7 +453,7 @@ const addProducts = (products) => {
     const newData = products[0]
 
     products.map((item, index) => {
-        if (index >= 0) {
+        if (index >= 1) {
             newData["1LBoxes"] += item["1LBoxes"]
             newData["20LCans"] += item["20LCans"]
             newData["2LBoxes"] += item["2LBoxes"]
