@@ -35,13 +35,19 @@ router.get('/getInvoiceById/:invoiceId', (req, res) => {
         if (err) res.status(500).json(dbError(err));
         else {
             const { gstNo, invoiceId, customerType, fromDate, toDate, ...rest } = results[0]
+            let haveMultipleAddress = false
             let products = JSON.parse(results[0].products)
             let obj = {
                 gstNo, invoiceId, ...rest
             }
             obj.products = products
             if (products.length) {
-                if (customerType == 'Corporate') {
+                const uniqueValues = new Set(products.map(p => p.productName));
+                if (uniqueValues.size < products.length) {
+                    haveMultipleAddress = true
+                }
+
+                if (haveMultipleAddress) {
                     let arr = []
                     for (let [index, i] of products.entries()) {
                         i = {
@@ -89,9 +95,8 @@ router.get('/getInvoiceById/:invoiceId', (req, res) => {
                     }
                 }
             }
-            console.log("obj", obj.products.length)
 
-            if (customerType == 'Corporate') {
+            if (haveMultipleAddress) {
                 let invoice = {
                     items: obj.products, customerType, invoiceId, gstNo, fromDate, toDate
                 }
