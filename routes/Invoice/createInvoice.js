@@ -307,7 +307,7 @@ function formatDate(date) {
 }
 const getResults = (row) => {
     let { quantity, price, discount = 0, gst, cgst, sgst, igst, gstNo } = row
-    // const isLocal = gstNo && gstNo.startsWith('36')
+    const isLocal = gstNo && gstNo.startsWith('36')
     const priceAfterDiscount = price - (price / 100 * discount)
     const amount = Number((priceAfterDiscount * quantity).toFixed(2))
     const totalTax = (amount / 100 * gst)
