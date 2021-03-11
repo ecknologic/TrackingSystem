@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SearchIconGrey } from './SVG_Icons';
 import '../sass/searchInput.scss'
 const fn = () => { }
 
-const SearchInput = ({ placeholder, onSearch = fn, onChange = fn, width = '300px', className }) => {
+const SearchInput = ({ placeholder, onSearch = fn, onChange = fn, width = '300px', className, reset }) => {
     const [input, setInput] = useState('')
+
+    useEffect(() => {
+        setInput('')
+    }, [reset])
 
     const handleChange = ({ currentTarget: { value } }) => {
         setInput(value)

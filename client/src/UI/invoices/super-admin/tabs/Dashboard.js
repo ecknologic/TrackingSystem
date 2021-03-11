@@ -14,7 +14,7 @@ import RoutesFilter from '../../../../components/RoutesFilter';
 import { getInvoiceColumns } from '../../../../assets/fixtures';
 import CustomRangeInput from '../../../../components/CustomRangeInput';
 import CustomPagination from '../../../../components/CustomPagination';
-import { deepClone, getStatusColor, showToast } from '../../../../utils/Functions';
+import { deepClone, doubleKeyComplexSearch, getStatusColor, showToast } from '../../../../utils/Functions';
 import { ListViewIconGrey, ScheduleIcon, SendIconGrey, TickIconGrey } from '../../../../components/SVG_Icons';
 const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
@@ -22,6 +22,7 @@ const APIDATEFORMAT = 'YYYY-MM-DD'
 const Dashboard = ({ reFetch, onUpdate }) => {
     const history = useHistory()
     const [invoices, setInvoices] = useState([])
+    const [invoicesClone, setInvoicesClone] = useState([])
     const [loading, setLoading] = useState(true)
     const [pageSize, setPageSize] = useState(12)
     const [pageNumber, setPageNumber] = useState(1)
@@ -32,6 +33,8 @@ const Dashboard = ({ reFetch, onUpdate }) => {
     const [startDate, setStartDate] = useState(TODAYDATE)
     const [generateDisabled, setGenerateDisabled] = useState(true)
     const [endDate, setEndDate] = useState(TODAYDATE)
+    const [resetSearch, setResetSearch] = useState(false)
+    const [searchON, setSeachON] = useState(false)
     const [open, setOpen] = useState(false)
 
     const invoiceColumns = useMemo(() => getInvoiceColumns(), [])
@@ -57,6 +60,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
         try {
             const data = await http.GET(axios, url, config)
             setInvoices(data)
+            setInvoicesClone(data)
             setTotalCount(data.length)
             setLoading(false)
         } catch (error) { }
@@ -74,11 +78,21 @@ const Dashboard = ({ reFetch, onUpdate }) => {
     const generateInvoices = async () => {
         const url = '/invoice/generateMultipleInvoices'
         const body = { fromDate: startDate, toDate: endDate, customerIds }
+        const options = { item: 'Invoices', v1Ing: 'Generating', v2: 'generated' }
 
         try {
+            showToast({ ...options, action: 'loading' })
             await http.POST(axios, url, body, config)
+            await getInvoices()
+            showToast(options)
+            searchON && setResetSearch(!resetSearch)
+        } catch (error) {
+            message.destroy()
             setLoading(false)
-        } catch (error) { }
+            if (error.response.status === 400) {
+                message.info('Oops! Already generated or DCs do not exist for the selection.')
+            }
+        }
     }
 
     const handlePageChange = (number) => {
@@ -152,6 +166,20 @@ const Dashboard = ({ reFetch, onUpdate }) => {
         }
     }
 
+    const handleSearch = (value) => {
+        setPageNumber(1)
+        if (value === "") {
+            setTotalCount(invoicesClone.length)
+            setInvoices(invoicesClone)
+            setSeachON(false)
+            return
+        }
+        const result = doubleKeyComplexSearch(invoicesClone, value, 'invoiceId', 'customerName')
+        setTotalCount(result.length)
+        setInvoices(result)
+        setSeachON(true)
+    }
+
     const dataSource = useMemo(() => invoices.map((invoice) => {
         const { invoiceId, createdDateTime, totalAmount, customerName, dueDate, status } = invoice
 
@@ -215,6 +243,8 @@ const Dashboard = ({ reFetch, onUpdate }) => {
                         placeholder='Search Invoice'
                         className='delivery-search'
                         width='50%'
+                        reset={resetSearch}
+                        onChange={handleSearch}
                     />
                 </div>
             </div>

@@ -10,11 +10,12 @@ import CustomModal from '../../../../components/CustomModal';
 import { EyeIconGrey } from '../../../../components/SVG_Icons';
 import { receivedStockColumns } from '../../../../assets/fixtures';
 import CustomPagination from '../../../../components/CustomPagination';
-import { getStatusColor, showToast } from '../../../../utils/Functions';
+import { doubleKeyComplexSearch, getStatusColor, showToast } from '../../../../utils/Functions';
 
 const StockReceived = () => {
     const [loading, setLoading] = useState(true)
     const [stock, setStock] = useState([])
+    const [stockClone, setStockClone] = useState([])
     const [viewData, setViewData] = useState({})
     const [pageSize, setPageSize] = useState(10)
     const [totalCount, setTotalCount] = useState(null)
@@ -39,6 +40,7 @@ const StockReceived = () => {
             const data = await http.GET(axios, url, config)
             setLoading(false)
             setTotalCount(data.length)
+            setStockClone(data)
             setStock(data)
         } catch (error) { }
     }
@@ -70,6 +72,18 @@ const StockReceived = () => {
         setPageNumber(number)
     }
 
+    const handleSearch = (value) => {
+        setPageNumber(1)
+        if (value === "") {
+            setTotalCount(stockClone.length)
+            setStock(stockClone)
+            return
+        }
+        const result = doubleKeyComplexSearch(stockClone, value, 'dcNo', 'departmentName')
+        setTotalCount(result.length)
+        setStock(result)
+    }
+
     const dataSource = useMemo(() => stock.map((order) => {
         const { id, dcNo, departmentName, driverName, mobileNumber, product20L, product1L,
             product2L, product300ML, product500ML, isConfirmed } = order
@@ -98,6 +112,7 @@ const StockReceived = () => {
                         placeholder='Search Delivery Challan'
                         className='delivery-search'
                         width='50%'
+                        onChange={handleSearch}
                     />
                 </div>
             </div>

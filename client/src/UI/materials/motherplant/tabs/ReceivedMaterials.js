@@ -14,7 +14,7 @@ import { getReceivedRMColumns } from '../../../../assets/fixtures';
 import CustomDateInput from '../../../../components/CustomDateInput';
 import CustomPagination from '../../../../components/CustomPagination';
 import { EyeIconGrey, ScheduleIcon } from '../../../../components/SVG_Icons';
-import { base64String, disableFutureDates, getStatusColor } from '../../../../utils/Functions';
+import { base64String, disableFutureDates, doubleKeyComplexSearch, getStatusColor } from '../../../../utils/Functions';
 const DATEFORMAT = 'DD-MM-YYYY'
 const format = 'YYYY-MM-DD'
 
@@ -25,11 +25,15 @@ const ReceivedMaterials = ({ isSuperAdmin = false }) => {
     const [totalCount, setTotalCount] = useState(null)
     const [pageNumber, setPageNumber] = useState(1)
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
+    const [filteredClone, setFilteredClone] = useState([])
     const [viewModal, setViewModal] = useState(false)
     const [formTitle, setFormTitle] = useState('')
     const [open, setOpen] = useState(false)
     const [RM, setRM] = useState([])
     const [RMClone, setRMClone] = useState([])
+    const [resetSearch, setResetSearch] = useState(false)
+    const [searchON, setSeachON] = useState(false)
+    const [filterON, setFilterON] = useState(false)
 
     const ReceivedMColumns = useMemo(() => getReceivedRMColumns(isSuperAdmin), [])
     const source = useMemo(() => axios.CancelToken.source(), []);
@@ -75,7 +79,10 @@ const ReceivedMaterials = ({ isSuperAdmin = false }) => {
         const filtered = RMClone.filter(item => dayjs(value).format(DATEFORMAT) == dayjs(item.invoiceDate).format(DATEFORMAT))
         setRM(filtered)
         setTotalCount(filtered.length)
+        setFilteredClone(filtered)
         setPageNumber(1)
+        setFilterON(true)
+        searchON && setResetSearch(!resetSearch)
     }
 
     const handleMenuSelect = (key, data) => {
@@ -94,6 +101,21 @@ const ReceivedMaterials = ({ isSuperAdmin = false }) => {
     const handleSizeChange = (number, size) => {
         setPageSize(size)
         setPageNumber(number)
+    }
+
+    const handleSearch = (value) => {
+        setPageNumber(1)
+        if (value === "") {
+            setTotalCount(RMClone.length)
+            setRM(RMClone)
+            setSeachON(false)
+            return
+        }
+        const data = filterON ? filteredClone : RMClone
+        const result = doubleKeyComplexSearch(data, value, 'orderId', 'itemName')
+        setTotalCount(result.length)
+        setRM(result)
+        setSeachON(true)
     }
 
     const dataSource = useMemo(() => RM.map((item) => {
@@ -144,8 +166,10 @@ const ReceivedMaterials = ({ isSuperAdmin = false }) => {
                 </div>
                 <div className='right'>
                     <SearchInput
-                        placeholder='Search Delivery Challan'
+                        placeholder='Search Material'
                         className='delivery-search'
+                        reset={resetSearch}
+                        onChange={handleSearch}
                         width='50%'
                     />
 

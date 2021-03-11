@@ -14,7 +14,7 @@ import { EditIconGrey, ScheduleIcon } from '../../../components/SVG_Icons';
 import { internalQCColumns } from '../../../assets/fixtures';
 import CustomDateInput from '../../../components/CustomDateInput';
 import CustomPagination from '../../../components/CustomPagination';
-import { disableFutureDates, getStatusColor } from '../../../utils/Functions';
+import { disableFutureDates, doubleKeyComplexSearch, getStatusColor } from '../../../utils/Functions';
 const DATEFORMAT = 'DD-MM-YYYY'
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 const format = 'YYYY-MM-DD'
@@ -25,12 +25,16 @@ const InternalQC = ({ reFetch }) => {
     const [pageSize, setPageSize] = useState(10)
     const [totalCount, setTotalCount] = useState(null)
     const [pageNumber, setPageNumber] = useState(1)
+    const [filteredClone, setFilteredClone] = useState([])
     const [viewModal, setViewModal] = useState(false)
     const [formTitle, setFormTitle] = useState('')
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
     const [open, setOpen] = useState(false)
     const [QC, setQC] = useState([])
     const [QCClone, setQCClone] = useState([])
+    const [resetSearch, setResetSearch] = useState(false)
+    const [searchON, setSeachON] = useState(false)
+    const [filterON, setFilterON] = useState(false)
 
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
@@ -66,8 +70,11 @@ const InternalQC = ({ reFetch }) => {
         setSelectedDate(dayjs(value).format(format))
         const filtered = QCClone.filter(item => dayjs(value).format(DATEFORMAT) === dayjs(item.dispatchedDate).format(DATEFORMAT))
         setQC(filtered)
+        setFilteredClone(filtered)
         setTotalCount(filtered.length)
         setPageNumber(1)
+        setFilterON(true)
+        searchON && setResetSearch(!resetSearch)
     }
 
     const handleMenuSelect = (key, data) => {
@@ -85,6 +92,21 @@ const InternalQC = ({ reFetch }) => {
     const handleSizeChange = (number, size) => {
         setPageSize(size)
         setPageNumber(number)
+    }
+
+    const handleSearch = (value) => {
+        setPageNumber(1)
+        if (value === "") {
+            setTotalCount(QCClone.length)
+            setQC(QCClone)
+            setSeachON(false)
+            return
+        }
+        const data = filterON ? filteredClone : QCClone
+        const result = doubleKeyComplexSearch(data, value, 'batchId', 'managerName')
+        setTotalCount(result.length)
+        setQC(result)
+        setSeachON(true)
     }
 
     const dataSource = useMemo(() => QC.map((qc) => {
@@ -132,8 +154,10 @@ const InternalQC = ({ reFetch }) => {
                 </div>
                 <div className='right'>
                     <SearchInput
-                        placeholder='Search Delivery Challan'
+                        placeholder='Search Batch'
                         className='delivery-search'
+                        reset={resetSearch}
+                        onChange={handleSearch}
                         width='50%'
                     />
 

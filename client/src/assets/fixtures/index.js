@@ -700,7 +700,7 @@ export const getReceivedRMColumns = (isSuperAdmin) => {
 
 export const internalQCColumns = [
     {
-        title: 'Batch Id',
+        title: 'Batch ID',
         dataIndex: 'batchId',
         key: 'batchId',
     },
@@ -748,7 +748,7 @@ export const internalQCColumns = [
 
 export const testedBatchesColumns = [
     {
-        title: 'Batch Id',
+        title: 'Batch ID',
         dataIndex: 'batchId',
         key: 'batchId',
     },
@@ -786,7 +786,7 @@ export const testedBatchesColumns = [
 
 export const productionTBColumns = [
     {
-        title: 'Batch Id',
+        title: 'Batch ID',
         dataIndex: 'batchId',
         key: 'batchId',
     },

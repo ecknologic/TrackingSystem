@@ -14,7 +14,7 @@ import CustomModal from '../../../components/CustomModal';
 import { getDispatchColumns } from '../../../assets/fixtures';
 import CustomDateInput from '../../../components/CustomDateInput';
 import CustomPagination from '../../../components/CustomPagination';
-import { disableFutureDates, getStatusColor } from '../../../utils/Functions';
+import { disableFutureDates, doubleKeyComplexSearch, getStatusColor } from '../../../utils/Functions';
 const DATEFORMAT = 'DD-MM-YYYY'
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 const format = 'YYYY-MM-DD'
@@ -27,9 +27,13 @@ const Dispatches = ({ reFetch }) => {
     const [pageNumber, setPageNumber] = useState(1)
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
     const [dispatchesClone, setDispatchesClone] = useState([])
+    const [filteredClone, setFilteredClone] = useState([])
     const [viewModal, setViewModal] = useState(false)
     const [formTitle, setFormTitle] = useState('')
     const [dispatches, setDispatches] = useState([])
+    const [resetSearch, setResetSearch] = useState(false)
+    const [searchON, setSeachON] = useState(false)
+    const [filterON, setFilterON] = useState(false)
     const [open, setOpen] = useState(false)
 
     const dispatchColumns = useMemo(() => getDispatchColumns(), [])
@@ -68,8 +72,11 @@ const Dispatches = ({ reFetch }) => {
         setSelectedDate(dayjs(value).format(format))
         const filtered = dispatchesClone.filter(item => dayjs(value).format(DATEFORMAT) === dayjs(item.dispatchedDate).format(DATEFORMAT))
         setDispatches(filtered)
+        setFilteredClone(filtered)
         setTotalCount(filtered.length)
         setPageNumber(1)
+        setFilterON(true)
+        searchON && setResetSearch(!resetSearch)
     }
 
     const handleMenuSelect = (key, data) => {
@@ -87,6 +94,21 @@ const Dispatches = ({ reFetch }) => {
     const handleSizeChange = (number, size) => {
         setPageSize(size)
         setPageNumber(number)
+    }
+
+    const handleSearch = (value) => {
+        setPageNumber(1)
+        if (value === "") {
+            setTotalCount(dispatchesClone.length)
+            setDispatches(dispatchesClone)
+            setSeachON(false)
+            return
+        }
+        const data = filterON ? filteredClone : dispatchesClone
+        const result = doubleKeyComplexSearch(data, value, 'dcNo', 'batchId')
+        setTotalCount(result.length)
+        setDispatches(result)
+        setSeachON(true)
     }
 
     const dataSource = useMemo(() => dispatches.map((dispatch) => {
@@ -134,11 +156,12 @@ const Dispatches = ({ reFetch }) => {
                 </div>
                 <div className='right'>
                     <SearchInput
-                        placeholder='Search Delivery Challan'
+                        placeholder='Search Dispatches'
                         className='delivery-search'
+                        reset={resetSearch}
+                        onChange={handleSearch}
                         width='50%'
                     />
-
                 </div>
             </div>
             <div className='app-table dispatch-table'>

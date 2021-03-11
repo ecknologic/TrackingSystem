@@ -341,7 +341,7 @@ router.post("/createInvoice", (req, res) => {
                 saveInvoice(req.body, res, true)
             }
         }
-        else res.json(`No Products Delivered to ${organizationName || customerName}`)
+        else res.status(404).json(`No Products Delivered to ${organizationName || customerName}`)
     })
 
 });

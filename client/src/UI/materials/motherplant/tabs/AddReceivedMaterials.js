@@ -11,7 +11,7 @@ import ConfirmMessage from '../../../../components/ConfirmMessage';
 import { TODAYDATE, TRACKFORM } from '../../../../utils/constants';
 import CustomPagination from '../../../../components/CustomPagination';
 import { getRMColumns } from '../../../../assets/fixtures';
-import { base64String, deepClone, disableFutureDates, getBase64, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
+import { base64String, deepClone, disableFutureDates, doubleKeyComplexSearch, getBase64, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 import CustomModal from '../../../../components/CustomModal';
 import MaterialReceivedForm from '../forms/MaterialReceived';
 import { validateNames, validateNumber, validateReceivedMaterialValues } from '../../../../utils/validations';
@@ -32,6 +32,7 @@ const AddMaterials = ({ onUpdate = fn }) => {
     const [modal, setModal] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
+    const [filteredClone, setFilteredClone] = useState([])
     const [shake, setShake] = useState(false)
     const [open, setOpen] = useState(false)
     const [RM, setRM] = useState([])
@@ -39,6 +40,9 @@ const AddMaterials = ({ onUpdate = fn }) => {
     const [currentRMId, setCurrentRMId] = useState('')
     const [hideCancel, setHideCancel] = useState(false)
     const [formDisabled, setFormDisabled] = useState(false)
+    const [resetSearch, setResetSearch] = useState(false)
+    const [searchON, setSeachON] = useState(false)
+    const [filterON, setFilterON] = useState(false)
     const [okTxt, setOkText] = useState('Confirm Details')
     const [formTitle, setFormTitle] = useState('')
 
@@ -90,7 +94,10 @@ const AddMaterials = ({ onUpdate = fn }) => {
         setSelectedDate(dayjs(value).format(format))
         const filtered = RMClone.filter(item => dayjs(value).format(DATEFORMAT) == dayjs(item.approvedDate).format(DATEFORMAT))
         setRM(filtered)
+        setFilteredClone(filtered)
         setPageNumber(1)
+        setFilterON(true)
+        searchON && setResetSearch(!resetSearch)
     }
 
     const handlePageChange = (number) => {
@@ -225,6 +232,21 @@ const AddMaterials = ({ onUpdate = fn }) => {
         setModal(true)
     }
 
+    const handleSearch = (value) => {
+        setPageNumber(1)
+        if (value === "") {
+            setTotalCount(RMClone.length)
+            setRM(RMClone)
+            setSeachON(false)
+            return
+        }
+        const data = filterON ? filteredClone : RMClone
+        const result = doubleKeyComplexSearch(data, value, 'orderId', 'itemName')
+        setTotalCount(result.length)
+        setRM(result)
+        setSeachON(true)
+    }
+
     const dataSource = useMemo(() => RM.map((item) => {
         const { rawmaterialid: key, orderId, itemQty, itemName, approvedDate, reorderLevel,
             minOrderLevel, vendorName, status } = item
@@ -276,11 +298,12 @@ const AddMaterials = ({ onUpdate = fn }) => {
                 </div>
                 <div className='right'>
                     <SearchInput
-                        placeholder='Search Delivery Challan'
+                        placeholder='Search Material'
                         className='delivery-search'
+                        reset={resetSearch}
+                        onChange={handleSearch}
                         width='50%'
                     />
-
                 </div>
             </div>
             <div className='app-table dispatch-table'>

@@ -17,7 +17,7 @@ import CustomPagination from '../../../../components/CustomPagination';
 import CustomRangeInput from '../../../../components/CustomRangeInput';
 import { EyeIconGrey, ScheduleIcon } from '../../../../components/SVG_Icons';
 import { getWarehoseId, TODAYDATE, TRACKFORM } from '../../../../utils/constants';
-import { resetTrackForm, getStatusColor } from '../../../../utils/Functions';
+import { resetTrackForm, getStatusColor, doubleKeyComplexSearch } from '../../../../utils/Functions';
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
 const DeliveredDC = () => {
@@ -27,6 +27,7 @@ const DeliveredDC = () => {
     const [customerIds, setCustomerIds] = useState([])
     const [filterBtnDisabled, setFilterBtnDisabled] = useState(true)
     const [deliveries, setDeliveries] = useState([])
+    const [deliveriesClone, setDeliveriesClone] = useState([])
     const [formData, setFormData] = useState({})
     const [pageSize, setPageSize] = useState(10)
     const [totalCount, setTotalCount] = useState(null)
@@ -37,6 +38,8 @@ const DeliveredDC = () => {
     const [startDate, setStartDate] = useState(TODAYDATE)
     const [endDate, setEndDate] = useState(TODAYDATE)
     const [selectedRange, setSelectedRange] = useState([])
+    const [resetSearch, setResetSearch] = useState(false)
+    const [searchON, setSeachON] = useState(false)
     const [open, setOpen] = useState(false)
     const [title, setTitle] = useState('')
 
@@ -70,7 +73,9 @@ const DeliveredDC = () => {
             setPageNumber(1)
             setLoading(false)
             setTotalCount(data.length)
+            setDeliveriesClone(data)
             setDeliveries(data)
+            searchON && setResetSearch(!resetSearch)
         } catch (error) { }
     }
 
@@ -126,6 +131,20 @@ const DeliveredDC = () => {
         setDCModal(false)
         setBtnDisabled(false)
         setFormData({})
+    }
+
+    const handleSearch = (value) => {
+        setPageNumber(1)
+        if (value === "") {
+            setTotalCount(deliveriesClone.length)
+            setDeliveries(deliveriesClone)
+            setSeachON(false)
+            return
+        }
+        const result = doubleKeyComplexSearch(deliveriesClone, value, 'dcNo', 'customerName')
+        setTotalCount(result.length)
+        setDeliveries(result)
+        setSeachON(true)
     }
 
     const dataSource = useMemo(() => deliveries.map((dc) => {
@@ -194,6 +213,8 @@ const DeliveredDC = () => {
                         placeholder='Search Delivery Challan'
                         className='delivery-search'
                         width='50%'
+                        reset={resetSearch}
+                        onChange={handleSearch}
                     />
                 </div>
             </div>

@@ -12,7 +12,7 @@ import SearchInput from '../../../../components/SearchInput';
 import { getInvoiceColumns } from '../../../../assets/fixtures';
 import CustomDateInput from '../../../../components/CustomDateInput';
 import CustomPagination from '../../../../components/CustomPagination';
-import { deepClone, disableFutureDates, getStatusColor, showToast } from '../../../../utils/Functions';
+import { deepClone, disableFutureDates, doubleKeyComplexSearch, getStatusColor, showToast } from '../../../../utils/Functions';
 import { ListViewIconGrey, ScheduleIcon, SendIconGrey, TickIconGrey } from '../../../../components/SVG_Icons';
 const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
@@ -21,11 +21,15 @@ const Dashboard = ({ reFetch, onUpdate }) => {
     const history = useHistory()
     const [invoices, setInvoices] = useState([])
     const [invoicesClone, setInvoicesClone] = useState([])
+    const [filteredClone, setFilteredClone] = useState([])
     const [loading, setLoading] = useState(true)
     const [pageSize, setPageSize] = useState(12)
     const [pageNumber, setPageNumber] = useState(1)
     const [totalCount, setTotalCount] = useState(null)
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
+    const [resetSearch, setResetSearch] = useState(false)
+    const [searchON, setSeachON] = useState(false)
+    const [filterON, setFilterON] = useState(false)
     const [open, setOpen] = useState(false)
 
     const invoiceColumns = useMemo(() => getInvoiceColumns('dcNo'), [])
@@ -85,8 +89,11 @@ const Dashboard = ({ reFetch, onUpdate }) => {
         setSelectedDate(dayjs(value).format(APIDATEFORMAT))
         const filtered = invoicesClone.filter(item => dayjs(value).format(DATEFORMAT) == dayjs(item.createdDateTime).format(DATEFORMAT))
         setInvoices(filtered)
+        setFilteredClone(filtered)
         setTotalCount(filtered.length)
         setPageNumber(1)
+        setFilterON(true)
+        searchON && setResetSearch(!resetSearch)
     }
 
     const optimisticUpdate = (id, status) => {
@@ -110,6 +117,21 @@ const Dashboard = ({ reFetch, onUpdate }) => {
         } catch (error) {
             message.destroy()
         }
+    }
+
+    const handleSearch = (value) => {
+        setPageNumber(1)
+        if (value === "") {
+            setTotalCount(invoicesClone.length)
+            setInvoices(invoicesClone)
+            setSeachON(false)
+            return
+        }
+        const data = filterON ? filteredClone : invoicesClone
+        const result = doubleKeyComplexSearch(data, value, 'invoiceId', 'customerName')
+        setTotalCount(result.length)
+        setInvoices(result)
+        setSeachON(true)
     }
 
     const dataSource = useMemo(() => invoices.map((invoice) => {
@@ -161,7 +183,9 @@ const Dashboard = ({ reFetch, onUpdate }) => {
                     <SearchInput
                         placeholder='Search Invoice'
                         className='delivery-search'
+                        reset={resetSearch}
                         width='50%'
+                        onChange={handleSearch}
                     />
                 </div>
             </div>
