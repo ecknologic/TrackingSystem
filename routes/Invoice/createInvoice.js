@@ -311,12 +311,12 @@ const getResults = (row) => {
     const priceAfterDiscount = price - (price / 100 * discount)
     const amount = Number((priceAfterDiscount * quantity).toFixed(2))
     const totalTax = (amount / 100 * gst)
-    cgst = Number((totalTax / 2).toFixed(2))
-    sgst = Number((totalTax / 2).toFixed(2))
-    igst = 0
-    // cgst = isLocal ? Number((totalTax / 2).toFixed(2)) : 0.00
-    // sgst = isLocal ? Number((totalTax / 2).toFixed(2)) : 0.00
-    // igst = isLocal ? 0.00 : Number((totalTax).toFixed(2))
+    // cgst = Number((totalTax / 2).toFixed(2))
+    // sgst = Number((totalTax / 2).toFixed(2))
+    // igst = 0
+    cgst = isLocal ? Number((totalTax / 2).toFixed(2)) : 0.00
+    sgst = isLocal ? Number((totalTax / 2).toFixed(2)) : 0.00
+    igst = isLocal ? 0.00 : Number((totalTax).toFixed(2))
     return { amount, cgst, sgst, igst }
 }
 module.exports = {
