@@ -7,7 +7,7 @@ const customerQueries = require('../../dbQueries/Customer/queries.js');
 const { createSingleDeliveryInvoice } = require('./createInvoice.js');
 const { createMultiDeliveryInvoice } = require('./invoice.js');
 const fs = require('fs');
-const { generatePDF } = require('../../dbQueries/Customer/queries.js');
+const { generatePDF, generateCustomerPDF } = require('../../dbQueries/Customer/queries.js');
 const dayjs = require('dayjs');
 
 router.get('/getInvoices', (req, res) => {
@@ -163,7 +163,7 @@ router.post("/generateMultipleInvoices", (req, res) => {
             generatePDF(req.body, async (err, data) => {
                 if (err) res.status(500).json(dbError(err));
                 else {
-                    if (!data.length) res.status(404).json('No data found')
+                    if (!data.length) res.status(400).json('No data found')
                     else {
                         let customersArr = []
                         data.map(item => {
@@ -172,7 +172,7 @@ router.post("/generateMultipleInvoices", (req, res) => {
                                 let products = addProducts(JSON.parse(item.products))
                                 customersArr[index].products = customersArr[index].products.concat(products)
                             } else {
-                                let products = JSON.parse(item.products)
+                                let products = addProducts(JSON.parse(item.products))
                                 customersArr.push({ ...item, products })
                             }
                         })
@@ -270,37 +270,80 @@ router.post("/generateMultipleInvoices", (req, res) => {
     })
 });
 router.post("/createInvoice", (req, res) => {
-    let { customerId, customerName, organizationName, address, gstNo, panNo, mobileNumber, products } = req.body
-    let obj = {
-        customerId, customerName, organizationName, address, gstNo, panNo, mobileNumber
-    }
-    if (products.length) {
-        for (let i of products) {
-            if (i.productName.startsWith('20')) {
-                obj['20LCans'] = i.quantity
-                obj['price20L'] = i.productPrice
-            } else if (i.productName.startsWith('1')) {
-                obj['1LBoxes'] = i.quantity
-                obj['price1L'] = i.productPrice
-            } else if (i.productName.startsWith('500')) {
-                obj['500MLBoxes'] = i.quantity
-                obj['price500ML'] = i.productPrice
-            } else if (i.productName.startsWith('300')) {
-                obj['300MLBoxes'] = i.quantity
-                obj['price300ML'] = i.productPrice
-            }
-            else if (i.productName.startsWith('2')) {
-                obj['2LBoxes'] = i.quantity
-                obj['price2L'] = i.productPrice
+    // let { customerId, customerName, organizationName, address, gstNo, panNo, mobileNumber, products } = req.body
+    // let obj = {
+    //     customerId, customerName, organizationName, address, gstNo, panNo, mobileNumber
+    // }
+    // if (products.length) {
+    //     for (let i of products) {
+    //         if (i.productName.startsWith('20')) {
+    //             obj['20LCans'] = i.quantity
+    //             obj['price20L'] = i.productPrice
+    //         } else if (i.productName.startsWith('1')) {
+    //             obj['1LBoxes'] = i.quantity
+    //             obj['price1L'] = i.productPrice
+    //         } else if (i.productName.startsWith('500')) {
+    //             obj['500MLBoxes'] = i.quantity
+    //             obj['price500ML'] = i.productPrice
+    //         } else if (i.productName.startsWith('300')) {
+    //             obj['300MLBoxes'] = i.quantity
+    //             obj['price300ML'] = i.productPrice
+    //         }
+    //         else if (i.productName.startsWith('2')) {
+    //             obj['2LBoxes'] = i.quantity
+    //             obj['price2L'] = i.productPrice
+    //         }
+    //     }
+    // }
+    // // let invoice = {
+    // //     items: [obj], invoiceId, gstNo
+    // // }
+    // // createSingleDeliveryInvoice(invoice, "invoice.pdf").then(response => {
+    // // })
+    // saveInvoice(req.body, res, true)
+    let { customerId, customerName, invoiceId, fromDate, toDate, organizationName, address, gstNo, panNo, mobileNumber } = req.body
+
+    generateCustomerPDF({ fromDate, toDate, customerId }, (err, data) => {
+        if (err) res.status(500).json(dbError(err));
+        else if (data.length) {
+            if (!JSON.parse(data[0].products)) {
+                res.status(400).json("No products found")
+            } else {
+                let products = addProducts(JSON.parse(data[0].products))
+                let product = products[0]
+                const {
+                    address,
+                    price1L,
+                    price2L,
+                    price20L,
+                    price300ML,
+                    price500ML
+                } = product
+                let arr = []
+                if (product['20LCans'] > 0) {
+                    arr.push(prepareProductObj({ invoiceId, productName: "20 Lt Bibo Water Jar", quantity: product['20LCans'], productPrice: price20L, tax: 12, gstNo, address }))
+                }
+                if (product['2LBoxes'] > 0) {
+                    arr.push(prepareProductObj({ invoiceId, productName: "2 Lt Bibo Water Bottle Case - 9 bottles", quantity: product['2LBoxes'], productPrice: price2L, tax: 18, gstNo, address }))
+                }
+                if (product['1LBoxes'] > 0) {
+                    arr.push(prepareProductObj({ invoiceId, productName: "1Lt Bibo Water Case - 12 Bottles", quantity: product['1LBoxes'], productPrice: price1L, tax: 18, gstNo, address }))
+                }
+                if (product['500MLBoxes'] > 0) {
+                    arr.push(prepareProductObj({ invoiceId, productName: "500 ML Bibo Water Cases - 24 Bottles", quantity: product['500MLBoxes'], productPrice: price500ML, tax: 18, gstNo, address }))
+                }
+                if (product['300MLBoxes'] > 0) {
+                    arr.push(prepareProductObj({ invoiceId, productName: "300 ML Bibo Water Cases - 30 Bottles", quantity: product['300MLBoxes'], productPrice: price300ML, tax: 18, gstNo, address }))
+                }
+                const { totalAmount } = computeFinalAmounts(arr)
+                req.body.products = arr
+                req.body.totalAmount = totalAmount
+                saveInvoice(req.body, res, true)
             }
         }
-    }
-    // let invoice = {
-    //     items: [obj], invoiceId, gstNo
-    // }
-    // createSingleDeliveryInvoice(invoice, "invoice.pdf").then(response => {
-    // })
-    saveInvoice(req.body, res, true)
+        else res.json(`No Products Delivered to ${organizationName || customerName}`)
+    })
+
 });
 router.post("/updateInvoice", (req, res) => {
     let { customerId, invoiceId, customerName, organizationName, address, gstNo, panNo, mobileNumber, products } = req.body
@@ -426,5 +469,36 @@ const addProducts = (products) => {
     })
     return [newData]
 }
+const prepareProductObj = (product) => {
+    const { invoiceId, productName, quantity, productPrice, tax = 18, gstNo, address } = product
+    let cgstValue = tax / 2
+    const { amount, cgst, sgst, igst } = getResults({
+        quantity, productPrice, gstNo, tax, cgst: cgstValue, sgst: cgstValue, igst: 0
+    })
+    return {
+        productName,
+        quantity,
+        productPrice,
+        tax,
+        amount,
+        cgst,
+        sgst,
+        igst,
+        address,
+        invoiceId,
+        discount: 0
+    }
+}
+const computeFinalAmounts = (data) => {
+    let subTotal = 0, cgstAmount = 0, sgstAmount = 0, igstAmount = 0;
+    data.map((item) => {
+        subTotal = Number((subTotal + Number(item.amount)).toFixed(2))
+        cgstAmount = Number((cgstAmount + item.cgst).toFixed(2))
+        sgstAmount = Number((sgstAmount + item.sgst).toFixed(2))
+        igstAmount = Number((igstAmount + item.igst).toFixed(2))
+    })
+    const totalAmount = Math.round((subTotal + cgstAmount + sgstAmount + igstAmount))
 
+    return { subTotal, cgstAmount, sgstAmount, igstAmount, totalAmount }
+}
 module.exports = router;

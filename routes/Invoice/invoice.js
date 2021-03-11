@@ -25,10 +25,10 @@ function createMultiDeliveryInvoice(invoice, path) {
 }
 
 
-
 function generateHeader(doc) {
     doc
-        .rect(25, 25, 545, 80)
+        .rect(25, 25, 545, 800)
+        .stroke()
         .fontSize(12)
         .text("Acer Engineers Pvt Ltd.", 30, 30, { align: "left" })
         .fontSize(8)
@@ -48,12 +48,12 @@ function generateHeader(doc) {
 }
 
 function generateCustomerInformation(doc, invoice) {
+    const { invoiceId, fromDate, toDate } = invoice
     doc
         .fillColor("#444444")
-        .rect(25, 105, 545, 0)
+    generateHr(doc, 100);
 
     const customerInformationTop = 110;
-    const { invoiceId, fromDate, toDate } = invoice
 
     doc
         .fontSize(10)
@@ -65,14 +65,15 @@ function generateCustomerInformation(doc, invoice) {
         .text(invoice.invoice_nr, 150, customerInformationTop)
         .font("Helvetica")
         .text("Invoice Date:", 40, customerInformationTop + 15)
-        .text(formatDate(new Date()), 150, customerInformationTop + 15)
+        .text(formatDate(new Date()), 100, customerInformationTop + 15)
         .text("Period of supply:", 40, customerInformationTop + 30)
         .text(
             formatDate(new Date(fromDate)) + '  to  ' + formatDate(new Date(toDate)),
-            150,
+            115,
             customerInformationTop + 30
         )
         .moveDown();
+    generateHr(doc, 160);
 }
 
 function generateInvoiceTable(doc, invoice) {
@@ -146,23 +147,25 @@ function generateInvoiceTable(doc, invoice) {
         }
         if (i == (invoice.items.length - 1)) {
             const { gstNo } = i
-            totalArr.push({ gstNo,  product: "20 Lt Bt Jar", price: totalPrice20L, quantity: totalQuantity20L },
-                { gstNo,  product: "1L Boxes", price: totalPrice1L, quantity: totalQuantity1L },
-                { gstNo,  product: "500ML Boxes", price: totalPrice500ML, quantity: totalQuantity500ML },
-                { gstNo,  product: "300ML Boxes", price: totalPrice300ML, quantity: totalQuantity300ML },
-                { gstNo,  product: "2L Boxes", price: totalPrice2L, quantity: totalQuantity2L }
+            totalArr.push({ gstNo, product: "20 Lt Bt Jar", price: totalPrice20L, quantity: totalQuantity20L },
+                { gstNo, product: "1L Boxes", price: totalPrice1L, quantity: totalQuantity1L },
+                { gstNo, product: "500ML Boxes", price: totalPrice500ML, quantity: totalQuantity500ML },
+                { gstNo, product: "300ML Boxes", price: totalPrice300ML, quantity: totalQuantity300ML },
+                { gstNo, product: "2L Boxes", price: totalPrice2L, quantity: totalQuantity2L }
             )
         }
     }
     function renderProductRow(doc, tableTop, j, product, quantity, price, address, index, i) {
         const position = tableTop + (j + 1) * 20;
         if (position == 40) {
-            generateHr(doc, position - 15)
-            doc.addPage();
+            // generateHr(doc, position - 15)
+            doc.addPage()
+                .rect(25, 25, 545, 800)
+                .stroke()
         }
         if (position >= 760) {
             doc
-                .rect(25, 25, 545, position + 10)
+
             invoiceTableTop = 0;
             jCount = 0;
         }
@@ -183,9 +186,9 @@ function generateInvoiceTable(doc, invoice) {
 
     // generateHr(doc, position + 20);
     const subtotalPosition = (invoiceTableTop + (jCount + 1) * 20) + 98;
-    generateHr(doc, subtotalPosition - 15)
+    generateHr(doc, subtotalPosition - 10)
+    generateHr(doc, subtotalPosition - 45)
     doc
-        .rect(25, subtotalPosition - 50, 545, 250)
         .text("SUMMARY", 30, subtotalPosition - 40)
     generateSummaryRow(doc, subtotalPosition - 5,
         "Product",
@@ -299,36 +302,32 @@ function generateTableRow(
 
 function billingTable(doc, invoice) {
     const item = invoice.items.length ? invoice.items[0] : {}
-    const { customerId = "", customerName = "", panNo = "", organizationName = "", address1 = "", address = "", gstNo = "", mobileNumber = "" } = item
-    const stateCode = (gstNo || '').substring(0, 2)
-    const billingInfoTop = 170;
-    // const address = "1st Floor Solitaire Building Plot no 14 & 15,software unit layout, Madhapur , Hyderabad,500081 "
+    const { customerId = "", customerName = "", organizationName = "", address1 = "", address = "", gstNo = "NA", mobileNumber = "" } = item
+    const billingInfoTop = 160;
+    const statusCode = (gstNo || '').slice(0, 2)
 
     doc
-        .rect(25, 170, 545, billingInfoTop - 45)
         .text("Details of receiver ( Billed to)", 30, billingInfoTop + 5)
         .text(`Customer Id : ${customerId}`, 200, billingInfoTop + 5)
         .text("Details of receiver ( Shipped to)", 350, billingInfoTop + 5)
     generateHr(doc, billingInfoTop + 18);
-    generateVr(doc, 300, billingInfoTop, 125)
-    // generateHr(doc, billingInfoTop + 125);
+    generateVr(doc, 300, 160, 130)
+    generateHr(doc, billingInfoTop + 130);
     doc
         .fontSize(10)
-        .text(organizationName || customerName, 30, billingInfoTop + 30)
+        .text(`${organizationName || customerName} `, 30, billingInfoTop + 30)
         .fontSize(8)
-        .text(`${address} , Contact No: ${mobileNumber}`, 30, billingInfoTop + 42, { width: 200 })
-        .text(`GST NO: ${gstNo} `, 30, billingInfoTop + 80)
-        .text(`State Code: ${stateCode}`, 190, billingInfoTop + 80)
-        .text(`PAN NO: ${panNo}`, 30, billingInfoTop + 100)
-        .text(`PO NO:`, 30, billingInfoTop + 110)
+        .text(`${address}`, 30, billingInfoTop + 42, { width: 200 })
+        .text(`Contact No: ${mobileNumber} `, 30, billingInfoTop + 50, { width: 200 })
+        .text(`GST NO: ${gstNo || "NA"} `, 30, billingInfoTop + 100)
+        .text(`State Code: ${statusCode}`, 30, billingInfoTop + 115)
         .fontSize(10)
-        .text(organizationName || customerName, 310, billingInfoTop + 30)
+        .text(`${organizationName || customerName} `, 310, billingInfoTop + 30)
         .fontSize(8)
-        .text(`${address} , Contact No: ${mobileNumber}`, 310, billingInfoTop + 42, { width: 200 })
-        .text(`GST NO: ${gstNo} `, 310, billingInfoTop + 80)
-        .text(`State Code: ${stateCode}`, 480, billingInfoTop + 80)
-        .text(`PAN NO: ${panNo}`, 310, billingInfoTop + 100)
-        .text(`PO NO:`, 310, billingInfoTop + 110)
+        .text(`${address}`, 310, billingInfoTop + 42, { width: 200 })
+        .text(`Contact No: ${mobileNumber} `, 310, billingInfoTop + 50, { width: 200 })
+        .text(`GST NO: ${gstNo || "NA"} `, 310, billingInfoTop + 100)
+        .text(`State Code: ${statusCode}`, 310, billingInfoTop + 115)
 
 }
 function generateHr(doc, y) {
