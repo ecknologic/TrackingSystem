@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { message } from 'antd';
-import { getRole, getUserId, getWarehoseId, SUPERADMIN } from '../utils/constants';
+import { ACCOUNTSADMIN, getRole, getUserId, getWarehoseId, SUPERADMIN } from '../utils/constants';
 message.config({ maxCount: 1 });
 
 // Setting headers in request
@@ -8,6 +8,7 @@ axios.interceptors.request.use(function (config) {
     config.headers.departmentId = getWarehoseId()
     config.headers.userId = getUserId()
     config.headers.isSuperAdmin = getRole() === SUPERADMIN
+    config.headers.isAccountsAdmin = getRole() === ACCOUNTSADMIN
 
     return config;
 });
