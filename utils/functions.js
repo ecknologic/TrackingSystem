@@ -161,7 +161,7 @@ const getCompareCustomersData = (data, type) => {
         activeOtherCustomers, prevActiveOtherCustomers, totalDistributors } = data
 
     const totalCorporateCustomers = getFormatedNumber(activeCorporateCustomers)
-    const totalIndividualCustomers = getFormatedNumber(activeCorporateCustomers)
+    const totalIndividualCustomers = getFormatedNumber(activeOtherCustomers)
     const corporateCustomersPercent = getPercent(activeCorporateCustomers, prevActiveCorporateCustomers)
     const corporateCustomersCompareText = getCompareText(type, prevActiveCorporateCustomers)
     const individualCustomersPercent = getPercent(activeOtherCustomers, prevActiveOtherCustomers)

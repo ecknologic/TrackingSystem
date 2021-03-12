@@ -199,26 +199,26 @@ motherPlantDbQueries.getCurrentProductionDetailsByDate = async (input, callback)
 motherPlantDbQueries.getTotalProductionDetails = async (input, callback) => {
     let { departmentId, startDate, endDate, fromStart, shiftType } = input;
     let options = [departmentId, startDate, endDate]
-    let query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes,GROUP_CONCAT(p.batchId) AS batchIds FROM production p WHERE departmentId=? AND DATE(`productionDate`)<=?";
+    let query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes,GROUP_CONCAT(p.batchId) AS batchIds FROM production p WHERE departmentId=? AND isApproved=1 AND DATE(`productionDate`)<=?";
 
     if (fromStart == 'true') {
         if (shiftType !== 'All') {
             options = [departmentId, endDate, shiftType]
-            query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes,GROUP_CONCAT(p.batchId) AS batchIds FROM production p WHERE departmentId=? AND DATE(`productionDate`)<=?  AND shiftType=?";
+            query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes,GROUP_CONCAT(p.batchId) AS batchIds FROM production p WHERE departmentId=? AND isApproved=1 AND DATE(`productionDate`)<=?  AND shiftType=?";
         }
         else {
             options = [departmentId, endDate]
-            query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes,GROUP_CONCAT(p.batchId) AS batchIds FROM production p WHERE departmentId=? AND DATE(`productionDate`)<=?";
+            query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes,GROUP_CONCAT(p.batchId) AS batchIds FROM production p WHERE departmentId=? AND isApproved=1 AND DATE(`productionDate`)<=?";
         }
     }
     else {
         if (shiftType !== 'All') {
             options = [departmentId, startDate, endDate, shiftType]
-            query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes,GROUP_CONCAT(p.batchId) AS batchIds FROM production p WHERE departmentId=? AND DATE(`productionDate`)>=? AND DATE(`productionDate`)<=? AND shiftType=?";
+            query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes,GROUP_CONCAT(p.batchId) AS batchIds FROM production p WHERE departmentId=? AND isApproved=1 AND DATE(`productionDate`)>=? AND DATE(`productionDate`)<=? AND shiftType=?";
         }
         else {
             options = [departmentId, startDate, endDate]
-            query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes,GROUP_CONCAT(p.batchId) AS batchIds FROM production p WHERE departmentId=? AND DATE(`productionDate`)>=? AND DATE(`productionDate`)<=?";
+            query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes,GROUP_CONCAT(p.batchId) AS batchIds FROM production p WHERE departmentId=? AND isApproved=1 AND DATE(`productionDate`)>=? AND DATE(`productionDate`)<=?";
         }
     }
     return executeGetParamsQuery(query, options, callback)
