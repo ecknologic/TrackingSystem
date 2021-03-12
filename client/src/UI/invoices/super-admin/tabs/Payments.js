@@ -76,7 +76,7 @@ const Payments = ({ reFetch, onUpdate }) => {
     const handleDateSelect = (value) => {
         setOpen(false)
         setSelectedDate(dayjs(value).format(APIDATEFORMAT))
-        const filtered = invoices.filter(item => dayjs(value).format(DATEFORMAT) === dayjs(item.createdDateTime).format(DATEFORMAT))
+        const filtered = invoices.filter(item => dayjs(value).format(DATEFORMAT) === dayjs(item.invoiceDate).format(DATEFORMAT))
         setInvoices(filtered)
         setFilteredClone(filtered)
         setTotalCount(filtered.length)
@@ -133,7 +133,7 @@ const Payments = ({ reFetch, onUpdate }) => {
     }
 
     const dataSource = useMemo(() => invoices.map((invoice) => {
-        const { invoiceId, createdDateTime, totalAmount, customerName, dueDate, status } = invoice
+        const { invoiceId, invoiceDate, totalAmount, customerName, dueDate, status } = invoice
 
         const options = [
             <Menu.Item key="resend" icon={<SendIconGrey />}>Resend</Menu.Item>,
@@ -146,7 +146,7 @@ const Payments = ({ reFetch, onUpdate }) => {
             customerName,
             totalAmount,
             dueDate: dayjs(dueDate).format(DATEFORMAT),
-            date: dayjs(createdDateTime).format(DATEFORMAT),
+            date: dayjs(invoiceDate).format(DATEFORMAT),
             status: renderStatus(status),
             invoiceId: <span className='app-link' onClick={() => handleViewInvoice(invoice)}>{invoiceId}</span>,
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, invoice)} />
