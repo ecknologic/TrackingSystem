@@ -157,7 +157,7 @@ const getCompareData = (currentValues, previousValues, type, isRs) => {
     }
 }
 const getCompareCustomersData = (data, type) => {
-    const { totalCustomers, activeCorporateCustomers, prevActiveCorporateCustomers,
+    const { totalCustomers, inActiveCustomers, activeCorporateCustomers, prevActiveCorporateCustomers,
         activeOtherCustomers, prevActiveOtherCustomers, totalDistributors = 0 } = data
 
     const totalCorporateCustomers = getFormatedNumber(activeCorporateCustomers)
@@ -166,11 +166,12 @@ const getCompareCustomersData = (data, type) => {
     const corporateCustomersCompareText = getCompareText(type, prevActiveCorporateCustomers)
     const individualCustomersPercent = getPercent(activeOtherCustomers, prevActiveOtherCustomers)
     const individualCustomersCompareText = getCompareText(type, prevActiveOtherCustomers)
-
-    return {
+    let obj = {
         totalCorporateCustomers, totalIndividualCustomers, totalCustomers: getFormatedNumber(totalCustomers + totalDistributors), corporateCustomersPercent, corporateCustomersCompareText,
         individualCustomersPercent, individualCustomersCompareText
     }
+    if (inActiveCustomers) obj.totalInactiveCustomers = getFormatedNumber(inActiveCustomers)
+    return obj
 }
 
 const getCompareDistributorsData = (data, type) => {

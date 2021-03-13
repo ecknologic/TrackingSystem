@@ -220,6 +220,15 @@ customerQueries.getCorporateCustomersByDepartment = (input, callback) => {
         executeGetParamsQuery(query, [departmentId, startDate, endDate], callback)
     } else executeGetParamsQuery(query, [departmentId], callback)
 }
+customerQueries.getInActiveCustomersByDepartment = (input, callback) => {
+    let { startDate, endDate, fromStart, departmentId } = input;
+    let query = "SELECT COUNT(*) as totalCount FROM DeliveryDetails WHERE departmentId=? AND isActive=0 AND deleted=0 AND lastApprovedDate!='NULL'"
+    if (fromStart !== 'true') {
+        query = "SELECT COUNT(*) as totalCount FROM DeliveryDetails WHERE departmentId=? AND isActive=0 AND deleted=0 AND lastApprovedDate!='NULL' AND DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
+        executeGetParamsQuery(query, [departmentId, startDate, endDate], callback)
+    }
+    else executeGetParamsQuery(query, [departmentId], callback)
+}
 customerQueries.getCorporateCustomersChangeByDepartment = (input, callback) => {
     let { startDate, endDate, fromStart, type, departmentId } = input;
     const { startDate: newStartDate, endDate: newEndDate } = dateComparisions(startDate, endDate, type)

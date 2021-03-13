@@ -419,6 +419,12 @@ router.get('/getCustomersCount', (req, res) => {
               result.prevActiveCorporateCustomers = previousCorporate.length ? previousCorporate[0].totalCount : 0
             }
           })
+          customerQueries.getInActiveCustomersByDepartment(input, (err, inactive) => {
+            if (err) res.status(500).json(dbError(err))
+            else {
+              result.inActiveCustomers = inactive.length ? inactive[0].totalCount : 0
+            }
+          })
           customerQueries.getOtherCustomersByDepartment(input, (err, other) => {
             if (err) res.status(500).json(dbError(err))
             else {
