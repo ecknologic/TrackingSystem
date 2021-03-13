@@ -248,27 +248,27 @@ const getGraphData = (product20LCount, product2LCount, product1LCount, product50
         {
             name: "20 Ltrs",
             label: label || "20 Ltrs",
-            value: product20LCount
+            value: product20LCount || 0
         },
         {
             name: "2 Ltrs",
             label: label || "2 Ltrs",
-            value: product2LCount
+            value: product2LCount || 0
         },
         {
             name: "1 Ltrs",
             label: label || "1 Ltrs",
-            value: product1LCount
+            value: product1LCount || 0
         },
         {
             name: "500 ml",
             label: label || "500 ml",
-            value: product500MLCount
+            value: product500MLCount || 0
         },
         {
             name: "300 ml",
             label: label || "300 ml",
-            value: product300MLCount
+            value: product300MLCount || 0
         }
     ]
 }

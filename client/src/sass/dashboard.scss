@@ -8,6 +8,26 @@ $textColor:rgba(0,0,0,0.85);
     padding: 2em;
 }
 
+.dashboard-content-outer {
+    background-color: #FAFAFB;
+    display: flex;
+    width: 100%;
+
+    .left-content {
+        width: 70%;
+
+        .dashboard-content {
+            padding-right: 0;
+        }
+    }
+
+    .right-content {
+        width: 30%;
+        padding: 2em;
+        padding-left: 1.5em;
+    }
+}
+
 .panel-header {
     width: 100%;
     display: flex;
@@ -240,6 +260,43 @@ $textColor:rgba(0,0,0,0.85);
         margin-right: 1em;
     }
     
+}
+
+.dashboard-content-inner {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 2.5em;
+    width: 100%;
+
+    .left-panel {
+        flex: 1;
+        margin-right: 1em;
+    }
+
+    .right-panel {
+        width: 30%;
+
+        .panel-header,.head-container {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .secondary {
+            margin-top: .5em;
+        }
+    }
+
+    .invoice-overview-panel {
+        flex: 1;
+        
+        .header {
+            padding: 0 1em;
+        }
+        
+        .second-header {
+            padding: 1em;
+        }
+    }
 }
 
 .total-customer-panel {

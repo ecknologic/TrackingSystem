@@ -11,7 +11,7 @@ import { TODAYDATE as d } from '../../../../utils/constants';
 import can300ML from '../../../../assets/icons/ic_Can300ML.svg'
 import can500ML from '../../../../assets/icons/ic_Can500ML.svg'
 import { LeftChevronIconGrey, RightChevronIconGrey } from '../../../../components/SVG_Icons';
-const options = { startDate: d, endDate: d, shift: 'All', fromStart: true }
+const options = { startDate: d, endDate: d, fromStart: true }
 
 const TotalStockStatus = () => {
     const [stock, setStock] = useState({})
@@ -29,12 +29,12 @@ const TotalStockStatus = () => {
         }
     }, [])
 
-    const getTotalStock = async ({ startDate, endDate, shift, fromStart }) => {
-        const url = `/motherPlant/getTotalProductionDetails?startDate=${startDate}&endDate=${endDate}&shiftType=${shift}&fromStart=${fromStart}`
+    const getTotalStock = async ({ startDate, endDate, fromStart }) => {
+        const url = `/motherPlant/getTotalProductionDetails?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}`
 
         try {
-            const data = await http.GET(axios, url, config)
-            setStock(data)
+            // const data = await http.GET(axios, url, config)
+            // setStock(data)
         } catch (error) { }
     }
 
@@ -46,7 +46,7 @@ const TotalStockStatus = () => {
 
     return (
         <>
-            <PanelHeader title='Total Stock Status' onSelect={handleOperation} showShow showShift />
+            <PanelHeader title='Stock Status' onSelect={handleOperation} showShow />
             <div className='panel-body'>
                 <Slider className='dashboard-slider' {...props} >
                     <StockCard title='20 Ltrs' icon={can20L} total={product20LCount} />
@@ -61,7 +61,7 @@ const TotalStockStatus = () => {
 }
 const props = {
     infinite: false,
-    slidesToShow: 5,
+    slidesToShow: 4,
     slidesToScroll: 1,
     prevArrow: <LeftChevronIconGrey />,
     nextArrow: <RightChevronIconGrey />,

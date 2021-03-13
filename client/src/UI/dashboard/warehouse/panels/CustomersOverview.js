@@ -1,6 +1,5 @@
 import axios from 'axios';
 import Slider from "react-slick";
-import { useHistory } from 'react-router-dom';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
 import PanelHeader from '../../../../components/PanelHeader';
@@ -10,21 +9,15 @@ import { LeftChevronIconGrey, RightChevronIconGrey } from '../../../../component
 const options = { startDate: d, endDate: d, fromStart: true, type: 'Till Now' }
 
 const CustomersOverview = () => {
-    const history = useHistory()
     const [opData, setOpData] = useState(() => options)
     const [active, setActive] = useState({})
-    const [inactive, setInactive] = useState({})
 
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
-    const { totalCustomers, corporateCustomersPercent, corporateCustomersCompareText, totalActiveCustomers,
-        individualCustomersPercent, individualCustomersCompareText, totalCorporateCustomers, totalIndividualCustomers } = active
-    const { distributorsPercent, totalInactiveCustomers, distributorsCompareText, pendingIndividualCustomers,
-        totalDistributors, pendingCorporateCustomers } = inactive
+    const { totalCustomers, corporateCustomersPercent, corporateCustomersCompareText, individualCustomersPercent, individualCustomersCompareText, totalCorporateCustomers, totalIndividualCustomers, totalInactiveCustomers } = active
 
     useEffect(() => {
         getActiveData(opData)
-        getInactiveData(opData)
 
         return () => {
             http.ABORT(source)
@@ -32,7 +25,7 @@ const CustomersOverview = () => {
     }, [])
 
     const getActiveData = async ({ startDate, endDate, fromStart, type }) => {
-        const url = `/customer/getActiveCustomersCount?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}&type=${type}`
+        const url = `/warehouse/getCustomersCount?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}&type=${type}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -40,24 +33,11 @@ const CustomersOverview = () => {
         } catch (error) { }
     }
 
-    const getInactiveData = async ({ startDate, endDate, fromStart, type }) => {
-        const url = `/customer/getInactiveCustomersCount?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}&type=${type}`
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setInactive(data)
-        } catch (error) { }
-    }
-
     const handleOperation = useCallback((data) => {
         const newData = { ...opData, ...data }
         getActiveData(newData)
-        getInactiveData(newData)
         setOpData(newData)
     }, [opData])
-
-    const goToCustomers = (active) => history.push(`/customers/${active}`)
-    const goToDistributors = () => history.push('/distributors')
 
     return (
         <>
@@ -69,13 +49,12 @@ const CustomersOverview = () => {
                 <div className='sub-title green'>Active Customers  {totalCustomers - totalInactiveCustomers || 0}</div>
                 <div className='sub-title'>Inactive Customers  {totalInactiveCustomers || 0}</div>
             </div>
-            <PanelHeader title='Customers Overview' onSelect={handleOperation} showShow />
+            <PanelHeader title='Customers Overview' onSelect={handleOperation} showShow hideReports />
             <div className='panel-body quality-testing-panel'>
                 <Slider className='dashboard-slider' {...props} >
-                    <CustomerOverviewCard compareText={corporateCustomersCompareText} percent={corporateCustomersPercent} total={totalCorporateCustomers} pending={pendingCorporateCustomers} title='Corporate Customers' onClick={() => goToCustomers('1')} />
-                    <CustomerOverviewCard compareText={individualCustomersCompareText} total={totalIndividualCustomers} pending={pendingIndividualCustomers} percent={individualCustomersPercent} title='Individual Customers' onClick={() => goToCustomers('2')} />
-                    <CustomerOverviewCard title='Memberships' onClick={() => { }} />
-                    <CustomerOverviewCard compareText={distributorsCompareText} percent={distributorsPercent} total={totalDistributors} title='Dealerships' onClick={goToDistributors} />
+                    <CustomerOverviewCard isWHAdmin compareText={corporateCustomersCompareText} percent={corporateCustomersPercent} total={totalCorporateCustomers} title='Corporate Customers' />
+                    <CustomerOverviewCard isWHAdmin compareText={individualCustomersCompareText} total={totalIndividualCustomers} percent={individualCustomersPercent} title='Individual Customers' />
+                    <CustomerOverviewCard isWHAdmin title='Memberships' onClick={() => { }} />
                 </Slider>
             </div>
         </>
@@ -83,7 +62,7 @@ const CustomersOverview = () => {
 }
 const props = {
     infinite: false,
-    slidesToShow: 4,
+    slidesToShow: 3,
     slidesToScroll: 1,
     prevArrow: <LeftChevronIconGrey />,
     nextArrow: <RightChevronIconGrey />

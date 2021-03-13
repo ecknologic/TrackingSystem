@@ -8,7 +8,9 @@ import ConfirmMessage from '../../components/ConfirmMessage';
 import {
     DashboardIcon, SettingIcon, FriendReqIcon, FriendReqIconLight, DocIconLight, FriendIcon,
     DashboardIconLight, SettingIconLight, ProjectIcon, ProjectIconLight, DocIcon, FriendsIconLight, FriendsIcon,
-    FriendIconLight, LocationIcon, LocationIconLight, BlocksIcon, BlocksIconLight, StockIcon, StockIconLight, ReportIcon, ReportIconLight, BadgeIcon, BadgeIconLight, RibbonIcon, RibbonIconLight, CheckIcon, CheckIconLight
+    FriendIconLight, LocationIcon, LocationIconLight, BlocksIcon, BlocksIconLight, StockIcon, StockIconLight, ReportIcon,
+    ReportIconLight, BadgeIcon, BadgeIconLight, RibbonIcon, RibbonIconLight, CheckIcon, CheckIconLight, StackIcon, StackIconLight,
+    HomeIcon, HomeIconLight
 } from '../../components/SVG_Icons'
 
 const SideMenu = () => {
@@ -159,11 +161,11 @@ const SideMenu = () => {
                                     <span>Routes</span>
                                 </Item>
                                 <Item key='/motherplants'>
-                                    {selected === '/motherplants' ? <SettingIcon /> : <SettingIconLight />}
+                                    {selected === '/motherplants' ? <StackIcon /> : <StackIconLight />}
                                     <span>Mother Plants</span>
                                 </Item>
                                 <Item key='/warehouses'>
-                                    {selected === '/warehouses' ? <FriendsIcon /> : <FriendsIconLight />}
+                                    {selected === '/warehouses' ? <HomeIcon /> : <HomeIconLight />}
                                     <span>Warehouses</span>
                                 </Item>
                             </SubMenu>

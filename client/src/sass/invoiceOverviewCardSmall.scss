@@ -1,0 +1,62 @@
+.invoice-overview-card-small {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding:1em 10% .7em 10%;
+    background-color: #fff;
+    border-radius: .6em;
+    margin-top: 1em;
+
+    .heading {
+        display: flex;
+
+        .title, .number {
+            font-family: 'PoppinsBold700';
+            font-size: 1.1em;
+            color: #354052;
+        }
+
+        .title {
+            padding-right: .5em;
+        }
+    }
+
+    .pie-chart-stats {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+        .stats {
+            padding-top: 1em;
+        }
+
+        .stat {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            .title {
+                font-size: .9em;
+                font-family: 'PoppinsRegular400';
+                color: rgba(0,0,0,0.85);
+                padding-right: 1em;
+                padding-left: .3em;
+            }
+            
+            .number {
+                font-family: 'PoppinsSemiBold600';
+                color: #2E384D;
+                font-size: 1.1em;
+                display: flex;
+                align-items: center;
+            }
+        }
+
+        .app-dot {
+            display: inline-block;
+            width: 9px;
+            height: 9px;
+        }
+    }
+}

@@ -8,7 +8,7 @@ const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
 const DCView = ({ data }) => {
     const { dcNo, RouteName, mobileNumber, product20L, product2L, product1L, product500ML,
-        product300ML, address, driverName, isDelivered, deliveredDate } = data
+        product300ML, address, driverName, isDelivered, deliveredDate, returnEmptyCans } = data
 
     const color = getStatusColor(isDelivered)
     const text = isDelivered === 'Completed' ? 'Delivered' : isDelivered === 'Postponed' ? isDelivered : 'Pending'
@@ -83,6 +83,18 @@ const DCView = ({ data }) => {
                         <div className='input-container'>
                             <InputLabel name='300 Ml (Box-1&times;30)' />
                             <InputValue size='smaller' value={product500ML || 0} />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <Divider />
+            <div className='columns'>
+                <InputLabel name='Return Cans' />
+                <div className='columns-container'>
+                    <div className='column'>
+                        <div className='input-container'>
+                            <InputLabel name='20 Ltrs' />
+                            <InputValue size='smaller' value={returnEmptyCans || 0} />
                         </div>
                     </div>
                 </div>

@@ -4,7 +4,7 @@ import '../sass/customerOverviewCard.scss';
 import CustomButton from './CustomButton';
 import { RightChevronIconLight } from './SVG_Icons';
 
-const CustomerOverviewCard = ({ title, total, pending, percent, compareText, onClick }) => {
+const CustomerOverviewCard = ({ title, total, pending, percent, compareText, onClick, isWHAdmin }) => {
 
 
     return (
@@ -16,16 +16,22 @@ const CustomerOverviewCard = ({ title, total, pending, percent, compareText, onC
                     <ChangeBadge percent={percent} />
                 </div>
                 <span className='compare-text'>{compareText || '--'}</span>
-                <div className='pending'>
-                    <span className='text'>Approvals Pending</span>
-                    <span className='red-num'>{pending || 0}</span>
-                </div>
-                <CustomButton
-                    text='View Details'
-                    className='app-view-btn'
-                    onClick={onClick}
-                    suffix={<RightChevronIconLight className='chev' />}
-                />
+                {
+                    !isWHAdmin && (
+                        <>
+                            <div className='pending'>
+                                <span className='text'>Approvals Pending</span>
+                                <span className='red-num'>{pending || 0}</span>
+                            </div>
+                            <CustomButton
+                                text='View Details'
+                                className='app-view-btn'
+                                onClick={onClick}
+                                suffix={<RightChevronIconLight className='chev' />}
+                            />
+                        </>
+                    )
+                }
             </div>
         </div>
     )
