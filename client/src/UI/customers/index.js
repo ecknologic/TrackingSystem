@@ -228,7 +228,7 @@ const Customers = () => {
         <Fragment>
             <Header activeTab={activeTab} onSearch={handleSearch} onSort={onSort} onFilter={onFilterChange} onChange={handleTabChange} onClick={goToAddAccount} />
             <div className='account-manager-content'>
-                <Row gutter={[{ lg: 32, xl: 16 }, { lg: 32, xl: 32 }]}>
+                <Row gutter={[{ lg: 32, xl: 16 }, { lg: 16, xl: 16 }]}>
                     {
                         loading ? <NoContent content={<Spinner />} />
                             : accounts.length ? accounts.slice(sliceFrom, sliceTo).map((account) => (

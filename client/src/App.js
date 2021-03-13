@@ -64,7 +64,7 @@ const App = () => {
       else {
          const role = getRole()
          if (role === MARKETINGADMIN) return <Redirect to='/manage-accounts' />
-         else if (role === WAREHOUSEADMIN) return <WarehouseDashboard />
+         else if (role === WAREHOUSEADMIN) return <Redirect to='/manage-stock' />
          else if (role === MOTHERPLANTADMIN) return <MotherplantDashboard />
          else if (role === SUPERADMIN) return <SuperAdminDashboard />
          else if (role === ACCOUNTSADMIN) return <Redirect to='/customers' />

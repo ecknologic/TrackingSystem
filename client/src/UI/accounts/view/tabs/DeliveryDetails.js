@@ -323,7 +323,7 @@ const DeliveryDetails = ({ isAdmin, recentDelivery, ...rest }) => {
 
     return (
         <div className='account-view-delivery-details'>
-            <Row gutter={[{ lg: 32, xl: 16 }, { lg: 32, xl: 32 }]}>
+            <Row gutter={[{ lg: 32, xl: 16 }, { lg: 16, xl: 16 }]}>
                 {
                     loading ? <NoContent content={<Spinner />} />
                         : delivery.length ? delivery.map((item) => (

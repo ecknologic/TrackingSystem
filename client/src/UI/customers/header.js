@@ -1,14 +1,12 @@
+import React from 'react';
 import { Tabs } from 'antd';
-import React, { useState } from 'react';
 import SortBy from '../../components/SortByDropdown';
 import SearchInput from '../../components/SearchInput';
-import ViewsComponent from '../../components/ViewsComponent';
 import AccountsFilter from '../../components/AccountsFilter';
 import { PlusIconGrey } from '../../components/SVG_Icons';
 import CustomButton from '../../components/CustomButton';
 
 const Header = ({ activeTab, onChange, onSearch, onSort, onFilter, onClick }) => {
-    const [view, setView] = useState('card')
 
     return (
         <div className='customers-header'>
@@ -40,7 +38,6 @@ const Header = ({ activeTab, onChange, onSearch, onSort, onFilter, onClick }) =>
                     />
                 </div>
                 <div className='rest-container'>
-                    <ViewsComponent selected={view} onViewChange={(e) => setView(e)} />
                     <div className='op-container'>
                         <SortBy onSelect={onSort} />
                         <AccountsFilter onChange={onFilter} />

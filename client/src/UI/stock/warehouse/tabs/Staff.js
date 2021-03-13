@@ -57,7 +57,7 @@ const Staff = () => {
     return (
         <Fragment>
             <div className='stock-staff-container'>
-                <Row gutter={[{ lg: 32, xl: 16 }, { lg: 32, xl: 32 }]}>
+                <Row gutter={[{ lg: 32, xl: 16 }, { lg: 16, xl: 16 }]}>
                     {
                         loading ? <NoContent content={<Spinner />} />
                             : employees.length ? employees.slice(sliceFrom, sliceTo).map((employee) => (
