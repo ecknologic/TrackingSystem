@@ -205,9 +205,9 @@ function generateInvoiceTable(doc, invoice) {
         .text("A/C No : 1451 2230 0000 0035", 30, subtotalPosition + 170)
         .text("IFSC : KVBL0001451", 30, subtotalPosition + 180)
         .fillColor("black")
-        .text("for Acer Engineers Pvt Ltd", 0, subtotalPosition + 190, { align: "right" })
-        .image("signature.png", 460, subtotalPosition + 200, { width: 80 })
-        .text("Authorized Signatory", 0, subtotalPosition + 220, { align: "right" })
+        .text("for Acer Engineers Pvt Ltd", 0, subtotalPosition + 150, { align: "right" })
+        .image("signature.png", 460, subtotalPosition + 160, { width: 80 })
+        .text("Authorized Signatory", 0, subtotalPosition + 180, { align: "right" })
 }
 function billingTable(doc, invoice) {
     const item = invoice.items.length ? invoice.items[0] : {}
@@ -226,15 +226,15 @@ function billingTable(doc, invoice) {
         .fontSize(10)
         .text(`${organizationName || customerName} `, 30, billingInfoTop + 30)
         .fontSize(8)
-        .text(`${address}`, 30, billingInfoTop + 42, { width: 200 })
-        .text(`Contact No: ${mobileNumber} `, 30, billingInfoTop + 50, { width: 200 })
+        .text(`${address1}`, 30, billingInfoTop + 42, { width: 200 })
+        .text(`Contact No: ${mobileNumber} `, 30, address1.length > 50 ? billingInfoTop + 75 : billingInfoTop + 50, { width: 200 })
         .text(`GST NO: ${gstNo || "NA"} `, 30, billingInfoTop + 100)
         .text(`State Code: ${statusCode}`, 30, billingInfoTop + 115)
         .fontSize(10)
         .text(`${organizationName || customerName} `, 310, billingInfoTop + 30)
         .fontSize(8)
         .text(`${address}`, 310, billingInfoTop + 42, { width: 200 })
-        .text(`Contact No: ${mobileNumber} `, 310, billingInfoTop + 50, { width: 200 })
+        .text(`Contact No: ${mobileNumber} `, 310, address.length > 50 ? billingInfoTop + 75 : billingInfoTop + 50, { width: 200 })
         .text(`GST NO: ${gstNo || "NA"} `, 310, billingInfoTop + 100)
         .text(`State Code: ${statusCode}`, 310, billingInfoTop + 115)
 

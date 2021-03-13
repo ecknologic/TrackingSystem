@@ -34,7 +34,7 @@ router.get('/getInvoiceById/:invoiceId', (req, res) => {
     invoiceQueries.getInvoiceById(req.params.invoiceId, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
-            const { gstNo, invoiceId, customerType, fromDate, toDate, ...rest } = results[0]
+            const { gstNo, invoiceId, address1, customerType, fromDate, toDate, ...rest } = results[0]
             let haveMultipleAddress = false
             let products = JSON.parse(results[0].products)
             let obj = {
@@ -110,7 +110,7 @@ router.get('/getInvoiceById/:invoiceId', (req, res) => {
                 })
             } else {
                 let invoice = {
-                    items: [obj], invoiceId, gstNo, fromDate, toDate
+                    items: [obj], invoiceId, gstNo, address1, fromDate, toDate
                 }
                 createSingleDeliveryInvoice(invoice, "invoice.pdf").then(response => {
                     setTimeout(() => {
