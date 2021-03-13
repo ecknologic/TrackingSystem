@@ -480,7 +480,10 @@ router.put('/updateCustomerStatus', (req, res) => {
     else {
       customerQueries.updateCustomerDeliveriesStatus(req.body, (err, update) => {
         if (err) res.status(500).json(dbError(err))
-        else res.json(UPDATEMESSAGE)
+        else {
+          saveToCustomerOrderDetails(req.body.customerId, res)
+          res.json(UPDATEMESSAGE)
+        }
       })
     }
   })
