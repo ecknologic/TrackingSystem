@@ -204,6 +204,48 @@ customerQueries.getsqlNo = (tableName, callback) => {
     let seqNoQuery = `SELECT AUTO_INCREMENT AS orderId FROM information_schema.TABLES WHERE TABLE_NAME=?`
     executeGetParamsQuery(seqNoQuery, [tableName], callback)
 }
+customerQueries.getTotalCustomersByDepartment = (input, callback) => {
+    let { startDate, endDate, fromStart, departmentId } = input;
+    let query = "SELECT COUNT(*) as totalCount FROM DeliveryDetails WHERE deleted=0 AND isActive=1 AND departmentId=?"
+    if (fromStart !== 'true') {
+        query = "SELECT COUNT(*) as totalCount FROM DeliveryDetails WHERE deleted=0 AND isActive=1 AND departmentId=? AND  DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
+        executeGetParamsQuery(query, [departmentId, startDate, endDate], callback)
+    } else executeGetParamsQuery(query, [departmentId], callback)
+}
+customerQueries.getCorporateCustomersByDepartment = (input, callback) => {
+    let { startDate, endDate, fromStart, departmentId } = input;
+    let query = "SELECT COUNT(*) as totalCount FROM DeliveryDetails d INNER JOIN customerdetails c ON d.customer_Id=c.customerId WHERE d.isActive=1 AND d.deleted=0 AND d.departmentId=? AND c.customertype='Corporate'"
+    if (fromStart !== 'true') {
+        query = "SELECT COUNT(*) as totalCount FROM DeliveryDetails d INNER JOIN customerdetails c ON d.customer_Id=c.customerId WHERE d.isActive=1 AND d.deleted=0 AND d.departmentId=? AND c.customertype='Corporate' AND  DATE(d.registeredDate)>=? AND DATE(d.registeredDate)<=?"
+        executeGetParamsQuery(query, [departmentId, startDate, endDate], callback)
+    } else executeGetParamsQuery(query, [departmentId], callback)
+}
+customerQueries.getCorporateCustomersChangeByDepartment = (input, callback) => {
+    let { startDate, endDate, fromStart, type, departmentId } = input;
+    const { startDate: newStartDate, endDate: newEndDate } = dateComparisions(startDate, endDate, type)
+    let query = "SELECT COUNT(*) as totalCount FROM DeliveryDetails d INNER JOIN customerdetails c ON d.customer_Id=c.customerId WHERE d.isActive=1 AND d.deleted=0 AND d.departmentId=? AND c.customertype='Corporate'"
+    if (fromStart !== 'true') {
+        query = "SELECT COUNT(*) as totalCount FROM DeliveryDetails d INNER JOIN customerdetails c ON d.customer_Id=c.customerId WHERE d.isActive=1 AND d.deleted=0 AND d.departmentId=? AND c.customertype='Corporate' AND  DATE(d.registeredDate)>=? AND DATE(d.registeredDate)<=?"
+        executeGetParamsQuery(query, [departmentId, newStartDate, newEndDate], callback)
+    } else executeGetParamsQuery(query, [departmentId], callback)
+}
+customerQueries.getOtherCustomersByDepartment = (input, callback) => {
+    let { startDate, endDate, fromStart, departmentId } = input;
+    let query = "SELECT COUNT(*) as totalCount FROM DeliveryDetails d INNER JOIN customerdetails c ON d.customer_Id=c.customerId WHERE d.isActive=1 AND d.deleted=0 AND d.departmentId=? AND c.customertype='Individual'"
+    if (fromStart !== 'true') {
+        query = "SELECT COUNT(*) as totalCount FROM DeliveryDetails d INNER JOIN customerdetails c ON d.customer_Id=c.customerId WHERE d.isActive=1 AND d.deleted=0 AND d.departmentId=? AND c.customertype='Individual' AND  DATE(d.registeredDate)>=? AND DATE(d.registeredDate)<=?"
+        executeGetParamsQuery(query, [departmentId, startDate, endDate], callback)
+    } else executeGetParamsQuery(query, [departmentId], callback)
+}
+customerQueries.getOtherCustomersChangeByDepartment = (input, callback) => {
+    let { startDate, endDate, fromStart, type, departmentId } = input;
+    const { startDate: newStartDate, endDate: newEndDate } = dateComparisions(startDate, endDate, type)
+    let query = "SELECT COUNT(*) as totalCount FROM DeliveryDetails d INNER JOIN customerdetails c ON d.customer_Id=c.customerId WHERE d.isActive=1 AND d.deleted=0 AND d.departmentId=? AND c.customertype='Individual'"
+    if (fromStart !== 'true') {
+        query = "SELECT COUNT(*) as totalCount FROM DeliveryDetails d INNER JOIN customerdetails c ON d.customer_Id=c.customerId WHERE d.isActive=1 AND d.deleted=0 AND d.departmentId=? AND c.customertype='Individual' AND  DATE(d.registeredDate)>=? AND DATE(d.registeredDate)<=?"
+        executeGetParamsQuery(query, [departmentId, newStartDate, newEndDate], callback)
+    } else executeGetParamsQuery(query, [departmentId], callback)
+}
 //POST Request Methods
 customerQueries.saveCustomerOrderDetails = (input, callback) => {
     let { contactPerson, phoneNumber, address, routeId, driverId, customer_Id, latitude, longitude, dcNo, departmentId, customerType, product20L, price20L, product1L, price1L, product500ML, price500ML,

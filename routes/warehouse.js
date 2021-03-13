@@ -7,7 +7,7 @@ const motherPlantDbQueries = require('../dbQueries/motherplant/queries.js');
 const usersQueries = require('../dbQueries/users/queries.js');
 const warehouseQueries = require('../dbQueries/warehouse/queries.js');
 const { DATEFORMAT, INSERTMESSAGE, UPDATEMESSAGE, WEEKDAYS } = require('../utils/constants.js');
-const { customerProductDetails, dbError, getCompareData, getFormatedNumber, getGraphData } = require('../utils/functions.js');
+const { customerProductDetails, dbError, getCompareData, getFormatedNumber, getGraphData, getCompareCustomersData } = require('../utils/functions.js');
 var departmentId;
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -398,6 +398,44 @@ router.get('/getDepartmentStaff', (req, res) => {
   warehouseQueries.getDepartmentStaff(departmentId, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else res.json(results);
+  })
+})
+
+router.get('/getCustomersCount', (req, res) => {
+  const result = {}
+  const { type } = req.query
+  let input = req.query
+  customerQueries.getTotalCustomersByDepartment(input, (err, active) => {
+    if (err) res.status(500).json(dbError(err))
+    else {
+      result.totalCustomers = active.length ? active[0].totalCount : 0
+      customerQueries.getCorporateCustomersByDepartment(input, (err, corporate) => {
+        if (err) res.status(500).json(dbError(err))
+        else {
+          result.activeCorporateCustomers = corporate.length ? corporate[0].totalCount : 0
+          customerQueries.getCorporateCustomersChangeByDepartment(input, (err, previousCorporate) => {
+            if (err) res.status(500).json(dbError(err))
+            else {
+              result.prevActiveCorporateCustomers = previousCorporate.length ? previousCorporate[0].totalCount : 0
+            }
+          })
+          customerQueries.getOtherCustomersByDepartment(input, (err, other) => {
+            if (err) res.status(500).json(dbError(err))
+            else {
+              result.activeOtherCustomers = other.length ? other[0].totalCount : 0
+              customerQueries.getOtherCustomersChangeByDepartment(input, (err, previousOther) => {
+                if (err) res.status(500).json(dbError(err))
+                else if (previousOther.length) {
+                  result.prevActiveOtherCustomers = previousOther.length ? previousOther[0].totalCount : 0
+                  res.json(getCompareCustomersData(result, type))
+                }
+                else res.json(getCompareCustomersData(result, type))
+              })
+            }
+          })
+        }
+      })
+    }
   })
 })
 module.exports = router;
