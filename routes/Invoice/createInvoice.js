@@ -211,7 +211,8 @@ function generateInvoiceTable(doc, invoice) {
 }
 function billingTable(doc, invoice) {
     const item = invoice.items.length ? invoice.items[0] : {}
-    const { customerId = "", customerName = "", organizationName = "", address1 = "", address = "", gstNo = "", mobileNumber = "" } = item
+    const { Address1 } = invoice
+    const { customerId = "", customerName = "", organizationName = "", address = "", gstNo = "", mobileNumber = "" } = item
     const billingInfoTop = 160;
     const statusCode = (gstNo || '').slice(0, 2)
 
@@ -226,8 +227,8 @@ function billingTable(doc, invoice) {
         .fontSize(10)
         .text(`${organizationName || customerName} `, 30, billingInfoTop + 30)
         .fontSize(8)
-        .text(`${address1}`, 30, billingInfoTop + 42, { width: 200 })
-        .text(`Contact No: ${mobileNumber} `, 30, address1.length > 50 ? billingInfoTop + 75 : billingInfoTop + 50, { width: 200 })
+        .text(`${Address1}`, 30, billingInfoTop + 42, { width: 200 })
+        .text(`Contact No: ${mobileNumber} `, 30, Address1.length > 50 ? billingInfoTop + 75 : billingInfoTop + 50, { width: 200 })
         .text(`GST NO: ${gstNo || "NA"} `, 30, billingInfoTop + 100)
         .text(`State Code: ${statusCode}`, 30, billingInfoTop + 115)
         .fontSize(10)
