@@ -29,6 +29,7 @@ import AccountsDashboard from './UI/accounts/dashboard';
 import ReturnEmptyCans from './UI/empty-cans/warehouse';
 import EditInvoice from './UI/invoices/super-admin/edit';
 import ManageDistributor from './UI/distributors/manage';
+import WarehouseDashboard from './UI/dashboard/warehouse';
 import ReceivedEmptyCans from './UI/empty-cans/motherplant';
 import ManageInvoices from './UI/invoices/super-admin/manage';
 import MotherplantDashboard from './UI/dashboard/motherplant';
@@ -63,7 +64,7 @@ const App = () => {
       else {
          const role = getRole()
          if (role === MARKETINGADMIN) return <Redirect to='/manage-accounts' />
-         else if (role === WAREHOUSEADMIN) return <Redirect to='/manage-stock' />
+         else if (role === WAREHOUSEADMIN) return <WarehouseDashboard />
          else if (role === MOTHERPLANTADMIN) return <MotherplantDashboard />
          else if (role === SUPERADMIN) return <SuperAdminDashboard />
          else if (role === ACCOUNTSADMIN) return <Redirect to='/customers' />

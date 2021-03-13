@@ -298,6 +298,7 @@ const CreateEmployee = ({ goToTab }) => {
         setBtnDisabled(false)
         resetTrackForm()
         setFormData({})
+        setDepValues({})
         setAdharProof({})
         setLicenseProof({})
         setFormErrors({})
