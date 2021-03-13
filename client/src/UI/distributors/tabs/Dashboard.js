@@ -216,7 +216,7 @@ const Dashboard = ({ reFetch }) => {
         <Fragment>
             <MenuBar searchText='Search Accounts' onSearch={handleSearch} onSort={onSort} onFilter={onFilterChange} />
             <div className='employee-manager-content'>
-                <Row gutter={[{ lg: 32, xl: 16 }, { lg: 32, xl: 32 }]}>
+                <Row gutter={[{ lg: 32, xl: 16 }, { lg: 16, xl: 16 }]}>
                     {
                         loading ? <NoContent content={<Spinner />} />
                             : distributors.length ? distributors.slice(sliceFrom, sliceTo).map((distributor) => (

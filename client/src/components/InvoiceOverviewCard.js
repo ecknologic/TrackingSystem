@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { memo } from 'react';
 import PieChart from './PieChart';
 import '../sass/invoiceOverviewCard.scss'
 
-const InvoiceOverviewCard = ({ data, graph }) => {
+const InvoiceOverviewCard = memo(({ data, graph }) => {
 
     const { paidCount, pendingCount, totalCount } = data
 
@@ -39,6 +39,6 @@ const InvoiceOverviewCard = ({ data, graph }) => {
             </div>
         </div>
     )
-}
+})
 
 export default InvoiceOverviewCard

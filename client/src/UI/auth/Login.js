@@ -8,6 +8,7 @@ import { createOrUpdateAPI } from '../../utils/apis';
 import { useHistory } from 'react-router-dom';
 import { http } from '../../modules/http';
 import './login.css'
+import { BiboIcon } from '../../components/SVG_Icons';
 
 const Login = () => {
     const history = useHistory()
@@ -98,7 +99,8 @@ const Login = () => {
                 <Col span={12}>
                     <div className="login_container">
                         <div>
-                            <h3><span>&#8592;</span>  <span className="login_bibo_text">Bibo</span> <span>Water</span></h3>
+                            <h3><BiboIcon /></h3>
+                            {/* <h3><span>&#8592;</span>  <span className="login_bibo_text">Bibo</span> <span>Water</span></h3> */}
                             {/* <ArrowLeftOutlined /> */}
                         </div>
                         <div>

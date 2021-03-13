@@ -7,7 +7,8 @@ import ConfirmModal from '../../components/CustomModal';
 import ConfirmMessage from '../../components/ConfirmMessage';
 import {
     DashboardIcon, SettingIcon, FriendReqIcon, FriendReqIconLight, DocIconLight, FriendIcon,
-    DashboardIconLight, SettingIconLight, ProjectIcon, ProjectIconLight, DocIcon, FriendsIconLight, FriendsIcon, FriendIconLight,
+    DashboardIconLight, SettingIconLight, ProjectIcon, ProjectIconLight, DocIcon, FriendsIconLight, FriendsIcon,
+    FriendIconLight, LocationIcon, LocationIconLight, BlocksIcon, BlocksIconLight, StockIcon, StockIconLight, ReportIcon, ReportIconLight, BadgeIcon, BadgeIconLight, RibbonIcon, RibbonIconLight, CheckIcon, CheckIconLight
 } from '../../components/SVG_Icons'
 
 const SideMenu = () => {
@@ -58,7 +59,7 @@ const SideMenu = () => {
                     ROLE === MOTHERPLANTADMIN ?
                         <>
                             <Item key='/manage-production'>
-                                {selected === '/manage-production' ? <ProjectIcon /> : <ProjectIconLight />}
+                                {selected === '/manage-production' ? <StockIcon /> : <StockIconLight />}
                                 <span>Stock Details</span>
                             </Item>
                             <Item key='/manage-return-cans'>
@@ -66,15 +67,15 @@ const SideMenu = () => {
                                 <span>Empty Cans</span>
                             </Item>
                             <Item key='/manage-dispatches'>
-                                {selected === '/manage-dispatches' ? <ProjectIcon /> : <ProjectIconLight />}
+                                {selected === '/manage-dispatches' ? <CheckIcon /> : <CheckIconLight />}
                                 <span>Dispatches</span>
                             </Item>
                             <Item key='/manage-materials'>
-                                {selected === '/manage-materials' ? <ProjectIcon /> : <ProjectIconLight />}
+                                {selected === '/manage-materials' ? <RibbonIcon /> : <RibbonIconLight />}
                                 <span>Materials</span>
                             </Item>
                             <Item key='/manage-qc'>
-                                {selected === '/manage-qc' ? <ProjectIcon /> : <ProjectIconLight />}
+                                {selected === '/manage-qc' ? <BadgeIcon /> : <BadgeIconLight />}
                                 <span>Quality Control</span>
                             </Item>
                         </>
@@ -84,7 +85,7 @@ const SideMenu = () => {
                     ROLE === WAREHOUSEADMIN ?
                         <>
                             <Item key='/manage-stock'>
-                                {selected === '/manage-stock' ? <ProjectIcon /> : <ProjectIconLight />}
+                                {selected === '/manage-stock' ? <BlocksIcon /> : <BlocksIconLight />}
                                 <span>Manage Stock</span>
                             </Item>
                             <Item key='/manage-empty-cans'>
@@ -96,11 +97,11 @@ const SideMenu = () => {
                                 <span>Invoices</span>
                             </Item>
                             <Item key='/manage-routes'>
-                                {selected === '/manage-routes' ? <FriendsIcon /> : <FriendsIconLight />}
+                                {selected === '/manage-routes' ? <LocationIcon /> : <LocationIconLight />}
                                 <span>Routes</span>
                             </Item>
                             <Item key='/reports' style={{ pointerEvents: 'none' }}>
-                                {selected === '/reports' ? <DocIcon /> : <DocIconLight />}
+                                {selected === '/reports' ? <ReportIcon /> : <ReportIconLight />}
                                 <span>Reports</span>
                             </Item>
                         </>
@@ -154,7 +155,7 @@ const SideMenu = () => {
                                     <span>Distributors</span>
                                 </Item>
                                 <Item key='/routes'>
-                                    {selected === '/routes' ? <FriendsIcon /> : <FriendsIconLight />}
+                                    {selected === '/routes' ? <LocationIcon /> : <LocationIconLight />}
                                     <span>Routes</span>
                                 </Item>
                                 <Item key='/motherplants'>
@@ -167,7 +168,7 @@ const SideMenu = () => {
                                 </Item>
                             </SubMenu>
                             <Item key='/materials'>
-                                {selected === '/materials' ? <FriendsIcon /> : <FriendsIconLight />}
+                                {selected === '/materials' ? <RibbonIcon /> : <RibbonIconLight />}
                                 <span>Materials</span>
                             </Item>
                             <Item key='/invoices'>

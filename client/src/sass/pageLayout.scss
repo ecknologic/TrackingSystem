@@ -10,24 +10,9 @@
 
         #logo-container {
             display: flex;
-            height: 100%;
-            width: 8em;
-            font-family: "Lato-Medium";
             justify-content: space-between;
             align-items: center;
             padding: 0 .3em;
-            font-size: 1.1em;
-
-            h1 {
-                margin: 0;
-            }
-
-            #bibo {
-                color: #0062FF;
-            }
-            #water {
-                color: #4C4E4E;;
-            }
         }
 
         #nav-container {

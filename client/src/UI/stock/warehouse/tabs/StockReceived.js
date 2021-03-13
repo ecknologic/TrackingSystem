@@ -6,11 +6,12 @@ import Spinner from '../../../../components/Spinner';
 import Actions from '../../../../components/Actions';
 import ArrivedStockView from '../forms/ArrivedStock';
 import SearchInput from '../../../../components/SearchInput';
+import RoutesFilter from '../../../../components/RoutesFilter';
 import CustomModal from '../../../../components/CustomModal';
 import { EyeIconGrey } from '../../../../components/SVG_Icons';
 import { receivedStockColumns } from '../../../../assets/fixtures';
 import CustomPagination from '../../../../components/CustomPagination';
-import { doubleKeyComplexSearch, getStatusColor, showToast } from '../../../../utils/Functions';
+import { doubleKeyComplexSearch, getStatusColor, isEmpty, showToast } from '../../../../utils/Functions';
 
 const StockReceived = () => {
     const [loading, setLoading] = useState(true)
@@ -21,12 +22,19 @@ const StockReceived = () => {
     const [totalCount, setTotalCount] = useState(null)
     const [pageNumber, setPageNumber] = useState(1)
     const [viewModal, setViewModal] = useState(false)
+    const [filterInfo, setFilterInfo] = useState([])
+    const [filterON, setFilterON] = useState(false)
+    const [searchON, setSeachON] = useState(false)
+    const [motherplantList, setMotherplantList] = useState([])
+    const [filteredClone, setFilteredClone] = useState([])
+    const [resetSearch, setResetSearch] = useState(false)
 
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
         getReceivedStock()
+        getMotherplantList()
 
         return () => {
             http.ABORT(source)
@@ -57,6 +65,15 @@ const StockReceived = () => {
         } catch (error) { }
     }
 
+    const getMotherplantList = async () => {
+        const url = '/bibo/getDepartmentsList?departmentType=MotherPlant'
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setMotherplantList(data)
+        } catch (error) { }
+    }
+
     const handleMenuSelect = (key, id) => {
         if (key === 'view') {
             getStockById(id)
@@ -70,6 +87,26 @@ const StockReceived = () => {
     const handleSizeChange = (number, size) => {
         setPageSize(size)
         setPageNumber(number)
+    }
+
+    const onFilterChange = (data) => {
+        setPageNumber(1)
+        setFilterInfo(data)
+        if (isEmpty(data)) {
+            setStock(stockClone)
+            setTotalCount(stockClone.length)
+            setFilterON(false)
+        }
+        else generateFiltered(stockClone, data)
+    }
+
+    const generateFiltered = (original, filterInfo) => {
+        const filtered = original.filter((item) => filterInfo.includes(item.departmentId))
+        setStock(filtered)
+        setFilteredClone(filtered)
+        setTotalCount(filtered.length)
+        setFilterON(true)
+        searchON && setResetSearch(!resetSearch)
     }
 
     const handleSearch = (value) => {
@@ -107,6 +144,15 @@ const StockReceived = () => {
     return (
         <div className='stock-delivery-container'>
             <div className='header'>
+                <div className='left'>
+                    <RoutesFilter
+                        data={motherplantList}
+                        keyValue='departmentId'
+                        keyLabel='departmentName'
+                        title='Select Mother Plant'
+                        onChange={onFilterChange}
+                    />
+                </div>
                 <div className='right'>
                     <SearchInput
                         placeholder='Search Delivery Challan'

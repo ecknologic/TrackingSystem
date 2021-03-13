@@ -115,7 +115,7 @@ warehouseQueries.getTotalEmptyCansChangeCount = async (input, callback) => {
     return executeGetParamsQuery(query, options, callback)
 }
 warehouseQueries.getReceivedStock = async (warehouseId, callback) => {
-    let query = "SELECT w.id,w.DCNO as dcNo,w.warehouseId,w.isConfirmed,w.deliveryDate,w.20LCans as product20L,w.1LBoxes as product1L,w.500MLBoxes as product500ML,w.300MLBoxes as product300ML,w.2LBoxes as product2L,d.driverName,dri.mobileNumber,dep.address,dep.departmentName from warehousestockdetails w INNER JOIN dispatches d ON w.DCNO=d.DCNO INNER JOIN departmentmaster dep ON d.departmentId=dep.departmentId INNER JOIN driverdetails dri ON d.driverId=dri.driverId where w.warehouseId=? ORDER BY w.deliveryDate DESC";
+    let query = "SELECT w.id,w.DCNO as dcNo,w.warehouseId,w.isConfirmed,w.deliveryDate,w.20LCans as product20L,w.1LBoxes as product1L,w.500MLBoxes as product500ML,w.300MLBoxes as product300ML,w.2LBoxes as product2L,d.driverName,dri.mobileNumber,dep.address,dep.departmentName,dep.departmentId from warehousestockdetails w INNER JOIN dispatches d ON w.DCNO=d.DCNO INNER JOIN departmentmaster dep ON d.departmentId=dep.departmentId INNER JOIN driverdetails dri ON d.driverId=dri.driverId where w.warehouseId=? ORDER BY w.deliveryDate DESC";
     return executeGetParamsQuery(query, [warehouseId], callback)
 }
 warehouseQueries.getReceivedStockById = async (input, callback) => {
