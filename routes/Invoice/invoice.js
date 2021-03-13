@@ -164,8 +164,6 @@ function generateInvoiceTable(doc, invoice) {
                 .stroke()
         }
         if (position >= 760) {
-            doc
-
             invoiceTableTop = 0;
             jCount = 0;
         }
@@ -317,15 +315,15 @@ function billingTable(doc, invoice) {
         .fontSize(10)
         .text(`${organizationName || customerName} `, 30, billingInfoTop + 30)
         .fontSize(8)
-        .text(`${address}`, 30, billingInfoTop + 42, { width: 200 })
-        .text(`Contact No: ${mobileNumber} `, 30, billingInfoTop + 50, { width: 200 })
+        .text(`${address1}`, 30, billingInfoTop + 42, { width: 200 })
+        .text(`Contact No: ${mobileNumber} `, 30, address1.length > 50 ? billingInfoTop + 75 : billingInfoTop + 50, { width: 200 })
         .text(`GST NO: ${gstNo || "NA"} `, 30, billingInfoTop + 100)
         .text(`State Code: ${statusCode}`, 30, billingInfoTop + 115)
         .fontSize(10)
         .text(`${organizationName || customerName} `, 310, billingInfoTop + 30)
         .fontSize(8)
-        .text(`${address}`, 310, billingInfoTop + 42, { width: 200 })
-        .text(`Contact No: ${mobileNumber} `, 310, billingInfoTop + 50, { width: 200 })
+        .text(`${address1}`, 310, billingInfoTop + 42, { width: 200 })
+        .text(`Contact No: ${mobileNumber} `, 310, address1.length > 50 ? billingInfoTop + 75 : billingInfoTop + 50, { width: 200 })
         .text(`GST NO: ${gstNo || "NA"} `, 310, billingInfoTop + 100)
         .text(`State Code: ${statusCode}`, 310, billingInfoTop + 115)
 
