@@ -19,7 +19,7 @@ const APIDATEFORMAT = 'YYYY-MM-DD'
 
 const PanelHeader = memo((props) => {
     const { title, showShow, showShift, initTime = tillNowString, showDep, depName, showFooter,
-        depMenu = [], depOptions = [], onSelect = fn } = props
+        depMenu = [], depOptions = [], onSelect = fn, hideReports, hideDepInput } = props
     const [open, setOpen] = useState(false)
     const [time, setTime] = useState(() => getInitTime(initTime))
     const [selectedRange, setSelectedRange] = useState([])
@@ -178,7 +178,7 @@ const PanelHeader = memo((props) => {
                     </div>
                 </div>
                 <div className='secondary'>
-                    <ReportsDropdown inverse />
+                    {hideReports ? null : <ReportsDropdown inverse />}
                 </div>
             </div>
             {
@@ -193,14 +193,19 @@ const PanelHeader = memo((props) => {
                                     onSelect={handleDateInputSelect}
                                 />
                             </div>
-                            <div className='input-container'>
-                                <InputLabel name={depName} />
-                                <SelectInput
-                                    value={depValue}
-                                    options={depOptions}
-                                    onSelect={handleDepartmentSelect}
-                                />
-                            </div>
+                            {
+                                hideDepInput ? null
+                                    : (
+                                        <div className='input-container'>
+                                            <InputLabel name={depName} />
+                                            <SelectInput
+                                                value={depValue}
+                                                options={depOptions}
+                                                onSelect={handleDepartmentSelect}
+                                            />
+                                        </div>
+                                    )
+                            }
                         </div>
                     </div>
                 )

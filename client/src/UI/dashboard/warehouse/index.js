@@ -1,62 +1,35 @@
-import axios from 'axios';
-import React, { Fragment, useEffect, useMemo, useState } from 'react';
-import { http } from '../../../modules/http';
+import React, { Fragment } from 'react';
 import SalesResults from './panels/SalesResults';
-import TotalBusiness from './panels/TotalBusiness';
 import Header from '../../../components/ContentHeader';
 import InvoiceOverview from './panels/InvoiceOverview';
+import TotalStockStatus from './panels/TotalStockStatus';
 import CustomersOverview from './panels/CustomersOverview';
-import ProductionResults from './panels/ProductionResults';
-import WaterQualityResults from './panels/WaterQualityResults';
-import { getDepartmentOptions, getWarehouseOptions, getDepartmentMenu } from '../../../assets/fixtures';
+import { getWarehoseId } from '../../../utils/constants';
 
 const WarehouseDashboard = () => {
-    const [warehouseList, setWarehouseList] = useState([])
-    const [motherplantList, setMotherplantList] = useState([])
-
-    const motherplantOptions = useMemo(() => getDepartmentOptions(motherplantList), [motherplantList])
-    const motherplantMenu = useMemo(() => getDepartmentMenu(motherplantList), [motherplantList])
-    const warehouseOptions = useMemo(() => getWarehouseOptions(warehouseList), [warehouseList])
-    const source = useMemo(() => axios.CancelToken.source(), []);
-    const config = { cancelToken: source.token }
-
-    useEffect(() => {
-        getMotherplantList()
-        getWarehouseList()
-    }, [])
-
-    const getMotherplantList = async () => {
-        const url = '/bibo/getDepartmentsList?departmentType=MotherPlant&hasAll=true'
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setMotherplantList(data)
-        } catch (error) { }
-    }
-
-    const getWarehouseList = async () => {
-        const url = '/bibo/getDepartmentsList?departmentType=warehouse&hasAll=true'
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setWarehouseList(data)
-        } catch (error) { }
-    }
+    const departmentId = getWarehoseId()
 
     return (
         <Fragment>
             <Header />
-            <div className='dashboard-content'>
-                <div className='equal-panels-container'>
-                    <ProductionResults depOptions={motherplantOptions} />
-                    <SalesResults depOptions={warehouseOptions} />
+            <div className='dashboard-content-outer'>
+                <div className='left-content'>
+                    <div className='dashboard-content'>
+                        <TotalStockStatus />
+                        <div className='dashboard-content-inner'>
+                            <div className='left-panel'>
+                                <SalesResults depId={departmentId} />
+                            </div>
+                            <div className='right-panel'>
+                                <InvoiceOverview />
+                            </div>
+                        </div>
+                        <CustomersOverview />
+                    </div>
                 </div>
-                <CustomersOverview />
-                <div className='equal-panels-container'>
-                    <TotalBusiness />
-                    <InvoiceOverview />
+                <div className='right-content'>
+
                 </div>
-                <WaterQualityResults depMenu={motherplantMenu} motherplantList={motherplantList} />
             </div>
         </Fragment>
     )

@@ -58,7 +58,7 @@ const EmptyBottlesStock = () => {
 
 const props = {
     infinite: false,
-    slidesToShow: 4,
+    slidesToShow: 5,
     slidesToScroll: 1,
     prevArrow: <LeftChevronIconGrey />,
     nextArrow: <RightChevronIconGrey />,

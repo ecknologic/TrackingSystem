@@ -251,6 +251,16 @@ const CheckComponent = ({ color }) => (
         <path fill={color} fillRule="evenodd" d="M10.26 11.47L18.2 1.38a1 1 0 011.58 1.24l-8.68 11a1 1 0 01-1.5.07L5.27 9.13a1 1 0 111.44-1.37l3.54 3.71zM18 9.1a1 1 0 012 0v7.2a3.7 3.7 0 01-3.7 3.7H3.7A3.7 3.7 0 010 16.3V3.7A3.7 3.7 0 013.7 0h10.7a1 1 0 010 2H3.7C2.76 2 2 2.76 2 3.7v12.6c0 .94.76 1.7 1.7 1.7h12.6c.94 0 1.7-.76 1.7-1.7V9.1z" />
     </svg>
 )
+const StackComponent = ({ color }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="21">
+        <path fill={color} fillRule="evenodd" d="M6.3 12.2V8.8H2v3.4h4.3zm2 0H18V8.8H8.3v3.4zm-2-9.7H3a1 1 0 00-1 1v3.3h4.3V2.5zm2 0v4.3H18V3.5a1 1 0 00-1-1H8.3zm-2 16v-4.3H2v3.3a1 1 0 001 1h3.3zm2 0H17a1 1 0 001-1v-3.3H8.3v4.3zm-8.3-1v-14a3 3 0 013-3h14a3 3 0 013 3v14a3 3 0 01-3 3H3a3 3 0 01-3-3z" />
+    </svg>
+)
+const HomeComponent = ({ color }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+        <path fill={color} fill-rule="evenodd" d="M17.1 8.3h-.39c-.73 0-1.4-.26-1.92-.69-.51.43-1.18.69-1.91.69h-.96c-.73 0-1.4-.26-1.92-.69-.52.43-1.19.69-1.92.69h-.96c-.73 0-1.4-.26-1.91-.69-.52.43-1.2.69-1.92.69H2.9V18H7v-6a1 1 0 011-1h4.5a1 1 0 011 1v6h3.6V8.3zm2-.72V18.1a1.9 1.9 0 01-1.9 1.9H2.8a1.9 1.9 0 01-1.9-1.9V7.58a2.64 2.64 0 01-.79-2.73l1.05-3.43A2 2 0 013.07 0h13.86a2 2 0 011.91 1.42l1.05 3.43a2.62 2.62 0 01-.79 2.73zM11.5 18v-5H9v5h2.5zm6.47-12.57L16.93 2H3.07L2.03 5.43A.6.6 0 002 5.6c0 .37.35.7.8.7h.49c.52 0 .92-.37.92-.8 0-1.33 2-1.33 2 0 0 .43.4.8.91.8h.96c.52 0 .92-.37.92-.8 0-1.33 2-1.33 2 0 0 .43.4.8.92.8h.96c.52 0 .91-.37.91-.8 0-1.33 2-1.33 2 0 0 .43.4.8.92.8h.48l.24-.03c.42-.12.65-.5.54-.84z" />
+    </svg>
+)
 
 const BiboSvg = () => <BiboComponent />
 const RightChevronSvgLight = () => <RightChevronComponent color={purpleColor} />
@@ -320,6 +330,10 @@ const RibbonSvgLight = () => <RibbonComponent color={secondaryColor} />
 const RibbonSvg = () => <RibbonComponent color={primaryColor} />
 const CheckSvgLight = () => <CheckComponent color={secondaryColor} />
 const CheckSvg = () => <CheckComponent color={primaryColor} />
+const StackSvgLight = () => <StackComponent color={secondaryColor} />
+const StackSvg = () => <StackComponent color={primaryColor} />
+const HomeSvgLight = () => <HomeComponent color={secondaryColor} />
+const HomeSvg = () => <HomeComponent color={primaryColor} />
 
 export const RightChevronIconGrey = ({ currentSlide, slideCount, ...props }) => <Icon component={RightChevronSvgGrey} {...props} />
 export const LeftChevronIconGrey = ({ currentSlide, slideCount, ...props }) => <Icon component={LeftChevronSvgGrey} {...props} />
@@ -390,3 +404,7 @@ export const RibbonIconLight = props => <Icon component={RibbonSvgLight} {...pro
 export const RibbonIcon = props => <Icon component={RibbonSvg} {...props} />
 export const CheckIconLight = props => <Icon component={CheckSvgLight} {...props} />
 export const CheckIcon = props => <Icon component={CheckSvg} {...props} />
+export const StackIconLight = props => <Icon component={StackSvgLight} {...props} />
+export const StackIcon = props => <Icon component={StackSvg} {...props} />
+export const HomeIconLight = props => <Icon component={HomeSvgLight} {...props} />
+export const HomeIcon = props => <Icon component={HomeSvg} {...props} />

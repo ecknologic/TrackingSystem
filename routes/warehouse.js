@@ -405,6 +405,7 @@ router.get('/getCustomersCount', (req, res) => {
   const result = {}
   const { type } = req.query
   let input = req.query
+  input.departmentId = departmentId
   customerQueries.getTotalCustomersByDepartment(input, (err, active) => {
     if (err) res.status(500).json(dbError(err))
     else {

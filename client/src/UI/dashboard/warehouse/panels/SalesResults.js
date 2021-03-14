@@ -8,8 +8,8 @@ import PanelHeader from '../../../../components/PanelHeader';
 import { defaultBars } from '../../../../assets/fixtures';
 import DashboardResultsCard from '../../../../components/DashboardResultsCard';
 
-const SalesResults = ({ depOptions }) => {
-    const options = { startDate: d, endDate: d, departmentId: 'All', fromStart: true, type: 'Till Now' }
+const SalesResults = ({ depId }) => {
+    const options = { startDate: d, endDate: d, fromStart: true, type: 'Till Now' }
     const [results, setResults] = useState({})
     const [graph, setGraph] = useState(defaultBars)
     const [columnWidthRatio, setColumnWidthRatio] = useState()
@@ -26,8 +26,8 @@ const SalesResults = ({ depOptions }) => {
         }
     }, [])
 
-    const getResults = async ({ startDate, endDate, departmentId, fromStart, type }) => {
-        const url = `/warehouse/getTotalSales?startDate=${startDate}&endDate=${endDate}&departmentId=${departmentId}&fromStart=${fromStart}&type=${type}`
+    const getResults = async ({ startDate, endDate, fromStart, type }) => {
+        const url = `/warehouse/getTotalSales?startDate=${startDate}&endDate=${endDate}&departmentId=${depId}&fromStart=${fromStart}&type=${type}`
 
         try {
             const { graph = [], ...rest } = await http.GET(axios, url, config)
@@ -48,10 +48,10 @@ const SalesResults = ({ depOptions }) => {
         <PanelHeader
             title='Sales Results'
             onSelect={handleOperation}
-            depOptions={depOptions}
             depName='Warehouse'
             initTime='Till Now'
             showFooter
+            hideDepInput
         />
     )
 
