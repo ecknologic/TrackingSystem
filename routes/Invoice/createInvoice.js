@@ -211,8 +211,8 @@ function generateInvoiceTable(doc, invoice) {
 }
 function billingTable(doc, invoice) {
     const item = invoice.items.length ? invoice.items[0] : {}
-    const { Address1, deliveryAddress } = invoice
-    const { customerId = "", customerName = "", organizationName = "", address = "", gstNo = "", mobileNumber = "" } = item
+    const { Address1 } = invoice
+    const { customerId = "", customerName = "", organizationName = "", deliveryAddress, address = "", gstNo = "", mobileNumber = "" } = item
     const billingInfoTop = 160;
     const statusCode = (gstNo || '').slice(0, 2)
 

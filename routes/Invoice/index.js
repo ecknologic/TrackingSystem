@@ -98,7 +98,7 @@ router.get('/getInvoiceById/:invoiceId', (req, res) => {
 
             if (haveMultipleAddress) {
                 let invoice = {
-                    items: obj.products, customerType, deliveryAddress, Address1, invoiceId, gstNo, fromDate, toDate
+                    items: obj.products, customerType, Address1, invoiceId, gstNo, fromDate, toDate
                 }
                 createMultiDeliveryInvoice(invoice, "invoice.pdf").then(response => {
                     setTimeout(() => {
@@ -110,7 +110,7 @@ router.get('/getInvoiceById/:invoiceId', (req, res) => {
                 })
             } else {
                 let invoice = {
-                    items: [obj], invoiceId, gstNo, deliveryAddress, Address1, fromDate, toDate
+                    items: [obj], invoiceId, gstNo, Address1, fromDate, toDate
                 }
                 createSingleDeliveryInvoice(invoice, "invoice.pdf").then(response => {
                     setTimeout(() => {
@@ -198,7 +198,7 @@ router.post("/generateMultipleInvoices", (req, res) => {
                                 mailIds: EmailId
                             }
                             products.map(product => {
-                                const { location: address, price20L, price2L, price1L, price500ML, price300ML } = product
+                                const { location: address, deliveryAddress, price20L, price2L, price1L, price500ML, price300ML } = product
                                 let addedProducts = []
                                 if (product['20LCans'] > 0) {
                                     if (!addedProducts.includes("20LCans")) {
@@ -209,6 +209,7 @@ router.post("/generateMultipleInvoices", (req, res) => {
                                             "discount": 0,
                                             "tax": 12,
                                             address,
+                                            deliveryAddress,
                                             ...getResults({ gstNo, quantity: product['20LCans'], productPrice: price20L, discount: 0, tax: 12 })
                                         })
                                         addedProducts.push("20LCans")
@@ -223,6 +224,7 @@ router.post("/generateMultipleInvoices", (req, res) => {
                                             "discount": 0,
                                             "tax": 18,
                                             address,
+                                            deliveryAddress,
                                             ...getResults({ gstNo, quantity: product['1LBoxes'], productPrice: price1L, discount: 0, tax: 18 })
 
                                         })
@@ -238,6 +240,7 @@ router.post("/generateMultipleInvoices", (req, res) => {
                                             "discount": 0,
                                             "tax": 18,
                                             address,
+                                            deliveryAddress,
                                             ...getResults({ gstNo, quantity: product['500MLBoxes'], productPrice: price500ML, discount: 0, tax: 18 })
 
                                         })
@@ -253,6 +256,7 @@ router.post("/generateMultipleInvoices", (req, res) => {
                                             "discount": 0,
                                             "tax": 18,
                                             address,
+                                            deliveryAddress,
                                             ...getResults({ gstNo, quantity: product['300MLBoxes'], productPrice: price300ML, discount: 0, tax: 18 })
                                         })
                                         addedProducts.push("300MLBoxes")
@@ -267,6 +271,7 @@ router.post("/generateMultipleInvoices", (req, res) => {
                                             "discount": 0,
                                             "tax": 18,
                                             address,
+                                            deliveryAddress,
                                             ...getResults({ gstNo, quantity: product['2LBoxes'], productPrice: price2L, discount: 0, tax: 18 })
                                         })
                                         addedProducts.push("2LBoxes")
@@ -329,6 +334,7 @@ router.post("/createInvoice", (req, res) => {
                 let product = products[0]
                 const {
                     location: address,
+                    deliveryAddress,
                     price1L,
                     price2L,
                     price20L,
@@ -481,6 +487,7 @@ const addProducts = (products) => {
             newData["price300ML"] += item["price300ML"]
             newData["price500ML"] += item["price500ML"]
             newData["address"] = item["address"]
+            newData["deliveryAddress"] = item["deliveryAddress"]
         }
     })
     return [newData]
