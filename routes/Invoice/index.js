@@ -34,7 +34,7 @@ router.get('/getInvoiceById/:invoiceId', (req, res) => {
     invoiceQueries.getInvoiceById(req.params.invoiceId, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
-            const { gstNo, invoiceId, Address1, customerType, fromDate, toDate, ...rest } = results[0]
+            const { gstNo, invoiceId, Address1, deliveryAddress, customerType, fromDate, toDate, ...rest } = results[0]
             let haveMultipleAddress = false
             let products = JSON.parse(results[0].products)
             let obj = {
@@ -98,7 +98,7 @@ router.get('/getInvoiceById/:invoiceId', (req, res) => {
 
             if (haveMultipleAddress) {
                 let invoice = {
-                    items: obj.products, customerType, Address1, invoiceId, gstNo, fromDate, toDate
+                    items: obj.products, customerType, deliveryAddress, Address1, invoiceId, gstNo, fromDate, toDate
                 }
                 createMultiDeliveryInvoice(invoice, "invoice.pdf").then(response => {
                     setTimeout(() => {
@@ -110,7 +110,7 @@ router.get('/getInvoiceById/:invoiceId', (req, res) => {
                 })
             } else {
                 let invoice = {
-                    items: [obj], invoiceId, gstNo, Address1, fromDate, toDate
+                    items: [obj], invoiceId, gstNo, deliveryAddress, Address1, fromDate, toDate
                 }
                 createSingleDeliveryInvoice(invoice, "invoice.pdf").then(response => {
                     setTimeout(() => {
@@ -198,7 +198,7 @@ router.post("/generateMultipleInvoices", (req, res) => {
                                 mailIds: EmailId
                             }
                             products.map(product => {
-                                const { address, price20L, price2L, price1L, price500ML, price300ML } = product
+                                const { location: address, price20L, price2L, price1L, price500ML, price300ML } = product
                                 if (product['20LCans'] > 0) {
                                     finalProducts.push({
                                         "productName": "20 Lt Bibo Water Jar",
@@ -312,7 +312,7 @@ router.post("/createInvoice", (req, res) => {
                 let products = addProducts(JSON.parse(data[0].products))
                 let product = products[0]
                 const {
-                    address,
+                    location: address,
                     price1L,
                     price2L,
                     price20L,

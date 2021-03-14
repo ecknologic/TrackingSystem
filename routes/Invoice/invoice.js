@@ -146,7 +146,7 @@ function generateInvoiceTable(doc, invoice) {
 
         }
         if (i == (invoice.items.length - 1)) {
-            const { gstNo } = i
+            const { gstNo } = item
             totalArr.push({ gstNo, product: "20 Lt Bt Jar", price: totalPrice20L, quantity: totalQuantity20L },
                 { gstNo, product: "1L Boxes", price: totalPrice1L, quantity: totalQuantity1L },
                 { gstNo, product: "500ML Boxes", price: totalPrice500ML, quantity: totalQuantity500ML },
@@ -286,7 +286,7 @@ function generateTableRow(
     quantity,
     price
 ) {
-    console.log("y value:::" + y + "item:::" + sno);
+    // console.log("y value:::" + y + "item:::" + sno);
     doc
         .fontSize(10)
         .text(sno, 50, y)
