@@ -1327,6 +1327,16 @@ textarea, .ant-dropdown-menu {
     }
 }
 
+.app-day-slide-item {
+    font-family: 'PoppinsRegular400';
+    color: rgba(0, 0, 0, 0.85);
+    cursor: pointer;
+
+    .date {
+        font-size: .95em;
+    }
+}
+
 .app-date-picker-wrapper {
     position: relative;
     display: flex;

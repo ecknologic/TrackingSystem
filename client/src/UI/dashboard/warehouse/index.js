@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react';
+import TodaysOrders from './panels/TodaysOrders';
 import SalesResults from './panels/SalesResults';
 import Header from '../../../components/ContentHeader';
 import InvoiceOverview from './panels/InvoiceOverview';
@@ -28,7 +29,7 @@ const WarehouseDashboard = () => {
                     </div>
                 </div>
                 <div className='right-content'>
-
+                    <TodaysOrders />
                 </div>
             </div>
         </Fragment>

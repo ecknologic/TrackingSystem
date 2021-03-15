@@ -1,9 +1,8 @@
 import dayjs from 'dayjs';
 import React from 'react';
-const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+import { MONTHS } from '../assets/fixtures';
 
 const DateValue = ({ date, to }) => {
-
     const fromMonthIndex = dayjs(date).month()
     const fromDay = dayjs(date).get('date')
     const toMonthIndex = dayjs(to).month()
@@ -11,8 +10,8 @@ const DateValue = ({ date, to }) => {
 
     const isSame = dayjs(date).isSame(dayjs(to))
 
-    const FromEl = <span className='app-date-value'>{`${months[fromMonthIndex]} - ${fromDay}`}</span>
-    const ToEl = <span className='app-date-value'>{`${months[toMonthIndex]} - ${toDay}`}</span>
+    const FromEl = <span className='app-date-value'>{`${MONTHS[fromMonthIndex]} - ${fromDay}`}</span>
+    const ToEl = <span className='app-date-value'>{`${MONTHS[toMonthIndex]} - ${toDay}`}</span>
 
     if (to && !isSame) return (
         <>

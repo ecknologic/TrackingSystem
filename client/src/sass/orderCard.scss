@@ -1,0 +1,45 @@
+.order-card-container {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 1em;
+
+    .title,.stock {
+        font-size: .95em;
+        font-family: 'PoppinsMedium500';
+    }
+
+    .address {
+        color: #B4B3B3;
+        font-size: .85em;
+        font-family: 'PoppinsRegular400';
+    }
+
+    .stock {
+        margin: .5em 0;
+    }
+
+    .stat-head {
+        font-family: 'PoppinsSemiBold600';
+        font-size: 1em;
+        color: #354052;
+    }
+
+    .status {
+        .app-dot {
+            width: 9px;
+            height: 9px;
+        }
+
+        .status-text {
+            font-size: .95em;
+            font-family: 'PoppinsRegular400';
+            color: rgba(0, 0, 0, 0.85);
+        }
+    }
+
+    .small-btn {
+        margin-top: .5em;
+        height: auto;
+        width: fit-content;
+    }
+}
