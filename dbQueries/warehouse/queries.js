@@ -12,7 +12,7 @@ warehouseQueries.getDeliveryDetails = (input, callback) => {
 }
 
 warehouseQueries.getAllDcDetails = (input, callback) => {
-    const { fromDate, toDate, departmentId=23, customerIds } = input
+    const { fromDate, toDate, departmentId = 23, customerIds } = input
     let query = "select c.returnEmptyCans,c.customerOrderId,c.deliveredDate,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS product20L,c.1LBoxes AS product1L,c.500MLBoxes AS product500ML,c.300MLBoxes AS product300ML,c.2LBoxes AS product2L,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE warehouseId=? AND isDelivered='Completed' ORDER BY c.dcNo DESC";
     let options = [departmentId]
     if (customerIds && fromDate && toDate && departmentId) {
@@ -52,6 +52,18 @@ warehouseQueries.getTotalSales = (input, callback) => {
             options = [startDate, endDate, departmentId]
         }
     }
+    return executeGetParamsQuery(query, options, callback)
+}
+warehouseQueries.getTotalCurrentActiveStocks = (input, callback) => {
+    const { startDate, endDate, departmentId, fromStart } = input
+    let query = "SELECT (`a`.`total20LCans` - IFNULL(`b`.`total20LCans`,0)) AS `total20LCans`, (`a`.`total1LBoxes` - IFNULL(`b`.`total1LBoxes`,0)) AS `total1LBoxes`, (`a`.`total500MLBoxes` - IFNULL(`b`.`total500MLBoxes`,0)) AS `total500MLBoxes`, (`a`.`total300MLBoxes` - IFNULL(`b`.`total300MLBoxes`,0)) AS `total300MLBoxes`,(`a`.`total2LBoxes` - IFNULL(`b`.`total2LBoxes`,0)) AS `total2LBoxes` FROM (SELECT  SUM(20LCans) AS `total20LCans`,SUM(1LBoxes) AS `total1LBoxes`, SUM(500MLBoxes) AS `total500MLBoxes`,SUM(300MLBoxes) AS `total300MLBoxes`,SUM(2LBoxes) AS `total2LBoxes` FROM `warehousestockdetails` WHERE warehouseId=? AND DATE(DeliveryDate)<=?) AS a INNER JOIN (SELECT  SUM(20LCans) AS `total20LCans`, SUM(1LBoxes) AS `total1LBoxes`,  SUM(500MLBoxes) AS `total500MLBoxes`, SUM(300MLBoxes) AS `total300MLBoxes`, SUM(2LBoxes) AS `total2LBoxes`  FROM  customerorderdetails WHERE  isDelivered='Completed' AND warehouseId=? AND DATE(DeliveryDate)<=?) AS b";
+    let options = [departmentId, endDate, departmentId, endDate]
+
+    if (fromStart !== 'true') {
+        query = "SELECT (`a`.`total20LCans` - IFNULL(`b`.`total20LCans`,0)) AS `total20LCans`, (`a`.`total1LBoxes` - IFNULL(`b`.`total1LBoxes`,0)) AS `total1LBoxes`, (`a`.`total500MLBoxes` - IFNULL(`b`.`total500MLBoxes`,0)) AS `total500MLBoxes`, (`a`.`total300MLBoxes` - IFNULL(`b`.`total300MLBoxes`,0)) AS `total300MLBoxes`,(`a`.`total2LBoxes` - IFNULL(`b`.`total2LBoxes`,0)) AS `total2LBoxes` FROM (SELECT  SUM(20LCans) AS `total20LCans`,SUM(1LBoxes) AS `total1LBoxes`, SUM(500MLBoxes) AS `total500MLBoxes`,SUM(300MLBoxes) AS `total300MLBoxes`,SUM(2LBoxes) AS `total2LBoxes` FROM `warehousestockdetails` WHERE warehouseId=? AND DeliveryDate BETWEEN ? AND ?) AS a INNER JOIN (SELECT  SUM(20LCans) AS `total20LCans`, SUM(1LBoxes) AS `total1LBoxes`,  SUM(500MLBoxes) AS `total500MLBoxes`, SUM(300MLBoxes) AS `total300MLBoxes`, SUM(2LBoxes) AS `total2LBoxes`  FROM  customerorderdetails WHERE  isDelivered='Completed' AND warehouseId=? AND DeliveryDate BETWEEN ? AND ?) AS b";
+        options = [departmentId, startDate, endDate, departmentId, startDate, endDate]
+    }
+
     return executeGetParamsQuery(query, options, callback)
 }
 warehouseQueries.getTotalSalesChange = (input, callback) => {
