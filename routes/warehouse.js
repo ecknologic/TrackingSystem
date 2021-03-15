@@ -123,7 +123,7 @@ router.post('/updateWarehouse', (req, res) => {
 router.post('/createDC', (req, res) => {
   let dcCreateQuery = "insert into customerorderdetails (customerName,phoneNumber,address,routeId,driverId,20LCans,1LBoxes,500MLBoxes,300MLBoxes,2LBoxes,warehouseId) values(?,?,?,?,?,?,?,?,?,?,?)";
   let dcDetails = req.body;
-  let insertQueryValues = [dcDetails.customerName, dcDetails.phoneNumber, dcDetails.address, dcDetails.routeId, dcDetails.driverId, dcDetails.cans20L, dcDetails.boxes1L, dcDetails.boxes500ML, dcDetails.boxes300ML, dcDetails.boxes2L, dcDetails.warehouseId]
+  let insertQueryValues = [dcDetails.customerName, dcDetails.phoneNumber, dcDetails.address, dcDetails.routeId, dcDetails.driverId, dcDetails.product20L, dcDetails.product1L, dcDetails.product500ML, dcDetails.product300ML, dcDetails.product2L, dcDetails.warehouseId]
   db.query(dcCreateQuery, insertQueryValues, (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
@@ -146,11 +146,11 @@ router.post('/createDC', (req, res) => {
 router.put('/updateDC', (req, res) => {
   let dcCreateQuery = "UPDATE customerorderdetails SET customerName=?,phoneNumber=?,address=?,routeId=?,driverId=?,20LCans=?,1LBoxes=?,500MLBoxes=?,300MLBoxes=?,2LBoxes=?,warehouseId=? WHERE customerOrderId=?";
   let dcDetails = req.body;
-  let updateQueryValues = [dcDetails.customerName, dcDetails.phoneNumber, dcDetails.address, dcDetails.routeId, dcDetails.driverId, dcDetails.cans20L, dcDetails.boxes1L, dcDetails.boxes500ML, dcDetails.boxes300ML, dcDetails.boxes2L, dcDetails.warehouseId, dcDetails.customerOrderId]
+  let updateQueryValues = [dcDetails.customerName, dcDetails.phoneNumber, dcDetails.address, dcDetails.routeId, dcDetails.driverId, dcDetails.product20L, dcDetails.product1L, dcDetails.product500ML, dcDetails.product300ML, dcDetails.product2L, dcDetails.warehouseId, dcDetails.customerOrderId]
   db.query(dcCreateQuery, updateQueryValues, (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
-      let deliveryDetailsQuery = "select c.customerOrderId,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS cans20L,c.1LBoxes AS boxes1L,c.500MLBoxes AS boxes500ML,c.300MLBoxes AS boxes300ML,c.2LBoxes AS boxes2L,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid INNER JOIN driverdetails d  ON c.driverId=d.driverid   WHERE customerOrderId =?";
+      let deliveryDetailsQuery = "select c.customerOrderId,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS product20L,c.1LBoxes AS product1L,c.500MLBoxes AS product500ML,c.300MLBoxes AS product300ML,c.2LBoxes AS product2L,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid INNER JOIN driverdetails d  ON c.driverId=d.driverid   WHERE customerOrderId =?";
       db.query(deliveryDetailsQuery, [dcDetails.customerOrderId], (deliveryErr, deliveryDetails) => {
         if (deliveryErr) res.json({ status: 500, message: deliveryErr.sqlMessage });
         else res.json({ status: 200, message: "DC Updated successfully", data: deliveryDetails })

@@ -32,10 +32,15 @@ const DCView = ({ data }) => {
                     <InputLabel name='Route' />
                     <InputValue size='large' value={RouteName} />
                 </div>
-                <div className='input-container'>
-                    <InputLabel name='Delivered On' />
-                    <InputValue size='smaller' value={dayjs(deliveredDate).format(DATEANDTIMEFORMAT)} />
-                </div>
+                {
+                    isDelivered === 'Completed' &&
+                    (
+                        <div className='input-container'>
+                            <InputLabel name='Delivered On' />
+                            <InputValue size='smaller' value={dayjs(deliveredDate).format(DATEANDTIMEFORMAT)} />
+                        </div>
+                    )
+                }
             </div>
             <Divider />
             <div className='row'>

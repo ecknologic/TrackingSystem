@@ -25,6 +25,7 @@ $textColor:rgba(0,0,0,0.85);
         width: 30%;
         padding: 2em;
         padding-left: 1.5em;
+        padding-bottom: 4.5em;
     }
 }
 
@@ -370,5 +371,36 @@ $textColor:rgba(0,0,0,0.85);
     .chev {
         padding-left: .5em;
         transform: scale(.8);
+    }
+}
+
+.todays-orders-panel {
+    height: 100%;
+    background-color: #fff;
+    border-radius: .6em;
+
+    .panel-header {
+        padding: .5em 0 0 1.5em;
+    }
+
+    .head-container {
+        width: 100%;
+    }
+    
+    .panel-body {
+        padding-top: 1em;
+        height: 100%;
+
+        .no-content {
+            height: calc(100vh - 13em);
+        }
+    }
+
+    .panel-details-scroll {
+        padding: 5px 1.5em 0 1.5em;
+    }
+
+    .panel-details {
+        height: 100%;
     }
 }

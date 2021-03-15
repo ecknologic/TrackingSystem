@@ -6,18 +6,16 @@ import Spinner from '../../../../components/Spinner';
 import Actions from '../../../../components/Actions';
 import DCView from '../../../accounts/view/views/DCView';
 import DateValue from '../../../../components/DateValue';
-import QuitModal from '../../../../components/CustomModal';
 import SearchInput from '../../../../components/SearchInput';
 import CustomModal from '../../../../components/CustomModal';
 import { deliveryColumns } from '../../../../assets/fixtures';
 import CustomButton from '../../../../components/CustomButton';
 import RoutesFilter from '../../../../components/RoutesFilter';
-import ConfirmMessage from '../../../../components/ConfirmMessage';
+import { getWarehoseId, TODAYDATE } from '../../../../utils/constants';
 import CustomPagination from '../../../../components/CustomPagination';
 import CustomRangeInput from '../../../../components/CustomRangeInput';
 import { EyeIconGrey, ScheduleIcon } from '../../../../components/SVG_Icons';
-import { getWarehoseId, TODAYDATE, TRACKFORM } from '../../../../utils/constants';
-import { resetTrackForm, getStatusColor, doubleKeyComplexSearch } from '../../../../utils/Functions';
+import { getStatusColor, doubleKeyComplexSearch } from '../../../../utils/Functions';
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
 const DeliveredDC = () => {
@@ -32,9 +30,7 @@ const DeliveredDC = () => {
     const [pageSize, setPageSize] = useState(10)
     const [totalCount, setTotalCount] = useState(null)
     const [pageNumber, setPageNumber] = useState(1)
-    const [btnDisabled, setBtnDisabled] = useState(false)
     const [DCModal, setDCModal] = useState(false)
-    const [confirmModal, setConfirmModal] = useState(false)
     const [startDate, setStartDate] = useState(TODAYDATE)
     const [endDate, setEndDate] = useState(TODAYDATE)
     const [selectedRange, setSelectedRange] = useState([])
@@ -123,13 +119,8 @@ const DeliveredDC = () => {
         setPageNumber(number)
     }
 
-    const onModalClose = (hasSaved) => {
-        const formHasChanged = sessionStorage.getItem(TRACKFORM)
-        if (formHasChanged && !hasSaved) {
-            return setConfirmModal(true)
-        }
+    const onModalClose = () => {
         setDCModal(false)
-        setBtnDisabled(false)
         setFormData({})
     }
 
@@ -162,14 +153,8 @@ const DeliveredDC = () => {
         }
     }), [deliveries])
 
-    const handleConfirmModalOk = useCallback(() => {
-        setConfirmModal(false);
-        resetTrackForm()
-        onModalClose()
-    }, [])
 
     const handleDCModalCancel = useCallback(() => onModalClose(), [])
-    const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
@@ -241,7 +226,6 @@ const DeliveredDC = () => {
             <CustomModal
                 className='app-form-modal app-view-modal'
                 visible={DCModal}
-                btnDisabled={btnDisabled}
                 onOk={handleDCModalCancel}
                 onCancel={handleDCModalCancel}
                 title={title}
@@ -250,15 +234,6 @@ const DeliveredDC = () => {
             >
                 <DCView data={formData} />
             </CustomModal>
-            <QuitModal
-                visible={confirmModal}
-                onOk={handleConfirmModalOk}
-                onCancel={handleConfirmModalCancel}
-                title='Are you sure you want to leave?'
-                okTxt='Yes'
-            >
-                <ConfirmMessage msg='Changes you made may not be saved.' />
-            </QuitModal>
         </div>
     )
 }

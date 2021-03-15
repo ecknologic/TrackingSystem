@@ -2,6 +2,8 @@ import { Menu, Select } from 'antd';
 import React from 'react';
 const { Option } = Select;
 
+export const MONTHSFULL = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+export const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 export const WEEKDAYS = ["ALL", "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
 export const idOptions = [
     <Option key='1' value="adharNo">Aadhar</Option>,
