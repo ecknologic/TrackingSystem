@@ -10,7 +10,7 @@ const ArrivedStockForm = (props) => {
 
     const { data, errors = {}, disabled, onChange, viewOnly } = props
 
-    const { dcNo = '', damagedDesc, address = '', isDamaged, driverName = '', mobileNumber = '', vehicleNo = '', vehicleType = '', departmentName,
+    const { dcNo = '', damagedDesc, address = '', isDamaged, driverName = '', mobileNumber = '', vehicleNo = '', vehicleType = '', departmentName, managerName,
         damaged20LCans, damaged2LBoxes, damaged1LBoxes, damaged500MLBoxes, damaged300MLBoxes, product20L, product2L, product1L, product300ML, product500ML } = data
 
     useEffect(() => {
@@ -51,6 +51,10 @@ const ArrivedStockForm = (props) => {
                     <InputLabel name='Contact Name And Number' />
                     <InputValue size='smaller' value={`${driverName}, ${mobileNumber}`} />
                 </div>
+                <div className='input-container'>
+                    <InputLabel name='Manager' />
+                    <InputValue size='larger' value={managerName} />
+                </div>
             </div>
             <Divider />
             <div className='columns'>
@@ -89,7 +93,6 @@ const ArrivedStockForm = (props) => {
                 </div>
             </div>
             <Divider />
-
             <div className='columns'>
                 <InputLabel name='Damaged Particulars' error={errors.damaged} />
                 <div className='columns-container'>

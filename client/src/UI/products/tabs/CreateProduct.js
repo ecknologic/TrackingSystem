@@ -104,7 +104,7 @@ const CreateProduct = ({ goToTab }) => {
                     app-create-btn footer-btn ${btnDisabled ? 'disabled' : ''} 
                     ${shake ? 'app-shake' : ''}
                 `}
-                    text='Create'
+                    text='Add'
                 />
             </div>
         </div>

@@ -9,7 +9,7 @@ const Header = ({ onClick, hideBack }) => {
             <div className='heading-container'>
                 {!hideBack && <BackButton onClick={onClick} />}
                 <div className='titles-container'>
-                    <span className='title'>Create Account</span>
+                    <span className='title'>Add Account</span>
                 </div>
             </div>
         </div>

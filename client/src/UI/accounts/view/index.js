@@ -128,11 +128,7 @@ const ViewAccount = () => {
         }
 
         // Validations
-        if (key === 'gstNo') {
-            const error = validateIDNumbers(key, value)
-            setFormErrors(errors => ({ ...errors, [key]: error }))
-        }
-        else if (key === 'phoneNumber') {
+        if (key === 'phoneNumber') {
             const error = validateMobileNumber(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -152,11 +148,7 @@ const ViewAccount = () => {
 
     const handleBlur = (value, key) => {
         // Validations
-        if (key === 'gstNo') {
-            const error = validateIDNumbers(key, value, true)
-            setFormErrors(errors => ({ ...errors, [key]: error }))
-        }
-        else if (key === 'phoneNumber') {
+        if (key === 'phoneNumber') {
             const error = validateMobileNumber(value, true)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }

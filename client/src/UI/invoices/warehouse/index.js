@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import React, { Fragment, useState } from 'react';
 import Dashboard from './tabs/Dashboard';
 import CreateInvoice from './tabs/CreateInvoice';
-import Header from '../../../components/SimpleHeader';
+import Header from '../../../components/ContentHeader';
 import '../../../sass/invoices.scss';
 
 const Invoices = () => {
@@ -32,7 +32,7 @@ const Invoices = () => {
                         <TabPane tab="Invoices" key="1">
                             <Dashboard reFetch={reFetch} onUpdate={() => setreFetch(!reFetch)} />
                         </TabPane>
-                        <TabPane tab="Create New Invoice" key="2">
+                        <TabPane tab="Add New Invoice" key="2">
                             <CreateInvoice goToTab={handleGoToTab} />
                         </TabPane>
                     </Tabs>

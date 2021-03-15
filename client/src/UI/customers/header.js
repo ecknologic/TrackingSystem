@@ -12,7 +12,7 @@ const Header = ({ activeTab, onChange, onSearch, onSort, onFilter, onClick }) =>
         <div className='customers-header'>
             <div className='heading-container'>
                 <span className='title'>Customers</span>
-                <CustomButton text='Create Account'
+                <CustomButton text='Add Account'
                     onClick={onClick}
                     className='app-create-acc-btn'
                     icon={<PlusIconGrey />}

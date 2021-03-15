@@ -14,7 +14,7 @@ import DeleteModal from '../../../../components/CustomModal';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import { getRouteOptions, WEEKDAYS } from '../../../../assets/fixtures';
 import { getDevDays, getProductsWithIdForDB, getProductsForUI, isEmpty, extractDeliveryDetails, extractProductsFromForm, deepClone, getBase64, getDevDaysForDB, base64String, resetTrackForm, showToast } from '../../../../utils/Functions';
-import { validateDeliveryValues, validateDevDays, validateIDNumbers, validateIntFloat, validateMobileNumber, validateNames, validateNumber } from '../../../../utils/validations';
+import { validateDeliveryValues, validateDevDays, validateIntFloat, validateMobileNumber, validateNames, validateNumber } from '../../../../utils/validations';
 
 const DeliveryDetails = ({ isAdmin, recentDelivery, ...rest }) => {
     const { accountId } = useParams()
@@ -144,11 +144,7 @@ const DeliveryDetails = ({ isAdmin, recentDelivery, ...rest }) => {
         }
 
         // Validations
-        if (key === 'gstNo') {
-            const error = validateIDNumbers(key, value)
-            setFormErrors(errors => ({ ...errors, [key]: error }))
-        }
-        else if (key === 'phoneNumber') {
+        if (key === 'phoneNumber') {
             const error = validateMobileNumber(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -172,11 +168,7 @@ const DeliveryDetails = ({ isAdmin, recentDelivery, ...rest }) => {
 
     const handleBlur = (value, key) => {
         // Validations
-        if (key === 'gstNo') {
-            const error = validateIDNumbers(key, value, true)
-            setFormErrors(errors => ({ ...errors, [key]: error }))
-        }
-        else if (key === 'phoneNumber') {
+        if (key === 'phoneNumber') {
             const error = validateMobileNumber(value, true)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }

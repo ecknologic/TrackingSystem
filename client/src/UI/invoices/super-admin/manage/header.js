@@ -12,7 +12,7 @@ const Header = ({ onClick, onAdd }) => {
                 <BackButton onClick={onClick} />
                 <span className='title'>All Invoices</span>
             </div>
-            <CustomButton text='Create Invoice'
+            <CustomButton text='Add Invoice'
                 onClick={onAdd}
                 className='app-create-acc-btn'
                 icon={<PlusIconGrey />}

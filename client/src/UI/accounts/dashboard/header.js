@@ -12,7 +12,7 @@ const Header = ({ onClick, onSearch, onSort, onFilter }) => {
         <div className='manage-accounts-header'>
             <div className='heading-container'>
                 <span className='title'>Manage Accounts</span>
-                <CustomButton text='Create Account'
+                <CustomButton text='Add Account'
                     onClick={onClick}
                     className='app-create-acc-btn'
                     icon={<PlusIconGrey />}

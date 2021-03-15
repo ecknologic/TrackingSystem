@@ -2,11 +2,10 @@ import dayjs from 'dayjs';
 import { Divider } from 'antd';
 import React, { useEffect } from 'react';
 import InputLabel from '../../../components/InputLabel';
-import { genderOptions } from '../../../assets/fixtures'
+import { bloodGroupOptions, genderOptions } from '../../../assets/fixtures'
 import CustomInput from '../../../components/CustomInput';
 import SelectInput from '../../../components/SelectInput';
 import DraggerInput from '../../../components/DraggerInput';
-import InputWithAddon from '../../../components/InputWithAddon';
 import UploadPreviewer from '../../../components/UploadPreviewer';
 import CustomDateInput from '../../../components/CustomDateInput';
 import { disableFutureDates, resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
@@ -17,7 +16,7 @@ const EmployeeForm = (props) => {
         adharProof, adharProofErrors, licenseProof, licenseProofErrors, isWHAdmin, editMode } = props
     const { userName, adharNo, licenseNo, parentName, gender, dob, mobileNumber, address,
         joinedDate, permanentAddress, roleId, emailid, departmentId, accountNo, branchName, bankName,
-        ifscCode, recruitedBy, recommendedBy } = data
+        ifscCode, recruitedBy, recommendedBy, bloodGroup } = data
 
 
     useEffect(() => {
@@ -48,7 +47,7 @@ const EmployeeForm = (props) => {
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Aadhar Number' error={errors.adharNo} mandatory />
-                        <InputWithAddon maxLength={12} label='VERIFY' uppercase
+                        <CustomInput maxLength={12} uppercase
                             value={adharNo} placeholder='Aadhar Number' disabled={isWHAdmin}
                             error={errors.adharNo} onBlur={(value) => onBlur(value, 'adharNo')}
                             onChange={(value) => onChange(value, 'adharNo')}
@@ -118,6 +117,15 @@ const EmployeeForm = (props) => {
             </div>
             <div className='row'>
                 <div className='input-container'>
+                    <InputLabel name='Bood Group' error={errors.bloodGroup} />
+                    <SelectInput track
+                        options={bloodGroupOptions} value={bloodGroup} disabled={isWHAdmin}
+                        error={errors.bloodGroup} onSelect={(value) => onChange(value, 'bloodGroup')}
+                    />
+                </div>
+            </div>
+            <div className='row'>
+                <div className='input-container'>
                     <InputLabel name='Date of Joining' error={errors.joinedDate} mandatory />
                     <CustomDateInput
                         track value={joinedDate} error={errors.joinedDate} disabled={isWHAdmin}
@@ -151,7 +159,7 @@ const EmployeeForm = (props) => {
                         <div className='row'>
                             <div className='input-container'>
                                 <InputLabel name='Driving License Number' error={errors.licenseNo} mandatory />
-                                <InputWithAddon maxLength={16} label='VERIFY' uppercase
+                                <CustomInput maxLength={16} uppercase
                                     value={licenseNo} placeholder='Driving License Number' disabled={isWHAdmin}
                                     error={errors.licenseNo} onBlur={(value) => onBlur(value, 'licenseNo')}
                                     onChange={(value) => onChange(value, 'licenseNo')}

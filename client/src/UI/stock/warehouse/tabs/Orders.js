@@ -39,7 +39,7 @@ const Orders = () => {
     const [isFetched, setIsFetched] = useState(false)
     const [devDays, setDevDays] = useState([])
     const [shake, setShake] = useState(false)
-    const [label, setLabel] = useState('Create')
+    const [label, setLabel] = useState('Add')
     const [viewedArr, setViewedArr] = useState([])
 
     const routeOptions = useMemo(() => getRouteOptions(routes), [routes])
@@ -175,8 +175,8 @@ const Orders = () => {
                 setOptions({ item: 'Delivery', v1Ing: 'Updating', v2: 'updated' })
             }
             else {
-                setOptions({ item: 'Delivery', v1Ing: 'Creating', v2: 'created' })
-                setLabel('Create')
+                setOptions({ item: 'Delivery', v1Ing: 'adding', v2: 'added' })
+                setLabel('Add')
             }
 
             setDCModal(true)
@@ -265,7 +265,7 @@ const Orders = () => {
         setBtnDisabled(false)
         setFormData({})
         setFormErrors({})
-        setLabel("Create")
+        setLabel("Add")
     }
 
     const handleSearch = (value) => {
@@ -398,6 +398,6 @@ const renderOrderDetails = ({ product20L, product2L, product1L, product500ML, pr
 }
 const getActions = (driverName) => {
     return [<Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>,
-    <Menu.Item key="delivery" icon={<EditIconGrey />}>{`${driverName ? "Update" : "Create"} Delivery`}</Menu.Item>]
+    <Menu.Item key="delivery" icon={<EditIconGrey />}>{`${driverName ? "Update" : "Add"} Delivery`}</Menu.Item>]
 }
 export default Orders

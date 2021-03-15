@@ -31,7 +31,7 @@ const Staff = () => {
                         <TabPane tab="Staff" key="1">
                             <Dashboard reFetch={reFetch} />
                         </TabPane>
-                        <TabPane tab="Create New Staff" key="2">
+                        <TabPane tab="Add New Staff" key="2">
                             <CreateEmployee goToTab={handleGoToTab} />
                         </TabPane>
                     </Tabs>

@@ -31,7 +31,7 @@ const Distributors = () => {
                         <TabPane tab="Distributors" key="1">
                             <Dashboard reFetch={reFetch} />
                         </TabPane>
-                        <TabPane tab="Create New Distributor" key="2">
+                        <TabPane tab="Add New Distributor" key="2">
                             <CreateEmployee goToTab={handleGoToTab} />
                         </TabPane>
                     </Tabs>

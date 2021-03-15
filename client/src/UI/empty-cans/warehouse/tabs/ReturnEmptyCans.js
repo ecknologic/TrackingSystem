@@ -113,7 +113,7 @@ const ReturnEmptyCans = ({ goToTab, fetchList, driverList, ...rest }) => {
                     app-create-btn footer-btn ${btnDisabled ? 'disabled' : ''} 
                     ${shake ? 'app-shake' : ''}
                 `}
-                    text='Return'
+                    text='Add'
                 />
             </div>
         </div>

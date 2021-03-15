@@ -96,7 +96,7 @@ const InternalQC = () => {
 
     return (
         <>
-            <FormHeader title='Create Request Quality Control (Internal)' />
+            <FormHeader title='Add Request Quality Control (Internal)' />
             <InternalQCForm
                 track
                 data={formData}

@@ -143,7 +143,7 @@ const ApproveAccount = () => {
         }
 
         // Validations
-        if (key === 'adharNo' || key === 'panNo' || key === 'gstNo' || key === 'licenseNo' || key === 'rocNo') {
+        if (key === 'adharNo' || key === 'panNo' || key === 'licenseNo' || key === 'rocNo') {
             const error = validateIDNumbers(key, value)
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -168,7 +168,7 @@ const ApproveAccount = () => {
     const handleBlur = (value, key) => {
 
         // Validations
-        if (key === 'adharNo' || key === 'panNo' || key === 'gstNo' || key === 'licenseNo' || key === 'rocNo') {
+        if (key === 'adharNo' || key === 'panNo' || key === 'licenseNo' || key === 'rocNo') {
             const error = validateIDNumbers(key, value, true)
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }

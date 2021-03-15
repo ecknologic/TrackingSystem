@@ -122,11 +122,7 @@ const AddAccount = () => {
         }
 
         // Validations
-        if (key === 'gstNo') {
-            const error = validateIDNumbers(key, value)
-            setDeliveryErrors(errors => ({ ...errors, [key]: error }))
-        }
-        else if (key === 'phoneNumber') {
+        if (key === 'phoneNumber') {
             const error = validateMobileNumber(value)
             setDeliveryErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -146,11 +142,7 @@ const AddAccount = () => {
     const handleDeliveryBlur = (value, key) => {
 
         // Validations
-        if (key === 'gstNo') {
-            const error = validateIDNumbers(key, value, true)
-            setDeliveryErrors(errors => ({ ...errors, [key]: error }))
-        }
-        else if (key === 'phoneNumber') {
+        if (key === 'phoneNumber') {
             const error = validateMobileNumber(value, true)
             setDeliveryErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -174,7 +166,7 @@ const AddAccount = () => {
         }
 
         // Validations
-        if (key === 'adharNo' || key === 'panNo' || key === 'gstNo' || key === 'licenseNo') {
+        if (key === 'adharNo' || key === 'panNo' || key === 'licenseNo') {
             const error = validateIDNumbers(key, value)
             setGeneralErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -182,7 +174,7 @@ const AddAccount = () => {
             const error = validateMobileNumber(value)
             setGeneralErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key === 'depositAmount') {
+        else if (key === 'depositAmount' || key === 'alternateNumber') {
             const error = validateNumber(value)
             setGeneralErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -207,7 +199,7 @@ const AddAccount = () => {
     const handleGeneralBlur = (value, key) => {
 
         // Validations
-        if (key === 'adharNo' || key === 'panNo' || key === 'gstNo' || key === 'licenseNo') {
+        if (key === 'adharNo' || key === 'panNo' || key === 'licenseNo') {
             const error = validateIDNumbers(key, value, true)
             setGeneralErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -236,7 +228,7 @@ const AddAccount = () => {
         if (sameAddress) preFillDDForm(value, key)
 
         // Validations
-        if (key === 'gstNo' || key === 'licenseNo' || key === 'rocNo') {
+        if (key === 'licenseNo' || key === 'rocNo') {
             const error = validateIDNumbers(key, value)
             setCorporateErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -244,7 +236,7 @@ const AddAccount = () => {
             const error = validateNames(value)
             setCorporateErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key === 'depositAmount' || key === 'poNo') {
+        else if (key === 'depositAmount' || key === 'poNo' || key === 'alternateNumber') {
             const error = validateNumber(value)
             setCorporateErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -265,7 +257,7 @@ const AddAccount = () => {
     const handleCorporateBlur = (value, key) => {
 
         // Validations
-        if (key === 'gstNo' || key === 'licenseNo' || key === 'rocNo') {
+        if (key === 'licenseNo' || key === 'rocNo') {
             const error = validateIDNumbers(key, value, true)
             setCorporateErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -700,7 +692,7 @@ const AddAccount = () => {
                         app-create-btn footer-btn ${btnDisabled && 'disabled'}
                         ${createShake && 'app-shake'}
                         `}
-                        text='Create Account'
+                        text='Add Account'
                     />
                 </div>
             </div>

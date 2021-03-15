@@ -1,4 +1,5 @@
 import axios from 'axios';
+import dayjs from 'dayjs';
 import { Menu, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import DCView from '../views/DCView';
@@ -14,6 +15,7 @@ import { EyeIconGrey } from '../../../../components/SVG_Icons';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomPagination from '../../../../components/CustomPagination';
 import { resetTrackForm, getStatusColor } from '../../../../utils/Functions';
+const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
 const DeliveryChallan = ({ accountId }) => {
     const [loading, setLoading] = useState(true)
@@ -79,16 +81,18 @@ const DeliveryChallan = ({ accountId }) => {
     }
 
     const dataSource = useMemo(() => deliveries.map((dc) => {
-        const { dcNo, customerOrderId, address, RouteName, driverName, customerName, isDelivered } = dc
+        const { dcNo, customerOrderId, address, RouteName, driverName, customerName, deliveredDate, isDelivered, returnEmptyCans } = dc
         return {
             key: customerOrderId || dcNo,
             dcnumber: dcNo,
             shopAddress: address,
             route: RouteName,
             name: customerName,
+            returnEmptyCans: returnEmptyCans || 0,
             driverName: driverName || 'Not Assigned',
             orderDetails: renderOrderDetails(dc),
             status: renderStatus(isDelivered),
+            dateAndTime: dayjs(deliveredDate).format(DATEANDTIMEFORMAT),
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, dc)} />
         }
     }), [deliveries])

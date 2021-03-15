@@ -177,8 +177,8 @@ const Delivery = ({ date, source }) => {
 
         let url = '/warehouse/createDC'
         let method = 'POST'
-        let v1Ing = 'Creating'
-        let v2 = 'created'
+        let v1Ing = 'adding'
+        let v2 = 'added'
 
         if (customerOrderId) {
             url = '/customer/updateCustomerOrderDetails'
@@ -285,7 +285,7 @@ const Delivery = ({ date, source }) => {
                         title='Select Routes'
                         onChange={onFilterChange}
                     />
-                    <CustomButton text='Create New DC' onClick={onCreateDC} className='app-add-new-btn' icon={<PlusIcon />} />
+                    <CustomButton text='Add New DC' onClick={onCreateDC} className='app-add-new-btn' icon={<PlusIcon />} />
                 </div>
                 <div className='right'>
                     <SearchInput
@@ -361,10 +361,10 @@ const renderStatus = (status) => {
     )
 }
 
-const renderOrderDetails = ({ cans20L, boxes2L, boxes1L, boxes500ML, boxes300ML }) => {
+const renderOrderDetails = ({ product20L, product2L, product1L, product500ML, product300ML }) => {
     return `
-    20 ltrs - ${Number(cans20L)}, 2 ltrs - ${Number(boxes2L)} boxes, 1 ltr - ${Number(boxes1L)} boxes, 
-    500 ml - ${Number(boxes500ML)} boxes, 300 ml - ${Number(boxes300ML)} boxes
+    20 ltrs - ${Number(product20L)}, 2 ltrs - ${Number(product2L)} boxes, 1 ltr - ${Number(product1L)} boxes, 
+    500 ml - ${Number(product500ML)} boxes, 300 ml - ${Number(product300ML)} boxes
     `
 }
 const options = [<Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>]

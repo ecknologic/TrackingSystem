@@ -3,7 +3,7 @@ import TodaysOrders from './panels/TodaysOrders';
 import SalesResults from './panels/SalesResults';
 import Header from '../../../components/ContentHeader';
 import InvoiceOverview from './panels/InvoiceOverview';
-import TotalStockStatus from './panels/TotalStockStatus';
+import StockStatus from './panels/StockStatus';
 import CustomersOverview from './panels/CustomersOverview';
 import { getWarehoseId } from '../../../utils/constants';
 
@@ -16,7 +16,7 @@ const WarehouseDashboard = () => {
             <div className='dashboard-content-outer'>
                 <div className='left-content'>
                     <div className='dashboard-content'>
-                        <TotalStockStatus />
+                        <StockStatus />
                         <div className='dashboard-content-inner'>
                             <div className='left-panel'>
                                 <SalesResults depId={departmentId} />

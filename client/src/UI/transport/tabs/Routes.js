@@ -12,7 +12,7 @@ import ConfirmModal from '../../../components/CustomModal';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import CustomPagination from '../../../components/CustomPagination';
 import { EditIconGrey, TrashIconGrey } from '../../../components/SVG_Icons';
-import { getRole, getWarehoseId, SUPERADMIN, TRACKFORM } from '../../../utils/constants';
+import { getRole, getWarehoseId, SUPERADMIN, TRACKFORM, WAREHOUSEADMIN } from '../../../utils/constants';
 import { deepClone, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
 
 const RoutesDashboard = ({ reFetch, isFetched, fetchList, departmentOptions }) => {
@@ -31,8 +31,8 @@ const RoutesDashboard = ({ reFetch, isFetched, fetchList, departmentOptions }) =
     const [modalDelete, setModalDelete] = useState(false)
     const [currentId, setCurrentId] = useState('')
 
-    const isWHAdmin = useMemo(() => role === 'WarehouseAdmin', [role])
-    const isSuperAdmin = useMemo(() => getRole() === SUPERADMIN, [])
+    const isWHAdmin = useMemo(() => role === WAREHOUSEADMIN, [role])
+    const isSuperAdmin = useMemo(() => role === SUPERADMIN, [])
     const options = useMemo(() => getOptions(isSuperAdmin), [])
     const toastLoading = { v1Ing: 'Fetching', action: 'loading' }
     const source = useMemo(() => axios.CancelToken.source(), []);

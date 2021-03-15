@@ -103,7 +103,7 @@ const StockDetails = ({ date, source, goToTab }) => {
             ...formData, createdBy: USERID,
             product20L, product2L, product1L, product500ML, product300ML
         }
-        const options = { item: 'Production Batch', v1Ing: 'Creating', v2: 'created' }
+        const options = { item: 'Production Batch', v1Ing: 'adding', v2: 'added' }
 
         try {
             setBtnDisabled(true)
@@ -136,7 +136,7 @@ const StockDetails = ({ date, source, goToTab }) => {
     return (
         <>
             <CASMPPanel data={stock} />
-            <FormHeader title='Create Production Batch' />
+            <FormHeader title='Add Production Batch' />
             <BatchForm
                 track
                 data={formData}
@@ -152,7 +152,7 @@ const StockDetails = ({ date, source, goToTab }) => {
                         app-create-btn footer-btn ${btnDisabled ? 'disabled' : ''} 
                         ${shake ? 'app-shake' : ''}
                     `}
-                    text='Create Batch'
+                    text='Add Batch'
                 />
             </div>
             <ConfirmModal

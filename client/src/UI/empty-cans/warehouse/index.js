@@ -102,7 +102,7 @@ const EmptyCans = () => {
                         <TabPane tab="Empty Cans" key="1">
                             <Dashboard reFetch={reFetch} isFetched={isFetched} fetchList={fetchList} {...childProps} />
                         </TabPane>
-                        <TabPane tab="Return Empty Cans" key="2">
+                        <TabPane tab="Add Empty Cans" key="2">
                             <ReturnEmptyCans goToTab={handleGoToTab} fetchList={fetchList} {...childProps} />
                         </TabPane>
                     </Tabs>

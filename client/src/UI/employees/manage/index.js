@@ -17,7 +17,7 @@ import CustomButton from '../../../components/CustomButton';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import { getDepartmentOptions, getRoleOptions } from '../../../assets/fixtures';
 import { isEmpty, showToast, base64String, getMainPathname, getBase64, getValidDate } from '../../../utils/Functions';
-import { getRole, TRACKFORM } from '../../../utils/constants';
+import { getRole, TRACKFORM, WAREHOUSEADMIN } from '../../../utils/constants';
 import {
     validateIDNumbers, validateNames, validateMobileNumber, validateEmailId, validateIDProofs,
     validateEmployeeValues, validateDependentValues, validateNumber, validateIFSCCode
@@ -51,7 +51,7 @@ const ManageEmployee = ({ isDriver }) => {
     const [departmentList, setDepartmentList] = useState([])
     const [prevDepartmentId, setPrevDepartmentId] = useState('')
 
-    const isWHAdmin = useMemo(() => role === 'WarehouseAdmin', [role])
+    const isWHAdmin = useMemo(() => role === WAREHOUSEADMIN, [role])
     const roleOptions = useMemo(() => getRoleOptions(roleList), [roleList])
     const mainUrl = useMemo(() => getMainPathname(pathname), [pathname])
     const departmentOptions = useMemo(() => getDepartmentOptions(departmentList), [departmentList])

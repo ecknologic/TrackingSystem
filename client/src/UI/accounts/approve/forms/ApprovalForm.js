@@ -4,7 +4,6 @@ import InputLabel from '../../../../components/InputLabel';
 import CustomInput from '../../../../components/CustomInput';
 import SelectInput from '../../../../components/SelectInput';
 import DraggerInput from '../../../../components/DraggerInput';
-import InputWithAddon from '../../../../components/InputWithAddon';
 import UploadPreviewer from '../../../../components/UploadPreviewer';
 import { invoiceOptions, businessOptions, corpIdOptions, idOptions } from '../../../../assets/fixtures'
 import { getIDInputValidationProps, getIdProofName, resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
@@ -105,11 +104,10 @@ const ApprovalForm = (props) => {
             <div className='row'>
                 <div className='input-container'>
                     <InputLabel name='GST Number' error={errors.gstNo} mandatory={isCorporate} />
-                    <InputWithAddon
+                    <CustomInput
                         maxLength={15} value={gstNo}
-                        label='VERIFY' disabled={disabled || gstDisable} uppercase
+                        disabled={disabled || gstDisable} uppercase
                         placeholder='GST Number' error={errors.gstNo}
-                        onBlur={(value) => onBlur(value, 'gstNo')}
                         onChange={(value) => onChange(value, 'gstNo')}
                     />
                 </div>

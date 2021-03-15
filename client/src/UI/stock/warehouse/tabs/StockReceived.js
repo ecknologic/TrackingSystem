@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import axios from 'axios';
 import { Menu, message, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -12,6 +13,7 @@ import { EyeIconGrey } from '../../../../components/SVG_Icons';
 import { receivedStockColumns } from '../../../../assets/fixtures';
 import CustomPagination from '../../../../components/CustomPagination';
 import { doubleKeyComplexSearch, getStatusColor, isEmpty, showToast } from '../../../../utils/Functions';
+const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
 const StockReceived = () => {
     const [loading, setLoading] = useState(true)
@@ -123,7 +125,7 @@ const StockReceived = () => {
 
     const dataSource = useMemo(() => stock.map((order) => {
         const { id, dcNo, departmentName, driverName, mobileNumber, product20L, product1L,
-            product2L, product300ML, product500ML, isConfirmed } = order
+            product2L, product300ML, product500ML, isConfirmed, deliveryDate } = order
         return {
             key: id,
             dcNo,
@@ -131,6 +133,7 @@ const StockReceived = () => {
             driverName,
             mobileNumber,
             status: renderStatus(isConfirmed),
+            dateAndTime: dayjs(deliveryDate).format(DATEANDTIMEFORMAT),
             stockDetails: renderStockDetails({ product20L, product1L, product2L, product300ML, product500ML }),
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, id)} />
         }

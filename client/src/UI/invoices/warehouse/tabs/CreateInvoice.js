@@ -12,9 +12,9 @@ import Spinner from '../../../../components/Spinner';
 import { TODAYDATE } from '../../../../utils/constants';
 import NoContent from '../../../../components/NoContent';
 import CustomButton from '../../../../components/CustomButton';
+import { getProductOptions, getDDownOptions } from '../../../../assets/fixtures';
 import { isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 import { validateNumber, validateInvoiceValues } from '../../../../utils/validations';
-import { getProductOptions, getCustomerOptions, getStaffOptions, getDDownOptions } from '../../../../assets/fixtures';
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
 const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
@@ -26,7 +26,6 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [productList, setProductList] = useState([])
-    const [salesPersonList, setSalesPersonList] = useState([])
     const [customerList, setCustomerList] = useState([])
     const [billingAddress, setBillingAddress] = useState({})
     const [dataSource, setDataSource] = useState(editMode ? [] : initData)
@@ -36,8 +35,6 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
 
     const GSTOptions = useMemo(() => getDDownOptions(GSTList), [GSTList])
     const productOptions = useMemo(() => getProductOptions(productList), [productList])
-    const salesPersonOptions = useMemo(() => getStaffOptions(salesPersonList), [salesPersonList])
-    const customerOptions = useMemo(() => getCustomerOptions(customerList), [customerList])
     const footerValues = useMemo(() => computeFinalAmounts(dataSource), [dataSource])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
@@ -46,7 +43,6 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
         if (editMode) getInvoice()
         else getInvoiceId()
         getCustomerList()
-        getSalesPersonList()
         getProductList()
         getGSTList()
 
@@ -76,15 +72,6 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
         try {
             const invoiceId = await http.GET(axios, url, config)
             setFormData(prev => ({ ...prev, invoiceId }))
-        } catch (error) { }
-    }
-
-    const getSalesPersonList = async () => {
-        const url = '/customer/getSalesPersons'
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setSalesPersonList(data)
         } catch (error) { }
     }
 
@@ -276,7 +263,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
                     app-create-btn footer-btn ${btnDisabled ? 'disabled' : ''} 
                     ${shake ? 'app-shake' : ''}
                 `}
-                    text={editMode ? 'Update' : 'Create'}
+                    text={editMode ? 'Update' : 'Add'}
                 />
             </div>
         </div>
@@ -284,8 +271,8 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
 }
 
 const getVerbs = (editMode) => {
-    let v1Ing = 'Creating'
-    let v2 = 'created'
+    let v1Ing = 'adding'
+    let v2 = 'added'
     if (editMode) {
         v1Ing = 'Updating'
         v2 = 'updated'

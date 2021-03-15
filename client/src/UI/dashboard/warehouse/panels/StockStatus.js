@@ -13,10 +13,10 @@ import can500ML from '../../../../assets/icons/ic_Can500ML.svg'
 import { LeftChevronIconGrey, RightChevronIconGrey } from '../../../../components/SVG_Icons';
 const options = { startDate: d, endDate: d, fromStart: true }
 
-const TotalStockStatus = () => {
+const StockStatus = () => {
     const [stock, setStock] = useState({})
     const [opData, setOpData] = useState(() => options)
-    const { product20LCount, product2LCount, product1LCount, product500MLCount, product300MLCount } = stock
+    const { total20LCans, total2LBoxes, total1LBoxes, total500MLBoxes, total300MLBoxes } = stock
 
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
@@ -30,11 +30,11 @@ const TotalStockStatus = () => {
     }, [])
 
     const getTotalStock = async ({ startDate, endDate, fromStart }) => {
-        const url = `/motherPlant/getTotalProductionDetails?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}`
+        const url = `/warehouse/totalCurrentActiveStockDetails?startDate=${startDate} 00:00:00&endDate=${endDate} 23:59:59&fromStart=${fromStart}`
 
         try {
-            // const data = await http.GET(axios, url, config)
-            // setStock(data)
+            const data = await http.GET(axios, url, config)
+            setStock(data)
         } catch (error) { }
     }
 
@@ -49,11 +49,11 @@ const TotalStockStatus = () => {
             <PanelHeader title='Stock Status' onSelect={handleOperation} showShow />
             <div className='panel-body'>
                 <Slider className='dashboard-slider' {...props} >
-                    <StockCard title='20 Ltrs' icon={can20L} total={product20LCount} />
-                    <StockCard title='2 Ltrs' icon={can2L} total={product2LCount} />
-                    <StockCard title='1 Ltrs' icon={can1L} total={product1LCount} />
-                    <StockCard title='500 ml' icon={can500ML} total={product500MLCount} />
-                    <StockCard title='300 ml' icon={can300ML} total={product300MLCount} />
+                    <StockCard title='20 Ltrs' icon={can20L} total={total20LCans} />
+                    <StockCard title='2 Ltrs' icon={can2L} total={total2LBoxes} />
+                    <StockCard title='1 Ltrs' icon={can1L} total={total1LBoxes} />
+                    <StockCard title='500 ml' icon={can500ML} total={total500MLBoxes} />
+                    <StockCard title='300 ml' icon={can300ML} total={total300MLBoxes} />
                 </Slider>
             </div>
         </>
@@ -67,4 +67,4 @@ const props = {
     nextArrow: <RightChevronIconGrey />,
 }
 
-export default TotalStockStatus
+export default StockStatus

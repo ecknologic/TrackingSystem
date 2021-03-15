@@ -35,7 +35,7 @@ const Drivers = () => {
                         <TabPane tab="Vehicles" key="2">
                             <Vehicles reFetch={reFetch} />
                         </TabPane>
-                        <TabPane tab="Create New Vehicle" key="3">
+                        <TabPane tab="Add New Vehicle" key="3">
                             <CreateVehicle goToTab={handleGoToTab} />
                         </TabPane>
                     </Tabs>

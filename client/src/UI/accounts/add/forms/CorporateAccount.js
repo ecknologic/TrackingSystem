@@ -4,7 +4,6 @@ import InputLabel from '../../../../components/InputLabel';
 import CustomInput from '../../../../components/CustomInput';
 import SelectInput from '../../../../components/SelectInput';
 import DraggerInput from '../../../../components/DraggerInput';
-import InputWithAddon from '../../../../components/InputWithAddon';
 import UploadPreviewer from '../../../../components/UploadPreviewer';
 import { invoiceOptions, corpIdOptions, businessOptions } from '../../../../assets/fixtures'
 import { getIdProofName, getIDInputValidationProps, resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
@@ -14,7 +13,7 @@ const CorporateAccountForm = (props) => {
     const { data, errors, IDProofs = {}, IDProofErrors, onChange, onBlur, onUpload, disabled, onRemove } = props
 
     const {
-        gstNo, natureOfBussiness, organizationName, address, customerName, poNo,
+        gstNo, natureOfBussiness, organizationName, address, customerName, poNo, alternateNumber,
         mobileNumber, invoicetype, creditPeriodInDays, EmailId, referredBy, idProofType,
         registeredDate, gstProof, depositAmount, pinCode, dispenserCount, contractPeriod
     } = data
@@ -83,11 +82,10 @@ const CorporateAccountForm = (props) => {
             <div className='row'>
                 <div className='input-container'>
                     <InputLabel name='GST Number' error={errors.gstNo} mandatory />
-                    <InputWithAddon
+                    <CustomInput
                         maxLength={15} value={gstNo}
-                        label='VERIFY' disabled={disabled} uppercase
+                        disabled={disabled} uppercase
                         placeholder='GST Number' error={errors.gstNo}
-                        onBlur={(value) => onBlur(value, 'gstNo')}
                         onChange={(value) => onChange(value, 'gstNo')}
                     />
                 </div>
@@ -152,6 +150,15 @@ const CorporateAccountForm = (props) => {
             </div>
             <div className='row'>
                 <div className='input-container'>
+                    <InputLabel name='Alternate Phone No' error={errors.alternateNumber} />
+                    <CustomInput value={alternateNumber} placeholder='Alternate Phone Number'
+                        error={errors.alternateNumber} maxLength={15}
+                        onChange={(value) => onChange(value, 'alternateNumber')}
+                    />
+                </div>
+            </div>
+            <div className='row'>
+                <div className='input-container'>
                     <InputLabel name='Contact Person' error={errors.customerName} mandatory />
                     <CustomInput
                         value={customerName}
@@ -162,7 +169,7 @@ const CorporateAccountForm = (props) => {
                     />
                 </div>
                 <div className='input-container'>
-                    <InputLabel name='Email' error={errors.EmailId} mandatory />
+                    <InputLabel name='Official Email' error={errors.EmailId} mandatory />
                     <CustomInput
                         value={EmailId} type='email' disabled={disabled}
                         placeholder='Email' error={errors.EmailId}

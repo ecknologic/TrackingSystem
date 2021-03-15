@@ -6,10 +6,9 @@ import InputLabel from '../../../../components/InputLabel';
 import SelectInput from '../../../../components/SelectInput';
 import DraggerInput from '../../../../components/DraggerInput';
 import CustomInput from '../../../../components/CustomInput';
-import InputWithAddon from '../../../../components/InputWithAddon';
 import UploadPreviewer from '../../../../components/UploadPreviewer';
 import { dayOptions, getRouteOptions, WEEKDAYS } from '../../../../assets/fixtures'
-import { validateIDNumbers, validateIntFloat, validateMobileNumber, validateNames, validateNumber } from '../../../../utils/validations';
+import { validateIntFloat, validateMobileNumber, validateNames, validateNumber } from '../../../../utils/validations';
 
 const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => {
 
@@ -66,11 +65,7 @@ const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => 
         }
 
         // Validations
-        if (key === 'gstNo') {
-            const error = validateIDNumbers(key, value)
-            setErrors(errors => ({ ...errors, [key]: error }))
-        }
-        else if (key === 'phoneNumber') {
+        if (key === 'phoneNumber') {
             const error = validateMobileNumber(value)
             setErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -91,11 +86,7 @@ const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => 
     const onBlur = (value, key) => {
 
         // Validations
-        if (key === 'gstNo') {
-            const error = validateIDNumbers(key, value, true)
-            setErrors(errors => ({ ...errors, [key]: error }))
-        }
-        else if (key === 'phoneNumber') {
+        if (key === 'phoneNumber') {
             const error = validateMobileNumber(value, true)
             setErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -148,9 +139,9 @@ const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => 
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='GST Number' error={errors.gstNo} />
-                        <InputWithAddon maxLength={15} uppercase
-                            label='VERIFY' value={gstNo} placeholder='GST Number'
-                            error={errors.gstNo} onBlur={(value) => onBlur(value, 'gstNo')}
+                        <CustomInput maxLength={15} uppercase
+                            value={gstNo} placeholder='GST Number'
+                            error={errors.gstNo}
                             onChange={(value) => onChange(value, 'gstNo')}
                         />
                     </div>

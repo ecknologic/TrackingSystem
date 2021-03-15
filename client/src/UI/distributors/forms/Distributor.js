@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import InputLabel from '../../../components/InputLabel';
 import CustomInput from '../../../components/CustomInput';
 import DraggerInput from '../../../components/DraggerInput';
-import InputWithAddon from '../../../components/InputWithAddon';
 import UploadPreviewer from '../../../components/UploadPreviewer';
 import { resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
 
@@ -10,7 +9,8 @@ const EmployeeForm = (props) => {
 
     const { data, errors, onChange, onUpload, onRemove, disabled, onBlur } = props
     const { agencyName, gstNo, gstProof, operationalArea, contactPerson, mobileNumber, address,
-        alternateNumber, mailId, alternateMailId } = data
+        alternateNumber, mailId, alternateMailId, product20L, price20L, product2L, product1L, price2L, price1L, product500ML,
+        price500ML, product300ML, price300ML } = data
 
 
     useEffect(() => {
@@ -29,11 +29,10 @@ const EmployeeForm = (props) => {
             <div className='row'>
                 <div className='input-container'>
                     <InputLabel name='GST Number' error={errors.gstNo} mandatory />
-                    <InputWithAddon
+                    <CustomInput
                         maxLength={15} value={gstNo}
-                        label='VERIFY' disabled={disabled} uppercase
+                        disabled={disabled} uppercase
                         placeholder='GST Number' error={errors.gstNo}
-                        onBlur={(value) => onBlur(value, 'gstNo')}
                         onChange={(value) => onChange(value, 'gstNo')}
                     />
                 </div>
@@ -112,6 +111,81 @@ const EmployeeForm = (props) => {
                         onBlur={(value) => onBlur(value, 'alternateMailId')}
                         onChange={(value) => onChange(value, 'alternateMailId')}
                     />
+                </div>
+            </div>
+            <div className='columns'>
+                <InputLabel name='Products and Price' error={errors.productNPrice} mandatory />
+                <div className='columns-container'>
+                    <div className='column'>
+                        <div className='input-container'>
+                            <InputLabel name='20 Ltrs' />
+                            <CustomInput value={product20L}
+                                placeholder='Qty' onChange={(value) => onChange(value, 'product20L')}
+                            />
+                        </div>
+                        <div className='input-container'>
+                            <InputLabel name='Price' />
+                            <CustomInput value={price20L}
+                                onBlur={(value) => onBlur(value, 'price20L')}
+                                placeholder='Rs' onChange={(value) => onChange(value, 'price20L')} />
+                        </div>
+                    </div>
+                    <div className='column'>
+                        <div className='input-container'>
+                            <InputLabel name='2 Ltrs' />
+                            <CustomInput value={product2L}
+                                placeholder='Qty' onChange={(value) => onChange(value, 'product2L')}
+                            />
+                        </div>
+                        <div className='input-container'>
+                            <InputLabel name='Price' />
+                            <CustomInput value={price2L}
+                                onBlur={(value) => onBlur(value, 'price2L')}
+                                placeholder='Rs' onChange={(value) => onChange(value, 'price2L')} />
+                        </div>
+                    </div>
+                    <div className='column'>
+                        <div className='input-container'>
+                            <InputLabel name='1 Ltrs' />
+                            <CustomInput value={product1L}
+                                placeholder='Qty' onChange={(value) => onChange(value, 'product1L')}
+                            />
+                        </div>
+                        <div className='input-container'>
+                            <InputLabel name='Price' />
+                            <CustomInput value={price1L}
+                                onBlur={(value) => onBlur(value, 'price1L')}
+                                placeholder='Rs' onChange={(value) => onChange(value, 'price1L')} />
+                        </div>
+                    </div>
+                    <div className='column'>
+                        <div className='input-container'>
+                            <InputLabel name='500 Ml' />
+                            <CustomInput value={product500ML}
+                                placeholder='Qty' onChange={(value) => onChange(value, 'product500ML')}
+                            />
+                        </div>
+                        <div className='input-container'>
+                            <InputLabel name='Price' />
+                            <CustomInput value={price500ML}
+                                onBlur={(value) => onBlur(value, 'price500ML')}
+                                placeholder='Rs' onChange={(value) => onChange(value, 'price500ML')} />
+                        </div>
+                    </div>
+                    <div className='column last'>
+                        <div className='input-container'>
+                            <InputLabel name='300 Ml' />
+                            <CustomInput value={product300ML}
+                                placeholder='Qty' onChange={(value) => onChange(value, 'product300ML')}
+                            />
+                        </div>
+                        <div className='input-container'>
+                            <InputLabel name='Price' />
+                            <CustomInput value={price300ML}
+                                onBlur={(value) => onBlur(value, 'price300ML')}
+                                placeholder='Rs' onChange={(value) => onChange(value, 'price300ML')} />
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

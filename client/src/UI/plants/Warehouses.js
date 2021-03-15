@@ -31,7 +31,7 @@ const Warehouses = () => {
                         <TabPane tab="Warehouses" key="1">
                             <Dashboard reFetch={reFetch} />
                         </TabPane>
-                        <TabPane tab="Create New Warehouse" key="2">
+                        <TabPane tab="Add New Warehouse" key="2">
                             <CreateNewPlant goToTab={handleGoToTab} />
                         </TabPane>
                     </Tabs>

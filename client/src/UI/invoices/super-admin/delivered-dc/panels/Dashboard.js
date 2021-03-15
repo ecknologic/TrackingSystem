@@ -17,6 +17,7 @@ import ConfirmMessage from '../../../../../components/ConfirmMessage';
 import CustomPagination from '../../../../../components/CustomPagination';
 import { resetTrackForm, getStatusColor } from '../../../../../utils/Functions';
 const APIDATEFORMAT = 'YYYY-MM-DD'
+const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
 const DeliveredDC = () => {
     const { state: urlState = {} } = useLocation()
@@ -88,16 +89,18 @@ const DeliveredDC = () => {
     }
 
     const dataSource = useMemo(() => deliveries.map((dc) => {
-        const { dcNo, customerOrderId, address, RouteName, driverName, customerName, isDelivered } = dc
+        const { dcNo, customerOrderId, address, RouteName, driverName, customerName, isDelivered, returnEmptyCans, deliveredDate } = dc
         return {
             key: customerOrderId || dcNo,
             dcnumber: dcNo,
             shopAddress: address,
             route: RouteName,
             name: customerName,
+            returnEmptyCans: returnEmptyCans || 0,
             driverName: driverName || 'Not Assigned',
             orderDetails: renderOrderDetails(dc),
             status: renderStatus(isDelivered),
+            dateAndTime: dayjs(deliveredDate).format(DATEANDTIMEFORMAT),
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, dc)} />
         }
     }), [deliveries])

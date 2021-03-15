@@ -104,7 +104,7 @@ const StockDetails = ({ date, source }) => {
         const url = `warehouse/currentActiveStockDetails/${date}?warehouseId=${warehouseId}`
 
         try {
-            const { data: [data = {}] } = await http.GET(axios, url, config)
+            const data = await http.GET(axios, url, config)
             setCAS(data)
         } catch (error) { }
     }
@@ -113,7 +113,7 @@ const StockDetails = ({ date, source }) => {
         const url = `warehouse/outForDeliveryDetails/${date}?warehouseId=${warehouseId}`
 
         try {
-            const { data: [data = {}] } = await http.GET(axios, url, config)
+            const data = await http.GET(axios, url, config)
             setOFC(data)
         } catch (error) { }
     }
@@ -122,7 +122,7 @@ const StockDetails = ({ date, source }) => {
         const url = `/warehouse/getConfirmedEmptyCans/${warehouseId}`
 
         try {
-            const [data] = await http.GET(axios, url, config)
+            const data = await http.GET(axios, url, config)
             setEC(data)
         } catch (error) { }
     }
@@ -131,7 +131,7 @@ const StockDetails = ({ date, source }) => {
         const url = `/warehouse/getReturnedEmptyCans/${warehouseId}`
 
         try {
-            const [data] = await http.GET(axios, url, config)
+            const data = await http.GET(axios, url, config)
             setREC(data)
         } catch (error) { }
     }
@@ -333,7 +333,7 @@ const StockDetails = ({ date, source }) => {
                 onOk={handleCansReturn}
                 onCancel={handleModalCancel}
                 title='Empty Cans Return to Mother Plant'
-                okTxt='Return Empty Cans'
+                okTxt='Add Empty Cans'
             >
                 <EmptyCansForm
                     data={formData}

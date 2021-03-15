@@ -113,7 +113,7 @@ const CreateDispatch = ({ goToTab, driverList, warehouseList, reFetch, ...rest }
             ...formData, dispatchAddress: departmentName, outOfStock,
             product20L, product2L, product1L, product500ML, product300ML
         }
-        const options = { item: 'Dispatch', v1Ing: 'Creating', v2: 'created' }
+        const options = { item: 'Dispatch', v1Ing: 'adding', v2: 'added' }
         const url = '/motherplant/addDispatchDetails'
 
         try {
@@ -158,7 +158,7 @@ const CreateDispatch = ({ goToTab, driverList, warehouseList, reFetch, ...rest }
 
     return (
         <>
-            <FormHeader title='Create Dispatch DC' />
+            <FormHeader title='Add Dispatch DC' />
             <DispatchForm
                 track
                 data={formData}
@@ -175,7 +175,7 @@ const CreateDispatch = ({ goToTab, driverList, warehouseList, reFetch, ...rest }
                     app-create-btn footer-btn ${btnDisabled ? 'disabled' : ''} 
                     ${shake ? 'app-shake' : ''}
                 `}
-                    text='Create'
+                    text='Add'
                 />
             </div>
             <ConfirmModal

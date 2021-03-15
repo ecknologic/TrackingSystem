@@ -8,7 +8,7 @@ const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
 const DispatchView = ({ data }) => {
 
-    const { DCNO, batchId, dispatchedDate, vehicleNo, mobileNumber,
+    const { DCNO, batchId, dispatchedDate, vehicleNo, mobileNumber, managerName,
         product20L, product2L, product1L, product500ML, product300ML, dispatchAddress, vehicleType, driverName, status } = data
 
     const color = getStatusColor(status)
@@ -56,6 +56,10 @@ const DispatchView = ({ data }) => {
                 <div className='input-container'>
                     <InputLabel name='Contact Name And Number' />
                     <InputValue size='smaller' value={`${driverName}, ${mobileNumber || '--'}`} />
+                </div>
+                <div className='input-container'>
+                    <InputLabel name='Manager' />
+                    <InputValue size='larger' value={managerName} />
                 </div>
             </div>
             <Divider />

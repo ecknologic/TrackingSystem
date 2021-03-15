@@ -15,7 +15,7 @@ import CustomButton from '../../../components/CustomButton';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import { isEmpty, showToast, base64String, getBase64 } from '../../../utils/Functions';
 import { TRACKFORM } from '../../../utils/constants';
-import { validateIDNumbers, validateNames, validateMobileNumber, validateEmailId, validateDistributorValues } from '../../../utils/validations';
+import { validateNames, validateMobileNumber, validateEmailId, validateDistributorValues } from '../../../utils/validations';
 import '../../../sass/employees.scss'
 
 const ManageDistributor = () => {
@@ -62,11 +62,7 @@ const ManageDistributor = () => {
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
         // Validations
-        if (key === 'gstNo') {
-            const error = validateIDNumbers(key, value)
-            setFormErrors(errors => ({ ...errors, [key]: error }))
-        }
-        else if (key === 'agencyName' || key === 'operationalArea' || key === 'contactPerson') {
+        if (key === 'agencyName' || key === 'operationalArea' || key === 'contactPerson') {
             const error = validateNames(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -79,11 +75,7 @@ const ManageDistributor = () => {
     const handleBlur = (value, key) => {
 
         // Validations
-        if (key === 'gstNo') {
-            const error = validateIDNumbers(key, value, true)
-            setFormErrors(errors => ({ ...errors, [key]: error }))
-        }
-        else if (key === 'mailId' || key === 'alternateMailId') {
+        if (key === 'mailId' || key === 'alternateMailId') {
             const error = validateEmailId(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }

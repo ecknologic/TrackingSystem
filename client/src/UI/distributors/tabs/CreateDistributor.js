@@ -6,9 +6,7 @@ import DistributorForm from '../forms/Distributor';
 import { getUserId } from '../../../utils/constants';
 import CustomButton from '../../../components/CustomButton';
 import { getBase64, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
-import {
-    validateIDNumbers, validateMobileNumber, validateNames, validateDistributorValues, validateEmailId
-} from '../../../utils/validations';
+import { validateMobileNumber, validateNames, validateDistributorValues, validateEmailId } from '../../../utils/validations';
 
 const CreateEmployee = ({ goToTab }) => {
     const USERID = getUserId()
@@ -31,11 +29,7 @@ const CreateEmployee = ({ goToTab }) => {
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
         // Validations
-        if (key === 'gstNo') {
-            const error = validateIDNumbers(key, value)
-            setFormErrors(errors => ({ ...errors, [key]: error }))
-        }
-        else if (key === 'agencyName' || key === 'operationalArea' || key === 'contactPerson') {
+        if (key === 'agencyName' || key === 'operationalArea' || key === 'contactPerson') {
             const error = validateNames(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -48,11 +42,7 @@ const CreateEmployee = ({ goToTab }) => {
     const handleBlur = (value, key) => {
 
         // Validations
-        if (key === 'gstNo') {
-            const error = validateIDNumbers(key, value, true)
-            setFormErrors(errors => ({ ...errors, [key]: error }))
-        }
-        else if (key === 'mailId' || key === 'alternateMailId') {
+        if (key === 'mailId' || key === 'alternateMailId') {
             const error = validateEmailId(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -129,7 +119,7 @@ const CreateEmployee = ({ goToTab }) => {
                     app-create-btn footer-btn ${btnDisabled ? 'disabled' : ''} 
                     ${shake ? 'app-shake' : ''}
                 `}
-                    text='Create'
+                    text='Add'
                 />
             </div>
         </div>

@@ -4,7 +4,6 @@ import InputLabel from '../../../../components/InputLabel';
 import CustomInput from '../../../../components/CustomInput';
 import SelectInput from '../../../../components/SelectInput';
 import DraggerInput from '../../../../components/DraggerInput';
-import InputWithAddon from '../../../../components/InputWithAddon';
 import UploadPreviewer from '../../../../components/UploadPreviewer';
 import { resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 
@@ -37,10 +36,9 @@ const DeliveryForm = (props) => {
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='GST Number' error={errors.gstNo} />
-                        <InputWithAddon maxLength={15} label='VERIFY' uppercase
+                        <CustomInput maxLength={15} uppercase
                             value={gstNo} placeholder='GST Number' disabled={sameAddress || isDisabled}
-                            error={errors.gstNo} onBlur={(value) => onBlur(value, 'gstNo')}
-                            onChange={(value) => onChange(value, 'gstNo')}
+                            error={errors.gstNo} onChange={(value) => onChange(value, 'gstNo')}
                         />
                     </div>
                     <div className='input-container app-upload-file-container app-gst-upload-container'>

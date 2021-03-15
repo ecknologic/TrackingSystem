@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import axios from 'axios';
 import { Menu, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -17,6 +18,7 @@ import CustomRangeInput from '../../../../components/CustomRangeInput';
 import { EyeIconGrey, ScheduleIcon } from '../../../../components/SVG_Icons';
 import { getStatusColor, doubleKeyComplexSearch } from '../../../../utils/Functions';
 const APIDATEFORMAT = 'YYYY-MM-DD'
+const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
 const DeliveredDC = () => {
     const departmentId = getWarehoseId()
@@ -139,16 +141,18 @@ const DeliveredDC = () => {
     }
 
     const dataSource = useMemo(() => deliveries.map((dc) => {
-        const { dcNo, customerOrderId, address, RouteName, driverName, customerName, isDelivered } = dc
+        const { dcNo, customerOrderId, address, RouteName, driverName, deliveredDate, customerName, returnEmptyCans, isDelivered } = dc
         return {
             key: customerOrderId || dcNo,
             dcnumber: dcNo,
             shopAddress: address,
             route: RouteName,
             name: customerName,
+            returnEmptyCans: returnEmptyCans || 0,
             driverName: driverName || 'Not Assigned',
             orderDetails: renderOrderDetails(dc),
             status: renderStatus(isDelivered),
+            dateAndTime: dayjs(deliveredDate).format(DATEANDTIMEFORMAT),
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, dc)} />
         }
     }), [deliveries])

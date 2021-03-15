@@ -31,7 +31,7 @@ const Motherplants = () => {
                         <TabPane tab="Mother Plants" key="1">
                             <Dashboard reFetch={reFetch} />
                         </TabPane>
-                        <TabPane tab="Create New Plant" key="2">
+                        <TabPane tab="Add New Plant" key="2">
                             <CreateNewPlant goToTab={handleGoToTab} />
                         </TabPane>
                     </Tabs>

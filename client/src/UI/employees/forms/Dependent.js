@@ -6,7 +6,6 @@ import { genderOptions } from '../../../assets/fixtures'
 import CustomInput from '../../../components/CustomInput';
 import SelectInput from '../../../components/SelectInput';
 import DraggerInput from '../../../components/DraggerInput';
-import InputWithAddon from '../../../components/InputWithAddon';
 import UploadPreviewer from '../../../components/UploadPreviewer';
 import CustomDateInput from '../../../components/CustomDateInput';
 import { disableFutureDates, resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
@@ -38,7 +37,7 @@ const DependentForm = (props) => {
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Aadhar Number' error={errors.adharNo} mandatory />
-                        <InputWithAddon maxLength={12} label='VERIFY' uppercase
+                        <CustomInput maxLength={12} uppercase
                             value={adharNo} placeholder='Aadhar Number'
                             error={errors.adharNo} onBlur={(value) => onBlur(value, 'adharNo')}
                             onChange={(value) => onChange(value, 'adharNo')}

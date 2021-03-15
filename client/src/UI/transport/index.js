@@ -4,17 +4,21 @@ import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'reac
 import Dashboard from './tabs/Routes';
 import { http } from '../../modules/http';
 import CreateRoute from './tabs/CreateRoute';
-import Header from '../../components/SimpleHeader';
+import SimpleHeader from '../../components/SimpleHeader';
+import ContentHeader from '../../components/ContentHeader';
 import { getDepartmentOptions } from '../../assets/fixtures';
 import '../../sass/products.scss';
+import { getRole, SUPERADMIN } from '../../utils/constants';
 
 const Transport = () => {
+    const role = getRole()
     const [activeTab, setActiveTab] = useState('1')
     const [reFetch, setreFetch] = useState(false)
     const [departmentList, setDepartmentList] = useState([])
     const [isFetched, setIsFetched] = useState(false)
     const departmentOptions = useMemo(() => getDepartmentOptions(departmentList), [departmentList])
 
+    const isSuperAdmin = useMemo(() => role === SUPERADMIN, [role])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
@@ -52,7 +56,7 @@ const Transport = () => {
 
     return (
         <Fragment>
-            <Header title='Routes' />
+            { isSuperAdmin ? <SimpleHeader title='Routes' /> : <ContentHeader title='Routes' />}
             <div className='employee-content'>
                 <div className='app-tabs-container'>
                     <Tabs
@@ -62,7 +66,7 @@ const Transport = () => {
                         <TabPane tab="Routes" key="1">
                             <Dashboard departmentOptions={departmentOptions} isFetched={isFetched} fetchList={fetchList} reFetch={reFetch} />
                         </TabPane>
-                        <TabPane tab="Create New Route" key="2">
+                        <TabPane tab="Add New Route" key="2">
                             <CreateRoute departmentOptions={departmentOptions} fetchList={fetchList} goToTab={handleGoToTab} />
                         </TabPane>
                     </Tabs>

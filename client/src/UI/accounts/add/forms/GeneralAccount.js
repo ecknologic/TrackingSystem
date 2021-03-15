@@ -2,7 +2,6 @@ import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import SelectInput from '../../../../components/SelectInput';
 import DraggerInput from '../../../../components/DraggerInput';
-import InputWithAddon from '../../../../components/InputWithAddon';
 import UploadPreviewer from '../../../../components/UploadPreviewer';
 import InputLabel from '../../../../components/InputLabel';
 import CustomInput from '../../../../components/CustomInput';
@@ -18,7 +17,7 @@ const GeneralAccountForm = (props) => {
 
     const {
         gstNo, address, natureOfBussiness, depositAmount, customerName, mobileNumber, registeredDate, pinCode,
-        invoicetype, EmailId, idProofType, gstProof, referredBy, routeId, departmentId, deliveryLocation,
+        invoicetype, EmailId, idProofType, gstProof, referredBy, routeId, departmentId, deliveryLocation, alternateNumber,
         creditPeriodInDays, product20L, product2L, price20L, product1L, price2L, price1L, product500ML, price500ML, product300ML, price300ML
     } = data
 
@@ -108,10 +107,9 @@ const GeneralAccountForm = (props) => {
                 <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='GST Number' error={errors.gstNo} />
-                        <InputWithAddon
-                            maxLength={15} value={gstNo} label='VERIFY' uppercase
+                        <CustomInput
+                            maxLength={15} value={gstNo} uppercase
                             disabled={disabled} placeholder='GST Number' error={errors.gstNo}
-                            onBlur={(value) => onBlur(value, 'gstNo')}
                             onChange={(value) => onChange(value, 'gstNo')}
                         />
                     </div>
@@ -171,6 +169,15 @@ const GeneralAccountForm = (props) => {
                             error={errors.EmailId}
                             onBlur={(value) => onBlur(value, 'EmailId')}
                             onChange={(value) => onChange(value, 'EmailId')}
+                        />
+                    </div>
+                </div>
+                <div className='row'>
+                    <div className='input-container'>
+                        <InputLabel name='Alternate Phone No' error={errors.alternateNumber} />
+                        <CustomInput value={alternateNumber} placeholder='Alternate Phone Number'
+                            error={errors.alternateNumber} maxLength={15}
+                            onChange={(value) => onChange(value, 'alternateNumber')}
                         />
                     </div>
                 </div>

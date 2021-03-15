@@ -5,6 +5,16 @@ const { Option } = Select;
 export const MONTHSFULL = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 export const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 export const WEEKDAYS = ["ALL", "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
+export const bloodGroupOptions = [
+    <Option key='1' value="A+">A+</Option>,
+    <Option key='2' value="A-">A-</Option>,
+    <Option key='3' value="B+">B+</Option>,
+    <Option key='4' value="B-">B-</Option>,
+    <Option key='5' value="O+">O+</Option>,
+    <Option key='6' value="O-">O-</Option>,
+    <Option key='7' value="AB+">AB+</Option>,
+    <Option key='8' value="AB-">AB-</Option>,
+]
 export const idOptions = [
     <Option key='1' value="adharNo">Aadhar</Option>,
     <Option key='2' value="panNo">PAN</Option>,
@@ -389,6 +399,11 @@ export const deliveryColumns = [
         key: 'dcnumber',
     },
     {
+        title: 'Date & time',
+        dataIndex: 'dateAndTime',
+        key: 'dateAndTime',
+    },
+    {
         title: 'Name',
         dataIndex: 'name',
         key: 'name',
@@ -407,6 +422,11 @@ export const deliveryColumns = [
         title: 'Driver',
         key: 'driverName',
         dataIndex: 'driverName',
+    },
+    {
+        title: 'Return Cans',
+        dataIndex: 'returnEmptyCans',
+        key: 'returnEmptyCans',
     },
     {
         title: 'Order Details',
@@ -467,6 +487,11 @@ export const receivedStockColumns = [
         title: 'DC Number',
         dataIndex: 'dcNo',
         key: 'dcNo',
+    },
+    {
+        title: 'Date & time',
+        dataIndex: 'dateAndTime',
+        key: 'dateAndTime',
     },
     {
         title: 'Mother Plant',
@@ -737,7 +762,7 @@ export const internalQCColumns = [
         dataIndex: 'TDS',
     },
     {
-        title: 'QA Status',
+        title: 'Status',
         dataIndex: 'status',
         key: 'status',
     },

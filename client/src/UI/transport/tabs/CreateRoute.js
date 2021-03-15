@@ -3,7 +3,7 @@ import { message } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import RouteForm from '../forms/Route';
 import { http } from '../../../modules/http';
-import { getRole, getWarehoseId } from '../../../utils/constants';
+import { getRole, getWarehoseId, WAREHOUSEADMIN } from '../../../utils/constants';
 import CustomButton from '../../../components/CustomButton';
 import { isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
 
@@ -14,7 +14,7 @@ const CreateRoute = ({ goToTab, fetchList, departmentOptions }) => {
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [shake, setShake] = useState(false)
 
-    const isWHAdmin = useMemo(() => role === 'WarehouseAdmin', [role])
+    const isWHAdmin = useMemo(() => role === WAREHOUSEADMIN, [role])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
@@ -91,7 +91,7 @@ const CreateRoute = ({ goToTab, fetchList, departmentOptions }) => {
                     app-create-btn footer-btn ${btnDisabled ? 'disabled' : ''} 
                     ${shake ? 'app-shake' : ''}
                 `}
-                    text='Create'
+                    text='Add'
                 />
             </div>
         </div>

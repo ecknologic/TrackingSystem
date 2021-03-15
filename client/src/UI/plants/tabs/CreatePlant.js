@@ -6,8 +6,8 @@ import { http } from '../../../modules/http';
 import PlantForm from '../forms/Plant';
 import { getStaffOptions } from '../../../assets/fixtures';
 import CustomButton from '../../../components/CustomButton';
+import { validateMobileNumber, validateNames, validatePlantValues, validatePinCode } from '../../../utils/validations';
 import { getBase64, getMainPathname, getPlantValuesForDB, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
-import { validateIDNumbers, validateMobileNumber, validateNames, validatePlantValues, validatePinCode } from '../../../utils/validations';
 
 const CreateNewPlant = ({ goToTab }) => {
     const { pathname } = useLocation()
@@ -62,11 +62,7 @@ const CreateNewPlant = ({ goToTab }) => {
         }
 
         // Validations
-        if (key === 'gstNo') {
-            const error = validateIDNumbers(key, value)
-            setFormErrors(errors => ({ ...errors, [key]: error }))
-        }
-        else if (key === 'departmentName' || key === 'city' || key === 'state') {
+        if (key === 'departmentName' || key === 'city' || key === 'state') {
             const error = validateNames(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -83,11 +79,7 @@ const CreateNewPlant = ({ goToTab }) => {
     const handleBlur = (value, key) => {
         // Validations
 
-        if (key === 'gstNo') {
-            const error = validateIDNumbers(key, value, true)
-            setFormErrors(errors => ({ ...errors, [key]: error }))
-        }
-        else if (key === 'pinCode') {
+        if (key === 'pinCode') {
             const error = validatePinCode(value, true)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -169,7 +161,7 @@ const CreateNewPlant = ({ goToTab }) => {
                     app-create-btn footer-btn ${btnDisabled ? 'disabled' : ''} 
                     ${shake ? 'app-shake' : ''}
                 `}
-                    text='Create'
+                    text='Add'
                 />
             </div>
         </>

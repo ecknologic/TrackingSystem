@@ -69,7 +69,7 @@ const AccountOverview = ({ data, onUpdate, isAdmin }) => {
         }
 
         // Validations
-        if (key === 'adharNo' || key === 'panNo' || key === 'gstNo' || key === 'licenseNo' || key === 'rocNo') {
+        if (key === 'adharNo' || key === 'panNo' || key === 'licenseNo' || key === 'rocNo') {
             const error = validateIDNumbers(key, value)
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -77,7 +77,7 @@ const AccountOverview = ({ data, onUpdate, isAdmin }) => {
             const error = validateNames(value)
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key === 'depositAmount' || key === 'poNo') {
+        else if (key === 'depositAmount' || key === 'poNo' || key === 'alternateNumber') {
             const error = validateNumber(value)
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -96,7 +96,7 @@ const AccountOverview = ({ data, onUpdate, isAdmin }) => {
     }
     const handleBlur = (value, key) => {
         // Validations
-        if (key === 'adharNo' || key === 'panNo' || key === 'gstNo' || key === 'licenseNo' || key === 'rocNo') {
+        if (key === 'adharNo' || key === 'panNo' || key === 'licenseNo' || key === 'rocNo') {
             const error = validateIDNumbers(key, value, true)
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }

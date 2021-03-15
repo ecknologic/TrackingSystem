@@ -83,6 +83,10 @@
                     
                     .ant-menu-sub.ant-menu-inline {
                         background-color: #fff;
+
+                        .ant-menu-item {
+                            padding-left: 2em !important;
+                        }
                     }
 
                     .ant-menu-submenu-title {
@@ -98,6 +102,12 @@
 
                 .ant-menu-submenu-selected {
                     color: #0062FF;
+
+                    .ant-menu-submenu-title {
+                        svg path {
+                            fill: #0062FF;
+                        }
+                    }
                 }
             }
         }

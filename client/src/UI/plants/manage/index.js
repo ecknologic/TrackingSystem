@@ -16,7 +16,7 @@ import { getStaffOptions } from '../../../assets/fixtures';
 import CustomButton from '../../../components/CustomButton';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import { isEmpty, showToast, base64String, getMainPathname, getBase64, getPlantValuesForDB } from '../../../utils/Functions';
-import { validateIDNumbers, validateNames, validateMobileNumber, validatePinCode, validatePlantValues } from '../../../utils/validations';
+import { validateNames, validateMobileNumber, validatePinCode, validatePlantValues } from '../../../utils/validations';
 import '../../../sass/plants.scss'
 
 const ManagePlant = () => {
@@ -94,11 +94,7 @@ const ManagePlant = () => {
         }
 
         // Validations
-        if (key === 'gstNo') {
-            const error = validateIDNumbers(key, value)
-            setAccountErrors(errors => ({ ...errors, [key]: error }))
-        }
-        else if (key === 'departmentName' || key === 'city' || key === 'state') {
+        if (key === 'departmentName' || key === 'city' || key === 'state') {
             const error = validateNames(value)
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -115,11 +111,7 @@ const ManagePlant = () => {
     const handleBlur = (value, key) => {
         // Validations
 
-        if (key === 'gstNo') {
-            const error = validateIDNumbers(key, value, true)
-            setAccountErrors(errors => ({ ...errors, [key]: error }))
-        }
-        else if (key === 'pinCode') {
+        if (key === 'pinCode') {
             const error = validatePinCode(value, true)
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }
