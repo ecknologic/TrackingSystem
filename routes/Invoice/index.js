@@ -34,7 +34,7 @@ router.get('/getInvoiceById/:invoiceId', (req, res) => {
     invoiceQueries.getInvoiceById(req.params.invoiceId, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
-            const { gstNo, invoiceId, Address1, customerType, fromDate, toDate, ...rest } = results[0]
+            const { gstNo, invoiceId, Address1, deliveryAddress, customerType, fromDate, toDate, ...rest } = results[0]
             let haveMultipleAddress = false
             let products = JSON.parse(results[0].products)
             let obj = {
@@ -180,7 +180,7 @@ router.post("/generateMultipleInvoices", (req, res) => {
                         const { fromDate, toDate } = req.body
                         for (let [index, i] of customersArr.entries()) {
                             let { gstNo, products, customerId, creditPeriodInDays, organizationName, EmailId, createdBy } = i
-                            let finalProducts = []
+                            let finalProducts = [];
                             let obj = {
                                 customerName: organizationName,
                                 gstNo,
@@ -198,63 +198,84 @@ router.post("/generateMultipleInvoices", (req, res) => {
                                 mailIds: EmailId
                             }
                             products.map(product => {
-                                const { address, price20L, price2L, price1L, price500ML, price300ML } = product
+                                const { location: address, deliveryAddress, price20L, price2L, price1L, price500ML, price300ML } = product
+                                let addedProducts = []
                                 if (product['20LCans'] > 0) {
-                                    finalProducts.push({
-                                        "productName": "20 Lt Bibo Water Jar",
-                                        "quantity": product['20LCans'],
-                                        "productPrice": price20L,
-                                        "discount": 0,
-                                        "tax": 12,
-                                        address,
-                                        ...getResults({ gstNo, quantity: product['20LCans'], productPrice: price20L, discount: 0, tax: 12 })
-                                    })
+                                    if (!addedProducts.includes("20LCans")) {
+                                        finalProducts.push({
+                                            "productName": "20 Lt Bibo Water Jar",
+                                            "quantity": product['20LCans'],
+                                            "productPrice": price20L,
+                                            "discount": 0,
+                                            "tax": 12,
+                                            address,
+                                            deliveryAddress,
+                                            ...getResults({ gstNo, quantity: product['20LCans'], productPrice: price20L, discount: 0, tax: 12 })
+                                        })
+                                        addedProducts.push("20LCans")
+                                    }
                                 }
                                 if (product['1LBoxes'] > 0) {
-                                    finalProducts.push({
-                                        "productName": "1 Lt Bibo Water Jar",
-                                        "quantity": product['1LBoxes'],
-                                        "productPrice": price1L,
-                                        "discount": 0,
-                                        "tax": 18,
-                                        address,
-                                        ...getResults({ gstNo, quantity: product['1LBoxes'], productPrice: price1L, discount: 0, tax: 18 })
+                                    if (!addedProducts.includes("1LBoxes")) {
+                                        finalProducts.push({
+                                            "productName": "1 Lt Bibo Water Jar",
+                                            "quantity": product['1LBoxes'],
+                                            "productPrice": price1L,
+                                            "discount": 0,
+                                            "tax": 18,
+                                            address,
+                                            deliveryAddress,
+                                            ...getResults({ gstNo, quantity: product['1LBoxes'], productPrice: price1L, discount: 0, tax: 18 })
 
-                                    })
+                                        })
+                                        addedProducts.push("1LBoxes")
+                                    }
                                 }
                                 if (product['500MLBoxes'] > 0) {
-                                    finalProducts.push({
-                                        "productName": "500ML Bibo Water Jar",
-                                        "quantity": product['500MLBoxes'],
-                                        "productPrice": price500ML,
-                                        "discount": 0,
-                                        "tax": 18,
-                                        address,
-                                        ...getResults({ gstNo, quantity: product['500MLBoxes'], productPrice: price500ML, discount: 0, tax: 18 })
+                                    if (!addedProducts.includes("500MLBoxes")) {
+                                        finalProducts.push({
+                                            "productName": "500ML Bibo Water Jar",
+                                            "quantity": product['500MLBoxes'],
+                                            "productPrice": price500ML,
+                                            "discount": 0,
+                                            "tax": 18,
+                                            address,
+                                            deliveryAddress,
+                                            ...getResults({ gstNo, quantity: product['500MLBoxes'], productPrice: price500ML, discount: 0, tax: 18 })
 
-                                    })
+                                        })
+                                        addedProducts.push("500MLBoxes")
+                                    }
                                 }
                                 if (product['300MLBoxes'] > 0) {
-                                    finalProducts.push({
-                                        "productName": "300ML Lt Bibo Water Jar",
-                                        "quantity": product['300MLBoxes'],
-                                        "productPrice": price300ML,
-                                        "discount": 0,
-                                        "tax": 18,
-                                        address,
-                                        ...getResults({ gstNo, quantity: product['300MLBoxes'], productPrice: price300ML, discount: 0, tax: 18 })
-                                    })
+                                    if (!addedProducts.includes("300MLBoxes")) {
+                                        finalProducts.push({
+                                            "productName": "300ML Lt Bibo Water Jar",
+                                            "quantity": product['300MLBoxes'],
+                                            "productPrice": price300ML,
+                                            "discount": 0,
+                                            "tax": 18,
+                                            address,
+                                            deliveryAddress,
+                                            ...getResults({ gstNo, quantity: product['300MLBoxes'], productPrice: price300ML, discount: 0, tax: 18 })
+                                        })
+                                        addedProducts.push("300MLBoxes")
+                                    }
                                 }
                                 if (product['2LBoxes'] > 0) {
-                                    finalProducts.push({
-                                        "productName": "2 Lt Bibo Water Jar",
-                                        "quantity": product['2LBoxes'],
-                                        "productPrice": price2L,
-                                        "discount": 0,
-                                        "tax": 18,
-                                        address,
-                                        ...getResults({ gstNo, quantity: product['2LBoxes'], productPrice: price2L, discount: 0, tax: 18 })
-                                    })
+                                    if (!addedProducts.includes("2LBoxes")) {
+                                        finalProducts.push({
+                                            "productName": "2 Lt Bibo Water Jar",
+                                            "quantity": product['2LBoxes'],
+                                            "productPrice": price2L,
+                                            "discount": 0,
+                                            "tax": 18,
+                                            address,
+                                            deliveryAddress,
+                                            ...getResults({ gstNo, quantity: product['2LBoxes'], productPrice: price2L, discount: 0, tax: 18 })
+                                        })
+                                        addedProducts.push("2LBoxes")
+                                    }
                                 }
                             })
 
@@ -312,7 +333,8 @@ router.post("/createInvoice", (req, res) => {
                 let products = addProducts(JSON.parse(data[0].products))
                 let product = products[0]
                 const {
-                    address,
+                    location: address,
+                    deliveryAddress,
                     price1L,
                     price2L,
                     price20L,
@@ -465,6 +487,7 @@ const addProducts = (products) => {
             newData["price300ML"] += item["price300ML"]
             newData["price500ML"] += item["price500ML"]
             newData["address"] = item["address"]
+            newData["deliveryAddress"] = item["deliveryAddress"]
         }
     })
     return [newData]
