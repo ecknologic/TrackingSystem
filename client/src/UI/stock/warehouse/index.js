@@ -1,10 +1,12 @@
 import axios from 'axios';
 import { Tabs } from 'antd';
+import { useParams } from 'react-router';
 import React, { Fragment, useMemo, useState } from 'react';
 import Orders from './tabs/Orders';
 import Staff from './tabs/Staff';
 import Delivery from './tabs/Delivery';
 import { http } from '../../../modules/http';
+import DeliveredDC from './tabs/DeliveredDC';
 import StockDetails from './tabs/StockDetails';
 import StockReceived from './tabs/StockReceived';
 import { TODAYDATE } from '../../../utils/constants';
@@ -12,17 +14,20 @@ import Header from '../../../components/ContentHeader';
 import ReportsDropdown from '../../../components/ReportsDropdown';
 import DatePickerPanel from '../../../components/DatePickerPanel';
 import '../../../sass/stock.scss'
-import DeliveredDC from './tabs/DeliveredDC';
 
 const WarehouseStock = () => {
-
-    const [activeTab, setActiveTab] = useState('1')
+    const { active = '1' } = useParams()
+    const [activeTab, setActiveTab] = useState(active)
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
     const showDatePanel = activeTab === '1' || activeTab === '2'
     const source = useMemo(() => axios.CancelToken.source(), [selectedDate, activeTab]);
 
     const handleDateChange = (date) => {
         setSelectedDate(date)
+    }
+
+    const handleTabClick = (key) => {
+        setActiveTab(key)
     }
 
     const handleDateSelect = () => http.ABORT(source)
@@ -34,7 +39,8 @@ const WarehouseStock = () => {
                 <div className='app-tabs-container app-hidden-panes'>
                     <Tabs
                         tabBarExtraContent={<ReportsDropdown />}
-                        onChange={(key) => setActiveTab(key)}
+                        onChange={handleTabClick}
+                        activeKey={activeTab}
                     >
                         <TabPane tab="Stock Details" key="1" />
                         <TabPane tab="Delivery" key="2" />

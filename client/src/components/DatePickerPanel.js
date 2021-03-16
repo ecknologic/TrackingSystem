@@ -116,7 +116,7 @@ const DatePickerPanel = ({ onChange, onSelect }) => {
                         open={open}
                         value={selectedDate}
                         style={{ right: 0 }}
-                        className='date-panel-picker'
+                        className='app-date-panel-picker'
                         onChange={handleDateSelect}
                         onOpenChange={datePickerStatus}
                         disabledDate={disableFutureDates}

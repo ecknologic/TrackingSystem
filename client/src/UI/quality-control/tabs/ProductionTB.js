@@ -135,7 +135,7 @@ const ProductionTB = ({ reFetch }) => {
                             open={open}
                             style={{ left: 0 }}
                             value={selectedDate}
-                            className='date-panel-picker'
+                            className='app-date-panel-picker'
                             onChange={handleDateSelect}
                             onOpenChange={datePickerStatus}
                             disabledDate={disableFutureDates}

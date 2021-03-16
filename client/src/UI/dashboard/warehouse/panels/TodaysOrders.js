@@ -1,5 +1,6 @@
 import { Empty } from 'antd';
 import axios from 'axios';
+import { useHistory } from 'react-router';
 import Scrollbars from 'react-custom-scrollbars-2';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
@@ -11,11 +12,12 @@ import NoContent from '../../../../components/NoContent';
 import OrderCard from '../../../../components/OrderCard';
 import DCView from '../../../accounts/view/views/DCView';
 import CustomModal from '../../../../components/CustomModal';
+import CustomButton from '../../../../components/CustomButton';
 
 const TodaysOrders = () => {
+    const history = useHistory()
     const [loading, setLoading] = useState(true)
     const [orders, setOrders] = useState([])
-    const [selectedDate, setSelectedDate] = useState(TODAYDATE)
     const [DCModal, setDCModal] = useState(false)
     const [title, setTitle] = useState('')
     const [viewData, setViewData] = useState({})
@@ -30,7 +32,7 @@ const TodaysOrders = () => {
         }
     }, [])
 
-    const getOrders = async () => {
+    const getOrders = async (selectedDate = TODAYDATE) => {
         const url = `/warehouse/deliveryDetails/${selectedDate}`
         try {
             const data = await http.GET(axios, url, config)
@@ -50,13 +52,26 @@ const TodaysOrders = () => {
         setViewData({})
     }
 
+    const handleDateChange = (date) => {
+        setLoading(true)
+        getOrders(date)
+    }
+
     const handleDCModalCancel = useCallback(() => onModalClose(), [])
+    const goToOrders = useCallback(() => history.push('/manage-stock/3'), [])
 
     return (
         <div className='todays-orders-panel'>
             <div className='panel-header'>
                 <div className='head-container'>
-                    {/* <DaySlider onChange={() => { }} /> */}
+                    <div className='head'>
+                        <DaySlider onChange={handleDateChange} />
+                        <CustomButton
+                            text='View All'
+                            onClick={goToOrders}
+                            className='app-extra-btn inverse small-btn'
+                        />
+                    </div>
                     <div className='title'>
                         Today's Orders
                     </div>

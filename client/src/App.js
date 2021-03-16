@@ -110,7 +110,7 @@ const App = () => {
                   <Route path='/manage-invoices' render={byRole(<WarehouseInvoices />)} />
                   <Route path='/manage-empty-cans' render={byRole(<ReturnEmptyCans />)} />
                   <Route path='/manage-stock/staff/:employeeId' render={byRole(<ManageEmployee isDriver />)} />
-                  <Route path='/manage-stock' render={byRole(<WarehouseStock />)} />
+                  <Route path='/manage-stock/:active?' render={byRole(<WarehouseStock />)} />
                   <Route path='/materials' render={byRole(<Materials />)} />
                   <Route path='/staff/manage/:employeeId' render={byRole(<ManageEmployee />)} />
                   <Route path='/drivers/manage/:employeeId' render={byRole(<ManageEmployee isDriver />)} />

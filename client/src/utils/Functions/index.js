@@ -143,6 +143,12 @@ export const getCleanObject = (data) => {
 export const getSideMenuKey = (path) => {
     if (path.includes('/manage-accounts'))
         return '/manage-accounts'
+    if (path.includes('/manage-stock'))
+        return '/manage-stock'
+    if (path.includes('/invoices'))
+        return '/invoices'
+    if (path.includes('/customers'))
+        return '/customers'
     return path
 }
 

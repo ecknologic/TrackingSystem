@@ -2,27 +2,36 @@ import dayjs from 'dayjs';
 import Slider from 'react-slick';
 import React, { Fragment, useEffect, useRef, useState } from 'react';
 import { LeftChevronIconGrey, RightChevronIconGrey } from './SVG_Icons';
-import { TODAYDATE, TRACKFORM } from '../utils/constants';
-import '../sass/daySlider.scss'
 import DaySlideItem from './DaySlideItem';
-const format = 'YYYY-MM-DD';
+import { TODAYDATE } from '../utils/constants';
+import CustomDateInput from './CustomDateInput';
+import { getAdjustedSlideIndex } from '../utils/Functions';
+import '../sass/daySlider.scss'
+const APIDATEFORMAT = 'YYYY-MM-DD';
 const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-const DaySlider = ({ onChange, onSelect }) => {
+const DaySlider = ({ onChange }) => {
     const sliderRef = useRef()
     const [open, setOpen] = useState(false)
-    const [daysInMonth, SetdaysInMonth] = useState(0)
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
     const [selectedDay, setSelectedDay] = useState(0)
     const [selectedMonth, setSelectedMonth] = useState(0)
     const [selectedYear, setSelectedYear] = useState(0)
-    const [confirm, setConfirm] = useState(false)
     const [slides, setSlides] = useState([])
 
-    const clickRef = useRef('')
+    const hasSlides = slides.length
 
     useEffect(() => {
-        const today = dayjs().format(format)
+        if (hasSlides) {
+            const actualIndex = slides.findIndex((item) => item.date == selectedDay)
+            const adjustedIndex = getAdjustedSlideIndex(actualIndex, 1)
+            sliderRef.current.slickGoTo(adjustedIndex)
+        }
+    }, [slides.length, selectedDate])
+
+
+    useEffect(() => {
+        const today = dayjs().format(APIDATEFORMAT)
         generateRequiredDates(today)
     }, [])
 
@@ -37,10 +46,8 @@ const DaySlider = ({ onChange, onSelect }) => {
             return { date: day + 1, day: days[dayjs(currentDate).day()] }
         })
 
-        onChange(date)
         setSelectedDate(date)
         setSlides(slides)
-        SetdaysInMonth(daysInMonth)
         setSelectedDay(day)
         setSelectedMonth(month)
         setSelectedYear(year)
@@ -51,35 +58,19 @@ const DaySlider = ({ onChange, onSelect }) => {
     }
 
     const handleDateSelect = (value) => {
-        const date = dayjs(value).format(format)
-        const sameDay = selectedDate == date
-        const formHasChanged = sessionStorage.getItem(TRACKFORM)
+        const date = dayjs(value).format(APIDATEFORMAT)
 
-        if (formHasChanged && !sameDay) {
-            clickRef.current = value
-            setConfirm(true)
-        }
-        else {
-            !sameDay && onSelect()
-            generateRequiredDates(date)
-            setOpen(false)
-        }
+        generateRequiredDates(date)
+        setOpen(false)
     }
 
-    const handleSlideSelect = (value) => {
-        const sameDay = selectedDay == value
-        const formHasChanged = sessionStorage.getItem(TRACKFORM)
-        if (formHasChanged && !sameDay) {
-            clickRef.current = value
-            setConfirm(true)
+    const beforeChange = (prev, next) => {
+        const current = next + 1
+        if (selectedDay != current) {
+            const currentDate = `${selectedYear}-${selectedMonth}-${current}`
+            onChange(currentDate)
         }
-        else {
-            !sameDay && onSelect()
-            setSelectedDay(value)
-            const date = `${selectedYear}-${selectedMonth}-${value}`
-            setSelectedDate(date)
-            onChange(date)
-        }
+        else onChange(selectedDate)
     }
 
     const props = {
@@ -88,7 +79,7 @@ const DaySlider = ({ onChange, onSelect }) => {
         slidesToScroll: 1,
         prevArrow: <LeftChevronIconGrey />,
         nextArrow: <RightChevronIconGrey />,
-        // beforeChange
+        beforeChange
     };
 
     return (
@@ -100,10 +91,18 @@ const DaySlider = ({ onChange, onSelect }) => {
                         item={item}
                         year={selectedYear}
                         month={selectedMonth}
-                        onSelect={onSelect}
+                        onSelect={() => setOpen(true)}
                     />)
                 }
             </Slider>
+            <CustomDateInput // Hidden in the DOM
+                open={open}
+                value={selectedDate}
+                style={{ right: '20%' }}
+                className='app-date-panel-picker'
+                onChange={handleDateSelect}
+                onOpenChange={datePickerStatus}
+            />
         </Fragment>
     )
 }

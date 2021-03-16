@@ -50,8 +50,6 @@ const DeliveredDC = () => {
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
-    console.log('customer List', customerList)
-
     useEffect(() => {
         setLoading(true)
         getDeliveries()
@@ -232,7 +230,7 @@ const DeliveredDC = () => {
                             open={rangeOpen}
                             value={selectedRange}
                             style={{ left: 0 }}
-                            className='date-panel-picker'
+                            className='app-date-panel-picker'
                             onChange={handleRangeSelect}
                             onOpenChange={datePickerStatus}
                         />
@@ -240,7 +238,7 @@ const DeliveredDC = () => {
                             open={dateOpen}
                             value={selectedDate}
                             style={{ left: 0 }}
-                            className='date-panel-picker'
+                            className='app-date-panel-picker'
                             onChange={handleDateSelect}
                             onOpenChange={datePickerStatus}
                         />

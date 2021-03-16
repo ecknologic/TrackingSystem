@@ -177,8 +177,6 @@ const AccountOverview = ({ data, onUpdate, isAdmin }) => {
             setTimeout(() => setShake(false), 820)
             setIDProofErrors(IDProofError)
             setAccountErrors(accountErrors)
-            console.log('IDProofError', IDProofError)
-            console.log('accountErrors', accountErrors)
             return
         }
         const idProofs = getIdProofsForDB(IDProofs, idProofType)

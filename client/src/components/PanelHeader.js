@@ -126,7 +126,7 @@ const PanelHeader = memo((props) => {
                                             open={open}
                                             value={selectedRange}
                                             style={{ left: 0 }}
-                                            className='date-panel-picker'
+                                            className='app-date-panel-picker'
                                             onChange={handleDateSelect}
                                             onOpenChange={datePickerStatus}
                                             disabledDate={disableFutureDates}

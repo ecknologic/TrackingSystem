@@ -1349,9 +1349,12 @@ textarea, .ant-dropdown-menu {
 .app-day-slide-item {
     font-family: 'PoppinsRegular400';
     color: rgba(0, 0, 0, 0.85);
-    cursor: pointer;
-
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
     .date {
+        cursor: pointer;
         font-size: .95em;
     }
 }
@@ -1379,6 +1382,7 @@ textarea, .ant-dropdown-menu {
             font-family: 'PoppinsSemiBold600';
             font-size: .9em;
             margin-right: .2em;
+            white-space: nowrap;
         }
     
         svg {
@@ -1386,20 +1390,20 @@ textarea, .ant-dropdown-menu {
         }
     
     }
+}
 
-    .date-panel-picker {
-        width: 0;
-    
-        .ant-picker-suffix {
-            display: none;
-        }
-    
-        &.ant-picker {
-            padding: 0;
-            visibility: hidden;
-            height: 2em;
-            position: absolute;
-        }
+.app-date-panel-picker {
+    width: 0;
+
+    .ant-picker-suffix {
+        display: none;
+    }
+
+    &.ant-picker {
+        padding: 0;
+        visibility: hidden;
+        height: 2em;
+        position: absolute;
     }
 }
 

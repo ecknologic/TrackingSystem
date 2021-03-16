@@ -10,7 +10,7 @@ import CustomButton from '../../../../components/CustomButton';
 import { todayDeliveryColumns } from '../../../../assets/fixtures'
 import '../../../../sass/todayDeliveryDetails.scss'
 
-const TodayDeliveryDetails = () => {
+const DispatchDetails = () => {
     const history = useHistory()
     const [loading, setLoading] = useState(true)
     const [dispatches, setDispatches] = useState([])
@@ -96,4 +96,4 @@ const renderProductDetails = ({ product20L, product2L, product1L, product500ML, 
     500 ml - ${Number(product500ML)} boxes, 300 ml - ${Number(product300ML)} boxes
     `
 }
-export default TodayDeliveryDetails
+export default DispatchDetails

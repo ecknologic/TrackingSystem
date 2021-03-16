@@ -37,7 +37,6 @@ export const EditableCell = ({ title, editable, children, dataIndex,
     const save = async () => {
         try {
             const values = await form.validateFields();
-            console.log('data Index Inside', dataIndex)
             toggleEdit();
             onSave({ ...record, ...values }, dataIndex);
         } catch (error) { }
@@ -84,13 +83,13 @@ export const EditableCell = ({ title, editable, children, dataIndex,
                 }
             </Form.Item>
         ) : (
-                <div
-                    className="editable-cell-value-wrap"
-                    onClick={toggleEdit}
-                >
-                    {children}
-                </div>
-            );
+            <div
+                className="editable-cell-value-wrap"
+                onClick={toggleEdit}
+            >
+                {children}
+            </div>
+        );
     }
 
     return <td {...restProps}>{childNode}</td>;
