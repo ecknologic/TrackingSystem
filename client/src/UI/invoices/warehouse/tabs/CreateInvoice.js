@@ -263,7 +263,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
                     app-create-btn footer-btn ${btnDisabled ? 'disabled' : ''} 
                     ${shake ? 'app-shake' : ''}
                 `}
-                    text={editMode ? 'Update' : 'Add'}
+                    text={editMode ? 'Update' : 'Create'}
                 />
             </div>
         </div>
@@ -271,7 +271,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
 }
 
 const getVerbs = (editMode) => {
-    let v1Ing = 'adding'
+    let v1Ing = 'Creating'
     let v2 = 'added'
     if (editMode) {
         v1Ing = 'Updating'

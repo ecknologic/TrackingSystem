@@ -116,6 +116,7 @@ const Invoice = ({ reFetch, accountId }) => {
     return (
         <div className='stock-delivery-container'>
             <div className='header'>
+                <div className='left'></div>
                 <div className='right'>
                     <SearchInput
                         placeholder='Search Invoice'

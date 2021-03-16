@@ -175,7 +175,7 @@ const Orders = () => {
                 setOptions({ item: 'Delivery', v1Ing: 'Updating', v2: 'updated' })
             }
             else {
-                setOptions({ item: 'Delivery', v1Ing: 'adding', v2: 'added' })
+                setOptions({ item: 'Delivery', v1Ing: 'Adding', v2: 'added' })
                 setLabel('Add')
             }
 
@@ -310,6 +310,7 @@ const Orders = () => {
     return (
         <div className='stock-delivery-container'>
             <div className='header'>
+                <div className='left'></div>
                 <div className='right'>
                     <SearchInput
                         placeholder='Search Delivery Challan'

@@ -14,7 +14,7 @@ import ConfirmMessage from '../../../../components/ConfirmMessage';
 import { getWarehoseId, TRACKFORM } from '../../../../utils/constants';
 import CustomPagination from '../../../../components/CustomPagination';
 import { EditIconGrey, PlusIcon } from '../../../../components/SVG_Icons';
-import { deliveryColumns, getRouteOptions, getDriverOptions } from '../../../../assets/fixtures';
+import { getRouteOptions, getDriverOptions, getDeliveryColumns } from '../../../../assets/fixtures';
 import { validateMobileNumber, validateNames, validateNumber, validateDCValues } from '../../../../utils/validations';
 import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone, getStatusColor, doubleKeyComplexSearch } from '../../../../utils/Functions';
 
@@ -43,6 +43,7 @@ const Delivery = ({ date, source }) => {
     const [title, setTitle] = useState('')
     const [mode, setMode] = useState(false)
 
+    const deliveryColumns = useMemo(() => getDeliveryColumns(), [])
     const routeOptions = useMemo(() => getRouteOptions(routes), [routes])
     const driverOptions = useMemo(() => getDriverOptions(drivers), [drivers])
     const config = { cancelToken: source.token }
@@ -177,7 +178,7 @@ const Delivery = ({ date, source }) => {
 
         let url = '/warehouse/createDC'
         let method = 'POST'
-        let v1Ing = 'adding'
+        let v1Ing = 'Adding'
         let v2 = 'added'
 
         if (customerOrderId) {

@@ -392,58 +392,67 @@ export const paymentColumns = [
         key: 'action'
     },
 ]
-export const deliveryColumns = [
-    {
-        title: 'DC Number',
-        dataIndex: 'dcnumber',
-        key: 'dcnumber',
-    },
-    {
-        title: 'Date & time',
-        dataIndex: 'dateAndTime',
-        key: 'dateAndTime',
-    },
-    {
-        title: 'Name',
-        dataIndex: 'name',
-        key: 'name',
-    },
-    {
-        title: 'Address',
-        dataIndex: 'shopAddress',
-        key: 'shopAddress',
-    },
-    {
-        title: 'Route',
-        dataIndex: 'route',
-        key: 'route',
-    },
-    {
-        title: 'Driver',
-        key: 'driverName',
-        dataIndex: 'driverName',
-    },
-    {
-        title: 'Return Cans',
-        dataIndex: 'returnEmptyCans',
-        key: 'returnEmptyCans',
-    },
-    {
-        title: 'Order Details',
-        dataIndex: 'orderDetails',
-        key: 'routeorderDetails',
-    },
-    {
-        title: 'Status',
-        dataIndex: 'status',
-        key: 'status',
-    },
-    {
-        title: 'Actions',
-        dataIndex: 'action',
-        key: 'action'
-    },
-]
+
+export const getDeliveryColumns = (type) => {
+    const columns = [
+        {
+            title: 'DC Number',
+            dataIndex: 'dcnumber',
+            key: 'dcnumber',
+        },
+        {
+            title: 'Name',
+            dataIndex: 'name',
+            key: 'name',
+        },
+        {
+            title: 'Address',
+            dataIndex: 'shopAddress',
+            key: 'shopAddress',
+        },
+        {
+            title: 'Route',
+            dataIndex: 'route',
+            key: 'route',
+        },
+        {
+            title: 'Driver',
+            key: 'driverName',
+            dataIndex: 'driverName',
+        },
+        {
+            title: 'Order Details',
+            dataIndex: 'orderDetails',
+            key: 'routeorderDetails',
+        },
+        {
+            title: 'Status',
+            dataIndex: 'status',
+            key: 'status',
+        },
+        {
+            title: 'Actions',
+            dataIndex: 'action',
+            key: 'action'
+        },
+    ]
+
+    if (type === 'extra') {
+        columns.splice(1, 0, {
+            title: 'Date & time',
+            dataIndex: 'dateAndTime',
+            key: 'dateAndTime',
+        })
+        columns.splice(6, 0, {
+            title: 'Return Cans',
+            dataIndex: 'returnEmptyCans',
+            key: 'returnEmptyCans',
+        })
+    }
+
+    return columns
+}
+
 export const orderColumns = [
     {
         title: 'Order ID',

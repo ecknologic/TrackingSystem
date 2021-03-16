@@ -1,5 +1,4 @@
 import axios from 'axios';
-import dayjs from 'dayjs';
 import { Menu, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import DCView from '../views/DCView';
@@ -10,12 +9,11 @@ import { TRACKFORM } from '../../../../utils/constants';
 import QuitModal from '../../../../components/CustomModal';
 import SearchInput from '../../../../components/SearchInput';
 import CustomModal from '../../../../components/CustomModal';
-import { deliveryColumns } from '../../../../assets/fixtures';
+import { getDeliveryColumns } from '../../../../assets/fixtures';
 import { EyeIconGrey } from '../../../../components/SVG_Icons';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomPagination from '../../../../components/CustomPagination';
 import { resetTrackForm, getStatusColor } from '../../../../utils/Functions';
-const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
 const DeliveryChallan = ({ accountId }) => {
     const [loading, setLoading] = useState(true)
@@ -29,6 +27,7 @@ const DeliveryChallan = ({ accountId }) => {
     const [confirmModal, setConfirmModal] = useState(false)
     const [title, setTitle] = useState('')
 
+    const deliveryColumns = useMemo(() => getDeliveryColumns(), [])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
@@ -81,18 +80,16 @@ const DeliveryChallan = ({ accountId }) => {
     }
 
     const dataSource = useMemo(() => deliveries.map((dc) => {
-        const { dcNo, customerOrderId, address, RouteName, driverName, customerName, deliveredDate, isDelivered, returnEmptyCans } = dc
+        const { dcNo, customerOrderId, address, RouteName, driverName, customerName, isDelivered } = dc
         return {
             key: customerOrderId || dcNo,
             dcnumber: dcNo,
             shopAddress: address,
             route: RouteName,
             name: customerName,
-            returnEmptyCans: returnEmptyCans || 0,
             driverName: driverName || 'Not Assigned',
             orderDetails: renderOrderDetails(dc),
             status: renderStatus(isDelivered),
-            dateAndTime: dayjs(deliveredDate).format(DATEANDTIMEFORMAT),
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, dc)} />
         }
     }), [deliveries])

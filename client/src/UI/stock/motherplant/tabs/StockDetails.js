@@ -103,7 +103,7 @@ const StockDetails = ({ date, source, goToTab }) => {
             ...formData, createdBy: USERID,
             product20L, product2L, product1L, product500ML, product300ML
         }
-        const options = { item: 'Production Batch', v1Ing: 'adding', v2: 'added' }
+        const options = { item: 'Production Batch', v1Ing: 'Adding', v2: 'added' }
 
         try {
             setBtnDisabled(true)

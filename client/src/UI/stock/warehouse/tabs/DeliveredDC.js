@@ -9,7 +9,7 @@ import DCView from '../../../accounts/view/views/DCView';
 import DateValue from '../../../../components/DateValue';
 import SearchInput from '../../../../components/SearchInput';
 import CustomModal from '../../../../components/CustomModal';
-import { deliveryColumns } from '../../../../assets/fixtures';
+import { getDeliveryColumns } from '../../../../assets/fixtures';
 import CustomButton from '../../../../components/CustomButton';
 import RoutesFilter from '../../../../components/RoutesFilter';
 import { getWarehoseId, TODAYDATE } from '../../../../utils/constants';
@@ -41,6 +41,7 @@ const DeliveredDC = () => {
     const [open, setOpen] = useState(false)
     const [title, setTitle] = useState('')
 
+    const deliveryColumns = useMemo(() => getDeliveryColumns('extra'), [])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
@@ -178,7 +179,7 @@ const DeliveredDC = () => {
                     <div className='app-date-picker-wrapper'>
                         <div className='date-picker' onClick={() => setOpen(true)}>
                             <ScheduleIcon />
-                            <span>Select Date</span>
+                            <span>Select</span>
                         </div>
                         <CustomButton
                             style={{ marginLeft: '1em' }}

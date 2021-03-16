@@ -117,7 +117,7 @@ const EmployeeForm = (props) => {
             </div>
             <div className='row'>
                 <div className='input-container'>
-                    <InputLabel name='Bood Group' error={errors.bloodGroup} />
+                    <InputLabel name='Blood Group' error={errors.bloodGroup} />
                     <SelectInput track
                         options={bloodGroupOptions} value={bloodGroup} disabled={isWHAdmin}
                         error={errors.bloodGroup} onSelect={(value) => onChange(value, 'bloodGroup')}

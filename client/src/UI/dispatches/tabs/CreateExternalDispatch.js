@@ -99,7 +99,7 @@ const CreateExternalDispatch = ({ goToTab, driverList, ...rest }) => {
             ...formData, dispatchType: 'External', dispatchTo: 3, ...products
         }
         const url = '/motherPlant/addDispatchDetails'
-        const options = { item: 'Dispatch', v1Ing: 'adding', v2: 'added' }
+        const options = { item: 'Dispatch', v1Ing: 'Adding', v2: 'added' }
 
         try {
             setBtnDisabled(true)
@@ -135,7 +135,7 @@ const CreateExternalDispatch = ({ goToTab, driverList, ...rest }) => {
 
     return (
         <>
-            <FormHeader title='Add Dispatch DC (Outside)' />
+            <FormHeader title='Create Dispatch DC (Outside)' />
             <ExternalDispatchForm
                 track
                 data={formData}

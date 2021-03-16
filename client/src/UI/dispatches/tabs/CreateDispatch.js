@@ -113,7 +113,7 @@ const CreateDispatch = ({ goToTab, driverList, warehouseList, reFetch, ...rest }
             ...formData, dispatchAddress: departmentName, outOfStock,
             product20L, product2L, product1L, product500ML, product300ML
         }
-        const options = { item: 'Dispatch', v1Ing: 'adding', v2: 'added' }
+        const options = { item: 'Dispatch', v1Ing: 'Creating', v2: 'created' }
         const url = '/motherplant/addDispatchDetails'
 
         try {
@@ -158,7 +158,7 @@ const CreateDispatch = ({ goToTab, driverList, warehouseList, reFetch, ...rest }
 
     return (
         <>
-            <FormHeader title='Add Dispatch DC' />
+            <FormHeader title='Create Dispatch DC' />
             <DispatchForm
                 track
                 data={formData}

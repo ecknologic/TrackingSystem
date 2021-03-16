@@ -93,7 +93,7 @@ const Dispatche = () => {
                         <TabPane tab="Dispatches" key="1">
                             <Dispatches reFetch={reFetch} />
                         </TabPane>
-                        <TabPane tab="Add Dispatch" key="2">
+                        <TabPane tab="Create Dispatch" key="2">
                             <CreateDispatch goToTab={handleGoToTab} reFetch={getBatchsList} {...childProps} />
                         </TabPane>
                         {/* <TabPane tab="Add Dispatch (Outside)" key="3">

@@ -198,7 +198,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
 }
 
 const getVerbs = (editMode) => {
-    let v1Ing = 'adding'
+    let v1Ing = 'Creating'
     let v2 = 'added'
     if (editMode) {
         v1Ing = 'Updating'
