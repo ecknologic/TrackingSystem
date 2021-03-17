@@ -77,7 +77,7 @@ const AccountOverview = ({ data, onUpdate, isAdmin }) => {
             const error = validateNames(value)
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key === 'depositAmount' || key === 'poNo' || key === 'alternateNumber') {
+        else if (key === 'depositAmount' || key === 'poNo' || key === 'alternatePhNo') {
             const error = validateNumber(value)
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }

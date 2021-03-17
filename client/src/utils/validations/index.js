@@ -57,7 +57,7 @@ export const validateAccountValues = (data, customerType, isInView) => {
     const text = 'Required'
     const {
         gstNo, panNo, adharNo, licenseNo, natureOfBussiness, organizationName, address, customerName,
-        mobileNumber, invoicetype, creditPeriodInDays = "", EmailId, referredBy, idProofType, pinCode, alternateNumber,
+        mobileNumber, invoicetype, creditPeriodInDays = "", EmailId, referredBy, idProofType, pinCode, alternatePhNo,
         contractPeriod, dispenserCount, registeredDate, gstProof, depositAmount = "", departmentId, routeId, ...rest
     } = data
 
@@ -94,9 +94,9 @@ export const validateAccountValues = (data, customerType, isInView) => {
         const error = validateNames(referredBy)
         error && (errors.referredBy = error)
     }
-    if (alternateNumber) {
-        const error = validateNumber(alternateNumber)
-        error && (errors.alternateNumber = error)
+    if (alternatePhNo) {
+        const error = validateNumber(alternatePhNo)
+        error && (errors.alternatePhNo = error)
     }
     if (creditPeriodInDays === null || !String(creditPeriodInDays)) errors.creditPeriodInDays = text
     else {

@@ -174,7 +174,7 @@ const AddAccount = () => {
             const error = validateMobileNumber(value)
             setGeneralErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key === 'depositAmount' || key === 'alternateNumber') {
+        else if (key === 'depositAmount' || key === 'alternatePhNo') {
             const error = validateNumber(value)
             setGeneralErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -236,7 +236,7 @@ const AddAccount = () => {
             const error = validateNames(value)
             setCorporateErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key === 'depositAmount' || key === 'poNo' || key === 'alternateNumber') {
+        else if (key === 'depositAmount' || key === 'poNo' || key === 'alternatePhNo') {
             const error = validateNumber(value)
             setCorporateErrors(errors => ({ ...errors, [key]: error }))
         }

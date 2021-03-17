@@ -4,7 +4,7 @@ import InputValue from '../../../components/InputValue';
 const AccountView = ({ data }) => {
 
     const { agencyName, operationalArea, contactPerson, mobileNumber, address,
-        alternateNumber, mailId, alternateMailId } = data
+        alternatePhNo, mailId, alternateMailId } = data
 
     return (
         <div className='app-view-info'>
@@ -36,10 +36,10 @@ const AccountView = ({ data }) => {
                     <InputValue size='large' value={mobileNumber} />
                 </div>
                 {
-                    alternateNumber && (
+                    alternatePhNo && (
                         <div className='input-container'>
                             <InputValue size='smaller' value='Alternate Mobile No' />
-                            <InputValue size='large' value={alternateNumber} />
+                            <InputValue size='large' value={alternatePhNo} />
                         </div>
                     )
                 }

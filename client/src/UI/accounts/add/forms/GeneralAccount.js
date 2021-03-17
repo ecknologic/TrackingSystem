@@ -17,7 +17,7 @@ const GeneralAccountForm = (props) => {
 
     const {
         gstNo, address, natureOfBussiness, depositAmount, customerName, mobileNumber, registeredDate, pinCode,
-        invoicetype, EmailId, idProofType, gstProof, referredBy, routeId, departmentId, deliveryLocation, alternateNumber,
+        invoicetype, EmailId, idProofType, gstProof, referredBy, routeId, departmentId, deliveryLocation, alternatePhNo,
         creditPeriodInDays, product20L, product2L, price20L, product1L, price2L, price1L, product500ML, price500ML, product300ML, price300ML
     } = data
 
@@ -174,10 +174,10 @@ const GeneralAccountForm = (props) => {
                 </div>
                 <div className='row'>
                     <div className='input-container'>
-                        <InputLabel name='Alternate Phone No' error={errors.alternateNumber} />
-                        <CustomInput value={alternateNumber} placeholder='Alternate Phone Number'
-                            error={errors.alternateNumber} maxLength={15}
-                            onChange={(value) => onChange(value, 'alternateNumber')}
+                        <InputLabel name='Alternate Phone No' error={errors.alternatePhNo} />
+                        <CustomInput value={alternatePhNo} placeholder='Alternate Phone Number'
+                            error={errors.alternatePhNo} maxLength={15}
+                            onChange={(value) => onChange(value, 'alternatePhNo')}
                         />
                     </div>
                 </div>

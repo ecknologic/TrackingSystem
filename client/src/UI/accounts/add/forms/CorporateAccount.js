@@ -13,7 +13,7 @@ const CorporateAccountForm = (props) => {
     const { data, errors, IDProofs = {}, IDProofErrors, onChange, onBlur, onUpload, disabled, onRemove } = props
 
     const {
-        gstNo, natureOfBussiness, organizationName, address, customerName, poNo, alternateNumber,
+        gstNo, natureOfBussiness, organizationName, address, customerName, poNo, alternatePhNo,
         mobileNumber, invoicetype, creditPeriodInDays, EmailId, referredBy, idProofType,
         registeredDate, gstProof, depositAmount, pinCode, dispenserCount, contractPeriod
     } = data
@@ -150,10 +150,10 @@ const CorporateAccountForm = (props) => {
             </div>
             <div className='row'>
                 <div className='input-container'>
-                    <InputLabel name='Alternate Phone No' error={errors.alternateNumber} />
-                    <CustomInput value={alternateNumber} placeholder='Alternate Phone Number'
-                        error={errors.alternateNumber} maxLength={15}
-                        onChange={(value) => onChange(value, 'alternateNumber')}
+                    <InputLabel name='Alternate Phone No' error={errors.alternatePhNo} />
+                    <CustomInput value={alternatePhNo} placeholder='Alternate Phone Number'
+                        error={errors.alternatePhNo} maxLength={15}
+                        onChange={(value) => onChange(value, 'alternatePhNo')}
                     />
                 </div>
             </div>
