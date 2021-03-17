@@ -58,7 +58,7 @@ const TodaysOrders = () => {
     }
 
     const handleDCModalCancel = useCallback(() => onModalClose(), [])
-    const goToOrders = useCallback(() => history.push('/manage-stock/3'), [])
+    const goToOrders = useCallback(() => history.push('/manage-stock/2'), [])
 
     return (
         <div className='todays-orders-panel'>

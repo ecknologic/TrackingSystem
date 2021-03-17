@@ -858,8 +858,7 @@ export const validateDCValues = (data) => {
     let errors = {};
     const text = 'Required'
 
-    const { routeId, customerName, phoneNumber, address, driverId, cans20L: product20L,
-        boxes2L: product2L, boxes1L: product1L, boxes500ML: product500ML, boxes300ML: product300ML } = data
+    const { routeId, customerName, phoneNumber, address, driverId, ...rest } = data
 
     if (!routeId) errors.routeId = text
     if (!driverId) errors.driverId = text
@@ -874,7 +873,7 @@ export const validateDCValues = (data) => {
         const error = validateNames(customerName)
         error && (errors.customerName = error)
     }
-    const productErrors = validateProducts({ product20L, product1L, product2L, product500ML, product300ML })
+    const productErrors = validateProducts(rest)
     return { ...errors, ...productErrors }
 }
 
