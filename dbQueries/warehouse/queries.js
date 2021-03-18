@@ -44,8 +44,8 @@ warehouseQueries.getTotalSales = (input, callback) => {
     }
 
     if (departmentId != 'All') {
-        query = "select SUM(c.20LCans) AS product20LCount,SUM(c.1LBoxes) AS product1LCount,SUM(c.500MLBoxes) AS product500MLCount,SUM(c.300MLBoxes) AS product300MLCount,SUM(c.2LBoxes) AS product2LCount,c.deliveredDate FROM customerorderdetails c WHERE DATE(`deliveredDate`) >= ? AND DATE(`deliveredDate`) <= ? AND warehouseId=? AND isDelivered='Completed'";
-        options = [startDate, endDate, departmentId]
+        query = "select SUM(c.20LCans) AS product20LCount,SUM(c.1LBoxes) AS product1LCount,SUM(c.500MLBoxes) AS product500MLCount,SUM(c.300MLBoxes) AS product300MLCount,SUM(c.2LBoxes) AS product2LCount,c.deliveredDate FROM customerorderdetails c WHERE  DATE(`deliveredDate`) <= ? AND warehouseId=? AND isDelivered='Completed'";
+        options = [endDate, departmentId]
 
         if (fromStart !== 'true') {
             query = "select SUM(c.20LCans) AS product20LCount,SUM(c.1LBoxes) AS product1LCount,SUM(c.500MLBoxes) AS product500MLCount,SUM(c.300MLBoxes) AS product300MLCount,SUM(c.2LBoxes) AS product2LCount,c.deliveredDate FROM customerorderdetails c WHERE DATE(`deliveredDate`) >= ? AND DATE(`deliveredDate`) <= ? AND warehouseId=? AND isDelivered='Completed'";
