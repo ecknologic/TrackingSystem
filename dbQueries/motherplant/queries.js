@@ -68,7 +68,7 @@ motherPlantDbQueries.getVehicleDetails = async (callback) => {
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getDispatchDetails = async (departmentId, callback) => {
-    let query = `SELECT d.status,d.dispatchType,d.dispatchAddress,d.DCNO,d.batchId,d.product20L,d.product1L,d.product500ML,d.product300ML,d.product2L,d.driverName,d.dispatchTo,d.dispatchedDate,dri.mobileNumber,v.vehicleType,v.vehicleNo from dispatches d INNER JOIN VehicleDetails v ON d.vehicleNo=v.vehicleId INNER JOIN driverdetails dri on d.driverId=dri.driverId WHERE d.departmentId=${departmentId} ORDER BY d.dispatchedDate DESC`;
+    let query = `SELECT d.status,d.dispatchType,d.managerName,d.dispatchAddress,d.DCNO,d.batchId,d.product20L,d.product1L,d.product500ML,d.product300ML,d.product2L,d.driverName,d.dispatchTo,d.dispatchedDate,dri.mobileNumber,v.vehicleType,v.vehicleNo from dispatches d INNER JOIN VehicleDetails v ON d.vehicleNo=v.vehicleId INNER JOIN driverdetails dri on d.driverId=dri.driverId WHERE d.departmentId=${departmentId} ORDER BY d.dispatchedDate DESC`;
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getDispatchDetailsByDate = async (input, callback) => {
@@ -290,7 +290,7 @@ motherPlantDbQueries.getCurrentDispatchDetailsByDate = async (input, callback) =
     return executeGetParamsQuery(query, [input.departmentId, input.date], callback)
 }
 motherPlantDbQueries.getDispatchDetailsByDC = async (dcNo, callback) => {
-    let query = `SELECT SUM(d.product20L) as product20L,SUM(d.product1L) as product1L,SUM(d.product500ML) as product500ML,SUM(d.product300ML) as product300ML,SUM(d.product2L) as product2L,dcNo,GROUP_CONCAT(d.departmentId) as motherplantId,GROUP_CONCAT(v.vehicleType) vehicleType,GROUP_CONCAT(v.vehicleNo) vehicleNo,GROUP_CONCAT(driver.driverName) driverName,GROUP_CONCAT(driver.mobileNumber) mobileNumber,GROUP_CONCAT(dep.address) address,GROUP_CONCAT(dep.departmentName) departmentName
+    let query = `SELECT SUM(d.product20L) as product20L,SUM(d.product1L) as product1L,SUM(d.product500ML) as product500ML,SUM(d.product300ML) as product300ML,SUM(d.product2L) as product2L,dcNo,managerName,GROUP_CONCAT(d.departmentId) as motherplantId,GROUP_CONCAT(v.vehicleType) vehicleType,GROUP_CONCAT(v.vehicleNo) vehicleNo,GROUP_CONCAT(driver.driverName) driverName,GROUP_CONCAT(driver.mobileNumber) mobileNumber,GROUP_CONCAT(dep.address) address,GROUP_CONCAT(dep.departmentName) departmentName
     FROM dispatches d INNER JOIN VehicleDetails v on d.vehicleNo=v.vehicleId INNER JOIN driverdetails driver on d.driverId=driver.driverId INNER JOIN departmentmaster dep on d.departmentId=dep.departmentId WHERE DCNO=?`;
     return executeGetParamsQuery(query, [dcNo], callback)
 }
