@@ -302,6 +302,19 @@ export const productColumns = [
     },
 ]
 
+export const roleColumns = [
+    {
+        title: 'Role Label',
+        dataIndex: 'RoleLabel',
+        key: 'RoleLabel',
+    },
+    {
+        title: 'Actions',
+        dataIndex: 'action',
+        key: 'action'
+    },
+]
+
 export const getInvoiceColumns = (type) => {
     const columns = [
         {

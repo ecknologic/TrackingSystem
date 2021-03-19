@@ -57,7 +57,7 @@ export const getRoutesByRole = (role) => {
 
         case SUPERADMIN:
             return ['/customers', '/materials', '/motherplants', '/warehouses', '/staff', '/drivers',
-                '/products', '/routes', '/distributors', '/invoices']
+                '/products', '/routes', '/distributors', '/invoices', '/roles']
 
         case ACCOUNTSADMIN:
             return ['/customers', '/invoices']

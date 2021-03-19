@@ -108,6 +108,7 @@ const DeliveryChallan = ({ accountId }) => {
     return (
         <div className='stock-delivery-container account-view-delivery-challan'>
             <div className='header'>
+                <div className='left'></div>
                 <div className='right'>
                     <SearchInput
                         placeholder='Search Delivery Challan'

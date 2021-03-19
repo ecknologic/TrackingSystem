@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
 import { isLogged, getRole, getRoutesByRole, MARKETINGADMIN, MOTHERPLANTADMIN, SUPERADMIN, WAREHOUSEADMIN, ACCOUNTSADMIN } from './utils/constants';
 import { getMainPathname, resetTrackForm } from './utils/Functions';
+import Roles from './UI/roles';
 import Login from './UI/auth/Login';
 import Products from './UI/products';
 import Transport from './UI/transport';
@@ -117,6 +118,7 @@ const App = () => {
                   <Route path='/distributors/manage/:distributorId' render={byRole(<ManageDistributor />)} />
                   <Route path='/motherplants/manage/:plantId' render={byRole(<ManagePlant />)} />
                   <Route path='/warehouses/manage/:plantId' render={byRole(<ManagePlant />)} />
+                  <Route path='/roles' render={byRole(<Roles />)} />
                   <Route path='/staff' render={byRole(<Staff />)} />
                   <Route path='/routes' render={byRole(<Transport />)} />
                   <Route path='/drivers' render={byRole(<Drivers />)} />
