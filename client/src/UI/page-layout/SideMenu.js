@@ -80,10 +80,6 @@ const SideMenu = () => {
                                 {selected === '/manage-qc' ? <BadgeIcon /> : <BadgeIconLight />}
                                 <span>Quality Control</span>
                             </Item>
-                            <Item key='/manage-invoices'>
-                                {selected === '/manage-invoices' ? <DocIcon /> : <DocIconLight />}
-                                <span>Invoices</span>
-                            </Item>
                         </>
                         : null
                 }
