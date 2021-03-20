@@ -381,6 +381,24 @@ export const extractDeliveryDetails = (data) => {
     delete clone.product300MLId
     return clone
 }
+export const extractDistributorDetails = (data) => {
+    const clone = deepClone(data)
+    delete clone.price1L
+    delete clone.price2L
+    delete clone.price20L
+    delete clone.price500ML
+    delete clone.price300ML
+    delete clone.product1L
+    delete clone.product20L
+    delete clone.product500ML
+    delete clone.product300ML
+    delete clone.product20LId
+    delete clone.product2LId
+    delete clone.product1LId
+    delete clone.product500MLId
+    delete clone.product300MLId
+    return clone
+}
 
 export const extractGADeliveryDetails = ({ gstNo = '', deliveryLocation, departmentId, isApproved = 0, gstProof = '', address, routeId, mobileNumber, customerName: contactPerson }) => {
     return { gstNo, gstProof, address, deliveryLocation, departmentId, isApproved, phoneNumber: mobileNumber, routeId, contactPerson }

@@ -162,6 +162,7 @@ const Delivery = ({ date, source }) => {
         if (key === 'view') {
             const { dcNo, isDelivered } = data
             setTitle(dcNo)
+            isEmpty(distributorList) && getDistributorList()
             const isDisabled = isDelivered === 'Completed'
             setOkTxt(isDisabled ? 'Close' : 'Update')
             setMode(isDisabled ? 'view' : 'edit')
@@ -263,8 +264,8 @@ const Delivery = ({ date, source }) => {
             key: customerOrderId || dcNo,
             dcnumber: dcNo,
             shopAddress: address,
-            route: RouteName,
             name: customerName,
+            route: RouteName || 'Not Assigned',
             driverName: driverName || 'Not Assigned',
             orderDetails: renderOrderDetails(dc),
             status: renderStatus(isDelivered),

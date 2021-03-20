@@ -125,16 +125,16 @@ router.post('/createDC', (req, res) => {
   let dcDetails = req.body;
   let insertQueryValues = [dcDetails.customerName, dcDetails.phoneNumber, dcDetails.address, dcDetails.routeId, dcDetails.driverId, dcDetails.product20L, dcDetails.product1L, dcDetails.product500ML, dcDetails.product300ML, dcDetails.product2L, dcDetails.warehouseId, dcDetails.customerType, dcDetails.existingCustomerId]
   db.query(dcCreateQuery, insertQueryValues, (err, results) => {
-    if (err) res.json({ status: 500, message: err.sqlMessage });
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else {
       let inserted_id = results.insertId;
       let updateQuery = "update customerorderdetails set dcNo=? where customerOrderId=?"
       let updateQueryValues = ["DC-" + inserted_id, inserted_id];
       db.query(updateQuery, updateQueryValues, (err1, results1) => {
-        if (err1) res.json({ status: 500, message: err.sqlMessage });
+        if (err1) res.status(500).json({ status: 500, message: err.sqlMessage });
         else {
           warehouseQueries.getDeliverysByCustomerOrderId(inserted_id, (deliveryErr, deliveryDetails) => {
-            if (deliveryErr) res.json({ status: 500, message: deliveryErr.sqlMessage });
+            if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
             else res.json(deliveryDetails)
           })
         }
@@ -392,6 +392,18 @@ router.get('/getTotalEmptyCansCount', (req, res) => {
 })
 router.get('/getReceivedStock', (req, res) => {
   warehouseQueries.getReceivedStock(departmentId, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.json(results);
+  })
+})
+router.get('/getDCList', (req, res) => {
+  warehouseQueries.getDCList(departmentId, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.json(results);
+  })
+})
+router.get('/getDcDetailsByDcNo/:dcNo', (req, res) => {
+  warehouseQueries.getDcDetailsByDcNo(req.params.dcNo, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else res.json(results);
   })

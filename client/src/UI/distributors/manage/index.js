@@ -8,13 +8,13 @@ import { http } from '../../../modules/http'
 import DistributorForm from '../forms/Distributor';
 import Spinner from '../../../components/Spinner';
 import ScrollUp from '../../../components/ScrollUp';
+import { TRACKFORM } from '../../../utils/constants';
 import NoContent from '../../../components/NoContent';
 import QuitModal from '../../../components/CustomModal';
 import IDProofInfo from '../../../components/IDProofInfo';
 import CustomButton from '../../../components/CustomButton';
 import ConfirmMessage from '../../../components/ConfirmMessage';
-import { isEmpty, showToast, base64String, getBase64 } from '../../../utils/Functions';
-import { TRACKFORM } from '../../../utils/constants';
+import { isEmpty, showToast, base64String, getBase64, getProductsForUI, getProductsWithIdForDB, extractDistributorDetails, extractProductsFromForm } from '../../../utils/Functions';
 import { validateNames, validateMobileNumber, validateEmailId, validateDistributorValues } from '../../../utils/validations';
 import '../../../sass/employees.scss'
 
@@ -47,12 +47,14 @@ const ManageDistributor = () => {
 
         try {
             const [data] = await http.GET(axios, url, config)
-            const { gstProof: gst, agencyName, gstNo } = data
+            const { products, ...rest } = data
+            const { gstProof: gst, agencyName, gstNo } = rest
             const gstProof = base64String(gst?.data)
+            const productsUI = getProductsForUI(products)
 
             setGstProof({ idProofType: 'gstNo', Front: gstProof, gstNo })
             setHeaderContent({ title: agencyName })
-            setFormData({ ...data, gstProof })
+            setFormData({ ...rest, gstProof, ...productsUI })
             setLoading(false)
         } catch (error) { }
     }
@@ -104,7 +106,11 @@ const ManageDistributor = () => {
             return
         }
 
-        let body = { ...formData }
+        const productsUI = extractProductsFromForm(formData)
+        const products = getProductsWithIdForDB(productsUI)
+        const data = extractDistributorDetails(formData)
+
+        let body = { ...data, products }
         if (!formData.isNewFile) {
             delete body.gstProof
         }
