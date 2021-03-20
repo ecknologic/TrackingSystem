@@ -347,7 +347,7 @@ customerQueries.generatePDF = (input, callback) => {
     JSON_ARRAYAGG(JSON_OBJECT('deliveryAddress',d.address,'location',d.location,'20LCans',co.20LCans,'price20L',co.price20L,'1LBoxes',co.1LBoxes,
     'price1L',co.price1L, '500MLBoxes',co.500MLBoxes,'price500ML',co.price500ML,'300MLBoxes',co.300MLBoxes,'price300ML',co.price300ML,'2LBoxes',co.2LBoxes,'price2L',co.price2L)) as products
     FROM customerdetails c INNER JOIN  customerorderdetails co ON c.customerId=co.existingCustomerId
-    INNER JOIN DeliveryDetails d ON d.customer_Id=c.customerId  WHERE co.isDelivered='Completed' AND customerId NOT IN (SELECT customerId FROM Invoice WHERE fromdate=? AND todate=?)
+    INNER JOIN DeliveryDetails d ON d.customer_Id=c.customerId  WHERE c.invoicetype!='complimentary' AND co.isDelivered='Completed' AND customerId NOT IN (SELECT customerId FROM Invoice WHERE fromdate=? AND todate=?)
     AND( DATE(co.deliveryDate) BETWEEN ? AND ?) GROUP BY c.customerId,d.location`
     let options = [fromDate, toDate, fromDate, toDate]
     if (customerIds.length) {
@@ -356,7 +356,7 @@ customerQueries.generatePDF = (input, callback) => {
         JSON_ARRAYAGG(JSON_OBJECT('deliveryAddress',d.address,'location',d.location,'20LCans',co.20LCans,'price20L',co.price20L,'1LBoxes',co.1LBoxes,
         'price1L',co.price1L, '500MLBoxes',co.500MLBoxes,'price500ML',co.price500ML,'300MLBoxes',co.300MLBoxes,'price300ML',co.price300ML,'2LBoxes',co.2LBoxes,'price2L',co.price2L)) as products
         FROM customerdetails c INNER JOIN  customerorderdetails co ON c.customerId=co.existingCustomerId
-        INNER JOIN DeliveryDetails d ON d.customer_Id=c.customerId  WHERE co.isDelivered='Completed' AND customerId NOT IN (SELECT customerId FROM Invoice WHERE fromdate=? AND todate=?)
+        INNER JOIN DeliveryDetails d ON d.customer_Id=c.customerId  WHERE c.invoicetype!='complimentary' AND co.isDelivered='Completed' AND customerId NOT IN (SELECT customerId FROM Invoice WHERE fromdate=? AND todate=?)
         AND( DATE(co.deliveryDate) BETWEEN ? AND ?) AND c.customerId IN (?) GROUP BY c.customerId,d.location`
         options = [fromDate, toDate, fromDate, toDate, customerIds]
     }
@@ -382,7 +382,7 @@ customerQueries.generateCustomerPDF = (input, callback) => {
     JSON_ARRAYAGG(JSON_OBJECT('deliveryAddress',d.address,'location',d.location,'20LCans',co.20LCans,'price20L',co.price20L,'1LBoxes',co.1LBoxes,
     'price1L',co.price1L, '500MLBoxes',co.500MLBoxes,'price500ML',co.price500ML,'300MLBoxes',co.300MLBoxes,'price300ML',co.price300ML,'2LBoxes',co.2LBoxes,'price2L',co.price2L)) as products
     FROM customerdetails c INNER JOIN  customerorderdetails co ON c.customerId=co.existingCustomerId
-    INNER JOIN DeliveryDetails d ON d.customer_Id=c.customerId  WHERE co.isDelivered='Completed' AND customerId NOT IN (SELECT customerId FROM Invoice WHERE fromDate=? AND toDate=?)
+    INNER JOIN DeliveryDetails d ON d.customer_Id=c.customerId  WHERE c.invoicetype!='complimentary' AND co.isDelivered='Completed' AND customerId NOT IN (SELECT customerId FROM Invoice WHERE fromDate=? AND toDate=?)
     AND( DATE(co.deliveryDate) BETWEEN ? AND ?) AND c.customerId=?`
     // "SELECT c.gstNo,c.customerId,c.creditPeriodInDays,c.createdBy,c.EmailId,c.customerName,c.organizationName,c.address1,d.address,c.gstNo,c.panNo,c.mobileNumber,co.20LCans,co.price20L,co.1LBoxes,co.price1L, co.500MLBoxes,co.price500ML,co.300MLBoxes,co.price300ML,co.2LBoxes,co.price2L FROM customerdetails c INNER JOIN  customerorderdetails co ON c.customerId=co.existingCustomerId INNER JOIN DeliveryDetails d ON d.customer_Id=c.customerId  WHERE co.isDelivered='Completed' AND( DATE(co.deliveryDate) BETWEEN ? AND ?)"
     return executeGetParamsQuery(query, [fromDate, toDate, fromDate, toDate, customerId], callback)
