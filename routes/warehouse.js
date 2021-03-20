@@ -121,9 +121,9 @@ router.post('/updateWarehouse', (req, res) => {
 });
 
 router.post('/createDC', (req, res) => {
-  let dcCreateQuery = "insert into customerorderdetails (customerName,phoneNumber,address,routeId,driverId,20LCans,1LBoxes,500MLBoxes,300MLBoxes,2LBoxes,warehouseId) values(?,?,?,?,?,?,?,?,?,?,?)";
+  let dcCreateQuery = "insert into customerorderdetails (customerName,phoneNumber,address,routeId,driverId,20LCans,1LBoxes,500MLBoxes,300MLBoxes,2LBoxes,warehouseId,customerType,existingCustomerId) values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
   let dcDetails = req.body;
-  let insertQueryValues = [dcDetails.customerName, dcDetails.phoneNumber, dcDetails.address, dcDetails.routeId, dcDetails.driverId, dcDetails.product20L, dcDetails.product1L, dcDetails.product500ML, dcDetails.product300ML, dcDetails.product2L, dcDetails.warehouseId]
+  let insertQueryValues = [dcDetails.customerName, dcDetails.phoneNumber, dcDetails.address, dcDetails.routeId, dcDetails.driverId, dcDetails.product20L, dcDetails.product1L, dcDetails.product500ML, dcDetails.product300ML, dcDetails.product2L, dcDetails.warehouseId, dcDetails.customerType, dcDetails.existingCustomerId]
   db.query(dcCreateQuery, insertQueryValues, (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
