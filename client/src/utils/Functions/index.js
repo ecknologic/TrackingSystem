@@ -436,11 +436,13 @@ export const getAddressesForDB = (data, isUpdate) => {
 export const getDCValuesForDB = (data) => {
 
     const { customerName, phoneNumber, address, routeId, driverId,
-        cans20L = 0, boxes2L = 0, boxes1L = 0, boxes500ML = 0, boxes300ML = 0 } = data
+        product20L = 0, product2L = 0, product1L = 0, product500ML = 0, product300ML = 0,
+        customerType, existingCustomerId } = data
 
     return {
         customerName, phoneNumber, address, routeId, driverId,
-        cans20L, boxes2L, boxes1L, boxes500ML, boxes300ML
+        product20L, product2L, product1L, product500ML, product300ML,
+        customerType, existingCustomerId
     }
 }
 

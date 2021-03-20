@@ -1,3 +1,4 @@
+import { Radio } from 'antd';
 import React, { useEffect } from 'react';
 import SelectInput from '../../../../components/SelectInput';
 import InputLabel from '../../../../components/InputLabel';
@@ -6,13 +7,15 @@ import { resetTrackForm, trackAccountFormOnce } from '../../../../utils/Function
 
 const DCForm = (props) => {
 
-    const { data, errors, routeOptions, disabledItems, onBlur, driverOptions, onChange } = props
+    const { data, errors, routeOptions, disabledItems, onBlur, driverOptions, distributorOptions, onChange } = props
 
     const { routeId, customerName, phoneNumber, address, driverId, product20L, product2L, product1L,
-        product500ML, product300ML } = data
+        product500ML, product300ML, existingCustomerId, customerType } = data
 
     const disableAll = disabledItems === 'ALL' && disabledItems !== 'NONE'
     const disableFew = disabledItems === 'FEW'
+    const isDistributor = customerType === 'distributor'
+    const isNewCustomer = customerType === 'newCustomer'
 
     useEffect(() => {
         resetTrackForm()
@@ -27,8 +30,34 @@ const DCForm = (props) => {
         <>
             <div className='app-form-container'>
                 <div className='row'>
+                    <div className='input-container'>
+                        <InputLabel name='Customer Type' mandatory />
+                        <Radio.Group
+                            onChange={({ target: { value } }) => onChange(value, 'customerType')}
+                            value={customerType}
+                            disabled={disableAll || disableFew}
+                            className='radio-btns'
+                        >
+                            <Radio value='newCustomer'>New Customer</Radio>
+                            <Radio value='distributor'>Distributor</Radio>
+                        </Radio.Group>
+                    </div>
+                    {
+                        isDistributor &&
+                        (
+                            <div className='input-container'>
+                                <InputLabel name='Distributor' error={errors.existingCustomerId} mandatory={!isNewCustomer} />
+                                <SelectInput track value={existingCustomerId} options={distributorOptions}
+                                    disabled={disableAll || disableFew} error={errors.existingCustomerId}
+                                    onSelect={(value) => onChange(value, 'existingCustomerId')}
+                                />
+                            </div>
+                        )
+                    }
+                </div>
+                <div className='row'>
                     <div className='input-container stretch'>
-                        <InputLabel name='Select Route' error={errors.routeId} mandatory />
+                        <InputLabel name='Select Route' error={errors.routeId} mandatory={!isNewCustomer} />
                         <SelectInput track options={routeOptions} value={routeId}
                             error={errors.routeId} disabled={disableAll}
                             onSelect={(value) => onChange(value, 'routeId')}
@@ -63,7 +92,7 @@ const DCForm = (props) => {
                 </div>
                 <div className='row'>
                     <div className='input-container stretch'>
-                        <InputLabel name='Driver Name' error={errors.driverId} mandatory />
+                        <InputLabel name='Driver Name' error={errors.driverId} mandatory={!isNewCustomer} />
                         <SelectInput track options={driverOptions} value={driverId}
                             error={errors.driverId} disabled={disableAll}
                             onSelect={(value) => onChange(value, 'driverId')}
