@@ -5,9 +5,13 @@ warehouseQueries.getWarehouseList = async (callback) => {
     let query = `select d.departmentId,d.departmentName,d.address,d.state,d.city,d.isApproved,u.userName as adminName,u.emailid as adminEmail,u.mobileNumber as adminNumber from departmentmaster d INNER JOIN usermaster u on d.adminId=u.userId WHERE d.departmentType='Warehouse' AND d.deleted='0' ORDER BY d.createdDateTime DESC`;
     return executeGetQuery(query, callback)
 }
+warehouseQueries.getDCList = async (departmentId, callback) => {
+    let query = `select dcNo FROM customerorderdetails WHERE departmentId=?`;
+    return executeGetParamsQuery(query, [departmentId], callback)
+}
 warehouseQueries.getDeliveryDetails = (input, callback) => {
     const { date, departmentId } = input
-    let query = "select c.customerOrderId,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS product20L,c.1LBoxes AS product1L,c.500MLBoxes AS product500ML,c.300MLBoxes AS product300ML,c.2LBoxes AS product2L,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE DATE(`deliveryDate`) = ? AND warehouseId=? ORDER BY c.dcNo DESC";
+    let query = "select c.customerOrderId,c.existingCustomerId,c.customerType,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS product20L,c.1LBoxes AS product1L,c.500MLBoxes AS product500ML,c.300MLBoxes AS product300ML,c.2LBoxes AS product2L,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c LEFT JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE DATE(`deliveryDate`) = ? AND warehouseId=? ORDER BY c.dcNo DESC";
     return executeGetParamsQuery(query, [date, departmentId], callback)
 }
 
@@ -32,6 +36,10 @@ warehouseQueries.getAllDcDetails = (input, callback) => {
 warehouseQueries.getCustomerDcDetails = (customerId, callback) => {
     let query = "select c.customerOrderId,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS product20L,c.1LBoxes AS product1L,c.500MLBoxes AS product500ML,c.300MLBoxes AS product300ML,c.2LBoxes AS product2L,c.deliveredDate,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE existingCustomerId=? AND isDelivered='Completed' ORDER BY c.dcNo DESC";
     return executeGetParamsQuery(query, [customerId], callback)
+}
+warehouseQueries.getDcDetailsByDcNo = (dcNo, callback) => {
+    let query = "select dcNo, 20LCans AS product20L,1LBoxes AS product1L,500MLBoxes AS product500ML,300MLBoxes AS product300ML,2LBoxes AS product2L FROM customerorderdetails  WHERE dcNo=?";
+    return executeGetParamsQuery(query, [dcNo], callback)
 }
 warehouseQueries.getTotalSales = (input, callback) => {
     const { startDate, endDate, departmentId, fromStart } = input
@@ -78,7 +86,7 @@ warehouseQueries.getTotalSalesChange = (input, callback) => {
     return executeGetParamsQuery(query, options, callback)
 }
 warehouseQueries.getDeliverysByCustomerOrderId = (customerOrderId, callback) => {
-    let query = "select c.customerOrderId,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS cans20L,c.1LBoxes AS boxes1L,c.500MLBoxes AS boxes500ML,c.300MLBoxes AS boxes300ML,c.2LBoxes AS boxes2L,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE customerOrderId=" + customerOrderId;
+    let query = "select c.customerOrderId,c.existingCustomerId,c.customerType,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS product20L,c.1LBoxes AS product1L,c.500MLBoxes AS product50M0L,c.300MLBoxes AS product300ML,c.2LBoxes AS product2L,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c LEFT JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE customerOrderId=" + customerOrderId;
     return executeGetQuery(query, callback)
 }
 warehouseQueries.getWarehouseById = async (warehouseId, callback) => {

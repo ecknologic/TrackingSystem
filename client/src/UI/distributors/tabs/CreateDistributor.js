@@ -5,7 +5,7 @@ import { http } from '../../../modules/http';
 import DistributorForm from '../forms/Distributor';
 import { getUserId } from '../../../utils/constants';
 import CustomButton from '../../../components/CustomButton';
-import { getBase64, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
+import { extractDistributorDetails, extractProductsFromForm, getBase64, getProductsForDB, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
 import { validateMobileNumber, validateNames, validateDistributorValues, validateEmailId } from '../../../utils/validations';
 
 const CreateEmployee = ({ goToTab }) => {
@@ -71,12 +71,16 @@ const CreateEmployee = ({ goToTab }) => {
             return
         }
 
+        const productsUI = extractProductsFromForm(formData)
+        const products = getProductsForDB(productsUI)
+        const data = extractDistributorDetails(formData)
+
         let body = {
-            ...formData, createdBy: USERID
+            ...data, products, createdBy: USERID
         }
         const url = '/distributor/createDistributor'
         const options = { item: 'Distributor', v1Ing: 'Adding', v2: 'added' }
-
+        console.log('body>>', body)
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })

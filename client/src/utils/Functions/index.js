@@ -381,6 +381,24 @@ export const extractDeliveryDetails = (data) => {
     delete clone.product300MLId
     return clone
 }
+export const extractDistributorDetails = (data) => {
+    const clone = deepClone(data)
+    delete clone.price1L
+    delete clone.price2L
+    delete clone.price20L
+    delete clone.price500ML
+    delete clone.price300ML
+    delete clone.product1L
+    delete clone.product20L
+    delete clone.product500ML
+    delete clone.product300ML
+    delete clone.product20LId
+    delete clone.product2LId
+    delete clone.product1LId
+    delete clone.product500MLId
+    delete clone.product300MLId
+    return clone
+}
 
 export const extractGADeliveryDetails = ({ gstNo = '', deliveryLocation, departmentId, isApproved = 0, gstProof = '', address, routeId, mobileNumber, customerName: contactPerson }) => {
     return { gstNo, gstProof, address, deliveryLocation, departmentId, isApproved, phoneNumber: mobileNumber, routeId, contactPerson }
@@ -436,11 +454,13 @@ export const getAddressesForDB = (data, isUpdate) => {
 export const getDCValuesForDB = (data) => {
 
     const { customerName, phoneNumber, address, routeId, driverId,
-        cans20L = 0, boxes2L = 0, boxes1L = 0, boxes500ML = 0, boxes300ML = 0 } = data
+        product20L = 0, product2L = 0, product1L = 0, product500ML = 0, product300ML = 0,
+        customerType, existingCustomerId } = data
 
     return {
         customerName, phoneNumber, address, routeId, driverId,
-        cans20L, boxes2L, boxes1L, boxes500ML, boxes300ML
+        product20L, product2L, product1L, product500ML, product300ML,
+        customerType, existingCustomerId
     }
 }
 

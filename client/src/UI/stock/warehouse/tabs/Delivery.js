@@ -14,11 +14,12 @@ import ConfirmMessage from '../../../../components/ConfirmMessage';
 import { getWarehoseId, TRACKFORM } from '../../../../utils/constants';
 import CustomPagination from '../../../../components/CustomPagination';
 import { EditIconGrey, PlusIcon } from '../../../../components/SVG_Icons';
-import { getRouteOptions, getDriverOptions, getDeliveryColumns } from '../../../../assets/fixtures';
+import { getRouteOptions, getDriverOptions, getDeliveryColumns, getDistributorOptions } from '../../../../assets/fixtures';
 import { validateMobileNumber, validateNames, validateNumber, validateDCValues } from '../../../../utils/validations';
 import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone, getStatusColor, doubleKeyComplexSearch } from '../../../../utils/Functions';
 
 const Delivery = ({ date, source }) => {
+    const defaultValue = { customerType: 'newCustomer' }
     const warehouseId = getWarehoseId()
     const [routes, setRoutes] = useState([])
     const [drivers, setDrivers] = useState([])
@@ -26,7 +27,7 @@ const Delivery = ({ date, source }) => {
     const [deliveriesClone, setDeliveriesClone] = useState([])
     const [filteredClone, setFilteredClone] = useState([])
     const [deliveries, setDeliveries] = useState([])
-    const [formData, setFormData] = useState({})
+    const [formData, setFormData] = useState(defaultValue)
     const [formErrors, setFormErrors] = useState({})
     const [pageSize, setPageSize] = useState(10)
     const [totalCount, setTotalCount] = useState(null)
@@ -34,6 +35,7 @@ const Delivery = ({ date, source }) => {
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
     const [resetSearch, setResetSearch] = useState(false)
+    const [distributorList, setDistributorList] = useState([])
     const [filterInfo, setFilterInfo] = useState([])
     const [filterON, setFilterON] = useState(false)
     const [searchON, setSeachON] = useState(false)
@@ -46,6 +48,7 @@ const Delivery = ({ date, source }) => {
     const deliveryColumns = useMemo(() => getDeliveryColumns(), [])
     const routeOptions = useMemo(() => getRouteOptions(routes), [routes])
     const driverOptions = useMemo(() => getDriverOptions(drivers), [drivers])
+    const distributorOptions = useMemo(() => getDistributorOptions(distributorList), [distributorList])
     const config = { cancelToken: source.token }
 
     useEffect(() => {
@@ -77,6 +80,15 @@ const Delivery = ({ date, source }) => {
         } catch (error) { }
     }
 
+    const getDistributorList = async () => {
+        const url = '/distributor/getDistributorsList'
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setDistributorList(data)
+        } catch (error) { }
+    }
+
     const getDeliveries = async () => {
         const url = `/warehouse/deliveryDetails/${date}`
 
@@ -98,6 +110,10 @@ const Delivery = ({ date, source }) => {
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
+
+        if (value === 'newCustomer') {
+            setFormData(data => ({ ...data, existingCustomerId: null }))
+        }
 
         // Validations
         if (key === 'customerName') {
@@ -146,6 +162,7 @@ const Delivery = ({ date, source }) => {
         if (key === 'view') {
             const { dcNo, isDelivered } = data
             setTitle(dcNo)
+            isEmpty(distributorList) && getDistributorList()
             const isDisabled = isDelivered === 'Completed'
             setOkTxt(isDisabled ? 'Close' : 'Update')
             setMode(isDisabled ? 'view' : 'edit')
@@ -222,7 +239,7 @@ const Delivery = ({ date, source }) => {
         }
         setDCModal(false)
         setBtnDisabled(false)
-        setFormData({})
+        setFormData(defaultValue)
         setFormErrors({})
     }
 
@@ -247,8 +264,8 @@ const Delivery = ({ date, source }) => {
             key: customerOrderId || dcNo,
             dcnumber: dcNo,
             shopAddress: address,
-            route: RouteName,
             name: customerName,
+            route: RouteName || 'Not Assigned',
             driverName: driverName || 'Not Assigned',
             orderDetails: renderOrderDetails(dc),
             status: renderStatus(isDelivered),
@@ -263,11 +280,12 @@ const Delivery = ({ date, source }) => {
     }, [])
 
     const onCreateDC = useCallback(() => {
+        isEmpty(distributorList) && getDistributorList()
         setMode('create')
         setTitle('Add New DC')
         setOkTxt('Save')
         setDCModal(true)
-    }, [])
+    }, [distributorList])
 
     const handleDCModalCancel = useCallback(() => onModalClose(), [])
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
@@ -334,6 +352,7 @@ const Delivery = ({ date, source }) => {
                     disabledItems={disabledItems}
                     driverOptions={driverOptions}
                     routeOptions={routeOptions}
+                    distributorOptions={distributorOptions}
                     onChange={handleChange}
                     onBlur={handleBlur}
                 />

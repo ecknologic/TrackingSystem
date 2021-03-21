@@ -130,10 +130,6 @@ export const validateAccountValues = (data, customerType, isInView) => {
         const error = validateIDNumbers('licenseNo', licenseNo, true)
         error && (errors.licenseNo = error)
     }
-    if (gstNo) {
-        const error = validateIDNumbers('gstNo', gstNo, true)
-        error && (errors.gstNo = error)
-    }
 
     return { ...errors, ...productErrors }
 }
@@ -149,10 +145,6 @@ export const validateDeliveryValues = (data) => {
     if (!address) errors.address = text
     if (gstNo && !gstProof) errors.gstProof = text
     if (!gstNo && gstProof) errors.gstNo = text
-    if (gstNo) {
-        const error = validateIDNumbers('gstNo', gstNo, true)
-        error && (errors.gstNo = error)
-    }
     if (!phoneNumber) errors.phoneNumber = text
     else {
         const error = validateMobileNumber(phoneNumber, true)
@@ -210,10 +202,6 @@ export const validatePlantValues = (data) => {
     if (!address) errors.address = text
     if (gstNo && !gstProof) errors.gstProof = text
     if (!gstNo && gstProof) errors.gstNo = text
-    if (gstNo) {
-        const error = validateIDNumbers('gstNo', gstNo, true)
-        error && (errors.gstNo = error)
-    }
     if (phoneNumber) {
         const error = validateMobileNumber(phoneNumber, true)
         error && (errors.phoneNumber = error)
@@ -358,10 +346,6 @@ export const validateDistributorValues = (data) => {
     if (!address) errors.address = text
     if (!gstProof) errors.gstProof = text
     if (!gstNo) errors.gstNo = text
-    else {
-        const error = validateIDNumbers('gstNo', gstNo, true)
-        error && (errors.gstNo = error)
-    }
     if (!mobileNumber) errors.mobileNumber = text
     else {
         const error = validateMobileNumber(mobileNumber, true)
@@ -858,10 +842,17 @@ export const validateDCValues = (data) => {
     let errors = {};
     const text = 'Required'
 
-    const { routeId, customerName, phoneNumber, address, driverId, ...rest } = data
+    const { routeId, customerName, customerType, existingCustomerId, phoneNumber, address,
+        driverId, ...rest } = data
 
-    if (!routeId) errors.routeId = text
-    if (!driverId) errors.driverId = text
+    const isDistributor = customerType === 'distributor'
+
+    if (isDistributor) {
+        if (!routeId) errors.routeId = text
+        if (!driverId) errors.driverId = text
+        if (!existingCustomerId) errors.existingCustomerId = text
+    }
+
     if (!address) errors.address = text
     if (!phoneNumber) errors.phoneNumber = text
     else {
