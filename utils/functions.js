@@ -1,7 +1,7 @@
 const db = require('../config/db.js');
 var dayjs = require('dayjs');
 var bcrypt = require("bcryptjs");
-const { DATEFORMAT } = require('./constants.js');
+const { DATEFORMAT, DISTRIBUTOR } = require('./constants.js');
 
 const format = 'DDMM-YY'
 const getBatchId = (shiftType) => {
@@ -66,10 +66,14 @@ const dbError = (err) => {
     }
     return errMessage;
 }
-const customerProductDetails = (deliveryDetailsId) => {
+const customerProductDetails = (deliveryDetailsId, customerType) => {
     return new Promise((resolve, reject) => {
-        let customerProductDetailsQuery = "SELECT cp.productName,cp.productPrice,cp.noOfJarsTobePlaced,cp.id AS productId FROM customerproductdetails cp WHERE deliveryDetailsId=?";
-        db.query(customerProductDetailsQuery, [deliveryDetailsId], (err, results) => {
+        let query = "SELECT cp.productName,cp.productPrice,cp.noOfJarsTobePlaced,cp.id AS productId FROM customerproductdetails cp WHERE ";
+        let options = [deliveryDetailsId]
+        if (customerType == DISTRIBUTOR) query = query + "customerId=?"
+        else query = query + "deliveryDetailsId=?"
+
+        db.query(query, options, (err, results) => {
             if (err) reject(err)
             else {
                 resolve(results)
@@ -272,8 +276,22 @@ const getGraphData = (product20LCount, product2LCount, product1LCount, product50
         }
     ]
 }
+const saveProductDetails = ({ products, deliveryDetailsId, customerId, customerType = 'customer' }) => {
+    return new Promise((resolve, reject) => {
+        if (products.length) {
+            for (let i of products) {
+                let deliveryProductsQuery = "insert  into customerproductdetails (deliverydetailsId,customerId,noOfJarsTobePlaced,productPrice,productName,customerType) values(?,?,?,?,?,?)";
+                let insertQueryValues = [deliveryDetailsId, customerId, i.noOfJarsTobePlaced, i.productPrice, i.productName, customerType]
+                db.query(deliveryProductsQuery, insertQueryValues, (err, results) => {
+                    if (err) reject(err);
+                    else resolve(results)
+                });
+            }
+        }
+    })
+}
 module.exports = {
     executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, checkDepartmentExists, productionCount,
     getCompareData, dateComparisions, checkUserExists, dbError, getBatchId, customerProductDetails, createHash, convertToWords,
-    getFormatedNumber, getCompareCustomersData, getCompareDistributorsData, getGraphData, formatDate
+    saveProductDetails, getFormatedNumber, getCompareCustomersData, getCompareDistributorsData, getGraphData, formatDate
 }

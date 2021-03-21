@@ -1,8 +1,8 @@
 var express = require('express');
 var router = express.Router();
 const distributorQueries = require('../dbQueries/distributor/queries.js');
-const { dbError } = require('../utils/functions.js');
-const { UPDATEMESSAGE } = require('../utils/constants');
+const { dbError, saveProductDetails, customerProductDetails } = require('../utils/functions.js');
+const { UPDATEMESSAGE, DISTRIBUTOR } = require('../utils/constants');
 
 router.get('/getDistributors', (req, res) => {
     distributorQueries.getDistributors((err, results) => {
@@ -20,15 +20,24 @@ router.get('/getDistributor/:distributorId', (req, res) => {
     const { distributorId } = req.params
     distributorQueries.getDistributorById(distributorId, (err, results) => {
         if (err) res.status(500).json(dbError(err));
-        else res.send(results);
+        else if (results.length) {
+            customerProductDetails(distributorId, DISTRIBUTOR).then(products => {
+                results[0].products = products
+                res.send(results);
+            })
+        }
+        else res.json("Distributor not Found")
     });
 });
 
 router.post("/createDistributor", (req, res) => {
+    const { products, deliveryDetailsId } = req.body
     distributorQueries.createDistributor(req.body, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
-            res.json(results)
+            saveProductDetails({ products, deliveryDetailsId, customerId: results.insertId, customerType: "distributor" }).then(result => {
+                res.json(result)
+            })
         }
     })
 });
