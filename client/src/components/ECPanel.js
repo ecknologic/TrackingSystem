@@ -28,6 +28,19 @@ const ECPanel = ({ confirmed, returned, onAdd }) => {
                     <span className='add' onClick={onAdd}>Add Empty Cans</span>
                 </div>
             </div>
+            <div className='box items mother-plant'>
+                <span className='name'>Return to Warehouse</span>
+                <div className='return'>
+                    {
+                        rec ? (
+                            <div className='numbers-container'>
+                                <span className='number'>{rec}</span>
+                            </div>
+                        ) : null
+                    }
+                    <span className='add' onClick={onAdd}>Add Empty Cans</span>
+                </div>
+            </div>
             <div className='buttons'>
                 <CustomButton text='Get Reports' className='app-stock-btn' />
             </div>

@@ -129,6 +129,9 @@ export const getProductOptions = (products = []) => {
 export const getDDownOptions = (options = []) => {
     return options.map((item) => <Option key={item.dropdownId} value={item.value}>{item.value}</Option>)
 }
+export const getDCOptions = (options = []) => {
+    return options.map((item) => <Option key={item.dcNo} value={item.dcNo}>{item.dcNo}</Option>)
+}
 export const getCustomerOptions = (customers = []) => {
     return customers.map((item) => <Option key={item.customerId} value={item.customerId}>{item.customerName}</Option>)
 }

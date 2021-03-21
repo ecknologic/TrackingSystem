@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
 import InputLabel from '../../../../components/InputLabel';
+import SelectInput from '../../../../components/SelectInput';
 import CustomInput from '../../../../components/CustomInput';
 import CustomTextArea from '../../../../components/CustomTextArea';
 import CustomDateInput from '../../../../components/CustomDateInput';
 import { resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 
-const InvoiceForm = ({ data, errors, onChange }) => {
+const InvoiceForm = ({ data, errors, onChange, DCOptions }) => {
 
     const { customerName, dcNo, poNo, hsnCode, mailSubject, invoiceId, invoiceDate } = data
 
@@ -22,17 +23,17 @@ const InvoiceForm = ({ data, errors, onChange }) => {
         <div className='app-form-container invoice-form-container'>
             <div className='row'>
                 <div className='input-container'>
-                    <InputLabel name='Customer Name' error={errors.customerName} mandatory />
-                    <CustomInput value={customerName}
-                        error={errors.customerName} placeholder='Customer Name'
-                        onChange={(value) => onChange(value, 'customerName')}
+                    <InputLabel name='DC Number' error={errors.dcNo} mandatory />
+                    <SelectInput track showSearch placeholder='Search & Select'
+                        options={DCOptions} value={dcNo} error={errors.dcNo}
+                        onSelect={(value) => onChange(value, 'dcNo')}
                     />
                 </div>
                 <div className='input-container'>
-                    <InputLabel name='DC Number' error={errors.dcNo} mandatory />
-                    <CustomInput value={dcNo}
-                        error={errors.dcNo} placeholder='DC Number'
-                        onChange={(value) => onChange(value, 'dcNo')}
+                    <InputLabel name='Customer Name' error={errors.customerName} mandatory />
+                    <CustomInput value={customerName} disabled
+                        error={errors.customerName} placeholder='Customer Name'
+                        onChange={(value) => onChange(value, 'customerName')}
                     />
                 </div>
             </div>

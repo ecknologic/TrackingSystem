@@ -12,9 +12,9 @@ import Spinner from '../../../../components/Spinner';
 import { TODAYDATE } from '../../../../utils/constants';
 import NoContent from '../../../../components/NoContent';
 import CustomButton from '../../../../components/CustomButton';
-import { getProductOptions, getDDownOptions } from '../../../../assets/fixtures';
 import { isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 import { validateNumber, validateInvoiceValues } from '../../../../utils/validations';
+import { getProductOptions, getDDownOptions, getDCOptions } from '../../../../assets/fixtures';
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
 const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
@@ -23,6 +23,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
     const { invoiceId } = useParams()
     const [formData, setFormData] = useState(defaultValues)
     const [GSTList, setGSTList] = useState([])
+    const [DCList, setDCList] = useState([])
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [productList, setProductList] = useState([])
@@ -33,6 +34,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
     const [deleted, setDeleted] = useState([])
     const [loading, setLoading] = useState(false)
 
+    const DCOptions = useMemo(() => getDCOptions(DCList), [DCList])
     const GSTOptions = useMemo(() => getDDownOptions(GSTList), [GSTList])
     const productOptions = useMemo(() => getProductOptions(productList), [productList])
     const footerValues = useMemo(() => computeFinalAmounts(dataSource), [dataSource])
@@ -45,6 +47,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
         getCustomerList()
         getProductList()
         getGSTList()
+        getDCList()
 
         return () => {
             http.ABORT(source)
@@ -81,6 +84,15 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
         try {
             const data = await http.GET(axios, url, config)
             setGSTList(data)
+        } catch (error) { }
+    }
+
+    const getDCList = async () => {
+        const url = `/warehouse/getDCList`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setDCList(data)
         } catch (error) { }
     }
 
@@ -160,6 +172,11 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
+        if (key === 'dcNo') {
+            const customerName = DCList.find(item => item.dcNo === value).customerName
+            setFormData(data => ({ ...data, customerName }))
+        }
+
         // Validations
         if (key === 'hsnCode' || key === 'poNo') {
             const error = validateNumber(value)
@@ -237,6 +254,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
             <InvoiceForm
                 data={formData}
                 errors={formErrors}
+                DCOptions={DCOptions}
                 customerList={customerList}
                 onChange={handleChange}
             />
