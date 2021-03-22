@@ -6,7 +6,7 @@ warehouseQueries.getWarehouseList = async (callback) => {
     return executeGetQuery(query, callback)
 }
 warehouseQueries.getDCList = async (departmentId, callback) => {
-    let query = `select dcNo, customerName FROM customerorderdetails WHERE warehouseId=?`;
+    let query = `select dcNo, customerName,address as deliveryAddress FROM customerorderdetails WHERE warehouseId=?`;
     return executeGetParamsQuery(query, [departmentId], callback)
 }
 warehouseQueries.getDeliveryDetails = (input, callback) => {

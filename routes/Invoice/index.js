@@ -9,6 +9,14 @@ const { createMultiDeliveryInvoice } = require('./invoice.js');
 const fs = require('fs');
 const { generatePDF, generateCustomerPDF } = require('../../dbQueries/Customer/queries.js');
 const dayjs = require('dayjs');
+var departmentId;
+
+//Middle ware that is specific to this router
+router.use(function timeLog(req, res, next) {
+    console.log('Time: ', Date.now());
+    departmentId = req.headers['departmentid'] || 1
+    next();
+});
 
 router.get('/getInvoices', (req, res) => {
     invoiceQueries.getInvoices(req.params.status, (err, results) => {
@@ -30,8 +38,17 @@ router.get('/getInvoices/:status', (req, res) => {
         else res.send(results);
     });
 });
+
+router.get('/getDepartmentInvoices', (req, res) => {
+    invoiceQueries.getInvoiceByDepartment(departmentId, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.send(results);
+    });
+});
+
 router.get('/getInvoiceById/:invoiceId', (req, res) => {
-    invoiceQueries.getInvoiceById(req.params.invoiceId, (err, results) => {
+    const { invoiceId } = req.params
+    invoiceQueries.getInvoiceById({ invoiceId, departmentId: req.query.departmentId }, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
             const { gstNo, invoiceId, Address1, deliveryAddress, customerType, fromDate, toDate, ...rest } = results[0]
@@ -126,7 +143,7 @@ router.get('/getInvoiceById/:invoiceId', (req, res) => {
 });
 
 router.get('/getInvoiceId', (req, res) => {
-    invoiceQueries.getInvoiceId((err, results) => {
+    invoiceQueries.getInvoiceId(req.query.departmentId, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else res.send(getInvoiceNumber(results[0].invoiceId + 1));
     });
@@ -290,6 +307,12 @@ router.post("/generateMultipleInvoices", (req, res) => {
         }
     })
 });
+
+router.post("/createDepartmentInvoice", (req, res) => {
+    req.body.departmentId = departmentId
+    saveDepartmentInvoice(req.body, res, true)
+});
+
 router.post("/createInvoice", (req, res) => {
     // let { customerId, customerName, organizationName, address, gstNo, panNo, mobileNumber, products } = req.body
     // let obj = {
@@ -415,6 +438,23 @@ const saveInvoice = async (requestObj, res, response) => {
                         //     if (err) res.status(500).json(dbError(err));
                         //     else res.json({ message: 'Invoice created successfully' })
                         // })
+                    }
+                })
+            } else res.status(500).json({ message: "Products should not be empty" })
+        }
+    })
+}
+const saveDepartmentInvoice = async (requestObj, res, response) => {
+    // req.body.invoicePdf = pdfData.toString('base64')
+    invoiceQueries.createDepartmentInvoice(requestObj, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else {
+            let { products, invoiceId } = requestObj;
+            if (products.length) {
+                invoiceQueries.saveDepartmentInvoiceProducts({ products, invoiceId }, (err, data) => {
+                    if (err) res.status(500).json(dbError(err));
+                    else {
+                        response && res.json({ message: 'Invoice created successfully' })
                     }
                 })
             } else res.status(500).json({ message: "Products should not be empty" })

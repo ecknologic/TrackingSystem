@@ -290,8 +290,23 @@ const saveProductDetails = ({ products, deliveryDetailsId, customerId, customerT
         }
     })
 }
+
+const updateProductDetails = (products) => {
+    return new Promise((resolve, reject) => {
+        if (products.length) {
+            for (let i of products) {
+                let deliveryProductsQuery = "UPDATE customerproductdetails SET noOfJarsTobePlaced=?,productPrice=?,productName=? where id=" + i.productId;
+                let updateQueryValues = [i.noOfJarsTobePlaced, i.productPrice, i.productName]
+                db.query(deliveryProductsQuery, updateQueryValues, (err, results) => {
+                    if (err) reject(err);
+                    else resolve(results)
+                });
+            }
+        }
+    })
+}
 module.exports = {
     executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, checkDepartmentExists, productionCount,
     getCompareData, dateComparisions, checkUserExists, dbError, getBatchId, customerProductDetails, createHash, convertToWords,
-    saveProductDetails, getFormatedNumber, getCompareCustomersData, getCompareDistributorsData, getGraphData, formatDate
+    saveProductDetails, updateProductDetails, getFormatedNumber, getCompareCustomersData, getCompareDistributorsData, getGraphData, formatDate
 }

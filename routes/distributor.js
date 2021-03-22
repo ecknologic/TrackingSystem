@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const distributorQueries = require('../dbQueries/distributor/queries.js');
-const { dbError, saveProductDetails, customerProductDetails } = require('../utils/functions.js');
+const { dbError, saveProductDetails, customerProductDetails, updateProductDetails } = require('../utils/functions.js');
 const { UPDATEMESSAGE, DISTRIBUTOR } = require('../utils/constants');
 
 router.get('/getDistributors', (req, res) => {
@@ -42,9 +42,14 @@ router.post("/createDistributor", (req, res) => {
     })
 });
 router.post("/updateDistributor", (req, res) => {
+    const { products } = req.body;
     distributorQueries.updateDistributor(req.body, (err, results) => {
         if (err) res.status(500).json(dbError(err));
-        else res.json(UPDATEMESSAGE)
+        else {
+            updateProductDetails(products).then(result => {
+                res.json(UPDATEMESSAGE)
+            })
+        }
     })
 });
 router.put('/updateDistributorStatus', (req, res) => {

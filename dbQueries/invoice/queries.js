@@ -17,13 +17,21 @@ invoiceQueries.getInvoiceByStatus = async (status, callback) => {
     return executeGetParamsQuery(query, [status], callback)
 }
 
-invoiceQueries.getInvoiceById = async (invoiceId, callback) => {
+invoiceQueries.getInvoiceByDepartment = async (departmentId, callback) => {
+    let query = `select * from departmentInvoices where departmentId=? ORDER BY updatedDateTime DESC`;
+    return executeGetParamsQuery(query, [departmentId], callback)
+}
+
+invoiceQueries.getInvoiceById = async (input, callback) => {
+    const { invoiceId, departmentId } = input
     let query = `select i.*,JSON_ARRAYAGG(json_object('key',p.id,'discount',p.discount,'productName',p.productName,'productPrice',ROUND(p.productPrice,1),'quantity',p.quantity,'tax',p.tax,'amount',ROUND(p.amount),'cgst',ROUND(p.cgst),'sgst',ROUND(p.sgst),'igst',ROUND(p.igst),'address',p.address,'deliveryAddress',p.deliveryAddress)) as products,c.organizationName,c.customerType, c.gstNo, c.panNo, c.mobileNumber,c.Address1,p.address from Invoice i INNER JOIN invoiceProductsDetails p ON i.invoiceId=p.invoiceId INNER JOIN customerdetails c ON c.customerId=i.customerId where i.invoiceId=? AND p.deleted=0`;
+    if(departmentId) query = `select i.*,JSON_ARRAYAGG(json_object('key',p.id,'discount',p.discount,'productName',p.productName,'productPrice',ROUND(p.productPrice,1),'quantity',p.quantity,'tax',p.tax,'amount',ROUND(p.amount),'cgst',ROUND(p.cgst),'sgst',ROUND(p.sgst),'igst',ROUND(p.igst),'address',p.address,'deliveryAddress',p.deliveryAddress)) as products,c.organizationName,c.customerType, c.gstNo, c.panNo, c.mobileNumber,c.Address1,p.address from departmentInvoices i INNER JOIN departmentInvoiceProducts p ON i.invoiceId=p.invoiceId INNER JOIN customerdetails c ON c.customerId=i.customerId where i.invoiceId=? AND p.deleted=0`;
     return executeGetParamsQuery(query, [invoiceId], callback)
 }
 
-invoiceQueries.getInvoiceId = async (callback) => {
+invoiceQueries.getInvoiceId = async (departmentId, Fcallback) => {
     let query = "SELECT COUNT(invoiceId) AS invoiceId FROM  Invoice";
+    if (departmentId) query = "SELECT COUNT(invoiceId) AS invoiceId FROM  departmentInvoices"
     return executeGetQuery(query, callback)
 }
 invoiceQueries.getInvoivesCount = async (callback) => {
@@ -38,6 +46,22 @@ invoiceQueries.createInvoice = (input, callback) => {
     // var gstProofImage = Buffer.from(gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
     let requestBody = [customerId, invoiceDate, dueDate, salesPerson, invoiceId, hsnCode, poNo, totalAmount, customerName, fromDate, toDate]
     executePostOrUpdateQuery(query, requestBody, callback)
+}
+
+invoiceQueries.createDepartmentInvoice = (input, callback) => {
+    const { dcNo, invoiceDate, dueDate, fromDate, toDate, salesPerson, invoiceId, hsnCode, poNo, totalAmount, customerName, departmentId } = input
+    let query = "insert into departmentInvoices (dcNo,invoiceDate,dueDate,salesPerson,invoiceId,hsnCode,poNo,totalAmount,customerName,fromDate,toDate,departmentId) values(?,?,?,?,?,?,?,?,?,?,?,?)";
+    // var gstProofImage = Buffer.from(gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+    let requestBody = [dcNo, invoiceDate, dueDate, salesPerson, invoiceId, hsnCode, poNo, totalAmount, customerName, fromDate, toDate, departmentId]
+    executePostOrUpdateQuery(query, requestBody, callback)
+}
+
+invoiceQueries.saveDepartmentInvoiceProducts = (input, callback) => {
+    const { invoiceId, products } = input
+    // console.log("prr", JSON.stringify(products))
+    const sql = products.map(item => "('" + invoiceId + "', '" + item.productName + "', " + item.productPrice + ", " + item.discount + ", " + item.quantity + ", " + item.tax + ", " + item.cgst + ", " + item.sgst + ", " + item.igst + ", " + item.amount + ",'" + item.address + "','" + item.deliveryAddress + "')")
+    let query = "insert into departmentInvoiceProducts (invoiceId, productName, productPrice, discount, quantity, tax,cgst,sgst,igst,amount,address,deliveryAddress) values " + sql;
+    executeGetQuery(query, callback)
 }
 
 invoiceQueries.saveInvoiceProducts = (input, callback) => {
