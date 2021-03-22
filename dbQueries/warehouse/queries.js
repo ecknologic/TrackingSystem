@@ -6,7 +6,7 @@ warehouseQueries.getWarehouseList = async (callback) => {
     return executeGetQuery(query, callback)
 }
 warehouseQueries.getDCList = async (departmentId, callback) => {
-    let query = `select co.dcNo, co.customerName,co.address,c.Address1 as deliveryAddress FROM customerorderdetails co LEFT JOIN customerdetails c ON co.existingCustomerId=c.customerId WHERE warehouseId=?`;
+    let query = `select co.dcNo, co.customerName,co.address,c.Address1 as deliveryAddress,c.gstNo,c.EmailId,c.panNo,c.customerId,c.createdBy FROM customerorderdetails co LEFT JOIN customerdetails c ON co.existingCustomerId=c.customerId WHERE warehouseId=?`;
     return executeGetParamsQuery(query, [departmentId], callback)
 }
 warehouseQueries.getDeliveryDetails = (input, callback) => {

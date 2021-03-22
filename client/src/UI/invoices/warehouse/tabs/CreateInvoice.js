@@ -9,9 +9,9 @@ import { http } from '../../../../modules/http';
 import ProductsTable from '../forms/ProductsTable';
 import InvoiceRestForm from '../forms/InvoiceRest';
 import Spinner from '../../../../components/Spinner';
-import { TODAYDATE } from '../../../../utils/constants';
 import NoContent from '../../../../components/NoContent';
 import CustomButton from '../../../../components/CustomButton';
+import { getWarehoseId, TODAYDATE } from '../../../../utils/constants';
 import { isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 import { validateNumber, validateInvoiceValues } from '../../../../utils/validations';
 import { getProductOptions, getDDownOptions, getDCOptions } from '../../../../assets/fixtures';
@@ -22,13 +22,13 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
     const history = useHistory()
     const { invoiceId } = useParams()
     const [formData, setFormData] = useState(defaultValues)
+    const [isLocal, setIsLocal] = useState(false)
     const [GSTList, setGSTList] = useState([])
     const [DCList, setDCList] = useState([])
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [productList, setProductList] = useState([])
     const [customerList, setCustomerList] = useState([])
-    const [billingAddress, setBillingAddress] = useState({})
     const [dataSource, setDataSource] = useState(editMode ? [] : initData)
     const [shake, setShake] = useState(false)
     const [deleted, setDeleted] = useState([])
@@ -54,6 +54,11 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
         }
     }, [])
 
+    useEffect(() => {
+        const updatedData = dataSource.map((row) => ({ ...row, ...getResults(row) }))
+        setDataSource(updatedData)
+    }, [isLocal])
+
     const getInvoice = async () => {
         const url = `/invoice/getInvoiceById/${invoiceId}`
 
@@ -70,7 +75,8 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
     }
 
     const getInvoiceId = async () => {
-        const url = '/invoice/getInvoiceId'
+        const depId = getWarehoseId()
+        const url = `/invoice/getInvoiceId?departmentId=${depId}`
 
         try {
             const invoiceId = await http.GET(axios, url, config)
@@ -157,7 +163,6 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
     };
 
     const getResults = (row) => {
-        const { isLocal } = billingAddress
         let { quantity, productPrice, discount, tax, cgst, sgst, igst } = row
         const priceAfterDiscount = productPrice - (productPrice / 100 * discount)
         const amount = Number((priceAfterDiscount * quantity).toFixed(2))
@@ -173,8 +178,11 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
         if (key === 'dcNo') {
-            const customerName = DCList.find(item => item.dcNo === value).customerName
-            setFormData(data => ({ ...data, customerName }))
+            const dc = DCList.find(item => item.dcNo === value)
+            setFormData(data => ({ ...data, ...dc }))
+
+            if ((dc.gstNo || "").startsWith('36')) setIsLocal(true)
+            else setIsLocal(false)
         }
 
         // Validations
@@ -186,9 +194,9 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
 
     const handleSubmit = async () => {
         const formErrors = validateInvoiceValues({ ...formData, products: dataSource }, true);
-        const { EmailId: emailId, customerName, panNo, mobileNumber, address, gstNo } = billingAddress
         const { totalAmount } = footerValues
-        const { invoiceDate, dueDate, fromDate, toDate } = formData
+        const { EmailId: emailId, invoiceDate, dueDate, fromDate, toDate, address, deliveryAddress,
+            createdBy: salesPerson } = formData
 
         if (!isEmpty(formErrors)) {
             setShake(true)
@@ -197,6 +205,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
             return
         }
 
+        const products = dataSource.map((item) => ({ ...item, address, deliveryAddress }))
 
         if (editMode && !isEmpty(deleted)) {
             const url = '/invoice/deleteInvoiceProducts'
@@ -209,8 +218,8 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
         let body = {
             ...formData, invoiceDate: dayjs(invoiceDate).format(APIDATEFORMAT),
             fromDate: dayjs(fromDate).format(APIDATEFORMAT), toDate: dayjs(toDate).format(APIDATEFORMAT),
-            mailIds: emailId, products: dataSource, dueDate: dayjs(dueDate).format(APIDATEFORMAT),
-            totalAmount, customerName, panNo, mobileNumber, address, gstNo
+            mailIds: emailId, products, dueDate: dayjs(dueDate).format(APIDATEFORMAT),
+            totalAmount, salesPerson
         }
 
         const url = getUrl(editMode)
@@ -271,7 +280,6 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
             <InvoiceRestForm
                 data={formData}
                 errors={formErrors}
-                billingAddress={billingAddress}
                 onChange={handleChange}
             />
             <div className='app-footer-buttons-container'>
@@ -299,7 +307,7 @@ const getVerbs = (editMode) => {
     return { v1Ing, v2 }
 }
 const getUrl = (editMode) => {
-    const createUrl = '/invoice/createInvoice'
+    const createUrl = '/invoice/createDepartmentInvoice'
     const updateUrl = '/invoice/updateInvoice'
     return editMode ? updateUrl : createUrl
 }

@@ -7,16 +7,20 @@ import ListPanel from './panels/ListPanel';
 import ContentPanel from './panels/ContentPanel';
 import Spinner from '../../../../components/Spinner'
 import NoContent from '../../../../components/NoContent'
+import { getMainPathname } from '../../../../utils/Functions';
+import { getRole, getWarehoseId, SUPERADMIN } from '../../../../utils/constants';
 import '../../../../sass/invoices.scss';
 
 const Invoices = () => {
     const history = useHistory()
-    const { state } = useLocation()
+    const { state, pathname } = useLocation()
     const [loading, setLoading] = useState(true)
     const [isLoading, setIsLoading] = useState(false)
     const [invoices, setInvoices] = useState([])
     const [activeMsg, setActiveMsg] = useState(state ? state.invoice : {})
 
+    const mainUrl = useMemo(() => getMainPathname(pathname), [pathname])
+    const isSuperAdmin = useMemo(() => getRole() === SUPERADMIN, [])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
@@ -26,7 +30,8 @@ const Invoices = () => {
     }, [])
 
     const getInvoice = async (id) => {
-        const url = `/invoice/getInvoiceById/${id}`
+        const depId = getWarehoseId()
+        const url = `/invoice/getInvoiceById/${id}?departmentId=${depId}`
 
         try {
             setIsLoading(true)
@@ -37,7 +42,9 @@ const Invoices = () => {
     }
 
     const getInvoices = async () => {
-        const url = `/invoice/getInvoices`
+
+        let url = '/invoice/getDepartmentInvoices'
+        if (isSuperAdmin) url = '/invoice/getInvoices'
 
         try {
             setLoading(true)
@@ -52,8 +59,8 @@ const Invoices = () => {
         getInvoice(msg.invoiceId)
     }
 
-    const onAdd = () => history.push('/invoices/2')
-    const handleBack = () => history.push('/invoices')
+    const onAdd = () => history.push(`${mainUrl}/2`)
+    const handleBack = () => history.push(`${mainUrl}`)
 
     const handlePrint = (event, pdf) => {
         event.preventDefault();

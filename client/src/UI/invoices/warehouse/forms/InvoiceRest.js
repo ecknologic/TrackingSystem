@@ -4,10 +4,9 @@ import InputValue from '../../../../components/InputValue';
 import CustomTextArea from '../../../../components/CustomTextArea';
 import { resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 
-const InvoiceRestForm = ({ data, billingAddress, errors, onChange }) => {
+const InvoiceRestForm = ({ data, errors, onChange }) => {
 
-    const { TAndC } = data
-    const { emailLabel } = billingAddress
+    const { TAndC, EmailId } = data
 
     useEffect(() => {
         resetTrackForm()
@@ -30,8 +29,8 @@ const InvoiceRestForm = ({ data, billingAddress, errors, onChange }) => {
             </div>
             <div className='row'>
                 <div className='input-container stretch'>
-                    <InputLabel name='Email To' error={errors.emailId} />
-                    <InputValue size='large' value={emailLabel} />
+                    <InputLabel name='Email To' />
+                    <InputValue size='large' value={EmailId} />
                 </div>
             </div>
         </div>

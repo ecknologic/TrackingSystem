@@ -49,7 +49,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
     }, [reFetch])
 
     const getInvoices = async () => {
-        const url = '/invoice/getInvoices/Pending'
+        const url = '/invoice/getDepartmentInvoices'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -78,7 +78,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
         else handleStatusUpdate(data.invoiceId)
     }
 
-    const handleViewInvoice = (invoice) => history.push('/invoices/manage', { invoice })
+    const handleViewInvoice = (invoice) => history.push('/manage-invoices/manage', { invoice })
 
     const datePickerStatus = (status) => {
         !status && setOpen(false)
@@ -135,7 +135,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
     }
 
     const dataSource = useMemo(() => invoices.map((invoice) => {
-        const { invoiceId, invoiceDate, totalAmount, customerName, dueDate, status } = invoice
+        const { invoiceId, invoiceDate, totalAmount, customerName, dueDate, status, dcNo } = invoice
 
         const options = [
             <Menu.Item key="resend" icon={<SendIconGrey />}>Resend</Menu.Item>,
@@ -145,6 +145,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
 
         return {
             key: invoiceId,
+            dcNo,
             customerName,
             totalAmount,
             status: renderStatus(status),

@@ -147,6 +147,8 @@ export const getSideMenuKey = (path) => {
         return '/manage-stock'
     if (path.includes('/invoices'))
         return '/invoices'
+    if (path.includes('/manage-invoices'))
+        return '/manage-invoices'
     if (path.includes('/customers'))
         return '/customers'
     return path
