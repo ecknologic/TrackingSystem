@@ -119,8 +119,9 @@ const CreateEmployee = ({ goToTab }) => {
             <div className='app-footer-buttons-container'>
                 <CustomButton
                     onClick={handleSubmit}
+                    disabled={btnDisabled}
                     className={`
-                    app-create-btn footer-btn ${btnDisabled ? 'disabled' : ''} 
+                    app-create-btn footer-btn
                     ${shake ? 'app-shake' : ''}
                 `}
                     text='Add'

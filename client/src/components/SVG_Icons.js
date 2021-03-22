@@ -261,8 +261,19 @@ const HomeComponent = ({ color }) => (
         <path fill={color} fill-rule="evenodd" d="M17.1 8.3h-.39c-.73 0-1.4-.26-1.92-.69-.51.43-1.18.69-1.91.69h-.96c-.73 0-1.4-.26-1.92-.69-.52.43-1.19.69-1.92.69h-.96c-.73 0-1.4-.26-1.91-.69-.52.43-1.2.69-1.92.69H2.9V18H7v-6a1 1 0 011-1h4.5a1 1 0 011 1v6h3.6V8.3zm2-.72V18.1a1.9 1.9 0 01-1.9 1.9H2.8a1.9 1.9 0 01-1.9-1.9V7.58a2.64 2.64 0 01-.79-2.73l1.05-3.43A2 2 0 013.07 0h13.86a2 2 0 011.91 1.42l1.05 3.43a2.62 2.62 0 01-.79 2.73zM11.5 18v-5H9v5h2.5zm6.47-12.57L16.93 2H3.07L2.03 5.43A.6.6 0 002 5.6c0 .37.35.7.8.7h.49c.52 0 .92-.37.92-.8 0-1.33 2-1.33 2 0 0 .43.4.8.91.8h.96c.52 0 .92-.37.92-.8 0-1.33 2-1.33 2 0 0 .43.4.8.92.8h.96c.52 0 .91-.37.91-.8 0-1.33 2-1.33 2 0 0 .43.4.8.92.8h.48l.24-.03c.42-.12.65-.5.54-.84z" />
     </svg>
 )
+const XLSComponent = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="24" height="24">
+        <path fill="#eceff1" d="M496 432.01H272c-8.83 0-16-7.17-16-16v-320a16 16 0 0116-16h224a16 16 0 0116 16v320a16 16 0 01-16 16z" />
+        <g fill="#388e3c">
+            <path d="M336 176.01h-64a16 16 0 010-32h64a16 16 0 010 32zM336 240.01h-64a16 16 0 010-32h64a16 16 0 010 32zM336 304.01h-64a16 16 0 010-32h64a16 16 0 010 32zM336 368.01h-64a16 16 0 010-32h64a16 16 0 010 32zM432 176.01h-32a16 16 0 010-32h32a16 16 0 010 32zM432 240.01h-32a16 16 0 010-32h32a16 16 0 010 32zM432 304.01h-32a16 16 0 010-32h32a16 16 0 010 32zM432 368.01h-32a16 16 0 010-32h32a16 16 0 010 32z" />
+        </g>
+        <path fill="#2e7d32" d="M282.2 19.7a15.72 15.72 0 00-13.14-3.4l-256 48C5.47 65.7 0 72.3 0 80v352c0 7.68 5.47 14.3 13.06 15.71l256 48a15.93 15.93 0 0013.15-3.4 16 16 0 005.79-12.3v-448c0-4.78-2.11-9.29-5.8-12.33z" />
+        <path fill="#fafafa" d="M220.03 309.48l-50.59-57.82 51.17-65.8a16.03 16.03 0 00-2.79-22.46 16.03 16.03 0 00-22.46 2.79l-47.4 60.92-39.93-45.63a15.92 15.92 0 00-22.56-1.5 15.97 15.97 0 00-1.5 22.56l44 50.3-44.61 57.35a16.03 16.03 0 002.78 22.46 16.1 16.1 0 0022.5-2.81l40.8-52.48 46.53 53.15a15.94 15.94 0 0022.56 1.54 15.97 15.97 0 001.5-22.57z" />
+    </svg>
+)
 
 const BiboSvg = () => <BiboComponent />
+const XLSSvg = () => <XLSComponent />
 const RightChevronSvgLight = () => <RightChevronComponent color={purpleColor} />
 const RightChevronSvgGrey = () => <RightChevronComponent color={greyColor} />
 const LeftChevronSvgGrey = () => <LeftChevronComponent color={greyColor} />
@@ -408,3 +419,4 @@ export const StackIconLight = props => <Icon component={StackSvgLight} {...props
 export const StackIcon = props => <Icon component={StackSvg} {...props} />
 export const HomeIconLight = props => <Icon component={HomeSvgLight} {...props} />
 export const HomeIcon = props => <Icon component={HomeSvg} {...props} />
+export const XLSIcon = props => <Icon component={XLSSvg} {...props} />

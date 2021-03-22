@@ -7,28 +7,27 @@ import { http } from '../../../../../modules/http';
 import Spinner from '../../../../../components/Spinner';
 import Actions from '../../../../../components/Actions';
 import DCView from '../../../../accounts/view/views/DCView';
-import { TRACKFORM } from '../../../../../utils/constants';
-import QuitModal from '../../../../../components/CustomModal';
+import Worksheet from '../../../../../components/Worksheet';
 import SearchInput from '../../../../../components/SearchInput';
 import CustomModal from '../../../../../components/CustomModal';
-import { getDeliveryColumns } from '../../../../../assets/fixtures';
 import { EyeIconGrey } from '../../../../../components/SVG_Icons';
-import ConfirmMessage from '../../../../../components/ConfirmMessage';
+import { getDeliveryColumns } from '../../../../../assets/fixtures';
 import CustomPagination from '../../../../../components/CustomPagination';
-import { resetTrackForm, getStatusColor } from '../../../../../utils/Functions';
+import { doubleKeyComplexSearch, getStatusColor } from '../../../../../utils/Functions';
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
-const DeliveredDC = () => {
+const DeliveredDC = ({ invoiceId }) => {
     const { state: urlState = {} } = useLocation()
     const [loading, setLoading] = useState(true)
     const [deliveries, setDeliveries] = useState([])
+    const [deliveriesClone, setDeliveriesClone] = useState([])
     const [formData, setFormData] = useState({})
     const [pageSize, setPageSize] = useState(10)
     const [totalCount, setTotalCount] = useState(null)
     const [pageNumber, setPageNumber] = useState(1)
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [DCModal, setDCModal] = useState(false)
-    const [confirmModal, setConfirmModal] = useState(false)
+    const [excelRows, setExelRows] = useState([])
     const [title, setTitle] = useState('')
 
     const deliveryColumns = useMemo(() => getDeliveryColumns(), [])
@@ -45,7 +44,6 @@ const DeliveredDC = () => {
         }
     }, [])
 
-
     const getDeliveries = async () => {
         const startDate = dayjs(fromDate).format(APIDATEFORMAT)
         const endDate = dayjs(toDate).format(APIDATEFORMAT)
@@ -57,8 +55,20 @@ const DeliveredDC = () => {
             setPageNumber(1)
             setLoading(false)
             setTotalCount(data.length)
+            setDeliveriesClone(data)
             setDeliveries(data)
+            generateExcelRows(data)
         } catch (error) { }
+    }
+
+    const generateExcelRows = (data) => {
+        const rows = data.map((item) => {
+            const orderDetails = renderOrderDetails(item)
+            const status = getStatusText(item.isDelivered)
+            return { ...item, status, orderDetails }
+        })
+
+        setExelRows(rows)
     }
 
     const handleMenuSelect = (key, data) => {
@@ -78,14 +88,22 @@ const DeliveredDC = () => {
         setPageNumber(number)
     }
 
-    const onModalClose = (hasSaved) => {
-        const formHasChanged = sessionStorage.getItem(TRACKFORM)
-        if (formHasChanged && !hasSaved) {
-            return setConfirmModal(true)
-        }
+    const onModalClose = () => {
         setDCModal(false)
         setBtnDisabled(false)
         setFormData({})
+    }
+
+    const handleSearch = (value) => {
+        setPageNumber(1)
+        if (value === "") {
+            setTotalCount(deliveriesClone.length)
+            setDeliveries(deliveriesClone)
+            return
+        }
+        const result = doubleKeyComplexSearch(deliveriesClone, value, 'dcNo', 'customerName')
+        setTotalCount(result.length)
+        setDeliveries(result)
     }
 
     const dataSource = useMemo(() => deliveries.map((dc) => {
@@ -103,25 +121,28 @@ const DeliveredDC = () => {
         }
     }), [deliveries])
 
-    const handleConfirmModalOk = useCallback(() => {
-        setConfirmModal(false);
-        resetTrackForm()
-        onModalClose()
-    }, [])
 
     const handleDCModalCancel = useCallback(() => onModalClose(), [])
-    const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
+
     return (
         <div className='stock-delivery-container'>
             <div className='header'>
-                <div className='left'></div>
+                <div className='left'>
+                    <Worksheet
+                        fileName={`DC List for ${invoiceId}`}
+                        rows={excelRows}
+                        columns={columns}
+                        disabled={loading}
+                    />
+                </div>
                 <div className='right'>
                     <SearchInput
                         placeholder='Search Delivery Challan'
                         className='delivery-search'
+                        onChange={handleSearch}
                         width='50%'
                     />
                 </div>
@@ -158,28 +179,33 @@ const DeliveredDC = () => {
             >
                 <DCView data={formData} />
             </CustomModal>
-            <QuitModal
-                visible={confirmModal}
-                onOk={handleConfirmModalOk}
-                onCancel={handleConfirmModalCancel}
-                title='Are you sure you want to leave?'
-                okTxt='Yes'
-            >
-                <ConfirmMessage msg='Changes you made may not be saved.' />
-            </QuitModal>
         </div>
     )
 }
 
+const columns = [
+    { label: 'DC Number', value: 'dcNo' },
+    { label: 'Name', value: 'customerName' },
+    { label: 'Address', value: 'address' },
+    { label: 'Route', value: 'RouteName' },
+    { label: 'Driver', value: 'driverName' },
+    { label: 'Order Details', value: 'orderDetails' },
+    { label: 'Status', value: 'status' },
+]
+
 const renderStatus = (status) => {
     const color = getStatusColor(status)
-    const text = status === 'Completed' ? 'Delivered' : status === 'Postponed' ? status : 'Pending'
+    const text = getStatusText(status)
     return (
         <div className='status'>
             <span className='app-dot' style={{ background: color }}></span>
             <span className='status-text'>{text}</span>
         </div>
     )
+}
+
+const getStatusText = (status) => {
+    return status === 'Completed' ? 'Delivered' : status === 'Postponed' ? status : 'Pending'
 }
 
 const renderOrderDetails = ({ product20L, product2L, product1L, product500ML, product300ML }) => {

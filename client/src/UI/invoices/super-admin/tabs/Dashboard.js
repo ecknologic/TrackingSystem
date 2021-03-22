@@ -120,7 +120,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
         if (key === 'resend') {
         }
         else if (key === 'dcList') {
-            history.push(`/invoices/delivery-challan/${data.invoiceId}`, data)
+            history.push(`/invoices/dc-list/${data.invoiceId}`, data)
         }
         else handleStatusUpdate(data.invoiceId)
     }

@@ -64,7 +64,7 @@ const CASPanel = ({ data, newStock, onConfirm, arrivedStock, btnDisabled }) => {
             </div>
             <div className='buttons'>
                 {
-                    showPurple ? <CustomButton text='Confirm Stock Particulars' onClick={onConfirm} className={`app-stock-btn purple-btn ${btnDisabled ? 'disabled' : ''}`} />
+                    showPurple ? <CustomButton text='Confirm Stock Particulars' onClick={onConfirm} className='app-stock-btn purple-btn' disabled={btnDisabled} />
                         : showGreen ? <CustomButton text='Confirmed' className='app-stock-btn green-btn' />
                             : null
                 }

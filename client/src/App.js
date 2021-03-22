@@ -108,6 +108,7 @@ const App = () => {
                   <Route path='/manage-materials' render={byRole(<MotherplantMaterials />)} />
                   <Route path='/manage-routes' render={byRole(<Transport />)} />
                   <Route path='/manage-return-cans' render={byRole(<ReceivedEmptyCans />)} />
+                  <Route path='/manage-invoices/dc-list/:invoiceId' render={byRole(<DeliveredDC />)} />
                   <Route path='/manage-invoices/manage' render={byRole(<ManageInvoices />)} />
                   <Route path='/manage-invoices/:active?' render={byRole(<WarehouseInvoices />)} />
                   <Route path='/manage-empty-cans' render={byRole(<ReturnEmptyCans />)} />
@@ -124,7 +125,7 @@ const App = () => {
                   <Route path='/routes' render={byRole(<Transport />)} />
                   <Route path='/drivers' render={byRole(<Drivers />)} />
                   <Route path='/invoices/manage' render={byRole(<ManageInvoices />)} />
-                  <Route path='/invoices/delivery-challan/:invoiceId' render={byRole(<DeliveredDC />)} />
+                  <Route path='/invoices/dc-list/:invoiceId' render={byRole(<DeliveredDC />)} />
                   <Route path='/invoices/edit/:invoiceId' render={byRole(<EditInvoice />)} />
                   <Route path='/invoices/:active?' render={byRole(<Invoices />)} />
                   <Route path='/products' render={byRole(<Products />)} />
