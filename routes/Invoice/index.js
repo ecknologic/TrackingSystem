@@ -92,6 +92,7 @@ router.get('/getInvoiceById/:invoiceId', (req, res) => {
                     }
                 } else {
                     for (let i of obj.products) {
+                        obj.deliveryAddress = i.deliveryAddress
                         if (i.productName.startsWith('20')) {
                             obj['20LCans'] = i.quantity
                             obj['price20L'] = i.productPrice
