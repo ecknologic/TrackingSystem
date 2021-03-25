@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
 import { isLogged, getRole, getRoutesByRole, MARKETINGADMIN, MOTHERPLANTADMIN, SUPERADMIN, WAREHOUSEADMIN, ACCOUNTSADMIN } from './utils/constants';
 import { getMainPathname, resetTrackForm } from './utils/Functions';
-import Roles from './UI/roles';
 import Login from './UI/auth/Login';
 import Products from './UI/products';
 import Transport from './UI/transport';
@@ -32,10 +31,10 @@ import EditInvoice from './UI/invoices/super-admin/edit';
 import ManageDistributor from './UI/distributors/manage';
 import WarehouseDashboard from './UI/dashboard/warehouse';
 import ReceivedEmptyCans from './UI/empty-cans/motherplant';
+import SuperAdminDashboard from './UI/dashboard/super-admin';
 import ManageInvoices from './UI/invoices/super-admin/manage';
 import MotherplantDashboard from './UI/dashboard/motherplant';
 import MotherplantMaterials from './UI/materials/motherplant';
-import SuperAdminDashboard from './UI/dashboard/super-admin';
 import DeliveredDC from './UI/invoices/super-admin/delivered-dc';
 
 const App = () => {
@@ -120,7 +119,6 @@ const App = () => {
                   <Route path='/distributors/manage/:distributorId' render={byRole(<ManageDistributor />)} />
                   <Route path='/motherplants/manage/:plantId' render={byRole(<ManagePlant />)} />
                   <Route path='/warehouses/manage/:plantId' render={byRole(<ManagePlant />)} />
-                  <Route path='/roles' render={byRole(<Roles />)} />
                   <Route path='/staff' render={byRole(<Staff />)} />
                   <Route path='/routes' render={byRole(<Transport />)} />
                   <Route path='/drivers' render={byRole(<Drivers />)} />

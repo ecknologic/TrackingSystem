@@ -14,7 +14,7 @@ var departmentId;
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
     console.log('Time: ', Date.now());
-    departmentId = req.headers['departmentid'] || 1
+    departmentId = req.headers['departmentid']
     next();
 });
 

@@ -457,12 +457,12 @@ export const getDCValuesForDB = (data) => {
 
     const { customerName, phoneNumber, address, routeId, driverId,
         product20L = 0, product2L = 0, product1L = 0, product500ML = 0, product300ML = 0,
-        customerType, existingCustomerId } = data
+        customerType, existingCustomerId, creationType } = data
 
     return {
         customerName, phoneNumber, address, routeId, driverId,
         product20L, product2L, product1L, product500ML, product300ML,
-        customerType, existingCustomerId
+        customerType, existingCustomerId, creationType
     }
 }
 

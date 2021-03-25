@@ -19,6 +19,12 @@ invoiceQueries.getInvoiceByStatus = async (status, callback) => {
 
 invoiceQueries.getInvoiceByDepartment = async (departmentId, callback) => {
     let query = `select * from departmentInvoices where departmentId=? ORDER BY updatedDateTime DESC`;
+
+    if (departmentId == "null" || !departmentId) {
+        query = `select d.*, dep.departmentName from departmentInvoices d INNER JOIN departmentmaster dep ON d.departmentId=dep.departmentId ORDER BY updatedDateTime DESC`;
+        return executeGetQuery(query, callback)
+    }
+
     return executeGetParamsQuery(query, [departmentId], callback)
 }
 
@@ -49,10 +55,10 @@ invoiceQueries.createInvoice = (input, callback) => {
 }
 
 invoiceQueries.createDepartmentInvoice = (input, callback) => {
-    const { dcNo, customerId, invoiceDate, dueDate, fromDate, toDate, salesPerson, invoiceId, hsnCode, poNo, totalAmount, customerName, departmentId } = input
-    let query = "insert into departmentInvoices (dcNo,customerId,invoiceDate,dueDate,salesPerson,invoiceId,hsnCode,poNo,totalAmount,customerName,fromDate,toDate,departmentId) values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    const { dcNo, customerId, invoiceDate, dueDate, fromDate, toDate, salesPerson, invoiceId, hsnCode, poNo, totalAmount, customerName, departmentId, status = 'Pending' } = input
+    let query = "insert into departmentInvoices (dcNo,customerId,invoiceDate,dueDate,salesPerson,invoiceId,hsnCode,poNo,totalAmount,customerName,fromDate,toDate,departmentId,status) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     // var gstProofImage = Buffer.from(gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-    let requestBody = [dcNo, customerId, invoiceDate, dueDate, salesPerson, invoiceId, hsnCode, poNo, totalAmount, customerName, fromDate, toDate, departmentId]
+    let requestBody = [dcNo, customerId, invoiceDate, dueDate, salesPerson, invoiceId, hsnCode, poNo, totalAmount, customerName, fromDate, toDate, departmentId, status]
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 

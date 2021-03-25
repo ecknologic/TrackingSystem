@@ -13,7 +13,7 @@ import CustomModal from '../../../../../components/CustomModal';
 import { EyeIconGrey } from '../../../../../components/SVG_Icons';
 import { getDeliveryColumns } from '../../../../../assets/fixtures';
 import CustomPagination from '../../../../../components/CustomPagination';
-import { doubleKeyComplexSearch, getStatusColor } from '../../../../../utils/Functions';
+import { doubleKeyComplexSearch, getStatusColor, isEmpty } from '../../../../../utils/Functions';
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
 const DeliveredDC = ({ invoiceId }) => {
@@ -135,7 +135,7 @@ const DeliveredDC = ({ invoiceId }) => {
                         fileName={`DC List for ${invoiceId}`}
                         rows={excelRows}
                         columns={columns}
-                        disabled={loading}
+                        disabled={loading || isEmpty(deliveries)}
                     />
                 </div>
                 <div className='right'>

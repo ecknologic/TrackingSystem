@@ -25,6 +25,7 @@ const StockDetails = ({ date, source }) => {
     const [OFD, setOFC] = useState({})
     const [EC, setEC] = useState({})
     const [REC, setREC] = useState({})
+    const [TRC, setTRC] = useState({})
     const [motherplantList, setMotherplantList] = useState([])
     const [driverList, setDriverList] = useState([])
     const [vehicleList, setVehicleList] = useState([])
@@ -57,6 +58,7 @@ const StockDetails = ({ date, source }) => {
         getEC()
         getCAS()
         getREC()
+        getTRC()
 
         if (isToday) getNewStock()
         else {
@@ -133,6 +135,15 @@ const StockDetails = ({ date, source }) => {
         try {
             const data = await http.GET(axios, url, config)
             setREC(data)
+        } catch (error) { }
+    }
+
+    const getTRC = async () => {
+        const url = `/warehouse/getTotalReturnCans/${date}`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setTRC(data)
         } catch (error) { }
     }
 
@@ -307,7 +318,7 @@ const StockDetails = ({ date, source }) => {
                 <span className='title'>Empty Cans details</span>
                 <span className='msg'>Empty and damaged cans are not included in correct stock details</span>
             </div>
-            <ECPanel confirmed={EC} returned={REC} onAdd={onAddEmptyCans} />
+            <ECPanel confirmed={EC} mpReturned={REC} whReturned={TRC} onAdd={onAddEmptyCans} />
             <ERCPanel />
             <DCPanel />
             <CustomModal
