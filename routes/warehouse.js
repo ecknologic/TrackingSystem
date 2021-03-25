@@ -208,8 +208,8 @@ router.get('/getAllDcDetails', (req, res) => {
 
 router.get('/getTotalReturnCans/:date', (req, res) => {
   warehouseQueries.getTotalReturnCans({ departmentId, date: req.params.date }, (err, results) => {
-    if (err) res.status(500).json(err.sqlMessage);
-    else res.send(JSON.stringify(results));
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.json(results[0]);
   });
 });
 
@@ -299,16 +299,14 @@ router.get('/getWarehouseDetails/:warehouseId', (req, res) => {
   });
 });
 
-router.get('/getConfirmedEmptyCans/:warehouseId', (req, res) => {
-  let { warehouseId } = req.params;
-  warehouseQueries.getConfirmedEmptyCans(warehouseId, (err, results) => {
+router.get('/getConfirmedEmptyCans/:date', (req, res) => {
+  warehouseQueries.getConfirmedEmptyCans(departmentId, req.params.date, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else res.json(results[0]);
   });
 });
-router.get('/getReturnedEmptyCans/:warehouseId', (req, res) => {
-  let { warehouseId } = req.params;
-  warehouseQueries.getReturnedEmptyCans(warehouseId, (err, results) => {
+router.get('/getReturnedEmptyCans/:date', (req, res) => {
+  warehouseQueries.getReturnedEmptyCans(departmentId, req.params.date, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else res.json(results[0]);
   });

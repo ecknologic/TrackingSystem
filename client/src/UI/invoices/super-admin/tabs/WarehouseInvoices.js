@@ -9,34 +9,45 @@ import Spinner from '../../../../components/Spinner';
 import { TODAYDATE } from '../../../../utils/constants';
 import DateValue from '../../../../components/DateValue';
 import SearchInput from '../../../../components/SearchInput';
+import CustomButton from '../../../../components/CustomButton';
+import RoutesFilter from '../../../../components/RoutesFilter';
 import { getInvoiceColumns } from '../../../../assets/fixtures';
-import CustomDateInput from '../../../../components/CustomDateInput';
+import CustomRangeInput from '../../../../components/CustomRangeInput';
 import CustomPagination from '../../../../components/CustomPagination';
-import { deepClone, disableFutureDates, doubleKeyComplexSearch, getStatusColor, showToast } from '../../../../utils/Functions';
+import { deepClone, disableFutureDates, doubleKeyComplexSearch, getStatusColor, isEmpty, showToast } from '../../../../utils/Functions';
 import { ListViewIconGrey, ScheduleIcon, SendIconGrey, TickIconGrey } from '../../../../components/SVG_Icons';
+import CustomDateInput from '../../../../components/CustomDateInput';
 const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
-const Dashboard = ({ reFetch, onUpdate }) => {
+const WarehouseInvoices = ({ reFetch, onUpdate }) => {
     const history = useHistory()
     const [invoices, setInvoices] = useState([])
     const [invoicesClone, setInvoicesClone] = useState([])
-    const [filteredClone, setFilteredClone] = useState([])
     const [loading, setLoading] = useState(true)
     const [pageSize, setPageSize] = useState(12)
     const [pageNumber, setPageNumber] = useState(1)
+    const [customerIds, setCustomerIds] = useState([])
     const [totalCount, setTotalCount] = useState(null)
+    const [warehouseList, setWarehouseList] = useState([])
+    const [selectedRange, setSelectedRange] = useState([])
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
+    const [startDate, setStartDate] = useState(TODAYDATE)
+    const [generateDisabled, setGenerateDisabled] = useState(true)
+    const [filteredClone, setFilteredClone] = useState([])
+    const [filterInfo, setFilterInfo] = useState([])
+    const [filterON, setFilterON] = useState(false)
+    const [endDate, setEndDate] = useState(TODAYDATE)
     const [resetSearch, setResetSearch] = useState(false)
     const [searchON, setSeachON] = useState(false)
-    const [filterON, setFilterON] = useState(false)
     const [open, setOpen] = useState(false)
 
-    const invoiceColumns = useMemo(() => getInvoiceColumns('dcNo'), [])
+    const invoiceColumns = useMemo(() => getInvoiceColumns('warehouse'), [])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
+        getWarehouseList()
 
         return () => {
             http.ABORT(source)
@@ -60,6 +71,15 @@ const Dashboard = ({ reFetch, onUpdate }) => {
         } catch (error) { }
     }
 
+    const getWarehouseList = async () => {
+        const url = '/bibo/getDepartmentsList?departmentType=warehouse'
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setWarehouseList(data)
+        } catch (error) { }
+    }
+
     const handlePageChange = (number) => {
         setPageNumber(number)
     }
@@ -69,21 +89,36 @@ const Dashboard = ({ reFetch, onUpdate }) => {
         setPageNumber(number)
     }
 
+    const onFilterChange = (data) => {
+        setPageNumber(1)
+        setFilterInfo(data)
+        if (isEmpty(data)) {
+            setInvoices(invoicesClone)
+            setTotalCount(invoicesClone.length)
+            setFilterON(false)
+        }
+        else generateFiltered(invoicesClone, data)
+    }
+
+    const generateFiltered = (original, filterInfo) => {
+        const filtered = original.filter((item) => filterInfo.includes(item.departmentId))
+        setInvoices(filtered)
+        setFilteredClone(filtered)
+        setTotalCount(filtered.length)
+        setFilterON(true)
+        searchON && setResetSearch(!resetSearch)
+    }
+
     const handleMenuSelect = (key, data) => {
         if (key === 'resend') {
         }
         else if (key === 'dcList') {
-            const startDate = dayjs(data.fromDate).format(APIDATEFORMAT)
-            const endDate = dayjs(data.toDate).format(APIDATEFORMAT)
-            console.log("start date", startDate)
-            console.log("end date", endDate)
-
-            history.push(`/manage-invoices/dc-list/${data.invoiceId}`, data)
+            history.push(`/invoices/dc-list/${data.invoiceId}`, data)
         }
         else handleStatusUpdate(data.invoiceId)
     }
 
-    const handleViewInvoice = (invoice) => history.push('/manage-invoices/manage', { invoice })
+    const handleViewInvoice = (invoice) => history.push('/invoices/manage', { invoice })
 
     const datePickerStatus = (status) => {
         !status && setOpen(false)
@@ -140,7 +175,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
     }
 
     const dataSource = useMemo(() => invoices.map((invoice) => {
-        const { invoiceId, invoiceDate, totalAmount, customerName, dueDate, status, dcNo } = invoice
+        const { invoiceId, invoiceDate, totalAmount, customerName, departmentName, dueDate, status } = invoice
 
         const options = [
             <Menu.Item key="resend" icon={<SendIconGrey />}>Resend</Menu.Item>,
@@ -150,9 +185,9 @@ const Dashboard = ({ reFetch, onUpdate }) => {
 
         return {
             key: invoiceId,
-            dcNo,
             customerName,
             totalAmount,
+            departmentName,
             status: renderStatus(status),
             dueDate: dayjs(dueDate).format(DATEFORMAT),
             date: dayjs(invoiceDate).format(DATEFORMAT),
@@ -168,6 +203,13 @@ const Dashboard = ({ reFetch, onUpdate }) => {
         <div className='stock-delivery-container'>
             <div className='header'>
                 <div className='left'>
+                    <RoutesFilter
+                        data={warehouseList}
+                        title='Select Warehouse'
+                        keyValue='departmentId'
+                        keyLabel='departmentName'
+                        onChange={onFilterChange}
+                    />
                     <DateValue date={selectedDate} />
                     <div className='app-date-picker-wrapper'>
                         <div className='date-picker' onClick={() => setOpen(true)}>
@@ -189,8 +231,8 @@ const Dashboard = ({ reFetch, onUpdate }) => {
                     <SearchInput
                         placeholder='Search Invoice'
                         className='delivery-search'
-                        reset={resetSearch}
                         width='50%'
+                        reset={resetSearch}
                         onChange={handleSearch}
                     />
                 </div>
@@ -227,4 +269,4 @@ const renderStatus = (status) => {
         </div>
     )
 }
-export default Dashboard
+export default WarehouseInvoices

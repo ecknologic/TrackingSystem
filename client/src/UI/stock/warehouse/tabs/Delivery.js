@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Menu, Table } from 'antd';
+import { Menu, message, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import DCForm from '../forms/DCForm';
 import { http } from '../../../../modules/http';
@@ -14,12 +14,12 @@ import ConfirmMessage from '../../../../components/ConfirmMessage';
 import { getWarehoseId, TRACKFORM } from '../../../../utils/constants';
 import CustomPagination from '../../../../components/CustomPagination';
 import { EditIconGrey, PlusIcon } from '../../../../components/SVG_Icons';
-import { getRouteOptions, getDriverOptions, getDeliveryColumns, getDistributorOptions } from '../../../../assets/fixtures';
+import { getRouteOptions, getDriverOptions, getDeliveryColumns, getDistributorOptions, getCustomerOptions } from '../../../../assets/fixtures';
 import { validateMobileNumber, validateNames, validateNumber, validateDCValues } from '../../../../utils/validations';
 import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone, getStatusColor, doubleKeyComplexSearch } from '../../../../utils/Functions';
 
 const Delivery = ({ date, source }) => {
-    const defaultValue = { customerType: 'newCustomer' }
+    const defaultValue = { customerType: 'newCustomer', creationType: 'manual' }
     const warehouseId = getWarehoseId()
     const [routes, setRoutes] = useState([])
     const [drivers, setDrivers] = useState([])
@@ -35,6 +35,7 @@ const Delivery = ({ date, source }) => {
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
     const [resetSearch, setResetSearch] = useState(false)
+    const [customerList, setCustomerList] = useState([])
     const [distributorList, setDistributorList] = useState([])
     const [filterInfo, setFilterInfo] = useState([])
     const [filterON, setFilterON] = useState(false)
@@ -49,6 +50,7 @@ const Delivery = ({ date, source }) => {
     const routeOptions = useMemo(() => getRouteOptions(routes), [routes])
     const driverOptions = useMemo(() => getDriverOptions(drivers), [drivers])
     const distributorOptions = useMemo(() => getDistributorOptions(distributorList), [distributorList])
+    const customerOptions = useMemo(() => getCustomerOptions(customerList), [customerList])
     const config = { cancelToken: source.token }
 
     useEffect(() => {
@@ -89,6 +91,15 @@ const Delivery = ({ date, source }) => {
         } catch (error) { }
     }
 
+    const getCustomerList = async () => {
+        const url = '/customer/getCustomerNames'
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setCustomerList(data)
+        } catch (error) { }
+    }
+
     const getDeliveries = async () => {
         const url = `/warehouse/deliveryDetails/${date}`
 
@@ -111,8 +122,20 @@ const Delivery = ({ date, source }) => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
-        if (value === 'newCustomer') {
-            setFormData(data => ({ ...data, existingCustomerId: null }))
+        if (key === 'customerType') {
+            setFormData(data => ({ ...data, existingCustomerId: null, customerName: '' }))
+        }
+
+        if (key === 'existingCustomerId') {
+            const { customerType } = formData
+            if (customerType === 'distributor') {
+                let customerName = distributorList.find(item => item.distributorId === value).agencyName
+                setFormData(data => ({ ...data, customerName }))
+            }
+            else {
+                let customerName = customerList.find(item => item.customerId === value).customerName
+                setFormData(data => ({ ...data, customerName }))
+            }
         }
 
         // Validations
@@ -158,11 +181,18 @@ const Delivery = ({ date, source }) => {
         searchON && setResetSearch(!resetSearch)
     }
 
-    const handleMenuSelect = (key, data) => {
+    const handleMenuSelect = async (key, data) => {
         if (key === 'view') {
             const { dcNo, isDelivered } = data
             setTitle(dcNo)
-            isEmpty(distributorList) && getDistributorList()
+
+            try {
+                showToast({ v1Ing: 'Fetching', action: 'loading' })
+                isEmpty(distributorList) && await getDistributorList()
+                isEmpty(customerList) && await getCustomerList()
+                message.destroy()
+            } catch (error) { }
+
             const isDisabled = isDelivered === 'Completed'
             setOkTxt(isDisabled ? 'Close' : 'Update')
             setMode(isDisabled ? 'view' : 'edit')
@@ -191,7 +221,7 @@ const Delivery = ({ date, source }) => {
         }
 
         const dcValues = getDCValuesForDB(formData)
-        const { customerOrderId } = formData
+        const { customerOrderId, driverId } = formData
 
         let url = '/warehouse/createDC'
         let method = 'POST'
@@ -208,6 +238,11 @@ const Delivery = ({ date, source }) => {
         const body = {
             ...dcValues, warehouseId, customerOrderId
         }
+
+        if (!driverId) { // Set status to delivered
+            body.isDelivered = 'Completed'
+        }
+
         const options = { item: 'DC', v1Ing, v2 }
 
         try {
@@ -271,7 +306,7 @@ const Delivery = ({ date, source }) => {
             status: renderStatus(isDelivered),
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, dc)} />
         }
-    }), [deliveries])
+    }), [deliveries, distributorList, customerList])
 
     const handleConfirmModalOk = useCallback(() => {
         setConfirmModal(false);
@@ -279,13 +314,14 @@ const Delivery = ({ date, source }) => {
         onModalClose()
     }, [])
 
-    const onCreateDC = useCallback(() => {
+    const onCreateDC = () => {
         isEmpty(distributorList) && getDistributorList()
+        isEmpty(customerList) && getCustomerList()
         setMode('create')
         setTitle('Add New DC')
         setOkTxt('Save')
         setDCModal(true)
-    }, [distributorList])
+    }
 
     const handleDCModalCancel = useCallback(() => onModalClose(), [])
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
@@ -352,6 +388,7 @@ const Delivery = ({ date, source }) => {
                     disabledItems={disabledItems}
                     driverOptions={driverOptions}
                     routeOptions={routeOptions}
+                    customerOptions={customerOptions}
                     distributorOptions={distributorOptions}
                     onChange={handleChange}
                     onBlur={handleBlur}
