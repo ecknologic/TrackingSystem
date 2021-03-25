@@ -175,7 +175,7 @@ router.put('/updateInvoiceStatus', (req, res) => {
     });
 });
 router.post("/generateMultipleInvoices", (req, res) => {
-    invoiceQueries.getInvoiceId((err, results) => {
+    invoiceQueries.getInvoiceId(req.query.departmentId, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
             generatePDF(req.body, async (err, data) => {
