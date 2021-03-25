@@ -204,6 +204,15 @@ router.get('/getAllDcDetails', (req, res) => {
     res.send(JSON.stringify(results));
   });
 });
+
+
+router.get('/getTotalReturnCans/:date', (req, res) => {
+  warehouseQueries.getTotalReturnCans({ departmentId, date: req.params.date }, (err, results) => {
+    if (err) res.status(500).json(err.sqlMessage);
+    else res.send(JSON.stringify(results));
+  });
+});
+
 router.get('/getTotalSales', (req, res) => {
   var input = req.query;
   const defaultValues = { product20LCount: 0, product1LCount: 0, product500MLCount: 0, product300MLCount: 0, product2LCount: 0 }

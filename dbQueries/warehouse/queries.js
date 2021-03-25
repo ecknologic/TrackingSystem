@@ -14,6 +14,11 @@ warehouseQueries.getDeliveryDetails = (input, callback) => {
     let query = "select c.customerOrderId,c.existingCustomerId,c.customerType,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS product20L,c.1LBoxes AS product1L,c.500MLBoxes AS product500ML,c.300MLBoxes AS product300ML,c.2LBoxes AS product2L,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c LEFT JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE DATE(`deliveryDate`) = ? AND warehouseId=? ORDER BY c.dcNo DESC";
     return executeGetParamsQuery(query, [date, departmentId], callback)
 }
+warehouseQueries.getTotalReturnCans = (input, callback) => {
+    const { departmentId, date } = input
+    let query = 'SELECT SUM(returnEmptyCans) AS totalReturnCans FROM customerorderdetails WHERE DATE(deliveredDate)<=? AND warehouseId=?'
+    return executeGetParamsQuery(query, [date, departmentId], callback)
+}
 
 warehouseQueries.getAllDcDetails = (input, callback) => {
     const { fromDate, toDate, departmentId, customerIds } = input
