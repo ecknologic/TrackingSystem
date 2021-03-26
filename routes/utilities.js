@@ -23,7 +23,7 @@ const insertToCustomerOrderDetails = (result, res, sendResponse) => {
     let requestBody = result
     // requestBody.dcNo = "DC-" + results[0].orderId
     requestBody.departmentId = result.departmentId || 1
-    requestBody.customerType = 'Internal'
+    requestBody.customerType = 'internal'
     requestBody.phoneNumber = result.phoneNumber
     customerProductDetails(deliveryDetailsId).then(products => {
       products.map(product => {

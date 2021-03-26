@@ -846,10 +846,14 @@ export const validateDCValues = (data) => {
         driverId, ...rest } = data
 
     const isDistributor = customerType === 'distributor'
+    const isNewCustomer = customerType === 'newCustomer'
 
     if (isDistributor) {
         if (!routeId) errors.routeId = text
         if (!driverId) errors.driverId = text
+    }
+
+    if (!isNewCustomer) {
         if (!existingCustomerId) errors.existingCustomerId = text
     }
 

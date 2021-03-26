@@ -5,6 +5,7 @@ import Payments from './tabs/Payments';
 import Dashboard from './tabs/Dashboard';
 import CreateInvoice from './tabs/CreateInvoice';
 import Header from '../../../components/SimpleHeader';
+import WarehouseInvoices from './tabs/WarehouseInvoices';
 import '../../../sass/invoices.scss';
 
 const Invoices = () => {
@@ -38,6 +39,9 @@ const Invoices = () => {
                         </TabPane>
                         <TabPane tab="Received Payments" key="3">
                             <Payments reFetch={reFetch} onUpdate={() => setreFetch(!reFetch)} />
+                        </TabPane>
+                        <TabPane tab="Warehouse Invoices" key="4">
+                            <WarehouseInvoices reFetch={reFetch} onUpdate={() => setreFetch(!reFetch)} />
                         </TabPane>
                     </Tabs>
                 </div>

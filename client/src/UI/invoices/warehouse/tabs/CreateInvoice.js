@@ -15,6 +15,7 @@ import { getWarehoseId, TODAYDATE } from '../../../../utils/constants';
 import { isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 import { validateNumber, validateInvoiceValues } from '../../../../utils/validations';
 import { getProductOptions, getDDownOptions, getDCOptions } from '../../../../assets/fixtures';
+import Checkbox from 'antd/lib/checkbox/Checkbox';
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
 const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
@@ -252,6 +253,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
         setDataSource(initData)
         setFormErrors({})
     }
+    console.log('form data>>', formData)
 
     if (loading) return <NoContent content={<Spinner />} />
 
@@ -277,6 +279,10 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
                 onSave={handleProductsSave}
                 onDelete={handleProductsDelete}
             />
+            <div className='checkbox-container'>
+                <Checkbox onChange={({ target: { checked } }) => handleChange(checked ? 'Paid' : 'Pending', 'status')} />
+                <span className='text'>Customer has paid the amount?</span>
+            </div>
             <InvoiceRestForm
                 data={formData}
                 errors={formErrors}
