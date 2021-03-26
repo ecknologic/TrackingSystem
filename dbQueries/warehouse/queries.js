@@ -6,7 +6,7 @@ warehouseQueries.getWarehouseList = async (callback) => {
     return executeGetQuery(query, callback)
 }
 warehouseQueries.getDCList = async (departmentId, callback) => {
-    let query = `select co.dcNo, co.customerName,co.address,c.Address1 as deliveryAddress,c.gstNo,c.EmailId,c.panNo,c.customerId,c.createdBy FROM customerorderdetails co LEFT JOIN customerdetails c ON co.existingCustomerId=c.customerId WHERE warehouseId=? AND co.isDelivered='Completed'`;
+    let query = `select co.dcNo, co.customerName,co.address,c.Address1 as deliveryAddress,c.gstNo,c.EmailId,c.panNo,c.customerId,c.createdBy FROM customerorderdetails co LEFT JOIN customerdetails c ON co.existingCustomerId=c.customerId WHERE warehouseId=? AND co.creationType='manual'`;
     return executeGetParamsQuery(query, [departmentId], callback)
 }
 warehouseQueries.getDeliveryDetails = (input, callback) => {
@@ -16,7 +16,7 @@ warehouseQueries.getDeliveryDetails = (input, callback) => {
 }
 warehouseQueries.getTotalReturnCans = (input, callback) => {
     const { departmentId, date } = input
-    let query = 'SELECT SUM(returnEmptyCans) AS emptycans FROM customerorderdetails WHERE DATE(deliveredDate)<=? AND warehouseId=?'
+    let query = 'SELECT SUM(returnEmptyCans) AS emptycans FROM customerorderdetails WHERE DATE(deliveredDate)=? AND warehouseId=?'
     return executeGetParamsQuery(query, [date, departmentId], callback)
 }
 
