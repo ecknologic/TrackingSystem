@@ -1,16 +1,11 @@
 // config.js
 const config = {
-   
-    db: {
-    //    host: 'localhost',
-    //   dbName: 'trackingsystem',
-    //   user:'root',
-    //   password:'Gemini@123'
- host: '100.25.207.145',
-      dbName: 'trackingsystem',
-      user:'root',
-      password:'Google@19' 
-    }
-   };
-   
-   module.exports = config;
+  db: {
+    host: process.env.HOST,
+    dbName: process.env.DB_NAME,
+    user: process.env.USER_NAME,
+    password: process.env.PASSWORD
+  }
+};
+
+module.exports = config;
