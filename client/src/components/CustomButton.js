@@ -4,9 +4,9 @@ const CustomButton = ({ text, onClick, icon, suffix, className = '', style, disa
 
     return (
         <div className={`app-btn ${className} ${disabled ? 'disabled' : ''}`} onClick={onClick} style={style}>
-            {icon}
+            { icon && <span className='prefix'>{icon}</span>}
             <span className='text' >{text}</span>
-            {suffix}
+            { suffix && <span className='suffix'>{suffix}</span>}
         </div>
     )
 }

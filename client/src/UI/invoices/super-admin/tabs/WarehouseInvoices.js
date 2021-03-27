@@ -17,6 +17,8 @@ import CustomPagination from '../../../../components/CustomPagination';
 import { deepClone, disableFutureDates, doubleKeyComplexSearch, getStatusColor, isEmpty, showToast } from '../../../../utils/Functions';
 import { ListViewIconGrey, ScheduleIcon, SendIconGrey, TickIconGrey } from '../../../../components/SVG_Icons';
 import CustomDateInput from '../../../../components/CustomDateInput';
+import InputLabel from '../../../../components/InputLabel';
+import InputValue from '../../../../components/InputValue';
 const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
@@ -27,22 +29,17 @@ const WarehouseInvoices = ({ reFetch, onUpdate }) => {
     const [loading, setLoading] = useState(true)
     const [pageSize, setPageSize] = useState(12)
     const [pageNumber, setPageNumber] = useState(1)
-    const [customerIds, setCustomerIds] = useState([])
     const [totalCount, setTotalCount] = useState(null)
     const [warehouseList, setWarehouseList] = useState([])
-    const [selectedRange, setSelectedRange] = useState([])
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
-    const [startDate, setStartDate] = useState(TODAYDATE)
-    const [generateDisabled, setGenerateDisabled] = useState(true)
     const [filteredClone, setFilteredClone] = useState([])
-    const [filterInfo, setFilterInfo] = useState([])
     const [filterON, setFilterON] = useState(false)
-    const [endDate, setEndDate] = useState(TODAYDATE)
     const [resetSearch, setResetSearch] = useState(false)
     const [searchON, setSeachON] = useState(false)
     const [open, setOpen] = useState(false)
 
     const invoiceColumns = useMemo(() => getInvoiceColumns('warehouse'), [])
+    const totalAmount = useMemo(() => computeTotalAmount(invoices), [invoices])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
@@ -91,7 +88,6 @@ const WarehouseInvoices = ({ reFetch, onUpdate }) => {
 
     const onFilterChange = (data) => {
         setPageNumber(1)
-        setFilterInfo(data)
         if (isEmpty(data)) {
             setInvoices(invoicesClone)
             setTotalCount(invoicesClone.length)
@@ -228,6 +224,10 @@ const WarehouseInvoices = ({ reFetch, onUpdate }) => {
                     </div>
                 </div>
                 <div className='right'>
+                    <div className='field'>
+                        <InputLabel name='Total Amount' />
+                        <InputValue size='larger' value={totalAmount} />
+                    </div>
                     <SearchInput
                         placeholder='Search Invoice'
                         className='delivery-search'
@@ -268,5 +268,15 @@ const renderStatus = (status) => {
             <span className='status-text'>{status}</span>
         </div>
     )
+}
+
+const computeTotalAmount = (data) => {
+    let totalAmount = 0
+    if (!isEmpty(data)) {
+        totalAmount = data.map(item => item.totalAmount).reduce((a, c) => a + c).toLocaleString('en-IN')
+    }
+
+    return `₹ ${totalAmount}`
+
 }
 export default WarehouseInvoices

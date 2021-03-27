@@ -296,6 +296,14 @@
             width: 60%;
             display: flex;
             justify-content: flex-end;
+            align-items: center;
+            
+            .field {
+                display: flex;
+                flex-flow: column;
+                margin-right: 1em;
+
+            }
 
             .delivery-search {
                 max-width: 22em;

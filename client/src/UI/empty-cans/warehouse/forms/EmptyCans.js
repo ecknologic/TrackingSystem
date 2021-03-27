@@ -58,7 +58,7 @@ const EmptyCansForm = (props) => {
                 </div>
             </div>
             <div className='columns'>
-                <InputLabel name='Return Cans' mandatory />
+                <InputLabel name='Empty Cans' mandatory />
                 <div className='columns-container'>
                     <div className='column'>
                         <div className='input-container'>
