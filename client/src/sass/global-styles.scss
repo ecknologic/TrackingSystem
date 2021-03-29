@@ -257,6 +257,12 @@ $textColorDisabled:rgba(0,0,0,0.55);
     }
 }
 
+.app-checkbox-text {
+    color: rgba(0,0,0,0.85);
+    margin-left: .8em;
+    font-family: 'PoppinsRegular400';
+}
+
 // -------------- antd Dragger Input styles ------------------- //
  
 
@@ -775,8 +781,11 @@ textarea, .ant-dropdown-menu {
     .ant-tabs-tab {
         color: #171725;
         font-family: 'PoppinsSemiBold600';
-        padding: 1em 1em 1.4em 1em;
-        margin-right: 2em;
+        padding: 1em 1em 1.4em;
+    }
+
+    .ant-tabs-tab + .ant-tabs-tab {
+        margin: 0 0 0 2em;   
     }
 
     .ant-tabs-tab:hover .ant-tabs-tab-btn {
@@ -932,8 +941,16 @@ textarea, .ant-dropdown-menu {
     padding: 0 1em;
     height: 2.6em;
     border-radius: .6em;
+
+    .prefix, .suffix {
+        display: inline-flex;
+        align-items: center;
+    }
     
-    .anticon {
+    .prefix {
+        margin-right: .5em;
+    }
+    .suffix {
         margin-left: .5em;
     }
 
@@ -978,8 +995,7 @@ textarea, .ant-dropdown-menu {
     font-weight: 650;
     color: #696974;
     background-color: #FAFAFB;
-    padding: .5em;
-    padding-right: 1em;
+    padding: .5em 1em;
     border-radius: .6em;
     cursor: pointer;
     font-family: 'PoppinsSemiBold600';
@@ -1701,8 +1717,6 @@ textarea, .ant-dropdown-menu {
         width: 40%;
         display: flex;
         align-items: center;
-
-        
     }
 
     .right {

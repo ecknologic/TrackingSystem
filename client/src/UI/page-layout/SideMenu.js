@@ -53,32 +53,26 @@ const SideMenu = () => {
                 selectedKeys={selected}
                 onSelect={handleMenuSelect}
             >
-                <Item key='/dashboard'>
-                    {selected === '/dashboard' ? <DashboardIcon /> : <DashboardIconLight />}
+                <Item key='/dashboard' icon={selected === '/dashboard' ? <DashboardIcon /> : <DashboardIconLight />}>
                     <span>Dashboard</span>
                 </Item>
                 {
                     ROLE === MOTHERPLANTADMIN ?
                         <>
-                            <Item key='/manage-production'>
-                                {selected === '/manage-production' ? <StockIcon /> : <StockIconLight />}
-                                <span>Stock Details</span>
+                            <Item key='/manage-production' icon={selected === '/manage-production' ? <StockIcon /> : <StockIconLight />}>
+                                Stock Details
                             </Item>
-                            <Item key='/manage-return-cans'>
-                                {selected === '/manage-return-cans' ? <ProjectIcon /> : <ProjectIconLight />}
-                                <span>Empty Cans</span>
+                            <Item key='/manage-return-cans' icon={selected === '/manage-return-cans' ? <ProjectIcon /> : <ProjectIconLight />}>
+                                Empty Cans
                             </Item>
-                            <Item key='/manage-dispatches'>
-                                {selected === '/manage-dispatches' ? <CheckIcon /> : <CheckIconLight />}
-                                <span>Dispatches</span>
+                            <Item key='/manage-dispatches' icon={selected === '/manage-dispatches' ? <CheckIcon /> : <CheckIconLight />}>
+                                Dispatches
                             </Item>
-                            <Item key='/manage-materials'>
-                                {selected === '/manage-materials' ? <RibbonIcon /> : <RibbonIconLight />}
-                                <span>Materials</span>
+                            <Item key='/manage-materials' icon={selected === '/manage-materials' ? <RibbonIcon /> : <RibbonIconLight />}>
+                                Materials
                             </Item>
-                            <Item key='/manage-qc'>
-                                {selected === '/manage-qc' ? <BadgeIcon /> : <BadgeIconLight />}
-                                <span>Quality Control</span>
+                            <Item key='/manage-qc' icon={selected === '/manage-qc' ? <BadgeIcon /> : <BadgeIconLight />}>
+                                Quality Control
                             </Item>
                         </>
                         : null
@@ -86,25 +80,20 @@ const SideMenu = () => {
                 {
                     ROLE === WAREHOUSEADMIN ?
                         <>
-                            <Item key='/manage-stock'>
-                                {selected === '/manage-stock' ? <BlocksIcon /> : <BlocksIconLight />}
-                                <span>Manage Stock</span>
+                            <Item key='/manage-stock' icon={selected === '/manage-stock' ? <BlocksIcon /> : <BlocksIconLight />}>
+                                Manage Stock
                             </Item>
-                            <Item key='/manage-empty-cans'>
-                                {selected === '/manage-empty-cans' ? <ProjectIcon /> : <ProjectIconLight />}
-                                <span>Empty Cans</span>
+                            <Item key='/manage-empty-cans' icon={selected === '/manage-empty-cans' ? <ProjectIcon /> : <ProjectIconLight />}>
+                                Empty Cans
                             </Item>
-                            <Item key='/manage-invoices'>
-                                {selected === '/manage-invoices' ? <DocIcon /> : <DocIconLight />}
-                                <span>Invoices</span>
+                            <Item key='/manage-invoices' icon={selected === '/manage-invoices' ? <DocIcon /> : <DocIconLight />}>
+                                Invoices
                             </Item>
-                            <Item key='/manage-routes'>
-                                {selected === '/manage-routes' ? <LocationIcon /> : <LocationIconLight />}
-                                <span>Routes</span>
+                            <Item key='/manage-routes' icon={selected === '/manage-routes' ? <LocationIcon /> : <LocationIconLight />}>
+                                Routes
                             </Item>
-                            <Item key='/reports' style={{ pointerEvents: 'none' }}>
-                                {selected === '/reports' ? <ReportIcon /> : <ReportIconLight />}
-                                <span>Reports</span>
+                            <Item key='/reports' style={{ pointerEvents: 'none' }} icon={selected === '/reports' ? <ReportIcon /> : <ReportIconLight />}>
+                                Reports
                             </Item>
                         </>
                         : null
@@ -112,17 +101,14 @@ const SideMenu = () => {
                 {
                     ROLE === MARKETINGADMIN ?
                         <>
-                            <Item key='/manage-accounts'>
-                                {selected === '/manage-accounts' ? <ProjectIcon /> : <ProjectIconLight />}
-                                <span>Manage Accounts</span>
+                            <Item key='/manage-accounts' icon={selected === '/manage-accounts' ? <ProjectIcon /> : <ProjectIconLight />}>
+                                Manage Accounts
                             </Item>
-                            <Item key='/add-customer'>
-                                {selected === '/add-customer' ? <FriendReqIcon /> : <FriendReqIconLight />}
-                                <span>Add Customer</span>
+                            <Item key='/add-customer' icon={selected === '/add-customer' ? <FriendReqIcon /> : <FriendReqIconLight />}>
+                                Add Customer
                             </Item>
-                            <Item key='/customerDashboard' style={{ pointerEvents: 'none' }}>
-                                {selected === '/customerDashboard' ? <SettingIcon /> : <SettingIconLight />}
-                                <span>Settings</span>
+                            <Item key='/customerDashboard' style={{ pointerEvents: 'none' }} icon={selected === '/customerDashboard' ? <SettingIcon /> : <SettingIconLight />}>
+                                Settings
                             </Item>
                         </>
                         : null
@@ -130,56 +116,40 @@ const SideMenu = () => {
                 {
                     ROLE === SUPERADMIN ?
                         <>
-                            <SubMenu title={
-                                <span>
-                                    <DocIconLight />
-                                    <span>Add</span>
-                                </span>
-                            }>
-                                <Item key='/customers'>
-                                    {selected === '/customers' ? <FriendIcon /> : <FriendIconLight />}
-                                    <span>Customers</span>
+                            <SubMenu icon={<DocIconLight />} title='Add'>
+                                <Item key='/customers' icon={selected === '/customers' ? <FriendIcon /> : <FriendIconLight />}>
+                                    Customers
                                 </Item>
-                                <Item key='/products'>
-                                    {selected === '/products' ? <FriendsIcon /> : <FriendsIconLight />}
-                                    <span>Products</span>
+                                <Item key='/products' icon={selected === '/products' ? <FriendsIcon /> : <FriendsIconLight />}>
+                                    Products
                                 </Item>
-                                <Item key='/staff'>
-                                    {selected === '/staff' ? <FriendsIcon /> : <FriendsIconLight />}
-                                    <span>Staff</span>
+                                <Item key='/staff' icon={selected === '/staff' ? <FriendsIcon /> : <FriendsIconLight />}>
+                                    Staff
                                 </Item>
-                                <Item key='/drivers'>
-                                    {selected === '/drivers' ? <FriendsIcon /> : <FriendsIconLight />}
-                                    <span>Drivers</span>
+                                <Item key='/drivers' icon={selected === '/drivers' ? <FriendsIcon /> : <FriendsIconLight />}>
+                                    Drivers
                                 </Item>
-                                <Item key='/distributors'>
-                                    {selected === '/distributors' ? <FriendsIcon /> : <FriendsIconLight />}
-                                    <span>Distributors</span>
+                                <Item key='/distributors' icon={selected === '/distributors' ? <FriendsIcon /> : <FriendsIconLight />}>
+                                    Distributors
                                 </Item>
-                                <Item key='/routes'>
-                                    {selected === '/routes' ? <LocationIcon /> : <LocationIconLight />}
-                                    <span>Routes</span>
+                                <Item key='/routes' icon={selected === '/routes' ? <LocationIcon /> : <LocationIconLight />}>
+                                    Routes
                                 </Item>
-                                <Item key='/motherplants'>
-                                    {selected === '/motherplants' ? <StackIcon /> : <StackIconLight />}
-                                    <span>Mother Plants</span>
+                                <Item key='/motherplants' icon={selected === '/motherplants' ? <StackIcon /> : <StackIconLight />}>
+                                    Mother Plants
                                 </Item>
-                                <Item key='/warehouses'>
-                                    {selected === '/warehouses' ? <HomeIcon /> : <HomeIconLight />}
-                                    <span>Warehouses</span>
+                                <Item key='/warehouses' icon={selected === '/warehouses' ? <HomeIcon /> : <HomeIconLight />}>
+                                    Warehouses
                                 </Item>
                             </SubMenu>
-                            <Item key='/materials'>
-                                {selected === '/materials' ? <RibbonIcon /> : <RibbonIconLight />}
-                                <span>Materials</span>
+                            <Item key='/materials' icon={selected === '/materials' ? <RibbonIcon /> : <RibbonIconLight />}>
+                                Materials
                             </Item>
-                            <Item key='/invoices'>
-                                {selected === '/invoices' ? <DocIcon /> : <DocIconLight />}
-                                <span>Invoices</span>
+                            <Item key='/invoices' icon={selected === '/invoices' ? <DocIcon /> : <DocIconLight />}>
+                                Invoices
                             </Item>
-                            <Item key='/settings' style={{ pointerEvents: 'none' }}>
-                                {selected === '/settings' ? <SettingIcon /> : <SettingIconLight />}
-                                <span>Settings</span>
+                            <Item key='/settings' style={{ pointerEvents: 'none' }} icon={selected === '/settings' ? <SettingIcon /> : <SettingIconLight />}>
+                                Settings
                             </Item>
                         </>
                         : null
@@ -187,17 +157,14 @@ const SideMenu = () => {
                 {
                     ROLE === ACCOUNTSADMIN ?
                         <>
-                            <Item key='/customers'>
-                                {selected === '/customers' ? <FriendIcon /> : <FriendIconLight />}
-                                <span>Customers</span>
+                            <Item key='/customers' icon={selected === '/customers' ? <FriendIcon /> : <FriendIconLight />}>
+                                Customers
                             </Item>
-                            <Item key='/invoices' >
-                                {selected === '/invoices' ? <DocIcon /> : <DocIconLight />}
-                                <span>Invoices</span>
+                            <Item key='/invoices' icon={selected === '/invoices' ? <DocIcon /> : <DocIconLight />}>
+                                Invoices
                             </Item>
-                            <Item key='/settings' style={{ pointerEvents: 'none' }}>
-                                {selected === '/settings' ? <SettingIcon /> : <SettingIconLight />}
-                                <span>Settings</span>
+                            <Item key='/settings' style={{ pointerEvents: 'none' }} icon={selected === '/settings' ? <SettingIcon /> : <SettingIconLight />}>
+                                Settings
                             </Item>
                         </>
                         : null

@@ -617,8 +617,10 @@ const AddAccount = () => {
                     corporate ? (
                         <>
                             <div className='checkbox-container'>
-                                <Checkbox disabled={sameAddress && hasExtraAddress} checked={sameAddress} onChange={() => setSameAddress(!sameAddress)} />
-                                <span className='text'>Delivery to the same address?</span>
+                                <div>
+                                    <Checkbox disabled={sameAddress && hasExtraAddress} checked={sameAddress} onChange={() => setSameAddress(!sameAddress)} />
+                                    <span className='app-checkbox-text'>Delivery to the same address?</span>
+                                </div>
                             </div>
                             <Divider />
                             <div className='title-container'>

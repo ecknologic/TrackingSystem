@@ -280,8 +280,10 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
                 onDelete={handleProductsDelete}
             />
             <div className='checkbox-container'>
-                <Checkbox onChange={({ target: { checked } }) => handleChange(checked ? 'Paid' : 'Pending', 'status')} />
-                <span className='text'>Customer has paid the amount?</span>
+                <div>
+                    <Checkbox onChange={({ target: { checked } }) => handleChange(checked ? 'Paid' : 'Pending', 'status')} />
+                    <span className='app-checkbox-text'>Customer has paid the amount?</span>
+                </div>
             </div>
             <InvoiceRestForm
                 data={formData}
