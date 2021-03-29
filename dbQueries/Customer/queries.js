@@ -21,7 +21,7 @@ customerQueries.getCustomersByCustomerType = (customerType, callback) => {
     executeGetParamsQuery(query, [customerType], callback)
 }
 customerQueries.getInActiveCustomers = (callback) => {
-    let query = "SELECT c.organizationName,c.customertype,c.isActive,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.isApproved=0 AND c.approvedDate!='NULL' and d.deleted=0  GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.customerId,c.registeredDate ORDER BY c.lastDraftedDate DESC"
+    let query = "SELECT c.organizationName,c.customertype,c.isActive,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.isApproved=0 AND c.approvedDate IS NOT NULL and d.deleted=0  GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.customerId,c.registeredDate ORDER BY c.lastDraftedDate DESC"
     executeGetParamsQuery(query, callback)
 }
 customerQueries.getCustomerBillingAddress = (customerId, callback) => {
@@ -85,9 +85,9 @@ customerQueries.getTotalActiveCustomers = (input, callback) => {
 }
 customerQueries.getTotalInActiveCustomers = (input, callback) => {
     let { startDate, endDate, fromStart } = input;
-    let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND deleted=0 AND approvedDate!='NULL'"
+    let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND deleted=0 AND approvedDate IS NOT NULL"
     if (fromStart !== 'true') {
-        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND deleted=0 AND approvedDate!='NULL' AND DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
+        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND deleted=0 AND approvedDate IS NOT NULL AND DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
         executeGetParamsQuery(query, [startDate, endDate], callback)
     }
     else executeGetParamsQuery(query, callback)
@@ -95,9 +95,9 @@ customerQueries.getTotalInActiveCustomers = (input, callback) => {
 customerQueries.getTotalInActiveCustomersChange = (input, callback) => {
     let { startDate, endDate, fromStart, type } = input;
     const { startDate: newStartDate, endDate: newEndDate } = dateComparisions(startDate, endDate, type)
-    let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND deleted=0 AND approvedDate!='NULL'"
+    let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND deleted=0 AND approvedDate IS NOT NULL"
     if (fromStart !== 'true') {
-        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND deleted=0 AND approvedDate!='NULL' AND DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
+        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND deleted=0 AND approvedDate IS NOT NULL AND DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
         executeGetParamsQuery(query, [newStartDate, newEndDate], callback)
     }
     else executeGetParamsQuery(query, callback)
@@ -222,9 +222,9 @@ customerQueries.getCorporateCustomersByDepartment = (input, callback) => {
 }
 customerQueries.getInActiveCustomersByDepartment = (input, callback) => {
     let { startDate, endDate, fromStart, departmentId } = input;
-    let query = "SELECT COUNT(*) as totalCount FROM DeliveryDetails WHERE departmentId=? AND isActive=0 AND deleted=0 AND lastApprovedDate!='NULL'"
+    let query = "SELECT COUNT(*) as totalCount FROM DeliveryDetails WHERE departmentId=? AND isActive=0 AND deleted=0 AND lastApprovedDate IS NOT NULL"
     if (fromStart !== 'true') {
-        query = "SELECT COUNT(*) as totalCount FROM DeliveryDetails WHERE departmentId=? AND isActive=0 AND deleted=0 AND lastApprovedDate!='NULL' AND DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
+        query = "SELECT COUNT(*) as totalCount FROM DeliveryDetails WHERE departmentId=? AND isActive=0 AND deleted=0 AND lastApprovedDate IS NOT NULL AND DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
         executeGetParamsQuery(query, [departmentId, startDate, endDate], callback)
     }
     else executeGetParamsQuery(query, [departmentId], callback)

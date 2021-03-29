@@ -21,20 +21,20 @@ motherPlantDbQueries.getProductsByBatch = async (input, callback) => {
 }
 motherPlantDbQueries.getTotalProduction = async (input, callback) => {
     let { departmentId, startDate, endDate, fromStart, type } = input
-    let query = `SELECT SUM(p.product20L) AS product20LCount,SUM(p.product1L) AS product1LCount,SUM(p.product500ML) product500MLCount,SUM(p.product300ML) product300MLCount,SUM(p.product2L) product2LCount,productionDate FROM production p WHERE DATE(productionDate)<=? AND isApproved=1`;
+    let query = `SELECT SUM(p.product20L) AS product20LCount,SUM(p.product1L) AS product1LCount,SUM(p.product500ML) product500MLCount,SUM(p.product300ML) product300MLCount,SUM(p.product2L) product2LCount FROM production p WHERE DATE(productionDate)<=? AND isApproved=1`;
     let options = [endDate]
 
     if (fromStart !== 'true') {
-        query = `SELECT SUM(p.product20L) AS product20LCount,SUM(p.product1L) AS product1LCount,SUM(p.product500ML) product500MLCount,SUM(p.product300ML) product300MLCount,SUM(p.product2L) product2LCount,productionDate FROM production p WHERE DATE(productionDate)>=? AND DATE(productionDate)<=? AND isApproved=1`;
+        query = `SELECT SUM(p.product20L) AS product20LCount,SUM(p.product1L) AS product1LCount,SUM(p.product500ML) product500MLCount,SUM(p.product300ML) product300MLCount,SUM(p.product2L) product2LCount FROM production p WHERE DATE(productionDate)>=? AND DATE(productionDate)<=? AND isApproved=1`;
         options = [startDate, endDate]
     }
 
     if (departmentId != 'All') {
-        query = `SELECT SUM(p.product20L) AS product20LCount,SUM(p.product1L) AS product1LCount,SUM(p.product500ML) product500MLCount,SUM(p.product300ML) product300MLCount,SUM(p.product2L) product2LCount,productionDate FROM production p WHERE departmentId=? AND DATE(productionDate)<=? AND isApproved=1`;
+        query = `SELECT SUM(p.product20L) AS product20LCount,SUM(p.product1L) AS product1LCount,SUM(p.product500ML) product500MLCount,SUM(p.product300ML) product300MLCount,SUM(p.product2L) product2LCount FROM production p WHERE departmentId=? AND DATE(productionDate)<=? AND isApproved=1`;
         options = [departmentId, endDate]
 
         if (fromStart !== 'true') {
-            query = `SELECT SUM(p.product20L) AS product20LCount,SUM(p.product1L) AS product1LCount,SUM(p.product500ML) product500MLCount,SUM(p.product300ML) product300MLCount,SUM(p.product2L) product2LCount,productionDate FROM production p WHERE departmentId=? AND DATE(productionDate)>=? AND DATE(productionDate)<=? AND isApproved=1`;
+            query = `SELECT SUM(p.product20L) AS product20LCount,SUM(p.product1L) AS product1LCount,SUM(p.product500ML) product500MLCount,SUM(p.product300ML) product300MLCount,SUM(p.product2L) product2LCount FROM production p WHERE departmentId=? AND DATE(productionDate)>=? AND DATE(productionDate)<=? AND isApproved=1`;
             options = [departmentId, startDate, endDate]
         }
     }
