@@ -27,7 +27,7 @@ const PieChart = ({ data }) => {
             autoRotate: false,
             content: function content(_ref) {
                 var percent = _ref.percent;
-                return ''.concat(percent * 100, '%');
+                return ''.concat(Math.round(percent * 100), '%');
             },
             style: {
                 fontSize: 22,
