@@ -63,7 +63,7 @@ const CreateDispatch = ({ goToTab, driverList, warehouseList, reFetch, ...rest }
         if (key === 'dispatchType') {
             setFormData(data => ({ ...data, dispatchTo: null }))
             if (value === 'distributor' && isEmpty(distributorList)) {
-                getDistributorList()
+                // getDistributorList()
             }
         }
 

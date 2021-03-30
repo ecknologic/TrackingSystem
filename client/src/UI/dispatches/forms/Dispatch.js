@@ -112,14 +112,14 @@ const DispatchForm = (props) => {
                 <div className='row'>
                     <div className='input-container stretch'>
                         <InputLabel name='Dispatch To' error={errors.dispatchTo} errClass='dispatchTo' mandatory />
-                        <Radio.Group
+                        {/* <Radio.Group
                             onChange={({ target: { value } }) => onChange(value, 'dispatchType')}
                             value={dispatchType}
                             className='radio-btns'
                         >
                             <Radio value='warehouse'>Warehouse</Radio>
                             <Radio value='distributor'>Distributor</Radio>
-                        </Radio.Group>
+                        </Radio.Group> */}
                         <SelectInput track value={dispatchTo} options={dispatchToOptions}
                             disabled={disabled} error={errors.dispatchTo}
                             onSelect={(value) => onChange(value, 'dispatchTo')}
