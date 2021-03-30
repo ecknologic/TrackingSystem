@@ -5,8 +5,8 @@ import PanelHeader from '../../../../components/PanelHeader';
 import { TODAYDATE as d } from '../../../../utils/constants';
 import { defaultPie, dummyWaterResults } from '../../../../assets/fixtures';
 import InvoiceOverviewCard from '../../../../components/InvoiceOverviewCard';
-import CustomButton from '../../../../components/CustomButton';
-import { RightChevronIconLight } from '../../../../components/SVG_Icons';
+// import CustomButton from '../../../../components/CustomButton';
+// import { RightChevronIconLight } from '../../../../components/SVG_Icons';
 const options = { startDate: d, endDate: d, fromStart: true }
 
 const InvoiceOverview = () => {
@@ -56,7 +56,7 @@ const InvoiceOverview = () => {
                 <PanelHeader title='Invoice Overview' onSelect={handleInvoiceOp} showShow />
             </div>
             <InvoiceOverviewCard data={results} graph={graph} />
-            <div className='second-header'>
+            {/* <div className='second-header'>
                 <PanelHeader title='Memberships' onSelect={handleMembershipOp} showShow />
             </div>
             <div className='second-overview-card'>
@@ -74,7 +74,7 @@ const InvoiceOverview = () => {
                     onClick={handleClick}
                     suffix={<RightChevronIconLight className='chev' />}
                 />
-            </div>
+            </div> */}
         </div>
     )
 }
