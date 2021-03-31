@@ -265,7 +265,7 @@ router.post("/createInvoice", (req, res) => {
             } else {
                 let products = addProducts(JSON.parse(data[0].products))
                 let product = products[0]
-                const { EmailId } = result[0]
+                const { EmailId } = data[0]
                 const {
                     location: address,
                     deliveryAddress,
@@ -293,7 +293,7 @@ router.post("/createInvoice", (req, res) => {
                 }
                 const { totalAmount } = computeFinalAmounts(arr)
                 req.body.products = arr
-                req.body.mailIds=EmailId
+                req.body.mailIds = EmailId
                 req.body.totalAmount = totalAmount
                 saveInvoice(req.body, res, true)
             }
