@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import axios from 'axios';
-import { message } from 'antd';
+import { message, Checkbox } from 'antd';
 import { v4 as uuidv4 } from 'uuid';
 import { useHistory, useParams } from 'react-router-dom';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -15,11 +15,10 @@ import { getWarehoseId, TODAYDATE } from '../../../../utils/constants';
 import { isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 import { validateNumber, validateInvoiceValues } from '../../../../utils/validations';
 import { getProductOptions, getDDownOptions, getDCOptions } from '../../../../assets/fixtures';
-import Checkbox from 'antd/lib/checkbox/Checkbox';
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
 const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
-    const defaultValues = useMemo(() => ({ invoiceDate: TODAYDATE, hsnCode: 22011010 }), [])
+    const defaultValues = useMemo(() => ({ invoiceDate: TODAYDATE, hsnCode: 22011010, status: 'Pending' }), [])
     const history = useHistory()
     const { invoiceId } = useParams()
     const [formData, setFormData] = useState(defaultValues)
@@ -41,6 +40,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
     const footerValues = useMemo(() => computeFinalAmounts(dataSource), [dataSource])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
+    const { status } = formData
 
     useEffect(() => {
         if (editMode) getInvoice()
@@ -253,7 +253,6 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
         setDataSource(initData)
         setFormErrors({})
     }
-    console.log('form data>>', formData)
 
     if (loading) return <NoContent content={<Spinner />} />
 
@@ -281,7 +280,10 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
             />
             <div className='checkbox-container'>
                 <div>
-                    <Checkbox onChange={({ target: { checked } }) => handleChange(checked ? 'Paid' : 'Pending', 'status')} />
+                    <Checkbox
+                        value={status === 'Pending' ? false : true}
+                        onChange={({ target: { checked } }) => handleChange(checked ? 'Paid' : 'Pending', 'status')}
+                    />
                     <span className='app-checkbox-text'>Customer has paid the amount?</span>
                 </div>
             </div>

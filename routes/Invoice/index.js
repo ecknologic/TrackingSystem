@@ -9,6 +9,7 @@ const { createMultiDeliveryInvoice } = require('./invoice.js');
 const fs = require('fs');
 const { generatePDF, generateCustomerPDF } = require('../../dbQueries/Customer/queries.js');
 const dayjs = require('dayjs');
+const { sendMail } = require('../mailTemplate.js');
 var departmentId;
 
 //Middle ware that is specific to this router
@@ -48,99 +49,7 @@ router.get('/getDepartmentInvoices', (req, res) => {
 
 router.get('/getInvoiceById/:invoiceId', (req, res) => {
     const { invoiceId } = req.params
-    invoiceQueries.getInvoiceById({ invoiceId, departmentId: req.query.departmentId }, (err, results) => {
-        if (err) res.status(500).json(dbError(err));
-        else {
-            const { gstNo, invoiceId, Address1, deliveryAddress, customerType, fromDate, toDate, ...rest } = results[0]
-            let haveMultipleAddress = false
-            let products = JSON.parse(results[0].products)
-            let obj = {
-                gstNo, invoiceId, ...rest
-            }
-            obj.products = products
-            if (products.length) {
-                const uniqueValues = new Set(products.map(p => p.productName));
-                if (uniqueValues.size < products.length) {
-                    haveMultipleAddress = true
-                }
-
-                if (haveMultipleAddress) {
-                    let arr = []
-                    for (let [index, i] of products.entries()) {
-                        i = {
-                            gstNo, invoiceId, ...rest, ...i,
-                        }
-                        if (i.productName.startsWith('20')) {
-                            i['20LCans'] = i.quantity
-                            i['price20L'] = i.productPrice
-                        } else if (i.productName.startsWith('1')) {
-                            i['1LBoxes'] = i.quantity
-                            i['price1L'] = i.productPrice
-                        } else if (i.productName.startsWith('500')) {
-                            i['500MLBoxes'] = i.quantity
-                            i['price500ML'] = i.productPrice
-                        } else if (i.productName.startsWith('300')) {
-                            i['300MLBoxes'] = i.quantity
-                            i['price300ML'] = i.productPrice
-                        }
-                        else if (i.productName.startsWith('2')) {
-                            i['2LBoxes'] = i.quantity
-                            i['price2L'] = i.productPrice
-                        }
-                        arr.push(i)
-                        if (obj.products.length == index + 1) obj.products = arr
-                    }
-                } else {
-                    for (let i of obj.products) {
-                        obj.deliveryAddress = i.deliveryAddress
-                        if (i.productName.startsWith('20')) {
-                            obj['20LCans'] = i.quantity
-                            obj['price20L'] = i.productPrice
-                        } else if (i.productName.startsWith('1')) {
-                            obj['1LBoxes'] = i.quantity
-                            obj['price1L'] = i.productPrice
-                        } else if (i.productName.startsWith('500')) {
-                            obj['500MLBoxes'] = i.quantity
-                            obj['price500ML'] = i.productPrice
-                        } else if (i.productName.startsWith('300')) {
-                            obj['300MLBoxes'] = i.quantity
-                            obj['price300ML'] = i.productPrice
-                        }
-                        else if (i.productName.startsWith('2')) {
-                            obj['2LBoxes'] = i.quantity
-                            obj['price2L'] = i.productPrice
-                        }
-                    }
-                }
-            }
-
-            if (haveMultipleAddress) {
-                let invoice = {
-                    items: obj.products, customerType, Address1, invoiceId, gstNo, fromDate, toDate
-                }
-                createMultiDeliveryInvoice(invoice, "invoice.pdf").then(response => {
-                    setTimeout(() => {
-                        fs.readFile("invoice.pdf", (err, result) => {
-                            obj.invoicePdf = result
-                            res.json(obj)
-                        })
-                    }, 1500)
-                })
-            } else {
-                let invoice = {
-                    items: [obj], invoiceId, gstNo, Address1, fromDate, toDate
-                }
-                createSingleDeliveryInvoice(invoice, "invoice.pdf").then(response => {
-                    setTimeout(() => {
-                        fs.readFile("invoice.pdf", (err, result) => {
-                            obj.invoicePdf = result
-                            res.json(obj)
-                        })
-                    }, 1500)
-                })
-            }
-        };
-    });
+    getInvoiceByInvoiceId({ invoiceId, departmentId: req.query.departmentId, res })
 });
 
 router.get('/getInvoiceId', (req, res) => {
@@ -356,6 +265,7 @@ router.post("/createInvoice", (req, res) => {
             } else {
                 let products = addProducts(JSON.parse(data[0].products))
                 let product = products[0]
+                const { EmailId } = data[0]
                 const {
                     location: address,
                     deliveryAddress,
@@ -367,22 +277,23 @@ router.post("/createInvoice", (req, res) => {
                 } = product
                 let arr = []
                 if (product['20LCans'] > 0) {
-                    arr.push(prepareProductObj({ invoiceId, productName: "20 Lt Bibo Water Jar", quantity: product['20LCans'], productPrice: price20L, tax: 12, gstNo, address }))
+                    arr.push(prepareProductObj({ deliveryAddress, invoiceId, productName: "20 Lt Bibo Water Jar", quantity: product['20LCans'], productPrice: price20L, tax: 12, gstNo, address }))
                 }
                 if (product['2LBoxes'] > 0) {
-                    arr.push(prepareProductObj({ invoiceId, productName: "2 Lt Bibo Water Bottle Case - 9 bottles", quantity: product['2LBoxes'], productPrice: price2L, tax: 18, gstNo, address }))
+                    arr.push(prepareProductObj({ deliveryAddress, invoiceId, productName: "2 Lt Bibo Water Bottle Case - 9 bottles", quantity: product['2LBoxes'], productPrice: price2L, tax: 18, gstNo, address }))
                 }
                 if (product['1LBoxes'] > 0) {
-                    arr.push(prepareProductObj({ invoiceId, productName: "1Lt Bibo Water Case - 12 Bottles", quantity: product['1LBoxes'], productPrice: price1L, tax: 18, gstNo, address }))
+                    arr.push(prepareProductObj({ deliveryAddress, invoiceId, productName: "1Lt Bibo Water Case - 12 Bottles", quantity: product['1LBoxes'], productPrice: price1L, tax: 18, gstNo, address }))
                 }
                 if (product['500MLBoxes'] > 0) {
-                    arr.push(prepareProductObj({ invoiceId, productName: "500 ML Bibo Water Cases - 24 Bottles", quantity: product['500MLBoxes'], productPrice: price500ML, tax: 18, gstNo, address }))
+                    arr.push(prepareProductObj({ deliveryAddress, invoiceId, productName: "500 ML Bibo Water Cases - 24 Bottles", quantity: product['500MLBoxes'], productPrice: price500ML, tax: 18, gstNo, address }))
                 }
                 if (product['300MLBoxes'] > 0) {
-                    arr.push(prepareProductObj({ invoiceId, productName: "300 ML Bibo Water Cases - 30 Bottles", quantity: product['300MLBoxes'], productPrice: price300ML, tax: 18, gstNo, address }))
+                    arr.push(prepareProductObj({ deliveryAddress, invoiceId, productName: "300 ML Bibo Water Cases - 30 Bottles", quantity: product['300MLBoxes'], productPrice: price300ML, tax: 18, gstNo, address }))
                 }
                 const { totalAmount } = computeFinalAmounts(arr)
                 req.body.products = arr
+                req.body.mailIds = EmailId
                 req.body.totalAmount = totalAmount
                 saveInvoice(req.body, res, true)
             }
@@ -434,6 +345,7 @@ const saveInvoice = async (requestObj, res, response) => {
                 invoiceQueries.saveInvoiceProducts({ products, invoiceId }, (err, data) => {
                     if (err) res.status(500).json(dbError(err));
                     else {
+                        getInvoiceByInvoiceId({ invoiceId })
                         response && res.json({ message: 'Invoice created successfully' })
                         // invoiceQueries.saveInvoicePdf({ invoiceId }, (err, data) => {
                         //     if (err) res.status(500).json(dbError(err));
@@ -455,6 +367,7 @@ const saveDepartmentInvoice = async (requestObj, res, response) => {
                 invoiceQueries.saveDepartmentInvoiceProducts({ products, invoiceId }, (err, data) => {
                     if (err) res.status(500).json(dbError(err));
                     else {
+                        getInvoiceByInvoiceId({ invoiceId, departmentId })
                         response && res.json({ message: 'Invoice created successfully' })
                     }
                 })
@@ -534,7 +447,7 @@ const addProducts = (products) => {
     return [newData]
 }
 const prepareProductObj = (product) => {
-    const { invoiceId, productName, quantity, productPrice, tax = 18, gstNo, address } = product
+    const { invoiceId, productName, quantity, productPrice, tax = 18, gstNo, address, deliveryAddress } = product
     let cgstValue = tax / 2
     const { amount, cgst, sgst, igst } = getResults({
         quantity, productPrice, gstNo, tax, cgst: cgstValue, sgst: cgstValue, igst: 0
@@ -550,6 +463,7 @@ const prepareProductObj = (product) => {
         igst,
         address,
         invoiceId,
+        deliveryAddress,
         discount: 0
     }
 }
@@ -564,5 +478,102 @@ const computeFinalAmounts = (data) => {
     const totalAmount = Math.round((subTotal + cgstAmount + sgstAmount + igstAmount))
 
     return { subTotal, cgstAmount, sgstAmount, igstAmount, totalAmount }
+}
+const getInvoiceByInvoiceId = ({ invoiceId, departmentId, res }) => {
+    invoiceQueries.getInvoiceById({ invoiceId, departmentId }, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else {
+            const { gstNo, mailIds, invoiceId, Address1, deliveryAddress, customerType, fromDate, toDate, ...rest } = results[0]
+            let haveMultipleAddress = false
+            let products = JSON.parse(results[0].products)
+            let obj = {
+                gstNo, invoiceId, ...rest
+            }
+            obj.products = products
+            if (products.length) {
+                const uniqueValues = new Set(products.map(p => p.productName));
+                if (uniqueValues.size < products.length) {
+                    haveMultipleAddress = true
+                }
+
+                if (haveMultipleAddress) {
+                    let arr = []
+                    for (let [index, i] of products.entries()) {
+                        i = {
+                            gstNo, invoiceId, ...rest, ...i,
+                        }
+                        if (i.productName.startsWith('20')) {
+                            i['20LCans'] = i.quantity
+                            i['price20L'] = i.productPrice
+                        } else if (i.productName.startsWith('1')) {
+                            i['1LBoxes'] = i.quantity
+                            i['price1L'] = i.productPrice
+                        } else if (i.productName.startsWith('500')) {
+                            i['500MLBoxes'] = i.quantity
+                            i['price500ML'] = i.productPrice
+                        } else if (i.productName.startsWith('300')) {
+                            i['300MLBoxes'] = i.quantity
+                            i['price300ML'] = i.productPrice
+                        }
+                        else if (i.productName.startsWith('2')) {
+                            i['2LBoxes'] = i.quantity
+                            i['price2L'] = i.productPrice
+                        }
+                        arr.push(i)
+                        if (obj.products.length == index + 1) obj.products = arr
+                    }
+                } else {
+                    for (let i of obj.products) {
+                        obj.deliveryAddress = i.deliveryAddress
+                        if (i.productName.startsWith('20')) {
+                            obj['20LCans'] = i.quantity
+                            obj['price20L'] = i.productPrice
+                        } else if (i.productName.startsWith('1')) {
+                            obj['1LBoxes'] = i.quantity
+                            obj['price1L'] = i.productPrice
+                        } else if (i.productName.startsWith('500')) {
+                            obj['500MLBoxes'] = i.quantity
+                            obj['price500ML'] = i.productPrice
+                        } else if (i.productName.startsWith('300')) {
+                            obj['300MLBoxes'] = i.quantity
+                            obj['price300ML'] = i.productPrice
+                        }
+                        else if (i.productName.startsWith('2')) {
+                            obj['2LBoxes'] = i.quantity
+                            obj['price2L'] = i.productPrice
+                        }
+                    }
+                }
+            }
+
+            if (haveMultipleAddress) {
+                let invoice = {
+                    items: obj.products, customerType, Address1, invoiceId, gstNo, fromDate, toDate
+                }
+                createMultiDeliveryInvoice(invoice, "invoice.pdf").then(response => {
+                    setTimeout(() => {
+                        fs.readFile("invoice.pdf", (err, result) => {
+                            obj.invoicePdf = result
+                            if (res) res.json(obj)
+                            else sendMail({ mailId: mailIds, attachment: result })
+                        })
+                    }, 1500)
+                })
+            } else {
+                let invoice = {
+                    items: [obj], invoiceId, gstNo, Address1, fromDate, toDate
+                }
+                createSingleDeliveryInvoice(invoice, "invoice.pdf").then(response => {
+                    setTimeout(() => {
+                        fs.readFile("invoice.pdf", (err, result) => {
+                            obj.invoicePdf = result
+                            if (res) res.json(obj)
+                            else sendMail({ mailId: mailIds, attachment: result })
+                        })
+                    }, 1500)
+                })
+            }
+        };
+    });
 }
 module.exports = router;

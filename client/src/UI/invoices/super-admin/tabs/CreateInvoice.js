@@ -150,12 +150,12 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
             message.destroy()
             if (!axios.isCancel(error)) {
                 setBtnDisabled(false)
-            }
-            else if (error.response.status === 400) {
-                message.info('Oops! Already generated or DCs do not exist for the selection.')
-            }
-            else if (error.response.status === 404) {
-                message.info('Oops! DCs do not exist for the selection.')
+                if (error.response.status === 400) {
+                    message.info('Oops! Already generated or DCs do not exist for the selection.')
+                }
+                else if (error.response.status === 404) {
+                    message.info('Oops! DCs do not exist for the selection.')
+                }
             }
         }
     }
@@ -164,6 +164,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
         setBtnDisabled(false)
         resetTrackForm()
         setFormData(defaultValues)
+        setBillingAddress({})
         setFormErrors({})
     }
 
