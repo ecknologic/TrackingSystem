@@ -231,7 +231,7 @@ const WarehouseInvoices = ({ reFetch, onUpdate }) => {
                     <SearchInput
                         placeholder='Search Invoice'
                         className='delivery-search'
-                        width='50%'
+                        width='40%'
                         reset={resetSearch}
                         onChange={handleSearch}
                     />
@@ -273,7 +273,9 @@ const renderStatus = (status) => {
 const computeTotalAmount = (data) => {
     let totalAmount = 0
     if (!isEmpty(data)) {
-        totalAmount = data.map(item => item.totalAmount).reduce((a, c) => a + c).toLocaleString('en-IN')
+        totalAmount = data.filter(item => item.status === 'Pending')
+            .map(item => item.totalAmount)
+            .reduce((a, c) => a + c).toLocaleString('en-IN')
     }
 
     return `₹ ${totalAmount}`
