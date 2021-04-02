@@ -1492,22 +1492,15 @@ textarea, .ant-dropdown-menu {
 }
   
 .editable-cell-value-wrap {
+    align-items: center;
+    border-radius: .6em;
+    border: 1px solid #d9d9d9;
+    cursor: pointer;
     display: flex;
     justify-content: center;
-    align-items: center;
     min-height: 2.7em;
-    padding: 1px 1em;
-    cursor: pointer;
-}
-  
-.editable-row:hover .editable-cell-value-wrap {
-    border: 1px solid #d9d9d9;
     padding: 0 calc(1em - 1px);
-    border-radius: .6em;
-}
-  
-[data-theme='dark'] .editable-row:hover .editable-cell-value-wrap {
-    border: 1px solid #434343;
+    padding: 1px 1em;
 }
 
 .app-table {
