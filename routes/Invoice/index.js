@@ -77,12 +77,21 @@ router.put('/deleteInvoiceProducts', (req, res) => {
         else res.send("Deleted successfully");
     });
 });
+
 router.put('/updateInvoiceStatus', (req, res) => {
     invoiceQueries.updateInvoiceStatus(req.body, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else res.send("Updated successfully");
     });
 });
+
+router.put('/updateDepartmentInvoiceStatus', (req, res) => {
+    invoiceQueries.updateDepartmentInvoiceStatus(req.body, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.send("Updated successfully");
+    });
+});
+
 router.post("/generateMultipleInvoices", (req, res) => {
     invoiceQueries.getInvoiceId(req.query.departmentId, (err, results) => {
         if (err) res.status(500).json(dbError(err));
@@ -345,8 +354,8 @@ const saveInvoice = async (requestObj, res, response) => {
                 invoiceQueries.saveInvoiceProducts({ products, invoiceId }, (err, data) => {
                     if (err) res.status(500).json(dbError(err));
                     else {
-                        getInvoiceByInvoiceId({ invoiceId })
                         response && res.json({ message: 'Invoice created successfully' })
+                        getInvoiceByInvoiceId({ invoiceId })
                         // invoiceQueries.saveInvoicePdf({ invoiceId }, (err, data) => {
                         //     if (err) res.status(500).json(dbError(err));
                         //     else res.json({ message: 'Invoice created successfully' })
@@ -550,12 +559,12 @@ const getInvoiceByInvoiceId = ({ invoiceId, departmentId, res }) => {
                 let invoice = {
                     items: obj.products, customerType, Address1, invoiceId, gstNo, fromDate, toDate
                 }
-                createMultiDeliveryInvoice(invoice, "invoice.pdf").then(response => {
+                createMultiDeliveryInvoice(invoice, `${invoiceId}.pdf`).then(response => {
                     setTimeout(() => {
-                        fs.readFile("invoice.pdf", (err, result) => {
+                        fs.readFile(`${invoiceId}.pdf`, (err, result) => {
                             obj.invoicePdf = result
                             if (res) res.json(obj)
-                            else sendMail({ mailId: mailIds, attachment: result })
+                            else sendMail({ mailId: mailIds, attachment: result, invoiceId })
                         })
                     }, 1500)
                 })
@@ -563,12 +572,12 @@ const getInvoiceByInvoiceId = ({ invoiceId, departmentId, res }) => {
                 let invoice = {
                     items: [obj], invoiceId, gstNo, Address1, fromDate, toDate
                 }
-                createSingleDeliveryInvoice(invoice, "invoice.pdf").then(response => {
+                createSingleDeliveryInvoice(invoice, `${invoiceId}.pdf`).then(response => {
                     setTimeout(() => {
-                        fs.readFile("invoice.pdf", (err, result) => {
+                        fs.readFile(`${invoiceId}.pdf`, (err, result) => {
                             obj.invoicePdf = result
                             if (res) res.json(obj)
-                            else sendMail({ mailId: mailIds, attachment: result })
+                            else sendMail({ mailId: mailIds, attachment: result, invoiceId })
                         })
                     }, 1500)
                 })

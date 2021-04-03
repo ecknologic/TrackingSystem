@@ -55,10 +55,10 @@ invoiceQueries.createInvoice = (input, callback) => {
 }
 
 invoiceQueries.createDepartmentInvoice = (input, callback) => {
-    const { dcNo, customerId, invoiceDate, dueDate, fromDate, toDate, salesPerson, invoiceId, hsnCode, poNo, totalAmount, customerName, departmentId, mailIds, status = 'Pending' } = input
-    let query = "insert into departmentInvoices (dcNo,customerId,invoiceDate,dueDate,salesPerson,invoiceId,hsnCode,poNo,totalAmount,customerName,fromDate,toDate,departmentId,status,mailIds) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    const { dcNo, customerId, invoiceDate, dueDate, fromDate, toDate, salesPerson, invoiceId, hsnCode, poNo, totalAmount, customerName, departmentId, mailIds, status = 'Pending', departmentStatus = 'Pending' } = input
+    let query = "insert into departmentInvoices (dcNo,customerId,invoiceDate,dueDate,salesPerson,invoiceId,hsnCode,poNo,totalAmount,customerName,fromDate,toDate,departmentId,status,mailIds,departmentStatus) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     // var gstProofImage = Buffer.from(gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-    let requestBody = [dcNo, customerId, invoiceDate, dueDate, salesPerson, invoiceId, hsnCode, poNo, totalAmount, customerName, fromDate, toDate, departmentId, status, mailIds]
+    let requestBody = [dcNo, customerId, invoiceDate, dueDate, salesPerson, invoiceId, hsnCode, poNo, totalAmount, customerName, fromDate, toDate, departmentId, status, mailIds, departmentStatus]
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 
@@ -125,5 +125,10 @@ invoiceQueries.deleteInvoiceProducts = (ids, callback) => {
 invoiceQueries.updateInvoiceStatus = ({ invoiceId, status }, callback) => {
     let query = "update Invoice SET updatedDateTime=?, status=? WHERE invoiceId=?";
     executePostOrUpdateQuery(query, [new Date(), status, invoiceId], callback)
+}
+invoiceQueries.updateDepartmentInvoiceStatus = (input, callback) => {
+    const { invoiceId, departmentStatus, status } = input
+    let query = "update departmentInvoices SET updatedDateTime=?,departmentStatus=?, status=? WHERE invoiceId=?";
+    executePostOrUpdateQuery(query, [new Date(), departmentStatus, status, invoiceId], callback)
 }
 module.exports = invoiceQueries

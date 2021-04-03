@@ -1,4 +1,5 @@
 var nodemailer = require('nodemailer');
+const fs = require('fs')
 
 // // in async func
 // pdf.end();
@@ -7,7 +8,7 @@ var nodemailer = require('nodemailer');
 // contentType: 'application/pdf' }, { filename: 'fromStream.pdf', content: stream, contentType: 'application/pdf' }];
 // await sendMail('"Sender" <sender@test.com>', 'reciver@test.com', 'Test Send Files', '<h1>Hello</h1>', attachments);
 
-const sendMail = ({ message, mailId, body, attachment }) => {
+const sendMail = ({ message, mailId, body, attachment, invoiceId }) => {
     var transporter = nodemailer.createTransport({
         host: 'smtp.gmail.com',
         port: 465,
@@ -17,7 +18,7 @@ const sendMail = ({ message, mailId, body, attachment }) => {
             pass: process.env.MAIL_PASSWORD
         }
     });
-    const attachments = [{ filename: 'invoice.pdf', content: attachment, contentType: 'application/pdf' }];
+    const attachments = [{ filename: `${invoiceId}.pdf`, content: attachment, contentType: 'application/pdf' }];
     var mailOptions = {
         from: 'praveen14568@gmail.com',
         to: mailId,
@@ -30,6 +31,14 @@ const sendMail = ({ message, mailId, body, attachment }) => {
         if (error) {
             console.log(error);
         } else {
+            if (invoiceId) {
+                try {
+                    fs.unlinkSync(`${invoiceId}.pdf`)
+                    //file removed
+                } catch (err) {
+                    console.error(err)
+                }
+            }
             console.log('Email sent: ' + info.response);
         }
     });
