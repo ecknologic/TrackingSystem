@@ -613,6 +613,9 @@ export const getStatusColor = (status) => {
         case 'Postponed':
             return '#FA6400'
 
+        case 'Inprogress':
+            return '#FFB200'
+
         default:
             return '#A10101'
     }

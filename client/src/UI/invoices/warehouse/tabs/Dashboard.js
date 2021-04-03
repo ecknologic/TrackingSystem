@@ -17,7 +17,7 @@ import { ListViewIconGrey, ScheduleIcon, SendIconGrey, TickIconGrey } from '../.
 const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
-const Dashboard = ({ reFetch, onUpdate }) => {
+const Dashboard = ({ reFetch }) => {
     const history = useHistory()
     const [invoices, setInvoices] = useState([])
     const [invoicesClone, setInvoicesClone] = useState([])
@@ -104,20 +104,19 @@ const Dashboard = ({ reFetch, onUpdate }) => {
     const optimisticUpdate = (id, status) => {
         let clone = deepClone(invoices);
         const index = clone.findIndex(item => item.invoiceId === id)
-        clone[index].status = status;
+        clone[index].departmentStatus = status;
         setInvoices(clone)
-        onUpdate()
     }
 
     const handleStatusUpdate = async (invoiceId) => {
-        const status = 'Paid'
+        const departmentStatus = 'Paid'
         const options = { item: 'Invoice status', v1Ing: 'Updating', v2: 'updated' }
-        const url = `/invoice/updateInvoiceStatus`
-        const body = { status, invoiceId }
+        const url = `/invoice/updateDepartmentInvoiceStatus`
+        const body = { departmentStatus, invoiceId, status: 'Inprogress' }
         try {
             showToast({ ...options, action: 'loading' })
             await http.PUT(axios, url, body, config)
-            optimisticUpdate(invoiceId, status)
+            optimisticUpdate(invoiceId, departmentStatus)
             showToast(options)
         } catch (error) {
             message.destroy()
@@ -140,12 +139,12 @@ const Dashboard = ({ reFetch, onUpdate }) => {
     }
 
     const dataSource = useMemo(() => invoices.map((invoice) => {
-        const { invoiceId, invoiceDate, totalAmount, customerName, dueDate, status, dcNo } = invoice
+        const { invoiceId, invoiceDate, totalAmount, customerName, dueDate, departmentStatus, dcNo } = invoice
 
         const options = [
             <Menu.Item key="resend" icon={<SendIconGrey />}>Resend</Menu.Item>,
             <Menu.Item key="dcList" icon={<ListViewIconGrey />}>DC List</Menu.Item>,
-            <Menu.Item key="paid" icon={<TickIconGrey />}>Paid</Menu.Item>,
+            <Menu.Item key="paid" className={departmentStatus === 'Paid' ? 'disabled' : ''} icon={<TickIconGrey />}>Paid</Menu.Item>,
         ]
 
         return {
@@ -153,7 +152,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
             dcNo,
             customerName,
             totalAmount,
-            status: renderStatus(status),
+            status: renderStatus(departmentStatus),
             dueDate: dayjs(dueDate).format(DATEFORMAT),
             date: dayjs(invoiceDate).format(DATEFORMAT),
             invoiceId: <span className='app-link' onClick={() => handleViewInvoice(invoice)}>{invoiceId}</span>,

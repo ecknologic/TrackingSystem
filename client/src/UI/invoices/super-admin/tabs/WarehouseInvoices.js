@@ -22,7 +22,7 @@ import InputValue from '../../../../components/InputValue';
 const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
-const WarehouseInvoices = ({ reFetch, onUpdate }) => {
+const WarehouseInvoices = ({ reFetch }) => {
     const history = useHistory()
     const [invoices, setInvoices] = useState([])
     const [invoicesClone, setInvoicesClone] = useState([])
@@ -137,14 +137,13 @@ const WarehouseInvoices = ({ reFetch, onUpdate }) => {
         const index = clone.findIndex(item => item.invoiceId === id)
         clone[index].status = status;
         setInvoices(clone)
-        onUpdate()
     }
 
     const handleStatusUpdate = async (invoiceId) => {
         const status = 'Paid'
         const options = { item: 'Invoice status', v1Ing: 'Updating', v2: 'updated' }
-        const url = `/invoice/updateInvoiceStatus`
-        const body = { status, invoiceId }
+        const url = `/invoice/updateDepartmentInvoiceStatus`
+        const body = { status, invoiceId, departmentStatus: status }
         try {
             showToast({ ...options, action: 'loading' })
             await http.PUT(axios, url, body, config)
@@ -173,10 +172,11 @@ const WarehouseInvoices = ({ reFetch, onUpdate }) => {
     const dataSource = useMemo(() => invoices.map((invoice) => {
         const { invoiceId, invoiceDate, totalAmount, customerName, departmentName, dueDate, status } = invoice
 
+        const canPay = status === 'Inprogress'
         const options = [
             <Menu.Item key="resend" icon={<SendIconGrey />}>Resend</Menu.Item>,
             <Menu.Item key="dcList" icon={<ListViewIconGrey />}>DC List</Menu.Item>,
-            <Menu.Item key="paid" icon={<TickIconGrey />}>Paid</Menu.Item>,
+            <Menu.Item key="paid" className={canPay ? '' : 'disabled'} icon={<TickIconGrey />}>Paid</Menu.Item>,
         ]
 
         return {
@@ -262,10 +262,11 @@ const WarehouseInvoices = ({ reFetch, onUpdate }) => {
 }
 const renderStatus = (status) => {
     const color = getStatusColor(status)
+    const text = status === 'Inprogress' ? 'In Progress' : status
     return (
         <div className='status'>
             <span className='app-dot' style={{ background: color }}></span>
-            <span className='status-text'>{status}</span>
+            <span className='status-text'>{text}</span>
         </div>
     )
 }
@@ -273,7 +274,7 @@ const renderStatus = (status) => {
 const computeTotalAmount = (data) => {
     let totalAmount = 0
     if (!isEmpty(data)) {
-        totalAmount = data.filter(item => item.status === 'Pending')
+        totalAmount = data.filter(({ status }) => status !== 'Paid')
             .map(item => item.totalAmount)
             .reduce((a, c) => a + c).toLocaleString('en-IN')
     }

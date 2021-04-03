@@ -282,7 +282,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
                 <div>
                     <Checkbox
                         value={status === 'Pending' ? false : true}
-                        onChange={({ target: { checked } }) => handleChange(checked ? 'Paid' : 'Pending', 'status')}
+                        onChange={({ target: { checked } }) => handleChange(checked ? 'Paid' : 'Pending', 'departmentStatus')}
                     />
                     <span className='app-checkbox-text'>Customer has paid the amount?</span>
                 </div>
