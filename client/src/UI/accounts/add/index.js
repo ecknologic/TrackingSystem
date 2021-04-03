@@ -35,6 +35,7 @@ const AddAccount = () => {
     const history = useHistory()
     const { pathname } = useLocation()
     const defaultValues = useMemo(() => ({ referredBy: USERNAME, registeredDate: TODAYDATE }), [])
+    const genDefaultValues = useMemo(() => ({ ...defaultValues, natureOfBussiness: 'Residential' }), [])
 
     const [confirmModal, setConfirmModal] = useState(false)
     const [switchModal, setSwitchModal] = useState(false)
@@ -44,7 +45,7 @@ const AddAccount = () => {
     const [corporateErrors, setCorporateErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [corporateValues, setCorporateValues] = useState(defaultValues)
-    const [generalValues, setGeneralValues] = useState(defaultValues)
+    const [generalValues, setGeneralValues] = useState(genDefaultValues)
     const [generalErrors, setGeneralErrors] = useState({})
     const [deliveryValues, setDeliveryValues] = useState({})
     const [deliveryErrors, setDeliveryErrors] = useState({})
@@ -379,7 +380,7 @@ const AddAccount = () => {
     }
 
     const resetGeneralValues = () => {
-        setGeneralValues(defaultValues)
+        setGeneralValues(genDefaultValues)
         setIDProofs({})
         setDevDays([])
     }
@@ -515,8 +516,8 @@ const AddAccount = () => {
         if (formHasChanged) setSwitchModal(true)
         else {
             setCorporate(!corporate)
-            setCorporateValues({ ...defaultValues, natureOfBussiness: null })
-            setGeneralValues({ ...defaultValues, natureOfBussiness: 'Residential' })
+            setCorporateValues(defaultValues)
+            setGeneralValues(genDefaultValues)
             resetErrorValues()
         }
     }
@@ -524,15 +525,15 @@ const AddAccount = () => {
     const handleAddNewAccount = () => {
         setSucessModal(false)
         setBtnDisabled(false)
-        setCorporateValues(defaultValues)
-        setGeneralValues(defaultValues)
         setDeliveryValues({})
         setIDProofs({})
         setDevDays([])
         setAddresses([])
-        setSameAddress(false)
         resetTrackForm()
+        setSameAddress(false)
         setScrollDep(!scrollDep)
+        setCorporateValues(defaultValues)
+        setGeneralValues(genDefaultValues)
     }
 
     const onAccountCancel = useCallback(() => setConfirmModal(true), [])

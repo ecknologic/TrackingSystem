@@ -40,23 +40,6 @@ const GeneralAccountForm = (props) => {
         }
     }, [])
 
-    const renderDL = () => (
-        <div className='input-container'>
-            <InputLabel name='Delivery Location' error={errors.deliveryLocation} mandatory />
-            <CustomInput value={deliveryLocation} placeholder='Add Location'
-                disabled={disabled} error={errors.deliveryLocation}
-                onChange={(value) => onChange(value, 'deliveryLocation')}
-            />
-        </div>
-    )
-
-    const renderNOB = () => (
-        <div className='input-container'>
-            <InputLabel name='Nature Of Business' error={errors.natureOfBussiness} />
-            <CustomInput value={natureOfBussiness} disabled error={errors.natureOfBussiness} />
-        </div>
-    )
-
     const idUploadDisable = idProofType !== 'panNo' ? Front && Back : Front
     const gstUploadDisable = gstProof
 
@@ -129,7 +112,6 @@ const GeneralAccountForm = (props) => {
                             onChange={(value) => onChange(value, 'customerName')}
                         />
                     </div>
-                    {accountOnly ? null : renderNOB()}
                 </div>
                 <div className='row'>
                     <div className='input-container stretch'>
@@ -149,7 +131,28 @@ const GeneralAccountForm = (props) => {
                         />
 
                     </div>
-                    {accountOnly ? renderNOB() : renderDL()}
+                    <div className='input-container'>
+                        <InputLabel name='Delivery Location' error={errors.deliveryLocation} mandatory />
+                        <CustomInput value={deliveryLocation} placeholder='Add Location'
+                            disabled={disabled} error={errors.deliveryLocation}
+                            onChange={(value) => onChange(value, 'deliveryLocation')}
+                        />
+                    </div>
+                </div>
+                <div className='row'>
+                    <div className='input-container'>
+                        <InputLabel name='Email' error={errors.EmailId} mandatory />
+                        <CustomInput value={EmailId} type='email'
+                            disabled={disabled} placeholder='Email'
+                            error={errors.EmailId}
+                            onBlur={(value) => onBlur(value, 'EmailId')}
+                            onChange={(value) => onChange(value, 'EmailId')}
+                        />
+                    </div>
+                    <div className='input-container'>
+                        <InputLabel name='Nature Of Business' error={errors.natureOfBussiness} />
+                        <CustomInput value={natureOfBussiness} disabled error={errors.natureOfBussiness} />
+                    </div>
                 </div>
                 <div className='row'>
                     <div className='input-container'>
@@ -163,17 +166,6 @@ const GeneralAccountForm = (props) => {
                         />
                     </div>
                     <div className='input-container'>
-                        <InputLabel name='Email' error={errors.EmailId} mandatory />
-                        <CustomInput value={EmailId} type='email'
-                            disabled={disabled} placeholder='Email'
-                            error={errors.EmailId}
-                            onBlur={(value) => onBlur(value, 'EmailId')}
-                            onChange={(value) => onChange(value, 'EmailId')}
-                        />
-                    </div>
-                </div>
-                <div className='row'>
-                    <div className='input-container'>
                         <InputLabel name='Alternate Phone No' error={errors.alternatePhNo} />
                         <CustomInput value={alternatePhNo} placeholder='Alternate Phone Number'
                             error={errors.alternatePhNo} maxLength={15}
@@ -183,16 +175,19 @@ const GeneralAccountForm = (props) => {
                 </div>
                 <div className='row'>
                     <div className='input-container'>
-                        <InputLabel name='Registered Date' error={errors.registeredDate} />
-                        <CustomInput value={dayjs(registeredDate).format(DATEFORMAT)} placeholder='Registered Date' disabled />
-                    </div>
-                    <div className='input-container'>
                         <InputLabel name='Credit Period in Days' error={errors.creditPeriodInDays} mandatory />
                         <CustomInput
                             value={creditPeriodInDays}
                             disabled={disabled} placeholder='Credit Period'
                             error={errors.creditPeriodInDays}
                             onChange={(value) => onChange(value, 'creditPeriodInDays')}
+                        />
+                    </div>
+                    <div className='input-container'>
+                        <InputLabel name='Invoice Type' error={errors.invoicetype} mandatory />
+                        <SelectInput track value={invoicetype}
+                            options={invoiceOptions} disabled={disabled}
+                            error={errors.invoicetype} onSelect={(value) => onChange(value, 'invoicetype')}
                         />
                     </div>
                 </div>
@@ -316,11 +311,8 @@ const GeneralAccountForm = (props) => {
                 }
                 <div className='row'>
                     <div className='input-container'>
-                        <InputLabel name='Invoice Type' error={errors.invoicetype} mandatory />
-                        <SelectInput track value={invoicetype}
-                            options={invoiceOptions} disabled={disabled}
-                            error={errors.invoicetype} onSelect={(value) => onChange(value, 'invoicetype')}
-                        />
+                        <InputLabel name='Registered Date' error={errors.registeredDate} />
+                        <CustomInput value={dayjs(registeredDate).format(DATEFORMAT)} placeholder='Registered Date' disabled />
                     </div>
                     <div className='input-container'>
                         <InputLabel name='Referred By' error={errors.referredBy} />
