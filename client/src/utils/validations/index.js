@@ -852,6 +852,12 @@ export const validateDCValues = (data) => {
         if (!routeId) errors.routeId = text
         if (!driverId) errors.driverId = text
     }
+    else {
+        if (routeId || driverId) {
+            if (!routeId) errors.routeId = text
+            if (!driverId) errors.driverId = text
+        }
+    }
 
     if (!isNewCustomer) {
         if (!existingCustomerId) errors.existingCustomerId = text

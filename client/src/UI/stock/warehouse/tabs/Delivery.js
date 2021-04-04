@@ -16,7 +16,7 @@ import CustomPagination from '../../../../components/CustomPagination';
 import { EditIconGrey, PlusIcon } from '../../../../components/SVG_Icons';
 import { getRouteOptions, getDriverOptions, getDeliveryColumns, getDistributorOptions, getCustomerOptions } from '../../../../assets/fixtures';
 import { validateMobileNumber, validateNames, validateNumber, validateDCValues } from '../../../../utils/validations';
-import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone, getStatusColor, doubleKeyComplexSearch } from '../../../../utils/Functions';
+import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone, getStatusColor, doubleKeyComplexSearch, getProductsForUI } from '../../../../utils/Functions';
 
 const Delivery = ({ date, source }) => {
     const defaultValue = { customerType: 'newCustomer', creationType: 'manual' }
@@ -100,6 +100,21 @@ const Delivery = ({ date, source }) => {
         } catch (error) { }
     }
 
+    const getDistributor = async (id) => {
+        const url = `/distributor/getDistributor/${id}`
+
+        try {
+            showToast({ v1Ing: 'Fetching', action: 'loading' })
+            const [data] = await http.GET(axios, url, config)
+            const { mobileNumber: phoneNumber, address, products, agencyName: customerName } = data
+            const productsUI = getProductsForUI(products)
+            setFormData(data => ({ ...data, phoneNumber, address, customerName, ...productsUI }))
+            showToast({ v2: 'fetched' })
+        } catch (error) {
+            message.destroy()
+        }
+    }
+
     const getDeliveries = async () => {
         const url = `/warehouse/deliveryDetails/${date}`
 
@@ -123,14 +138,14 @@ const Delivery = ({ date, source }) => {
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
         if (key === 'customerType') {
-            setFormData(data => ({ ...data, existingCustomerId: null, customerName: '' }))
+            const productsUI = getProductsForUI([])
+            setFormData(data => ({ ...data, existingCustomerId: null, customerName: '', phoneNumber: null, address: '', ...productsUI }))
         }
 
         if (key === 'existingCustomerId') {
             const { customerType } = formData
             if (customerType === 'distributor') {
-                let customerName = distributorList.find(item => item.distributorId === value).agencyName
-                setFormData(data => ({ ...data, customerName }))
+                getDistributor(value)
             }
             else {
                 let customerName = customerList.find(item => item.customerId === value).customerName
@@ -143,7 +158,7 @@ const Delivery = ({ date, source }) => {
             const error = validateNames(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key === 'mobileNumber') {
+        else if (key === 'phoneNumber') {
             const error = validateMobileNumber(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -155,7 +170,7 @@ const Delivery = ({ date, source }) => {
 
     const handleBlur = (value, key) => {
         // Validations
-        if (key === 'mobileNumber') {
+        if (key === 'phoneNumber') {
             const error = validateMobileNumber(value, true)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }

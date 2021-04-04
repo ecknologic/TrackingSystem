@@ -261,12 +261,12 @@ const WarehouseInvoices = ({ reFetch }) => {
     )
 }
 const renderStatus = (status) => {
-    const color = getStatusColor(status)
-    const text = status === 'Inprogress' ? 'In Progress' : status
+    const modifiedStatus = status === 'Inprogress' ? 'In Progress' : status
+    const color = getStatusColor(modifiedStatus)
     return (
         <div className='status'>
             <span className='app-dot' style={{ background: color }}></span>
-            <span className='status-text'>{text}</span>
+            <span className='status-text'>{modifiedStatus}</span>
         </div>
     )
 }
