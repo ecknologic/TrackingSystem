@@ -39,10 +39,11 @@ const OFDPanel = ({ data }) => {
                     <span className='number'>{total300MLBoxes || '--'}</span>
                 </div>
             </div>
-            <div className='buttons'>
+            {/* Below items should be: uncommented  */}
+            {/* <div className='buttons'>
                 <CustomButton text='21 - D.C Details' className='app-stock-btn' />
                 <CustomButton text='Get Reports' className='app-stock-btn' />
-            </div>
+            </div> */}
         </div>
     )
 }

@@ -21,6 +21,7 @@ const SideMenu = () => {
     const [confirm, setConfirm] = useState(false)
     const clickRef = useRef('')
 
+    const showDashboard = ROLE === SUPERADMIN || ROLE === WAREHOUSEADMIN || ROLE === MOTHERPLANTADMIN
     const mainPathname = getMainPathname(pathname)
 
     const menu = useMemo(() => getSideMenuKey(pathname), [mainPathname])
@@ -53,9 +54,13 @@ const SideMenu = () => {
                 selectedKeys={selected}
                 onSelect={handleMenuSelect}
             >
-                <Item key='/dashboard' icon={selected === '/dashboard' ? <DashboardIcon /> : <DashboardIconLight />}>
-                    <span>Dashboard</span>
-                </Item>
+                {
+                    showDashboard && (
+                        <Item key='/dashboard' icon={selected === '/dashboard' ? <DashboardIcon /> : <DashboardIconLight />}>
+                            <span>Dashboard</span>
+                        </Item>
+                    )
+                }
                 {
                     ROLE === MOTHERPLANTADMIN ?
                         <>
@@ -92,9 +97,10 @@ const SideMenu = () => {
                             <Item key='/manage-routes' icon={selected === '/manage-routes' ? <LocationIcon /> : <LocationIconLight />}>
                                 Routes
                             </Item>
-                            <Item key='/reports' style={{ pointerEvents: 'none' }} icon={selected === '/reports' ? <ReportIcon /> : <ReportIconLight />}>
+                            {/* Below item should be: uncommented */}
+                            {/* <Item key='/reports' style={{ pointerEvents: 'none' }} icon={selected === '/reports' ? <ReportIcon /> : <ReportIconLight />}>
                                 Reports
-                            </Item>
+                            </Item> */}
                         </>
                         : null
                 }
@@ -107,9 +113,10 @@ const SideMenu = () => {
                             <Item key='/add-customer' icon={selected === '/add-customer' ? <FriendReqIcon /> : <FriendReqIconLight />}>
                                 Add Customer
                             </Item>
-                            <Item key='/customerDashboard' style={{ pointerEvents: 'none' }} icon={selected === '/customerDashboard' ? <SettingIcon /> : <SettingIconLight />}>
+                            {/* Below item should be: uncommented */}
+                            {/* <Item key='/customerDashboard' style={{ pointerEvents: 'none' }} icon={selected === '/customerDashboard' ? <SettingIcon /> : <SettingIconLight />}>
                                 Settings
-                            </Item>
+                            </Item> */}
                         </>
                         : null
                 }
@@ -148,9 +155,10 @@ const SideMenu = () => {
                             <Item key='/invoices' icon={selected === '/invoices' ? <DocIcon /> : <DocIconLight />}>
                                 Invoices
                             </Item>
-                            <Item key='/settings' style={{ pointerEvents: 'none' }} icon={selected === '/settings' ? <SettingIcon /> : <SettingIconLight />}>
+                            {/* Below item should be: uncommented */}
+                            {/* <Item key='/settings' style={{ pointerEvents: 'none' }} icon={selected === '/settings' ? <SettingIcon /> : <SettingIconLight />}>
                                 Settings
-                            </Item>
+                            </Item> */}
                         </>
                         : null
                 }
@@ -163,9 +171,10 @@ const SideMenu = () => {
                             <Item key='/invoices' icon={selected === '/invoices' ? <DocIcon /> : <DocIconLight />}>
                                 Invoices
                             </Item>
-                            <Item key='/settings' style={{ pointerEvents: 'none' }} icon={selected === '/settings' ? <SettingIcon /> : <SettingIconLight />}>
+                            {/* Below item should be: uncommented */}
+                            {/* <Item key='/settings' style={{ pointerEvents: 'none' }} icon={selected === '/settings' ? <SettingIcon /> : <SettingIconLight />}>
                                 Settings
-                            </Item>
+                            </Item> */}
                         </>
                         : null
                 }

@@ -177,7 +177,8 @@ const PanelHeader = memo((props) => {
                     </div>
                 </div>
                 <div className='secondary'>
-                    {hideReports ? null : <ReportsDropdown inverse />}
+                    {/* Below item should be: uncommented */}
+                    {/* {hideReports ? null : <ReportsDropdown inverse />} */}
                 </div>
             </div>
             {

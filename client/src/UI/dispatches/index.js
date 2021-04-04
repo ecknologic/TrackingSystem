@@ -86,7 +86,8 @@ const Dispatche = () => {
             <div className='dispatches-content'>
                 <div className='app-tabs-container'>
                     <Tabs
-                        tabBarExtraContent={<ReportsDropdown />}
+                        // Below item should be: uncommented 
+                        // tabBarExtraContent={<ReportsDropdown />}
                         activeKey={activeTab}
                         onChange={(key) => setActiveTab(key)}
                     >

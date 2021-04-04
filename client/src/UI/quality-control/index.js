@@ -27,7 +27,8 @@ const QualityControl = () => {
             <div className='quality-check-content'>
                 <div className='app-tabs-container'>
                     <Tabs
-                        tabBarExtraContent={<ReportsDropdown />}
+                        // Below item should be: uncommented 
+                        // tabBarExtraContent={<ReportsDropdown />}
                         activeKey={activeTab}
                         onChange={(key) => setActiveTab(key)}
                     >
@@ -46,9 +47,10 @@ const QualityControl = () => {
                         <TabPane tab="Tested Batches (Production)" key="5">
                             <ProductionTB reFetch={reFetch} />
                         </TabPane>
-                        <TabPane tab="Quality Control (External)" key="6" disabled>
+                        {/* Below item should be: uncommented  */}
+                        {/* <TabPane tab="Quality Control (External)" key="6" disabled>
                             <NoContent content='Design is in progress' />
-                        </TabPane>
+                        </TabPane> */}
                     </Tabs>
                 </div>
             </div>

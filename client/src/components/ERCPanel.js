@@ -32,10 +32,11 @@ const ERCPanel = () => {
                     <span className='number'>--</span>
                 </div>
             </div>
-            <div className='buttons'>
+            {/* Below item should be: uncommented  */}
+            {/* <div className='buttons'>
                 <CustomButton text='View Details' className='app-stock-btn' />
                 <CustomButton text='Get Reports' className='app-stock-btn' />
-            </div>
+            </div> */}
         </div>
     )
 }

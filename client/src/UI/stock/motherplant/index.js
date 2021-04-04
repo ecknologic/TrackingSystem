@@ -59,14 +59,16 @@ const MotherplantStock = () => {
             <div className='stock-manager-content'>
                 <div className='app-tabs-container app-hidden-panes'>
                     <Tabs
-                        tabBarExtraContent={<ReportsDropdown />}
+                        // Below item should be: uncommented 
+                        // tabBarExtraContent={<ReportsDropdown />}
                         onChange={handleTabClick}
                         activeKey={activeTab}
                     >
                         <TabPane tab="Stock Details" key="1" />
                         <TabPane tab="Production" key="2" />
                         <TabPane tab="Quality Control (Internal)" key="3" />
-                        <TabPane tab="Damaged Stock" key="4" disabled />
+                        {/* Below item should be: uncommented  */}
+                        {/* <TabPane tab="Damaged Stock" key="4" disabled /> */}
                     </Tabs>
                 </div>
                 {

@@ -68,7 +68,8 @@ const CASPanel = ({ data, newStock, onConfirm, arrivedStock, btnDisabled }) => {
                         : showGreen ? <CustomButton text='Confirmed' className='app-stock-btn green-btn' />
                             : null
                 }
-                <CustomButton text='Get Reports' className='app-stock-btn' />
+                {/* Below item should be: uncommented  */}
+                {/* <CustomButton text='Get Reports' className='app-stock-btn' /> */}
             </div>
         </div>
     )

@@ -36,7 +36,8 @@ const Materials = () => {
             <div className='materials-content'>
                 <div className='app-tabs-container'>
                     <Tabs
-                        tabBarExtraContent={<ReportsDropdown />}
+                        // Below item should be: uncommented 
+                        // tabBarExtraContent={<ReportsDropdown />}
                         activeKey={activeTab}
                         onChange={(key) => setActiveTab(key)}
                     >
@@ -52,9 +53,10 @@ const Materials = () => {
                         <TabPane tab="Received Materials" key="4">
                             <ReceivedMaterials />
                         </TabPane>
-                        <TabPane tab="Current Stock" key="5" disabled>
+                        {/* Below item should be: uncommented */}
+                        {/* <TabPane tab="Current Stock" key="5" disabled>
                             <NoContent content='Design is in progress' />
-                        </TabPane>
+                        </TabPane> */}
                     </Tabs>
                 </div>
             </div>

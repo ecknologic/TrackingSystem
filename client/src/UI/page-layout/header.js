@@ -15,9 +15,10 @@ const Header = () => {
                 <BiboIcon />
             </div>
             <div id='nav-container'>
-                <SettingIconGrey className='nav-icon' />
-                <NotificationIconGrey className='nav-icon' onClick={() => setNotifDrawerOpen(true)} />
-                <ChatIconGrey className='nav-icon' />
+                {/* Below 3 lines should be: uncommented */}
+                {/* <SettingIconGrey className='nav-icon' /> */}
+                {/* <NotificationIconGrey className='nav-icon' onClick={() => setNotifDrawerOpen(true)} /> */}
+                {/* <ChatIconGrey className='nav-icon' /> */}
                 <Profile userName={userName} />
             </div >
             <NotificationDrawer onClose={() => setNotifDrawerOpen(false)} visible={notifDrawerOpen} />

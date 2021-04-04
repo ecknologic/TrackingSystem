@@ -18,11 +18,11 @@
         #nav-container {
             height: 100%;
             min-width: 10em;
-            border-left: 1px solid  #E2E2EA;
+            // border-left: 1px solid  #E2E2EA; // should be: uncommented
             padding: 0 1em;
     
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end; // should be: space-between
             align-items: center;
 
             .nav-icon {

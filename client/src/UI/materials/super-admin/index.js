@@ -14,7 +14,8 @@ const Materials = () => {
             <div className='materials-content'>
                 <div className='app-tabs-container'>
                     <Tabs
-                        tabBarExtraContent={<ReportsDropdown />}
+                    // Below item should be: uncommented 
+                    // tabBarExtraContent={<ReportsDropdown />}
                     >
                         <TabPane tab="Requested Materials" key="1">
                             <RequestedMaterialStatus isSuperAdmin />

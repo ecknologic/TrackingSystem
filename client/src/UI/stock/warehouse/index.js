@@ -38,7 +38,8 @@ const WarehouseStock = () => {
             <div className='stock-manager-content'>
                 <div className='app-tabs-container app-hidden-panes'>
                     <Tabs
-                        tabBarExtraContent={<ReportsDropdown />}
+                        // Below item should be: uncommented 
+                        // tabBarExtraContent={<ReportsDropdown />}
                         onChange={handleTabClick}
                         activeKey={activeTab}
                     >

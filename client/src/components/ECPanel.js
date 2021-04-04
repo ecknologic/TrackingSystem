@@ -34,9 +34,10 @@ const ECPanel = ({ confirmed, mpReturned, whReturned, onAdd }) => {
                     </div>
                 </div>
             </div>
-            <div className='buttons'>
+            {/* Below item should be: uncommented  */}
+            {/* <div className='buttons'>
                 <CustomButton text='Get Reports' className='app-stock-btn' />
-            </div>
+            </div> */}
         </div>
     )
 }
