@@ -176,6 +176,14 @@ export const doubleKeyComplexSearch = (data, matcher, key1, key2) => {
         return (match1 || match2)
     })
 }
+export const tripleKeyComplexSearch = (data, matcher, key1, key2, key3) => {
+    return data.filter((item) => {
+        const match1 = item[key1] && String(item[key1]).toLowerCase().includes(matcher.toLowerCase())
+        const match2 = item[key2] && String(item[key2]).toLowerCase().includes(matcher.toLowerCase())
+        const match3 = item[key3] && String(item[key3]).toLowerCase().includes(matcher.toLowerCase())
+        return (match1 || match2 || match3)
+    })
+}
 export const filterAccounts = (accountsClone, filterInfo) => {
     const { business, status, account } = filterInfo
     let singleFiltered = [], allFiltered = []

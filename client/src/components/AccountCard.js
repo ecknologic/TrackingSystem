@@ -35,6 +35,7 @@ const AccountCard = ({ data, onClick, btnTxt = 'Manage Account', onSelect, isAdm
                     {contacts > 1 ? <FriendsIconGrey className='friends icon' /> : <FriendIconGrey className='friend icon' />}
                     <div className='address-container'>
                         <span className='title clamp-1'>{organizationName || customerName}</span>
+                        <span className='id'>{customerId}</span>
                         <span className='address clamp-2'>{address}</span>
                     </div>
                 </div>
