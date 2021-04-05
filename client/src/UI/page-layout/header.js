@@ -12,7 +12,7 @@ const Header = () => {
     return (
         <Layout.Header id='app-header'>
             <div id="logo-container">
-                <BiboIcon />
+                <BiboIcon className='app-logo' />
             </div>
             <div id='nav-container'>
                 {/* Below 3 lines should be: uncommented */}

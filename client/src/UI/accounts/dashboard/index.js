@@ -9,7 +9,7 @@ import NoContent from '../../../components/NoContent';
 import { getUserId } from '../../../utils/constants';
 import AccountCard from '../../../components/AccountCard';
 import CustomPagination from '../../../components/CustomPagination';
-import { complexDateSort, complexSort, doubleKeyComplexSearch, filterAccounts } from '../../../utils/Functions'
+import { complexDateSort, complexSort, tripleKeyComplexSearch, filterAccounts } from '../../../utils/Functions'
 
 const Accounts = () => {
     const USERID = getUserId()
@@ -57,7 +57,7 @@ const Accounts = () => {
             setSeachON(false)
             return
         }
-        const result = doubleKeyComplexSearch(accountsClone, value, 'organizationName', 'customerName')
+        const result = tripleKeyComplexSearch(accountsClone, value, 'organizationName', 'customerName', 'customerId')
         setTotalCount(result.length)
         setAccounts(result)
         setSeachON(true)

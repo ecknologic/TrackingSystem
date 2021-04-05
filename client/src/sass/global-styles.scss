@@ -22,6 +22,10 @@ $textColorDisabled:rgba(0,0,0,0.55);
     width: 100%;
 }
 
+.app-logo {
+    transform: scale(.85);
+}
+
 // -------------- Text Overflow styles ------------------- //
 
 @mixin clamp {

@@ -11,7 +11,7 @@ import AccountCard from '../../components/AccountCard';
 import DeleteModal from '../../components/CustomModal';
 import ConfirmMessage from '../../components/ConfirmMessage';
 import CustomPagination from '../../components/CustomPagination';
-import { complexDateSort, complexSort, doubleKeyComplexSearch, filterAccounts, showToast } from '../../utils/Functions'
+import { complexDateSort, complexSort, tripleKeyComplexSearch, filterAccounts, showToast } from '../../utils/Functions'
 import '../../sass/customers.scss'
 
 const Customers = () => {
@@ -74,7 +74,7 @@ const Customers = () => {
             setSeachON(false)
             return
         }
-        const result = doubleKeyComplexSearch(accountsClone, value, 'organizationName', 'customerName')
+        const result = tripleKeyComplexSearch(accountsClone, value, 'organizationName', 'customerName', 'customerId')
         setTotalCount(result.length)
         setAccounts(result)
         setSeachON(true)
