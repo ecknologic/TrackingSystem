@@ -1,9 +1,9 @@
 import axios from 'axios';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
-import Header from './header';
 import { http } from '../../../modules/http';
 import SalesResults from './panels/SalesResults';
 import TotalBusiness from './panels/TotalBusiness';
+import Header from '../../../components/ContentHeader';
 import InvoiceOverview from './panels/InvoiceOverview';
 import CustomersOverview from './panels/CustomersOverview';
 import ProductionResults from './panels/ProductionResults';

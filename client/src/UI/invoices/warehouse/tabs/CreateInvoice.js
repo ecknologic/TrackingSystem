@@ -180,7 +180,9 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
 
         if (key === 'dcNo') {
             const dc = DCList.find(item => item.dcNo === value)
-            setFormData(data => ({ ...data, ...dc }))
+            let { customerId, distributorId } = dc
+            customerId = customerId || distributorId
+            setFormData(data => ({ ...data, ...dc, customerId }))
 
             if ((dc.gstNo || "").startsWith('36')) setIsLocal(true)
             else setIsLocal(false)

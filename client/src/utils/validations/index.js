@@ -843,36 +843,41 @@ export const validateDCValues = (data) => {
     const text = 'Required'
 
     const { routeId, customerName, customerType, existingCustomerId, phoneNumber, address,
-        driverId, ...rest } = data
+        driverId, distributorId, ...rest } = data
 
     const isDistributor = customerType === 'distributor'
-    const isNewCustomer = customerType === 'newCustomer'
+    const isExistingCustomer = customerType === 'internal'
 
     if (isDistributor) {
         if (!routeId) errors.routeId = text
         if (!driverId) errors.driverId = text
+        if (!distributorId) errors.distributorId = text
     }
     else {
         if (routeId || driverId) {
             if (!routeId) errors.routeId = text
             if (!driverId) errors.driverId = text
         }
+
+        if (isExistingCustomer) {
+            if (!existingCustomerId) errors.existingCustomerId = text
+        }
+        else {
+            if (!customerName) errors.customerName = text
+            else {
+                const error = validateNames(customerName)
+                error && (errors.customerName = error)
+            }
+        }
     }
 
-    if (!isNewCustomer) {
-        if (!existingCustomerId) errors.existingCustomerId = text
-    }
+
 
     if (!address) errors.address = text
     if (!phoneNumber) errors.phoneNumber = text
     else {
         const error = validateMobileNumber(phoneNumber, true)
         error && (errors.phoneNumber = error)
-    }
-    if (!customerName) errors.customerName = text
-    else {
-        const error = validateNames(customerName)
-        error && (errors.customerName = error)
     }
     const productErrors = validateProducts(rest)
     return { ...errors, ...productErrors }

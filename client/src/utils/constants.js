@@ -33,9 +33,9 @@ export const getDesignation = () => {
     const user = JSON.parse(sessionStorage.getItem('user'))
     if (user) {
         const { role } = user
-        if (role === MOTHERPLANTADMIN) return 'Mother Plant Manager - Admin'
-        else if (role === WAREHOUSEADMIN) return 'Warehouse Manager - Admin'
-        else if (role === SUPERADMIN) return 'Chief Executive Officer - Super Admin'
+        if (role === MOTHERPLANTADMIN) return 'Mother Plant Admin'
+        else if (role === WAREHOUSEADMIN) return 'Warehouse Admin'
+        else if (role === SUPERADMIN) return 'Super Admin'
         return ''
     }
     return ''

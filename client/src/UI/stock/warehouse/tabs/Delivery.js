@@ -139,22 +139,21 @@ const Delivery = ({ date, source }) => {
 
         if (key === 'customerType') {
             const productsUI = getProductsForUI([])
-            setFormData(data => ({ ...data, existingCustomerId: null, customerName: '', phoneNumber: null, address: '', ...productsUI }))
+            setFormData(data => ({
+                ...data, existingCustomerId: null, customerName: '', phoneNumber: null,
+                distributorId: null, address: '', ...productsUI
+            }))
         }
-
-        if (key === 'existingCustomerId') {
-            const { customerType } = formData
-            if (customerType === 'distributor') {
-                getDistributor(value)
-            }
-            else {
-                let customerName = customerList.find(item => item.customerId === value).customerName
-                setFormData(data => ({ ...data, customerName }))
-            }
+        else if (key === 'distributorId') {
+            getDistributor(value)
+        }
+        else if (key === 'existingCustomerId') {
+            let customerName = customerList.find(item => item.customerId === value).customerName
+            setFormData(data => ({ ...data, customerName }))
         }
 
         // Validations
-        if (key === 'customerName') {
+        else if (key === 'customerName') {
             const error = validateNames(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
