@@ -229,7 +229,11 @@ router.post("/generateMultipleInvoices", (req, res) => {
 
 router.post("/createDepartmentInvoice", (req, res) => {
     req.body.departmentId = departmentId
-    saveDepartmentInvoice(req.body, res, true)
+    invoiceQueries.getDepartmentInvoiceByDCNO(req.body.dcNo, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else if (results.length) res.status(400).json({ message: "Invoice already created with this DC number" })
+        else saveDepartmentInvoice(req.body, res, true)
+    })
 });
 
 router.post("/createInvoice", (req, res) => {

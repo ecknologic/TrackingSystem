@@ -27,6 +27,10 @@ invoiceQueries.getInvoiceByDepartment = async (departmentId, callback) => {
 
     return executeGetParamsQuery(query, [departmentId], callback)
 }
+invoiceQueries.getDepartmentInvoiceByDCNO = (dcNo, callback) => {
+    let query = `select * from departmentInvoices where dcNo=?`;
+    return executeGetParamsQuery(query, [dcNo], callback)
+}
 
 invoiceQueries.getInvoiceById = async (input, callback) => {
     const { invoiceId, departmentId } = input
