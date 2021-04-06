@@ -6,7 +6,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http'
 import Actions from '../../../../components/Actions';
 import Spinner from '../../../../components/Spinner';
-import { TODAYDATE } from '../../../../utils/constants';
+import { SUPERADMIN, TODAYDATE } from '../../../../utils/constants';
 import DateValue from '../../../../components/DateValue';
 import SearchInput from '../../../../components/SearchInput';
 import CustomButton from '../../../../components/CustomButton';
@@ -125,7 +125,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
         else handleStatusUpdate(data.invoiceId)
     }
 
-    const handleViewInvoice = (invoice) => history.push('/invoices/manage', { invoice })
+    const handleViewInvoice = (invoice) => history.push('/invoices/manage', { invoice, FOR: SUPERADMIN })
 
     const datePickerStatus = (status) => {
         !status && setOpen(false)

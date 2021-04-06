@@ -10,9 +10,9 @@ const fs = require('fs')
 
 const sendMail = ({ message, mailId, body, attachment, invoiceId }) => {
     var transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 465,
+        host: "smtpout.secureserver.net",
         secure: true,
+        secureConnection: false,
         auth: {
             user: process.env.MAIL_USER,
             pass: process.env.MAIL_PASSWORD
@@ -20,10 +20,10 @@ const sendMail = ({ message, mailId, body, attachment, invoiceId }) => {
     });
     const attachments = [{ filename: `${invoiceId}.pdf`, content: attachment, contentType: 'application/pdf' }];
     var mailOptions = {
-        from: 'praveen14568@gmail.com',
+        from: 'cc@bibowater.com',
         to: mailId,
-        subject: 'Sending Email using Node.js',
-        text: 'That was easy!',
+        subject: 'Bibo Invoice',
+        text: 'Check your invoice details in the below attachment',
         attachments
     };
 

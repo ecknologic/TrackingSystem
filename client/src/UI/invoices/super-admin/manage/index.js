@@ -20,7 +20,6 @@ const Invoices = () => {
     const [activeMsg, setActiveMsg] = useState(state ? state.invoice : {})
 
     const mainUrl = useMemo(() => getMainPathname(pathname), [pathname])
-    const isSuperAdmin = useMemo(() => getRole() === SUPERADMIN, [])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
@@ -42,9 +41,12 @@ const Invoices = () => {
     }
 
     const getInvoices = async () => {
+        const { FOR } = state || {}
 
         let url = '/invoice/getDepartmentInvoices'
-        if (isSuperAdmin) url = '/invoice/getInvoices'
+        if (FOR === SUPERADMIN) {
+            url = '/invoice/getInvoices'
+        }
 
         try {
             setLoading(true)
