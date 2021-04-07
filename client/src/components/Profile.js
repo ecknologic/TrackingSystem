@@ -1,6 +1,7 @@
 import React from 'react';
 import { Dropdown, Menu, message } from 'antd';
 import { useHistory } from 'react-router-dom';
+import useUser from '../utils/hooks/useUser';
 import AvatarText from './AvatarText';
 import { DDownIcon } from './SVG_Icons';
 import NameCard from './NameCard';
@@ -8,9 +9,11 @@ import '../sass/profile.scss'
 
 const Profile = ({ userName = '' }) => {
     const history = useHistory()
+    const { setUser } = useUser()
 
     const handleSelect = ({ key }) => {
         if (key === 'logout') {
+            setUser({})
             sessionStorage.clear()
             history.replace('/')
             message.success("Logged out successfully.")

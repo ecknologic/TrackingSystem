@@ -5,6 +5,8 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
 import Actions from '../../../../components/Actions';
 import Spinner from '../../../../components/Spinner';
+import useUser from '../../../../utils/hooks/useUser';
+import { TODAYDATE } from '../../../../utils/constants';
 import DateValue from '../../../../components/DateValue';
 import DCView from '../../../accounts/view/views/DCView';
 import CustomModal from '../../../../components/CustomModal';
@@ -15,7 +17,6 @@ import RoutesFilter from '../../../../components/RoutesFilter';
 import { EyeIconGrey } from '../../../../components/SVG_Icons';
 import { getDeliveryColumns } from '../../../../assets/fixtures';
 import CustomDateInput from '../../../../components/CustomDateInput';
-import { getWarehoseId, TODAYDATE } from '../../../../utils/constants';
 import CustomPagination from '../../../../components/CustomPagination';
 import CustomRangeInput from '../../../../components/CustomRangeInput';
 import { getStatusColor, doubleKeyComplexSearch } from '../../../../utils/Functions';
@@ -23,7 +24,7 @@ const APIDATEFORMAT = 'YYYY-MM-DD'
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
 const DeliveredDC = () => {
-    const departmentId = getWarehoseId()
+    const { WAREHOUSEID } = useUser()
     const [customerList, setCustomerList] = useState([])
     const [loading, setLoading] = useState(true)
     const [customerIds, setCustomerIds] = useState([])
@@ -61,7 +62,7 @@ const DeliveredDC = () => {
     }, [])
 
     const getCustomerList = async () => {
-        const url = `/customer/getCustomerNames`
+        const url = `customer/getCustomerNames`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -70,7 +71,7 @@ const DeliveredDC = () => {
     }
 
     const getDeliveries = async () => {
-        const url = `/warehouse/getAllDcDetails?fromDate=${startDate}&toDate=${endDate}&departmentId=${departmentId}&customerIds=${customerIds}`
+        const url = `warehouse/getAllDcDetails?fromDate=${startDate}&toDate=${endDate}&departmentId=${WAREHOUSEID}&customerIds=${customerIds}`
 
         try {
             const data = await http.GET(axios, url, config)

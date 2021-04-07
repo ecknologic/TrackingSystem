@@ -36,7 +36,7 @@ const Invoice = ({ reFetch, accountId }) => {
     }, [reFetch])
 
     const getInvoices = async () => {
-        const url = `/invoice/getCustomerInvoices/${accountId}`
+        const url = `invoice/getCustomerInvoices/${accountId}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -76,7 +76,7 @@ const Invoice = ({ reFetch, accountId }) => {
     const handleStatusUpdate = async (action, invoiceId) => {
         const status = action === 'paid' ? 'Paid' : 'Pending'
         const options = { item: 'Invoice status', v1Ing: 'Updating', v2: 'updated' }
-        const url = `/invoice/updateInvoiceStatus`
+        const url = `invoice/updateInvoiceStatus`
         const body = { status, invoiceId }
         try {
             showToast({ ...options, action: 'loading' })

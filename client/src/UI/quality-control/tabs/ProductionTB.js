@@ -44,7 +44,7 @@ const ProductionTB = ({ reFetch }) => {
     }, [reFetch])
 
     const getTB = async () => {
-        const url = '/motherPlant/getProdQCTestedBatches'
+        const url = 'motherPlant/getProdQCTestedBatches'
 
         try {
             const data = await http.GET(axios, url, config)

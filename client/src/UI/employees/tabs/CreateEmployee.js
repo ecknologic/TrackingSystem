@@ -51,7 +51,7 @@ const CreateEmployee = ({ goToTab }) => {
     }, [])
 
     const getRoleList = async () => {
-        const url = '/roles/getRoles'
+        const url = 'roles/getRoles'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -60,7 +60,7 @@ const CreateEmployee = ({ goToTab }) => {
     }
 
     const getDepartmentList = async () => {
-        const url = '/bibo/getAllDepartmentsList?hasNone=true&availableOnly=true'
+        const url = 'bibo/getAllDepartmentsList?hasNone=true&availableOnly=true'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -349,8 +349,8 @@ const CreateEmployee = ({ goToTab }) => {
 }
 
 const getUrl = (type) => {
-    const staffUrl = '/users/createWebUser'
-    const driverUrl = '/driver/createDriver'
+    const staffUrl = 'users/createWebUser'
+    const driverUrl = 'driver/createDriver'
 
     if (type === 'Staff') return staffUrl
     return driverUrl

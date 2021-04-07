@@ -9,6 +9,7 @@ import DeliveryView from './views/Delivery';
 import { http } from '../../../modules/http'
 import ApprovalForm from './forms/ApprovalForm';
 import Spinner from '../../../components/Spinner';
+import useUser from '../../../utils/hooks/useUser';
 import ScrollUp from '../../../components/ScrollUp';
 import CollapseForm from '../add/forms/CollapseForm';
 import NoContent from '../../../components/NoContent';
@@ -25,16 +26,16 @@ import {
     getIdProofsForDB, getAddressesForDB, isEmpty, showToast, extractCADetails, base64String, getDevDays,
     getProductsForUI, resetSessionItems, getSessionItems, resetTrackForm, getBase64
 } from '../../../utils/Functions';
-import { ACCOUNTSADMIN, getRole, SUPERADMIN, TRACKFORM } from '../../../utils/constants';
+import { ACCOUNTSADMIN, SUPERADMIN, TRACKFORM } from '../../../utils/constants';
 import {
     validateAccountValues, validateAddresses, validateIDNumbers, validateNames, validateNumber,
     validateMobileNumber, validateEmailId, compareMaxNumber, validateIDProofs
 } from '../../../utils/validations';
 
 const ApproveAccount = () => {
-    const { accountId } = useParams()
+    const { ROLE } = useUser()
     const history = useHistory()
-    const [role] = useState(() => getRole())
+    const { accountId } = useParams()
     const [accountValues, setAccountValues] = useState({ loading: true })
     const [headerContent, setHeaderContent] = useState({})
     const [loading, setLoading] = useState(true)
@@ -60,7 +61,7 @@ const ApproveAccount = () => {
 
     const confirmMsg = 'Changes you made may not be saved.'
     const showTrashIcon = useMemo(() => addresses.length !== 1, [addresses.length])
-    const isAdmin = useMemo(() => role === SUPERADMIN || role === ACCOUNTSADMIN, [])
+    const isAdmin = useMemo(() => ROLE === SUPERADMIN || ROLE === ACCOUNTSADMIN, [])
     const { organizationName, customerId, customertype, customerName, depositAmount, isSuperAdminApproved } = accountValues
     const canApprove = isAdmin || isSuperAdminApproved || Number(depositAmount)
     const source = useMemo(() => axios.CancelToken.source(), []);
@@ -78,7 +79,7 @@ const ApproveAccount = () => {
     }, [])
 
     const getAccount = async () => {
-        const url = `/customer/getCustomerDetailsById/${accountId}`
+        const url = `customer/getCustomerDetailsById/${accountId}`
         try {
             const { data: [data = {}] } = await http.GET(axios, url, config)
             const { gstProof, idProof_frontside, idProof_backside, Address1, registeredDate, ...rest } = data
@@ -104,7 +105,7 @@ const ApproveAccount = () => {
     }
 
     const getAddresses = async () => {
-        const url = `/customer/getCustomerDeliveryDetails/${accountId}?isSuperAdmin=${isAdmin}`
+        const url = `customer/getCustomerDeliveryDetails/${accountId}?isSuperAdmin=${isAdmin}`
         try {
             const { data: [data = {}] } = await http.GET(axios, url, config)
             const { deliveryDetails = [] } = data
@@ -125,7 +126,7 @@ const ApproveAccount = () => {
     }
 
     const getWarehouseList = async () => {
-        const url = '/bibo/getDepartmentsList?departmentType=warehouse'
+        const url = 'bibo/getDepartmentsList?departmentType=warehouse'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -273,7 +274,7 @@ const ApproveAccount = () => {
 
     const updateCustomer = async (body) => {
         try {
-            const url = '/customer/updateCustomer'
+            const url = 'customer/updateCustomer'
             await http.POST(axios, url, body, config)
             return Promise.resolve()
         } catch (error) {
@@ -284,7 +285,7 @@ const ApproveAccount = () => {
     const updateAddresses = async (body) => {
 
         try {
-            const url = '/customer/updateDeliveryDetails'
+            const url = 'customer/updateDeliveryDetails'
             if (body.length) {
                 await http.POST(axios, url, body, config)
             }
@@ -300,7 +301,7 @@ const ApproveAccount = () => {
             const total = removedAddressIds.length
             for (let index = 0; index < total; index++) {
                 const id = removedAddressIds[index]
-                const url = `/customer/deleteDelivery/${id}`
+                const url = `customer/deleteDelivery/${id}`
                 promises.push(http.DELETE(axios, url, config))
             }
             await Promise.all(promises)
@@ -344,7 +345,7 @@ const ApproveAccount = () => {
 
     const onAccountApprove = async () => {
         const options = { item: 'Customer', action: 'loading', v1Ing: 'Approving' }
-        const url = `/customer/approveCustomer/${customerId}`
+        const url = `customer/approveCustomer/${customerId}`
         const body = {
             deliveryDetailsIds: activeAddressIds,
             isSuperAdminApproved: isSuperAdminApproved || (Number(depositAmount) === 0 ? Number(isAdmin) : 0)

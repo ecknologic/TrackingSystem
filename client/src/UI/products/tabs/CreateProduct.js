@@ -61,7 +61,7 @@ const CreateProduct = ({ goToTab }) => {
         }
 
         let body = { ...formData }
-        const url = '/products/createProduct'
+        const url = 'products/createProduct'
         const options = { item: 'Product', v1Ing: 'Adding', v2: 'added' }
 
         try {

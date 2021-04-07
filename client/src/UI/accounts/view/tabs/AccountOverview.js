@@ -182,7 +182,7 @@ const AccountOverview = ({ data, onUpdate, isAdmin }) => {
         const idProofs = getIdProofsForDB(IDProofs, idProofType)
         const account = customertype === 'Corporate' ? extractCADetails(accountValues) : extractGADetails(accountValues)
 
-        const url = '/customer/updateCustomer'
+        const url = 'customer/updateCustomer'
         const body = { ...account, idProofs }
         const options = { item: 'Customer', v1Ing: 'Updating', v2: 'updated' }
 

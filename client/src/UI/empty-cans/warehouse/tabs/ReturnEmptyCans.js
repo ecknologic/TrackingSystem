@@ -3,13 +3,13 @@ import { message } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import EmptyCansForm from '../forms/EmptyCans';
 import { http } from '../../../../modules/http';
-import { getWarehoseId } from '../../../../utils/constants';
+import useUser from '../../../../utils/hooks/useUser';
 import CustomButton from '../../../../components/CustomButton';
 import { isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 import { validateNumber, validateRECValues } from '../../../../utils/validations';
 
 const ReturnEmptyCans = ({ goToTab, fetchList, driverList, ...rest }) => {
-    const warehouseId = getWarehoseId()
+    const { WAREHOUSEID } = useUser()
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
@@ -69,7 +69,7 @@ const ReturnEmptyCans = ({ goToTab, fetchList, driverList, ...rest }) => {
 
         let url = '/warehouse/returnEmptyCans'
         const body = {
-            ...formData, warehouseId
+            ...formData, WAREHOUSEID
         }
         const options = { item: 'Empty Cans', v1Ing: 'Returning', v2: 'returned' }
 

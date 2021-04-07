@@ -1,39 +1,19 @@
-import axios from 'axios';
-import React, { useEffect, useMemo, useState } from 'react'
-import { useSessionStorage } from '../../utils/hooks/sessionHook';
-import { Form, Row, Col, Input, Card, Button, Checkbox, message } from 'antd'
-import image from '../../assets/images/login_img.png'
-import { QuestionCircleFilled } from '@ant-design/icons';
-import { createOrUpdateAPI } from '../../utils/apis';
-import { BiboIcon } from '../../components/SVG_Icons';
+import React, { useContext, useState } from 'react'
 import { useHistory } from 'react-router-dom';
-import { http } from '../../modules/http';
+import { QuestionCircleFilled } from '@ant-design/icons';
+import { Form, Row, Col, Input, Card, Button, Checkbox, message } from 'antd'
+import useUser from '../../utils/hooks/useUser';
+import { createOrUpdateAPI } from '../../utils/apis';
+import image from '../../assets/images/login_img.png'
+import { BiboIcon } from '../../components/SVG_Icons';
 import './login.css'
 
 const Login = () => {
     const history = useHistory()
-    const [, setRoleInfo] = useSessionStorage('roleInfo')
+    const { setUser } = useUser()
     const [username, setUserName] = useState('');
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState({});
-
-    const source = useMemo(() => axios.CancelToken.source(), []);
-    const config = { cancelToken: source.token }
-
-    useEffect(() => {
-        return () => {
-            http.ABORT(source)
-        }
-    }, [])
-
-    const getRoleInfo = async (id) => {
-        const url = `/warehouse/getWarehouseDetails/${id}`
-
-        try {
-            const { data } = await http.GET(axios, url)
-            setRoleInfo(data)
-        } catch (error) { }
-    }
 
     const loginBtn = () => {
         let errors1 = {};
@@ -48,18 +28,11 @@ const Login = () => {
             createOrUpdateAPI('bibo/login?webUser=true', userData, "POST")
                 .then(response => {
                     if (response.status == 200) {
-                        let { isLogged, warehouseId, userName, id, role, roleId } = response;
-                        // sessionStorage.setItem("token", token)
-                        sessionStorage.setItem("isLogged", isLogged)
-                        let user = {
-                            id,
-                            name: userName,
-                            wareHouse: warehouseId,
-                            role,
-                            roleId
-                        }
+                        let { isLogged, warehouseId: WAREHOUSEID, userName: USERNAME, id: USERID,
+                            role: ROLE, roleId: ROLEID } = response;
+                        let user = { USERID, isLogged, USERNAME, WAREHOUSEID, ROLE, ROLEID }
+                        setUser(user)
                         sessionStorage.setItem("user", JSON.stringify(user))
-                        warehouseId && getRoleInfo(warehouseId)
                         message.success("Logged in successfully.")
                         history.replace('/dashboard')
                     } else {

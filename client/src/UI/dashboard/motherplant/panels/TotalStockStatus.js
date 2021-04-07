@@ -30,7 +30,7 @@ const TotalStockStatus = () => {
     }, [])
 
     const getTotalStock = async ({ startDate, endDate, shift, fromStart }) => {
-        const url = `/motherPlant/getTotalProductionDetails?startDate=${startDate}&endDate=${endDate}&shiftType=${shift}&fromStart=${fromStart}`
+        const url = `motherPlant/getTotalProductionDetails?startDate=${startDate}&endDate=${endDate}&shiftType=${shift}&fromStart=${fromStart}`
 
         try {
             const data = await http.GET(axios, url, config)

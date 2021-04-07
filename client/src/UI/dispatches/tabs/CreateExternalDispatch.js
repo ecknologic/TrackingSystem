@@ -29,7 +29,7 @@ const CreateExternalDispatch = ({ goToTab, driverList, ...rest }) => {
     }, [])
 
     const getCurrentStock = async (batchId) => {
-        const url = `/motherPlant/getProductByBatch/${batchId}`
+        const url = `motherPlant/getProductByBatch/${batchId}`
         try {
             const data = await http.GET(axios, url, config)
             setCurrentStock(data)
@@ -98,7 +98,7 @@ const CreateExternalDispatch = ({ goToTab, driverList, ...rest }) => {
         let body = {
             ...formData, dispatchType: 'External', dispatchTo: 3, ...products
         }
-        const url = '/motherPlant/addDispatchDetails'
+        const url = 'motherPlant/addDispatchDetails'
         const options = { item: 'Dispatch', v1Ing: 'Adding', v2: 'added' }
 
         try {

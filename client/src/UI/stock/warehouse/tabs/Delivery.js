@@ -5,13 +5,14 @@ import DCForm from '../forms/DCForm';
 import { http } from '../../../../modules/http';
 import Spinner from '../../../../components/Spinner';
 import Actions from '../../../../components/Actions';
+import useUser from '../../../../utils/hooks/useUser';
+import { TRACKFORM } from '../../../../utils/constants';
 import QuitModal from '../../../../components/CustomModal';
 import SearchInput from '../../../../components/SearchInput';
 import CustomModal from '../../../../components/CustomModal';
 import CustomButton from '../../../../components/CustomButton';
 import RoutesFilter from '../../../../components/RoutesFilter';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
-import { getWarehoseId, TRACKFORM } from '../../../../utils/constants';
 import CustomPagination from '../../../../components/CustomPagination';
 import { EditIconGrey, PlusIcon } from '../../../../components/SVG_Icons';
 import { getRouteOptions, getDriverOptions, getDeliveryColumns, getDistributorOptions, getCustomerOptions } from '../../../../assets/fixtures';
@@ -20,7 +21,7 @@ import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone, getSta
 
 const Delivery = ({ date, source }) => {
     const defaultValue = { customerType: 'newCustomer', creationType: 'manual' }
-    const warehouseId = getWarehoseId()
+    const { WAREHOUSEID: warehouseId } = useUser()
     const [routes, setRoutes] = useState([])
     const [drivers, setDrivers] = useState([])
     const [loading, setLoading] = useState(true)
@@ -65,7 +66,7 @@ const Delivery = ({ date, source }) => {
     }, [date])
 
     const getRoutes = async () => {
-        const url = `/customer/getRoutes/${warehouseId}`
+        const url = `customer/getRoutes/${warehouseId}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -74,7 +75,7 @@ const Delivery = ({ date, source }) => {
     }
 
     const getDrivers = async () => {
-        const url = `/bibo/getdriverDetails/${warehouseId}`
+        const url = `bibo/getdriverDetails/${warehouseId}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -83,7 +84,7 @@ const Delivery = ({ date, source }) => {
     }
 
     const getDistributorList = async () => {
-        const url = '/distributor/getDistributorsList'
+        const url = 'distributor/getDistributorsList'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -92,7 +93,7 @@ const Delivery = ({ date, source }) => {
     }
 
     const getCustomerList = async () => {
-        const url = '/customer/getCustomerNames'
+        const url = 'customer/getCustomerNames'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -101,7 +102,7 @@ const Delivery = ({ date, source }) => {
     }
 
     const getDistributor = async (id) => {
-        const url = `/distributor/getDistributor/${id}`
+        const url = `distributor/getDistributor/${id}`
 
         try {
             showToast({ v1Ing: 'Fetching', action: 'loading' })
@@ -116,7 +117,7 @@ const Delivery = ({ date, source }) => {
     }
 
     const getDeliveries = async () => {
-        const url = `/warehouse/deliveryDetails/${date}`
+        const url = `warehouse/deliveryDetails/${date}`
 
         try {
             const data = await http.GET(axios, url, config)

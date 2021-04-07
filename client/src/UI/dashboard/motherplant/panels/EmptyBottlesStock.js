@@ -26,7 +26,7 @@ const EmptyBottlesStock = () => {
     }, [])
 
     const getEmptyCans = async ({ startDate, endDate, type, fromStart }) => {
-        const url = `/warehouse/getTotalEmptyCansCount?startDate=${startDate}&endDate=${endDate}&type=${type}&fromStart=${fromStart}`
+        const url = `warehouse/getTotalEmptyCansCount?startDate=${startDate}&endDate=${endDate}&type=${type}&fromStart=${fromStart}`
 
         try {
             const data = await http.GET(axios, url, config)

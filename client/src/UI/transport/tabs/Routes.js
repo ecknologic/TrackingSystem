@@ -5,6 +5,7 @@ import RouteForm from '../forms/Route';
 import { http } from '../../../modules/http'
 import Actions from '../../../components/Actions';
 import Spinner from '../../../components/Spinner';
+import useUser from '../../../utils/hooks/useUser';
 import { routeColumns } from '../../../assets/fixtures';
 import CustomModal from '../../../components/CustomModal';
 import DeleteModal from '../../../components/CustomModal';
@@ -12,11 +13,11 @@ import ConfirmModal from '../../../components/CustomModal';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import CustomPagination from '../../../components/CustomPagination';
 import { EditIconGrey, TrashIconGrey } from '../../../components/SVG_Icons';
-import { getRole, getWarehoseId, SUPERADMIN, TRACKFORM, WAREHOUSEADMIN } from '../../../utils/constants';
 import { deepClone, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
+import { SUPERADMIN, TRACKFORM, WAREHOUSEADMIN } from '../../../utils/constants';
 
 const RoutesDashboard = ({ reFetch, isFetched, fetchList, departmentOptions }) => {
-    const role = getRole()
+    const { ROLE, WAREHOUSEID } = useUser()
     const [routes, setRoutes] = useState([])
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
@@ -31,8 +32,8 @@ const RoutesDashboard = ({ reFetch, isFetched, fetchList, departmentOptions }) =
     const [modalDelete, setModalDelete] = useState(false)
     const [currentId, setCurrentId] = useState('')
 
-    const isWHAdmin = useMemo(() => role === WAREHOUSEADMIN, [role])
-    const isSuperAdmin = useMemo(() => role === SUPERADMIN, [])
+    const isWHAdmin = useMemo(() => ROLE === WAREHOUSEADMIN, [ROLE])
+    const isSuperAdmin = useMemo(() => ROLE === SUPERADMIN, [])
     const options = useMemo(() => getOptions(isSuperAdmin), [])
     const toastLoading = { v1Ing: 'Fetching', action: 'loading' }
     const source = useMemo(() => axios.CancelToken.source(), []);
@@ -50,8 +51,7 @@ const RoutesDashboard = ({ reFetch, isFetched, fetchList, departmentOptions }) =
     }, [reFetch])
 
     const getRoutes = async () => {
-        const depId = getWarehoseId()
-        const url = getUrl(isWHAdmin, depId)
+        const url = getUrl(isWHAdmin, WAREHOUSEID)
 
         try {
             const data = await http.GET(axios, url, config)
@@ -90,7 +90,7 @@ const RoutesDashboard = ({ reFetch, isFetched, fetchList, departmentOptions }) =
 
     const handleDelete = async (id) => {
         const options = { item: 'Route', v1Ing: 'Deleting', v2: 'deleted' }
-        const url = `/warehouse/deleteRoute/${id}`
+        const url = `warehouse/deleteRoute/${id}`
 
         try {
             showToast({ ...options, action: 'loading' })
@@ -125,9 +125,9 @@ const RoutesDashboard = ({ reFetch, isFetched, fetchList, departmentOptions }) =
             setFormErrors(formErrors)
             return
         }
-        departmentId = isWHAdmin ? getWarehoseId() : departmentId
+        departmentId = isWHAdmin ? WAREHOUSEID : departmentId
         let body = { ...formData, departmentId }
-        const url = '/warehouse/updateRoute'
+        const url = 'warehouse/updateRoute'
         const options = { item: 'Route', v1Ing: 'Updating', v2: 'updated' }
 
         try {
@@ -257,8 +257,8 @@ const RoutesDashboard = ({ reFetch, isFetched, fetchList, departmentOptions }) =
 }
 
 const getUrl = (isWHAdmin, id) => {
-    if (isWHAdmin) return `/customer/getRoutes/${id}`
-    return '/bibo/getroutes'
+    if (isWHAdmin) return `customer/getRoutes/${id}`
+    return 'bibo/getroutes'
 }
 
 const getOptions = (isSuperAdmin) => {

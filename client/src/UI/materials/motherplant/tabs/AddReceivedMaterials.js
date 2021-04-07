@@ -60,7 +60,7 @@ const AddMaterials = ({ onUpdate = fn }) => {
     }, [])
 
     const getRM = async () => {
-        const url = '/motherPlant/getRMDetails?status=Approved'
+        const url = 'motherPlant/getRMDetails?status=Approved'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -72,7 +72,7 @@ const AddMaterials = ({ onUpdate = fn }) => {
     }
 
     const getRMReceipt = async (RMId) => {
-        const url = `/motherPlant/getReceiptDetails/${RMId}`
+        const url = `motherPlant/getReceiptDetails/${RMId}`
 
         try {
             showToast(toastLoading)
@@ -150,7 +150,7 @@ const AddMaterials = ({ onUpdate = fn }) => {
             return
         }
 
-        const url = '/motherPlant/createRMReceipt'
+        const url = 'motherPlant/createRMReceipt'
         const body = { ...formData, rawmaterialid: currentRMId }
         const otherUrl = '/motherPlant/updateRMStatus'
         const otherBody = { rawmaterialid: currentRMId, status: 'Confirmed' }

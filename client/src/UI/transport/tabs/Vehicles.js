@@ -5,18 +5,20 @@ import VehicleForm from '../forms/Vehicle';
 import { http } from '../../../modules/http'
 import Actions from '../../../components/Actions';
 import Spinner from '../../../components/Spinner';
+import useUser from '../../../utils/hooks/useUser';
 import CustomModal from '../../../components/CustomModal';
 import { vehicleColumns } from '../../../assets/fixtures';
 import DeleteModal from '../../../components/CustomModal';
 import ConfirmModal from '../../../components/CustomModal';
 import { validateNames } from '../../../utils/validations';
 import ConfirmMessage from '../../../components/ConfirmMessage';
+import { SUPERADMIN, TRACKFORM } from '../../../utils/constants';
 import CustomPagination from '../../../components/CustomPagination';
-import { getRole, SUPERADMIN, TRACKFORM } from '../../../utils/constants';
 import { EditIconGrey, TrashIconGrey } from '../../../components/SVG_Icons';
 import { deepClone, isAlphaNum, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
 
 const VehiclesDashboard = ({ reFetch }) => {
+    const { ROLE } = useUser()
     const [vehicles, setVehicles] = useState([])
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
@@ -31,7 +33,7 @@ const VehiclesDashboard = ({ reFetch }) => {
     const [modalDelete, setModalDelete] = useState(false)
     const [currentId, setCurrentId] = useState('')
 
-    const isSuperAdmin = useMemo(() => getRole() === SUPERADMIN, [])
+    const isSuperAdmin = useMemo(() => ROLE === SUPERADMIN, [])
     const options = useMemo(() => getOptions(isSuperAdmin), [])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
@@ -48,7 +50,7 @@ const VehiclesDashboard = ({ reFetch }) => {
     }, [reFetch])
 
     const getVehicles = async () => {
-        const url = '/bibo/getVehicleDetails'
+        const url = 'bibo/getVehicleDetails'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -80,7 +82,7 @@ const VehiclesDashboard = ({ reFetch }) => {
 
     const handleDelete = async (id) => {
         const options = { item: 'Vehicle', v1Ing: 'Deleting', v2: 'deleted' }
-        const url = `/motherPlant/deleteVehicle/${id}`
+        const url = `motherPlant/deleteVehicle/${id}`
 
         try {
             showToast({ ...options, action: 'loading' })
@@ -140,7 +142,7 @@ const VehiclesDashboard = ({ reFetch }) => {
         }
 
         let body = { ...formData }
-        const url = '/motherPlant/updateVehicle'
+        const url = 'motherPlant/updateVehicle'
         const options = { item: 'Vehicle', v1Ing: 'Updating', v2: 'updated' }
 
         try {

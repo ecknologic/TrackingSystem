@@ -5,15 +5,15 @@ import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import Header from './header';
 import { http } from '../../../modules/http'
 import Spinner from '../../../components/Spinner';
+import useUser from '../../../utils/hooks/useUser';
 import NoContent from '../../../components/NoContent';
-import { getUserId } from '../../../utils/constants';
 import AccountCard from '../../../components/AccountCard';
 import CustomPagination from '../../../components/CustomPagination';
 import { complexDateSort, complexSort, tripleKeyComplexSearch, filterAccounts } from '../../../utils/Functions'
 
 const Accounts = () => {
-    const USERID = getUserId()
     const history = useHistory()
+    const { USERID } = useUser()
     const [accountsClone, setAccountsClone] = useState([])
     const [filteredClone, setFilteredClone] = useState([])
     const [accounts, setAccounts] = useState([])
@@ -38,7 +38,7 @@ const Accounts = () => {
     }, [])
 
     const getAccounts = async () => {
-        const url = `/customer/getCustomerDetails/${USERID}`
+        const url = `customer/getCustomerDetails/${USERID}`
 
         try {
             const { data } = await http.GET(axios, url, config)

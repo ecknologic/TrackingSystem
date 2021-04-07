@@ -44,7 +44,7 @@ const StockReceived = () => {
     }, [])
 
     const getReceivedStock = async () => {
-        const url = '/warehouse/getReceivedStock'
+        const url = 'warehouse/getReceivedStock'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -56,7 +56,7 @@ const StockReceived = () => {
     }
 
     const getStockById = async (id) => {
-        const url = `/warehouse/getReceivedStockById/${id}`
+        const url = `warehouse/getReceivedStockById/${id}`
 
         try {
             showToast({ v1Ing: 'Fetching', action: 'loading' })
@@ -68,7 +68,7 @@ const StockReceived = () => {
     }
 
     const getMotherplantList = async () => {
-        const url = '/bibo/getDepartmentsList?departmentType=MotherPlant'
+        const url = 'bibo/getDepartmentsList?departmentType=MotherPlant'
 
         try {
             const data = await http.GET(axios, url, config)

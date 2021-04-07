@@ -76,7 +76,7 @@ const ManagePlant = () => {
     }
 
     const getStaffList = async (type) => {
-        const url = `/users/getUsersBydepartmentType/${type}`
+        const url = `users/getUsersBydepartmentType/${type}`
 
         try {
             const data = await http.GET(axios, url, config)

@@ -20,7 +20,7 @@ const RawMaterialStock = () => {
     }, [])
 
     const getRMStock = async () => {
-        const url = `/motherPlant/getRMTotalCount`
+        const url = `motherPlant/getRMTotalCount`
 
         try {
             const data = await http.GET(axios, url, config)

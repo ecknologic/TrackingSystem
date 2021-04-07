@@ -22,7 +22,7 @@ const TotalBusiness = () => {
     }, [])
 
     const getTotalBusiness = async ({ startDate, endDate, fromStart, type }) => {
-        const url = `/motherPlant/getTotalRevenue?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}&type=${type}`
+        const url = `motherPlant/getTotalRevenue?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}&type=${type}`
 
         try {
             const data = await http.GET(axios, url, config)

@@ -27,7 +27,7 @@ const DispatchDetails = () => {
     }, [])
 
     const getDispatches = async () => {
-        const url = `/motherPlant/getDispatchDetails/${TODAYDATE}`
+        const url = `motherPlant/getDispatchDetails/${TODAYDATE}`
 
         try {
             const data = await http.GET(axios, url, config)

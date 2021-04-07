@@ -3,14 +3,14 @@ import { Tabs } from 'antd';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import Dashboard from './tabs/Dashboard';
 import { http } from '../../../modules/http';
+import useUser from '../../../utils/hooks/useUser';
 import ReturnEmptyCans from './tabs/ReturnEmptyCans';
 import Header from '../../../components/ContentHeader';
-import { getWarehoseId } from '../../../utils/constants';
 import { getDepartmentOptions, getDriverOptions, getVehicleOptions, getWarehouseOptions } from '../../../assets/fixtures';
 import '../../../sass/products.scss';
 
 const EmptyCans = () => {
-    const warehouseId = getWarehoseId()
+    const { WAREHOUSEID } = useUser()
     const [activeTab, setActiveTab] = useState('1')
     const [reFetch, setreFetch] = useState(false)
     const [departmentList, setDepartmentList] = useState([])
@@ -35,7 +35,7 @@ const EmptyCans = () => {
     }, [])
 
     const getDepartmentList = async () => {
-        const url = '/bibo/getAllDepartmentsList'
+        const url = 'bibo/getAllDepartmentsList'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -44,7 +44,7 @@ const EmptyCans = () => {
     }
 
     const getMotherplantList = async () => {
-        const url = '/bibo/getDepartmentsList?departmentType=MotherPlant'
+        const url = 'bibo/getDepartmentsList?departmentType=MotherPlant'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -53,7 +53,7 @@ const EmptyCans = () => {
     }
 
     const getDriverList = async () => {
-        const url = `/bibo/getdriverDetails/${warehouseId}`
+        const url = `bibo/getdriverDetails/${WAREHOUSEID}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -62,7 +62,7 @@ const EmptyCans = () => {
     }
 
     const getVehicleList = async () => {
-        const url = `/bibo/getVehicleDetails`
+        const url = `bibo/getVehicleDetails`
 
         try {
             const data = await http.GET(axios, url, config)

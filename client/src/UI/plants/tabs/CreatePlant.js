@@ -35,7 +35,7 @@ const CreateNewPlant = ({ goToTab }) => {
 
     const getStaffList = async () => {
         const roleName = getRoleName()
-        const url = `/users/getUsersByRole/${roleName}`
+        const url = `users/getUsersByRole/${roleName}`
 
         try {
             const data = await http.GET(axios, url, config)

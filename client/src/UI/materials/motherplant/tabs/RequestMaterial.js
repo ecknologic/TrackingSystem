@@ -57,7 +57,7 @@ const RequestMaterial = ({ goToTab, ...rest }) => {
         }
 
         const body = { ...formData }
-        const url = '/motherPlant/createRM'
+        const url = 'motherPlant/createRM'
         const options = { item: 'Material Request', v1Ing: 'Sending', v2: 'sent' }
 
 

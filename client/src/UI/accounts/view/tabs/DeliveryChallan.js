@@ -41,7 +41,7 @@ const DeliveryChallan = ({ accountId }) => {
     }, [])
 
     const getDeliveries = async () => {
-        const url = `/customer/customerDCDetails/${accountId}`
+        const url = `customer/customerDCDetails/${accountId}`
 
         try {
             const data = await http.GET(axios, url, config)

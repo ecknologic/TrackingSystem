@@ -27,7 +27,7 @@ const WaterQualityResults = ({ depMenu, motherplantList }) => {
     }, [])
 
     const getTestResults = async ({ startDate, endDate, fromStart, departmentId, shift }) => {
-        const url = `/motherPlant/getQCTestResults?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}&departmentId=${departmentId}&shiftType=${shift}`
+        const url = `motherPlant/getQCTestResults?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}&departmentId=${departmentId}&shiftType=${shift}`
 
         try {
             const data = await http.GET(axios, url, config)

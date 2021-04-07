@@ -1,10 +1,11 @@
 import { Menu } from 'antd';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom';
-import { getRole, MARKETINGADMIN, TRACKFORM, WAREHOUSEADMIN, MOTHERPLANTADMIN, SUPERADMIN, ACCOUNTSADMIN } from '../../utils/constants';
-import { getSideMenuKey, resetTrackForm, getMainPathname } from '../../utils/Functions'
+import useUser from '../../utils/hooks/useUser';
 import ConfirmModal from '../../components/CustomModal';
 import ConfirmMessage from '../../components/ConfirmMessage';
+import { getSideMenuKey, resetTrackForm, getMainPathname } from '../../utils/Functions'
+import { MARKETINGADMIN, TRACKFORM, WAREHOUSEADMIN, MOTHERPLANTADMIN, SUPERADMIN, ACCOUNTSADMIN } from '../../utils/constants';
 import {
     DashboardIcon, SettingIcon, FriendReqIcon, FriendReqIconLight, DocIconLight, FriendIcon,
     DashboardIconLight, SettingIconLight, ProjectIcon, ProjectIconLight, DocIcon, FriendsIconLight, FriendsIcon,
@@ -14,9 +15,9 @@ import {
 } from '../../components/SVG_Icons'
 
 const SideMenu = () => {
-    const ROLE = getRole()
-    const { pathname } = useLocation()
+    const { ROLE } = useUser()
     const history = useHistory()
+    const { pathname } = useLocation()
     const [selected, setSelected] = useState('/')
     const [confirm, setConfirm] = useState(false)
     const clickRef = useRef('')

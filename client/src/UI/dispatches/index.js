@@ -2,11 +2,11 @@ import axios from 'axios';
 import { Tabs } from 'antd';
 import { http } from '../../modules/http';
 import React, { Fragment, useState, useCallback, useEffect, useMemo } from 'react';
-import Header from '../../components/ContentHeader';
 import Dispatches from './tabs/Dispatches';
-import CreateDispatch from './tabs/CreateDispatch';
 import ScrollUp from '../../components/ScrollUp';
-import { getWarehoseId } from '../../utils/constants';
+import useUser from '../../utils/hooks/useUser';
+import CreateDispatch from './tabs/CreateDispatch';
+import Header from '../../components/ContentHeader';
 // import ExternalDispatches from './tabs/ExternalDispatches';
 import ReportsDropdown from '../../components/ReportsDropdown';
 // import CreateExternalDispatch from './tabs/CreateExternalDispatch';
@@ -14,7 +14,7 @@ import { getBatchIdOptions, getWarehouseOptions, getDriverOptions, getVehicleOpt
 import '../../sass/dispatches.scss'
 
 const Dispatche = () => {
-    const warehouseId = getWarehoseId()
+    const { WAREHOUSEID } = useUser()
     const [activeTab, setActiveTab] = useState('1')
     const [reFetch, setreFetch] = useState(false)
     const [batchList, setBatchList] = useState([])
@@ -43,7 +43,7 @@ const Dispatche = () => {
     }, [])
 
     const getBatchsList = async () => {
-        const url = '/motherPlant/getPostProductionBatchIds'
+        const url = 'motherPlant/getPostProductionBatchIds'
         try {
             const data = await http.GET(axios, url, config)
             setBatchList(data)
@@ -51,7 +51,7 @@ const Dispatche = () => {
     }
 
     const getDriverList = async () => {
-        const url = `/bibo/getdriverDetails/${warehouseId}`
+        const url = `bibo/getdriverDetails/${WAREHOUSEID}`
         try {
             const data = await http.GET(axios, url, config)
             setDrivers(data)
@@ -59,7 +59,7 @@ const Dispatche = () => {
     }
 
     const getWarehouseList = async () => {
-        const url = '/bibo/getDepartmentsList?departmentType=warehouse'
+        const url = 'bibo/getDepartmentsList?departmentType=warehouse'
         try {
             const data = await http.GET(axios, url, config)
             setWarehouseList(data)
@@ -67,7 +67,7 @@ const Dispatche = () => {
     }
 
     const getVehicleDetails = async () => {
-        const url = '/bibo/getVehicleDetails'
+        const url = 'bibo/getVehicleDetails'
         try {
             const data = await http.GET(axios, url, config)
             setVehiclesList(data)

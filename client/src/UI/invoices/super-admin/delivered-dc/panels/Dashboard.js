@@ -48,7 +48,7 @@ const DeliveredDC = ({ invoiceId }) => {
         const startDate = dayjs(fromDate).format(APIDATEFORMAT)
         const endDate = dayjs(toDate).format(APIDATEFORMAT)
 
-        const url = `/warehouse/getAllDcDetails?fromDate=${startDate}&toDate=${endDate}&customerIds=${[customerId]}`
+        const url = `warehouse/getAllDcDetails?fromDate=${startDate}&toDate=${endDate}&customerIds=${[customerId]}`
 
         try {
             const data = await http.GET(axios, url, config)

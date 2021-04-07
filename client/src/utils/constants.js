@@ -11,43 +11,20 @@ export const TODAYDATE = dayjs().format('YYYY-MM-DD')
 
 export const getUserId = () => {
     const user = JSON.parse(sessionStorage.getItem('user'))
-    if (user) return user.id
-    return 1
-}
-export const getRoleId = () => {
-    const user = JSON.parse(sessionStorage.getItem('user'))
-    if (user) return user.roleId
-    return null
-}
-export const getRole = () => {
-    const user = JSON.parse(sessionStorage.getItem('user'))
-    if (user) return user.role
-    return null
-}
-export const getUsername = () => {
-    const user = JSON.parse(sessionStorage.getItem('user'))
-    if (user) return user.name
-    return ''
-}
-export const getDesignation = () => {
-    const user = JSON.parse(sessionStorage.getItem('user'))
-    if (user) {
-        const { role } = user
-        if (role === MOTHERPLANTADMIN) return 'Mother Plant Admin'
-        else if (role === WAREHOUSEADMIN) return 'Warehouse Admin'
-        else if (role === SUPERADMIN) return 'Super Admin'
-        return ''
-    }
-    return ''
-}
-export const getWarehoseId = () => {
-    const user = JSON.parse(sessionStorage.getItem('user'))
-    if (user) return user.wareHouse
+    if (user) return user.USERID
     return 1
 }
 
-export const isLogged = () => {
-    return JSON.parse(sessionStorage.getItem('isLogged'))
+export const getRole = () => {
+    const user = JSON.parse(sessionStorage.getItem('user'))
+    if (user) return user.ROLE
+    return null
+}
+
+export const getWarehoseId = () => {
+    const user = JSON.parse(sessionStorage.getItem('user'))
+    if (user) return user.WAREHOUSEID
+    return 1
 }
 
 export const getRoutesByRole = (role) => {

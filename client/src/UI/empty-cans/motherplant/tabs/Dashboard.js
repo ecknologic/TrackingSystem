@@ -43,7 +43,7 @@ const Dashboard = () => {
 
     const getEmptyCans = async () => {
         try {
-            const url = '/warehouse/getEmptyCansList'
+            const url = 'warehouse/getEmptyCansList'
             const data = await http.GET(axios, url, config)
             setEmptyCans(data)
             setTotalCount(data.length)
@@ -87,7 +87,7 @@ const Dashboard = () => {
     }
 
     const updateCansStatus = async (id, status, reason) => {
-        const url = '/motherPlant/updateEmptyCansStatus'
+        const url = 'motherPlant/updateEmptyCansStatus'
         const body = { id, status, reason }
         const options = { item: 'Empty Cans', v1Ing: status === 'Approved' ? 'Approving' : 'Rejecting', v2: status }
 

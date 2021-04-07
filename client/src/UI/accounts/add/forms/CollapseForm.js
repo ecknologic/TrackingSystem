@@ -47,7 +47,7 @@ const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => 
     }
 
     const getRouteList = async (departmentId) => {
-        const url = `/customer/getRoutes/${departmentId}`
+        const url = `customer/getRoutes/${departmentId}`
 
         try {
             const data = await http.GET(axios, url, config)

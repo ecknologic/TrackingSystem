@@ -48,7 +48,7 @@ const ReceivedMaterials = ({ isSuperAdmin = false }) => {
     }, [])
 
     const getRM = async () => {
-        const url = `/motherPlant/getRMReceiptDetails?isSuperAdmin=${isSuperAdmin}`
+        const url = `motherPlant/getRMReceiptDetails?isSuperAdmin=${isSuperAdmin}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -60,7 +60,7 @@ const ReceivedMaterials = ({ isSuperAdmin = false }) => {
     }
 
     const getRMById = async (id) => {
-        const url = `/motherPlant/getReceiptDetails/${id}`
+        const url = `motherPlant/getReceiptDetails/${id}`
 
         try {
             const [data] = await http.GET(axios, url, config)

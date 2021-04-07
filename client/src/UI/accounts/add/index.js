@@ -6,6 +6,7 @@ import Header from './header';
 import Delivery from './forms/Delivery';
 import { http } from '../../../modules/http'
 import CollapseForm from './forms/CollapseForm';
+import useUser from '../../../utils/hooks/useUser';
 import ScrollUp from '../../../components/ScrollUp';
 import GeneralAccount from './forms/GeneralAccount';
 import QuitModal from '../../../components/CustomModal';
@@ -16,24 +17,22 @@ import CustomButton from '../../../components/CustomButton';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import SuccessMessage from '../../../components/SuccessMessage';
 import CollapseHeader from '../../../components/CollapseHeader';
+import { TRACKFORM, TODAYDATE } from '../../../utils/constants';
 import { DDownIcon, PlusIcon } from '../../../components/SVG_Icons'
 import { getRouteOptions, getWarehouseOptions, WEEKDAYS } from '../../../assets/fixtures';
 import {
     getBase64, deepClone, getIdProofsForDB, getDevDaysForDB, getAddressesForDB, resetTrackForm,
     getProductsForDB, extractGADeliveryDetails, extractGADetails, isEmpty, showToast, extractCADetails, getMainPathname
 } from '../../../utils/Functions';
-import { TRACKFORM, getUserId, getUsername, getWarehoseId, TODAYDATE } from '../../../utils/constants';
 import {
     validateAccountValues, validateDeliveryValues, validateDevDays,
     validateIDProofs, validateAddresses, validateIDNumbers, validateNames, validateNumber, validateMobileNumber, validateEmailId, validateIntFloat, compareMaxNumber, validatePinCode
 } from '../../../utils/validations';
 
 const AddAccount = () => {
-    const USERID = getUserId()
-    const USERNAME = getUsername()
-    const WAREHOUSEID = getWarehoseId()
     const history = useHistory()
     const { pathname } = useLocation()
+    const { USERID, USERNAME, WAREHOUSEID } = useUser()
     const defaultValues = useMemo(() => ({ referredBy: USERNAME, registeredDate: TODAYDATE }), [])
     const genDefaultValues = useMemo(() => ({ ...defaultValues, natureOfBussiness: 'Residential' }), [])
 
@@ -95,7 +94,7 @@ const AddAccount = () => {
     }, [sameAddress])
 
     const getWarehouseList = async () => {
-        const url = '/bibo/getDepartmentsList?departmentType=warehouse'
+        const url = 'bibo/getDepartmentsList?departmentType=warehouse'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -104,7 +103,7 @@ const AddAccount = () => {
     }
 
     const getRouteList = async (departmentId) => {
-        const url = `/customer/getRoutes/${departmentId}`
+        const url = `customer/getRoutes/${departmentId}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -471,7 +470,7 @@ const AddAccount = () => {
         }
 
         const options = { item: 'Customer', action: 'loading', v1Ing: 'Adding' }
-        const url = '/customer/createCustomer'
+        const url = 'customer/createCustomer'
         try {
             setBtnDisabled(true)
             showToast(options)

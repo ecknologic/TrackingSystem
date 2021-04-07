@@ -26,7 +26,7 @@ const SuperAdminDashboard = () => {
     }, [])
 
     const getMotherplantList = async () => {
-        const url = '/bibo/getDepartmentsList?departmentType=MotherPlant&hasAll=true'
+        const url = 'bibo/getDepartmentsList?departmentType=MotherPlant&hasAll=true'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -35,7 +35,7 @@ const SuperAdminDashboard = () => {
     }
 
     const getWarehouseList = async () => {
-        const url = '/bibo/getDepartmentsList?departmentType=warehouse&hasAll=true'
+        const url = 'bibo/getDepartmentsList?departmentType=warehouse&hasAll=true'
 
         try {
             const data = await http.GET(axios, url, config)

@@ -9,9 +9,10 @@ import { http } from '../../../../modules/http';
 import ProductsTable from '../forms/ProductsTable';
 import InvoiceRestForm from '../forms/InvoiceRest';
 import Spinner from '../../../../components/Spinner';
+import useUser from '../../../../utils/hooks/useUser';
+import { TODAYDATE } from '../../../../utils/constants';
 import NoContent from '../../../../components/NoContent';
 import CustomButton from '../../../../components/CustomButton';
-import { getWarehoseId, TODAYDATE } from '../../../../utils/constants';
 import { isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 import { validateNumber, validateInvoiceValues } from '../../../../utils/validations';
 import { getProductOptions, getDDownOptions, getDCOptions } from '../../../../assets/fixtures';
@@ -20,6 +21,7 @@ const APIDATEFORMAT = 'YYYY-MM-DD'
 const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
     const defaultValues = useMemo(() => ({ invoiceDate: TODAYDATE, hsnCode: 22011010, status: 'Pending' }), [])
     const history = useHistory()
+    const { WAREHOUSEID } = useUser()
     const { invoiceId } = useParams()
     const [formData, setFormData] = useState(defaultValues)
     const [isLocal, setIsLocal] = useState(false)
@@ -61,7 +63,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
     }, [isLocal])
 
     const getInvoice = async () => {
-        const url = `/invoice/getInvoiceById/${invoiceId}`
+        const url = `invoice/getInvoiceById/${invoiceId}`
 
         try {
             setLoading(true)
@@ -76,8 +78,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
     }
 
     const getInvoiceId = async () => {
-        const depId = getWarehoseId()
-        const url = `/invoice/getInvoiceId?departmentId=${depId}`
+        const url = `invoice/getInvoiceId?departmentId=${WAREHOUSEID}`
 
         try {
             const invoiceId = await http.GET(axios, url, config)
@@ -86,7 +87,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
     }
 
     const getGSTList = async () => {
-        const url = `/bibo/getList/gst`
+        const url = `bibo/getList/gst`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -95,7 +96,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
     }
 
     const getDCList = async () => {
-        const url = `/warehouse/getDCList`
+        const url = `warehouse/getDCList`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -104,7 +105,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
     }
 
     const getProductList = async () => {
-        const url = '/products/getProducts'
+        const url = 'products/getProducts'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -113,7 +114,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
     }
 
     const getCustomerList = async () => {
-        const url = '/customer/getCustomerNames'
+        const url = 'customer/getCustomerNames'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -211,7 +212,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
         const products = dataSource.map((item) => ({ ...item, address, deliveryAddress }))
 
         if (editMode && !isEmpty(deleted)) {
-            const url = '/invoice/deleteInvoiceProducts'
+            const url = 'invoice/deleteInvoiceProducts'
             const body = { deleted }
             try {
                 http.PUT(axios, url, body, config)
@@ -320,8 +321,8 @@ const getVerbs = (editMode) => {
     return { v1Ing, v2 }
 }
 const getUrl = (editMode) => {
-    const createUrl = '/invoice/createDepartmentInvoice'
-    const updateUrl = '/invoice/updateInvoice'
+    const createUrl = 'invoice/createDepartmentInvoice'
+    const updateUrl = 'invoice/updateInvoice'
     return editMode ? updateUrl : createUrl
 }
 const initData = () => ([{

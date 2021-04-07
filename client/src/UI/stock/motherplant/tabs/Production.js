@@ -44,7 +44,7 @@ const Production = () => {
     }, [])
 
     const getProducts = async () => {
-        const url = `/motherPlant/getProductionDetails`
+        const url = `motherPlant/getProductionDetails`
         try {
             setLoading(true)
             const data = await http.GET(axios, url, config)
@@ -117,7 +117,7 @@ const Production = () => {
             return
         }
 
-        const url = '/motherPlant/updateProductionDetails'
+        const url = 'motherPlant/updateProductionDetails'
         const body = {
             ...formData
         }

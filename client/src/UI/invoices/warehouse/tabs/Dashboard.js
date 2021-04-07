@@ -49,7 +49,7 @@ const Dashboard = ({ reFetch }) => {
     }, [reFetch])
 
     const getInvoices = async () => {
-        const url = '/invoice/getDepartmentInvoices'
+        const url = 'invoice/getDepartmentInvoices'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -111,7 +111,7 @@ const Dashboard = ({ reFetch }) => {
     const handleStatusUpdate = async (invoiceId) => {
         const departmentStatus = 'Paid'
         const options = { item: 'Invoice status', v1Ing: 'Updating', v2: 'updated' }
-        const url = `/invoice/updateDepartmentInvoiceStatus`
+        const url = `invoice/updateDepartmentInvoiceStatus`
         const body = { departmentStatus, invoiceId, status: 'Inprogress' }
         try {
             showToast({ ...options, action: 'loading' })

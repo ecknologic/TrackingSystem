@@ -43,7 +43,7 @@ const ManageDistributor = () => {
     }, [])
 
     const getDistributor = async () => {
-        const url = `/distributor/getDistributor/${distributorId}`
+        const url = `distributor/getDistributor/${distributorId}`
 
         try {
             const [data] = await http.GET(axios, url, config)
@@ -114,7 +114,7 @@ const ManageDistributor = () => {
         if (!formData.isNewFile) {
             delete body.gstProof
         }
-        const url = '/distributor/updateDistributor'
+        const url = 'distributor/updateDistributor'
         const options = { item: 'Distributor', v1Ing: 'Updating', v2: 'updated' }
 
         try {
