@@ -130,7 +130,13 @@ router.post('/createDC', (req, res) => {
         req.body.customerType = 'internal'
         saveDC(req, res)
       } else {
-        saveDC(req, res)
+        customerQueries.createAdhocUser({ ...req.body, customertype: 'Individual' }, (err, data) => {
+          if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+          else {
+            req.body.existingCustomerId = data.insertId
+            saveDC(req, res)
+          }
+        })
       }
     })
   } else saveDC(req, res)
