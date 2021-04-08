@@ -255,6 +255,13 @@ customerQueries.getOtherCustomersChangeByDepartment = (input, callback) => {
         executeGetParamsQuery(query, [departmentId, newStartDate, newEndDate], callback)
     } else executeGetParamsQuery(query, [departmentId], callback)
 }
+
+customerQueries.checkUserExistsOrNot = (input, callback) => {
+    const { EmailId, mobileNumber } = input;
+    let query = 'Select customerId from customerdetails where EmailId=? OR mobileNumber=?'
+    console.log("query", query, EmailId)
+    return executeGetParamsQuery(query, [EmailId, mobileNumber], callback)
+}
 //POST Request Methods
 customerQueries.saveCustomerOrderDetails = (input, callback) => {
     let { contactPerson, phoneNumber, address, routeId, driverId, customer_Id, latitude, longitude, dcNo, departmentId, customerType, product20L, price20L, product1L, price1L, product500ML, price500ML,
@@ -386,5 +393,12 @@ customerQueries.generateCustomerPDF = (input, callback) => {
     AND( DATE(co.deliveryDate) BETWEEN ? AND ?) AND c.customerId=?`
     // "SELECT c.gstNo,c.customerId,c.creditPeriodInDays,c.createdBy,c.EmailId,c.customerName,c.organizationName,c.address1,d.address,c.gstNo,c.panNo,c.mobileNumber,co.20LCans,co.price20L,co.1LBoxes,co.price1L, co.500MLBoxes,co.price500ML,co.300MLBoxes,co.price300ML,co.2LBoxes,co.price2L FROM customerdetails c INNER JOIN  customerorderdetails co ON c.customerId=co.existingCustomerId INNER JOIN DeliveryDetails d ON d.customer_Id=c.customerId  WHERE co.isDelivered='Completed' AND( DATE(co.deliveryDate) BETWEEN ? AND ?)"
     return executeGetParamsQuery(query, [fromDate, toDate, fromDate, toDate, customerId], callback)
+}
+
+customerQueries.createAdhocUser = (input, callback) => {
+    const { customerName, mobileNumber, EmailId, Address1, contactperson, registeredDate = new Date(), natureOfBussiness = 'Others', isActive = 0, customertype = 'Individual' } = input
+    let query = "insert  into customerdetails (customerName,mobileNumber,EmailId,Address1,contactperson,registeredDate,natureOfBussiness,isActive,customertype) values(?,?,?,?,?,?,?,?,?)";
+    let requestBody = [customerName, mobileNumber, EmailId, Address1, contactperson, registeredDate, natureOfBussiness, isActive, customertype]
+    return executePostOrUpdateQuery(query, requestBody, callback)
 }
 module.exports = customerQueries
