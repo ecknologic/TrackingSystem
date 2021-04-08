@@ -1,12 +1,12 @@
 import axios from 'axios'
 import { message } from 'antd';
 import { ACCOUNTSADMIN, SUPERADMIN, getRole, getUserId, getWarehoseId } from '../utils/constants'
+import { isAbsoluteUrl } from '../utils/Functions';
 message.config({ maxCount: 1 });
-const isAbsoluteURLRegex = /^(?:\w+:)\/\//;
 
 // Setting headers in request
 axios.interceptors.request.use(function (config) {
-    if (!isAbsoluteURLRegex.test(config.url)) {
+    if (!isAbsoluteUrl(config.url)) {
         config.url = `${process.env.REACT_APP_API_HOST}${config.url}`;
     }
 

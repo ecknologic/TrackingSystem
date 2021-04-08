@@ -554,6 +554,9 @@ export const isStrictIntFloat = (string) => { // Allows digits with single dot a
 export const isIntFloat = (string) => { // Allows digits with multiple dots and hiphens at any position
     return String(string).match(/^[0-9.-]+$/)
 }
+export const isAbsoluteUrl = (string) => {
+    return String(string).match(/^(?:\w+:)\/\//)
+}
 
 // multiplication table
 const d = [
