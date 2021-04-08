@@ -152,7 +152,7 @@ const AddMaterials = ({ onUpdate = fn }) => {
 
         const url = 'motherPlant/createRMReceipt'
         const body = { ...formData, rawmaterialid: currentRMId }
-        const otherUrl = '/motherPlant/updateRMStatus'
+        const otherUrl = 'motherPlant/updateRMStatus'
         const otherBody = { rawmaterialid: currentRMId, status: 'Confirmed' }
         const options = { item: 'Received Materials', v1Ing: 'Adding', v2: 'added' }
 

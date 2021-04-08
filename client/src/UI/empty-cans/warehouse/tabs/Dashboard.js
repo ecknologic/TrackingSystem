@@ -122,7 +122,7 @@ const Dashboard = ({ reFetch, isFetched, fetchList, driverList, ...rest }) => {
             return
         }
 
-        let url = '/warehouse/updateReturnEmptyCans'
+        let url = 'warehouse/updateReturnEmptyCans'
         const body = {
             ...formData, status: 'Pending'
         }

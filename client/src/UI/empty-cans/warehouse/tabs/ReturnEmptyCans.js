@@ -67,7 +67,7 @@ const ReturnEmptyCans = ({ goToTab, fetchList, driverList, ...rest }) => {
             return
         }
 
-        let url = '/warehouse/returnEmptyCans'
+        let url = 'warehouse/returnEmptyCans'
         const body = {
             ...formData, WAREHOUSEID
         }

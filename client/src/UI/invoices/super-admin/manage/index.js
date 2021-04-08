@@ -44,9 +44,9 @@ const Invoices = () => {
     const getInvoices = async () => {
         const { FOR } = state || {}
 
-        let url = '/invoice/getDepartmentInvoices'
+        let url = 'invoice/getDepartmentInvoices'
         if (FOR === SUPERADMIN) {
-            url = '/invoice/getInvoices'
+            url = 'invoice/getInvoices'
         }
 
         try {
