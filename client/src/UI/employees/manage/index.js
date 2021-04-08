@@ -454,16 +454,16 @@ const ManageEmployee = ({ isDriver }) => {
 }
 
 const getUrl = (isDriver) => {
-    const staffUrl = '/users/getUser'
-    const driverUrl = '/driver/getDriver'
+    const staffUrl = 'users/getUser'
+    const driverUrl = 'driver/getDriver'
 
     if (isDriver) return driverUrl
     return staffUrl
 }
 
 const updateUrl = (isDriver) => {
-    const staffUrl = '/users/updateWebUser'
-    const driverUrl = '/driver/updateDriver'
+    const staffUrl = 'users/updateWebUser'
+    const driverUrl = 'driver/updateDriver'
 
     if (isDriver) return driverUrl
     return staffUrl

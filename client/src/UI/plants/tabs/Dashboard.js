@@ -39,7 +39,7 @@ const Dashboard = ({ reFetch }) => {
     }, [reFetch])
 
     const getPlants = async (plantType) => {
-        const url = `${mainUrl.slice(0, -1)}/get${plantType}List`
+        const url = `${mainUrl.slice(1, -1)}/get${plantType}List`
 
         try {
             const data = await http.GET(axios, url, config)

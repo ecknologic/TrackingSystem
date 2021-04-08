@@ -249,16 +249,16 @@ const ManagePlant = () => {
 }
 
 const getUrl = (url) => {
-    const mpUrl = '/motherPlant/getMotherPlantById'
-    const whUrl = '/warehouse/getWarehouseById'
+    const mpUrl = 'motherPlant/getMotherPlantById'
+    const whUrl = 'warehouse/getWarehouseById'
 
     if (url === '/motherplants') return mpUrl
     return whUrl
 }
 
 const updateUrl = (url) => {
-    const mpUrl = '/motherPlant/updateMotherPlant'
-    const whUrl = '/warehouse/updateWarehouse'
+    const mpUrl = 'motherPlant/updateMotherPlant'
+    const whUrl = 'warehouse/updateWarehouse'
 
     if (url === '/motherplants') return mpUrl
     return whUrl
