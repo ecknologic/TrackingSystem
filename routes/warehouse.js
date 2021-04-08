@@ -121,26 +121,19 @@ router.post('/updateWarehouse', (req, res) => {
 });
 
 router.post('/createDC', (req, res) => {
-  let dcCreateQuery = "insert into customerorderdetails (customerName,phoneNumber,address,routeId,driverId,20LCans,1LBoxes,500MLBoxes,300MLBoxes,2LBoxes,warehouseId,customerType,existingCustomerId,distributorId,creationType,isDelivered) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-  let { customerName, phoneNumber, address, routeId, driverId, product20L, product1L, product500ML, product300ML, product2L, warehouseId, customerType, existingCustomerId, distributorId, creationType, isDelivered = 'InProgress' } = req.body;
-  let insertQueryValues = [customerName, phoneNumber, address, routeId, driverId, product20L, product1L, product500ML, product300ML, product2L, warehouseId, customerType, existingCustomerId, distributorId, creationType, isDelivered]
-  db.query(dcCreateQuery, insertQueryValues, (err, results) => {
-    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
-    else {
-      let inserted_id = results.insertId;
-      let updateQuery = "update customerorderdetails set dcNo=? where customerOrderId=?"
-      let updateQueryValues = ["DC-" + inserted_id, inserted_id];
-      db.query(updateQuery, updateQueryValues, (err1, results1) => {
-        if (err1) res.status(500).json({ status: 500, message: err.sqlMessage });
-        else {
-          warehouseQueries.getDeliverysByCustomerOrderId(inserted_id, (deliveryErr, deliveryDetails) => {
-            if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
-            else res.json(deliveryDetails)
-          })
-        }
-      });
-    }
-  });
+  let { EmailId, phoneNumber, customerType } = req.body;
+  if (customerType == 'newCustomer') {
+    customerQueries.checkUserExistsOrNot({ EmailId, mobileNumber: phoneNumber }, (err, results) => {
+      if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+      else if (results.length) {
+        req.body.existingCustomerId = results[0].customerId
+        req.body.customerType = 'internal'
+        saveDC(req, res)
+      } else {
+        saveDC(req, res)
+      }
+    })
+  } else saveDC(req, res)
 });
 
 router.put('/updateDC', (req, res) => {
@@ -472,4 +465,27 @@ router.get('/getCustomersCount', (req, res) => {
     }
   })
 })
+
+const saveDC = (req, res) => {
+  let { customerName, phoneNumber, address, routeId, driverId, product20L, product1L, product500ML, product300ML, product2L, warehouseId, customerType, existingCustomerId, distributorId, creationType, isDelivered = 'InProgress' } = req.body;
+  let dcCreateQuery = "insert into customerorderdetails (customerName,phoneNumber,address,routeId,driverId,20LCans,1LBoxes,500MLBoxes,300MLBoxes,2LBoxes,warehouseId,customerType,existingCustomerId,distributorId,creationType,isDelivered) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+  let insertQueryValues = [customerName, phoneNumber, address, routeId, driverId, product20L, product1L, product500ML, product300ML, product2L, warehouseId, customerType, existingCustomerId, distributorId, creationType, isDelivered]
+  db.query(dcCreateQuery, insertQueryValues, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else {
+      let inserted_id = results.insertId;
+      let updateQuery = "update customerorderdetails set dcNo=? where customerOrderId=?"
+      let updateQueryValues = ["DC-" + inserted_id, inserted_id];
+      db.query(updateQuery, updateQueryValues, (err1, results1) => {
+        if (err1) res.status(500).json({ status: 500, message: err.sqlMessage });
+        else {
+          warehouseQueries.getDeliverysByCustomerOrderId(inserted_id, (deliveryErr, deliveryDetails) => {
+            if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
+            else res.json(deliveryDetails)
+          })
+        }
+      });
+    }
+  });
+}
 module.exports = router;
