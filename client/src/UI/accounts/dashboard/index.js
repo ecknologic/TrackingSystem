@@ -8,12 +8,14 @@ import Spinner from '../../../components/Spinner';
 import useUser from '../../../utils/hooks/useUser';
 import NoContent from '../../../components/NoContent';
 import AccountCard from '../../../components/AccountCard';
+import { getCreatorOptions } from '../../../assets/fixtures';
+import { MARKETINGMANAGER } from '../../../utils/constants';
 import CustomPagination from '../../../components/CustomPagination';
-import { complexDateSort, complexSort, tripleKeyComplexSearch, filterAccounts } from '../../../utils/Functions'
+import { complexDateSort, complexSort, tripleKeyComplexSearch, filterAccounts, isEmpty } from '../../../utils/Functions'
 
 const Accounts = () => {
     const history = useHistory()
-    const { USERID } = useUser()
+    const { USERID, ROLE } = useUser()
     const [accountsClone, setAccountsClone] = useState([])
     const [filteredClone, setFilteredClone] = useState([])
     const [accounts, setAccounts] = useState([])
@@ -24,13 +26,16 @@ const Accounts = () => {
     const [filterON, setFilterON] = useState(false)
     const [searchON, setSeachON] = useState(false)
     const [sortBy, setSortBy] = useState('NEW - OLD')
+    const [creatorList, setCreatorList] = useState([])
 
     const pageSizeOptions = useMemo(() => generatePageSizeOptions(), [window.innerWidth])
+    const creatorOptions = useMemo(() => getCreatorOptions(creatorList), [creatorList])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
         getAccounts()
+        getCreatorList()
 
         return () => {
             http.ABORT(source)
@@ -47,6 +52,23 @@ const Accounts = () => {
             setTotalCount(data.length)
             setLoading(false)
         } catch (error) { }
+    }
+
+    const getCreatorList = async () => {
+        const roleName = getRoleName()
+        if (!roleName) return;
+
+        const url = `users/getUsersByRole/${roleName}`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setCreatorList(data)
+        } catch (error) { }
+    }
+
+    const getRoleName = () => {
+        if (ROLE === MARKETINGMANAGER) return 'SalesAndMarketing'
+        return ''
     }
 
     const handleSearch = (value) => {
@@ -122,8 +144,8 @@ const Accounts = () => {
     }
 
     const onFilterChange = (data) => {
-        const { business, status, account } = data
-        if (!business.length && !status.length && !account.length) handleFilterClear()
+        const { business, status, account, creator } = data
+        if (isEmpty(business) && isEmpty(status) && isEmpty(account) && isEmpty(creator)) handleFilterClear()
         else handleFilter(data)
     }
 
@@ -136,7 +158,7 @@ const Accounts = () => {
 
     return (
         <Fragment>
-            <Header onSearch={handleSearch} onSort={onSort} onFilter={onFilterChange} onClick={goToAddAccount} />
+            <Header onSearch={handleSearch} onSort={onSort} onFilter={onFilterChange} onClick={goToAddAccount} creatorOptions={creatorOptions} />
             <div className='account-manager-content'>
                 <Row gutter={[{ lg: 32, xl: 16 }, { lg: 16, xl: 16 }]}>
                     {

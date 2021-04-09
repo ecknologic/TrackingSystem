@@ -5,7 +5,7 @@ import useUser from '../../utils/hooks/useUser';
 import ConfirmModal from '../../components/CustomModal';
 import ConfirmMessage from '../../components/ConfirmMessage';
 import { getSideMenuKey, resetTrackForm, getMainPathname } from '../../utils/Functions'
-import { MARKETINGADMIN, TRACKFORM, WAREHOUSEADMIN, MOTHERPLANTADMIN, SUPERADMIN, ACCOUNTSADMIN } from '../../utils/constants';
+import { MARKETINGADMIN, TRACKFORM, WAREHOUSEADMIN, MOTHERPLANTADMIN, SUPERADMIN, ACCOUNTSADMIN, MARKETINGMANAGER } from '../../utils/constants';
 import {
     DashboardIcon, SettingIcon, FriendReqIcon, FriendReqIconLight, DocIconLight, FriendIcon,
     DashboardIconLight, SettingIconLight, ProjectIcon, ProjectIconLight, DocIcon, FriendsIconLight, FriendsIcon,
@@ -100,7 +100,7 @@ const SideMenu = () => {
                         : null
                 }
                 {
-                    ROLE === MARKETINGADMIN ?
+                    ROLE === MARKETINGADMIN || ROLE === MARKETINGMANAGER ?
                         <>
                             <Item key='/manage-accounts' icon={selected === '/manage-accounts' ? <ProjectIcon /> : <ProjectIconLight />}>
                                 Manage Accounts

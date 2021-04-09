@@ -120,6 +120,9 @@ export const shiftMenu = [
     <Menu.Item key="Night" >Night</Menu.Item>,
     <Menu.Item key="All" >All</Menu.Item>
 ]
+export const getCreatorOptions = (creators = []) => {
+    return creators.map((item) => ({ value: item.userId, option: item.userName }))
+}
 export const getDepartmentMenu = (departments = []) => {
     return departments.map((item) => <Menu.Item key={item.departmentName} >{item.departmentName}</Menu.Item>)
 }

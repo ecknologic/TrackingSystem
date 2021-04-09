@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
-import { getRoutesByRole, MARKETINGADMIN, MOTHERPLANTADMIN, SUPERADMIN, WAREHOUSEADMIN, ACCOUNTSADMIN } from './utils/constants';
+import { getRoutesByRole, MARKETINGADMIN, MOTHERPLANTADMIN, SUPERADMIN, WAREHOUSEADMIN, ACCOUNTSADMIN, MARKETINGMANAGER } from './utils/constants';
 import { getMainPathname, resetTrackForm } from './utils/Functions';
 import Login from './UI/auth/Login';
 import Products from './UI/products';
@@ -62,6 +62,7 @@ const App = () => {
       if (!isUser) return <Redirect to='/' />
       else {
          if (ROLE === MARKETINGADMIN) return <Redirect to='/manage-accounts' />
+         else if (ROLE === MARKETINGMANAGER) return <Redirect to='/manage-accounts' />
          else if (ROLE === WAREHOUSEADMIN) return <WarehouseDashboard />
          else if (ROLE === MOTHERPLANTADMIN) return <MotherplantDashboard />
          else if (ROLE === SUPERADMIN) return <SuperAdminDashboard />
