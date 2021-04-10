@@ -843,7 +843,7 @@ export const validateDCValues = (data) => {
     const text = 'Required'
 
     const { routeId, customerName, customerType, existingCustomerId, phoneNumber, address,
-        driverId, distributorId, ...rest } = data
+        driverId, distributorId, EmailId, ...rest } = data
 
     const isDistributor = customerType === 'distributor'
     const isExistingCustomer = customerType === 'internal'
@@ -863,6 +863,11 @@ export const validateDCValues = (data) => {
             if (!existingCustomerId) errors.existingCustomerId = text
         }
         else {
+            if (!EmailId) errors.EmailId = text
+            else {
+                const error = validateEmailId(EmailId)
+                error && (errors.EmailId = error)
+            }
             if (!customerName) errors.customerName = text
             else {
                 const error = validateNames(customerName)

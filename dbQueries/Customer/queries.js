@@ -259,7 +259,6 @@ customerQueries.getOtherCustomersChangeByDepartment = (input, callback) => {
 customerQueries.checkUserExistsOrNot = (input, callback) => {
     const { EmailId, mobileNumber } = input;
     let query = 'Select customerId from customerdetails where EmailId=? OR mobileNumber=?'
-    console.log("query", query, EmailId)
     return executeGetParamsQuery(query, [EmailId, mobileNumber], callback)
 }
 //POST Request Methods
@@ -396,9 +395,9 @@ customerQueries.generateCustomerPDF = (input, callback) => {
 }
 
 customerQueries.createAdhocUser = (input, callback) => {
-    const { customerName, mobileNumber, EmailId, Address1, contactperson, registeredDate = new Date(), natureOfBussiness = 'Others', isActive = 0, customertype = 'Individual' } = input
-    let query = "insert  into customerdetails (customerName,mobileNumber,EmailId,Address1,contactperson,registeredDate,natureOfBussiness,isActive,customertype) values(?,?,?,?,?,?,?,?,?)";
-    let requestBody = [customerName, mobileNumber, EmailId, Address1, contactperson, registeredDate, natureOfBussiness, isActive, customertype]
+    const { customerName, phoneNumber, EmailId, address, contactperson, registeredDate = new Date(), natureOfBussiness = 'Others', isActive = 0, customertype = 'Individual' } = input
+    let query = "insert  into customerdetails (customerName,mobileNumber,EmailId,Address1,contactperson,registeredDate,natureOfBussiness,isActive,customertype,isAdhocUser) values(?,?,?,?,?,?,?,?,?,?)";
+    let requestBody = [customerName, phoneNumber, EmailId, address, contactperson, registeredDate, natureOfBussiness, isActive, customertype, 1]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 module.exports = customerQueries

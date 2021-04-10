@@ -104,7 +104,7 @@ const StockDetails = ({ date, source }) => {
     }
 
     const getCAS = async () => {
-        const url = `arehouse/currentActiveStockDetails/${date}?warehouseId=${WAREHOUSEID}`
+        const url = `warehouse/currentActiveStockDetails/${date}?warehouseId=${WAREHOUSEID}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -113,7 +113,7 @@ const StockDetails = ({ date, source }) => {
     }
 
     const getOFD = async () => {
-        const url = `arehouse/outForDeliveryDetails/${date}?warehouseId=${WAREHOUSEID}`
+        const url = `warehouse/outForDeliveryDetails/${date}?warehouseId=${WAREHOUSEID}`
 
         try {
             const data = await http.GET(axios, url, config)

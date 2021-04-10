@@ -226,7 +226,7 @@ const Orders = () => {
             return
         }
 
-        let url = '/customer/createOrderDelivery'
+        let url = 'customer/createOrderDelivery'
         const body = { ...formData }
 
         try {

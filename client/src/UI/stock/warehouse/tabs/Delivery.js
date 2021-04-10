@@ -16,7 +16,7 @@ import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomPagination from '../../../../components/CustomPagination';
 import { EditIconGrey, PlusIcon } from '../../../../components/SVG_Icons';
 import { getRouteOptions, getDriverOptions, getDeliveryColumns, getDistributorOptions, getCustomerOptions } from '../../../../assets/fixtures';
-import { validateMobileNumber, validateNames, validateNumber, validateDCValues } from '../../../../utils/validations';
+import { validateMobileNumber, validateNames, validateNumber, validateDCValues, validateEmailId } from '../../../../utils/validations';
 import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone, getStatusColor, doubleKeyComplexSearch, getProductsForUI } from '../../../../utils/Functions';
 
 const Delivery = ({ date, source }) => {
@@ -174,6 +174,10 @@ const Delivery = ({ date, source }) => {
             const error = validateMobileNumber(value, true)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
+        else if (key === 'EmailId') {
+            const error = validateEmailId(value)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
     }
 
     const onFilterChange = (data) => {
@@ -238,13 +242,13 @@ const Delivery = ({ date, source }) => {
         const dcValues = getDCValuesForDB(formData)
         const { customerOrderId, driverId } = formData
 
-        let url = '/warehouse/createDC'
+        let url = 'warehouse/createDC'
         let method = 'POST'
         let v1Ing = 'Adding'
         let v2 = 'added'
 
         if (customerOrderId) {
-            url = '/customer/updateCustomerOrderDetails'
+            url = 'customer/updateCustomerOrderDetails'
             method = 'PUT'
             v1Ing = 'Updating'
             v2 = 'updated'

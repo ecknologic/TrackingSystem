@@ -48,7 +48,7 @@ const Transport = () => {
     }
 
     const fetchList = async () => {
-        if (!isFetched) {
+        if (!isFetched && isSuperAdmin) {
             const p1 = getDepartmentList()
             await Promise.all([p1])
             setIsFetched(true)

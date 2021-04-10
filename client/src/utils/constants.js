@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 export const TRACKFORM = 'trackForm'
 export const MANDATORY = "Mandatory Field";
 export const MARKETINGADMIN = 'SalesAndMarketing'
+export const MARKETINGMANAGER = 'MarketingManager'
 export const WAREHOUSEADMIN = 'WarehouseAdmin'
 export const SUPERADMIN = 'SuperAdmin'
 export const ACCOUNTSADMIN = 'Accounts'
@@ -30,6 +31,9 @@ export const getWarehoseId = () => {
 export const getRoutesByRole = (role) => {
     switch (role) {
         case MARKETINGADMIN:
+            return ['/add-customer', '/manage-accounts']
+
+        case MARKETINGMANAGER:
             return ['/add-customer', '/manage-accounts']
 
         case SUPERADMIN:

@@ -120,6 +120,9 @@ export const shiftMenu = [
     <Menu.Item key="Night" >Night</Menu.Item>,
     <Menu.Item key="All" >All</Menu.Item>
 ]
+export const getCreatorOptions = (creators = []) => {
+    return creators.map((item) => ({ value: item.userId, option: item.userName }))
+}
 export const getDepartmentMenu = (departments = []) => {
     return departments.map((item) => <Menu.Item key={item.departmentName} >{item.departmentName}</Menu.Item>)
 }
@@ -514,48 +517,62 @@ export const orderColumns = [
     },
 ]
 
-export const receivedStockColumns = [
-    {
-        title: 'DC Number',
-        dataIndex: 'dcNo',
-        key: 'dcNo',
-    },
-    {
-        title: 'Date & time',
-        dataIndex: 'dateAndTime',
-        key: 'dateAndTime',
-    },
-    {
-        title: 'Mother Plant',
-        dataIndex: 'departmentName',
-        key: 'departmentName',
-    },
-    {
-        title: 'Stock Details',
-        dataIndex: 'stockDetails',
-        key: 'stockDetails',
-    },
-    {
-        title: 'Driver',
-        dataIndex: 'driverName',
-        key: 'driverName',
-    },
-    {
-        title: 'Phone Number',
-        dataIndex: 'mobileNumber',
-        key: 'mobileNumber',
-    },
-    {
-        title: 'Status',
-        dataIndex: 'status',
-        key: 'status'
-    },
-    {
-        title: 'Actions',
-        dataIndex: 'action',
-        key: 'action'
-    },
-]
+export const getStockColumns = (isWHAdmin) => {
+
+    const columns = [
+        {
+            title: 'DC Number',
+            dataIndex: 'dcNo',
+            key: 'dcNo',
+        },
+        {
+            title: 'Date & time',
+            dataIndex: 'dateAndTime',
+            key: 'dateAndTime',
+        },
+        {
+            title: 'Mother Plant',
+            dataIndex: 'departmentName',
+            key: 'departmentName',
+        },
+        {
+            title: 'Stock Details',
+            dataIndex: 'stockDetails',
+            key: 'stockDetails',
+        },
+        {
+            title: 'Driver',
+            dataIndex: 'driverName',
+            key: 'driverName',
+        },
+        {
+            title: 'Phone Number',
+            dataIndex: 'mobileNumber',
+            key: 'mobileNumber',
+        },
+        {
+            title: 'Status',
+            dataIndex: 'status',
+            key: 'status'
+        },
+        {
+            title: 'Actions',
+            dataIndex: 'action',
+            key: 'action'
+        },
+    ]
+
+    if (isWHAdmin) {
+        columns.splice(2, 1, {
+            title: 'Warehouse',
+            dataIndex: 'departmentName',
+            key: 'departmentName'
+        })
+    }
+
+
+    return columns;
+}
 
 export const todayDeliveryColumns = [
     {
