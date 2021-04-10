@@ -10,6 +10,11 @@ driverQueries.getDriverById = async (driverId, callback) => {
     return executeGetQuery(query, callback)
 }
 
+driverQueries.getOrderDetailsByOrderId = async (orderId, callback) => {
+    let query = `SELECT customerType from customerorderdetails where customerOrderId=${orderId}`
+    return executeGetQuery(query, callback)
+}
+
 //POST Request Methods
 driverQueries.createDriver = async (input, callback) => {
     const { userName, emailid, departmentId, mobileNumber, password, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, licenseNo, adharProof, licenseProof, accountNo, bankName, branchName, ifscCode, recommendedBy, recruitedBy } = input;
