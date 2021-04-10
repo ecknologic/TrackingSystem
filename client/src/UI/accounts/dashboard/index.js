@@ -32,6 +32,7 @@ const Accounts = () => {
     const creatorOptions = useMemo(() => getCreatorOptions(creatorList), [creatorList])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
+    const isSMManager = ROLE === MARKETINGMANAGER
 
     useEffect(() => {
         getAccounts()
@@ -43,7 +44,7 @@ const Accounts = () => {
     }, [])
 
     const getAccounts = async () => {
-        const url = `customer/getCustomerDetails/${USERID}`
+        const url = getUrl()
 
         try {
             const { data } = await http.GET(axios, url, config)
@@ -52,6 +53,14 @@ const Accounts = () => {
             setTotalCount(data.length)
             setLoading(false)
         } catch (error) { }
+    }
+
+    const getUrl = () => {
+        const SMManagerUrl = 'customer/getMarketingCustomerDetails'
+        const selfUrl = `customer/getCustomerDetails/${USERID}`
+
+        if (isSMManager) return SMManagerUrl
+        return selfUrl
     }
 
     const getCreatorList = async () => {
@@ -67,7 +76,7 @@ const Accounts = () => {
     }
 
     const getRoleName = () => {
-        if (ROLE === MARKETINGMANAGER) return 'SalesAndMarketing'
+        if (isSMManager) return 'SalesAndMarketing'
         return ''
     }
 
