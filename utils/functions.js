@@ -305,8 +305,34 @@ const updateProductDetails = (products) => {
         }
     })
 }
+const prepareOrderResponseObj = (i) => {
+    let responseObj = {
+        "customerId": i.customerId,
+        "customerName": i.ownerName,
+        "mobileNumber": i.phoneNumber,
+        // "AlternatePhNo": i.AlternatePhNo,
+        "EmailId": i.EmailId,
+        // "Address1": i.Address1,
+        // "Address2": i.Address2,
+        "contactperson": i.customerName,
+        "orderid": i.customerOrderId,
+        "dcNo": i.dcNo,
+        "emptyCans": i.returnEmptyCans,
+        "damagedCans": i.damagedCount,
+        "isDelivered": i.isDelivered,
+        "transactionid": i.transactionid,
+        "deliveryDate": i.deliveryDate,
+        "customerproducts": i.customerproducts,
+        address: i.address,
+        deliveryLocation: i.deliveryLocation,
+        latitude: i.latitude || null,
+        longitude: i.longitude || null,
+        customerproducts: `20L:${i["20LCans"]};1L:${i["1LBoxes"]};500ML:${i["500MLBoxes"]};300ML:${i["300MLBoxes"]};2L:${i["2LBoxes"]}`
+    }
+    return responseObj
+}
 module.exports = {
     executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, checkDepartmentExists, productionCount,
     getCompareData, dateComparisions, checkUserExists, dbError, getBatchId, customerProductDetails, createHash, convertToWords,
-    saveProductDetails, updateProductDetails, getFormatedNumber, getCompareCustomersData, getCompareDistributorsData, getGraphData, formatDate
+    saveProductDetails, updateProductDetails, getFormatedNumber, getCompareCustomersData, getCompareDistributorsData, getGraphData, formatDate, prepareOrderResponseObj
 }

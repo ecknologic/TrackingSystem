@@ -3,7 +3,7 @@ var router = express.Router();
 const db = require('../config/db.js');
 const driverQueries = require('../dbQueries/driver/queries.js');
 const usersQueries = require('../dbQueries/users/queries.js');
-const { dbError, createHash } = require('../utils/functions.js');
+const { dbError, createHash, prepareOrderResponseObj } = require('../utils/functions.js');
 
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -73,67 +73,61 @@ router.post('/updateDeliveryStatus/:orderId', (req, res) => {
 
 router.get("/customerOrderDetails/:orderId", (req, res) => {
     var orderId = req.params.orderId;
+    driverQueries.getOrderDetailsByOrderId(orderId, (err, orderData) => {
+        if (err) res.status(500).json(dbError(err));
+        else if (orderData.length) {
+            const { customerType } = orderData[0]
+            let customerOrderDetailsQuery = "SELECT cd.customerId,cd.customerName as ownerName,c.customerOrderId,c.*,GROUP_CONCAT(cp.productName,':',cp.noOfJarsTobePlaced SEPARATOR ';') AS customerproducts " +
+                " FROM customerdetails  cd INNER JOIN customerproductdetails cp ON cd.customerId=cp.customerId INNER JOIN" +
+                "  customerorderdetails c ON c.existingCustomerId=cp.customerId WHERE c.customerOrderId=?";
 
-    let customerOrderDetailsQuery = "SELECT cd.customerId,cd.customerName as ownerName,c.customerOrderId,c.*,GROUP_CONCAT(cp.productName,':',cp.noOfJarsTobePlaced SEPARATOR ';') AS customerproducts " +
-        " FROM customerdetails  cd INNER JOIN customerproductdetails cp ON cd.customerId=cp.customerId INNER JOIN" +
-        "  customerorderdetails c ON c.existingCustomerId=cp.customerId WHERE c.customerOrderId=?";
-
-    let result = db.query(customerOrderDetailsQuery, [orderId], (err, results) => {
-        if (err) res.send(err);
-        else {
-            let arr = [];
-            if (results.length) {
-                for (let i of results) {
-                    let obj = {
-                        "customerId": i.customerId,
-                        "customerName": i.ownerName,
-                        "mobileNumber": i.phoneNumber,
-                        // "AlternatePhNo": i.AlternatePhNo,
-                        "EmailId": i.EmailId,
-                        // "Address1": i.Address1,
-                        // "Address2": i.Address2,
-                        "contactperson": i.customerName,
-                        "orderid": i.customerOrderId,
-                        "dcNo": i.dcNo,
-                        "emptyCans": i.returnEmptyCans,
-                        "damagedCans": i.damagedCount,
-                        "isDelivered": i.isDelivered,
-                        "transactionid": i.transactionid,
-                        "deliveryDate": i.deliveryDate,
-                        "customerproducts": i.customerproducts,
-                        address: i.address,
-                        deliveryLocation: i.deliveryLocation,
-                        latitude: i.latitude || null,
-                        longitude: i.longitude || null,
-                        customerproducts: `20L:${i["20LCans"]};1L:${i["1LBoxes"]};500ML:${i["500MLBoxes"]};300ML:${i["300MLBoxes"]};2L:${i["2LBoxes"]}`
-                    }
-                    arr.push(obj)
-                }
-                res.send(JSON.stringify(arr));
-            } else {
-                res.send(JSON.stringify(results));
+            if (customerType == 'distributor') {
+                customerOrderDetailsQuery = "SELECT cd.distributorId as customerId,cd.operationalArea as deliveryLocation,cd.agencyName as ownerName,c.customerOrderId,c.*,GROUP_CONCAT(cp.productName,':',cp.noOfJarsTobePlaced SEPARATOR ';') AS customerproducts " +
+                    " FROM Distributors  cd INNER JOIN customerproductdetails cp ON cd.distributorId=cp.customerId INNER JOIN" +
+                    "  customerorderdetails c ON c.existingCustomerId=cp.customerId WHERE c.customerOrderId=?";
             }
+            db.query(customerOrderDetailsQuery, [orderId], (err, results) => {
+                if (err) res.send(err);
+                else {
+                    let arr = [];
+                    if (results.length) {
+                        for (let i of results) {
+                            let obj = prepareOrderResponseObj(i)
+                            arr.push(obj)
+                        }
+                        res.send(JSON.stringify(arr));
+                    } else {
+                        res.send(JSON.stringify(results));
+                    }
+                }
+            });
+        } else {
+            res.status(404).json("Order with this orderId not found")
         }
-    });
+    })
 });
+
 router.get('/getDrivers', (req, res) => {
     driverQueries.getDrivers((err, results) => {
         if (err) res.json(dbError(err))
         else res.json(results)
     })
 })
+
 router.get('/getDriver/:driverId', (req, res) => {
     driverQueries.getDriverById(req.params.driverId, (err, results) => {
         if (err) res.json(dbError(err))
         else res.json(results)
     })
 })
+
 router.delete('/deleteDriver/:driverId', (req, res) => {
     driverQueries.deleteDriver(req.params.driverId, (err, results) => {
         if (err) res.json(dbError(err))
         else res.json(results)
     })
 })
+
 router.post('/createDriver', (req, res) => {
     let input = req.body;
     input.password = createHash("Bibo@123")
@@ -170,4 +164,5 @@ router.post('/updateDriver', (req, res) => {
         }
     })
 })
+
 module.exports = router;
