@@ -5,12 +5,12 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
 import Spinner from '../../../../components/Spinner';
 import Actions from '../../../../components/Actions';
-// import ArrivedStockView from '../forms/ArrivedStock';
-import SearchInput from '../../../../components/SearchInput';
-import RoutesFilter from '../../../../components/RoutesFilter';
 import CustomModal from '../../../../components/CustomModal';
-import { EyeIconGrey } from '../../../../components/SVG_Icons';
+import SearchInput from '../../../../components/SearchInput';
 import { getStockColumns } from '../../../../assets/fixtures';
+import { EyeIconGrey } from '../../../../components/SVG_Icons';
+import RoutesFilter from '../../../../components/RoutesFilter';
+import ArrivedStockView from '../../warehouse/forms/ArrivedStock';
 import CustomPagination from '../../../../components/CustomPagination';
 import { doubleKeyComplexSearch, getStatusColor, isEmpty, showToast } from '../../../../utils/Functions';
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
@@ -44,7 +44,7 @@ const StockReceived = () => {
     }, [])
 
     const getReceivedStock = async () => {
-        const url = 'warehouse/getReceivedStock'
+        const url = 'warehouse/getDamagedStock'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -196,7 +196,7 @@ const StockReceived = () => {
                 okTxt='Close'
                 hideCancel
             >
-                {/* <ArrivedStockView viewOnly data={viewData} /> */}
+                <ArrivedStockView viewOnly data={viewData} />
             </CustomModal>
         </div>
     )

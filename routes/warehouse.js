@@ -420,6 +420,12 @@ router.get('/getReceivedStockById/:id', (req, res) => {
     else res.json(results);
   })
 })
+router.get('/getDamagedStock', (req, res) => {
+  warehouseQueries.getDamagedStock(departmentId, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.json(results);
+  })
+})
 router.get('/getDepartmentStaff', (req, res) => {
   warehouseQueries.getDepartmentStaff(departmentId, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });

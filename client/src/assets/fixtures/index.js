@@ -563,10 +563,14 @@ export const getStockColumns = (isWHAdmin) => {
     ]
 
     if (isWHAdmin) {
-        columns.splice(2, 1, {
+        columns.splice(2, 2, {
             title: 'Warehouse',
             dataIndex: 'departmentName',
             key: 'departmentName'
+        }, {
+            title: 'Damage Details',
+            dataIndex: 'stockDetails',
+            key: 'stockDetails',
         })
     }
 

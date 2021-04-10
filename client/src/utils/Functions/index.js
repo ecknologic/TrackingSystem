@@ -505,10 +505,11 @@ export const getDCValuesForDB = (data) => {
 export const getASValuesForDB = (data) => {
 
     const { dcNo, isDamaged = false, product20L, product2L, product1L, product500ML, product300ML,
-        damaged20LCans = 0, damagedDesc = '', damaged2LBoxes = 0, damaged1LBoxes = 0, damaged500MLBoxes = 0, damaged300MLBoxes = 0 } = data
+        damaged20LCans, damagedDesc = '', damaged2LBoxes, damaged1LBoxes, damaged500MLBoxes, damaged300MLBoxes } = data
 
     return {
-        dcNo, damaged20LCans, damagedDesc, isDamaged, damaged2LBoxes, damaged1LBoxes, damaged500MLBoxes, damaged300MLBoxes,
+        dcNo, damaged20LCans: damaged20LCans || 0, damagedDesc, isDamaged, damaged2LBoxes: damaged2LBoxes || 0,
+        damaged1LBoxes: damaged1LBoxes || 0, damaged500MLBoxes: damaged500MLBoxes || 0, damaged300MLBoxes: damaged300MLBoxes || 0,
         product20L, product2L, product1L, product500ML, product300ML
     }
 }
