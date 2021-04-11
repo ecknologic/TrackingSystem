@@ -49,7 +49,12 @@ router.get('/getDepartmentInvoices', (req, res) => {
 
 router.get('/getInvoiceById/:invoiceId', (req, res) => {
     const { invoiceId } = req.params
-    getInvoiceByInvoiceId({ invoiceId, departmentId: req.query.departmentId, res })
+    getInvoiceByInvoiceId({ invoiceId, departmentInvoice: false, res })
+});
+
+router.get('/getDepartmentInvoiceById/:invoiceId', (req, res) => {
+    const { invoiceId } = req.params
+    getInvoiceByInvoiceId({ invoiceId, departmentInvoice: true, res })
 });
 
 router.get('/getInvoiceId', (req, res) => {
@@ -492,8 +497,8 @@ const computeFinalAmounts = (data) => {
 
     return { subTotal, cgstAmount, sgstAmount, igstAmount, totalAmount }
 }
-const getInvoiceByInvoiceId = ({ invoiceId, departmentId, res }) => {
-    invoiceQueries.getInvoiceById({ invoiceId, departmentId }, (err, results) => {
+const getInvoiceByInvoiceId = ({ invoiceId, departmentInvoice, res }) => {
+    invoiceQueries.getInvoiceById({ invoiceId, departmentInvoice }, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
             const { gstNo, mailIds, invoiceId, Address1, deliveryAddress, customerType, fromDate, toDate, ...rest } = results[0]
