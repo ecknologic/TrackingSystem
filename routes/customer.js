@@ -696,6 +696,7 @@ router.get("/getSalesPersons", (req, res) => {
     }
   })
 });
+
 router.get('/customerDCDetails/:customerId', (req, res) => {
   var customerId = req.params.customerId;
   warehouseQueries.getCustomerDcDetails(customerId, (err, results) => {
@@ -703,6 +704,14 @@ router.get('/customerDCDetails/:customerId', (req, res) => {
     res.send(JSON.stringify(results));
   });
 });
+
+router.post('/createQuote', (req, res) => {
+  customerQueries.createQuote(req.body, (err, results) => {
+    if (err) res.status(500).json(err.sqlMessage);
+    else res.json(results)
+  });
+});
+
 const updateWHDelivery = (req) => {
   const { address, products, phoneNumber, driverId, routeId, contactPerson: customerName, customer_Id } = req.body[0]
   let obj = { address, phoneNumber, driverId, routeId, customer_Id, customerName, boxes1L: 0, boxes2L: 0, boxes300ML: 0, boxes500ML: 0, cans20L: 0 }

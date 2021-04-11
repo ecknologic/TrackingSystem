@@ -400,4 +400,12 @@ customerQueries.createAdhocUser = (input, callback) => {
     let requestBody = [customerName, phoneNumber, EmailId, address, contactperson, registeredDate, natureOfBussiness, isActive, customertype, 1]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
+
+customerQueries.createQuote = (input, callback) => {
+    const { product20L, product2L, product1L, product500ML, product300ML, customerName, email, mobileNumber, quotedDate = new Date() } = input
+    let query = "insert  into quotes (20LCans,1LBoxes,500MLBoxes,300MLBoxes,2LBoxes,customerName,email,mobileNumber,quotedDate) values(?,?,?,?,?,?,?,?,?)";
+    let requestBody = [product20L, product2L, product1L, product500ML, product300ML, customerName, email, mobileNumber, quotedDate]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+
 module.exports = customerQueries
