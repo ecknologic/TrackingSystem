@@ -6,7 +6,6 @@ import Header from './header';
 import ListPanel from './panels/ListPanel';
 import ContentPanel from './panels/ContentPanel';
 import Spinner from '../../../../components/Spinner'
-import useUser from '../../../../utils/hooks/useUser';
 import NoContent from '../../../../components/NoContent'
 import { SUPERADMIN } from '../../../../utils/constants';
 import { getMainPathname } from '../../../../utils/Functions';
@@ -14,7 +13,6 @@ import '../../../../sass/invoices.scss';
 
 const Invoices = () => {
     const history = useHistory()
-    const { WAREHOUSEID } = useUser()
     const { state, pathname } = useLocation()
     const [loading, setLoading] = useState(true)
     const [isLoading, setIsLoading] = useState(false)
@@ -31,7 +29,11 @@ const Invoices = () => {
     }, [])
 
     const getInvoice = async (id) => {
-        const url = `invoice/getInvoiceById/${id}?departmentId=${WAREHOUSEID}`
+        const { FOR } = state || {}
+        let url = `invoice/getDepartmentInvoiceById/${id}`
+        if (FOR === SUPERADMIN) {
+            url = `invoice/getInvoiceById/${id}`
+        }
 
         try {
             setIsLoading(true)
