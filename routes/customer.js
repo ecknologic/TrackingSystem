@@ -712,6 +712,52 @@ router.post('/createQuote', (req, res) => {
   });
 });
 
+router.get('/getQuotes', (req, res) => {
+  customerQueries.getQuotes((err, results) => {
+    if (err) res.status(500).json(err.sqlMessage);
+    else res.json(results)
+  });
+});
+
+// router.post('/createMembership', (req, res) => {
+//   customerQueries.createMembershipCustomer(req.body, (err, results) => {
+//     if (err) res.status(500).json(err.sqlMessage);
+//     else res.json(results)
+//   });
+// });
+
+router.post('/requestBusinessAccount', (req, res) => {
+  customerQueries.createBusinessRequest(req.body, (err, results) => {
+    if (err) res.status(500).json(err.sqlMessage);
+    else res.json(results)
+  });
+});
+
+router.get('/getBusinessRequests', (req, res) => {
+  customerQueries.getBusinessRequests((err, results) => {
+    if (err) res.status(500).json(err.sqlMessage);
+    else res.json(results)
+  });
+});
+
+router.post('/createMembership', async (req, res) => {
+  let customerDetailsQuery = "insert  into customerdetails (customerName,mobileNumber,EmailId,Address1,contactperson,registeredDate,invoicetype,natureOfBussiness,creditPeriodInDays,referredBy,depositAmount,isActive,latitude,longitude,customerType,organizationName,createdBy,pincode,contractPeriod) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+  // let customerDetailsQuery = "insert  into customerdetails (customerName,mobileNumber,EmailId,Address1,gstNo,registeredDate,invoicetype,natureOfBussiness,creditPeriodInDays,referredBy,isActive,qrcodeId,latitude,longitude,customerType,organizationName,createdBy) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+  let customerdetails = req.body;
+  const { customerName, mobileNumber, EmailId, Address1, contactperson, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, depositAmount, isActive, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, createdBy, idProofType, pinCode, contractPeriod } = customerdetails
+  Promise.all([getLatLongDetails(customerdetails)])
+    .then(response => {
+      let registeredDate = customerdetails.registeredDate ? customerdetails.registeredDate : new Date()
+      let insertQueryValues = [customerName, mobileNumber, EmailId, Address1, contactperson, registeredDate, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, depositAmount, isActive, response[0].latitude, response[0].longitude, customertype, organizationName, createdBy, pinCode, contractPeriod]
+      db.query(customerDetailsQuery, insertQueryValues, (err, results) => {
+        if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+        else {
+          saveDeliveryDetails(results.insertId, customerdetails, res)
+        }
+      });
+    })
+});
+
 const updateWHDelivery = (req) => {
   const { address, products, phoneNumber, driverId, routeId, contactPerson: customerName, customer_Id } = req.body[0]
   let obj = { address, phoneNumber, driverId, routeId, customer_Id, customerName, boxes1L: 0, boxes2L: 0, boxes300ML: 0, boxes500ML: 0, cans20L: 0 }

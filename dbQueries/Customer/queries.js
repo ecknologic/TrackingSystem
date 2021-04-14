@@ -261,6 +261,22 @@ customerQueries.checkUserExistsOrNot = (input, callback) => {
     let query = 'Select customerId from customerdetails where EmailId=? OR mobileNumber=?'
     return executeGetParamsQuery(query, [EmailId, mobileNumber], callback)
 }
+
+customerQueries.getQuotes = (callback) => {
+    let query = 'Select * from quotes ORDER BY quotedDate DESC'
+    return executeGetQuery(query, callback)
+}
+
+// customerQueries.getMembershipCustomers = (callback) => {
+//     let query = 'Select * from membershipcustomers ORDER BY registeredDateTime DESC'
+//     return executeGetQuery(query, callback)
+// }
+
+customerQueries.getBusinessRequests = (callback) => {
+    let query = 'Select * from businessaccountrequests ORDER BY requestedDate DESC'
+    return executeGetQuery(query, callback)
+}
+
 //POST Request Methods
 customerQueries.saveCustomerOrderDetails = (input, callback) => {
     let { contactPerson, phoneNumber, address, routeId, driverId, customer_Id, latitude, longitude, dcNo, departmentId, customerType, product20L, price20L, product1L, price1L, product500ML, price500ML,
@@ -405,6 +421,20 @@ customerQueries.createQuote = (input, callback) => {
     const { product20L, product2L, product1L, product500ML, product300ML, customerName, email, mobileNumber, quotedDate = new Date() } = input
     let query = "insert  into quotes (20LCans,1LBoxes,500MLBoxes,300MLBoxes,2LBoxes,customerName,email,mobileNumber,quotedDate) values(?,?,?,?,?,?,?,?,?)";
     let requestBody = [product20L, product2L, product1L, product500ML, product300ML, customerName, email, mobileNumber, quotedDate]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+
+customerQueries.createMembershipCustomer = (input, callback) => {
+    const { product20L, product2L, product1L, product500ML, product300ML, customerName, email, mobileNumber, registeredDateTime = new Date(), pincode, address, landmark } = input
+    let query = "insert  into membershipcustomers (20LCans,1LBoxes,500MLBoxes,300MLBoxes,2LBoxes,customerName,email,mobileNumber,registeredDateTime,pincode,address,landmark) values(?,?,?,?,?,?,?,?,?,?,?,?)";
+    let requestBody = [product20L, product2L, product1L, product500ML, product300ML, customerName, email, mobileNumber, registeredDateTime, pincode, address, landmark]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+
+customerQueries.createBusinessRequest = (input, callback) => {
+    const { organizationName, email, mobileNumber, requestedDate = new Date(), pincode, address, landmark } = input
+    let query = "insert  into businessaccountrequests (organizationName,email,mobileNumber,requestedDate,pincode,address,landmark) values(?,?,?,?,?,?,?)";
+    let requestBody = [organizationName, email, mobileNumber, requestedDate, pincode, address, landmark]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
