@@ -463,6 +463,14 @@ export const getDeliveryColumns = (type) => {
         },
     ]
 
+    if (type === 'date') {
+        columns.splice(1, 0, {
+            title: 'Date & time',
+            dataIndex: 'dateAndTime',
+            key: 'dateAndTime',
+        })
+    }
+
     if (type === 'extra') {
         columns.splice(1, 0, {
             title: 'Date & time',
