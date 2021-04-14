@@ -19,7 +19,7 @@ import { getProductOptions, getDDownOptions, getDCOptions } from '../../../../as
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
 const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
-    const defaultValues = useMemo(() => ({ invoiceDate: TODAYDATE, hsnCode: 22011010, status: 'Pending' }), [])
+    const defaultValues = useMemo(() => ({ invoiceDate: TODAYDATE, hsnCode: 22011010, departmentStatus: 'Pending' }), [])
     const history = useHistory()
     const { WAREHOUSEID } = useUser()
     const { invoiceId } = useParams()
@@ -42,7 +42,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
     const footerValues = useMemo(() => computeFinalAmounts(dataSource), [dataSource])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
-    const { status } = formData
+    const { departmentStatus } = formData
 
     useEffect(() => {
         if (editMode) getInvoice()
@@ -185,7 +185,8 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
             customerId = customerId || distributorId
             setFormData(data => ({ ...data, ...dc, customerId }))
 
-            if ((dc.gstNo || "").startsWith('36')) setIsLocal(true)
+            if (!dc.gstNo) setIsLocal(true)
+            else if ((dc.gstNo || "").startsWith('36')) setIsLocal(true)
             else setIsLocal(false)
         }
 
@@ -194,6 +195,12 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
             const error = validateNumber(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
+    }
+
+    const handleCheckboxChange = (checked) => {
+        const status = checked ? 'InProgress' : 'Pending'
+        const departmentStatus = checked ? 'Paid' : 'Pending'
+        setFormData(data => ({ ...data, departmentStatus, status }))
     }
 
     const handleSubmit = async () => {
@@ -284,8 +291,8 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
             <div className='checkbox-container'>
                 <div>
                     <Checkbox
-                        value={status === 'Pending' ? false : true}
-                        onChange={({ target: { checked } }) => handleChange(checked ? 'Paid' : 'Pending', 'departmentStatus')}
+                        value={departmentStatus === 'Pending' ? false : true}
+                        onChange={({ target: { checked } }) => handleCheckboxChange(checked)}
                     />
                     <span className='app-checkbox-text'>Customer has paid the amount?</span>
                 </div>

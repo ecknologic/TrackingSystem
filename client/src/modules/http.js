@@ -27,7 +27,6 @@ axios.interceptors.response.use(null, error => {
             message.info('Please check your network connection')
         if (error.message === 'Cancelled') { } //Ignore
         else {
-            console.log('error.>>>', error)
             message.error('Oops! Something went wrong, try again!')
         }
     }

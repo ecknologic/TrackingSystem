@@ -189,8 +189,8 @@ export const tripleKeyComplexSearch = (data, matcher, key1, key2, key3) => {
 }
 export const filterAccounts = (accountsClone, filterInfo) => {
     const { business, status, account, creator } = filterInfo
-    console.log('creator>>', creator)
     let singleFiltered = [], allFiltered = []
+
     if (!isEmpty(business) && !isEmpty(status) && !isEmpty(account) && !isEmpty(creator)) {
         allFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && status.includes(item.isApproved) && account.includes(item.customertype) && creator.includes(item.createdBy))
     }
@@ -204,7 +204,7 @@ export const filterAccounts = (accountsClone, filterInfo) => {
         allFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && account.includes(item.customertype) && creator.includes(item.createdBy))
     }
     else if (!isEmpty(account) && !isEmpty(status) && !isEmpty(creator)) {
-        allFiltered = accountsClone.filter((item) => business.includes(item.customertype) && status.includes(item.isApproved) && creator.includes(item.createdBy))
+        allFiltered = accountsClone.filter((item) => account.includes(item.customertype) && status.includes(item.isApproved) && creator.includes(item.createdBy))
     }
     else if (!isEmpty(business) && !isEmpty(status)) {
         allFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && status.includes(item.isApproved))
@@ -222,7 +222,7 @@ export const filterAccounts = (accountsClone, filterInfo) => {
         allFiltered = accountsClone.filter((item) => status.includes(item.isApproved) && creator.includes(item.createdBy))
     }
     else if (!isEmpty(account) && !isEmpty(creator)) {
-        allFiltered = accountsClone.filter((item) => status.includes(item.customertype) && creator.includes(item.createdBy))
+        allFiltered = accountsClone.filter((item) => account.includes(item.customertype) && creator.includes(item.createdBy))
     }
     else {
         singleFiltered = accountsClone.filter((item) => {
