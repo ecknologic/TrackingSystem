@@ -35,7 +35,7 @@ router.post("/createDistributor", (req, res) => {
     distributorQueries.createDistributor(req.body, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
-            saveProductDetails({ products, deliveryDetailsId, customerId: results.insertId, customerType: "distributor" }).then(result => {
+            saveProductDetails({ products, deliveryDetailsId, distributorId: results.insertId, customerType: "distributor" }).then(result => {
                 res.json(result)
             })
         }

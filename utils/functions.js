@@ -276,12 +276,12 @@ const getGraphData = (product20LCount, product2LCount, product1LCount, product50
         }
     ]
 }
-const saveProductDetails = ({ products, deliveryDetailsId, customerId, customerType = 'customer' }) => {
+const saveProductDetails = ({ products, deliveryDetailsId, customerId, distributorId, customerType = 'customer' }) => {
     return new Promise((resolve, reject) => {
         if (products.length) {
             for (let i of products) {
-                let deliveryProductsQuery = "insert  into customerproductdetails (deliverydetailsId,customerId,noOfJarsTobePlaced,productPrice,productName,customerType) values(?,?,?,?,?,?)";
-                let insertQueryValues = [deliveryDetailsId, customerId, i.noOfJarsTobePlaced, i.productPrice, i.productName, customerType]
+                let deliveryProductsQuery = "insert  into customerproductdetails (deliverydetailsId,customerId,noOfJarsTobePlaced,productPrice,productName,customerType,distributorId) values(?,?,?,?,?,?,?)";
+                let insertQueryValues = [deliveryDetailsId, customerId, i.noOfJarsTobePlaced, i.productPrice, i.productName, customerType, distributorId]
                 db.query(deliveryProductsQuery, insertQueryValues, (err, results) => {
                     if (err) reject(err);
                     else resolve(results)
