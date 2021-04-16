@@ -10,13 +10,16 @@ const getBatchId = (shiftType) => {
     return shift + '-' + currentDate
 }
 const checkUserExists = (req, res, next) => {
-    let userId = req.headers['userid']
-    let query = `Select userName from usermaster where userId=${userId} AND isActive='1' AND deleted=0`
-    executeGetQuery(query, (err, results) => {
-        if (err) console.log("Error", err)
-        else if (!results.length) res.status(406).json("Something went wrong")
-        else next()
-    })
+    if (req.query.isMobileApp) next()
+    else {
+        let userId = req.headers['userid']
+        let query = `Select userName from usermaster where userId=${userId} AND isActive='1' AND deleted=0`
+        executeGetQuery(query, (err, results) => {
+            if (err) console.log("Error", err)
+            else if (!results.length) res.status(406).json("Something went wrong")
+            else next()
+        })
+    }
 }
 const checkDepartmentExists = (req, res, next) => {
     let isSuperAdmin = req.headers['issuperadmin']
