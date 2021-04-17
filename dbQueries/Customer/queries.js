@@ -436,9 +436,9 @@ customerQueries.createMembershipCustomer = (input, callback) => {
 }
 
 customerQueries.createBusinessRequest = (input, callback) => {
-    const { organizationName, email, mobileNumber, requestedDate = new Date(), pincode, address, address2 } = input
-    let query = "insert  into businessaccountrequests (organizationName,email,mobileNumber,requestedDate,pincode,address,address2) values(?,?,?,?,?,?,?)";
-    let requestBody = [organizationName, email, mobileNumber, requestedDate, pincode, address, address2]
+    const { organizationName, email, mobileNumber, requestedDate = new Date(), pincode, address, address2, natureOfBussiness } = input
+    let query = "insert  into businessaccountrequests (organizationName,email,mobileNumber,requestedDate,pincode,address,address2,natureOfBussiness) values(?,?,?,?,?,?,?,?)";
+    let requestBody = [organizationName, email, mobileNumber, requestedDate, pincode, address, address2, natureOfBussiness]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
