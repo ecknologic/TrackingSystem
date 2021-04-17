@@ -8,9 +8,9 @@ import Spinner from '../../../components/Spinner';
 import useUser from '../../../utils/hooks/useUser';
 import NoContent from '../../../components/NoContent';
 import AccountCard from '../../../components/AccountCard';
-import { getCreatorOptions } from '../../../assets/fixtures';
 import { MARKETINGMANAGER } from '../../../utils/constants';
 import CustomPagination from '../../../components/CustomPagination';
+import { getCreatorOptions, getDefaultOptions } from '../../../assets/fixtures';
 import { complexDateSort, complexSort, tripleKeyComplexSearch, filterAccounts, isEmpty } from '../../../utils/Functions'
 
 const Accounts = () => {
@@ -26,9 +26,11 @@ const Accounts = () => {
     const [filterON, setFilterON] = useState(false)
     const [searchON, setSeachON] = useState(false)
     const [sortBy, setSortBy] = useState('NEW - OLD')
+    const [businessList, setBusinessList] = useState([])
     const [creatorList, setCreatorList] = useState([])
 
     const pageSizeOptions = useMemo(() => generatePageSizeOptions(), [window.innerWidth])
+    const businessOptions = useMemo(() => getDefaultOptions(businessList), [businessList])
     const creatorOptions = useMemo(() => getCreatorOptions(creatorList), [creatorList])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
@@ -37,6 +39,7 @@ const Accounts = () => {
     useEffect(() => {
         getAccounts()
         getCreatorList()
+        getBusinessList()
 
         return () => {
             http.ABORT(source)
@@ -61,6 +64,15 @@ const Accounts = () => {
 
         if (isSMManager) return SMManagerUrl
         return selfUrl
+    }
+
+    const getBusinessList = async () => {
+        const url = `bibo/getList/natureOfBusiness`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setBusinessList(data)
+        } catch (error) { }
     }
 
     const getCreatorList = async () => {
@@ -167,7 +179,7 @@ const Accounts = () => {
 
     return (
         <Fragment>
-            <Header onSearch={handleSearch} onSort={onSort} onFilter={onFilterChange} onClick={goToAddAccount} creatorOptions={creatorOptions} />
+            <Header onSearch={handleSearch} onSort={onSort} onFilter={onFilterChange} onClick={goToAddAccount} creatorOptions={creatorOptions} businessOptions={businessOptions} />
             <div className='account-manager-content'>
                 <Row gutter={[{ lg: 32, xl: 16 }, { lg: 16, xl: 16 }]}>
                     {

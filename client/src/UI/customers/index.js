@@ -9,6 +9,7 @@ import useUser from '../../utils/hooks/useUser';
 import NoContent from '../../components/NoContent';
 import AccountCard from '../../components/AccountCard';
 import DeleteModal from '../../components/CustomModal';
+import { getDefaultOptions } from '../../assets/fixtures';
 import ConfirmMessage from '../../components/ConfirmMessage';
 import CustomPagination from '../../components/CustomPagination';
 import { ACCOUNTSADMIN, SUPERADMIN } from '../../utils/constants';
@@ -33,7 +34,9 @@ const Customers = () => {
     const [activeTab, setActiveTab] = useState(active)
     const [modalDelete, setModalDelete] = useState(false)
     const [currentId, setCurrentId] = useState('')
+    const [businessList, setBusinessList] = useState([])
 
+    const businessOptions = useMemo(() => getDefaultOptions(businessList), [businessList])
     const pageSizeOptions = useMemo(() => generatePageSizeOptions(), [window.innerWidth])
     const isAdmin = useMemo(() => ROLE === SUPERADMIN || ROLE === ACCOUNTSADMIN, [])
     const source = useMemo(() => axios.CancelToken.source(), [activeTab]);
@@ -42,6 +45,7 @@ const Customers = () => {
     useEffect(() => {
         setLoading(true)
         getAccounts()
+        getBusinessList()
 
         return () => {
             http.ABORT(source)
@@ -57,6 +61,15 @@ const Customers = () => {
             setAccounts(data)
             setTotalCount(data.length)
             setLoading(false)
+        } catch (error) { }
+    }
+
+    const getBusinessList = async () => {
+        const url = `bibo/getList/natureOfBusiness`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setBusinessList(data)
         } catch (error) { }
     }
 
@@ -227,7 +240,7 @@ const Customers = () => {
 
     return (
         <Fragment>
-            <Header activeTab={activeTab} onSearch={handleSearch} onSort={onSort} onFilter={onFilterChange} onChange={handleTabChange} onClick={goToAddAccount} />
+            <Header activeTab={activeTab} onSearch={handleSearch} onSort={onSort} onFilter={onFilterChange} onChange={handleTabChange} onClick={goToAddAccount} businessOptions={businessOptions} />
             <div className='account-manager-content'>
                 <Row gutter={[{ lg: 32, xl: 16 }, { lg: 16, xl: 16 }]}>
                     {

@@ -3,9 +3,9 @@ import React, { useState, useRef } from 'react';
 import { isEmpty } from '../utils/Functions';
 import { FilterIconGrey } from './SVG_Icons';
 import CheckboxOption from './CheckboxOption';
-import { accountFilterOptions, businessFilterOptions, statusFilterOptions } from '../assets/fixtures'
+import { accountFilterOptions, statusFilterOptions } from '../assets/fixtures'
 
-const AccountsFilter = ({ onChange, creatorOptions }) => {
+const AccountsFilter = ({ onChange, creatorOptions = [], businessOptions }) => {
 
     const dataRef = useRef({ business: [], status: [], account: [], creator: [] })
     const [visible, setVisible] = useState(false)
@@ -32,7 +32,7 @@ const AccountsFilter = ({ onChange, creatorOptions }) => {
                                     <Menu.Item key={item.value}>
                                         <CheckboxOption
                                             value={item.value}
-                                            option={item.option}
+                                            option={item.name}
                                             onSelect={(value) => handleSelect(value, 'creator')}
                                             onDeselect={(value) => handleDeselect(value, 'creator')}
                                         />
@@ -50,7 +50,7 @@ const AccountsFilter = ({ onChange, creatorOptions }) => {
                             <Menu.Item key={item.value}>
                                 <CheckboxOption
                                     value={item.value}
-                                    option={item.option}
+                                    option={item.name}
                                     onSelect={(value) => handleSelect(value, 'account')}
                                     onDeselect={(value) => handleDeselect(value, 'account')}
                                 />
@@ -61,12 +61,12 @@ const AccountsFilter = ({ onChange, creatorOptions }) => {
             </Menu.ItemGroup>
             <Menu.ItemGroup title='Select Business'>
                 {
-                    businessFilterOptions.map((item) => {
+                    businessOptions.map((item) => {
                         return (
                             <Menu.Item key={item.value}>
                                 <CheckboxOption
                                     value={item.value}
-                                    option={item.option}
+                                    option={item.name}
                                     onSelect={(value) => handleSelect(value, 'business')}
                                     onDeselect={(value) => handleDeselect(value, 'business')}
                                 />
@@ -82,7 +82,7 @@ const AccountsFilter = ({ onChange, creatorOptions }) => {
                             <Menu.Item key={item.value}>
                                 <CheckboxOption
                                     value={item.value}
-                                    option={item.option}
+                                    option={item.name}
                                     onSelect={(value) => handleSelect(value, 'status')}
                                     onDeselect={(value) => handleDeselect(value, 'status')}
                                 />

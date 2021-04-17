@@ -44,20 +44,12 @@ export const genderOptions = [
     <Option key='3' value='TransGender'>TransGender</Option>
 ]
 export const statusFilterOptions = [
-    { value: 0, option: 'Draft' },
-    { value: 1, option: 'Active' }
+    { value: 0, name: 'Draft' },
+    { value: 1, name: 'Active' }
 ]
 export const accountFilterOptions = [
-    { value: 'Corporate', option: 'Corporate' },
-    { value: 'Individual', option: 'Individual' }
-]
-export const businessFilterOptions = [
-    { value: 'SoftwareAndIT', option: 'Software & IT' },
-    { value: 'HealthAndPharma', option: 'Health & Pharma' },
-    { value: 'RestaurantAndHospitality', option: 'Restaurant & Hospitality' },
-    { value: 'MediaAndAdvertising', option: 'Media & Advertising' },
-    { value: 'Manufacturers', option: 'Manufacturers' },
-    { value: 'CorporateOffices', option: 'Corporate Offices' },
+    { value: 'Corporate', name: 'Corporate' },
+    { value: 'Individual', name: 'Individual' }
 ]
 export const shiftOptions = [
     <Option key="1" value="Morning">Morning</Option>,
@@ -120,6 +112,9 @@ export const shiftMenu = [
     <Menu.Item key="Night" >Night</Menu.Item>,
     <Menu.Item key="All" >All</Menu.Item>
 ]
+export const getDefaultOptions = (options = []) => {
+    return options.map((item) => ({ value: item.value, name: item.name }))
+}
 export const getCreatorOptions = (creators = []) => {
     return creators.map((item) => ({ value: item.userId, option: item.userName }))
 }
