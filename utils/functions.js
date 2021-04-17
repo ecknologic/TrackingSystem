@@ -10,13 +10,16 @@ const getBatchId = (shiftType) => {
     return shift + '-' + currentDate
 }
 const checkUserExists = (req, res, next) => {
-    let userId = req.headers['userid']
-    let query = `Select userName from usermaster where userId=${userId} AND isActive='1' AND deleted=0`
-    executeGetQuery(query, (err, results) => {
-        if (err) console.log("Error", err)
-        else if (!results.length) res.status(406).json("Something went wrong")
-        else next()
-    })
+    if (req.query.isMobileApp) next()
+    else {
+        let userId = req.headers['userid']
+        let query = `Select userName from usermaster where userId=${userId} AND isActive='1' AND deleted=0`
+        executeGetQuery(query, (err, results) => {
+            if (err) console.log("Error", err)
+            else if (!results.length) res.status(406).json("Something went wrong")
+            else next()
+        })
+    }
 }
 const checkDepartmentExists = (req, res, next) => {
     let isSuperAdmin = req.headers['issuperadmin']
@@ -276,12 +279,12 @@ const getGraphData = (product20LCount, product2LCount, product1LCount, product50
         }
     ]
 }
-const saveProductDetails = ({ products, deliveryDetailsId, customerId, customerType = 'customer' }) => {
+const saveProductDetails = ({ products, deliveryDetailsId, customerId, distributorId, customerType = 'customer' }) => {
     return new Promise((resolve, reject) => {
         if (products.length) {
             for (let i of products) {
-                let deliveryProductsQuery = "insert  into customerproductdetails (deliverydetailsId,customerId,noOfJarsTobePlaced,productPrice,productName,customerType) values(?,?,?,?,?,?)";
-                let insertQueryValues = [deliveryDetailsId, customerId, i.noOfJarsTobePlaced, i.productPrice, i.productName, customerType]
+                let deliveryProductsQuery = "insert  into customerproductdetails (deliverydetailsId,customerId,noOfJarsTobePlaced,productPrice,productName,customerType,distributorId) values(?,?,?,?,?,?,?)";
+                let insertQueryValues = [deliveryDetailsId, customerId, i.noOfJarsTobePlaced, i.productPrice, i.productName, customerType, distributorId]
                 db.query(deliveryProductsQuery, insertQueryValues, (err, results) => {
                     if (err) reject(err);
                     else resolve(results)

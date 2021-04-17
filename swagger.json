@@ -5,7 +5,7 @@
         "title": "Tracking System Rest APIs",
         "description": "Node Js rest services for the tracking system which includes warehouse,driver and motherplant modules"
     },
-    "host": "65.1.190.193:8888",
+    "host": "15.207.25.20:8888",
     "basePath": "/",
     "tags": [
         {
@@ -583,6 +583,32 @@
                 "responses": {
                     "200": {
                         "description": "Quote created successfully"
+                    }
+                }
+            }
+        },
+        "/customer/requestBusinessAccount": {
+            "post": {
+                "tags": [
+                    "Customer"
+                ],
+                "description": "Request Business Account",
+                "parameters": [
+                    {
+                        "name": "requestDetails",
+                        "in": "body",
+                        "description": "Business Details",
+                        "schema": {
+                            "$ref": "#/definitions/RequestBusinessAccount"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Request created successfully"
                     }
                 }
             }
@@ -1555,6 +1581,36 @@
                     "type": "string"
                 },
                 "mobileNumber": {
+                    "type": "string"
+                }
+            }
+        },
+        "RequestBusinessAccount": {
+            "required": [
+                "organizationName",
+                "email",
+                "mobileNumber",
+                "pincode",
+                "address",
+                "address2"
+            ],
+            "properties": {
+                "organizationName": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "pincode": {
+                    "type": "number"
+                },
+                "mobileNumber": {
+                    "type": "string"
+                },
+                "address": {
+                    "type": "string"
+                },
+                "address2": {
                     "type": "string"
                 }
             }

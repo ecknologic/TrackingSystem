@@ -78,13 +78,13 @@ router.get("/customerOrderDetails/:orderId", (req, res) => {
         else if (orderData.length) {
             const { customerType } = orderData[0]
             let customerOrderDetailsQuery = "SELECT cd.customerId,cd.customerName as ownerName,c.customerOrderId,c.*,GROUP_CONCAT(cp.productName,':',cp.noOfJarsTobePlaced SEPARATOR ';') AS customerproducts " +
-                " FROM customerdetails  cd INNER JOIN customerproductdetails cp ON cd.customerId=cp.customerId INNER JOIN" +
-                "  customerorderdetails c ON c.existingCustomerId=cp.customerId WHERE c.customerOrderId=?";
+                " FROM customerdetails  cd LEFT JOIN customerproductdetails cp ON cd.customerId=cp.customerId INNER JOIN" +
+                "  customerorderdetails c ON c.existingCustomerId=cd.customerId WHERE c.customerOrderId=?";
 
             if (customerType == 'distributor') {
                 customerOrderDetailsQuery = "SELECT cd.distributorId as customerId,cd.operationalArea as deliveryLocation,cd.agencyName as ownerName,c.customerOrderId,c.*,GROUP_CONCAT(cp.productName,':',cp.noOfJarsTobePlaced SEPARATOR ';') AS customerproducts " +
-                    " FROM Distributors  cd INNER JOIN customerproductdetails cp ON cd.distributorId=cp.customerId INNER JOIN" +
-                    "  customerorderdetails c ON c.existingCustomerId=cp.customerId WHERE c.customerOrderId=?";
+                    " FROM Distributors  cd INNER JOIN customerproductdetails cp ON cd.distributorId=cp.distributorId INNER JOIN" +
+                    "  customerorderdetails c ON c.distributorId=cp.distributorId WHERE c.customerOrderId=?";
             }
             db.query(customerOrderDetailsQuery, [orderId], (err, results) => {
                 if (err) res.send(err);
