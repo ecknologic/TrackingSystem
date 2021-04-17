@@ -8,6 +8,10 @@ customerQueries.getCustomerDetails = (customerId, callback) => {
     let query = "SELECT isSuperAdminApproved,rocNo,poNo,depositAmount,customerId,customerName,c.mobileNumber,c.EmailId,c.Address1,c.gstNo,c.panNo,c.adharNo,c.registeredDate,c.invoicetype,c.natureOfBussiness,c.creditPeriodInDays,referredBy,isApproved,customertype,organizationName,idProofType,pincode as pinCode, dispenserCount, contractPeriod,customer_id_proof,d.idProof_backside,d.idProof_frontside,d.gstProof,u.userName as createdUserName from customerdetails c INNER JOIN customerDocStore d ON c.customer_id_proof=d.docId INNER JOIN usermaster u ON u.userId=c.createdBy WHERE c.customerId=" + customerId
     executeGetQuery(query, callback)
 }
+customerQueries.getCustomerDetailsForDC = (customerId, callback) => {
+    let query = "SELECT mobileNumber as phoneNumber,Address1 as address, customerName from customerdetails WHERE customerId=" + customerId
+    executeGetQuery(query, callback)
+}
 customerQueries.getOrdersByDepartmentId = (departmentId, callback) => {
     let query = "SELECT d.registeredDate,d.address,d.contactPerson,d.deliveryDetailsId,d.isActive as isApproved,d.vehicleId,r.routeName,r.routeId,dri.driverName,dri.driverId,dri.mobileNumber FROM DeliveryDetails d INNER JOIN routes r ON d.routeId=r.routeId left JOIN driverdetails dri ON d.driverId=dri.driverid WHERE d.deleted=0 AND d.isActive=1 AND d.departmentId=? ORDER BY d.registeredDate DESC";
     executeGetParamsQuery(query, [departmentId], callback)

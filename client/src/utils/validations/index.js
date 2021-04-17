@@ -331,7 +331,7 @@ export const validateDistributorValues = (data) => {
     let errors = {};
     const text = 'Required'
     const { agencyName, gstNo, gstProof, operationalArea, contactPerson, mobileNumber, address,
-        alternateNumber, mailId, alternateMailId } = data
+        alternateNumber, mailId, alternateMailId, deliveryLocation, ...rest } = data
 
     if (mailId && alternateMailId) {
         if (mailId.trim() === alternateMailId.trim()) {
@@ -343,6 +343,7 @@ export const validateDistributorValues = (data) => {
             errors.alternateNumber = 'Duplicate'
         }
     }
+    if (!deliveryLocation) errors.deliveryLocation = text
     if (!address) errors.address = text
     if (!gstProof) errors.gstProof = text
     if (!gstNo) errors.gstNo = text
@@ -380,7 +381,8 @@ export const validateDistributorValues = (data) => {
         error && (errors.alternateMailId = error)
     }
 
-    return errors
+    let productErrors = validateProductNPrice(rest)
+    return { ...errors, ...productErrors }
 }
 
 export const validateQCValues = (data) => {
@@ -843,7 +845,7 @@ export const validateDCValues = (data) => {
     const text = 'Required'
 
     const { routeId, customerName, customerType, existingCustomerId, phoneNumber, address,
-        driverId, distributorId, EmailId, ...rest } = data
+        driverId, distributorId, EmailId, deliveryLocation, ...rest } = data
 
     const isDistributor = customerType === 'distributor'
     const isExistingCustomer = customerType === 'internal'
@@ -879,6 +881,7 @@ export const validateDCValues = (data) => {
 
 
     if (!address) errors.address = text
+    if (!deliveryLocation) errors.deliveryLocation = text
     if (!phoneNumber) errors.phoneNumber = text
     else {
         const error = validateMobileNumber(phoneNumber, true)

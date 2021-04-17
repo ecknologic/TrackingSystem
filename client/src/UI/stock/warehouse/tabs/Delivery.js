@@ -107,9 +107,22 @@ const Delivery = ({ date, source }) => {
         try {
             showToast({ v1Ing: 'Fetching', action: 'loading' })
             const [data] = await http.GET(axios, url, config)
-            const { mobileNumber: phoneNumber, address, products, agencyName: customerName } = data
+            const { mobileNumber: phoneNumber, address, products, agencyName: customerName, deliveryLocation } = data
             const productsUI = getProductsForUI(products)
-            setFormData(data => ({ ...data, phoneNumber, address, customerName, ...productsUI }))
+            setFormData(data => ({ ...data, phoneNumber, address, customerName, deliveryLocation, ...productsUI }))
+            showToast({ v2: 'fetched' })
+        } catch (error) {
+            message.destroy()
+        }
+    }
+
+    const getCustomer = async (id) => {
+        const url = `customer/getCustomerDetailsForDC/${id}`
+
+        try {
+            showToast({ v1Ing: 'Fetching', action: 'loading' })
+            const { data: [res] } = await http.GET(axios, url, config)
+            setFormData(data => ({ ...data, ...res }))
             showToast({ v2: 'fetched' })
         } catch (error) {
             message.destroy()
@@ -142,15 +155,14 @@ const Delivery = ({ date, source }) => {
             const productsUI = getProductsForUI([])
             setFormData(data => ({
                 ...data, existingCustomerId: null, customerName: '', phoneNumber: null,
-                distributorId: null, address: '', ...productsUI
+                distributorId: null, deliveryLocation: '', address: '', ...productsUI
             }))
         }
         else if (key === 'distributorId') {
             getDistributor(value)
         }
         else if (key === 'existingCustomerId') {
-            let customerName = customerList.find(item => item.customerId === value).customerName
-            setFormData(data => ({ ...data, customerName }))
+            getCustomer(value)
         }
 
         // Validations

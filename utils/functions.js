@@ -73,7 +73,7 @@ const customerProductDetails = (deliveryDetailsId, customerType) => {
     return new Promise((resolve, reject) => {
         let query = "SELECT cp.productName,cp.productPrice,cp.noOfJarsTobePlaced,cp.id AS productId FROM customerproductdetails cp WHERE ";
         let options = [deliveryDetailsId]
-        if (customerType == DISTRIBUTOR) query = query + "customerId=?"
+        if (customerType == DISTRIBUTOR) query = query + "distributorId=?"
         else query = query + "deliveryDetailsId=?"
 
         db.query(query, options, (err, results) => {
