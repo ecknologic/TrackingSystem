@@ -157,7 +157,7 @@ const saveDeliveryDetails = (customerId, customerdetails, res) => {
         let latLong = await getLatLongDetails({ Address1: i.address })
         saveDeliveryDays(i.deliveryDays).then(deliveryDays => {
           let deliveryDetailsQuery = "insert  into DeliveryDetails (gstNo,location,address,phoneNumber,contactPerson,deliverydaysid,depositAmount,customer_Id,departmentId,isActive,gstProof,registeredDate,latitude,longitude,routeId) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-          var gstProof = Buffer.from(i.gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+          var gstProof = i.gstProof && Buffer.from(i.gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
           let registeredDate = new Date()
           let insertQueryValues = [i.gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, deliveryDays.insertId, i.depositAmount, customerId, i.departmentId, i.isApproved, gstProof, registeredDate, latLong.latitude, latLong.longitude, i.routeId]
           db.query(deliveryDetailsQuery, insertQueryValues, (err, results) => {
@@ -741,17 +741,24 @@ router.get('/getBusinessRequests', (req, res) => {
 });
 
 router.post('/createMembership', async (req, res) => {
-  let customerDetailsQuery = "insert  into customerdetails (customerName,mobileNumber,EmailId,Address1,contactperson,registeredDate,invoicetype,natureOfBussiness,creditPeriodInDays,referredBy,depositAmount,isActive,latitude,longitude,customerType,organizationName,createdBy,pincode,contractPeriod) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+  let customerDetailsQuery = "insert  into customerdetails (customerName,mobileNumber,EmailId,Address1,Address2,contactperson,registeredDate,natureOfBussiness,latitude,longitude,customerType,pincode,contractPeriod) values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
   // let customerDetailsQuery = "insert  into customerdetails (customerName,mobileNumber,EmailId,Address1,gstNo,registeredDate,invoicetype,natureOfBussiness,creditPeriodInDays,referredBy,isActive,qrcodeId,latitude,longitude,customerType,organizationName,createdBy) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
   let customerdetails = req.body;
-  const { customerName, mobileNumber, EmailId, Address1, contactperson, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, depositAmount, isActive, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, createdBy, idProofType, pinCode, contractPeriod } = customerdetails
+  const { customerName, mobileNumber, EmailId, Address1, Address2, contactperson, natureOfBussiness = 'Others', pinCode, contractPeriod } = customerdetails
   Promise.all([getLatLongDetails(customerdetails)])
     .then(response => {
+      const { latitude, longitude } = response[0]
       let registeredDate = customerdetails.registeredDate ? customerdetails.registeredDate : new Date()
-      let insertQueryValues = [customerName, mobileNumber, EmailId, Address1, contactperson, registeredDate, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, depositAmount, isActive, response[0].latitude, response[0].longitude, customertype, organizationName, createdBy, pinCode, contractPeriod]
+      let insertQueryValues = [customerName, mobileNumber, EmailId, Address1, Address2, contactperson, registeredDate, natureOfBussiness, latitude, longitude, "Membership", pinCode, contractPeriod]
       db.query(customerDetailsQuery, insertQueryValues, (err, results) => {
         if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
         else {
+          let deliveryDetails = [{
+            location: Address2, address: Address1,
+            phoneNumber: mobileNumber, contactPerson: customerName,
+            registeredDate, latitude, longitude
+          }]
+          customerdetails.deliveryDetails = deliveryDetails
           saveDeliveryDetails(results.insertId, customerdetails, res)
         }
       });
