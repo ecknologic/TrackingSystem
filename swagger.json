@@ -1592,7 +1592,8 @@
                 "mobileNumber",
                 "pincode",
                 "address",
-                "address2"
+                "address2",
+                "natureOfBusiness"
             ],
             "properties": {
                 "organizationName": {
@@ -1611,6 +1612,9 @@
                     "type": "string"
                 },
                 "address2": {
+                    "type": "string"
+                },
+                "natureOfBusiness": {
                     "type": "string"
                 }
             }
