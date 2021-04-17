@@ -31,7 +31,7 @@ const Invoices = () => {
     const getInvoice = async (id) => {
         const { FOR } = state || {}
         let url = `invoice/getDepartmentInvoiceById/${id}`
-        if (FOR === SUPERADMIN) {
+        if (FOR === SUPERADMIN || FOR === 'CUSTOMER') {
             url = `invoice/getInvoiceById/${id}`
         }
 
@@ -44,11 +44,14 @@ const Invoices = () => {
     }
 
     const getInvoices = async () => {
-        const { FOR } = state || {}
+        const { FOR, id } = state || {}
 
         let url = 'invoice/getDepartmentInvoices'
         if (FOR === SUPERADMIN) {
             url = 'invoice/getInvoices'
+        }
+        else if (FOR === SUPERADMIN || FOR === 'CUSTOMER') {
+            url = `invoice/getCustomerInvoices/${id}`
         }
 
         try {
@@ -65,13 +68,11 @@ const Invoices = () => {
     }
 
     const onAdd = () => history.push(`${mainUrl}/2`)
-    const handleBack = () => history.push(`${mainUrl}`)
+    const handleBack = () => history.goBack()
 
     const handlePrint = (event, pdf) => {
         event.preventDefault();
-        // window.open(pdf, "PRINT", "height=400,width=600");
         window.print()
-
     }
 
     return (

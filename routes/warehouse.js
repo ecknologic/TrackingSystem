@@ -479,9 +479,9 @@ router.get('/getCustomersCount', (req, res) => {
 })
 
 const saveDC = (req, res) => {
-  let { customerName, phoneNumber, address, routeId, driverId, product20L, product1L, product500ML, product300ML, product2L, warehouseId, customerType, existingCustomerId, distributorId, creationType, isDelivered = 'InProgress' } = req.body;
-  let dcCreateQuery = "insert into customerorderdetails (customerName,phoneNumber,address,routeId,driverId,20LCans,1LBoxes,500MLBoxes,300MLBoxes,2LBoxes,warehouseId,customerType,existingCustomerId,distributorId,creationType,isDelivered) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-  let insertQueryValues = [customerName, phoneNumber, address, routeId, driverId, product20L, product1L, product500ML, product300ML, product2L, warehouseId, customerType, existingCustomerId, distributorId, creationType, isDelivered]
+  let { customerName, phoneNumber, address, routeId, driverId, product20L, product1L, product500ML, product300ML, product2L, warehouseId, customerType, existingCustomerId, distributorId, creationType, isDelivered = 'InProgress', deliveryLocation } = req.body;
+  let dcCreateQuery = "insert into customerorderdetails (customerName,phoneNumber,address,routeId,driverId,20LCans,1LBoxes,500MLBoxes,300MLBoxes,2LBoxes,warehouseId,customerType,existingCustomerId,distributorId,creationType,isDelivered,deliveryLocation) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+  let insertQueryValues = [customerName, phoneNumber, address, routeId, driverId, product20L, product1L, product500ML, product300ML, product2L, warehouseId, customerType, existingCustomerId, distributorId, creationType, isDelivered, deliveryLocation]
   db.query(dcCreateQuery, insertQueryValues, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else {

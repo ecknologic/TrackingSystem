@@ -9,7 +9,7 @@ const DCForm = (props) => {
 
     const { data, errors, routeOptions, disabledItems, onBlur, driverOptions, distributorOptions, customerOptions, onChange } = props
 
-    const { routeId, customerName, phoneNumber, address, driverId, product20L, product2L, product1L,
+    const { routeId, customerName, phoneNumber, address, driverId, product20L, product2L, product1L, deliveryLocation,
         product500ML, product300ML, existingCustomerId, distributorId, customerType, creationType, EmailId } = data
 
     const disableAll = disabledItems === 'ALL' && disabledItems !== 'NONE'
@@ -27,6 +27,16 @@ const DCForm = (props) => {
             resetTrackForm()
         }
     }, [])
+
+    const renderDL = () => (
+        <div className='input-container'>
+            <InputLabel name='Delivery Location' error={errors.deliveryLocation} mandatory />
+            <CustomInput value={deliveryLocation} placeholder='Add Location'
+                disabled={disableAll || disableFew} error={errors.deliveryLocation}
+                onChange={(value) => onChange(value, 'deliveryLocation')}
+            />
+        </div>
+    )
 
     return (
         <>
@@ -96,22 +106,25 @@ const DCForm = (props) => {
                         />
                     </div>
                 </div>
-                {
-                    isNewCustomer &&
-                    (
-                        <div className='row'>
-                            <div className='input-container'>
-                                <InputLabel name='Email' error={errors.EmailId} mandatory />
-                                <CustomInput
-                                    value={EmailId} type='email' disabled={disableAll || disableFew}
-                                    placeholder='Email' error={errors.EmailId}
-                                    onBlur={(value) => onBlur(value, 'EmailId')}
-                                    onChange={(value) => onChange(value, 'EmailId')}
-                                />
-                            </div>
-                        </div>
-                    )
-                }
+                <div className='row'>
+                    {
+                        isNewCustomer ?
+                            (
+                                <>
+                                    <div className='input-container'>
+                                        <InputLabel name='Email' error={errors.EmailId} mandatory />
+                                        <CustomInput
+                                            value={EmailId} type='email' disabled={disableAll || disableFew}
+                                            placeholder='Email' error={errors.EmailId}
+                                            onBlur={(value) => onBlur(value, 'EmailId')}
+                                            onChange={(value) => onChange(value, 'EmailId')}
+                                        />
+                                    </div>
+                                    {renderDL()}
+                                </>
+                            ) : renderDL()
+                    }
+                </div>
                 <div className='row'>
                     <div className='input-container stretch'>
                         <InputLabel name='Address' error={errors.address} mandatory />

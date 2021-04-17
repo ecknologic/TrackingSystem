@@ -80,7 +80,7 @@ const CreateEmployee = ({ goToTab }) => {
         }
         const url = 'distributor/createDistributor'
         const options = { item: 'Distributor', v1Ing: 'Adding', v2: 'added' }
-        console.log('body>>', body)
+
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })

@@ -10,7 +10,7 @@ const EmployeeForm = (props) => {
     const { data, errors, onChange, onUpload, onRemove, disabled, onBlur } = props
     const { agencyName, gstNo, gstProof, operationalArea, contactPerson, mobileNumber, address,
         alternateNumber, mailId, alternateMailId, product20L, price20L, product2L, product1L, price2L, price1L, product500ML,
-        price500ML, product300ML, price300ML } = data
+        price500ML, product300ML, price300ML, deliveryLocation } = data
 
 
     useEffect(() => {
@@ -74,6 +74,13 @@ const EmployeeForm = (props) => {
                     <CustomInput value={contactPerson}
                         error={errors.contactPerson} placeholder="Contact Person"
                         onChange={(value) => onChange(value, 'contactPerson')}
+                    />
+                </div>
+                <div className='input-container'>
+                    <InputLabel name='Delivery Location' error={errors.deliveryLocation} mandatory />
+                    <CustomInput value={deliveryLocation} placeholder='Add Location'
+                        disabled={disabled} error={errors.deliveryLocation}
+                        onChange={(value) => onChange(value, 'deliveryLocation')}
                     />
                 </div>
             </div>

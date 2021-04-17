@@ -381,6 +381,15 @@ router.get("/getCustomerDetailsById/:customerId", (req, res) => {
   })
 });
 
+router.get("/getCustomerDetailsForDC/:customerId", (req, res) => {
+  customerQueries.getCustomerDetailsForDC(req.params.customerId, (err, results) => {
+    if (err) res.status(500).json(err);
+    else {
+      res.json({ status: 200, statusMessage: "Success", data: results })
+    }
+  })
+});
+
 router.get("/getCustomerDeliveryDetails/:customerId", (req, res) => {
   const { customerId } = req.params
   const { isSuperAdmin = 'false' } = req.query;

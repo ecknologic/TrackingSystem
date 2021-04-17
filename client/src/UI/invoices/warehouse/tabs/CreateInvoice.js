@@ -252,6 +252,9 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
             message.destroy()
             if (!axios.isCancel(error)) {
                 setBtnDisabled(false)
+                if (error.response.status === 400) {
+                    message.info('Invoice already generated for this DC')
+                }
             }
         }
     }
