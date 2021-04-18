@@ -508,7 +508,7 @@ const getInvoiceByInvoiceId = ({ invoiceId, departmentInvoice, res }) => {
                 gstNo, invoiceId, ...rest
             }
             obj.products = products
-            if (products.length) {
+            if (products && products.length) {
                 const uniqueValues = new Set(products.map(p => p.productName));
                 if (uniqueValues.size < products.length) {
                     haveMultipleAddress = true
@@ -562,11 +562,11 @@ const getInvoiceByInvoiceId = ({ invoiceId, departmentInvoice, res }) => {
                         }
                     }
                 }
-            }
+            } else return res.status(500).json("Something went wrong")
 
             if (haveMultipleAddress) {
                 let invoice = {
-                    items: obj.products, customerType, Address1, invoiceId, gstNo, fromDate, toDate
+                    items: obj.products, Address1, invoiceId, gstNo, fromDate, toDate
                 }
                 createMultiDeliveryInvoice(invoice, `${invoiceId}.pdf`).then(response => {
                     setTimeout(() => {

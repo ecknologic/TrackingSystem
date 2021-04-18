@@ -34,8 +34,19 @@ invoiceQueries.getDepartmentInvoiceByDCNO = (dcNo, callback) => {
 
 invoiceQueries.getInvoiceById = async (input, callback) => {
     const { invoiceId, departmentInvoice } = input
-    let query = `select i.*,JSON_ARRAYAGG(json_object('key',p.id,'discount',p.discount,'productName',p.productName,'productPrice',ROUND(p.productPrice,1),'quantity',p.quantity,'tax',p.tax,'amount',ROUND(p.amount),'cgst',ROUND(p.cgst),'sgst',ROUND(p.sgst),'igst',ROUND(p.igst),'address',p.address,'deliveryAddress',p.deliveryAddress)) as products,c.organizationName,c.customerType, c.gstNo, c.panNo, c.mobileNumber,c.Address1 from Invoice i INNER JOIN invoiceProductsDetails p ON i.invoiceId=p.invoiceId INNER JOIN customerdetails c ON c.customerId=i.customerId where i.invoiceId=? AND p.deleted=0`;
-    if (departmentInvoice) query = `select i.*,JSON_ARRAYAGG(json_object('key',p.id,'discount',p.discount,'productName',p.productName,'productPrice',ROUND(p.productPrice,1),'quantity',p.quantity,'tax',p.tax,'amount',ROUND(p.amount),'cgst',ROUND(p.cgst),'sgst',ROUND(p.sgst),'igst',ROUND(p.igst),'address',p.address,'deliveryAddress',p.deliveryAddress)) as products,c.organizationName,c.customerType, c.gstNo, c.panNo, c.mobileNumber,c.Address1 from departmentInvoices i INNER JOIN departmentInvoiceProducts p ON i.invoiceId=p.invoiceId INNER JOIN customerdetails c ON c.customerId=i.customerId where i.invoiceId=? AND p.deleted=0`;
+    let query = `select i.*,JSON_ARRAYAGG(json_object('key',p.id,'discount',p.discount,'productName',p.productName,'productPrice',ROUND(p.productPrice,1),'quantity',p.quantity,'tax',p.tax,'amount',ROUND(p.amount),'cgst',ROUND(p.cgst),'sgst',ROUND(p.sgst),'igst',ROUND(p.igst),'address',p.address,'deliveryAddress',p.deliveryAddress)) as products,c.organizationName, c.gstNo, c.panNo, c.mobileNumber,c.Address1 from Invoice i INNER JOIN invoiceProductsDetails p ON i.invoiceId=p.invoiceId INNER JOIN customerdetails c ON c.customerId=i.customerId where i.invoiceId=? AND p.deleted=0`;
+    if (departmentInvoice) query = `SELECT i.*,JSON_ARRAYAGG(JSON_OBJECT('key',p.id,'discount',p.discount,'productName',p.productName,
+    'productPrice',ROUND(p.productPrice,1),'quantity',p.quantity,'tax',p.tax,'amount',
+    ROUND(p.amount),'cgst',ROUND(p.cgst),'sgst',ROUND(p.sgst),'igst',ROUND(p.igst),
+    'address',p.address,'deliveryAddress',p.deliveryAddress)) AS products,
+    CASE WHEN i.customertype='distributor' THEN d.agencyName ELSE c.organizationName  END AS organizationName,
+    CASE WHEN i.customertype='distributor' THEN d.gstNo ELSE c.gstNo  END AS gstNo,
+    CASE WHEN i.customertype='distributor' THEN '' ELSE c.panNo  END AS panNo,
+    CASE WHEN i.customertype='distributor' THEN d.mobileNumber ELSE c.mobileNumber  END AS mobileNumber,
+    CASE WHEN i.customertype='distributor' THEN d.address ELSE c.Address1  END AS Address1
+    FROM departmentInvoices i INNER JOIN departmentInvoiceProducts p ON i.invoiceId=p.invoiceId
+    LEFT JOIN customerdetails c ON c.customerId=i.customerId LEFT JOIN Distributors d ON d.distributorId=i.customerId 
+    WHERE i.invoiceId=? AND p.deleted=0`;
     return executeGetParamsQuery(query, [invoiceId], callback)
 }
 
@@ -59,10 +70,10 @@ invoiceQueries.createInvoice = (input, callback) => {
 }
 
 invoiceQueries.createDepartmentInvoice = (input, callback) => {
-    const { dcNo, customerId, invoiceDate, dueDate, fromDate, toDate, salesPerson, invoiceId, hsnCode, poNo, totalAmount, customerName, departmentId, mailIds, status = 'Pending', departmentStatus = 'Pending' } = input
-    let query = "insert into departmentInvoices (dcNo,customerId,invoiceDate,dueDate,salesPerson,invoiceId,hsnCode,poNo,totalAmount,customerName,fromDate,toDate,departmentId,status,mailIds,departmentStatus) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    const { dcNo, customerId, invoiceDate, dueDate, fromDate, toDate, salesPerson, invoiceId, hsnCode, poNo, totalAmount, customerName, departmentId, mailIds, status = 'Pending', departmentStatus = 'Pending', customerType = 'customer' } = input
+    let query = "insert into departmentInvoices (dcNo,customerId,invoiceDate,dueDate,salesPerson,invoiceId,hsnCode,poNo,totalAmount,customerName,fromDate,toDate,departmentId,status,mailIds,departmentStatus,customerType) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     // var gstProofImage = Buffer.from(gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-    let requestBody = [dcNo, customerId, invoiceDate, dueDate, salesPerson, invoiceId, hsnCode, poNo, totalAmount, customerName, fromDate, toDate, departmentId, status, mailIds, departmentStatus]
+    let requestBody = [dcNo, customerId, invoiceDate, dueDate, salesPerson, invoiceId, hsnCode, poNo, totalAmount, customerName, fromDate, toDate, departmentId, status, mailIds, departmentStatus, customerType]
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 
