@@ -2,7 +2,7 @@ const { executeGetQuery, executePostOrUpdateQuery } = require('../../utils/funct
 let distributorQueries = {}
 
 distributorQueries.getDistributors = async (callback) => {
-    let query = `select distributorId,createdDateTime,agencyName,contactPerson,mobileNumber,address,isActive,operationalArea from Distributors ORDER BY createdDateTime DESC`;
+    let query = `select distributorId,createdDateTime,agencyName,contactPerson,mobileNumber,address,isActive,operationalArea from Distributors where deleted=0 ORDER BY createdDateTime DESC`;
     return executeGetQuery(query, callback)
 }
 distributorQueries.getDistributorsList = async (callback) => {
