@@ -141,7 +141,7 @@ router.post('/createCustomer', async (req, res) => {
   Promise.all(promiseArray)
     .then(response => {
       let registeredDate = customerdetails.registeredDate ? customerdetails.registeredDate : new Date()
-      let customer_id_proof = result[1] && result[1]
+      let customer_id_proof = response[1] && response[1]
       let insertQueryValues = [customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactperson, panNo, adharNo, registeredDate, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, response[0].latitude, response[0].longitude, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, createdBy, customer_id_proof, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo]
       db.query(customerDetailsQuery, insertQueryValues, (err, results) => {
         if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
