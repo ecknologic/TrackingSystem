@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { message } from 'antd';
-import { ACCOUNTSADMIN, SUPERADMIN, getRole, getUserId, getWarehoseId } from '../utils/constants'
+import { ACCOUNTSADMIN, SUPERADMIN, MARKETINGADMIN, getRole, getUserId, getWarehoseId } from '../utils/constants'
 import { isAbsoluteUrl } from '../utils/Functions';
 message.config({ maxCount: 1 });
 
@@ -14,6 +14,7 @@ axios.interceptors.request.use(function (config) {
     config.headers.userId = getUserId()
     config.headers.isSuperAdmin = getRole() === SUPERADMIN
     config.headers.isAccountsAdmin = getRole() === ACCOUNTSADMIN
+    config.headers.isSalesAdmin = getRole() === MARKETINGADMIN
 
     return config;
 })
