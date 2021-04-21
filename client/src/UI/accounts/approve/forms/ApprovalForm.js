@@ -72,13 +72,13 @@ const ApprovalForm = (props) => {
             <div className='app-identity-proof-container identity-proof-container'>
                 <div className='row'>
                     <div className='input-container'>
-                        <InputLabel name='Select Id Proof' error={errors.idProofType} mandatory />
+                        <InputLabel name='Select Id Proof' error={errors.idProofType} />
                         <SelectInput track value={idProofType} options={IDOptions} disabled={disabled || idDisable} error={errors.idProofType} onSelect={(value) => onChange(value, 'idProofType')} />
                     </div>
                     {
                         idProofType && (
                             <div className='input-container'>
-                                <InputLabel name={proofName} error={errors[idProofType]} mandatory />
+                                <InputLabel name={proofName} error={errors[idProofType]} />
                                 <CustomInput
                                     disabled={disabled || idDisable} maxLength={maxLength} uppercase
                                     value={data[idProofType]} error={errors[idProofType]}
@@ -103,7 +103,7 @@ const ApprovalForm = (props) => {
             </div>
             <div className='row'>
                 <div className='input-container'>
-                    <InputLabel name='GST Number' error={errors.gstNo} mandatory={isCorporate} />
+                    <InputLabel name='GST Number' error={errors.gstNo} />
                     <CustomInput
                         maxLength={15} value={gstNo}
                         disabled={disabled || gstDisable} uppercase

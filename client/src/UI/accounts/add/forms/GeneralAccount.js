@@ -49,7 +49,7 @@ const GeneralAccountForm = (props) => {
                 <div className='app-identity-proof-container identity-proof-container'>
                     <div className='row'>
                         <div className='input-container'>
-                            <InputLabel name='Select Id Proof' error={errors.idProofType} mandatory />
+                            <InputLabel name='Select Id Proof' error={errors.idProofType} />
                             <SelectInput
                                 track value={idProofType}
                                 options={idOptions} disabled={disabled}
