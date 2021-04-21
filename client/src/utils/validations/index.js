@@ -1,6 +1,6 @@
 import {
     isStrictDigit, isAadharValid, isPANValid, isEmpty, isGSTValid, isAlphaOnly, isIFSCValid,
-    isIndMobileNum, isAlphaNumOnly, isEmail, isStrictIntFloat, isIntFloat, isDLValid, isAlphaNum
+    isIndMobileNum, isAlphaNumOnly, isEmail, isStrictIntFloat, isIntFloat, isDLValid, isAlphaNum, getValidObject
 } from "../Functions"
 
 export const checkValidation = (stateValues) => {
@@ -34,7 +34,9 @@ export const validateRequired = (data) => {
 export const validateIDProofs = (proofs, proofType) => {
     let errors = {};
     const text = 'Required'
-    if (!isEmpty(proofs)) {
+    const valid = getValidObject(proofs)
+
+    if (!isEmpty(valid)) {
         const { Front, Back } = proofs;
         if (!Front) errors.Front = text
         if (proofType !== 'panNo' && !Back) errors.Back = text
