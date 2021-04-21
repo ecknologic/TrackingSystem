@@ -139,8 +139,8 @@ export const getInvoiceLabel = (value) => {
     }
 }
 
-export const getCleanObject = (data) => {
-    return Object.entries(data).reduce((a, [k, v]) => (v === null ? a : (a[k] = v, a)), {})
+export const getValidObject = (data) => { // Removes all invalid properties
+    return Object.entries(data).reduce((a, [k, v]) => ((!v) ? a : (a[k] = v, a)), {})
 }
 
 export const getSideMenuKey = (path) => {

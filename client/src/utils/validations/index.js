@@ -1,6 +1,6 @@
 import {
     isStrictDigit, isAadharValid, isPANValid, isEmpty, isGSTValid, isAlphaOnly, isIFSCValid,
-    isIndMobileNum, isAlphaNumOnly, isEmail, isStrictIntFloat, isIntFloat, isDLValid, isAlphaNum
+    isIndMobileNum, isAlphaNumOnly, isEmail, isStrictIntFloat, isIntFloat, isDLValid, isAlphaNum, getValidObject
 } from "../Functions"
 
 export const checkValidation = (stateValues) => {
@@ -34,11 +34,14 @@ export const validateRequired = (data) => {
 export const validateIDProofs = (proofs, proofType) => {
     let errors = {};
     const text = 'Required'
-    if (!isEmpty(proofs)) {
+    const valid = getValidObject(proofs)
+
+    if (!isEmpty(valid)) {
         const { Front, Back } = proofs;
         if (!Front) errors.Front = text
         if (proofType !== 'panNo' && !Back) errors.Back = text
-    } else errors = { Front: text, Back: text }
+    }
+    // else errors = { Front: text, Back: text }
 
     return errors
 }
@@ -65,8 +68,8 @@ export const validateAccountValues = (data, customerType, isInView) => {
         if (!organizationName) errors.organizationName = text
         if (!contractPeriod) errors.contractPeriod = text
         if (!dispenserCount) errors.dispenserCount = text
-        if (!gstNo) errors.gstNo = text
-        if (!gstProof) errors.gstProof = text
+        // if (!gstNo) errors.gstNo = text
+        // if (!gstProof) errors.gstProof = text
     }
     else {
         if (!isInView) { // General account form in add account screen
@@ -76,11 +79,11 @@ export const validateAccountValues = (data, customerType, isInView) => {
         }
     }
 
-    if (gstNo && !gstProof) errors.gstProof = text
-    if (!gstNo && gstProof) errors.gstNo = text
+    // if (gstNo && !gstProof) errors.gstProof = text
+    // if (!gstNo && gstProof) errors.gstNo = text
     if (!address) errors.address = text
-    if (!idProofType) errors.idProofType = text
-    if (idProofType && !data[idProofType]) errors[idProofType] = text
+    // if (!idProofType) errors.idProofType = text
+    // if (idProofType && !data[idProofType]) errors[idProofType] = text
     if (!invoicetype) errors.invoicetype = text
     if (!registeredDate) errors.registeredDate = text
     if (!natureOfBussiness) errors.natureOfBussiness = text
@@ -143,8 +146,8 @@ export const validateDeliveryValues = (data) => {
     if (!departmentId) errors.departmentId = text
     if (!routeId) errors.routeId = text
     if (!address) errors.address = text
-    if (gstNo && !gstProof) errors.gstProof = text
-    if (!gstNo && gstProof) errors.gstNo = text
+    // if (gstNo && !gstProof) errors.gstProof = text
+    // if (!gstNo && gstProof) errors.gstNo = text
     if (!phoneNumber) errors.phoneNumber = text
     else {
         const error = validateMobileNumber(phoneNumber, true)
