@@ -27,7 +27,7 @@ const SalesResults = ({ depOptions }) => {
     }, [])
 
     const getResults = async ({ startDate, endDate, departmentId, fromStart, type }) => {
-        const url = `/warehouse/getTotalSales?startDate=${startDate}&endDate=${endDate}&departmentId=${departmentId}&fromStart=${fromStart}&type=${type}`
+        const url = `warehouse/getTotalSales?startDate=${startDate}&endDate=${endDate}&departmentId=${departmentId}&fromStart=${fromStart}&type=${type}`
 
         try {
             const { graph = [], ...rest } = await http.GET(axios, url, config)

@@ -9,15 +9,16 @@ import EmployeeForm from '../forms/Employee';
 import DependentForm from '../forms/Dependent';
 import DependentView from '../views/Dependent';
 import Spinner from '../../../components/Spinner';
+import useUser from '../../../utils/hooks/useUser';
 import ScrollUp from '../../../components/ScrollUp';
 import NoContent from '../../../components/NoContent';
 import QuitModal from '../../../components/CustomModal';
 import IDProofInfo from '../../../components/IDProofInfo';
 import CustomButton from '../../../components/CustomButton';
 import ConfirmMessage from '../../../components/ConfirmMessage';
+import { TRACKFORM, WAREHOUSEADMIN } from '../../../utils/constants';
 import { getDepartmentOptions, getRoleOptions } from '../../../assets/fixtures';
 import { isEmpty, showToast, base64String, getMainPathname, getBase64, getValidDate } from '../../../utils/Functions';
-import { getRole, TRACKFORM, WAREHOUSEADMIN } from '../../../utils/constants';
 import {
     validateIDNumbers, validateNames, validateMobileNumber, validateEmailId, validateIDProofs,
     validateEmployeeValues, validateDependentValues, validateNumber, validateIFSCCode
@@ -26,7 +27,7 @@ import '../../../sass/employees.scss'
 const DATEFORMAT = 'YYYY-MM-DD'
 
 const ManageEmployee = ({ isDriver }) => {
-    const role = getRole()
+    const { ROLE } = useUser()
     const history = useHistory()
     const { employeeId } = useParams()
     const { pathname } = useLocation()
@@ -51,7 +52,7 @@ const ManageEmployee = ({ isDriver }) => {
     const [departmentList, setDepartmentList] = useState([])
     const [prevDepartmentId, setPrevDepartmentId] = useState('')
 
-    const isWHAdmin = useMemo(() => role === WAREHOUSEADMIN, [role])
+    const isWHAdmin = useMemo(() => ROLE === WAREHOUSEADMIN, [ROLE])
     const roleOptions = useMemo(() => getRoleOptions(roleList), [roleList])
     const mainUrl = useMemo(() => getMainPathname(pathname), [pathname])
     const departmentOptions = useMemo(() => getDepartmentOptions(departmentList), [departmentList])
@@ -103,7 +104,7 @@ const ManageEmployee = ({ isDriver }) => {
     }
 
     const getRoleList = async () => {
-        const url = '/roles/getRoles'
+        const url = 'roles/getRoles'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -114,7 +115,7 @@ const ManageEmployee = ({ isDriver }) => {
     }
 
     const getDepartmentList = async () => {
-        const url = '/bibo/getAllDepartmentsList?hasNone=true&availableOnly=true'
+        const url = 'bibo/getAllDepartmentsList?hasNone=true&availableOnly=true'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -453,16 +454,16 @@ const ManageEmployee = ({ isDriver }) => {
 }
 
 const getUrl = (isDriver) => {
-    const staffUrl = '/users/getUser'
-    const driverUrl = '/driver/getDriver'
+    const staffUrl = 'users/getUser'
+    const driverUrl = 'driver/getDriver'
 
     if (isDriver) return driverUrl
     return staffUrl
 }
 
 const updateUrl = (isDriver) => {
-    const staffUrl = '/users/updateWebUser'
-    const driverUrl = '/driver/updateDriver'
+    const staffUrl = 'users/updateWebUser'
+    const driverUrl = 'driver/updateDriver'
 
     if (isDriver) return driverUrl
     return staffUrl

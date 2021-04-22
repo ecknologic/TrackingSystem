@@ -1,7 +1,6 @@
-import axios from 'axios';
 import Slider from "react-slick";
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { http } from '../../../../modules/http';
+import { http, appApi } from '../../../../modules/http';
 import PanelHeader from '../../../../components/PanelHeader';
 import { TODAYDATE as d } from '../../../../utils/constants';
 import CustomerOverviewCard from '../../../../components/CustomerOverviewCard';
@@ -12,7 +11,7 @@ const CustomersOverview = () => {
     const [opData, setOpData] = useState(() => options)
     const [active, setActive] = useState({})
 
-    const source = useMemo(() => axios.CancelToken.source(), []);
+    const source = useMemo(() => appApi.CancelToken.source(), []);
     const config = { cancelToken: source.token }
     const { totalCustomers, corporateCustomersPercent, corporateCustomersCompareText, individualCustomersPercent, individualCustomersCompareText, totalCorporateCustomers, totalIndividualCustomers, totalInactiveCustomers } = active
 
@@ -25,10 +24,10 @@ const CustomersOverview = () => {
     }, [])
 
     const getActiveData = async ({ startDate, endDate, fromStart, type }) => {
-        const url = `/warehouse/getCustomersCount?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}&type=${type}`
+        const url = `warehouse/getCustomersCount?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}&type=${type}`
 
         try {
-            const data = await http.GET(axios, url, config)
+            const data = await http.GET(appApi, url, config)
             setActive(data)
         } catch (error) { }
     }

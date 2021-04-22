@@ -35,7 +35,7 @@ const CreateNewPlant = ({ goToTab }) => {
 
     const getStaffList = async () => {
         const roleName = getRoleName()
-        const url = `/users/getUsersByRole/${roleName}`
+        const url = `users/getUsersByRole/${roleName}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -112,7 +112,7 @@ const CreateNewPlant = ({ goToTab }) => {
         let body = {
             ...motherplant
         }
-        const url = `${mainUrl.slice(0, -1)}/create${plantType}`
+        const url = `${mainUrl.slice(1, -1)}/create${plantType}`
         const options = { item: plantType, v1Ing: 'Adding', v2: 'added' }
 
 

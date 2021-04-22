@@ -54,7 +54,7 @@ const DeliveryDetails = ({ isAdmin, recentDelivery, ...rest }) => {
     }, [recentDelivery])
 
     const getDeliveryDetails = async () => {
-        const url = `/customer/getCustomerDeliveryDetails/${accountId}`
+        const url = `customer/getCustomerDeliveryDetails/${accountId}`
         try {
             const { data: [data = {}] } = await http.GET(axios, url, config)
             const { deliveryDetails } = data
@@ -64,7 +64,7 @@ const DeliveryDetails = ({ isAdmin, recentDelivery, ...rest }) => {
     }
 
     const fetchDelivery = async (id) => {
-        const url = `/customer/getDeliveryDetails/${id}`
+        const url = `customer/getDeliveryDetails/${id}`
 
         try {
             showToast({ v1Ing: 'Fetching', action: 'loading' })
@@ -86,7 +86,7 @@ const DeliveryDetails = ({ isAdmin, recentDelivery, ...rest }) => {
     }
 
     const getRouteList = async (departmentId) => {
-        const url = `/customer/getRoutes/${departmentId}`
+        const url = `customer/getRoutes/${departmentId}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -222,7 +222,7 @@ const DeliveryDetails = ({ isAdmin, recentDelivery, ...rest }) => {
 
     const handleStatusUpdate = async (id, status) => {
         const options = { item: 'Delivery status', v1Ing: 'Updating', v2: 'updated' }
-        const url = `/customer/updateDeliveryDetailsStatus`
+        const url = `customer/updateDeliveryDetailsStatus`
         const body = { status, deliveryDetailsId: id }
 
         try {
@@ -237,7 +237,7 @@ const DeliveryDetails = ({ isAdmin, recentDelivery, ...rest }) => {
 
     const handleDelete = async (id) => {
         const options = { item: 'Delivery details', v1Ing: 'Deleting', v2: 'deleted' }
-        const url = `/customer/deleteDelivery/${id}`
+        const url = `customer/deleteDelivery/${id}`
 
         try {
             showToast({ ...options, action: 'loading' })
@@ -267,7 +267,7 @@ const DeliveryDetails = ({ isAdmin, recentDelivery, ...rest }) => {
         const formValues = extractDeliveryDetails(formData)
         const body = [{ ...formValues, isNew: false, delete: 0, products, deliveryDays }]
         const options = { item: 'Delivery details', v1Ing: 'Updating', v2: 'updated' }
-        const url = '/customer/updateDeliveryDetails'
+        const url = 'customer/updateDeliveryDetails'
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })

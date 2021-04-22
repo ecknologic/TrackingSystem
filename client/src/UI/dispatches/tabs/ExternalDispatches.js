@@ -51,7 +51,7 @@ const Dispatches = () => {
     }, [])
 
     const getDispatches = async () => {
-        const url = '/motherPlant/getDispatchDetails'
+        const url = 'motherPlant/getDispatchDetails'
 
         try {
             const data = await http.GET(axios, url, config)

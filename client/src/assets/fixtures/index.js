@@ -44,20 +44,12 @@ export const genderOptions = [
     <Option key='3' value='TransGender'>TransGender</Option>
 ]
 export const statusFilterOptions = [
-    { value: 0, option: 'Draft' },
-    { value: 1, option: 'Active' }
+    { value: 0, name: 'Draft' },
+    { value: 1, name: 'Active' }
 ]
 export const accountFilterOptions = [
-    { value: 'Corporate', option: 'Corporate' },
-    { value: 'Individual', option: 'Individual' }
-]
-export const businessFilterOptions = [
-    { value: 'SoftwareAndIT', option: 'Software & IT' },
-    { value: 'HealthAndPharma', option: 'Health & Pharma' },
-    { value: 'RestaurantAndHospitality', option: 'Restaurant & Hospitality' },
-    { value: 'MediaAndAdvertising', option: 'Media & Advertising' },
-    { value: 'Manufacturers', option: 'Manufacturers' },
-    { value: 'CorporateOffices', option: 'Corporate Offices' },
+    { value: 'Corporate', name: 'Corporate' },
+    { value: 'Individual', name: 'Individual' }
 ]
 export const shiftOptions = [
     <Option key="1" value="Morning">Morning</Option>,
@@ -120,6 +112,12 @@ export const shiftMenu = [
     <Menu.Item key="Night" >Night</Menu.Item>,
     <Menu.Item key="All" >All</Menu.Item>
 ]
+export const getDefaultOptions = (options = []) => {
+    return options.map((item) => ({ value: item.value, name: item.name }))
+}
+export const getCreatorOptions = (creators = []) => {
+    return creators.map((item) => ({ value: item.userId, option: item.userName }))
+}
 export const getDepartmentMenu = (departments = []) => {
     return departments.map((item) => <Menu.Item key={item.departmentName} >{item.departmentName}</Menu.Item>)
 }
@@ -460,6 +458,14 @@ export const getDeliveryColumns = (type) => {
         },
     ]
 
+    if (type === 'date') {
+        columns.splice(1, 0, {
+            title: 'Date & time',
+            dataIndex: 'dateAndTime',
+            key: 'dateAndTime',
+        })
+    }
+
     if (type === 'extra') {
         columns.splice(1, 0, {
             title: 'Date & time',
@@ -514,48 +520,66 @@ export const orderColumns = [
     },
 ]
 
-export const receivedStockColumns = [
-    {
-        title: 'DC Number',
-        dataIndex: 'dcNo',
-        key: 'dcNo',
-    },
-    {
-        title: 'Date & time',
-        dataIndex: 'dateAndTime',
-        key: 'dateAndTime',
-    },
-    {
-        title: 'Mother Plant',
-        dataIndex: 'departmentName',
-        key: 'departmentName',
-    },
-    {
-        title: 'Stock Details',
-        dataIndex: 'stockDetails',
-        key: 'stockDetails',
-    },
-    {
-        title: 'Driver',
-        dataIndex: 'driverName',
-        key: 'driverName',
-    },
-    {
-        title: 'Phone Number',
-        dataIndex: 'mobileNumber',
-        key: 'mobileNumber',
-    },
-    {
-        title: 'Status',
-        dataIndex: 'status',
-        key: 'status'
-    },
-    {
-        title: 'Actions',
-        dataIndex: 'action',
-        key: 'action'
-    },
-]
+export const getStockColumns = (isWHAdmin) => {
+
+    const columns = [
+        {
+            title: 'DC Number',
+            dataIndex: 'dcNo',
+            key: 'dcNo',
+        },
+        {
+            title: 'Date & time',
+            dataIndex: 'dateAndTime',
+            key: 'dateAndTime',
+        },
+        {
+            title: 'Mother Plant',
+            dataIndex: 'departmentName',
+            key: 'departmentName',
+        },
+        {
+            title: 'Stock Details',
+            dataIndex: 'stockDetails',
+            key: 'stockDetails',
+        },
+        {
+            title: 'Driver',
+            dataIndex: 'driverName',
+            key: 'driverName',
+        },
+        {
+            title: 'Phone Number',
+            dataIndex: 'mobileNumber',
+            key: 'mobileNumber',
+        },
+        {
+            title: 'Status',
+            dataIndex: 'status',
+            key: 'status'
+        },
+        {
+            title: 'Actions',
+            dataIndex: 'action',
+            key: 'action'
+        },
+    ]
+
+    if (isWHAdmin) {
+        columns.splice(2, 2, {
+            title: 'Warehouse',
+            dataIndex: 'departmentName',
+            key: 'departmentName'
+        }, {
+            title: 'Damage Details',
+            dataIndex: 'stockDetails',
+            key: 'stockDetails',
+        })
+    }
+
+
+    return columns;
+}
 
 export const todayDeliveryColumns = [
     {

@@ -5,12 +5,12 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
 import Spinner from '../../../../components/Spinner';
 import Actions from '../../../../components/Actions';
-import ArrivedStockView from '../forms/ArrivedStock';
-import SearchInput from '../../../../components/SearchInput';
-import RoutesFilter from '../../../../components/RoutesFilter';
 import CustomModal from '../../../../components/CustomModal';
-import { EyeIconGrey } from '../../../../components/SVG_Icons';
+import SearchInput from '../../../../components/SearchInput';
 import { getStockColumns } from '../../../../assets/fixtures';
+import { EyeIconGrey } from '../../../../components/SVG_Icons';
+import RoutesFilter from '../../../../components/RoutesFilter';
+import ArrivedStockView from '../../warehouse/forms/ArrivedStock';
 import CustomPagination from '../../../../components/CustomPagination';
 import { doubleKeyComplexSearch, getStatusColor, isEmpty, showToast } from '../../../../utils/Functions';
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
@@ -26,17 +26,17 @@ const StockReceived = () => {
     const [viewModal, setViewModal] = useState(false)
     const [filterON, setFilterON] = useState(false)
     const [searchON, setSeachON] = useState(false)
-    const [motherplantList, setMotherplantList] = useState([])
+    const [warehouseList, setWarehouseList] = useState([])
     const [filteredClone, setFilteredClone] = useState([])
     const [resetSearch, setResetSearch] = useState(false)
 
-    const receivedStockColumns = useMemo(() => getStockColumns(), [])
+    const damagedStockColumns = useMemo(() => getStockColumns(true), [])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
         getReceivedStock()
-        getMotherplantList()
+        getWarehouseList()
 
         return () => {
             http.ABORT(source)
@@ -44,7 +44,7 @@ const StockReceived = () => {
     }, [])
 
     const getReceivedStock = async () => {
-        const url = 'warehouse/getReceivedStock'
+        const url = 'warehouse/getDamagedStock'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -67,12 +67,12 @@ const StockReceived = () => {
         } catch (error) { }
     }
 
-    const getMotherplantList = async () => {
-        const url = 'bibo/getDepartmentsList?departmentType=MotherPlant'
+    const getWarehouseList = async () => {
+        const url = 'bibo/getDepartmentsList?departmentType=warehouse'
 
         try {
             const data = await http.GET(axios, url, config)
-            setMotherplantList(data)
+            setWarehouseList(data)
         } catch (error) { }
     }
 
@@ -119,7 +119,7 @@ const StockReceived = () => {
             return
         }
         const data = filterON ? filteredClone : stockClone
-        const result = doubleKeyComplexSearch(data, value, 'dcNo', 'departmentName')
+        const result = doubleKeyComplexSearch(stockClone, value, 'dcNo', 'departmentName')
         setTotalCount(result.length)
         setStock(result)
         setSeachON(true)
@@ -151,10 +151,10 @@ const StockReceived = () => {
             <div className='header'>
                 <div className='left'>
                     <RoutesFilter
-                        data={motherplantList}
+                        data={warehouseList}
                         keyValue='departmentId'
                         keyLabel='departmentName'
-                        title='Select Mother Plant'
+                        title='Select Warehouse'
                         onChange={onFilterChange}
                     />
                 </div>
@@ -171,7 +171,7 @@ const StockReceived = () => {
                 <Table
                     loading={{ spinning: loading, indicator: <Spinner /> }}
                     dataSource={dataSource.slice(sliceFrom, sliceTo)}
-                    columns={receivedStockColumns}
+                    columns={damagedStockColumns}
                     pagination={false}
                     scroll={{ x: true }}
                 />

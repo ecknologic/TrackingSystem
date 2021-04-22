@@ -29,7 +29,7 @@ const StatusFilter = ({ onChange }) => {
                             <Menu.Item key={item.value}>
                                 <CheckboxOption
                                     value={item.value}
-                                    option={item.option}
+                                    option={item.name}
                                     onSelect={(value) => handleSelect(value, 'status')}
                                     onDeselect={(value) => handleDeselect(value, 'status')}
                                 />

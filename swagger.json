@@ -5,7 +5,7 @@
         "title": "Tracking System Rest APIs",
         "description": "Node Js rest services for the tracking system which includes warehouse,driver and motherplant modules"
     },
-    "host": "http://65.1.190.193:8888",
+    "host": "15.207.25.20:8888",
     "basePath": "/",
     "tags": [
         {
@@ -561,6 +561,58 @@
                 }
             }
         },
+        "/customer/createQuote": {
+            "post": {
+                "tags": [
+                    "Customer"
+                ],
+                "description": "Create Quote",
+                "parameters": [
+                    {
+                        "name": "quoteDetails",
+                        "in": "body",
+                        "description": "Quote Details",
+                        "schema": {
+                            "$ref": "#/definitions/CreateQuote"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Quote created successfully"
+                    }
+                }
+            }
+        },
+        "/customer/requestBusinessAccount": {
+            "post": {
+                "tags": [
+                    "Customer"
+                ],
+                "description": "Request Business Account",
+                "parameters": [
+                    {
+                        "name": "requestDetails",
+                        "in": "body",
+                        "description": "Business Details",
+                        "schema": {
+                            "$ref": "#/definitions/RequestBusinessAccount"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Request created successfully"
+                    }
+                }
+            }
+        },
         "/warehouse/confirmStockRecieved": {
             "post": {
                 "tags": [
@@ -871,7 +923,7 @@
                 "password": {
                     "type": "string"
                 },
-                "departmentId":{
+                "departmentId": {
                     "type": "integer"
                 },
                 "privilegeDetails": {
@@ -1492,6 +1544,78 @@
                         "Inprogress",
                         "Completed"
                     ]
+                }
+            }
+        },
+        "CreateQuote": {
+            "required": [
+                "product20L",
+                "product2L",
+                "product1L",
+                "product500ML",
+                "product300ML",
+                "customerName",
+                "email",
+                "mobileNumber"
+            ],
+            "properties": {
+                "product20L": {
+                    "type": "number"
+                },
+                "product2L": {
+                    "type": "number"
+                },
+                "product1L": {
+                    "type": "number"
+                },
+                "product500ML": {
+                    "type": "number"
+                },
+                "product300ML": {
+                    "type": "number"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "customerName": {
+                    "type": "string"
+                },
+                "mobileNumber": {
+                    "type": "string"
+                }
+            }
+        },
+        "RequestBusinessAccount": {
+            "required": [
+                "organizationName",
+                "email",
+                "mobileNumber",
+                "pincode",
+                "address",
+                "address2",
+                "natureOfBusiness"
+            ],
+            "properties": {
+                "organizationName": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "pincode": {
+                    "type": "number"
+                },
+                "mobileNumber": {
+                    "type": "string"
+                },
+                "address": {
+                    "type": "string"
+                },
+                "address2": {
+                    "type": "string"
+                },
+                "natureOfBusiness": {
+                    "type": "string"
                 }
             }
         },

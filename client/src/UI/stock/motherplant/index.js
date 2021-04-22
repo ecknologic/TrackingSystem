@@ -5,6 +5,7 @@ import Production from './tabs/Production';
 import InternalQC from './tabs/InternalQC';
 import { http } from '../../../modules/http';
 import StockDetails from './tabs/StockDetails';
+import DamagedStock from './tabs/DamagedStock';
 import NoContent from '../../../components/NoContent';
 import Header from '../../../components/ContentHeader';
 import { resetTrackForm } from '../../../utils/Functions';
@@ -82,7 +83,8 @@ const MotherplantStock = () => {
                     activeTab === '1' ? <StockDetails goToTab={handleGoToTab} date={selectedDate} source={source} />
                         : activeTab === '2' ? <Production />
                             : activeTab === '3' ? <InternalQC />
-                                : <NoContent content='Design is in progress' />
+                                : activeTab === '4' ? <DamagedStock />
+                                    : <NoContent content='Design is in progress' />
                 }
             </div>
             <ConfirmModal

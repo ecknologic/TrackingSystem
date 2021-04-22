@@ -2,16 +2,18 @@ import axios from 'axios';
 import Slider from "react-slick";
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
+import useUser from '../../../../utils/hooks/useUser';
 import { isEmpty } from '../../../../utils/Functions';
+import NoContent from '../../../../components/NoContent';
+import { TODAYDATE as d } from '../../../../utils/constants';
 import PanelHeader from '../../../../components/PanelHeader';
 import QualityResultCard from '../../../../components/QualityResultCard';
-import { getWarehoseId, TODAYDATE as d } from '../../../../utils/constants';
 import { LeftChevronIconGrey, RightChevronIconGrey } from '../../../../components/SVG_Icons';
 import { Empty } from 'antd';
-import NoContent from '../../../../components/NoContent';
 const options = { startDate: d, endDate: d, fromStart: true }
 
 const WaterQualityResults = () => {
+    const { WAREHOUSEID } = useUser()
     const [results, setResults] = useState([])
     const [opData, setOpData] = useState(() => options)
 
@@ -27,8 +29,7 @@ const WaterQualityResults = () => {
     }, [])
 
     const getTestResults = async ({ startDate, endDate, fromStart }) => {
-        const departmentId = getWarehoseId()
-        const url = `/motherPlant/getQCTestResults?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}&departmentId=${departmentId}`
+        const url = `motherPlant/getQCTestResults?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}&departmentId=${WAREHOUSEID}`
 
         try {
             const data = await http.GET(axios, url, config)

@@ -169,7 +169,8 @@ const AccountOverview = ({ data, onUpdate, isAdmin }) => {
 
     const handleAccountUpdate = async () => {
         const { idProofType } = accountValues
-        const IDProofError = validateIDProofs(IDProofs, idProofType)
+        const { Front, Back } = IDProofs
+        const IDProofError = validateIDProofs({ Front, Back }, idProofType)
         const accountErrors = validateAccountValues(accountValues, customertype, true)
 
         if (!isEmpty(accountErrors) || !isEmpty(IDProofError)) {
@@ -182,7 +183,7 @@ const AccountOverview = ({ data, onUpdate, isAdmin }) => {
         const idProofs = getIdProofsForDB(IDProofs, idProofType)
         const account = customertype === 'Corporate' ? extractCADetails(accountValues) : extractGADetails(accountValues)
 
-        const url = '/customer/updateCustomer'
+        const url = 'customer/updateCustomer'
         const body = { ...account, idProofs }
         const options = { item: 'Customer', v1Ing: 'Updating', v2: 'updated' }
 

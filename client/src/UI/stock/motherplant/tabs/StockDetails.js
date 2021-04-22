@@ -3,7 +3,7 @@ import { message } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import BatchForm from '../forms/Batch';
 import { http } from '../../../../modules/http';
-import { getUserId } from '../../../../utils/constants';
+import useUser from '../../../../utils/hooks/useUser';
 import FormHeader from '../../../../components/FormHeader';
 import CASMPPanel from '../../../../components/CASMPPanel';
 import ConfirmModal from '../../../../components/CustomModal';
@@ -14,7 +14,7 @@ import { extractValidProductsForDB, isEmpty, resetTrackForm, showToast } from '.
 import { validateBatchValues, validateIntFloat, validateNames, validateNumber } from '../../../../utils/validations';
 
 const StockDetails = ({ date, source, goToTab }) => {
-    const USERID = getUserId()
+    const { USERID } = useUser()
     const [stock, setStock] = useState({})
     const [formData, setFormData] = useState({})
     const [batchList, setBatchList] = useState([])
@@ -37,7 +37,7 @@ const StockDetails = ({ date, source, goToTab }) => {
     }, [date])
 
     const getBatchesList = async (shiftType) => {
-        const url = `/motherPlant/getProductionBatchIds/${shiftType}`
+        const url = `motherPlant/getProductionBatchIds/${shiftType}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -46,7 +46,7 @@ const StockDetails = ({ date, source, goToTab }) => {
     }
 
     const getActiveStockByDate = async (date) => {
-        const url = `/motherPlant/getProductionDetailsByDate/${date}`
+        const url = `motherPlant/getProductionDetailsByDate/${date}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -98,7 +98,7 @@ const StockDetails = ({ date, source, goToTab }) => {
 
         const { product20L, product2L, product1L, product500ML, product300ML } = extractValidProductsForDB(formData)
 
-        const url = '/motherPlant/addProductionDetails'
+        const url = 'motherPlant/addProductionDetails'
         const body = {
             ...formData, createdBy: USERID,
             product20L, product2L, product1L, product500ML, product300ML

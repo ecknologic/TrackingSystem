@@ -1,17 +1,23 @@
-import axios from 'axios';
+import axios from 'axios'
 import { message } from 'antd';
-import { ACCOUNTSADMIN, getRole, getUserId, getWarehoseId, SUPERADMIN } from '../utils/constants';
+import { ACCOUNTSADMIN, SUPERADMIN, MARKETINGADMIN, getRole, getUserId, getWarehoseId } from '../utils/constants'
+import { isAbsoluteUrl } from '../utils/Functions';
 message.config({ maxCount: 1 });
 
 // Setting headers in request
 axios.interceptors.request.use(function (config) {
+    if (!isAbsoluteUrl(config.url)) {
+        config.url = `${process.env.REACT_APP_API_HOST}${config.url}`;
+    }
+
     config.headers.departmentId = getWarehoseId()
     config.headers.userId = getUserId()
     config.headers.isSuperAdmin = getRole() === SUPERADMIN
     config.headers.isAccountsAdmin = getRole() === ACCOUNTSADMIN
+    config.headers.isSalesAdmin = getRole() === MARKETINGADMIN
 
     return config;
-});
+})
 
 // Handling unexpected errors
 axios.interceptors.response.use(null, error => {
@@ -21,7 +27,9 @@ axios.interceptors.response.use(null, error => {
         if (error.message === 'Network Error')
             message.info('Please check your network connection')
         if (error.message === 'Cancelled') { } //Ignore
-        else message.error('Oops! Something went wrong, try again!')
+        else {
+            message.error('Oops! Something went wrong, try again!')
+        }
     }
     else if (expectedError) {
         if (error.response.status === 406) {
@@ -84,11 +92,13 @@ export const ABORT = (source) => {
     source.cancel('Cancelled');
 }
 
+export const appApi = axios
+
 export const http = {
     GET,
     POST,
     PUT,
     PATCH,
     DELETE,
-    ABORT
+    ABORT,
 }

@@ -1,14 +1,14 @@
 import React, { Fragment } from 'react';
+import StockStatus from './panels/StockStatus';
 import TodaysOrders from './panels/TodaysOrders';
 import SalesResults from './panels/SalesResults';
+import useUser from '../../../utils/hooks/useUser';
 import Header from '../../../components/ContentHeader';
 import InvoiceOverview from './panels/InvoiceOverview';
-import StockStatus from './panels/StockStatus';
 import CustomersOverview from './panels/CustomersOverview';
-import { getWarehoseId } from '../../../utils/constants';
 
 const WarehouseDashboard = () => {
-    const departmentId = getWarehoseId()
+    const { WAREHOUSEID } = useUser()
 
     return (
         <Fragment>
@@ -19,7 +19,7 @@ const WarehouseDashboard = () => {
                         <StockStatus />
                         <div className='dashboard-content-inner'>
                             <div className='left-panel'>
-                                <SalesResults depId={departmentId} />
+                                <SalesResults depId={WAREHOUSEID} />
                             </div>
                             <div className='right-panel'>
                                 <InvoiceOverview />

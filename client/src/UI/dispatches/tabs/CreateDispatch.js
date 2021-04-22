@@ -34,7 +34,7 @@ const CreateDispatch = ({ goToTab, driverList, warehouseList, reFetch, ...rest }
 
     const getCurrentStock = async (batchId) => {
 
-        const url = `/motherPlant/getProductByBatch/${batchId}`
+        const url = `motherPlant/getProductByBatch/${batchId}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -47,7 +47,7 @@ const CreateDispatch = ({ goToTab, driverList, warehouseList, reFetch, ...rest }
     }
 
     const getDistributorList = async () => {
-        const url = '/distributor/getDistributorsList'
+        const url = 'distributor/getDistributorsList'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -114,7 +114,7 @@ const CreateDispatch = ({ goToTab, driverList, warehouseList, reFetch, ...rest }
             product20L, product2L, product1L, product500ML, product300ML
         }
         const options = { item: 'Dispatch', v1Ing: 'Creating', v2: 'created' }
-        const url = '/motherplant/addDispatchDetails'
+        const url = 'motherplant/addDispatchDetails'
 
         try {
             setBtnDisabled(true)

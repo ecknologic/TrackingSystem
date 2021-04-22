@@ -57,7 +57,7 @@ const MaterialStatus = ({ reFetch, isSuperAdmin = false }) => {
     }, [reFetch])
 
     const getRM = async () => {
-        const url = `/motherPlant/getRMDetails?isSuperAdmin=${isSuperAdmin}`
+        const url = `motherPlant/getRMDetails?isSuperAdmin=${isSuperAdmin}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -127,7 +127,7 @@ const MaterialStatus = ({ reFetch, isSuperAdmin = false }) => {
     }
 
     const updateRMStatus = async (rawmaterialid, status, reason) => {
-        const url = '/motherPlant/updateRMStatus'
+        const url = 'motherPlant/updateRMStatus'
         const body = { rawmaterialid, status, reason }
         const options = { item: 'Order', v1Ing: status === 'Approved' ? 'Approving' : 'Rejecting', v2: status }
 

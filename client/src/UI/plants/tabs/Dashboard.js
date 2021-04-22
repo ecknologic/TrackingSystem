@@ -4,14 +4,16 @@ import { useHistory, useLocation } from 'react-router-dom';
 import React, { Fragment, useEffect, useMemo, useState, useCallback } from 'react';
 import { http } from '../../../modules/http'
 import Spinner from '../../../components/Spinner';
+import useUser from '../../../utils/hooks/useUser';
+import { SUPERADMIN } from '../../../utils/constants';
 import NoContent from '../../../components/NoContent';
 import PlantCard from '../../../components/PlantCard';
 import DeleteModal from '../../../components/CustomModal';
-import { getRole, SUPERADMIN } from '../../../utils/constants';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import { deepClone, getMainPathname, showToast } from '../../../utils/Functions';
 
 const Dashboard = ({ reFetch }) => {
+    const { ROLE } = useUser()
     const history = useHistory()
     const { pathname } = useLocation()
     const [plants, setPlants] = useState([])
@@ -20,7 +22,7 @@ const Dashboard = ({ reFetch }) => {
     const [currentId, setCurrentId] = useState('')
 
     const mainUrl = useMemo(() => getMainPathname(pathname), [pathname])
-    const isSuperAdmin = useMemo(() => getRole() === SUPERADMIN, [])
+    const isSuperAdmin = useMemo(() => ROLE === SUPERADMIN, [])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
@@ -37,7 +39,7 @@ const Dashboard = ({ reFetch }) => {
     }, [reFetch])
 
     const getPlants = async (plantType) => {
-        const url = `${mainUrl.slice(0, -1)}/get${plantType}List`
+        const url = `${mainUrl.slice(1, -1)}/get${plantType}List`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -66,7 +68,7 @@ const Dashboard = ({ reFetch }) => {
 
     const handleStatusUpdate = async (departmentId, status) => {
         const options = { item: 'Department status', v1Ing: 'Updating', v2: 'updated' }
-        const url = `/warehouse/updateDepartmentStatus`
+        const url = `warehouse/updateDepartmentStatus`
         const body = { status, departmentId }
         try {
             showToast({ ...options, action: 'loading' })
@@ -80,7 +82,7 @@ const Dashboard = ({ reFetch }) => {
 
     const handleDelete = async (id) => {
         const options = { item: 'Department', v1Ing: 'Deleting', v2: 'deleted' }
-        const url = `/warehouse/deleteDepartment/${id}`
+        const url = `warehouse/deleteDepartment/${id}`
 
         try {
             showToast({ ...options, action: 'loading' })

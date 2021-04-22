@@ -1,12 +1,13 @@
 import { Dropdown, Menu } from 'antd';
 import React, { useState, useRef } from 'react';
+import { isEmpty } from '../utils/Functions';
 import { FilterIconGrey } from './SVG_Icons';
 import CheckboxOption from './CheckboxOption';
-import { accountFilterOptions, businessFilterOptions, statusFilterOptions } from '../assets/fixtures'
+import { accountFilterOptions, statusFilterOptions } from '../assets/fixtures'
 
-const AccountsFilter = ({ onChange }) => {
+const AccountsFilter = ({ onChange, creatorOptions = [], businessOptions }) => {
 
-    const dataRef = useRef({ business: [], status: [], account: [] })
+    const dataRef = useRef({ business: [], status: [], account: [], creator: [] })
     const [visible, setVisible] = useState(false)
 
     const handleSelect = (option, target) => {
@@ -22,6 +23,26 @@ const AccountsFilter = ({ onChange }) => {
 
     const menu = () => (
         <Menu className='app-accounts-filter'>
+            {
+                !isEmpty(creatorOptions) && (
+                    <Menu.ItemGroup title='Select Creator'>
+                        {
+                            creatorOptions.map((item) => {
+                                return (
+                                    <Menu.Item key={item.value}>
+                                        <CheckboxOption
+                                            value={item.value}
+                                            option={item.name}
+                                            onSelect={(value) => handleSelect(value, 'creator')}
+                                            onDeselect={(value) => handleDeselect(value, 'creator')}
+                                        />
+                                    </Menu.Item>
+                                )
+                            })
+                        }
+                    </Menu.ItemGroup>
+                )
+            }
             <Menu.ItemGroup title='Select Account'>
                 {
                     accountFilterOptions.map((item) => {
@@ -29,7 +50,7 @@ const AccountsFilter = ({ onChange }) => {
                             <Menu.Item key={item.value}>
                                 <CheckboxOption
                                     value={item.value}
-                                    option={item.option}
+                                    option={item.name}
                                     onSelect={(value) => handleSelect(value, 'account')}
                                     onDeselect={(value) => handleDeselect(value, 'account')}
                                 />
@@ -40,12 +61,12 @@ const AccountsFilter = ({ onChange }) => {
             </Menu.ItemGroup>
             <Menu.ItemGroup title='Select Business'>
                 {
-                    businessFilterOptions.map((item) => {
+                    businessOptions.map((item) => {
                         return (
                             <Menu.Item key={item.value}>
                                 <CheckboxOption
                                     value={item.value}
-                                    option={item.option}
+                                    option={item.name}
                                     onSelect={(value) => handleSelect(value, 'business')}
                                     onDeselect={(value) => handleDeselect(value, 'business')}
                                 />
@@ -61,7 +82,7 @@ const AccountsFilter = ({ onChange }) => {
                             <Menu.Item key={item.value}>
                                 <CheckboxOption
                                     value={item.value}
-                                    option={item.option}
+                                    option={item.name}
                                     onSelect={(value) => handleSelect(value, 'status')}
                                     onDeselect={(value) => handleDeselect(value, 'status')}
                                 />

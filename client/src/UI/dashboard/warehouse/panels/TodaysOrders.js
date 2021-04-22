@@ -1,9 +1,8 @@
 import { Empty } from 'antd';
-import axios from 'axios';
 import { useHistory } from 'react-router';
 import Scrollbars from 'react-custom-scrollbars-2';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { http } from '../../../../modules/http';
+import { http, appApi } from '../../../../modules/http';
 import Spinner from '../../../../components/Spinner';
 import { isEmpty } from '../../../../utils/Functions';
 import DaySlider from '../../../../components/DaySlider';
@@ -21,7 +20,7 @@ const TodaysOrders = () => {
     const [DCModal, setDCModal] = useState(false)
     const [title, setTitle] = useState('')
     const [viewData, setViewData] = useState({})
-    const source = useMemo(() => axios.CancelToken.source(), []);
+    const source = useMemo(() => appApi.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
@@ -33,9 +32,9 @@ const TodaysOrders = () => {
     }, [])
 
     const getOrders = async (selectedDate = TODAYDATE) => {
-        const url = `/warehouse/deliveryDetails/${selectedDate}`
+        const url = `warehouse/deliveryDetails/${selectedDate}`
         try {
-            const data = await http.GET(axios, url, config)
+            const data = await http.GET(appApi, url, config)
             setOrders(data)
             setLoading(false)
         } catch (error) { }

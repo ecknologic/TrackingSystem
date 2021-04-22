@@ -49,7 +49,7 @@ const Dashboard = ({ reFetch, isFetched, fetchList, driverList, ...rest }) => {
     }, [reFetch])
 
     const getEmptyCans = async () => {
-        const url = '/warehouse/getEmptyCansList'
+        const url = 'warehouse/getEmptyCansList'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -122,7 +122,7 @@ const Dashboard = ({ reFetch, isFetched, fetchList, driverList, ...rest }) => {
             return
         }
 
-        let url = '/warehouse/updateReturnEmptyCans'
+        let url = 'warehouse/updateReturnEmptyCans'
         const body = {
             ...formData, status: 'Pending'
         }
@@ -233,11 +233,11 @@ const Dashboard = ({ reFetch, isFetched, fetchList, driverList, ...rest }) => {
                         formData={formData}
                         errors={formErrors}
                     /> : <EmptyCansForm
-                            data={formData}
-                            errors={formErrors}
-                            onChange={handleChange}
-                            {...rest}
-                        />
+                        data={formData}
+                        errors={formErrors}
+                        onChange={handleChange}
+                        {...rest}
+                    />
                 }
             </CustomModal>
             <ConfirmModal

@@ -57,7 +57,7 @@ const WarehouseInvoices = ({ reFetch }) => {
     }, [reFetch])
 
     const getInvoices = async () => {
-        const url = '/invoice/getDepartmentInvoices'
+        const url = 'invoice/getDepartmentInvoices'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -69,7 +69,7 @@ const WarehouseInvoices = ({ reFetch }) => {
     }
 
     const getWarehouseList = async () => {
-        const url = '/bibo/getDepartmentsList?departmentType=warehouse'
+        const url = 'bibo/getDepartmentsList?departmentType=warehouse'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -142,7 +142,7 @@ const WarehouseInvoices = ({ reFetch }) => {
     const handleStatusUpdate = async (invoiceId) => {
         const status = 'Paid'
         const options = { item: 'Invoice status', v1Ing: 'Updating', v2: 'updated' }
-        const url = `/invoice/updateDepartmentInvoiceStatus`
+        const url = `invoice/updateDepartmentInvoiceStatus`
         const body = { status, invoiceId, departmentStatus: status }
         try {
             showToast({ ...options, action: 'loading' })

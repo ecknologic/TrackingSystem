@@ -1,6 +1,5 @@
-import axios from 'axios';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { http } from '../../../../modules/http';
+import { http, appApi } from '../../../../modules/http';
 import PanelStats from '../../../../components/PanelStats';
 import ColumnChart from '../../../../components/ColumnChart';
 import { TODAYDATE as d } from '../../../../utils/constants';
@@ -15,7 +14,7 @@ const SalesResults = ({ depId }) => {
     const [columnWidthRatio, setColumnWidthRatio] = useState()
     const [opData, setOpData] = useState(() => options)
 
-    const source = useMemo(() => axios.CancelToken.source(), []);
+    const source = useMemo(() => appApi.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
@@ -27,10 +26,10 @@ const SalesResults = ({ depId }) => {
     }, [])
 
     const getResults = async ({ startDate, endDate, fromStart, type }) => {
-        const url = `/warehouse/getTotalSales?startDate=${startDate}&endDate=${endDate}&departmentId=${depId}&fromStart=${fromStart}&type=${type}`
+        const url = `warehouse/getTotalSales?startDate=${startDate}&endDate=${endDate}&departmentId=${depId}&fromStart=${fromStart}&type=${type}`
 
         try {
-            const { graph = [], ...rest } = await http.GET(axios, url, config)
+            const { graph = [], ...rest } = await http.GET(appApi, url, config)
             setResults(rest)
             setGraph(graph)
             if (type !== 'This Week') setColumnWidthRatio(1)

@@ -34,7 +34,7 @@ const ProductionQC = ({ goToTab }) => {
     }, [])
 
     const getBatchsList = async () => {
-        const url = `/motherPlant/getBatchNumbers`
+        const url = `motherPlant/getBatchNumbers`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -43,7 +43,7 @@ const ProductionQC = ({ goToTab }) => {
     }
 
     const getQCByProductionQcId = async (productionQcId) => {
-        const url = `/motherPlant/getQCLevelsDetails/${productionQcId}`
+        const url = `motherPlant/getQCLevelsDetails/${productionQcId}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -99,7 +99,7 @@ const ProductionQC = ({ goToTab }) => {
         let body = {
             ...formData, qcLevel, batchId, approveProd
         }
-        const url = '/motherplant/createQualityCheck'
+        const url = 'motherplant/createQualityCheck'
         const options = { item: 'QC Report', v1Ing: 'Sending', v2: 'sent' }
 
         try {

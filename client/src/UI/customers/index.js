@@ -5,19 +5,21 @@ import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'reac
 import Header from './header';
 import { http } from '../../modules/http'
 import Spinner from '../../components/Spinner';
-import { ACCOUNTSADMIN, getRole, SUPERADMIN } from '../../utils/constants';
+import useUser from '../../utils/hooks/useUser';
 import NoContent from '../../components/NoContent';
 import AccountCard from '../../components/AccountCard';
 import DeleteModal from '../../components/CustomModal';
+import { getDefaultOptions } from '../../assets/fixtures';
 import ConfirmMessage from '../../components/ConfirmMessage';
 import CustomPagination from '../../components/CustomPagination';
+import { ACCOUNTSADMIN, SUPERADMIN } from '../../utils/constants';
 import { complexDateSort, complexSort, tripleKeyComplexSearch, filterAccounts, showToast } from '../../utils/Functions'
 import '../../sass/customers.scss'
 
 const Customers = () => {
+    const { ROLE } = useUser()
     const history = useHistory()
     const { active = '1' } = useParams()
-    const [role] = useState(() => getRole())
     const [accountsClone, setAccountsClone] = useState([])
     const [filteredClone, setFilteredClone] = useState([])
     const [cardBtnTxt, setCardBtnTxt] = useState('Manage Account')
@@ -32,15 +34,18 @@ const Customers = () => {
     const [activeTab, setActiveTab] = useState(active)
     const [modalDelete, setModalDelete] = useState(false)
     const [currentId, setCurrentId] = useState('')
+    const [businessList, setBusinessList] = useState([])
 
+    const businessOptions = useMemo(() => getDefaultOptions(businessList), [businessList])
     const pageSizeOptions = useMemo(() => generatePageSizeOptions(), [window.innerWidth])
-    const isAdmin = useMemo(() => role === SUPERADMIN || role === ACCOUNTSADMIN, [])
+    const isAdmin = useMemo(() => ROLE === SUPERADMIN || ROLE === ACCOUNTSADMIN, [])
     const source = useMemo(() => axios.CancelToken.source(), [activeTab]);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
         setLoading(true)
         getAccounts()
+        getBusinessList()
 
         return () => {
             http.ABORT(source)
@@ -48,7 +53,7 @@ const Customers = () => {
     }, [activeTab])
 
     const getAccounts = async () => {
-        const url = `/customer/${getUrl(activeTab)}`
+        const url = `customer/${getUrl(activeTab)}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -56,6 +61,15 @@ const Customers = () => {
             setAccounts(data)
             setTotalCount(data.length)
             setLoading(false)
+        } catch (error) { }
+    }
+
+    const getBusinessList = async () => {
+        const url = `bibo/getList/natureOfBusiness`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setBusinessList(data)
         } catch (error) { }
     }
 
@@ -174,7 +188,7 @@ const Customers = () => {
 
     const handleStatusUpdate = async (customerId, status) => {
         const options = { item: 'Customer status', v1Ing: 'Updating', v2: 'updated' }
-        const url = `/customer/updateCustomerStatus`
+        const url = `customer/updateCustomerStatus`
         const body = { status, customerId }
         try {
             showToast({ ...options, action: 'loading' })
@@ -188,7 +202,7 @@ const Customers = () => {
 
     const handleDelete = async (id) => {
         const options = { item: 'Customer', v1Ing: 'Deleting', v2: 'deleted' }
-        const url = `/customer/deleteCustomer/${id}`
+        const url = `customer/deleteCustomer/${id}`
 
         try {
             showToast({ ...options, action: 'loading' })
@@ -226,7 +240,7 @@ const Customers = () => {
 
     return (
         <Fragment>
-            <Header activeTab={activeTab} onSearch={handleSearch} onSort={onSort} onFilter={onFilterChange} onChange={handleTabChange} onClick={goToAddAccount} />
+            <Header activeTab={activeTab} onSearch={handleSearch} onSort={onSort} onFilter={onFilterChange} onChange={handleTabChange} onClick={goToAddAccount} businessOptions={businessOptions} />
             <div className='account-manager-content'>
                 <Row gutter={[{ lg: 32, xl: 16 }, { lg: 16, xl: 16 }]}>
                     {

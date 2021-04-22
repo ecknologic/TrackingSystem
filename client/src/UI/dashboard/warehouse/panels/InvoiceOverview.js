@@ -1,6 +1,5 @@
-import axios from 'axios';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { http } from '../../../../modules/http';
+import { http, appApi } from '../../../../modules/http';
 import PanelHeader from '../../../../components/PanelHeader';
 import { TODAYDATE as d } from '../../../../utils/constants';
 import { defaultPie, dummyWaterResults } from '../../../../assets/fixtures';
@@ -11,7 +10,7 @@ const InvoiceOverview = () => {
     const [results, setResults] = useState(dummyWaterResults)
     const [opData, setOpData] = useState(() => options)
     const [graph, setGraph] = useState(defaultPie)
-    const source = useMemo(() => axios.CancelToken.source(), []);
+    const source = useMemo(() => appApi.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
 
@@ -24,10 +23,10 @@ const InvoiceOverview = () => {
     }, [])
 
     const getTestResults = async () => {
-        const url = '/invoice/getTotalInvoicesCount'
+        const url = 'invoice/getTotalInvoicesCount'
 
         try {
-            const data = await http.GET(axios, url, config)
+            const data = await http.GET(appApi, url, config)
             setResults(data)
             const graph = getPieData(data)
             setGraph(graph)

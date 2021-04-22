@@ -49,7 +49,12 @@ router.get('/getDepartmentInvoices', (req, res) => {
 
 router.get('/getInvoiceById/:invoiceId', (req, res) => {
     const { invoiceId } = req.params
-    getInvoiceByInvoiceId({ invoiceId, departmentId: req.query.departmentId, res })
+    getInvoiceByInvoiceId({ invoiceId, departmentInvoice: false, res })
+});
+
+router.get('/getDepartmentInvoiceById/:invoiceId', (req, res) => {
+    const { invoiceId } = req.params
+    getInvoiceByInvoiceId({ invoiceId, departmentInvoice: true, res })
 });
 
 router.get('/getInvoiceId', (req, res) => {
@@ -229,7 +234,11 @@ router.post("/generateMultipleInvoices", (req, res) => {
 
 router.post("/createDepartmentInvoice", (req, res) => {
     req.body.departmentId = departmentId
-    saveDepartmentInvoice(req.body, res, true)
+    invoiceQueries.getDepartmentInvoiceByDCNO(req.body.dcNo, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else if (results.length) res.status(400).json({ message: "Invoice already created with this DC number" })
+        else saveDepartmentInvoice(req.body, res, true)
+    })
 });
 
 router.post("/createInvoice", (req, res) => {
@@ -488,8 +497,8 @@ const computeFinalAmounts = (data) => {
 
     return { subTotal, cgstAmount, sgstAmount, igstAmount, totalAmount }
 }
-const getInvoiceByInvoiceId = ({ invoiceId, departmentId, res }) => {
-    invoiceQueries.getInvoiceById({ invoiceId, departmentId }, (err, results) => {
+const getInvoiceByInvoiceId = ({ invoiceId, departmentInvoice, res }) => {
+    invoiceQueries.getInvoiceById({ invoiceId, departmentInvoice }, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
             const { gstNo, mailIds, invoiceId, Address1, deliveryAddress, customerType, fromDate, toDate, ...rest } = results[0]
@@ -499,7 +508,7 @@ const getInvoiceByInvoiceId = ({ invoiceId, departmentId, res }) => {
                 gstNo, invoiceId, ...rest
             }
             obj.products = products
-            if (products.length) {
+            if (products && products.length) {
                 const uniqueValues = new Set(products.map(p => p.productName));
                 if (uniqueValues.size < products.length) {
                     haveMultipleAddress = true
@@ -553,11 +562,11 @@ const getInvoiceByInvoiceId = ({ invoiceId, departmentId, res }) => {
                         }
                     }
                 }
-            }
+            } else return res.status(500).json("Something went wrong")
 
             if (haveMultipleAddress) {
                 let invoice = {
-                    items: obj.products, customerType, Address1, invoiceId, gstNo, fromDate, toDate
+                    items: obj.products, Address1, invoiceId, gstNo, fromDate, toDate
                 }
                 createMultiDeliveryInvoice(invoice, `${invoiceId}.pdf`).then(response => {
                     setTimeout(() => {

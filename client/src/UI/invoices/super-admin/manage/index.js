@@ -7,8 +7,8 @@ import ListPanel from './panels/ListPanel';
 import ContentPanel from './panels/ContentPanel';
 import Spinner from '../../../../components/Spinner'
 import NoContent from '../../../../components/NoContent'
+import { SUPERADMIN } from '../../../../utils/constants';
 import { getMainPathname } from '../../../../utils/Functions';
-import { getRole, getWarehoseId, SUPERADMIN } from '../../../../utils/constants';
 import '../../../../sass/invoices.scss';
 
 const Invoices = () => {
@@ -29,8 +29,11 @@ const Invoices = () => {
     }, [])
 
     const getInvoice = async (id) => {
-        const depId = getWarehoseId()
-        const url = `/invoice/getInvoiceById/${id}?departmentId=${depId}`
+        const { FOR } = state || {}
+        let url = `invoice/getDepartmentInvoiceById/${id}`
+        if (FOR === SUPERADMIN || FOR === 'CUSTOMER') {
+            url = `invoice/getInvoiceById/${id}`
+        }
 
         try {
             setIsLoading(true)
@@ -41,11 +44,14 @@ const Invoices = () => {
     }
 
     const getInvoices = async () => {
-        const { FOR } = state || {}
+        const { FOR, id } = state || {}
 
-        let url = '/invoice/getDepartmentInvoices'
+        let url = 'invoice/getDepartmentInvoices'
         if (FOR === SUPERADMIN) {
-            url = '/invoice/getInvoices'
+            url = 'invoice/getInvoices'
+        }
+        else if (FOR === SUPERADMIN || FOR === 'CUSTOMER') {
+            url = `invoice/getCustomerInvoices/${id}`
         }
 
         try {
@@ -62,13 +68,11 @@ const Invoices = () => {
     }
 
     const onAdd = () => history.push(`${mainUrl}/2`)
-    const handleBack = () => history.push(`${mainUrl}`)
+    const handleBack = () => history.goBack()
 
     const handlePrint = (event, pdf) => {
         event.preventDefault();
-        // window.open(pdf, "PRINT", "height=400,width=600");
         window.print()
-
     }
 
     return (

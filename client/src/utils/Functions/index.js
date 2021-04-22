@@ -120,6 +120,9 @@ export const getRoleLabel = (id) => {
         case 6:
             return 'Driver'
 
+        case 7:
+            return 'Marketing Manager'
+
         default:
             return null
     }
@@ -136,8 +139,8 @@ export const getInvoiceLabel = (value) => {
     }
 }
 
-export const getCleanObject = (data) => {
-    return Object.entries(data).reduce((a, [k, v]) => (v === null ? a : (a[k] = v, a)), {})
+export const getValidObject = (data) => { // Removes all invalid properties
+    return Object.entries(data).reduce((a, [k, v]) => ((!v) ? a : (a[k] = v, a)), {})
 }
 
 export const getSideMenuKey = (path) => {
@@ -185,10 +188,23 @@ export const tripleKeyComplexSearch = (data, matcher, key1, key2, key3) => {
     })
 }
 export const filterAccounts = (accountsClone, filterInfo) => {
-    const { business, status, account } = filterInfo
+    const { business, status, account, creator } = filterInfo
     let singleFiltered = [], allFiltered = []
-    if (!isEmpty(business) && !isEmpty(status) && !isEmpty(account)) {
+
+    if (!isEmpty(business) && !isEmpty(status) && !isEmpty(account) && !isEmpty(creator)) {
+        allFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && status.includes(item.isApproved) && account.includes(item.customertype) && creator.includes(item.createdBy))
+    }
+    else if (!isEmpty(business) && !isEmpty(status) && !isEmpty(account)) {
         allFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && status.includes(item.isApproved) && account.includes(item.customertype))
+    }
+    else if (!isEmpty(business) && !isEmpty(status) && !isEmpty(creator)) {
+        allFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && status.includes(item.isApproved) && creator.includes(item.createdBy))
+    }
+    else if (!isEmpty(business) && !isEmpty(account) && !isEmpty(creator)) {
+        allFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && account.includes(item.customertype) && creator.includes(item.createdBy))
+    }
+    else if (!isEmpty(account) && !isEmpty(status) && !isEmpty(creator)) {
+        allFiltered = accountsClone.filter((item) => account.includes(item.customertype) && status.includes(item.isApproved) && creator.includes(item.createdBy))
     }
     else if (!isEmpty(business) && !isEmpty(status)) {
         allFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && status.includes(item.isApproved))
@@ -199,6 +215,15 @@ export const filterAccounts = (accountsClone, filterInfo) => {
     else if (!isEmpty(status) && !isEmpty(account)) {
         allFiltered = accountsClone.filter((item) => status.includes(item.isApproved) && account.includes(item.customertype))
     }
+    else if (!isEmpty(business) && !isEmpty(creator)) {
+        allFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && creator.includes(item.createdBy))
+    }
+    else if (!isEmpty(status) && !isEmpty(creator)) {
+        allFiltered = accountsClone.filter((item) => status.includes(item.isApproved) && creator.includes(item.createdBy))
+    }
+    else if (!isEmpty(account) && !isEmpty(creator)) {
+        allFiltered = accountsClone.filter((item) => account.includes(item.customertype) && creator.includes(item.createdBy))
+    }
     else {
         singleFiltered = accountsClone.filter((item) => {
             if (!isEmpty(account)) {
@@ -206,6 +231,9 @@ export const filterAccounts = (accountsClone, filterInfo) => {
             }
             else if (!isEmpty(business)) {
                 return business.includes(item.natureOfBussiness)
+            }
+            else if (!isEmpty(creator)) {
+                return creator.includes(item.createdBy)
             }
             return status.includes(item.isApproved)
         })
@@ -463,24 +491,27 @@ export const getAddressesForDB = (data, isUpdate) => {
 
 export const getDCValuesForDB = (data) => {
 
-    const { customerName, phoneNumber, address, routeId, driverId,
-        product20L = 0, product2L = 0, product1L = 0, product500ML = 0, product300ML = 0,
-        customerType, existingCustomerId, creationType } = data
+    const { customerName, phoneNumber, address, routeId, driverId, EmailId,
+        product20L, product2L, product1L, product500ML, product300ML,
+        customerType, existingCustomerId, distributorId, creationType, deliveryLocation } = data
 
     return {
-        customerName, phoneNumber, address, routeId, driverId,
-        product20L, product2L, product1L, product500ML, product300ML,
-        customerType, existingCustomerId, creationType
+        customerName, phoneNumber, address, routeId, driverId, EmailId,
+        product20L: product20L || 0, product2L: product2L || 0, product1L: product1L || 0,
+        product500ML: product500ML || 0, product300ML: product300ML || 0,
+        customerType, existingCustomerId, distributorId, creationType,
+        deliveryLocation
     }
 }
 
 export const getASValuesForDB = (data) => {
 
     const { dcNo, isDamaged = false, product20L, product2L, product1L, product500ML, product300ML,
-        damaged20LCans = 0, damagedDesc = '', damaged2LBoxes = 0, damaged1LBoxes = 0, damaged500MLBoxes = 0, damaged300MLBoxes = 0 } = data
+        damaged20LCans, damagedDesc = '', damaged2LBoxes, damaged1LBoxes, damaged500MLBoxes, damaged300MLBoxes } = data
 
     return {
-        dcNo, damaged20LCans, damagedDesc, isDamaged, damaged2LBoxes, damaged1LBoxes, damaged500MLBoxes, damaged300MLBoxes,
+        dcNo, damaged20LCans: damaged20LCans || 0, damagedDesc, isDamaged, damaged2LBoxes: damaged2LBoxes || 0,
+        damaged1LBoxes: damaged1LBoxes || 0, damaged500MLBoxes: damaged500MLBoxes || 0, damaged300MLBoxes: damaged300MLBoxes || 0,
         product20L, product2L, product1L, product500ML, product300ML
     }
 }
@@ -553,6 +584,9 @@ export const isStrictIntFloat = (string) => { // Allows digits with single dot a
 }
 export const isIntFloat = (string) => { // Allows digits with multiple dots and hiphens at any position
     return String(string).match(/^[0-9.-]+$/)
+}
+export const isAbsoluteUrl = (string) => {
+    return String(string).match(/^(?:\w+:)\/\//)
 }
 
 // multiplication table

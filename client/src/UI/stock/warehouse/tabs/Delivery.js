@@ -5,22 +5,23 @@ import DCForm from '../forms/DCForm';
 import { http } from '../../../../modules/http';
 import Spinner from '../../../../components/Spinner';
 import Actions from '../../../../components/Actions';
+import useUser from '../../../../utils/hooks/useUser';
+import { TRACKFORM } from '../../../../utils/constants';
 import QuitModal from '../../../../components/CustomModal';
 import SearchInput from '../../../../components/SearchInput';
 import CustomModal from '../../../../components/CustomModal';
 import CustomButton from '../../../../components/CustomButton';
 import RoutesFilter from '../../../../components/RoutesFilter';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
-import { getWarehoseId, TRACKFORM } from '../../../../utils/constants';
 import CustomPagination from '../../../../components/CustomPagination';
 import { EditIconGrey, PlusIcon } from '../../../../components/SVG_Icons';
 import { getRouteOptions, getDriverOptions, getDeliveryColumns, getDistributorOptions, getCustomerOptions } from '../../../../assets/fixtures';
-import { validateMobileNumber, validateNames, validateNumber, validateDCValues } from '../../../../utils/validations';
+import { validateMobileNumber, validateNames, validateNumber, validateDCValues, validateEmailId } from '../../../../utils/validations';
 import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone, getStatusColor, doubleKeyComplexSearch, getProductsForUI } from '../../../../utils/Functions';
 
 const Delivery = ({ date, source }) => {
     const defaultValue = { customerType: 'newCustomer', creationType: 'manual' }
-    const warehouseId = getWarehoseId()
+    const { WAREHOUSEID: warehouseId } = useUser()
     const [routes, setRoutes] = useState([])
     const [drivers, setDrivers] = useState([])
     const [loading, setLoading] = useState(true)
@@ -65,7 +66,7 @@ const Delivery = ({ date, source }) => {
     }, [date])
 
     const getRoutes = async () => {
-        const url = `/customer/getRoutes/${warehouseId}`
+        const url = `customer/getRoutes/${warehouseId}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -74,7 +75,7 @@ const Delivery = ({ date, source }) => {
     }
 
     const getDrivers = async () => {
-        const url = `/bibo/getdriverDetails/${warehouseId}`
+        const url = `bibo/getdriverDetails/${warehouseId}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -83,7 +84,7 @@ const Delivery = ({ date, source }) => {
     }
 
     const getDistributorList = async () => {
-        const url = '/distributor/getDistributorsList'
+        const url = 'distributor/getDistributorsList'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -92,7 +93,7 @@ const Delivery = ({ date, source }) => {
     }
 
     const getCustomerList = async () => {
-        const url = '/customer/getCustomerNames'
+        const url = 'customer/getCustomerNames'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -101,14 +102,27 @@ const Delivery = ({ date, source }) => {
     }
 
     const getDistributor = async (id) => {
-        const url = `/distributor/getDistributor/${id}`
+        const url = `distributor/getDistributor/${id}`
 
         try {
             showToast({ v1Ing: 'Fetching', action: 'loading' })
             const [data] = await http.GET(axios, url, config)
-            const { mobileNumber: phoneNumber, address, products, agencyName: customerName } = data
+            const { mobileNumber: phoneNumber, address, products, agencyName: customerName, deliveryLocation } = data
             const productsUI = getProductsForUI(products)
-            setFormData(data => ({ ...data, phoneNumber, address, customerName, ...productsUI }))
+            setFormData(data => ({ ...data, phoneNumber, address, customerName, deliveryLocation, ...productsUI }))
+            showToast({ v2: 'fetched' })
+        } catch (error) {
+            message.destroy()
+        }
+    }
+
+    const getCustomer = async (id) => {
+        const url = `customer/getCustomerDetailsForDC/${id}`
+
+        try {
+            showToast({ v1Ing: 'Fetching', action: 'loading' })
+            const { data: [res] } = await http.GET(axios, url, config)
+            setFormData(data => ({ ...data, ...res }))
             showToast({ v2: 'fetched' })
         } catch (error) {
             message.destroy()
@@ -116,7 +130,7 @@ const Delivery = ({ date, source }) => {
     }
 
     const getDeliveries = async () => {
-        const url = `/warehouse/deliveryDetails/${date}`
+        const url = `warehouse/deliveryDetails/${date}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -139,22 +153,20 @@ const Delivery = ({ date, source }) => {
 
         if (key === 'customerType') {
             const productsUI = getProductsForUI([])
-            setFormData(data => ({ ...data, existingCustomerId: null, customerName: '', phoneNumber: null, address: '', ...productsUI }))
+            setFormData(data => ({
+                ...data, existingCustomerId: null, customerName: '', phoneNumber: null,
+                distributorId: null, deliveryLocation: '', address: '', ...productsUI
+            }))
         }
-
-        if (key === 'existingCustomerId') {
-            const { customerType } = formData
-            if (customerType === 'distributor') {
-                getDistributor(value)
-            }
-            else {
-                let customerName = customerList.find(item => item.customerId === value).customerName
-                setFormData(data => ({ ...data, customerName }))
-            }
+        else if (key === 'distributorId') {
+            getDistributor(value)
+        }
+        else if (key === 'existingCustomerId') {
+            getCustomer(value)
         }
 
         // Validations
-        if (key === 'customerName') {
+        else if (key === 'customerName') {
             const error = validateNames(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -172,6 +184,10 @@ const Delivery = ({ date, source }) => {
         // Validations
         if (key === 'phoneNumber') {
             const error = validateMobileNumber(value, true)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'EmailId') {
+            const error = validateEmailId(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
     }
@@ -238,13 +254,13 @@ const Delivery = ({ date, source }) => {
         const dcValues = getDCValuesForDB(formData)
         const { customerOrderId, driverId } = formData
 
-        let url = '/warehouse/createDC'
+        let url = 'warehouse/createDC'
         let method = 'POST'
         let v1Ing = 'Adding'
         let v2 = 'added'
 
         if (customerOrderId) {
-            url = '/customer/updateCustomerOrderDetails'
+            url = 'customer/updateCustomerOrderDetails'
             method = 'PUT'
             v1Ing = 'Updating'
             v2 = 'updated'

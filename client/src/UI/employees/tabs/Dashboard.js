@@ -5,15 +5,17 @@ import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'reac
 import { http } from '../../../modules/http'
 import MenuBar from '../../../components/MenuBar';
 import Spinner from '../../../components/Spinner';
+import useUser from '../../../utils/hooks/useUser';
+import { SUPERADMIN } from '../../../utils/constants';
 import NoContent from '../../../components/NoContent';
 import DeleteModal from '../../../components/CustomModal';
 import EmployeeCard from '../../../components/EmployeeCard';
-import { getRole, SUPERADMIN } from '../../../utils/constants';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import CustomPagination from '../../../components/CustomPagination';
 import { deepClone, doubleKeyComplexSearch, getMainPathname, showToast, complexSort, complexDateSort, isEmpty } from '../../../utils/Functions';
 
 const Dashboard = ({ reFetch, isDriver }) => {
+    const { ROLE } = useUser()
     const history = useHistory()
     const { pathname } = useLocation()
     const [employeesClone, setEmployeesClone] = useState([])
@@ -29,7 +31,7 @@ const Dashboard = ({ reFetch, isDriver }) => {
     const [searchON, setSeachON] = useState(false)
     const [sortBy, setSortBy] = useState('NEW - OLD')
     const mainUrl = useMemo(() => getMainPathname(pathname), [pathname])
-    const isSuperAdmin = useMemo(() => getRole() === SUPERADMIN, [])
+    const isSuperAdmin = useMemo(() => ROLE === SUPERADMIN, [])
     const [employeeType] = useState(() => getEmployeeType(isDriver))
     const pageSizeOptions = useMemo(() => generatePageSizeOptions(), [window.innerWidth])
     const idKey = useMemo(() => getKey(isDriver), [])
@@ -261,24 +263,24 @@ const Dashboard = ({ reFetch, isDriver }) => {
 }
 
 const getUrl = (isDriver) => {
-    const staffUrl = '/users/getUsers'
-    const driverUrl = '/driver/getDrivers'
+    const staffUrl = 'users/getUsers'
+    const driverUrl = 'driver/getDrivers'
 
     if (isDriver) return driverUrl
     return staffUrl
 }
 
 const deleteUrl = (isDriver, id) => {
-    const staffUrl = `/users/deleteWebUser/${id}`
-    const driverUrl = `/driver/deleteDriver/${id}`
+    const staffUrl = `users/deleteWebUser/${id}`
+    const driverUrl = `driver/deleteDriver/${id}`
 
     if (isDriver) return driverUrl
     return staffUrl
 }
 
 const statusUrl = (isDriver) => {
-    const staffUrl = `/users/updateUserStatus`
-    const driverUrl = `/driver/updateDriverStatus`
+    const staffUrl = `users/updateUserStatus`
+    const driverUrl = `driver/updateDriverStatus`
 
     if (isDriver) return driverUrl
     return staffUrl

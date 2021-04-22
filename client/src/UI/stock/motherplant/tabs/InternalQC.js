@@ -60,7 +60,7 @@ const InternalQC = () => {
             return
         }
 
-        const url = '/motherPlant/createProductionQC'
+        const url = 'motherPlant/createProductionQC'
         const body = {
             ...formData
         }

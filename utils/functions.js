@@ -10,18 +10,22 @@ const getBatchId = (shiftType) => {
     return shift + '-' + currentDate
 }
 const checkUserExists = (req, res, next) => {
-    let userId = req.headers['userid']
-    let query = `Select userName from usermaster where userId=${userId} AND isActive='1' AND deleted=0`
-    executeGetQuery(query, (err, results) => {
-        if (err) console.log("Error", err)
-        else if (!results.length) res.status(406).json("Something went wrong")
-        else next()
-    })
+    if (req.query.isMobileApp) next()
+    else {
+        let userId = req.headers['userid']
+        let query = `Select userName from usermaster where userId=${userId} AND isActive='1' AND deleted=0`
+        executeGetQuery(query, (err, results) => {
+            if (err) console.log("Error", err)
+            else if (!results.length) res.status(406).json("Something went wrong")
+            else next()
+        })
+    }
 }
 const checkDepartmentExists = (req, res, next) => {
     let isSuperAdmin = req.headers['issuperadmin']
     let isAccountsAdmin = req.headers['isaccountsadmin']
-    if (isSuperAdmin == 'true' || isAccountsAdmin == 'true') {
+    let isSalesAdmin = req.headers['issalesadmin']
+    if (isSuperAdmin == 'true' || isAccountsAdmin == 'true' || isSalesAdmin == 'true') {
         next()
     } else {
         let departmentid = req.headers['departmentid']
@@ -70,7 +74,7 @@ const customerProductDetails = (deliveryDetailsId, customerType) => {
     return new Promise((resolve, reject) => {
         let query = "SELECT cp.productName,cp.productPrice,cp.noOfJarsTobePlaced,cp.id AS productId FROM customerproductdetails cp WHERE ";
         let options = [deliveryDetailsId]
-        if (customerType == DISTRIBUTOR) query = query + "customerId=?"
+        if (customerType == DISTRIBUTOR) query = query + "distributorId=?"
         else query = query + "deliveryDetailsId=?"
 
         db.query(query, options, (err, results) => {
@@ -276,12 +280,12 @@ const getGraphData = (product20LCount, product2LCount, product1LCount, product50
         }
     ]
 }
-const saveProductDetails = ({ products, deliveryDetailsId, customerId, customerType = 'customer' }) => {
+const saveProductDetails = ({ products, deliveryDetailsId, customerId, distributorId, customerType = 'customer' }) => {
     return new Promise((resolve, reject) => {
         if (products.length) {
             for (let i of products) {
-                let deliveryProductsQuery = "insert  into customerproductdetails (deliverydetailsId,customerId,noOfJarsTobePlaced,productPrice,productName,customerType) values(?,?,?,?,?,?)";
-                let insertQueryValues = [deliveryDetailsId, customerId, i.noOfJarsTobePlaced, i.productPrice, i.productName, customerType]
+                let deliveryProductsQuery = "insert  into customerproductdetails (deliverydetailsId,customerId,noOfJarsTobePlaced,productPrice,productName,customerType,distributorId) values(?,?,?,?,?,?,?)";
+                let insertQueryValues = [deliveryDetailsId, customerId, i.noOfJarsTobePlaced, i.productPrice, i.productName, customerType, distributorId]
                 db.query(deliveryProductsQuery, insertQueryValues, (err, results) => {
                     if (err) reject(err);
                     else resolve(results)
@@ -305,8 +309,34 @@ const updateProductDetails = (products) => {
         }
     })
 }
+const prepareOrderResponseObj = (i) => {
+    let responseObj = {
+        "customerId": i.customerId,
+        "customerName": i.ownerName,
+        "mobileNumber": i.phoneNumber,
+        // "AlternatePhNo": i.AlternatePhNo,
+        "EmailId": i.EmailId,
+        // "Address1": i.Address1,
+        // "Address2": i.Address2,
+        "contactperson": i.customerName,
+        "orderid": i.customerOrderId,
+        "dcNo": i.dcNo,
+        "emptyCans": i.returnEmptyCans,
+        "damagedCans": i.damagedCount,
+        "isDelivered": i.isDelivered,
+        "transactionid": i.transactionid,
+        "deliveryDate": i.deliveryDate,
+        "customerproducts": i.customerproducts,
+        address: i.address,
+        deliveryLocation: i.deliveryLocation,
+        latitude: i.latitude || null,
+        longitude: i.longitude || null,
+        customerproducts: `20L:${i["20LCans"]};1L:${i["1LBoxes"]};500ML:${i["500MLBoxes"]};300ML:${i["300MLBoxes"]};2L:${i["2LBoxes"]}`
+    }
+    return responseObj
+}
 module.exports = {
     executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, checkDepartmentExists, productionCount,
     getCompareData, dateComparisions, checkUserExists, dbError, getBatchId, customerProductDetails, createHash, convertToWords,
-    saveProductDetails, updateProductDetails, getFormatedNumber, getCompareCustomersData, getCompareDistributorsData, getGraphData, formatDate
+    saveProductDetails, updateProductDetails, getFormatedNumber, getCompareCustomersData, getCompareDistributorsData, getGraphData, formatDate, prepareOrderResponseObj
 }

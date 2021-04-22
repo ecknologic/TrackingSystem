@@ -6,14 +6,17 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http'
 import Actions from '../../../../components/Actions';
 import Spinner from '../../../../components/Spinner';
-import { getInvoiceColumns } from '../../../../assets/fixtures';
+import useUser from '../../../../utils/hooks/useUser';
 import SearchInput from '../../../../components/SearchInput';
+import { getInvoiceColumns } from '../../../../assets/fixtures';
 import CustomPagination from '../../../../components/CustomPagination';
+import { MARKETINGADMIN, MARKETINGMANAGER } from '../../../../utils/constants';
 import { deepClone, getStatusColor, showToast } from '../../../../utils/Functions';
 import { DocIconGrey, ListViewIconGrey, SendIconGrey, TickIconGrey } from '../../../../components/SVG_Icons';
 const DATEFORMAT = 'DD/MM/YYYY'
 
 const Invoice = ({ reFetch, accountId }) => {
+    const { ROLE } = useUser()
     const history = useHistory()
     const [invoices, setInvoices] = useState([])
     const [loading, setLoading] = useState(true)
@@ -21,6 +24,7 @@ const Invoice = ({ reFetch, accountId }) => {
     const [pageNumber, setPageNumber] = useState(1)
     const [totalCount, setTotalCount] = useState(null)
 
+    const isMarketingRole = useMemo(() => ROLE === MARKETINGADMIN || ROLE === MARKETINGMANAGER, [])
     const invoiceColumns = useMemo(() => getInvoiceColumns('single'), [])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
@@ -36,7 +40,7 @@ const Invoice = ({ reFetch, accountId }) => {
     }, [reFetch])
 
     const getInvoices = async () => {
-        const url = `/invoice/getCustomerInvoices/${accountId}`
+        const url = `invoice/getCustomerInvoices/${accountId}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -59,12 +63,12 @@ const Invoice = ({ reFetch, accountId }) => {
         if (key === 'resend') {
         }
         else if (key === 'dcList') {
-            history.push(`/invoices/delivery-challan/${data.invoiceId}`, data)
+            history.push(`/invoices/dc-list/${data.invoiceId}`, data)
         }
         else handleStatusUpdate(key, data.invoiceId)
     }
 
-    const handleViewInvoice = (invoice) => history.push('/invoices/manage', { invoice })
+    const handleViewInvoice = (invoice, id) => history.push('/invoices/manage', { invoice, FOR: 'CUSTOMER', id })
 
     const optimisticUpdate = (id, status) => {
         let clone = deepClone(invoices);
@@ -76,7 +80,7 @@ const Invoice = ({ reFetch, accountId }) => {
     const handleStatusUpdate = async (action, invoiceId) => {
         const status = action === 'paid' ? 'Paid' : 'Pending'
         const options = { item: 'Invoice status', v1Ing: 'Updating', v2: 'updated' }
-        const url = `/invoice/updateInvoiceStatus`
+        const url = `invoice/updateInvoiceStatus`
         const body = { status, invoiceId }
         try {
             showToast({ ...options, action: 'loading' })
@@ -89,12 +93,12 @@ const Invoice = ({ reFetch, accountId }) => {
     }
 
     const dataSource = useMemo(() => invoices.map((invoice) => {
-        const { invoiceId, createdDateTime, totalAmount, customerName, dueDate, status } = invoice
+        const { invoiceId, createdDateTime, totalAmount, customerName, dueDate, status, customerId } = invoice
 
         const options = [
             <Menu.Item key="resend" icon={<SendIconGrey />}>Resend</Menu.Item>,
             <Menu.Item key="dcList" icon={<ListViewIconGrey />}>DC List</Menu.Item>,
-            <Menu.Item key="paid" className={status === 'Paid' ? 'disabled' : ''} icon={<TickIconGrey />}>Paid</Menu.Item>,
+            <Menu.Item key="paid" className={status === 'Paid' || isMarketingRole ? 'disabled' : ''} icon={<TickIconGrey />}>Paid</Menu.Item>,
             <Menu.Item key="due" className={status === 'Pending' ? 'disabled' : ''} icon={<DocIconGrey />}>Due</Menu.Item>
         ]
 
@@ -105,7 +109,7 @@ const Invoice = ({ reFetch, accountId }) => {
             status: renderStatus(status),
             dueDate: dayjs(dueDate).format(DATEFORMAT),
             date: dayjs(createdDateTime).format(DATEFORMAT),
-            invoiceId: <span className='app-link' onClick={() => handleViewInvoice(invoice)}>{invoiceId}</span>,
+            invoiceId: <span className='app-link' onClick={() => handleViewInvoice(invoice, customerId)}>{invoiceId}</span>,
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, invoice)} />
         }
     }), [invoices])

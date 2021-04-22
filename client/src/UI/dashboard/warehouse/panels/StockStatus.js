@@ -1,7 +1,6 @@
-import axios from 'axios';
 import Slider from "react-slick";
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { http } from '../../../../modules/http';
+import { http, appApi } from '../../../../modules/http';
 import StockCard from '../../../../components/StockCard';
 import can1L from '../../../../assets/icons/ic_Can1L.svg'
 import can2L from '../../../../assets/icons/ic_Can2L.svg'
@@ -18,7 +17,7 @@ const StockStatus = () => {
     const [opData, setOpData] = useState(() => options)
     const { total20LCans, total2LBoxes, total1LBoxes, total500MLBoxes, total300MLBoxes } = stock
 
-    const source = useMemo(() => axios.CancelToken.source(), []);
+    const source = useMemo(() => appApi.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
@@ -30,10 +29,10 @@ const StockStatus = () => {
     }, [])
 
     const getTotalStock = async ({ startDate, endDate, fromStart }) => {
-        const url = `/warehouse/totalCurrentActiveStockDetails?startDate=${startDate} 00:00:00&endDate=${endDate} 23:59:59&fromStart=${fromStart}`
+        const url = `warehouse/totalCurrentActiveStockDetails?startDate=${startDate} 00:00:00&endDate=${endDate} 23:59:59&fromStart=${fromStart}`
 
         try {
-            const data = await http.GET(axios, url, config)
+            const data = await http.GET(appApi, url, config)
             setStock(data)
         } catch (error) { }
     }

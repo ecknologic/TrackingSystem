@@ -1,9 +1,9 @@
 import axios from 'axios';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
-import Header from './header';
 import { http } from '../../../modules/http';
 import SalesResults from './panels/SalesResults';
 import TotalBusiness from './panels/TotalBusiness';
+import Header from '../../../components/ContentHeader';
 import InvoiceOverview from './panels/InvoiceOverview';
 import CustomersOverview from './panels/CustomersOverview';
 import ProductionResults from './panels/ProductionResults';
@@ -26,7 +26,7 @@ const SuperAdminDashboard = () => {
     }, [])
 
     const getMotherplantList = async () => {
-        const url = '/bibo/getDepartmentsList?departmentType=MotherPlant&hasAll=true'
+        const url = 'bibo/getDepartmentsList?departmentType=MotherPlant&hasAll=true'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -35,7 +35,7 @@ const SuperAdminDashboard = () => {
     }
 
     const getWarehouseList = async () => {
-        const url = '/bibo/getDepartmentsList?departmentType=warehouse&hasAll=true'
+        const url = 'bibo/getDepartmentsList?departmentType=warehouse&hasAll=true'
 
         try {
             const data = await http.GET(axios, url, config)

@@ -1,12 +1,12 @@
 import { Layout } from 'antd';
 import React, { useState } from 'react';
 import Profile from '../../components/Profile';
-import { getUsername } from '../../utils/constants';
-import { BiboIcon, ChatIconGrey, NotificationIconGrey, SettingIconGrey } from '../../components/SVG_Icons';
+import useUser from '../../utils/hooks/useUser';
 import NotificationDrawer from '../../components/NotificationDrawer';
+import { BiboIcon, ChatIconGrey, NotificationIconGrey, SettingIconGrey } from '../../components/SVG_Icons';
 
 const Header = () => {
-    const userName = getUsername() || 'Bibo User'
+    const { USERNAME } = useUser()
     const [notifDrawerOpen, setNotifDrawerOpen] = useState(false)
 
     return (

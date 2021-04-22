@@ -4,6 +4,7 @@ import { pdfjs } from 'react-pdf';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import reportWebVitals from './reportWebVitals';
+import { AppProvider } from './modules/appContext';
 import App from './App';
 import './index.css';
 import 'antd/dist/antd.css';
@@ -13,7 +14,9 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <AppProvider>
+      <App />
+    </AppProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

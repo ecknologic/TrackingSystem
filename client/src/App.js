@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
-import { isLogged, getRole, getRoutesByRole, MARKETINGADMIN, MOTHERPLANTADMIN, SUPERADMIN, WAREHOUSEADMIN, ACCOUNTSADMIN } from './utils/constants';
+import { getRoutesByRole, MARKETINGADMIN, MOTHERPLANTADMIN, SUPERADMIN, WAREHOUSEADMIN, ACCOUNTSADMIN, MARKETINGMANAGER } from './utils/constants';
 import { getMainPathname, resetTrackForm } from './utils/Functions';
 import Login from './UI/auth/Login';
 import Products from './UI/products';
@@ -10,12 +10,13 @@ import Dispatches from './UI/dispatches';
 import Staff from './UI/employees/Staff';
 import PageLayout from './UI/page-layout';
 import AddAccount from './UI/accounts/add';
+import useUser from './utils/hooks/useUser';
 import ManagePlant from './UI/plants/manage';
 import Drivers from './UI/employees/Drivers';
 import Distributors from './UI/distributors';
 import ViewAccount from './UI/accounts/view';
-import Warehouses from './UI/plants/Warehouses';
 import NoContent from './components/NoContent';
+import Warehouses from './UI/plants/Warehouses';
 import Invoices from './UI/invoices/super-admin';
 import QualityControl from './UI/quality-control';
 import WarehouseStock from './UI/stock/warehouse';
@@ -38,19 +39,18 @@ import MotherplantMaterials from './UI/materials/motherplant';
 import DeliveredDC from './UI/invoices/super-admin/delivered-dc';
 
 const App = () => {
+   const { isLogged: isUser, ROLE } = useUser()
 
    useEffect(() => {
       resetTrackForm()
    }, [])
 
    const byRole = (Component) => (props) => {
-      const isUser = isLogged()
       if (!isUser) return <Redirect to='/' />
       else {
          const { match: { path } } = props
          const mainPath = getMainPathname(path)
-         const role = getRole()
-         const routes = getRoutesByRole(role)
+         const routes = getRoutesByRole(ROLE)
          const pass = routes.includes(mainPath)
          if (!pass)
             return <Redirect to="/unauthorized" />
@@ -59,33 +59,29 @@ const App = () => {
    }
 
    const dashboardAuth = () => {
-      const isUser = isLogged()
       if (!isUser) return <Redirect to='/' />
       else {
-         const role = getRole()
-         if (role === MARKETINGADMIN) return <Redirect to='/manage-accounts' />
-         else if (role === WAREHOUSEADMIN) return <WarehouseDashboard />
-         else if (role === MOTHERPLANTADMIN) return <MotherplantDashboard />
-         else if (role === SUPERADMIN) return <SuperAdminDashboard />
-         else if (role === ACCOUNTSADMIN) return <Redirect to='/customers' />
+         if (ROLE === MARKETINGADMIN) return <Redirect to='/manage-accounts' />
+         else if (ROLE === MARKETINGMANAGER) return <Redirect to='/manage-accounts' />
+         else if (ROLE === WAREHOUSEADMIN) return <WarehouseDashboard />
+         else if (ROLE === MOTHERPLANTADMIN) return <MotherplantDashboard />
+         else if (ROLE === SUPERADMIN) return <SuperAdminDashboard />
+         else if (ROLE === ACCOUNTSADMIN) return <Redirect to='/customers' />
          return <NoContent content='Screen Not designed for your role' />
       }
    }
 
    const loginAuth = () => {
-      const isUser = isLogged()
       if (!isUser) return <Login />
       else return <Redirect to='/dashboard' />
    }
 
    const noMatchAuth = () => {
-      const isUser = isLogged()
       if (!isUser) return <Redirect to='/' />
       return <NoContent content='Page Not found' />
    }
 
    const Unauthorized = () => {
-      const isUser = isLogged()
       if (!isUser) return <Redirect to='/' />
       else return <NoContent content="Access denied." />
    }

@@ -9,16 +9,15 @@ const DCForm = (props) => {
 
     const { data, errors, routeOptions, disabledItems, onBlur, driverOptions, distributorOptions, customerOptions, onChange } = props
 
-    const { routeId, customerName, phoneNumber, address, driverId, product20L, product2L, product1L,
-        product500ML, product300ML, existingCustomerId, customerType, creationType } = data
+    const { routeId, customerName, phoneNumber, address, driverId, product20L, product2L, product1L, deliveryLocation,
+        product500ML, product300ML, existingCustomerId, distributorId, customerType, creationType, EmailId } = data
 
     const disableAll = disabledItems === 'ALL' && disabledItems !== 'NONE'
     const disableFew = disabledItems === 'FEW'
     const isDistributor = customerType === 'distributor'
     const isNewCustomer = customerType === 'newCustomer'
+    const isExistingCustomer = customerType === 'internal'
     const showCustType = creationType === 'manual'
-
-    const options = isDistributor ? distributorOptions : customerOptions
 
     useEffect(() => {
         resetTrackForm()
@@ -28,6 +27,16 @@ const DCForm = (props) => {
             resetTrackForm()
         }
     }, [])
+
+    const renderDL = () => (
+        <div className='input-container'>
+            <InputLabel name='Delivery Location' error={errors.deliveryLocation} mandatory />
+            <CustomInput value={deliveryLocation} placeholder='Add Location'
+                disabled={disableAll || disableFew} error={errors.deliveryLocation}
+                onChange={(value) => onChange(value, 'deliveryLocation')}
+            />
+        </div>
+    )
 
     return (
         <>
@@ -53,24 +62,40 @@ const DCForm = (props) => {
                 }
                 <div className='row'>
                     {
-                        (!isNewCustomer) ?
-                            (
-                                <div className='input-container'>
-                                    <InputLabel name='Name' error={errors.existingCustomerId} mandatory />
-                                    <SelectInput track value={existingCustomerId} options={options}
-                                        disabled={disableAll || disableFew} error={errors.existingCustomerId}
-                                        onSelect={(value) => onChange(value, 'existingCustomerId')}
-                                    />
-                                </div>
-                            ) : (
-                                <div className='input-container'>
-                                    <InputLabel name='Name' error={errors.customerName} mandatory />
-                                    <CustomInput value={customerName} placeholder='Add Name'
-                                        disabled={disableAll || disableFew} error={errors.customerName}
-                                        onChange={(value) => onChange(value, 'customerName')}
-                                    />
-                                </div>
-                            )
+                        isNewCustomer &&
+                        (
+                            <div className='input-container'>
+                                <InputLabel name='Name' error={errors.customerName} mandatory />
+                                <CustomInput value={customerName} placeholder='Add Name'
+                                    disabled={disableAll || disableFew} error={errors.customerName}
+                                    onChange={(value) => onChange(value, 'customerName')}
+                                />
+                            </div>
+                        )
+                    }
+                    {
+                        isExistingCustomer &&
+                        (
+                            <div className='input-container'>
+                                <InputLabel name='Name' error={errors.existingCustomerId} mandatory />
+                                <SelectInput track value={existingCustomerId} options={customerOptions}
+                                    disabled={disableAll || disableFew} error={errors.existingCustomerId}
+                                    onSelect={(value) => onChange(value, 'existingCustomerId')}
+                                />
+                            </div>
+                        )
+                    }
+                    {
+                        isDistributor &&
+                        (
+                            <div className='input-container'>
+                                <InputLabel name='Name' error={errors.distributorId} mandatory />
+                                <SelectInput track value={distributorId} options={distributorOptions}
+                                    disabled={disableAll || disableFew} error={errors.distributorId}
+                                    onSelect={(value) => onChange(value, 'distributorId')}
+                                />
+                            </div>
+                        )
                     }
                     <div className='input-container'>
                         <InputLabel name='Phone Number' error={errors.phoneNumber} mandatory />
@@ -80,6 +105,25 @@ const DCForm = (props) => {
                             onChange={(value) => onChange(value, 'phoneNumber')}
                         />
                     </div>
+                </div>
+                <div className='row'>
+                    {
+                        isNewCustomer ?
+                            (
+                                <>
+                                    <div className='input-container'>
+                                        <InputLabel name='Email' error={errors.EmailId} mandatory />
+                                        <CustomInput
+                                            value={EmailId} type='email' disabled={disableAll || disableFew}
+                                            placeholder='Email' error={errors.EmailId}
+                                            onBlur={(value) => onBlur(value, 'EmailId')}
+                                            onChange={(value) => onChange(value, 'EmailId')}
+                                        />
+                                    </div>
+                                    {renderDL()}
+                                </>
+                            ) : renderDL()
+                    }
                 </div>
                 <div className='row'>
                     <div className='input-container stretch'>

@@ -44,7 +44,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
     }, [])
 
     const getInvoice = async () => {
-        const url = `/invoice/getInvoiceById/${invoiceId}`
+        const url = `invoice/getInvoiceById/${invoiceId}`
 
         try {
             setLoading(true)
@@ -59,7 +59,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
     }
 
     const getInvoiceId = async () => {
-        const url = '/invoice/getInvoiceId'
+        const url = 'invoice/getInvoiceId'
 
         try {
             const invoiceId = await http.GET(axios, url, config)
@@ -68,7 +68,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
     }
 
     const getSalesPersonList = async () => {
-        const url = '/customer/getSalesPersons'
+        const url = 'customer/getSalesPersons'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -77,7 +77,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
     }
 
     const getCustomerList = async () => {
-        const url = '/customer/getCustomerNames'
+        const url = 'customer/getCustomerNames'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -87,7 +87,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
 
     const getBillingAddress = async (customerId) => {
         setBillingAddress({ loading: true })
-        const url = `/customer/getCustomerBillingAddress/${customerId}`
+        const url = `customer/getCustomerBillingAddress/${customerId}`
 
         try {
             const { creditPeriodInDays, ...rest } = await http.GET(axios, url, config)
@@ -210,8 +210,8 @@ const getVerbs = (editMode) => {
     return { v1Ing, v2 }
 }
 const getUrl = (editMode) => {
-    const createUrl = '/invoice/createInvoice'
-    const updateUrl = '/invoice/updateInvoice'
+    const createUrl = 'invoice/createInvoice'
+    const updateUrl = 'invoice/updateInvoice'
     return editMode ? updateUrl : createUrl
 }
 export default CreateInvoice

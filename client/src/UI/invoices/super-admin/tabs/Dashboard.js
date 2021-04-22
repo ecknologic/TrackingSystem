@@ -55,7 +55,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
     }, [reFetch])
 
     const getInvoices = async () => {
-        const url = '/invoice/getInvoices/Pending'
+        const url = 'invoice/getInvoices/Pending'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -67,7 +67,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
     }
 
     const getCustomerList = async () => {
-        const url = `/customer/getCustomerNames`
+        const url = `customer/getCustomerNames`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -76,7 +76,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
     }
 
     const generateInvoices = async () => {
-        const url = '/invoice/generateMultipleInvoices'
+        const url = 'invoice/generateMultipleInvoices'
         const body = { fromDate: startDate, toDate: endDate, customerIds }
         const options = { item: 'Invoices', v1Ing: 'Generating', v2: 'generated' }
 
@@ -154,7 +154,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
     const handleStatusUpdate = async (invoiceId) => {
         const status = 'Paid'
         const options = { item: 'Invoice status', v1Ing: 'Updating', v2: 'updated' }
-        const url = `/invoice/updateInvoiceStatus`
+        const url = `invoice/updateInvoiceStatus`
         const body = { status, invoiceId }
         try {
             showToast({ ...options, action: 'loading' })

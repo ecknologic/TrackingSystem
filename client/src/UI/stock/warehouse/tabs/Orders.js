@@ -5,19 +5,20 @@ import CreateDelivery from '../forms/Delivery';
 import { http } from '../../../../modules/http';
 import Spinner from '../../../../components/Spinner';
 import Actions from '../../../../components/Actions';
+import useUser from '../../../../utils/hooks/useUser';
+import { TRACKFORM } from '../../../../utils/constants';
 import QuitModal from '../../../../components/CustomModal';
-import { EditIconGrey } from '../../../../components/SVG_Icons';
-import SearchInput from '../../../../components/SearchInput';
 import CustomModal from '../../../../components/CustomModal';
+import SearchInput from '../../../../components/SearchInput';
 import DeliveryForm from '../../../accounts/add/forms/Delivery';
+import { EditIconGrey } from '../../../../components/SVG_Icons';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
-import { getWarehoseId, TRACKFORM } from '../../../../utils/constants';
 import CustomPagination from '../../../../components/CustomPagination';
 import { orderColumns, getRouteOptions, getDriverOptions, getVehicleOptions, getWarehouseOptions } from '../../../../assets/fixtures';
 import { isEmpty, resetTrackForm, showToast, deepClone, getProductsForUI, base64String, getDevDays, doubleKeyComplexSearch } from '../../../../utils/Functions';
 
 const Orders = () => {
-    const warehouseId = getWarehoseId()
+    const { WAREHOUSEID } = useUser()
     const [routes, setRoutes] = useState([])
     const [drivers, setDrivers] = useState([])
     const [vehicles, setVehicles] = useState([])
@@ -61,7 +62,7 @@ const Orders = () => {
     const fetchData = async () => {
         if (!isFetched) {
             showToast(toastLoading)
-            const p1 = getRouteList(warehouseId)
+            const p1 = getRouteList(WAREHOUSEID)
             const p2 = getDriverList()
             const p3 = getVehicleList()
             const p4 = getWarehouseList()
@@ -71,7 +72,7 @@ const Orders = () => {
     }
 
     const getRouteList = async (depId) => {
-        const url = `/customer/getRoutes/${depId}`
+        const url = `customer/getRoutes/${depId}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -81,7 +82,7 @@ const Orders = () => {
     }
 
     const getDriverList = async () => {
-        const url = `/bibo/getdriverDetails/${warehouseId}`
+        const url = `bibo/getdriverDetails/${WAREHOUSEID}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -90,7 +91,7 @@ const Orders = () => {
     }
 
     const getVehicleList = async () => {
-        const url = `/bibo/getVehicleDetails`
+        const url = `bibo/getVehicleDetails`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -99,7 +100,7 @@ const Orders = () => {
     }
 
     const getWarehouseList = async () => {
-        const url = '/bibo/getDepartmentsList?departmentType=warehouse'
+        const url = 'bibo/getDepartmentsList?departmentType=warehouse'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -108,7 +109,7 @@ const Orders = () => {
     }
 
     const fetchDelivery = async (id) => {
-        const url = `/customer/getDeliveryDetails/${id}`
+        const url = `customer/getDeliveryDetails/${id}`
 
         try {
             showToast(toastLoading)
@@ -130,7 +131,7 @@ const Orders = () => {
     }
 
     const getOrders = async () => {
-        const url = `/warehouse/getOrders`
+        const url = `warehouse/getOrders`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -225,7 +226,7 @@ const Orders = () => {
             return
         }
 
-        let url = '/customer/createOrderDelivery'
+        let url = 'customer/createOrderDelivery'
         const body = { ...formData }
 
         try {

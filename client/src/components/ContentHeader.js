@@ -1,20 +1,20 @@
 import React, { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useSessionStorage } from '../utils/hooks/sessionHook'
+import useUser from '../utils/hooks/useUser';
 import { getMainPathname } from '../utils/Functions';
-import { getDesignation, getUsername } from '../utils/constants';
+import useDepartment from '../utils/hooks/useDepartment';
 import '../sass/contentHeader.scss'
 
 const ContentHeader = () => {
     const { pathname } = useLocation()
-    const [roleInfo] = useSessionStorage('roleInfo', {})
-    const { departmentName: title, address } = roleInfo
+    const { USERNAME, getDesignation } = useUser()
+    const { departmentName: title, address } = useDepartment()
 
     const mainUrl = useMemo(() => getMainPathname(pathname), [pathname])
     const isDashboard = mainUrl === '/dashboard'
 
     const getTitle = () => {
-        if (isDashboard) return `Welcome, ${getUsername()}`
+        if (isDashboard) return `Welcome, ${USERNAME}`
         return title
     }
 
@@ -25,16 +25,12 @@ const ContentHeader = () => {
 
     return (
         <div className='content-header'>
-            {
-                title && (
-                    <div className='heading-container'>
-                        <div className='titles-container'>
-                            <span className='title'>{getTitle()}</span>
-                            <span className='address'>{getAddress()}</span>
-                        </div>
-                    </div>
-                )
-            }
+            <div className='heading-container'>
+                <div className='titles-container'>
+                    <span className='title'>{getTitle()}</span>
+                    <span className='address'>{getAddress()}</span>
+                </div>
+            </div>
         </div>
     )
 }

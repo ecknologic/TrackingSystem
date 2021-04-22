@@ -1,5 +1,6 @@
 // config.js
 const config = {
+
   db: {
     host: process.env.HOST,
     dbName: process.env.DB_NAME,

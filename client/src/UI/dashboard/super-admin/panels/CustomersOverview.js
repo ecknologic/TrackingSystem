@@ -32,7 +32,7 @@ const CustomersOverview = () => {
     }, [])
 
     const getActiveData = async ({ startDate, endDate, fromStart, type }) => {
-        const url = `/customer/getActiveCustomersCount?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}&type=${type}`
+        const url = `customer/getActiveCustomersCount?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}&type=${type}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -41,7 +41,7 @@ const CustomersOverview = () => {
     }
 
     const getInactiveData = async ({ startDate, endDate, fromStart, type }) => {
-        const url = `/customer/getInactiveCustomersCount?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}&type=${type}`
+        const url = `customer/getInactiveCustomersCount?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}&type=${type}`
 
         try {
             const data = await http.GET(axios, url, config)

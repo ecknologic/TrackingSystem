@@ -7,20 +7,21 @@ import ArrivedStockForm from '../forms/ArrivedStock';
 import DCPanel from '../../../../components/DCPanel';
 import DSPanel from '../../../../components/DSPanel';
 import ECPanel from '../../../../components/ECPanel';
+import useUser from '../../../../utils/hooks/useUser';
 import ERCPanel from '../../../../components/ERCPanel';
 import OFDPanel from '../../../../components/OFDPanel';
 import CASPanel from '../../../../components/CASPanel';
 import CustomModal from '../../../../components/CustomModal';
 import ConfirmModal from '../../../../components/CustomModal';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
+import { TODAYDATE, TRACKFORM } from '../../../../utils/constants';
 import EmptyCansForm from '../../../empty-cans/warehouse/forms/EmptyCans';
-import { getWarehoseId, TODAYDATE, TRACKFORM } from '../../../../utils/constants';
 import { getASValuesForDB, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 import { validateNumber, validateASValues, validateRECValues } from '../../../../utils/validations';
 import { getDriverOptions, getWarehouseOptions, getVehicleOptions } from '../../../../assets/fixtures';
 
 const StockDetails = ({ date, source }) => {
-    const warehouseId = getWarehoseId()
+    const { WAREHOUSEID } = useUser()
     const [CAS, setCAS] = useState({})
     const [OFD, setOFC] = useState({})
     const [EC, setEC] = useState({})
@@ -76,7 +77,7 @@ const StockDetails = ({ date, source }) => {
     }, [fetchList])
 
     const getMotherplantList = async () => {
-        const url = '/bibo/getDepartmentsList?departmentType=MotherPlant'
+        const url = 'bibo/getDepartmentsList?departmentType=MotherPlant'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -85,7 +86,7 @@ const StockDetails = ({ date, source }) => {
     }
 
     const getDriverList = async () => {
-        const url = `/bibo/getdriverDetails/${warehouseId}`
+        const url = `bibo/getdriverDetails/${WAREHOUSEID}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -94,7 +95,7 @@ const StockDetails = ({ date, source }) => {
     }
 
     const getVehicleList = async () => {
-        const url = `/bibo/getVehicleDetails`
+        const url = `bibo/getVehicleDetails`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -103,7 +104,7 @@ const StockDetails = ({ date, source }) => {
     }
 
     const getCAS = async () => {
-        const url = `warehouse/currentActiveStockDetails/${date}?warehouseId=${warehouseId}`
+        const url = `warehouse/currentActiveStockDetails/${date}?warehouseId=${WAREHOUSEID}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -112,7 +113,7 @@ const StockDetails = ({ date, source }) => {
     }
 
     const getOFD = async () => {
-        const url = `warehouse/outForDeliveryDetails/${date}?warehouseId=${warehouseId}`
+        const url = `warehouse/outForDeliveryDetails/${date}?warehouseId=${WAREHOUSEID}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -121,7 +122,7 @@ const StockDetails = ({ date, source }) => {
     }
 
     const getEC = async () => {
-        const url = `/warehouse/getConfirmedEmptyCans/${warehouseId}`
+        const url = `warehouse/getConfirmedEmptyCans/${WAREHOUSEID}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -130,7 +131,7 @@ const StockDetails = ({ date, source }) => {
     }
 
     const getREC = async () => {
-        const url = `/warehouse/getReturnedEmptyCans/${warehouseId}`
+        const url = `warehouse/getReturnedEmptyCans/${WAREHOUSEID}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -139,7 +140,7 @@ const StockDetails = ({ date, source }) => {
     }
 
     const getTRC = async () => {
-        const url = `/warehouse/getTotalReturnCans/${date}`
+        const url = `warehouse/getTotalReturnCans/${date}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -148,7 +149,7 @@ const StockDetails = ({ date, source }) => {
     }
 
     const getNewStock = async () => {
-        const url = `/warehouse/getNewStockDetails/${warehouseId}`
+        const url = `warehouse/getNewStockDetails/${WAREHOUSEID}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -160,7 +161,7 @@ const StockDetails = ({ date, source }) => {
     }
 
     const getStockDetailsByDC = async (dcNo) => {
-        const url = `/warehouse/getDispatchDetailsByDC/${dcNo}`
+        const url = `warehouse/getDispatchDetailsByDC/${dcNo}`
 
         try {
             showToast({ v1Ing: 'Fetching', action: 'loading' })
@@ -226,9 +227,9 @@ const StockDetails = ({ date, source }) => {
             return
         }
 
-        let url = '/warehouse/returnEmptyCans'
+        let url = 'warehouse/returnEmptyCans'
         const body = {
-            ...formData, warehouseId
+            ...formData, warehouseId: WAREHOUSEID
         }
         const options = { item: 'Empty Cans', v1Ing: 'Returning', v2: 'returned' }
 
@@ -260,7 +261,7 @@ const StockDetails = ({ date, source }) => {
 
         const dcValues = getASValuesForDB(formData)
 
-        let url = '/warehouse/confirmStockRecieved'
+        let url = 'warehouse/confirmStockRecieved'
         const body = {
             ...dcValues, motherplantId
         }

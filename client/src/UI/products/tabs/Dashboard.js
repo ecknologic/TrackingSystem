@@ -39,7 +39,7 @@ const Dashboard = ({ reFetch }) => {
     }, [reFetch])
 
     const getProducts = async () => {
-        const url = '/products/getProducts'
+        const url = 'products/getProducts'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -94,7 +94,7 @@ const Dashboard = ({ reFetch }) => {
         }
 
         let body = { ...formData }
-        const url = '/products/updateProduct'
+        const url = 'products/updateProduct'
         const options = { item: 'Product', v1Ing: 'Updating', v2: 'updated' }
 
         try {

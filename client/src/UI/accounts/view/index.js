@@ -6,6 +6,7 @@ import Header from './header';
 import Invoice from './tabs/Invoice';
 import { http } from '../../../modules/http';
 import DeliveryForm from '../add/forms/Delivery';
+import useUser from '../../../utils/hooks/useUser';
 import AccountOverview from './tabs/AccountOverview';
 import DeliveryChallan from './tabs/DeliveryChallan';
 import DeliveryDetails from './tabs/DeliveryDetails';
@@ -14,16 +15,16 @@ import CustomModal from '../../../components/CustomModal';
 import CustomButton from '../../../components/CustomButton';
 import { DocIconWhite } from '../../../components/SVG_Icons';
 import ConfirmMessage from '../../../components/ConfirmMessage';
-import { ACCOUNTSADMIN, getRole, SUPERADMIN, TRACKFORM } from '../../../utils/constants';
+import { ACCOUNTSADMIN, SUPERADMIN, TRACKFORM } from '../../../utils/constants';
 import { getRouteOptions, getWarehouseOptions, WEEKDAYS } from '../../../assets/fixtures';
-import { validateDeliveryValues, validateDevDays, validateIDNumbers, validateIntFloat, validateMobileNumber, validateNames, validateNumber } from '../../../utils/validations';
+import { validateDeliveryValues, validateDevDays, validateIntFloat, validateMobileNumber, validateNames, validateNumber } from '../../../utils/validations';
 import { extractDeliveryDetails, getProductsForDB, extractProductsFromForm, isEmpty, getDevDaysForDB, getBase64, resetTrackForm, showToast, getMainPathname } from '../../../utils/Functions';
 
 const ViewAccount = () => {
+    const { ROLE } = useUser()
     const history = useHistory()
     const { accountId } = useParams()
     const { pathname } = useLocation()
-    const [role] = useState(() => getRole())
     const [account, setAccount] = useState({ loading: true })
     const [headerContent, setHeaderContent] = useState({})
     const [formData, setFormData] = useState({})
@@ -41,7 +42,7 @@ const ViewAccount = () => {
     const [navigateTo, setNavigateTo] = useState('')
     const [activeTab, setActiveTab] = useState('1')
 
-    const isAdmin = useMemo(() => role === SUPERADMIN || role === ACCOUNTSADMIN, [])
+    const isAdmin = useMemo(() => ROLE === SUPERADMIN || ROLE === ACCOUNTSADMIN, [])
     const routeOptions = useMemo(() => getRouteOptions(routeList), [routeList])
     const warehouseOptions = useMemo(() => getWarehouseOptions(warehouseList), [warehouseList])
     const source = useMemo(() => axios.CancelToken.source(), []);
@@ -57,7 +58,7 @@ const ViewAccount = () => {
     }, [])
 
     const getAccount = async () => {
-        const url = `/customer/getCustomerDetailsById/${accountId}`
+        const url = `customer/getCustomerDetailsById/${accountId}`
         try {
             const { data: [data = {}] } = await http.GET(axios, url, config)
             const { customerName, organizationName, Address1 } = data
@@ -70,7 +71,7 @@ const ViewAccount = () => {
     }
 
     const getWarehouseList = async () => {
-        const url = '/bibo/getDepartmentsList?departmentType=warehouse'
+        const url = 'bibo/getDepartmentsList?departmentType=warehouse'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -79,7 +80,7 @@ const ViewAccount = () => {
     }
 
     const getRouteList = async (departmentId) => {
-        const url = `/customer/getRoutes/${departmentId}`
+        const url = `customer/getRoutes/${departmentId}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -183,7 +184,7 @@ const ViewAccount = () => {
         const body = [{ ...formValues, isNew: true, delete: 0, isApproved: 0, products, deliveryDays, customer_Id: accountId }]
 
         const options = { item: 'Delivery details', v1Ing: 'Adding', v2: 'added' }
-        const url = '/customer/updateDeliveryDetails'
+        const url = 'customer/updateDeliveryDetails'
 
         try {
             setBtnDisabled(true)

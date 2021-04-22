@@ -2,14 +2,14 @@ import axios from 'axios';
 import { message } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import { http } from '../../../modules/http';
+import useUser from '../../../utils/hooks/useUser';
 import DistributorForm from '../forms/Distributor';
-import { getUserId } from '../../../utils/constants';
 import CustomButton from '../../../components/CustomButton';
 import { extractDistributorDetails, extractProductsFromForm, getBase64, getProductsForDB, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
 import { validateMobileNumber, validateNames, validateDistributorValues, validateEmailId } from '../../../utils/validations';
 
 const CreateEmployee = ({ goToTab }) => {
-    const USERID = getUserId()
+    const { USERID } = useUser()
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
@@ -78,9 +78,9 @@ const CreateEmployee = ({ goToTab }) => {
         let body = {
             ...data, products, createdBy: USERID
         }
-        const url = '/distributor/createDistributor'
+        const url = 'distributor/createDistributor'
         const options = { item: 'Distributor', v1Ing: 'Adding', v2: 'added' }
-        console.log('body>>', body)
+
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })

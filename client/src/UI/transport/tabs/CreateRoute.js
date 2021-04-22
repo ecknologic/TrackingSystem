@@ -3,18 +3,19 @@ import { message } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import RouteForm from '../forms/Route';
 import { http } from '../../../modules/http';
-import { getRole, getWarehoseId, WAREHOUSEADMIN } from '../../../utils/constants';
+import useUser from '../../../utils/hooks/useUser';
+import { WAREHOUSEADMIN } from '../../../utils/constants';
 import CustomButton from '../../../components/CustomButton';
 import { isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
 
 const CreateRoute = ({ goToTab, fetchList, departmentOptions }) => {
-    const role = getRole()
+    const { ROLE, WAREHOUSEID } = useUser()
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [shake, setShake] = useState(false)
 
-    const isWHAdmin = useMemo(() => role === WAREHOUSEADMIN, [role])
+    const isWHAdmin = useMemo(() => ROLE === WAREHOUSEADMIN, [ROLE])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
@@ -45,9 +46,9 @@ const CreateRoute = ({ goToTab, fetchList, departmentOptions }) => {
             return
         }
 
-        departmentId = isWHAdmin ? getWarehoseId() : departmentId
+        departmentId = isWHAdmin ? WAREHOUSEID : departmentId
         let body = { ...formData, departmentId }
-        const url = '/warehouse/createRoute'
+        const url = 'warehouse/createRoute'
         const options = { item: 'Route', v1Ing: 'Adding', v2: 'added' }
 
         try {

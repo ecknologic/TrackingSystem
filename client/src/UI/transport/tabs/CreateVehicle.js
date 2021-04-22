@@ -64,7 +64,7 @@ const CreateVehicle = ({ goToTab }) => {
         }
 
         let body = { ...formData }
-        const url = '/motherPlant/createVehicle'
+        const url = 'motherPlant/createVehicle'
         const options = { item: 'Vehicle', v1Ing: 'Adding', v2: 'added' }
 
         try {

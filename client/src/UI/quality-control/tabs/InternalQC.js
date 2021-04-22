@@ -50,7 +50,7 @@ const InternalQC = ({ reFetch }) => {
     }, [reFetch])
 
     const getQC = async () => {
-        const url = '/motherPlant/getProductionQcList'
+        const url = 'motherPlant/getProductionQcList'
 
         try {
             const data = await http.GET(axios, url, config)

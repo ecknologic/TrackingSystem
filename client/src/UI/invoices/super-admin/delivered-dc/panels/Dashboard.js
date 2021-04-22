@@ -15,6 +15,7 @@ import { getDeliveryColumns } from '../../../../../assets/fixtures';
 import CustomPagination from '../../../../../components/CustomPagination';
 import { doubleKeyComplexSearch, getStatusColor, isEmpty } from '../../../../../utils/Functions';
 const APIDATEFORMAT = 'YYYY-MM-DD'
+const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
 const DeliveredDC = ({ invoiceId }) => {
     const { state: urlState = {} } = useLocation()
@@ -30,7 +31,7 @@ const DeliveredDC = ({ invoiceId }) => {
     const [excelRows, setExelRows] = useState([])
     const [title, setTitle] = useState('')
 
-    const deliveryColumns = useMemo(() => getDeliveryColumns(), [])
+    const deliveryColumns = useMemo(() => getDeliveryColumns('date'), [])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
     const { fromDate, toDate, customerId } = urlState
@@ -48,7 +49,7 @@ const DeliveredDC = ({ invoiceId }) => {
         const startDate = dayjs(fromDate).format(APIDATEFORMAT)
         const endDate = dayjs(toDate).format(APIDATEFORMAT)
 
-        const url = `/warehouse/getAllDcDetails?fromDate=${startDate}&toDate=${endDate}&customerIds=${[customerId]}`
+        const url = `warehouse/getAllDcDetails?fromDate=${startDate}&toDate=${endDate}&customerIds=${[customerId]}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -65,7 +66,8 @@ const DeliveredDC = ({ invoiceId }) => {
         const rows = data.map((item) => {
             const orderDetails = renderOrderDetails(item)
             const status = getStatusText(item.isDelivered)
-            return { ...item, status, orderDetails }
+            const deliveredDate = dayjs(item.deliveryDate).format(DATEANDTIMEFORMAT)
+            return { ...item, status, orderDetails, deliveredDate }
         })
 
         setExelRows(rows)
@@ -107,7 +109,7 @@ const DeliveredDC = ({ invoiceId }) => {
     }
 
     const dataSource = useMemo(() => deliveries.map((dc) => {
-        const { dcNo, customerOrderId, address, RouteName, driverName, customerName, isDelivered } = dc
+        const { dcNo, customerOrderId, address, RouteName, driverName, customerName, isDelivered, deliveredDate } = dc
         return {
             key: customerOrderId || dcNo,
             dcnumber: dcNo,
@@ -117,6 +119,7 @@ const DeliveredDC = ({ invoiceId }) => {
             driverName: driverName || 'Not Assigned',
             orderDetails: renderOrderDetails(dc),
             status: renderStatus(isDelivered),
+            dateAndTime: dayjs(deliveredDate).format(DATEANDTIMEFORMAT),
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, dc)} />
         }
     }), [deliveries])
@@ -185,6 +188,7 @@ const DeliveredDC = ({ invoiceId }) => {
 
 const columns = [
     { label: 'DC Number', value: 'dcNo' },
+    { label: 'Date & Time', value: 'deliveredDate' },
     { label: 'Name', value: 'customerName' },
     { label: 'Address', value: 'address' },
     { label: 'Route', value: 'RouteName' },
