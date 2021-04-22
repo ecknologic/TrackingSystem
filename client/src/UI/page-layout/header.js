@@ -19,7 +19,7 @@ const Header = () => {
                 {/* <SettingIconGrey className='nav-icon' /> */}
                 {/* <NotificationIconGrey className='nav-icon' onClick={() => setNotifDrawerOpen(true)} /> */}
                 {/* <ChatIconGrey className='nav-icon' /> */}
-                <Profile userName={userName} />
+                <Profile userName={USERNAME} />
             </div >
             <NotificationDrawer onClose={() => setNotifDrawerOpen(false)} visible={notifDrawerOpen} />
         </Layout.Header>
