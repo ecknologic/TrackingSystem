@@ -720,8 +720,8 @@ router.get('/customerDCDetails/:customerId', (req, res) => {
 
 router.post('/createQuote', (req, res) => {
   customerQueries.createQuote(req.body, (err, results) => {
-    if (err) res.status(500).json(err.sqlMessage);
-    else res.send("Quote created successfully")
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.json({ status: 200, message: "Quote created successfully" })
   });
 });
 
@@ -741,8 +741,8 @@ router.get('/getQuotes', (req, res) => {
 
 router.post('/requestBusinessAccount', (req, res) => {
   customerQueries.createBusinessRequest(req.body, (err, results) => {
-    if (err) res.status(500).json(err.sqlMessage);
-    else res.send("Your request received successfully")
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.json({ status: 200, message: "Your request received successfully" })
   });
 });
 
