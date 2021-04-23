@@ -15,6 +15,7 @@ const { createInvoice } = require('./Invoice/invoice');
 const { UPDATEMESSAGE, DELETEMESSAGE } = require('../utils/constants.js');
 const usersQueries = require('../dbQueries/users/queries.js');
 const warehouseQueries = require('../dbQueries/warehouse/queries.js');
+const auditQueries = require('../dbQueries/auditlogs/queries.js');
 let departmentId;
 
 var storage = multer.diskStorage({
@@ -168,7 +169,10 @@ const saveDeliveryDetails = (customerId, customerdetails, res) => {
               count++
               saveProductDetails(i.products, results.insertId, customerId).then(productDetails => {
                 // console.log(count, customerdetails.deliveryDetails.length)
-                if (count == customerdetails.deliveryDetails.length) res.json({ status: 200, message: "Customer Created Successfully" });
+                if (count == customerdetails.deliveryDetails.length) {
+                  auditQueries.createLog({ userId: customerdetails.userId, description: "Customer created", customerId, type: "customer" })
+                  res.json({ status: 200, message: "Customer Created Successfully" })
+                }
               })
             }
           });
@@ -479,6 +483,7 @@ router.post('/updateCustomer', async (req, res) => {
       db.query(customerDetailsQuery, updateQueryValues, (err, results) => {
         if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
         else {
+          auditQueries.createLog({ userId: customerdetails.userId, description: "Customer Updated", customerId: customerdetails.customerId, type: "customer" })
           res.json({ status: 200, message: 'Customer Updated successfully' })
         }
       });
