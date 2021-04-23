@@ -300,23 +300,39 @@ motherPlantDbQueries.getQCLevelsDetails = async (input, callback) => {
     return executeGetParamsQuery(query, [productionQcId, departmentId], callback)
 }
 motherPlantDbQueries.getTotalRevenue = async (input, callback) => {
-    let { startDate, endDate, fromStart } = input;
+    let { startDate, endDate, fromStart, departmentId } = input;
     let options = [endDate]
     let query = `SELECT (SUM(20LCans * (price20L + (price20L * 12 / 100))))product20LCount, (SUM(1LBoxes * (price1L + (price1L * 18 / 100))))product1LCount, (SUM(500MLBoxes * (price500ML + (price500ML * 18 / 100))))product500MLCount, (SUM(300MLBoxes * (price300ML + (price300ML * 18 / 100))))product300MLCount, (SUM(2LBoxes * (price2L + (price2L * 18 / 100)))) product2LCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)<=?`;
-    if (fromStart !== 'true') {
+    if (fromStart !== 'true' && departmentId == "All") {
         options = [startDate, endDate]
         query = ` SELECT (SUM(20LCans * (price20L + (price20L * 12 / 100))))product20LCount, (SUM(1LBoxes * (price1L + (price1L * 18 / 100))))product1LCount, (SUM(500MLBoxes * (price500ML + (price500ML * 18 / 100))))product500MLCount, (SUM(300MLBoxes * (price300ML + (price300ML * 18 / 100))))product300MLCount, (SUM(2LBoxes * (price2L + (price2L * 18 / 100)))) product2LCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)>=? AND DATE(deliveredDate)<=?`;
+    }
+    else if (fromStart !== 'true' && departmentId !== "All") {
+        options = [startDate, endDate, departmentId]
+        query = ` SELECT (SUM(20LCans * (price20L + (price20L * 12 / 100))))product20LCount, (SUM(1LBoxes * (price1L + (price1L * 18 / 100))))product1LCount, (SUM(500MLBoxes * (price500ML + (price500ML * 18 / 100))))product500MLCount, (SUM(300MLBoxes * (price300ML + (price300ML * 18 / 100))))product300MLCount, (SUM(2LBoxes * (price2L + (price2L * 18 / 100)))) product2LCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)>=? AND DATE(deliveredDate)<=? AND warehouseId=?`;
+    }
+    else if (fromStart == 'true' && departmentId !== "All") {
+        options = [endDate, departmentId]
+        query = `SELECT (SUM(20LCans * (price20L + (price20L * 12 / 100))))product20LCount, (SUM(1LBoxes * (price1L + (price1L * 18 / 100))))product1LCount, (SUM(500MLBoxes * (price500ML + (price500ML * 18 / 100))))product500MLCount, (SUM(300MLBoxes * (price300ML + (price300ML * 18 / 100))))product300MLCount, (SUM(2LBoxes * (price2L + (price2L * 18 / 100)))) product2LCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)<=? AND warehouseId=?`;
     }
     return executeGetParamsQuery(query, options, callback)
 }
 motherPlantDbQueries.getTotalRevenueChange = async (input, callback) => {
-    let { startDate, endDate, fromStart, type } = input;
+    let { startDate, endDate, fromStart, type, departmentId } = input;
     const { startDate: newStartDate, endDate: newEndDate } = dateComparisions(startDate, endDate, type)
     let options = [newEndDate]
     let query = `SELECT (SUM(20LCans * (price20L + (price20L * 12 / 100))))product20LCount, (SUM(1LBoxes * (price1L + (price1L * 18 / 100))))product1LCount, (SUM(500MLBoxes * (price500ML + (price500ML * 18 / 100))))product500MLCount, (SUM(300MLBoxes * (price300ML + (price300ML * 18 / 100))))product300MLCount, (SUM(2LBoxes * (price2L + (price2L * 18 / 100)))) product2LCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)<=?`;
-    if (fromStart !== 'true') {
+    if (fromStart !== 'true' && departmentId == "All") {
         options = [newStartDate, newEndDate]
         query = ` SELECT (SUM(20LCans * (price20L + (price20L * 12 / 100))))product20LCount, (SUM(1LBoxes * (price1L + (price1L * 18 / 100))))product1LCount, (SUM(500MLBoxes * (price500ML + (price500ML * 18 / 100))))product500MLCount, (SUM(300MLBoxes * (price300ML + (price300ML * 18 / 100))))product300MLCount, (SUM(2LBoxes * (price2L + (price2L * 18 / 100)))) product2LCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)>=? AND DATE(deliveredDate)<=?`;
+    }
+    else if (fromStart !== 'true' && departmentId !== "All") {
+        options = [newStartDate, newEndDate, departmentId]
+        query = ` SELECT (SUM(20LCans * (price20L + (price20L * 12 / 100))))product20LCount, (SUM(1LBoxes * (price1L + (price1L * 18 / 100))))product1LCount, (SUM(500MLBoxes * (price500ML + (price500ML * 18 / 100))))product500MLCount, (SUM(300MLBoxes * (price300ML + (price300ML * 18 / 100))))product300MLCount, (SUM(2LBoxes * (price2L + (price2L * 18 / 100)))) product2LCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)>=? AND DATE(deliveredDate)<=? AND warehouseId=?`;
+    }
+    if (fromStart == 'true' && departmentId !== "All") {
+        options = [newStartDate, newEndDate, departmentId]
+        query = ` SELECT (SUM(20LCans * (price20L + (price20L * 12 / 100))))product20LCount, (SUM(1LBoxes * (price1L + (price1L * 18 / 100))))product1LCount, (SUM(500MLBoxes * (price500ML + (price500ML * 18 / 100))))product500MLCount, (SUM(300MLBoxes * (price300ML + (price300ML * 18 / 100))))product300MLCount, (SUM(2LBoxes * (price2L + (price2L * 18 / 100)))) product2LCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)>=? AND DATE(deliveredDate)<=? AND warehouseId=?`;
     }
     return executeGetParamsQuery(query, options, callback)
 }
