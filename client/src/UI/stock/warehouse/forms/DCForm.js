@@ -156,35 +156,35 @@ const DCForm = (props) => {
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='20 Ltrs' />
-                                <CustomInput value={product20L} disabled={disableAll || disableFew}
+                                <CustomInput value={product20L} disabled={disableAll}
                                     placeholder='Qty' onChange={(value) => onChange(value, 'product20L')} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='2 Ltrs (Box-1&times;9)' />
-                                <CustomInput value={product2L} disabled={disableAll || disableFew}
+                                <CustomInput value={product2L} disabled={disableAll}
                                     placeholder='Qty' onChange={(value) => onChange(value, 'product2L')} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='1 Ltrs (Box-1&times;12)' />
-                                <CustomInput value={product1L} disabled={disableAll || disableFew}
+                                <CustomInput value={product1L} disabled={disableAll}
                                     placeholder='Qty' onChange={(value) => onChange(value, 'product1L')} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='500 Ml (Box-1&times;24)' />
-                                <CustomInput value={product500ML} disabled={disableAll || disableFew}
+                                <CustomInput value={product500ML} disabled={disableAll}
                                     placeholder='Qty' onChange={(value) => onChange(value, 'product500ML')} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='300 Ml (Box-1&times;30)' />
-                                <CustomInput value={product300ML} disabled={disableAll || disableFew}
+                                <CustomInput value={product300ML} disabled={disableAll}
                                     placeholder='Qty' onChange={(value) => onChange(value, 'product300ML')} />
                             </div>
                         </div>
