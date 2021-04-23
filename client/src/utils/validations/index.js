@@ -1002,16 +1002,16 @@ export const validateIDNumbers = (key, value, isBlur) => {
             const isValid = isAlphaNum(value)
             if (!isValid) return 'Invalid'
         }
-        if (isBlur && value && String(value).length < 16) {
-            return 'Incomplete'
-        }
+        // if (isBlur && value && String(value).length < 16) {
+        //     return 'Incomplete'
+        // }
         if (!isAlphaNum(value)) {
             return 'Enter aphanumeric only'
         }
-        if (String(value).length === 16) {
-            const isValid = isDLValid(value)
-            if (!isValid) return 'Invalid'
-        }
+        // if (String(value).length === 16) {
+        //     const isValid = isDLValid(value)
+        //     if (!isValid) return 'Invalid'
+        // }
     }
     else if (key === 'rocNo') {
         if (isBlur && value) {
