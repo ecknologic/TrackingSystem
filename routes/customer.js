@@ -16,7 +16,7 @@ const { UPDATEMESSAGE, DELETEMESSAGE } = require('../utils/constants.js');
 const usersQueries = require('../dbQueries/users/queries.js');
 const warehouseQueries = require('../dbQueries/warehouse/queries.js');
 const auditQueries = require('../dbQueries/auditlogs/queries.js');
-let departmentId;
+let departmentId, userId;
 
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -36,7 +36,8 @@ var geocoder = NodeGeocoder({
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
   console.log('Time: ', Date.now());
-  departmentId = req.headers['departmentid'] || 1
+  departmentId = req.headers['departmentid']
+  userId = req.headers['userid']
   next();
 });
 // router.post('/uploadphoto', (req, res) => {
@@ -170,7 +171,7 @@ const saveDeliveryDetails = (customerId, customerdetails, res) => {
               saveProductDetails(i.products, results.insertId, customerId).then(productDetails => {
                 // console.log(count, customerdetails.deliveryDetails.length)
                 if (count == customerdetails.deliveryDetails.length) {
-                  auditQueries.createLog({ userId: customerdetails.userId, description: "Customer created", customerId, type: "customer" })
+                  auditQueries.createLog({ userId, description: "Customer created", customerId, type: "customer" })
                   res.json({ status: 200, message: "Customer Created Successfully" })
                 }
               })
@@ -483,7 +484,7 @@ router.post('/updateCustomer', async (req, res) => {
       db.query(customerDetailsQuery, updateQueryValues, (err, results) => {
         if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
         else {
-          auditQueries.createLog({ userId: customerdetails.userId, description: "Customer Updated", customerId: customerdetails.customerId, type: "customer" })
+          auditQueries.createLog({ userId, description: "Customer Updated", customerId: customerdetails.customerId, type: "customer" })
           res.json({ status: 200, message: 'Customer Updated successfully' })
         }
       });
