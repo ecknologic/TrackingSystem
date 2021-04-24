@@ -60,7 +60,7 @@ const GeneralAccountForm = (props) => {
                         {
                             idProofType && (
                                 <div className='input-container'>
-                                    <InputLabel name={proofName} error={errors[idProofType]} mandatory />
+                                    <InputLabel name={proofName} error={errors[idProofType]} />
                                     <CustomInput
                                         placeholder={`Add ${proofName}`} uppercase
                                         maxLength={maxLength} value={data[idProofType]}

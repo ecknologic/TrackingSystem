@@ -59,7 +59,7 @@ export const validateAccountValues = (data, customerType, isInView) => {
     let productErrors = {}
     const text = 'Required'
     const {
-        gstNo, panNo, adharNo, licenseNo, natureOfBussiness, organizationName, address, customerName,
+        gstNo, panNo, adharNo, licenseNo, natureOfBussiness, organizationName, address, customerName, deliveryLocation,
         mobileNumber, invoicetype, creditPeriodInDays = "", EmailId, referredBy, idProofType, pinCode, alternatePhNo,
         contractPeriod, dispenserCount, registeredDate, gstProof, depositAmount = "", departmentId, routeId, ...rest
     } = data
@@ -67,11 +67,12 @@ export const validateAccountValues = (data, customerType, isInView) => {
     if (customerType === 'Corporate') {
         if (!organizationName) errors.organizationName = text
         if (!contractPeriod) errors.contractPeriod = text
-        if (!dispenserCount) errors.dispenserCount = text
+        if (dispenserCount === null || !String(dispenserCount)) errors.dispenserCount = text
         // if (!gstNo) errors.gstNo = text
         // if (!gstProof) errors.gstProof = text
     }
     else {
+        if (!deliveryLocation) errors.deliveryLocation = text
         if (!isInView) { // General account form in add account screen
             if (!departmentId) errors.departmentId = text
             if (!routeId) errors.routeId = text
