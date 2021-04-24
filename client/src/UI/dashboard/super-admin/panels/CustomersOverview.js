@@ -56,7 +56,7 @@ const CustomersOverview = () => {
         setOpData(newData)
     }, [opData])
 
-    const goToCustomers = (active) => history.push(`/customers/${active}`)
+    const goToCustomers = (tab) => history.push(`/customers/${tab}`)
     const goToDistributors = () => history.push('/distributors')
 
     return (

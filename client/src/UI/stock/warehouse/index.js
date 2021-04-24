@@ -16,8 +16,8 @@ import DatePickerPanel from '../../../components/DatePickerPanel';
 import '../../../sass/stock.scss'
 
 const WarehouseStock = () => {
-    const { active = '1' } = useParams()
-    const [activeTab, setActiveTab] = useState(active)
+    const { tab = '1' } = useParams()
+    const [activeTab, setActiveTab] = useState(tab)
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
     const showDatePanel = activeTab === '1' || activeTab === '2'
     const source = useMemo(() => axios.CancelToken.source(), [selectedDate, activeTab]);

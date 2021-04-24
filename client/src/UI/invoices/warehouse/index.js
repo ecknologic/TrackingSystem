@@ -7,8 +7,8 @@ import Header from '../../../components/ContentHeader';
 import '../../../sass/invoices.scss';
 
 const Invoices = () => {
-    const { active = '1' } = useParams()
-    const [activeTab, setActiveTab] = useState(active)
+    const { tab = '1' } = useParams()
+    const [activeTab, setActiveTab] = useState(tab)
     const [reFetch, setreFetch] = useState(false)
 
     const handleGoToTab = (key) => {

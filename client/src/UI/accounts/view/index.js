@@ -271,9 +271,9 @@ const ViewAccount = () => {
 
     const handleModalCancel = useCallback(() => onModalClose(), [])
     const goBack = () => {
-        const { active, page } = state || {}
+        const { tab, page } = state || {}
         const mainPathname = getMainPathname(pathname)
-        const path = `${mainPathname}/${active}/${page}`
+        const path = `${mainPathname}/${tab}/${page}`
         history.push(path)
     }
 

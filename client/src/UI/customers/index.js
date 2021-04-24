@@ -19,7 +19,7 @@ import '../../sass/customers.scss'
 const Customers = () => {
     const { ROLE } = useUser()
     const history = useHistory()
-    const { active = '1', page = 1 } = useParams()
+    const { tab = '1', page = 1 } = useParams()
     const [accountsClone, setAccountsClone] = useState([])
     const [filteredClone, setFilteredClone] = useState([])
     const [cardBtnTxt, setCardBtnTxt] = useState('Manage Account')
@@ -31,7 +31,7 @@ const Customers = () => {
     const [filterON, setFilterON] = useState(false)
     const [searchON, setSeachON] = useState(false)
     const [sortBy, setSortBy] = useState('NEW - OLD')
-    const [activeTab, setActiveTab] = useState(active)
+    const [activeTab, setActiveTab] = useState(tab)
     const [modalDelete, setModalDelete] = useState(false)
     const [currentId, setCurrentId] = useState('')
     const [businessList, setBusinessList] = useState([])
@@ -168,9 +168,9 @@ const Customers = () => {
 
     const handleManageAccount = (id) => {
         if (activeTab === '3') {
-            return history.push(`/customers/approval/${id}`, { active: activeTab, page: pageNumber })
+            return history.push(`/customers/approval/${id}`, { tab: activeTab, page: pageNumber })
         }
-        return history.push(`/customers/manage/${id}`, { active: activeTab, page: pageNumber })
+        return history.push(`/customers/manage/${id}`, { tab: activeTab, page: pageNumber })
     }
 
     const handleMenuSelect = (key, id) => {
