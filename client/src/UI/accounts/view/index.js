@@ -16,7 +16,7 @@ import CustomButton from '../../../components/CustomButton';
 import { DocIconWhite } from '../../../components/SVG_Icons';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import { ACCOUNTSADMIN, SUPERADMIN, TRACKFORM } from '../../../utils/constants';
-import { getRouteOptions, getWarehouseOptions, WEEKDAYS } from '../../../assets/fixtures';
+import { getDropdownOptions, getRouteOptions, getWarehouseOptions, WEEKDAYS } from '../../../assets/fixtures';
 import { validateDeliveryValues, validateDevDays, validateIntFloat, validateMobileNumber, validateNames, validateNumber } from '../../../utils/validations';
 import { extractDeliveryDetails, getProductsForDB, extractProductsFromForm, isEmpty, getDevDaysForDB, getBase64, resetTrackForm, showToast, getMainPathname } from '../../../utils/Functions';
 
@@ -34,6 +34,8 @@ const ViewAccount = () => {
     const [devDaysError, setDevDaysError] = useState({})
     const [warehouseList, setWarehouseList] = useState([])
     const [routeList, setRouteList] = useState([])
+    const [locationList, setLocationList] = useState([])
+    const [businessList, setBusinessList] = useState([])
     const [recentDelivery, setRecentDelivery] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
@@ -45,12 +47,16 @@ const ViewAccount = () => {
     const isAdmin = useMemo(() => ROLE === SUPERADMIN || ROLE === ACCOUNTSADMIN, [])
     const routeOptions = useMemo(() => getRouteOptions(routeList), [routeList])
     const warehouseOptions = useMemo(() => getWarehouseOptions(warehouseList), [warehouseList])
+    const locationOptions = useMemo(() => getDropdownOptions(locationList), [locationList])
+    const businessOptions = useMemo(() => getDropdownOptions(businessList), [businessList])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
         getAccount()
         getWarehouseList()
+        getLocationList()
+        getBusinessList()
 
         return () => {
             http.ABORT(source)
@@ -77,6 +83,24 @@ const ViewAccount = () => {
             const data = await http.GET(axios, url, config)
             setWarehouseList(data)
         } catch (ex) { }
+    }
+
+    const getLocationList = async () => {
+        const url = `bibo/getList/location`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setLocationList(data)
+        } catch (error) { }
+    }
+
+    const getBusinessList = async () => {
+        const url = `bibo/getList/natureOfBusiness`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setBusinessList(data)
+        } catch (error) { }
     }
 
     const getRouteList = async (departmentId) => {
@@ -271,6 +295,8 @@ const ViewAccount = () => {
                             <AccountOverview
                                 data={account}
                                 isAdmin={isAdmin}
+                                businessOptions={businessOptions}
+                                locationOptions={locationOptions}
                                 onUpdate={handleAccountUpdate}
                             />
                         </TabPane>
@@ -305,6 +331,7 @@ const ViewAccount = () => {
                     devDays={devDays}
                     devDaysError={devDaysError}
                     routeOptions={routeOptions}
+                    locationOptions={locationOptions}
                     warehouseOptions={warehouseOptions}
                     onChange={handleChange}
                     onBlur={handleBlur}

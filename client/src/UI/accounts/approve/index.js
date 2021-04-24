@@ -20,8 +20,8 @@ import CustomButton from '../../../components/CustomButton';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import SuccessMessage from '../../../components/SuccessMessage';
 import CollapseHeader from '../../../components/CollapseHeader';
-import { getWarehouseOptions } from '../../../assets/fixtures';
 import { DDownIcon, TrashIconLight } from '../../../components/SVG_Icons'
+import { getDropdownOptions, getWarehouseOptions } from '../../../assets/fixtures';
 import {
     getIdProofsForDB, getAddressesForDB, isEmpty, showToast, extractCADetails, base64String, getDevDays,
     getProductsForUI, resetSessionItems, getSessionItems, resetTrackForm, getBase64
@@ -52,12 +52,16 @@ const ApproveAccount = () => {
     const [addressesErrors, setAddressesErrors] = useState({})
     const [editMode, setEditMode] = useState(false)
     const [warehouseList, setWarehouseList] = useState([])
+    const [locationList, setLocationList] = useState([])
+    const [businessList, setBusinessList] = useState([])
     const [shake, setShake] = useState(false)
     const [saveDisabled, setSaveDisabled] = useState(false)
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [isReviewed, setIsReviewed] = useState(false)
     const [activeKey, setActiveKey] = useState()
     const warehouseOptions = useMemo(() => getWarehouseOptions(warehouseList), [warehouseList])
+    const locationOptions = useMemo(() => getDropdownOptions(locationList), [locationList])
+    const businessOptions = useMemo(() => getDropdownOptions(businessList), [businessList])
 
     const confirmMsg = 'Changes you made may not be saved.'
     const showTrashIcon = useMemo(() => addresses.length !== 1, [addresses.length])
@@ -68,6 +72,8 @@ const ApproveAccount = () => {
     const config = { cancelToken: source.token }
 
     useEffect(() => {
+        getLocationList()
+        getBusinessList()
         resetSessionItems('address')
         const p1 = getAccount()
         const p2 = getAddresses()
@@ -131,6 +137,25 @@ const ApproveAccount = () => {
         try {
             const data = await http.GET(axios, url, config)
             setWarehouseList(data)
+        } catch (error) { }
+    }
+
+
+    const getLocationList = async () => {
+        const url = `bibo/getList/location`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setLocationList(data)
+        } catch (error) { }
+    }
+
+    const getBusinessList = async () => {
+        const url = `bibo/getList/natureOfBusiness`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setBusinessList(data)
         } catch (error) { }
     }
 
@@ -467,6 +492,7 @@ const ApproveAccount = () => {
                                                         <CollapseForm
                                                             uniqueId={index}
                                                             data={item}
+                                                            locationOptions={locationOptions}
                                                             addressesErrors={addressesErrors}
                                                             warehouseOptions={warehouseOptions}
                                                         />

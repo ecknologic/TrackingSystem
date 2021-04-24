@@ -5,6 +5,7 @@ import { http } from '../../../modules/http';
 import useUser from '../../../utils/hooks/useUser';
 import DistributorForm from '../forms/Distributor';
 import CustomButton from '../../../components/CustomButton';
+import { getDropdownOptions } from '../../../assets/fixtures';
 import { extractDistributorDetails, extractProductsFromForm, getBase64, getProductsForDB, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
 import { validateMobileNumber, validateNames, validateDistributorValues, validateEmailId } from '../../../utils/validations';
 
@@ -13,16 +14,29 @@ const CreateEmployee = ({ goToTab }) => {
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
+    const [locationList, setLocationList] = useState([])
     const [shake, setShake] = useState(false)
 
+    const locationOptions = useMemo(() => getDropdownOptions(locationList), [locationList])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
+        getLocationList()
+
         return () => {
             http.ABORT(source)
         }
     }, [])
+
+    const getLocationList = async () => {
+        const url = `bibo/getList/location`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setLocationList(data)
+        } catch (error) { }
+    }
 
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
@@ -115,6 +129,7 @@ const CreateEmployee = ({ goToTab }) => {
                 onChange={handleChange}
                 onUpload={handleUpload}
                 onRemove={handleRemove}
+                locationOptions={locationOptions}
             />
             <div className='app-footer-buttons-container'>
                 <CustomButton

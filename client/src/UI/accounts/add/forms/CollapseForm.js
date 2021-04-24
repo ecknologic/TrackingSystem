@@ -10,7 +10,7 @@ import UploadPreviewer from '../../../../components/UploadPreviewer';
 import { dayOptions, getRouteOptions, WEEKDAYS } from '../../../../assets/fixtures'
 import { validateIntFloat, validateMobileNumber, validateNames, validateNumber } from '../../../../utils/validations';
 
-const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => {
+const CollapseForm = ({ data, warehouseOptions, locationOptions, uniqueId, addressesErrors }) => {
 
     const [deliveryValues, setDeliveryValues] = useState({})
     const [errors, setErrors] = useState({})
@@ -161,10 +161,10 @@ const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => 
                     </div>
                     <div className='input-container'>
                         <InputLabel name='Delivery Location' error={errors.deliveryLocation} mandatory />
-                        <CustomInput
-                            value={deliveryLocation} placeholder='Add Location'
-                            error={errors.deliveryLocation}
-                            onChange={(value) => onChange(value, 'deliveryLocation')} />
+                        <SelectInput options={locationOptions} showSearch
+                            error={errors.deliveryLocation} value={deliveryLocation}
+                            onSelect={(value) => onChange(value, 'deliveryLocation')}
+                        />
                     </div>
 
                 </div>

@@ -26,14 +26,6 @@ export const corpIdOptions = [
     <Option key='1' value="panNo">PAN</Option>,
     <Option key='2' value="rocNo">ROC</Option>
 ]
-export const businessOptions = [
-    <Option key='1' value="SoftwareAndIT">Software & IT</Option>,
-    <Option key='2' value="HealthAndPharma">Health & Pharma</Option>,
-    <Option key='3' value="RestaurantAndHospitality">Restaurant & Hospitality</Option>,
-    <Option key='4' value="MediaAndAdvertising">Media & Advertising</Option>,
-    <Option key='5' value="Manufacturers">Manufacturers</Option>,
-    <Option key='6' value="CorporateOffices">Corporate Offices</Option>,
-]
 export const statusOptions = [
     <Option key='1' value={1}>Active</Option>,
     <Option key='2' value={0}>Draft</Option>
@@ -114,6 +106,9 @@ export const shiftMenu = [
 ]
 export const getDefaultOptions = (options = []) => {
     return options.map((item) => ({ value: item.value, name: item.name }))
+}
+export const getDropdownOptions = (options = []) => {
+    return options.map((item) => <Option key={item.value} value={item.value}>{item.name}</Option>)
 }
 export const getCreatorOptions = (creators = []) => {
     return creators.map((item) => ({ value: item.userId, option: item.userName }))

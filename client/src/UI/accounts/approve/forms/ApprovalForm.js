@@ -5,12 +5,13 @@ import CustomInput from '../../../../components/CustomInput';
 import SelectInput from '../../../../components/SelectInput';
 import DraggerInput from '../../../../components/DraggerInput';
 import UploadPreviewer from '../../../../components/UploadPreviewer';
-import { invoiceOptions, businessOptions, corpIdOptions, idOptions } from '../../../../assets/fixtures'
+import { invoiceOptions, corpIdOptions, idOptions } from '../../../../assets/fixtures'
 import { getIDInputValidationProps, getIdProofName, resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 const DATEFORMAT = 'DD/MM/YYYY'
 
 const ApprovalForm = (props) => {
-    const { data, errors, onChange, onBlur, onUpload, IDProofErrors, IDProofs, disabledItems, disabled, onRemove } = props
+    const { data, errors, onChange, onBlur, onUpload, IDProofErrors,
+        IDProofs, disabledItems, disabled, onRemove, businessOptions } = props
 
     const {
         gstNo, natureOfBussiness, organizationName, address, customerName, mobileNumber, invoicetype,

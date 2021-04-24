@@ -10,7 +10,7 @@ import { resetTrackForm, trackAccountFormOnce } from '../../../../utils/Function
 const DeliveryForm = (props) => {
 
     const { data, errors, devDays, onBlur, devDaysError = {}, disabled, onChange, onSelect, onDeselect,
-        warehouseOptions, routeOptions, sameAddress, onUpload, onRemove, isAdmin } = props
+        warehouseOptions, locationOptions, routeOptions, sameAddress, onUpload, onRemove, isAdmin } = props
 
     const {
         gstNo, gstProof, departmentId, routeId, phoneNumber, contactPerson, address, isApproved,
@@ -61,9 +61,9 @@ const DeliveryForm = (props) => {
                     </div>
                     <div className='input-container'>
                         <InputLabel name='Delivery Location' error={errors.deliveryLocation} mandatory />
-                        <CustomInput value={deliveryLocation} placeholder='Add Location'
-                            disabled={isDisabled} error={errors.deliveryLocation}
-                            onChange={(value) => onChange(value, 'deliveryLocation')}
+                        <SelectInput options={locationOptions} showSearch
+                            disabled={isDisabled} error={errors.deliveryLocation} value={deliveryLocation}
+                            onSelect={(value) => onChange(value, 'deliveryLocation')}
                         />
                     </div>
                 </div>

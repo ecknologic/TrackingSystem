@@ -7,7 +7,7 @@ import { resetTrackForm, trackAccountFormOnce } from '../../../../utils/Function
 
 const DCForm = (props) => {
 
-    const { data, errors, routeOptions, disabledItems, onBlur, driverOptions, distributorOptions, customerOptions, onChange } = props
+    const { data, errors, routeOptions, disabledItems, onBlur, driverOptions, distributorOptions, locationOptions, customerOptions, onChange } = props
 
     const { routeId, customerName, phoneNumber, address, driverId, product20L, product2L, product1L, deliveryLocation,
         product500ML, product300ML, existingCustomerId, distributorId, customerType, creationType, EmailId } = data
@@ -31,9 +31,9 @@ const DCForm = (props) => {
     const renderDL = () => (
         <div className='input-container'>
             <InputLabel name='Delivery Location' error={errors.deliveryLocation} mandatory />
-            <CustomInput value={deliveryLocation} placeholder='Add Location'
-                disabled={disableAll || disableFew} error={errors.deliveryLocation}
-                onChange={(value) => onChange(value, 'deliveryLocation')}
+            <SelectInput options={locationOptions} showSearch
+                disabled={disableAll || disableFew} error={errors.deliveryLocation} value={deliveryLocation}
+                onSelect={(value) => onChange(value, 'deliveryLocation')}
             />
         </div>
     )

@@ -12,7 +12,7 @@ const DATEFORMAT = 'DD/MM/YYYY'
 const GeneralAccountForm = (props) => {
 
     const { data, errors, devDays, IDProofs, IDProofErrors, devDaysError, onChange, onBlur, onUpload, onSelect,
-        onDeselect, accountOnly, disabled, onRemove, routeOptions, warehouseOptions } = props
+        onDeselect, accountOnly, disabled, onRemove, routeOptions, warehouseOptions, locationOptions } = props
     const { Front, Back } = IDProofs
 
     const {
@@ -133,9 +133,9 @@ const GeneralAccountForm = (props) => {
                     </div>
                     <div className='input-container'>
                         <InputLabel name='Delivery Location' error={errors.deliveryLocation} mandatory />
-                        <CustomInput value={deliveryLocation} placeholder='Add Location'
-                            disabled={disabled} error={errors.deliveryLocation}
-                            onChange={(value) => onChange(value, 'deliveryLocation')}
+                        <SelectInput options={locationOptions} showSearch
+                            disabled={disabled} error={errors.deliveryLocation} value={deliveryLocation}
+                            onSelect={(value) => onChange(value, 'deliveryLocation')}
                         />
                     </div>
                 </div>
