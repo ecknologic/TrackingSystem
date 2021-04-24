@@ -123,7 +123,7 @@ router.post('/updateWarehouse', (req, res) => {
 router.post('/createDC', (req, res) => {
   let { EmailId, phoneNumber, customerType } = req.body;
   if (customerType == 'newCustomer') {
-    customerQueries.checkUserExistsOrNot({ EmailId, mobileNumber: phoneNumber }, (err, results) => {
+    customerQueries.checkCustomerExistsOrNot({ EmailId, mobileNumber: phoneNumber }, (err, results) => {
       if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
       else if (results.length) {
         req.body.existingCustomerId = results[0].customerId

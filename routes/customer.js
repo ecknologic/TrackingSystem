@@ -139,19 +139,27 @@ router.post('/createCustomer', async (req, res) => {
   // let customerDetailsQuery = "insert  into customerdetails (customerName,mobileNumber,EmailId,Address1,gstNo,registeredDate,invoicetype,natureOfBussiness,creditPeriodInDays,referredBy,isActive,qrcodeId,latitude,longitude,customerType,organizationName,createdBy) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
   let customerdetails = req.body;
   const { customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactperson, panNo, adharNo, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, createdBy, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, alternateNumber } = customerdetails
-  let promiseArray = req.body.idProofs[0] != null ? [getLatLongDetails(customerdetails), uploadImage(req)] : [getLatLongDetails(customerdetails)]
-  Promise.all(promiseArray)
-    .then(response => {
-      let registeredDate = customerdetails.registeredDate ? customerdetails.registeredDate : new Date()
-      let customer_id_proof = response[1] && response[1]
-      let insertQueryValues = [customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactperson, panNo, adharNo, registeredDate, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, response[0].latitude, response[0].longitude, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, createdBy, customer_id_proof, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo]
-      db.query(customerDetailsQuery, insertQueryValues, (err, results) => {
-        if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
-        else {
-          saveDeliveryDetails(results.insertId, customerdetails, res)
-        }
-      });
-    })
+  customerQueries.checkCustomerExistsOrNot({ EmailId, mobileNumber }, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else if (results.length) {
+      res.status(400).json({ status: 400, message: "This Customer already created" })
+    }
+    else {
+      let promiseArray = req.body.idProofs[0] != null ? [getLatLongDetails(customerdetails), uploadImage(req)] : [getLatLongDetails(customerdetails)]
+      Promise.all(promiseArray)
+        .then(response => {
+          let registeredDate = customerdetails.registeredDate ? customerdetails.registeredDate : new Date()
+          let customer_id_proof = response[1] && response[1]
+          let insertQueryValues = [customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactperson, panNo, adharNo, registeredDate, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, response[0].latitude, response[0].longitude, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, createdBy, customer_id_proof, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo]
+          db.query(customerDetailsQuery, insertQueryValues, (err, results) => {
+            if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+            else {
+              saveDeliveryDetails(results.insertId, customerdetails, res)
+            }
+          });
+        })
+    }
+  })
 });
 const saveDeliveryDetails = (customerId, customerdetails, res) => {
   return new Promise(async (resolve, reject) => {

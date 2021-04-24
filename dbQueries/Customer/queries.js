@@ -260,7 +260,7 @@ customerQueries.getOtherCustomersChangeByDepartment = (input, callback) => {
     } else executeGetParamsQuery(query, [departmentId], callback)
 }
 
-customerQueries.checkUserExistsOrNot = (input, callback) => {
+customerQueries.checkCustomerExistsOrNot = (input, callback) => {
     const { EmailId, mobileNumber } = input;
     let query = 'Select customerId from customerdetails where EmailId=? OR mobileNumber=?'
     return executeGetParamsQuery(query, [EmailId, mobileNumber], callback)
