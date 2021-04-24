@@ -24,7 +24,7 @@ const ViewAccount = () => {
     const { ROLE } = useUser()
     const history = useHistory()
     const { accountId } = useParams()
-    const { pathname } = useLocation()
+    const { pathname, state } = useLocation()
     const [account, setAccount] = useState({ loading: true })
     const [headerContent, setHeaderContent] = useState({})
     const [formData, setFormData] = useState({})
@@ -271,8 +271,10 @@ const ViewAccount = () => {
 
     const handleModalCancel = useCallback(() => onModalClose(), [])
     const goBack = () => {
+        const { active, page } = state || {}
         const mainPathname = getMainPathname(pathname)
-        history.push(mainPathname)
+        const path = `${mainPathname}/${active}/${page}`
+        history.push(path)
     }
 
     return (

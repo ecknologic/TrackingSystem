@@ -95,7 +95,7 @@ const App = () => {
                   <Route path='/dashboard' render={dashboardAuth} />
                   <Route path='/manage-accounts/add-account' render={byRole(<AddAccount />)} />
                   <Route path='/manage-accounts/:accountId' render={byRole(<ViewAccount />)} />
-                  <Route path='/manage-accounts' render={byRole(<AccountsDashboard />)} />
+                  <Route path='/manage-accounts/:active?/:page?' render={byRole(<AccountsDashboard />)} />
                   <Route path='/add-customer' render={byRole(<AddAccount />)} />
                   <Route path='/manage-qc' render={byRole(<QualityControl />)} />
                   <Route path='/manage-production' render={byRole(<MotherplantStock />)} />
@@ -129,7 +129,7 @@ const App = () => {
                   <Route path='/customers/add-account' render={byRole(<AddAccount />)} />
                   <Route path='/customers/approval/:accountId' render={byRole(<ApproveAccount />)} />
                   <Route path='/customers/manage/:accountId' render={byRole(<ViewAccount />)} />
-                  <Route path='/customers/:active?' render={byRole(<Customers />)} />
+                  <Route path='/customers/:active?/:page?' render={byRole(<Customers />)} />
                   <Route path='/unauthorized' render={Unauthorized} />
                   <Route render={noMatchAuth} />
                </Switch>

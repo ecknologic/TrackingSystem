@@ -1,7 +1,7 @@
 import axios from 'axios';
 import dayjs from 'dayjs';
-import { useHistory, useParams } from 'react-router-dom';
 import { Checkbox, Collapse, message, Popconfirm } from 'antd';
+import { useHistory, useLocation, useParams } from 'react-router-dom';
 import React, { Fragment, useEffect, useMemo, useState, useCallback } from 'react';
 import Header from './header';
 import AccountView from './views/Account';
@@ -35,6 +35,7 @@ import {
 const ApproveAccount = () => {
     const { ROLE } = useUser()
     const history = useHistory()
+    const { state } = useLocation()
     const { accountId } = useParams()
     const [accountValues, setAccountValues] = useState({ loading: true })
     const [headerContent, setHeaderContent] = useState({})
@@ -426,7 +427,11 @@ const ApproveAccount = () => {
         ) : null
     );
 
-    const goToCustomers = () => history.push('/customers')
+    const goToCustomers = () => {
+        const { active, page } = state || {}
+        const path = `/customers/${active}/${page}`
+        history.push(path)
+    }
 
     return (
         <Fragment>
