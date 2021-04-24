@@ -7,7 +7,7 @@ const CollapseHeader = ({ title, msg, extra = null }) => {
         <div className='app-collapse-header'>
             <div className='header'>
                 <div className='title'>{title}</div>
-                <div className='msg'>{msg}</div>
+                <div className='msg clamp-1'>{msg}</div>
             </div>
             {
                 extra

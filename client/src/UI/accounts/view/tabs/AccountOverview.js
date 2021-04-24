@@ -20,7 +20,8 @@ import { validateIDProofs, validateAccountValues, validateIDNumbers, validateMob
 
 const AccountOverview = ({ data, onUpdate, isAdmin }) => {
     const { gstProof, idProof_backside, idProof_frontside, isApproved, registeredDate,
-        customertype, Address1, loading, adharNo, idProofType, panNo, gstNo } = data
+        customertype, Address1, loading, adharNo, idProofType, panNo, gstNo,
+        rocNo, licenseNo, voterId, passportNo } = data
 
     const { pathname } = useLocation()
     const history = useHistory()
@@ -47,7 +48,7 @@ const AccountOverview = ({ data, onUpdate, isAdmin }) => {
                 ...data, gstProof: gst, address: Address1,
                 registeredDate: dayjs(registeredDate).format('YYYY-MM-DD')
             }
-            setIDProofs({ Front, Back, idProofType, adharNo, panNo })
+            setIDProofs({ Front, Back, idProofType, adharNo, panNo, rocNo, licenseNo, voterId, passportNo })
             setGstProofs({ Front: gst, idProofType: 'gstNo', gstNo })
             setAccountValues(newData)
         }

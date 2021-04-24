@@ -894,6 +894,12 @@ textarea, .ant-dropdown-menu {
     font-size: 12px;
 }
 
+.app-input-value-larger, 
+.app-input-value-large, 
+.app-input-value-smaller {
+    word-break: break-word;
+}
+
 .label-mandatory::after {
     content:'*';
     color:  $errorColor;
