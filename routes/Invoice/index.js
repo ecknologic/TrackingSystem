@@ -64,7 +64,7 @@ router.get('/getInvoiceId', (req, res) => {
     });
 });
 router.get('/getTotalInvoicesCount', (req, res) => {
-    invoiceQueries.getInvoivesCount((err, results) => {
+    invoiceQueries.getInvoicesCount(req.query, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
             let pendingCount = 0, paidCount = 0
