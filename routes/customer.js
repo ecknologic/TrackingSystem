@@ -283,7 +283,7 @@ router.post("/approveCustomer/:customerId", (req, res) => {
       customerQueries.approveDeliveryDetails(req.body.deliveryDetailsIds, (err, updatedDelivery) => {
         if (err) res.json({ status: 500, message: err.sqlMessage });
         else {
-          saveToCustomerOrderDetails(customerId, res)
+          saveToCustomerOrderDetails(customerId, res, null, userId)
         }
       })
     }
@@ -399,6 +399,12 @@ router.get("/getCustomerDetailsById/:customerId", (req, res) => {
 router.get("/getCustomerDetailsForDC/:customerId", (req, res) => {
   customerQueries.getCustomerDetailsForDC(req.params.customerId, (err, results) => {
     if (err) res.status(500).json(err);
+    // else if (results.length) {
+    // customerProductDetails(results[0].deliveryDetailsId, "customer").then(products => {
+    //     results[0].products = products
+    //     res.json({ status: 200, statusMessage: "Success", data: results })
+    //   })
+    // }
     else {
       res.json({ status: 200, statusMessage: "Success", data: results })
     }
@@ -512,6 +518,7 @@ router.put('/updateCustomerOrderDetails', (req, res) => {
 })
 
 router.put('/updateCustomerStatus', (req, res) => {
+  const { status, customerId } = req.body
   customerQueries.updateCustomerStatus(req.body, (err, data) => {
     if (err) res.status(500).json(dbError(err))
     else {
@@ -519,6 +526,7 @@ router.put('/updateCustomerStatus', (req, res) => {
         if (err) res.status(500).json(dbError(err))
         else {
           saveToCustomerOrderDetails(req.body.customerId, res)
+          auditQueries.createLog({ userId, description: `Customer status changed to ${status == 1 ? 'Active' : 'Draft'}`, customerId, type: "customer" })
           res.json(UPDATEMESSAGE)
         }
       })
@@ -540,7 +548,10 @@ router.delete('/deleteCustomer/:customerId', (req, res) => {
     else {
       customerQueries.deleteCustomerDeliveries(customerId, (err, update) => {
         if (err) res.status(500).json(dbError(err))
-        else res.json(DELETEMESSAGE)
+        else {
+          auditQueries.createLog({ userId, description: `Customer Deleted`, customerId, type: "customer" })
+          res.json(DELETEMESSAGE)
+        }
       })
     }
   })
