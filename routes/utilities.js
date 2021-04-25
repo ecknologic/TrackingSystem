@@ -4,6 +4,7 @@ const db = require('../config/db.js')
 var cron = require('node-cron');
 const customerQueries = require('../dbQueries/Customer/queries.js');
 const { customerProductDetails } = require('../utils/functions.js');
+const auditQueries = require('../dbQueries/auditlogs/queries.js');
 
 router.use(function timeLog(req, res, next) {
   console.log('Time: ', Date.now());
@@ -72,7 +73,7 @@ cron.schedule('0 0 2 * * *', function () {
   saveToCustomerOrderDetails()
 });
 
-function saveToCustomerOrderDetails(customerId, res, deliveryDetailsId) {
+function saveToCustomerOrderDetails(customerId, res, deliveryDetailsId,userId) {
   var day = days[new Date().getDay()];
 
   let customerDeliveryDaysQuery = "SELECT c.deliveryDetailsId,c.customer_Id,c.phoneNumber,c.address,c.contactPerson,c.departmentId,c.routeId,c.driverId,c.latitude,c.longitude,c.location as deliveryLocation FROM DeliveryDetails c INNER JOIN  customerdeliverydays cd ON cd.deliveryDaysId=c.deliverydaysid  WHERE c.deleted=0 AND c.isActive=1 AND " + day + "=1";
@@ -91,7 +92,10 @@ function saveToCustomerOrderDetails(customerId, res, deliveryDetailsId) {
         await insertToCustomerOrderDetails(results[index], res, index === length - 1)
       }
     }
-    else res.json('Customer approved successfully')
+    else {
+      auditQueries.createLog({ userId, description: `Customer Approved`, customerId, type: "customer" })
+      res.json('Customer approved successfully')
+    }
   });
 }
 

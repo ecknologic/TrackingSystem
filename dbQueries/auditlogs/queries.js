@@ -11,9 +11,9 @@ auditQueries.getAudits = (customerId, callback) => {
 
 //POST Request Methods
 auditQueries.createLog = (input, callback) => {
-    let { userId, description, customerId, type } = input
-    let query = `insert into auditlogs (userId, createdDateTime, description, customerId, type) values(?,?,?,?,?)`;
-    let requestBody = [userId, new Date(), description, customerId, type]
+    let { userId, description, customerId, type, departmentId } = input
+    let query = `insert into auditlogs (userId, createdDateTime, description, customerId, type,departmentId) values(?,?,?,?,?,?)`;
+    let requestBody = [userId, new Date(), description, customerId, type, departmentId]
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 

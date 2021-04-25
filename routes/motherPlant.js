@@ -5,10 +5,12 @@ const { dbError, getBatchId, productionCount, getCompareData, getFormatedNumber,
 const { INSERTMESSAGE, UPDATEMESSAGE, WEEKDAYS } = require('../utils/constants');
 const dayjs = require('dayjs');
 const usersQueries = require('../dbQueries/users/queries');
-let departmentId;
+const auditQueries = require('../dbQueries/auditlogs/queries');
+let departmentId, userId;
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
-    departmentId = req.headers['departmentid'] || 1
+    departmentId = req.headers['departmentid']
+    userId = req.headers['userid']
     next();
 });
 
@@ -81,6 +83,7 @@ router.post('/createMotherPlant', (req, res) => {
             usersQueries.updateUserDepartment({ departmentId: results.insertId, userId: req.body.adminId }, (err, userResults) => {
                 if (err) res.status(500).json(dbError(err));
                 else {
+                    auditQueries.createLog({ userId, description: "Motherplant Created", departmentId: results.insertId, type: "motherplant" })
                     res.json(userResults);
                 }
             })
@@ -95,6 +98,7 @@ router.post('/updateMotherPlant', (req, res) => {
             usersQueries.updateUserDepartment({ departmentId, userId, removedAdminId }, (err, userResults) => {
                 if (err) res.status(500).json(dbError(err));
                 else {
+                    auditQueries.createLog({ userId, description: "Motherplant Updated", departmentId, type: "motherplant" })
                     res.json(userResults);
                 }
             })

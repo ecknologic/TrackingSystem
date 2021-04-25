@@ -2,16 +2,18 @@ const dayjs = require('dayjs');
 var express = require('express');
 var router = express.Router();
 const db = require('../config/db.js');
+const auditQueries = require('../dbQueries/auditlogs/queries.js');
 const customerQueries = require('../dbQueries/Customer/queries.js');
 const motherPlantDbQueries = require('../dbQueries/motherplant/queries.js');
 const usersQueries = require('../dbQueries/users/queries.js');
 const warehouseQueries = require('../dbQueries/warehouse/queries.js');
 const { DATEFORMAT, INSERTMESSAGE, UPDATEMESSAGE, WEEKDAYS } = require('../utils/constants.js');
 const { customerProductDetails, dbError, getCompareData, getFormatedNumber, getGraphData, getCompareCustomersData } = require('../utils/functions.js');
-var departmentId;
+var departmentId, userId;
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
-  departmentId = req.headers['departmentid'] || 1
+  departmentId = req.headers['departmentid']
+  userId = req.headers['userid']
   console.log('Time: ', Date.now());
   next();
 });
@@ -99,6 +101,7 @@ router.post('/createWarehouse', (req, res) => {
       usersQueries.updateUserDepartment({ departmentId: results.insertId, userId: req.body.adminId }, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
+          auditQueries.createLog({ userId, description: "Warehouse Created", departmentId: results.insertId, type: 'warehouse' })
           res.json(results);
         }
       })
@@ -113,6 +116,7 @@ router.post('/updateWarehouse', (req, res) => {
       usersQueries.updateUserDepartment({ departmentId, userId, removedAdminId }, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
+          auditQueries.createLog({ userId, description: "Warehouse Updated", departmentId, type: 'warehouse' })
           res.json(results);
         }
       })
@@ -323,15 +327,24 @@ router.put('/updateReturnEmptyCans', (req, res) => {
   });
 });
 router.put('/updateDepartmentStatus', (req, res) => {
+  const { status, departmentId, departmentType } = req.body
   warehouseQueries.updateDepartmentStatus(req.body, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
-    else res.json(results);
+    else {
+      auditQueries.createLog({ userId, description: `${departmentType == 'motherplant' ? "Motherplant" : "Warehouse"} status changed to ${status == 1 ? "Active" : "Inactive"}`, departmentId, type: departmentType })
+      res.json(results);
+    }
   });
 });
 router.delete('/deleteDepartment/:departmentId', (req, res) => {
-  warehouseQueries.deleteDepartment(req.params.departmentId, (err, results) => {
+  const { departmentId } = req.params
+  const { departmentType } = req.query
+  warehouseQueries.deleteDepartment(departmentId, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
-    else res.json(results);
+    else {
+      auditQueries.createLog({ userId, description: `${departmentType == 'motherplant' ? "Motherplant" : "Warehouse"} deleted`, departmentId, type: departmentType })
+      res.json(results);
+    }
   });
 });
 router.delete('/deleteRoute/:RouteId', (req, res) => {
