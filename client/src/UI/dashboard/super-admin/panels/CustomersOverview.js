@@ -75,7 +75,7 @@ const CustomersOverview = () => {
                     <CustomerOverviewCard compareText={corporateCustomersCompareText} percent={corporateCustomersPercent} total={totalCorporateCustomers} pending={pendingCorporateCustomers} title='Corporate Customers' onClick={() => goToCustomers('1')} />
                     <CustomerOverviewCard compareText={individualCustomersCompareText} total={totalIndividualCustomers} pending={pendingIndividualCustomers} percent={individualCustomersPercent} title='Individual Customers' onClick={() => goToCustomers('2')} />
                     <CustomerOverviewCard title='Memberships' onClick={() => { }} />
-                    <CustomerOverviewCard compareText={distributorsCompareText} percent={distributorsPercent} total={totalDistributors} title='Dealerships' onClick={goToDistributors} />
+                    <CustomerOverviewCard compareText={distributorsCompareText} percent={distributorsPercent} total={totalDistributors} title='Distributors' onClick={goToDistributors} />
                 </Slider>
             </div>
         </>
