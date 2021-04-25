@@ -57,10 +57,10 @@ invoiceQueries.getInvoiceId = async (departmentId, callback) => {
 }
 invoiceQueries.getInvoicesCount = async (input, callback) => {
     const { startDate, endDate, fromStart } = input
-    let query = "SELECT COUNT(*) AS totalCount,status FROM Invoice DATE(`invoiceDate`) <= ? GROUP BY status";
+    let query = "SELECT COUNT(*) AS totalCount,status FROM Invoice WHERE DATE(`invoiceDate`) <= ? GROUP BY status";
     let options = [endDate]
     if (fromStart !== 'true') {
-        query = "SELECT COUNT(*) AS totalCount,status FROM Invoice DATE(`invoiceDate`) >= ? AND DATE(`invoiceDate`) <= ? GROUP BY status";
+        query = "SELECT COUNT(*) AS totalCount,status FROM Invoice WHERE DATE(`invoiceDate`) >= ? AND DATE(`invoiceDate`) <= ? GROUP BY status";
         options = [startDate, endDate]
     }
     return executeGetParamsQuery(query, options, callback)

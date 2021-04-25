@@ -11,12 +11,12 @@ const DATEFORMAT = 'DD/MM/YYYY'
 
 const ApprovalForm = (props) => {
     const { data, errors, onChange, onBlur, onUpload, IDProofErrors,
-        IDProofs, disabledItems, disabled, onRemove, businessOptions } = props
+        IDProofs, disabledItems, disabled, onRemove, businessOptions, locationOptions } = props
 
     const {
         gstNo, natureOfBussiness, organizationName, address, customerName, mobileNumber, invoicetype,
         creditPeriodInDays, EmailId, referredBy, registeredDate, gstProof, customertype, depositAmount,
-        pinCode, contractPeriod, idProofType, dispenserCount } = data
+        pinCode, contractPeriod, idProofType, dispenserCount, deliveryLocation } = data
 
     const [proofName, setProofName] = useState('')
     const [idProps, setIdProps] = useState({})
@@ -143,7 +143,16 @@ const ApprovalForm = (props) => {
                             />
                         </div>
                 }
-                {isCorporate ? renderNOB() : null}
+                {isCorporate ? renderNOB()
+                    : (
+                        <div className='input-container'>
+                            <InputLabel name='Delivery Location' error={errors.deliveryLocation} mandatory />
+                            <SelectInput options={locationOptions} showSearch
+                                disabled={disabled} error={errors.deliveryLocation} value={deliveryLocation}
+                                onSelect={(value) => onChange(value, 'deliveryLocation')}
+                            />
+                        </div>
+                    )}
             </div>
             <div className='row'>
                 <div className='input-container stretch'>

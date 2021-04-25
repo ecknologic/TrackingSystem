@@ -25,8 +25,8 @@ const InvoiceOverview = () => {
         }
     }, [])
 
-    const getTestResults = async () => {
-        const url = 'invoice/getTotalInvoicesCount'
+    const getTestResults = async ({ startDate, endDate, fromStart }) => {
+        const url = `invoice/getTotalInvoicesCount?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}`
 
         try {
             const data = await http.GET(axios, url, config)
