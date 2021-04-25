@@ -171,8 +171,8 @@ const Accounts = () => {
         else handleFilter(data)
     }
 
-    const goToAddAccount = () => history.push('/manage-accounts/add-account')
-    const goToViewAccount = (id) => history.push(`/manage-accounts/${id}`, { page: pageNumber })
+    const goToAddAccount = () => history.push('/customer-accounts/add-account')
+    const goToViewAccount = (id) => history.push(`/customer-accounts/manage/${id}`, { page: pageNumber })
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize

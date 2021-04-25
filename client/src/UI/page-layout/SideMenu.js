@@ -102,7 +102,7 @@ const SideMenu = () => {
                 {
                     ROLE === MARKETINGADMIN || ROLE === MARKETINGMANAGER ?
                         <>
-                            <Item key='/manage-accounts' icon={selected === '/manage-accounts' ? <ProjectIcon /> : <ProjectIconLight />}>
+                            <Item key='/customer-accounts' icon={selected === '/customer-accounts' ? <ProjectIcon /> : <ProjectIconLight />}>
                                 Manage Accounts
                             </Item>
                             <Item key='/add-customer' icon={selected === '/add-customer' ? <FriendReqIcon /> : <FriendReqIconLight />}>

@@ -144,8 +144,8 @@ export const getValidObject = (data) => { // Removes all invalid properties
 }
 
 export const getSideMenuKey = (path) => {
-    if (path.includes('/manage-accounts'))
-        return '/manage-accounts'
+    if (path.includes('/customer-accounts'))
+        return '/customer-accounts'
     if (path.includes('/manage-stock'))
         return '/manage-stock'
     if (path.includes('/invoices'))

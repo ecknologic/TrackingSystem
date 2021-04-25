@@ -61,8 +61,8 @@ const App = () => {
    const dashboardAuth = () => {
       if (!isUser) return <Redirect to='/' />
       else {
-         if (ROLE === MARKETINGADMIN) return <Redirect to='/manage-accounts' />
-         else if (ROLE === MARKETINGMANAGER) return <Redirect to='/manage-accounts' />
+         if (ROLE === MARKETINGADMIN) return <Redirect to='/customer-accounts' />
+         else if (ROLE === MARKETINGMANAGER) return <Redirect to='/customer-accounts' />
          else if (ROLE === WAREHOUSEADMIN) return <WarehouseDashboard />
          else if (ROLE === MOTHERPLANTADMIN) return <MotherplantDashboard />
          else if (ROLE === SUPERADMIN) return <SuperAdminDashboard />
@@ -93,9 +93,9 @@ const App = () => {
             <PageLayout>
                <Switch>
                   <Route path='/dashboard' render={dashboardAuth} />
-                  <Route path='/manage-accounts/add-account' render={byRole(<AddAccount />)} />
-                  <Route path='/manage-accounts/:accountId' render={byRole(<ViewAccount />)} />
-                  <Route path='/manage-accounts/:tab?/:page?' render={byRole(<AccountsDashboard />)} />
+                  <Route path='/customer-accounts/add-account' render={byRole(<AddAccount />)} />
+                  <Route path='/customer-accounts/manage/:accountId' render={byRole(<ViewAccount />)} />
+                  <Route path='/customer-accounts/:tab?/:page?' render={byRole(<AccountsDashboard />)} />
                   <Route path='/add-customer' render={byRole(<AddAccount />)} />
                   <Route path='/manage-qc' render={byRole(<QualityControl />)} />
                   <Route path='/manage-production' render={byRole(<MotherplantStock />)} />

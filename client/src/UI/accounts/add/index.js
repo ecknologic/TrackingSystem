@@ -505,6 +505,9 @@ const AddAccount = () => {
             message.destroy()
             if (!axios.isCancel(error)) {
                 setBtnDisabled(false)
+                if (error.response.status === 400) {
+                    message.error('Email/phone already corresponds to an existing account.')
+                }
             }
         }
     }
@@ -585,7 +588,7 @@ const AddAccount = () => {
     }
 
     const goBack = () => {
-        if (mainUrl === '/add-customer') history.push('/manage-accounts')
+        if (mainUrl === '/add-customer') history.push('/customer-accounts')
         else history.push(mainUrl)
     }
 

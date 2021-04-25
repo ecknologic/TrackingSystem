@@ -428,7 +428,7 @@ const ApproveAccount = () => {
     );
 
     const goToCustomers = () => {
-        const { tab, page } = state || {}
+        const { tab = 1, page = 1 } = state || {}
         const path = `/customers/${tab}/${page}`
         history.push(path)
     }

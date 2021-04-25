@@ -31,10 +31,10 @@ export const getWarehoseId = () => {
 export const getRoutesByRole = (role) => {
     switch (role) {
         case MARKETINGADMIN:
-            return ['/add-customer', '/manage-accounts', '/invoices']
+            return ['/add-customer', '/customer-accounts', '/invoices']
 
         case MARKETINGMANAGER:
-            return ['/add-customer', '/manage-accounts', '/invoices']
+            return ['/add-customer', '/customer-accounts', '/invoices']
 
         case SUPERADMIN:
             return ['/customers', '/materials', '/motherplants', '/warehouses', '/staff', '/drivers',

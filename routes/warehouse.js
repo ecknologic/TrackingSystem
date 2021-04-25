@@ -331,7 +331,7 @@ router.put('/updateDepartmentStatus', (req, res) => {
   warehouseQueries.updateDepartmentStatus(req.body, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else {
-      auditQueries.createLog({ userId, description: `${departmentType == 'motherplant' ? "Motherplant" : "Warehouse"} status changed to ${status == 1 ? "Active" : "Inactive"}`, departmentId, type: departmentType })
+      auditQueries.createLog({ userId, description: `${departmentType} status changed to ${status == 1 ? "Active" : "Inactive"}`, departmentId, type: departmentType })
       res.json(results);
     }
   });
@@ -342,7 +342,7 @@ router.delete('/deleteDepartment/:departmentId', (req, res) => {
   warehouseQueries.deleteDepartment(departmentId, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else {
-      auditQueries.createLog({ userId, description: `${departmentType == 'motherplant' ? "Motherplant" : "Warehouse"} deleted`, departmentId, type: departmentType })
+      auditQueries.createLog({ userId, description: `${departmentType} deleted`, departmentId, type: departmentType })
       res.json(results);
     }
   });

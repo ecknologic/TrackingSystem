@@ -271,7 +271,7 @@ const ViewAccount = () => {
 
     const handleModalCancel = useCallback(() => onModalClose(), [])
     const goBack = () => {
-        const { tab, page } = state || {}
+        const { tab = 1, page = 1 } = state || {}
         const mainPathname = getMainPathname(pathname)
         const path = `${mainPathname}/${tab}/${page}`
         history.push(path)
@@ -306,6 +306,7 @@ const ViewAccount = () => {
                             <DeliveryDetails
                                 isAdmin={isAdmin}
                                 recentDelivery={recentDelivery}
+                                locationOptions={locationOptions}
                                 warehouseOptions={warehouseOptions}
                             />
                         </TabPane>
