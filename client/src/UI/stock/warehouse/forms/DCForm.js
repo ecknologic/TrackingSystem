@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import SelectInput from '../../../../components/SelectInput';
 import InputLabel from '../../../../components/InputLabel';
 import CustomInput from '../../../../components/CustomInput';
+import CustomTextArea from '../../../../components/CustomTextArea';
 import { resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 
 const DCForm = (props) => {
@@ -128,9 +129,8 @@ const DCForm = (props) => {
                 <div className='row'>
                     <div className='input-container stretch'>
                         <InputLabel name='Address' error={errors.address} mandatory />
-                        <CustomInput value={address} placeholder='Add Address'
-                            disabled={disableAll || disableFew} error={errors.address}
-                            onChange={(value) => onChange(value, 'address')}
+                        <CustomTextArea maxLength={256} disabled={disableAll || disableFew} error={errors.address} placeholder='Add Address'
+                            value={address} minRows={1} maxRows={2} onChange={(value) => onChange(value, 'address')}
                         />
                     </div>
                 </div>

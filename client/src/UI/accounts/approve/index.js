@@ -286,6 +286,9 @@ const ApproveAccount = () => {
             message.destroy()
             if (!axios.isCancel(error)) {
                 setSaveDisabled(false)
+                if (error.response.status === 400) {
+                    message.error('Email/phone already corresponds to an existing account.')
+                }
             }
         }
     }

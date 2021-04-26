@@ -4,6 +4,7 @@ import InputLabel from '../../../components/InputLabel';
 import CustomInput from '../../../components/CustomInput';
 import SelectInput from '../../../components/SelectInput';
 import DraggerInput from '../../../components/DraggerInput';
+import CustomTextArea from '../../../components/CustomTextArea';
 import UploadPreviewer from '../../../components/UploadPreviewer';
 import { getRoleLabel, resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
 
@@ -37,9 +38,8 @@ const PlantForm = (props) => {
             <div className='row'>
                 <div className='input-container stretch'>
                     <InputLabel name='Address' error={errors.address} mandatory />
-                    <CustomInput value={address} placeholder='Add Address'
-                        error={errors.address}
-                        onChange={(value) => onChange(value, 'address')}
+                    <CustomTextArea maxLength={256} error={errors.address} placeholder='Add Address'
+                        value={address} minRows={1} maxRows={2} onChange={(value) => onChange(value, 'address')}
                     />
                 </div>
             </div>

@@ -36,7 +36,7 @@ const AccountOverview = ({ data, onUpdate, isAdmin, locationOptions, businessOpt
     const [gstProofs, setGstProofs] = useState({})
     const [shake, setShake] = useState(false)
 
-    const isCorporate = customertype === 'corporate'
+    const isCorporate = customertype === 'Corporate'
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
@@ -204,6 +204,9 @@ const AccountOverview = ({ data, onUpdate, isAdmin, locationOptions, businessOpt
             message.destroy()
             if (!axios.isCancel(error)) {
                 setBtnDisabled(false)
+                if (error.response.status === 400) {
+                    message.error('Email/phone already corresponds to an existing account.')
+                }
             }
         }
     }

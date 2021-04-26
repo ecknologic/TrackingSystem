@@ -4,8 +4,9 @@ import { http } from '../../../../modules/http';
 import { getBase64 } from '../../../../utils/Functions';
 import InputLabel from '../../../../components/InputLabel';
 import SelectInput from '../../../../components/SelectInput';
-import DraggerInput from '../../../../components/DraggerInput';
 import CustomInput from '../../../../components/CustomInput';
+import DraggerInput from '../../../../components/DraggerInput';
+import CustomTextArea from '../../../../components/CustomTextArea';
 import UploadPreviewer from '../../../../components/UploadPreviewer';
 import { dayOptions, getRouteOptions, WEEKDAYS } from '../../../../assets/fixtures'
 import { validateIntFloat, validateMobileNumber, validateNames, validateNumber } from '../../../../utils/validations';
@@ -171,10 +172,9 @@ const CollapseForm = ({ data, warehouseOptions, locationOptions, uniqueId, addre
                 <div className='row'>
                     <div className='input-container stretch'>
                         <InputLabel name='Address' error={errors.address} mandatory />
-                        <CustomInput
-                            error={errors.address}
-                            value={address} placeholder='Add Address'
-                            onChange={(value) => onChange(value, 'address')} />
+                        <CustomTextArea maxLength={256} error={errors.address} placeholder='Add Address'
+                            value={address} minRows={1} maxRows={2} onChange={(value) => onChange(value, 'address')}
+                        />
                     </div>
                 </div>
                 <div className='row'>

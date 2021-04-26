@@ -6,6 +6,7 @@ import SelectInput from '../../../../components/SelectInput';
 import DraggerInput from '../../../../components/DraggerInput';
 import UploadPreviewer from '../../../../components/UploadPreviewer';
 import { resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
+import CustomTextArea from '../../../../components/CustomTextArea';
 
 const DeliveryForm = (props) => {
 
@@ -70,9 +71,8 @@ const DeliveryForm = (props) => {
                 <div className='row'>
                     <div className='input-container stretch'>
                         <InputLabel name='Address' error={errors.address} mandatory />
-                        <CustomInput value={address} placeholder='Add Address'
-                            disabled={sameAddress || isDisabled} error={errors.address}
-                            onChange={(value) => onChange(value, 'address')}
+                        <CustomTextArea maxLength={256} disabled={sameAddress || isDisabled} error={errors.address} placeholder='Add Address'
+                            value={address} minRows={1} maxRows={2} onChange={(value) => onChange(value, 'address')}
                         />
                     </div>
                 </div>

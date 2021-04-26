@@ -1,10 +1,11 @@
 import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
-import SelectInput from '../../../../components/SelectInput';
-import DraggerInput from '../../../../components/DraggerInput';
-import UploadPreviewer from '../../../../components/UploadPreviewer';
 import InputLabel from '../../../../components/InputLabel';
+import SelectInput from '../../../../components/SelectInput';
 import CustomInput from '../../../../components/CustomInput';
+import DraggerInput from '../../../../components/DraggerInput';
+import CustomTextArea from '../../../../components/CustomTextArea';
+import UploadPreviewer from '../../../../components/UploadPreviewer';
 import { dayOptions, invoiceOptions, idOptions } from '../../../../assets/fixtures'
 import { getIDInputValidationProps, getIdProofName, resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 const DATEFORMAT = 'DD/MM/YYYY'
@@ -116,9 +117,8 @@ const GeneralAccountForm = (props) => {
                 <div className='row'>
                     <div className='input-container stretch'>
                         <InputLabel name='Address' error={errors.address} mandatory />
-                        <CustomInput value={address} placeholder='Add Address'
-                            disabled={disabled} error={errors.address}
-                            onChange={(value) => onChange(value, 'address')}
+                        <CustomTextArea maxLength={256} disabled={disabled} error={errors.address} placeholder='Add Address'
+                            value={address} minRows={1} maxRows={2} onChange={(value) => onChange(value, 'address')}
                         />
                     </div>
                 </div>
