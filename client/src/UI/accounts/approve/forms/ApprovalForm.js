@@ -11,13 +11,12 @@ import { getIDInputValidationProps, getIdProofName, resetTrackForm, trackAccount
 const DATEFORMAT = 'DD/MM/YYYY'
 
 const ApprovalForm = (props) => {
-    const { data, errors, onChange, onBlur, onUpload, IDProofErrors,
-        IDProofs, disabledItems, disabled, onRemove, businessOptions, locationOptions } = props
+    const { data, errors, onChange, onBlur, onUpload, IDProofErrors, IDProofs, disabledItems, disabled, onRemove, businessOptions } = props
 
     const {
         gstNo, natureOfBussiness, organizationName, address, customerName, mobileNumber, invoicetype,
         creditPeriodInDays, EmailId, referredBy, registeredDate, gstProof, customertype, depositAmount,
-        pinCode, contractPeriod, idProofType, dispenserCount, deliveryLocation } = data
+        pinCode, contractPeriod, idProofType, dispenserCount, alternatePhNo, poNo } = data
 
     const [proofName, setProofName] = useState('')
     const [idProps, setIdProps] = useState({})
@@ -28,6 +27,7 @@ const ApprovalForm = (props) => {
     const idUploadDisable = idProofType !== 'panNo' ? Front && Back : Front
     const isCorporate = customertype === 'Corporate'
     const IDOptions = isCorporate ? corpIdOptions : idOptions
+    const emailLabel = isCorporate ? 'Official Email' : 'Email'
 
     useEffect(() => {
         setProofName(getIdProofName(idProofType))
@@ -43,31 +43,6 @@ const ApprovalForm = (props) => {
             resetTrackForm()
         }
     }, [])
-
-    const renderDispenser = () => (
-        <div className='input-container'>
-            <InputLabel name='Dispenser' error={errors.dispenserCount} mandatory />
-            <CustomInput
-                value={dispenserCount}
-                disabled={disabled} placeholder='Dispenser Qty'
-                error={errors.dispenserCount}
-                onChange={(value) => onChange(value, 'dispenserCount')}
-            />
-        </div>
-    )
-
-    const renderNOB = () => (
-        <div className='input-container'>
-            <InputLabel name='Nature Of Business' error={errors.natureOfBussiness} mandatory />
-            <SelectInput
-                value={natureOfBussiness}
-                options={businessOptions}
-                track disabled={disabled || !isCorporate}
-                error={errors.natureOfBussiness}
-                onSelect={(value) => onChange(value, 'natureOfBussiness')}
-            />
-        </div>
-    )
 
     return (
         <div className='app-form-container'>
@@ -144,16 +119,6 @@ const ApprovalForm = (props) => {
                             />
                         </div>
                 }
-                {isCorporate ? renderNOB()
-                    : (
-                        <div className='input-container'>
-                            <InputLabel name='Delivery Location' error={errors.deliveryLocation} mandatory />
-                            <SelectInput options={locationOptions} showSearch
-                                disabled={disabled} error={errors.deliveryLocation} value={deliveryLocation}
-                                onSelect={(value) => onChange(value, 'deliveryLocation')}
-                            />
-                        </div>
-                    )}
             </div>
             <div className='row'>
                 <div className='input-container stretch'>
@@ -172,14 +137,13 @@ const ApprovalForm = (props) => {
                     />
                 </div>
                 <div className='input-container'>
-                    <InputLabel name='Phone Number' error={errors.mobileNumber} mandatory />
-                    <CustomInput
-                        maxLength={10}
-                        value={mobileNumber} disabled={disabled}
-                        placeholder='Phone Number'
-                        error={errors.mobileNumber}
-                        onBlur={(value) => onBlur(value, 'mobileNumber')}
-                        onChange={(value) => onChange(value, 'mobileNumber')}
+                    <InputLabel name='Nature Of Business' error={errors.natureOfBussiness} mandatory />
+                    <SelectInput
+                        value={natureOfBussiness}
+                        options={businessOptions}
+                        track disabled={disabled || !isCorporate}
+                        error={errors.natureOfBussiness}
+                        onSelect={(value) => onChange(value, 'natureOfBussiness')}
                     />
                 </div>
             </div>
@@ -195,12 +159,32 @@ const ApprovalForm = (props) => {
                     />
                 </div>
                 <div className='input-container'>
-                    <InputLabel name='Email' error={errors.EmailId} mandatory />
+                    <InputLabel name={emailLabel} error={errors.EmailId} mandatory />
                     <CustomInput
                         value={EmailId} type='email' disabled={disabled}
-                        placeholder='Email' error={errors.EmailId}
+                        placeholder={emailLabel} error={errors.EmailId}
                         onBlur={(value) => onBlur(value, 'EmailId')}
                         onChange={(value) => onChange(value, 'EmailId')}
+                    />
+                </div>
+            </div>
+            <div className='row'>
+                <div className='input-container'>
+                    <InputLabel name='Phone Number' error={errors.mobileNumber} mandatory />
+                    <CustomInput
+                        maxLength={10}
+                        value={mobileNumber} disabled={disabled}
+                        placeholder='Phone Number'
+                        error={errors.mobileNumber}
+                        onBlur={(value) => onBlur(value, 'mobileNumber')}
+                        onChange={(value) => onChange(value, 'mobileNumber')}
+                    />
+                </div>
+                <div className='input-container'>
+                    <InputLabel name='Alternate Phone No' error={errors.alternatePhNo} />
+                    <CustomInput value={alternatePhNo} placeholder='Alternate Phone Number'
+                        error={errors.alternatePhNo} maxLength={15}
+                        onChange={(value) => onChange(value, 'alternatePhNo')}
                     />
                 </div>
             </div>
@@ -213,20 +197,33 @@ const ApprovalForm = (props) => {
                         onChange={(value) => onChange(value, 'depositAmount')}
                     />
                 </div>
-                {
-                    isCorporate ? renderDispenser() : renderNOB()
-                }
+                <div className='input-container'>
+                    <InputLabel name='Contract Period' error={errors.contractPeriod} mandatory />
+                    <CustomInput
+                        value={contractPeriod}
+                        disabled={disabled} placeholder='Contract Period'
+                        error={errors.contractPeriod}
+                        onChange={(value) => onChange(value, 'contractPeriod')}
+                    />
+                </div>
             </div>
             {
                 isCorporate ? (
                     <div className='row'>
                         <div className='input-container'>
-                            <InputLabel name='Contract Period' error={errors.contractPeriod} mandatory />
+                            <InputLabel name='Dispenser' error={errors.dispenserCount} mandatory />
                             <CustomInput
-                                value={contractPeriod}
-                                disabled={disabled} placeholder='Contract Period'
-                                error={errors.contractPeriod}
-                                onChange={(value) => onChange(value, 'contractPeriod')}
+                                value={dispenserCount}
+                                disabled={disabled} placeholder='Dispenser Qty'
+                                error={errors.dispenserCount}
+                                onChange={(value) => onChange(value, 'dispenserCount')}
+                            />
+                        </div>
+                        <div className='input-container'>
+                            <InputLabel name='PO Number' error={errors.poNo} />
+                            <CustomInput value={poNo}
+                                error={errors.poNo} placeholder='PO Number'
+                                onChange={(value) => onChange(value, 'poNo')}
                             />
                         </div>
                     </div>

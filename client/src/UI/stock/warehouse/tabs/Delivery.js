@@ -54,7 +54,7 @@ const Delivery = ({ date, source }) => {
     const locationOptions = useMemo(() => getDropdownOptions(locationList), [locationList])
     const distributorOptions = useMemo(() => getDistributorOptions(distributorList), [distributorList])
     const customerOptions = useMemo(() => getCustomerOptions(customerList), [customerList])
-    const childProps = useMemo(() => ({ routes, drivers, locationList, distributorList, customerList }),
+    const childProps = useMemo(() => ({ routeOptions, driverOptions, locationOptions, distributorOptions, customerOptions }),
         [routeOptions, driverOptions, locationOptions, distributorOptions, customerOptions])
     const config = { cancelToken: source.token }
 
