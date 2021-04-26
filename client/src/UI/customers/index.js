@@ -173,8 +173,11 @@ const Customers = () => {
         return history.push(`/customers/manage/${id}`, { tab: activeTab, page: pageNumber })
     }
 
-    const handleMenuSelect = (key, id) => {
-        if (key === 'Active') {
+    const handleMenuSelect = (key, id, isSAApproved) => {
+        if (key === 'Approve') {
+            onAccountApprove(id, isSAApproved)
+        }
+        else if (key === 'Active') {
             handleStatusUpdate(id, 1)
         }
         else if (key === 'Draft') {
@@ -193,6 +196,20 @@ const Customers = () => {
         try {
             showToast({ ...options, action: 'loading' })
             await http.PUT(axios, url, body, config)
+            optimisticUpdate(customerId)
+            showToast(options)
+        } catch (error) {
+            message.destroy()
+        }
+    }
+
+    const onAccountApprove = async (customerId, isSuperAdminApproved) => {
+        const options = { item: 'Customer', v1Ing: 'Approving', v2: 'approved' }
+        const url = `customer/approveCustomerDirectly/${customerId}`
+        const body = { isSuperAdminApproved }
+        try {
+            showToast({ ...options, action: 'loading' })
+            await http.POST(axios, url, body, config)
             optimisticUpdate(customerId)
             showToast(options)
         } catch (error) {
@@ -251,6 +268,7 @@ const Customers = () => {
                                         data={account}
                                         btnTxt={cardBtnTxt}
                                         isAdmin={isAdmin}
+                                        optionOneLabel={activeTab === '3' ? 'Approve' : 'Active'}
                                         onSelect={handleMenuSelect}
                                         onClick={handleManageAccount}
                                     />

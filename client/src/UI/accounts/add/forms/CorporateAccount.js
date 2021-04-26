@@ -12,9 +12,6 @@ const DATEFORMAT = 'DD/MM/YYYY'
 
 const CorporateAccountForm = (props) => {
     const { data, errors, IDProofs = {}, IDProofErrors, onChange, onBlur, onUpload, disabled, onRemove, businessOptions } = props
-    console.log('businessDdOptions', businessOptions)
-    console.log('corpIdOptions', corpIdOptions)
-    console.log('invoiceOptions', invoiceOptions)
     const {
         gstNo, natureOfBussiness, organizationName, address, customerName, poNo, alternatePhNo,
         mobileNumber, invoicetype, creditPeriodInDays, EmailId, referredBy, idProofType,
