@@ -296,6 +296,13 @@ customerQueries.approveCustomer = (input, callback) => {
     let options = [isSuperAdminApproved == 1 ? 0 : 1, currentDate, currentDate, isSuperAdminApproved, customerId]
     executePostOrUpdateQuery(query, options, callback)
 }
+
+customerQueries.approveOutDeliveryDetails = (customerId, callback) => {  //If user approves from the dashboard
+    let currentDate = new Date();
+    let query = 'UPDATE DeliveryDetails set isActive=1,approvedDate=?,lastApprovedDate=? where customer_Id=' + customerId
+    executePostOrUpdateQuery(query, [currentDate, currentDate], callback)
+}
+
 customerQueries.approveDeliveryDetails = (ids, callback) => {
     let currentDate = new Date();
     let query = 'UPDATE DeliveryDetails set isActive=1,approvedDate=?,lastApprovedDate=? where deliveryDetailsId IN (?)'

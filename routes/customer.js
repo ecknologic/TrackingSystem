@@ -289,6 +289,23 @@ router.post("/approveCustomer/:customerId", (req, res) => {
     }
   })
 });
+
+router.post("/approveCustomerDirectly/:customerId", (req, res) => {
+  const { customerId } = req.params;
+  const { isSuperAdminApproved } = req.body
+  customerQueries.approveCustomer({ customerId, isSuperAdminApproved }, (err, results) => {
+    if (err) res.json({ status: 500, message: err.sqlMessage });
+    else {
+      customerQueries.approveOutDeliveryDetails(customerId, (err, updatedDelivery) => {
+        if (err) res.json({ status: 500, message: err.sqlMessage });
+        else {
+          saveToCustomerOrderDetails(customerId, res, null, userId)
+        }
+      })
+    }
+  })
+});
+
 router.post("/createOrderDelivery", (req, res) => {
   customerQueries.updateOrderDelivery(req.body, (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
@@ -486,8 +503,8 @@ const getDeliveryDetails = ({ customerId, deliveryDetailsId, isSuperAdmin }) => 
 
 router.post('/updateCustomer', async (req, res) => {
   let customerdetails = req.body;
-  const { customer_id_proof, customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactperson, panNo, adharNo, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo } = customerdetails
-  let customerDetailsQuery = "UPDATE customerdetails SET customerName=?,mobileNumber=?,alternatePhNo=?,EmailId=?,Address1=?,Address2=?,gstNo=?,contactperson=?,panNo=?,adharNo=?,invoicetype=?,natureOfBussiness=?,creditPeriodInDays=?,referredBy=?,departmentId=?,deliveryDaysId=?,depositAmount=?,isActive=?,latitude=?,longitude=?,shippingAddress=?,shippingContactPerson=?,shippingContactNo=?,customerType=?,organizationName=?,idProofType=?,pincode=?, dispenserCount=?, contractPeriod=?,rocNo=?,poNo=?,customer_id_proof=? WHERE customerId=" + customerdetails.customerId;
+  const { customer_id_proof, customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactperson, panNo, adharNo, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, customerId } = customerdetails
+  let customerDetailsQuery = "UPDATE customerdetails SET customerName=?,mobileNumber=?,alternatePhNo=?,EmailId=?,Address1=?,Address2=?,gstNo=?,contactperson=?,panNo=?,adharNo=?,invoicetype=?,natureOfBussiness=?,creditPeriodInDays=?,referredBy=?,departmentId=?,deliveryDaysId=?,depositAmount=?,isActive=?,latitude=?,longitude=?,shippingAddress=?,shippingContactPerson=?,shippingContactNo=?,customerType=?,organizationName=?,idProofType=?,pincode=?, dispenserCount=?, contractPeriod=?,rocNo=?,poNo=?,customer_id_proof=? WHERE customerId=" + customerId;
   // let customerDetailsQuery = "insert  into customerdetails (customerName,mobileNumber,EmailId,Address1,gstNo,registeredDate,invoicetype,natureOfBussiness,creditPeriodInDays,referredBy,isActive,qrcodeId,latitude,longitude,customerType,organizationName,createdBy) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
   let promiseArray = req.body.idProofs[0] != null ? [getLatLongDetails(customerdetails), customer_id_proof ? updateProofs(req) : uploadImage(req)] : [getLatLongDetails(customerdetails)]
   Promise.all(promiseArray)
