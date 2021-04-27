@@ -4,9 +4,9 @@ import { http } from '../../../../modules/http';
 import PanelHeader from '../../../../components/PanelHeader';
 import { TODAYDATE as d } from '../../../../utils/constants';
 import TotalRevenueCard from '../../../../components/TotalRevenueCard';
-const options = { startDate: d, endDate: d, fromStart: true, type: 'Till Now' }
+const options = { startDate: d, endDate: d, fromStart: true, departmentId: 'All', type: 'Till Now' }
 
-const TotalBusiness = () => {
+const TotalBusiness = ({ warehouseList, depMenu }) => {
     const [business, setBusiness] = useState([])
     const [opData, setOpData] = useState(() => options)
 
@@ -21,8 +21,8 @@ const TotalBusiness = () => {
         }
     }, [])
 
-    const getTotalBusiness = async ({ startDate, endDate, fromStart, type }) => {
-        const url = `motherPlant/getTotalRevenue?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}&type=${type}`
+    const getTotalBusiness = async ({ startDate, endDate, fromStart, departmentId, type }) => {
+        const url = `motherPlant/getTotalRevenue?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}&departmentId=${departmentId}&type=${type}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -31,16 +31,21 @@ const TotalBusiness = () => {
     }
 
     const handleOperation = useCallback((data) => {
-        const newData = { ...opData, ...data }
+        let newData = {}
+        newData = { ...opData, ...data }
+        if (data.departmentId) {
+            const departmentId = warehouseList.find(item => item.departmentName === data.departmentId).departmentId
+            newData = { ...opData, departmentId }
+        }
         getTotalBusiness(newData)
         setOpData(newData)
-    }, [opData])
+    }, [opData, warehouseList])
 
 
     return (
         <div className='total-business-panel'>
             <div className='header'>
-                <PanelHeader title='Total Business' onSelect={handleOperation} showShow />
+                <PanelHeader title='Total Business' depMenu={depMenu} onSelect={handleOperation} showShow showDep depName='Warehouse' />
             </div>
             <TotalRevenueCard data={business} />
         </div>

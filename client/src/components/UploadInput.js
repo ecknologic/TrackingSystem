@@ -4,7 +4,7 @@ import { Upload } from 'antd'
 const UploadInput = ({ onUpload, disabled, children }) => {
 
     const props = {
-        accept: ".png,.jpg,.jpeg,.pdf",
+        accept: ".png,.jpg,.jpeg",
         customRequest: (e) => onUpload(e.file),
         className: `upload-input-container ${disabled ? 'disabled' : ''}`,
         showUploadList: false,

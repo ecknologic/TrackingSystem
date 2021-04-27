@@ -32,6 +32,7 @@ $textColor:rgba(0,0,0,0.85);
 .panel-header {
     width: 100%;
     display: flex;
+    flex-wrap: wrap;
 
     .primary {
         flex: 1;
@@ -51,6 +52,7 @@ $textColor:rgba(0,0,0,0.85);
     .head-container {
             display: flex;
             align-items: center;
+            flex-wrap: wrap;
 
             .title {
                 font-family: 'PoppinsBold700';
@@ -61,6 +63,7 @@ $textColor:rgba(0,0,0,0.85);
 
             .select-options {
                 display: flex;
+                flex-wrap: wrap;
 
                 .option {
                     margin-right: 1em;
@@ -276,11 +279,6 @@ $textColor:rgba(0,0,0,0.85);
 
     .right-panel {
         width: 30%;
-
-        .panel-header,.head-container {
-            align-items: flex-start;
-            flex-direction: column;
-        }
 
         .secondary {
             margin-top: .5em;

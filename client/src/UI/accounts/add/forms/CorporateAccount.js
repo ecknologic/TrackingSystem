@@ -4,14 +4,14 @@ import InputLabel from '../../../../components/InputLabel';
 import CustomInput from '../../../../components/CustomInput';
 import SelectInput from '../../../../components/SelectInput';
 import DraggerInput from '../../../../components/DraggerInput';
+import CustomTextArea from '../../../../components/CustomTextArea';
 import UploadPreviewer from '../../../../components/UploadPreviewer';
-import { invoiceOptions, corpIdOptions, businessOptions } from '../../../../assets/fixtures'
+import { invoiceOptions, corpIdOptions } from '../../../../assets/fixtures'
 import { getIdProofName, getIDInputValidationProps, resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 const DATEFORMAT = 'DD/MM/YYYY'
 
 const CorporateAccountForm = (props) => {
-    const { data, errors, IDProofs = {}, IDProofErrors, onChange, onBlur, onUpload, disabled, onRemove } = props
-
+    const { data, errors, IDProofs = {}, IDProofErrors, onChange, onBlur, onUpload, disabled, onRemove, businessOptions } = props
     const {
         gstNo, natureOfBussiness, organizationName, address, customerName, poNo, alternatePhNo,
         mobileNumber, invoicetype, creditPeriodInDays, EmailId, referredBy, idProofType,
@@ -111,10 +111,8 @@ const CorporateAccountForm = (props) => {
             <div className='row'>
                 <div className='input-container stretch'>
                     <InputLabel name='Address' error={errors.address} mandatory />
-                    <CustomInput
-                        value={address} placeholder='Add Address'
-                        disabled={disabled} error={errors.address}
-                        onChange={(value) => onChange(value, 'address')}
+                    <CustomTextArea maxLength={256} disabled={disabled} error={errors.address} placeholder='Add Address'
+                        value={address} minRows={1} maxRows={2} onChange={(value) => onChange(value, 'address')}
                     />
                 </div>
             </div>

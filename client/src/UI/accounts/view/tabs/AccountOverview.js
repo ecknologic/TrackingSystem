@@ -13,14 +13,16 @@ import IDProofInfo from '../../../../components/IDProofInfo';
 import ConfirmModal from '../../../../components/CustomModal';
 import CustomButton from '../../../../components/CustomButton';
 import GeneralAccountForm from '../../add/forms/GeneralAccount';
+import { getDropdownOptions } from '../../../../assets/fixtures';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CorporateAccountForm from '../../add/forms/CorporateAccount';
 import { base64String, extractCADetails, extractGADetails, getBase64, getIdProofsForDB, getMainPathname, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 import { validateIDProofs, validateAccountValues, validateIDNumbers, validateMobileNumber, validateNames, validateEmailId, validateNumber, compareMaxNumber, validatePinCode } from '../../../../utils/validations';
 
-const AccountOverview = ({ data, onUpdate, isAdmin }) => {
+const AccountOverview = ({ data, onUpdate, isAdmin, locationOptions, businessOptions }) => {
     const { gstProof, idProof_backside, idProof_frontside, isApproved, registeredDate,
-        customertype, Address1, loading, adharNo, idProofType, panNo, gstNo } = data
+        customertype, Address1, loading, adharNo, idProofType, panNo, gstNo,
+        rocNo, licenseNo, voterId, passportNo } = data
 
     const { pathname } = useLocation()
     const history = useHistory()
@@ -34,6 +36,7 @@ const AccountOverview = ({ data, onUpdate, isAdmin }) => {
     const [gstProofs, setGstProofs] = useState({})
     const [shake, setShake] = useState(false)
 
+    const isCorporate = customertype === 'Corporate'
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
@@ -47,7 +50,7 @@ const AccountOverview = ({ data, onUpdate, isAdmin }) => {
                 ...data, gstProof: gst, address: Address1,
                 registeredDate: dayjs(registeredDate).format('YYYY-MM-DD')
             }
-            setIDProofs({ Front, Back, idProofType, adharNo, panNo })
+            setIDProofs({ Front, Back, idProofType, adharNo, panNo, rocNo, licenseNo, voterId, passportNo })
             setGstProofs({ Front: gst, idProofType: 'gstNo', gstNo })
             setAccountValues(newData)
         }
@@ -181,7 +184,7 @@ const AccountOverview = ({ data, onUpdate, isAdmin }) => {
             return
         }
         const idProofs = getIdProofsForDB(IDProofs, idProofType)
-        const account = customertype === 'Corporate' ? extractCADetails(accountValues) : extractGADetails(accountValues)
+        const account = isCorporate ? extractCADetails(accountValues) : extractGADetails(accountValues)
 
         const url = 'customer/updateCustomer'
         const body = { ...account, idProofs }
@@ -201,6 +204,9 @@ const AccountOverview = ({ data, onUpdate, isAdmin }) => {
             message.destroy()
             if (!axios.isCancel(error)) {
                 setBtnDisabled(false)
+                if (error.response.status === 400) {
+                    message.error('Email/phone already corresponds to an existing account.')
+                }
             }
         }
     }
@@ -229,12 +235,13 @@ const AccountOverview = ({ data, onUpdate, isAdmin }) => {
                 loading ? <NoContent content={<Spinner />} />
                     : <>
                         {
-                            editMode ? customertype === 'Corporate' ?
+                            editMode ? isCorporate ?
                                 <CorporateAccountForm
                                     IDProofs={IDProofs}
                                     data={accountValues}
                                     errors={accountErrors}
                                     IDProofErrors={IDProofErrors}
+                                    businessOptions={businessOptions}
                                     onBlur={handleBlur}
                                     onChange={handleChange}
                                     onUpload={handleProofUpload}
@@ -245,6 +252,7 @@ const AccountOverview = ({ data, onUpdate, isAdmin }) => {
                                     IDProofs={IDProofs}
                                     data={accountValues}
                                     errors={accountErrors}
+                                    locationOptions={locationOptions}
                                     IDProofErrors={IDProofErrors}
                                     onBlur={handleBlur}
                                     onChange={handleChange}

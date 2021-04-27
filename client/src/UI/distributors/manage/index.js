@@ -13,6 +13,7 @@ import NoContent from '../../../components/NoContent';
 import QuitModal from '../../../components/CustomModal';
 import IDProofInfo from '../../../components/IDProofInfo';
 import CustomButton from '../../../components/CustomButton';
+import { getDropdownOptions } from '../../../assets/fixtures';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import { isEmpty, showToast, base64String, getBase64, getProductsForUI, getProductsWithIdForDB, extractDistributorDetails, extractProductsFromForm } from '../../../utils/Functions';
 import { validateNames, validateMobileNumber, validateEmailId, validateDistributorValues } from '../../../utils/validations';
@@ -26,16 +27,19 @@ const ManageDistributor = () => {
     const [formErrors, setFormErrors] = useState({})
     const [loading, setLoading] = useState(true)
     const [gstProof, setGstProof] = useState({})
+    const [locationList, setLocationList] = useState([])
     const [confirmModal, setConfirmModal] = useState(false)
     const [shake, setShake] = useState(false)
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [editMode, setEditMode] = useState('')
 
+    const locationOptions = useMemo(() => getDropdownOptions(locationList), [locationList])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
         getDistributor()
+        getLocationList()
 
         return () => {
             http.ABORT(source)
@@ -56,6 +60,15 @@ const ManageDistributor = () => {
             setHeaderContent({ title: agencyName })
             setFormData({ ...rest, gstProof, ...productsUI })
             setLoading(false)
+        } catch (error) { }
+    }
+
+    const getLocationList = async () => {
+        const url = `bibo/getList/location`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setLocationList(data)
         } catch (error) { }
     }
 
@@ -168,6 +181,7 @@ const ManageDistributor = () => {
                                             onChange={handleChange}
                                             onUpload={handleUpload}
                                             onRemove={handleRemove}
+                                            locationOptions={locationOptions}
                                         />
                                     </>
                                 ) :

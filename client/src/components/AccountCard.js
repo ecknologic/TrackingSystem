@@ -7,10 +7,11 @@ import { getBusinessTypes } from '../utils/Functions';
 import { FriendsIconGrey, FriendIconGrey, TrashIconGrey, TickIconGrey, BlockIconGrey } from './SVG_Icons';
 import '../sass/accountCard.scss'
 
-const AccountCard = ({ data, onClick, btnTxt = 'Manage Account', onSelect, isAdmin }) => {
-    const { customerId, isApproved, contactpersons, customerName, organizationName, address, natureOfBussiness } = data
+const AccountCard = ({ data, onClick, btnTxt = 'Manage Account', onSelect, isAdmin, optionOneLabel = 'Active' }) => {
+    const { customerId, isApproved, contactpersons, customerName, organizationName, address, natureOfBussiness,
+        isSuperAdminApproved, depositAmount } = data
 
-    const optionOne = isApproved ? 'Draft' : 'Active'
+    const optionOne = isApproved ? 'Draft' : optionOneLabel
     const iconOne = isApproved ? <BlockIconGrey /> : <TickIconGrey />
     const names = JSON.parse(contactpersons)
     const contacts = names.length
@@ -19,7 +20,8 @@ const AccountCard = ({ data, onClick, btnTxt = 'Manage Account', onSelect, isAdm
     const NOB = getBusinessTypes(natureOfBussiness)
 
     const handleSelect = ({ key }) => {
-        onSelect(key, customerId)
+        const isSAApproved = isSuperAdminApproved || (Number(depositAmount) === 0 ? Number(isAdmin) : 0)
+        onSelect(key, customerId, isSAApproved)
     }
 
     const options = [

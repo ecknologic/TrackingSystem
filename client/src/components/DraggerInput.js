@@ -5,7 +5,7 @@ const { Dragger } = Upload;
 const DraggerInput = ({ onUpload, disabled }) => {
 
     const props = {
-        accept: ".png,.jpg,.jpeg,.pdf",
+        accept: ".png,.jpg,.jpeg",
         customRequest: (e) => onUpload(e.file),
         showUploadList: false,
         disabled

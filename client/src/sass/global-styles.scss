@@ -431,6 +431,11 @@ textarea, .ant-dropdown-menu {
     }
 }
 
+textarea.ant-input {
+    line-height: 1.6;
+    min-height: 2.7em !important;
+}
+
 // -------------- antd Input styles ------------------- //
 
 .ant-input, .ant-input-number {
@@ -892,6 +897,12 @@ textarea, .ant-dropdown-menu {
     color: #535353;
     font-family: 'PoppinsMedium500';
     font-size: 12px;
+}
+
+.app-input-value-larger, 
+.app-input-value-large, 
+.app-input-value-smaller {
+    word-break: break-word;
 }
 
 .label-mandatory::after {

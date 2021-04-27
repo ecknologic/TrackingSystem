@@ -201,7 +201,7 @@ customerQueries.getTotalInActiveDistributors = (input, callback) => {
     else executeGetParamsQuery(query, callback)
 }
 customerQueries.getCustomerDetailsByStatus = (status, callback) => {
-    let query = "SELECT c.organizationName,c.customertype,c.isActive,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.isApproved=? and d.deleted=0 AND c.approvedDate IS NULL GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.customerId,c.registeredDate ORDER BY c.registeredDate DESC"
+    let query = "SELECT c.organizationName,c.isSuperAdminApproved,c.depositAmount,c.customertype,c.isActive,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.isApproved=? and d.deleted=0 AND c.approvedDate IS NULL GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.customerId,c.registeredDate ORDER BY c.registeredDate DESC"
     executeGetParamsQuery(query, [status], callback)
 }
 customerQueries.getsqlNo = (tableName, callback) => {
@@ -260,7 +260,7 @@ customerQueries.getOtherCustomersChangeByDepartment = (input, callback) => {
     } else executeGetParamsQuery(query, [departmentId], callback)
 }
 
-customerQueries.checkUserExistsOrNot = (input, callback) => {
+customerQueries.checkCustomerExistsOrNot = (input, callback) => {
     const { EmailId, mobileNumber } = input;
     let query = 'Select customerId from customerdetails where EmailId=? OR mobileNumber=?'
     return executeGetParamsQuery(query, [EmailId, mobileNumber], callback)
@@ -296,6 +296,13 @@ customerQueries.approveCustomer = (input, callback) => {
     let options = [isSuperAdminApproved == 1 ? 0 : 1, currentDate, currentDate, isSuperAdminApproved, customerId]
     executePostOrUpdateQuery(query, options, callback)
 }
+
+customerQueries.approveOutDeliveryDetails = (customerId, callback) => {  //If user approves from the dashboard
+    let currentDate = new Date();
+    let query = 'UPDATE DeliveryDetails set isActive=1,approvedDate=?,lastApprovedDate=? where customer_Id=' + customerId
+    executePostOrUpdateQuery(query, [currentDate, currentDate], callback)
+}
+
 customerQueries.approveDeliveryDetails = (ids, callback) => {
     let currentDate = new Date();
     let query = 'UPDATE DeliveryDetails set isActive=1,approvedDate=?,lastApprovedDate=? where deliveryDetailsId IN (?)'

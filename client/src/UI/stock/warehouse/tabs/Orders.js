@@ -14,7 +14,7 @@ import DeliveryForm from '../../../accounts/add/forms/Delivery';
 import { EditIconGrey } from '../../../../components/SVG_Icons';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomPagination from '../../../../components/CustomPagination';
-import { orderColumns, getRouteOptions, getDriverOptions, getVehicleOptions, getWarehouseOptions } from '../../../../assets/fixtures';
+import { orderColumns, getRouteOptions, getDriverOptions, getVehicleOptions, getWarehouseOptions, getDropdownOptions } from '../../../../assets/fixtures';
 import { isEmpty, resetTrackForm, showToast, deepClone, getProductsForUI, base64String, getDevDays, doubleKeyComplexSearch } from '../../../../utils/Functions';
 
 const Orders = () => {
@@ -34,6 +34,7 @@ const Orders = () => {
     const [DCModal, setDCModal] = useState(false)
     const [viewModal, setViewModal] = useState(false)
     const [currentDepId, setCurrentDepId] = useState('')
+    const [locationList, setLocationList] = useState([])
     const [warehouseList, setWarehouseList] = useState([])
     const [confirmModal, setConfirmModal] = useState(false)
     const [options, setOptions] = useState({})
@@ -47,6 +48,8 @@ const Orders = () => {
     const driverOptions = useMemo(() => getDriverOptions(drivers), [drivers])
     const vehicleOptions = useMemo(() => getVehicleOptions(vehicles), [vehicles])
     const warehouseOptions = useMemo(() => getWarehouseOptions(warehouseList), [warehouseList])
+    const locationOptions = useMemo(() => getDropdownOptions(locationList), [locationList])
+
     const toastLoading = { v1Ing: 'Fetching', action: 'loading' }
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
@@ -66,7 +69,8 @@ const Orders = () => {
             const p2 = getDriverList()
             const p3 = getVehicleList()
             const p4 = getWarehouseList()
-            await Promise.all([p1, p2, p3, p4])
+            const p5 = getLocationList()
+            await Promise.all([p1, p2, p3, p4, p5])
             message.destroy()
         }
     }
@@ -106,6 +110,15 @@ const Orders = () => {
             const data = await http.GET(axios, url, config)
             setWarehouseList(data)
         } catch (ex) { }
+    }
+
+    const getLocationList = async () => {
+        const url = `bibo/getList/location`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setLocationList(data)
+        } catch (error) { }
     }
 
     const fetchDelivery = async (id) => {
@@ -376,6 +389,7 @@ const Orders = () => {
                     errors={formErrors}
                     devDays={devDays}
                     routeOptions={routeOptions}
+                    locationOptions={locationOptions}
                     warehouseOptions={warehouseOptions}
                 />
             </CustomModal>

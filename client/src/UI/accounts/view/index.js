@@ -16,7 +16,7 @@ import CustomButton from '../../../components/CustomButton';
 import { DocIconWhite } from '../../../components/SVG_Icons';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import { ACCOUNTSADMIN, SUPERADMIN, TRACKFORM } from '../../../utils/constants';
-import { getRouteOptions, getWarehouseOptions, WEEKDAYS } from '../../../assets/fixtures';
+import { getDropdownOptions, getRouteOptions, getWarehouseOptions, WEEKDAYS } from '../../../assets/fixtures';
 import { validateDeliveryValues, validateDevDays, validateIntFloat, validateMobileNumber, validateNames, validateNumber } from '../../../utils/validations';
 import { extractDeliveryDetails, getProductsForDB, extractProductsFromForm, isEmpty, getDevDaysForDB, getBase64, resetTrackForm, showToast, getMainPathname } from '../../../utils/Functions';
 
@@ -24,7 +24,7 @@ const ViewAccount = () => {
     const { ROLE } = useUser()
     const history = useHistory()
     const { accountId } = useParams()
-    const { pathname } = useLocation()
+    const { pathname, state } = useLocation()
     const [account, setAccount] = useState({ loading: true })
     const [headerContent, setHeaderContent] = useState({})
     const [formData, setFormData] = useState({})
@@ -34,6 +34,8 @@ const ViewAccount = () => {
     const [devDaysError, setDevDaysError] = useState({})
     const [warehouseList, setWarehouseList] = useState([])
     const [routeList, setRouteList] = useState([])
+    const [locationList, setLocationList] = useState([])
+    const [businessList, setBusinessList] = useState([])
     const [recentDelivery, setRecentDelivery] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
@@ -45,12 +47,16 @@ const ViewAccount = () => {
     const isAdmin = useMemo(() => ROLE === SUPERADMIN || ROLE === ACCOUNTSADMIN, [])
     const routeOptions = useMemo(() => getRouteOptions(routeList), [routeList])
     const warehouseOptions = useMemo(() => getWarehouseOptions(warehouseList), [warehouseList])
+    const locationOptions = useMemo(() => getDropdownOptions(locationList), [locationList])
+    const businessOptions = useMemo(() => getDropdownOptions(businessList), [businessList])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
         getAccount()
         getWarehouseList()
+        getLocationList()
+        getBusinessList()
 
         return () => {
             http.ABORT(source)
@@ -77,6 +83,24 @@ const ViewAccount = () => {
             const data = await http.GET(axios, url, config)
             setWarehouseList(data)
         } catch (ex) { }
+    }
+
+    const getLocationList = async () => {
+        const url = `bibo/getList/location`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setLocationList(data)
+        } catch (error) { }
+    }
+
+    const getBusinessList = async () => {
+        const url = `bibo/getList/natureOfBusiness`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setBusinessList(data)
+        } catch (error) { }
     }
 
     const getRouteList = async (departmentId) => {
@@ -247,8 +271,10 @@ const ViewAccount = () => {
 
     const handleModalCancel = useCallback(() => onModalClose(), [])
     const goBack = () => {
+        const { tab = 1, page = 1 } = state || {}
         const mainPathname = getMainPathname(pathname)
-        history.push(mainPathname)
+        const path = `${mainPathname}/${tab}/${page}`
+        history.push(path)
     }
 
     return (
@@ -271,6 +297,8 @@ const ViewAccount = () => {
                             <AccountOverview
                                 data={account}
                                 isAdmin={isAdmin}
+                                businessOptions={businessOptions}
+                                locationOptions={locationOptions}
                                 onUpdate={handleAccountUpdate}
                             />
                         </TabPane>
@@ -278,6 +306,7 @@ const ViewAccount = () => {
                             <DeliveryDetails
                                 isAdmin={isAdmin}
                                 recentDelivery={recentDelivery}
+                                locationOptions={locationOptions}
                                 warehouseOptions={warehouseOptions}
                             />
                         </TabPane>
@@ -305,6 +334,7 @@ const ViewAccount = () => {
                     devDays={devDays}
                     devDaysError={devDaysError}
                     routeOptions={routeOptions}
+                    locationOptions={locationOptions}
                     warehouseOptions={warehouseOptions}
                     onChange={handleChange}
                     onBlur={handleBlur}

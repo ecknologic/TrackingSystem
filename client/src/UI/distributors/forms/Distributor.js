@@ -1,13 +1,15 @@
 import React, { useEffect } from 'react';
 import InputLabel from '../../../components/InputLabel';
 import CustomInput from '../../../components/CustomInput';
+import SelectInput from '../../../components/SelectInput';
 import DraggerInput from '../../../components/DraggerInput';
+import CustomTextArea from '../../../components/CustomTextArea';
 import UploadPreviewer from '../../../components/UploadPreviewer';
 import { resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
 
 const EmployeeForm = (props) => {
 
-    const { data, errors, onChange, onUpload, onRemove, disabled, onBlur } = props
+    const { data, errors, onChange, onUpload, onRemove, disabled, onBlur, locationOptions } = props
     const { agencyName, gstNo, gstProof, operationalArea, contactPerson, mobileNumber, address,
         alternateNumber, mailId, alternateMailId, product20L, price20L, product2L, product1L, price2L, price1L, product500ML,
         price500ML, product300ML, price300ML, deliveryLocation } = data
@@ -62,10 +64,9 @@ const EmployeeForm = (props) => {
             <div className='row'>
                 <div className='input-container stretch'>
                     <InputLabel name='Address' error={errors.address} mandatory />
-                    <CustomInput
-                        error={errors.address}
-                        value={address} placeholder='Add Address'
-                        onChange={(value) => onChange(value, 'address')} />
+                    <CustomTextArea maxLength={256} error={errors.address} placeholder='Add Address'
+                        value={address} minRows={1} maxRows={2} onChange={(value) => onChange(value, 'address')}
+                    />
                 </div>
             </div>
             <div className='row'>
@@ -78,9 +79,9 @@ const EmployeeForm = (props) => {
                 </div>
                 <div className='input-container'>
                     <InputLabel name='Delivery Location' error={errors.deliveryLocation} mandatory />
-                    <CustomInput value={deliveryLocation} placeholder='Add Location'
-                        disabled={disabled} error={errors.deliveryLocation}
-                        onChange={(value) => onChange(value, 'deliveryLocation')}
+                    <SelectInput options={locationOptions} showSearch
+                        disabled={disabled} error={errors.deliveryLocation} value={deliveryLocation}
+                        onSelect={(value) => onChange(value, 'deliveryLocation')}
                     />
                 </div>
             </div>

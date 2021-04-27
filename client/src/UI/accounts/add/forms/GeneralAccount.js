@@ -1,10 +1,11 @@
 import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
-import SelectInput from '../../../../components/SelectInput';
-import DraggerInput from '../../../../components/DraggerInput';
-import UploadPreviewer from '../../../../components/UploadPreviewer';
 import InputLabel from '../../../../components/InputLabel';
+import SelectInput from '../../../../components/SelectInput';
 import CustomInput from '../../../../components/CustomInput';
+import DraggerInput from '../../../../components/DraggerInput';
+import CustomTextArea from '../../../../components/CustomTextArea';
+import UploadPreviewer from '../../../../components/UploadPreviewer';
 import { dayOptions, invoiceOptions, idOptions } from '../../../../assets/fixtures'
 import { getIDInputValidationProps, getIdProofName, resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 const DATEFORMAT = 'DD/MM/YYYY'
@@ -12,7 +13,7 @@ const DATEFORMAT = 'DD/MM/YYYY'
 const GeneralAccountForm = (props) => {
 
     const { data, errors, devDays, IDProofs, IDProofErrors, devDaysError, onChange, onBlur, onUpload, onSelect,
-        onDeselect, accountOnly, disabled, onRemove, routeOptions, warehouseOptions } = props
+        onDeselect, accountOnly, disabled, onRemove, routeOptions, warehouseOptions, locationOptions } = props
     const { Front, Back } = IDProofs
 
     const {
@@ -60,7 +61,7 @@ const GeneralAccountForm = (props) => {
                         {
                             idProofType && (
                                 <div className='input-container'>
-                                    <InputLabel name={proofName} error={errors[idProofType]} mandatory />
+                                    <InputLabel name={proofName} error={errors[idProofType]} />
                                     <CustomInput
                                         placeholder={`Add ${proofName}`} uppercase
                                         maxLength={maxLength} value={data[idProofType]}
@@ -116,9 +117,8 @@ const GeneralAccountForm = (props) => {
                 <div className='row'>
                     <div className='input-container stretch'>
                         <InputLabel name='Address' error={errors.address} mandatory />
-                        <CustomInput value={address} placeholder='Add Address'
-                            disabled={disabled} error={errors.address}
-                            onChange={(value) => onChange(value, 'address')}
+                        <CustomTextArea maxLength={256} disabled={disabled} error={errors.address} placeholder='Add Address'
+                            value={address} minRows={1} maxRows={2} onChange={(value) => onChange(value, 'address')}
                         />
                     </div>
                 </div>
@@ -129,17 +129,7 @@ const GeneralAccountForm = (props) => {
                             error={errors.pinCode} maxLength={6} onBlur={(value) => onBlur(value, 'pinCode')}
                             onChange={(value) => onChange(value, 'pinCode')}
                         />
-
                     </div>
-                    <div className='input-container'>
-                        <InputLabel name='Delivery Location' error={errors.deliveryLocation} mandatory />
-                        <CustomInput value={deliveryLocation} placeholder='Add Location'
-                            disabled={disabled} error={errors.deliveryLocation}
-                            onChange={(value) => onChange(value, 'deliveryLocation')}
-                        />
-                    </div>
-                </div>
-                <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Email' error={errors.EmailId} mandatory />
                         <CustomInput value={EmailId} type='email'
@@ -148,10 +138,6 @@ const GeneralAccountForm = (props) => {
                             onBlur={(value) => onBlur(value, 'EmailId')}
                             onChange={(value) => onChange(value, 'EmailId')}
                         />
-                    </div>
-                    <div className='input-container'>
-                        <InputLabel name='Nature Of Business' error={errors.natureOfBussiness} />
-                        <CustomInput value={natureOfBussiness} disabled error={errors.natureOfBussiness} />
                     </div>
                 </div>
                 <div className='row'>
@@ -191,15 +177,28 @@ const GeneralAccountForm = (props) => {
                         />
                     </div>
                 </div>
+                <div className='row'>
+                    <div className='input-container'>
+                        <InputLabel name='Deposit Amount' error={errors.depositAmount} mandatory />
+                        <CustomInput
+                            value={depositAmount} disabled={disabled}
+                            placeholder='Deposit Amount' onChange={(value) => onChange(value, 'depositAmount')}
+                        />
+                    </div>
+                    <div className='input-container'>
+                        <InputLabel name='Nature Of Business' error={errors.natureOfBussiness} />
+                        <CustomInput value={natureOfBussiness} disabled error={errors.natureOfBussiness} />
+                    </div>
+                </div>
                 {
                     !accountOnly && (
                         <>
                             <div className='row'>
                                 <div className='input-container'>
-                                    <InputLabel name='Deposit Amount' error={errors.depositAmount} mandatory />
-                                    <CustomInput
-                                        value={depositAmount} disabled={disabled}
-                                        placeholder='Deposit Amount' onChange={(value) => onChange(value, 'depositAmount')}
+                                    <InputLabel name='Delivery Location' error={errors.deliveryLocation} mandatory />
+                                    <SelectInput options={locationOptions} showSearch
+                                        disabled={disabled} error={errors.deliveryLocation} value={deliveryLocation}
+                                        onSelect={(value) => onChange(value, 'deliveryLocation')}
                                     />
                                 </div>
                                 <div className='input-container'>

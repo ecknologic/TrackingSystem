@@ -7,8 +7,9 @@ const DATEFORMAT = 'DD/MM/YYYY'
 const AccountView = ({ data }) => {
 
     const {
-        natureOfBussiness, address, customerName, mobileNumber, invoicetype, creditPeriodInDays,
-        customertype, EmailId, registeredDate, depositAmount, referredBy, createdUserName, contractPeriod
+        natureOfBussiness, address, customerName, mobileNumber, invoicetype, creditPeriodInDays, alternatePhNo,
+        customertype, EmailId, registeredDate, depositAmount, referredBy, createdUserName, contractPeriod,
+        pinCode,
     } = data
 
     const isCorporate = customertype === 'Corporate'
@@ -30,13 +31,28 @@ const AccountView = ({ data }) => {
                 </div>
                 <div className='row half-stretch'>
                     <div className='input-container'>
+                        <InputValue size='smaller' value='PIN Code' />
+                        <InputValue size='large' value={pinCode} />
+                    </div>
+                    <div className='input-container'>
                         <InputValue size='smaller' value='Email ID' />
                         <InputValue size='large' value={EmailId} />
                     </div>
+                </div>
+                <div className='row half-stretch'>
                     <div className='input-container'>
                         <InputValue size='smaller' value='Contact Number' />
                         <InputValue size='large' value={mobileNumber} />
                     </div>
+                    {
+                        alternatePhNo &&
+                        (
+                            <div className='input-container'>
+                                <InputValue size='smaller' value='Alternate Phone No' />
+                                <InputValue size='large' value={alternatePhNo} />
+                            </div>
+                        )
+                    }
                 </div>
                 <div className='row half-stretch'>
                     <div className='input-container'>

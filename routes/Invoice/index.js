@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 const invoiceQueries = require('../../dbQueries/invoice/queries.js');
 const { dbError, base64String, formatDate } = require('../../utils/functions.js');
-const { UPDATEMESSAGE } = require('../../utils/constants');
+const { UPDATEMESSAGE, DATEFORMAT } = require('../../utils/constants');
 const customerQueries = require('../../dbQueries/Customer/queries.js');
 const { createSingleDeliveryInvoice } = require('./createInvoice.js');
 const { createMultiDeliveryInvoice } = require('./invoice.js');
@@ -64,7 +64,7 @@ router.get('/getInvoiceId', (req, res) => {
     });
 });
 router.get('/getTotalInvoicesCount', (req, res) => {
-    invoiceQueries.getInvoivesCount((err, results) => {
+    invoiceQueries.getInvoicesCount(req.query, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
             let pendingCount = 0, paidCount = 0
@@ -573,7 +573,7 @@ const getInvoiceByInvoiceId = ({ invoiceId, departmentInvoice, res }) => {
                         fs.readFile(`${invoiceId}.pdf`, (err, result) => {
                             obj.invoicePdf = result
                             if (res) res.json(obj)
-                            else sendMail({ mailId: mailIds, attachment: result, invoiceId })
+                            else sendMail({ mailId: mailIds, message: `Bibo Invoice from ${dayjs(fromDate).format(DATEFORMAT)} to ${dayjs(toDate).format(DATEFORMAT)}`, attachment: result, invoiceId })
                         })
                     }, 1500)
                 })
@@ -586,7 +586,7 @@ const getInvoiceByInvoiceId = ({ invoiceId, departmentInvoice, res }) => {
                         fs.readFile(`${invoiceId}.pdf`, (err, result) => {
                             obj.invoicePdf = result
                             if (res) res.json(obj)
-                            else sendMail({ mailId: mailIds, attachment: result, invoiceId })
+                            else sendMail({ mailId: mailIds, message: `Bibo Invoice from ${dayjs(fromDate).format(DATEFORMAT)} to ${dayjs(toDate).format(DATEFORMAT)}`, attachment: result, invoiceId })
                         })
                     }, 1500)
                 })

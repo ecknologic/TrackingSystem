@@ -19,19 +19,19 @@ import '../../sass/customers.scss'
 const Customers = () => {
     const { ROLE } = useUser()
     const history = useHistory()
-    const { active = '1' } = useParams()
+    const { tab = '1', page = 1 } = useParams()
     const [accountsClone, setAccountsClone] = useState([])
     const [filteredClone, setFilteredClone] = useState([])
     const [cardBtnTxt, setCardBtnTxt] = useState('Manage Account')
     const [accounts, setAccounts] = useState([])
     const [loading, setLoading] = useState(true)
     const [pageSize, setPageSize] = useState(12)
-    const [pageNumber, setPageNumber] = useState(1)
+    const [pageNumber, setPageNumber] = useState(Number(page))
     const [totalCount, setTotalCount] = useState(null)
     const [filterON, setFilterON] = useState(false)
     const [searchON, setSeachON] = useState(false)
     const [sortBy, setSortBy] = useState('NEW - OLD')
-    const [activeTab, setActiveTab] = useState(active)
+    const [activeTab, setActiveTab] = useState(tab)
     const [modalDelete, setModalDelete] = useState(false)
     const [currentId, setCurrentId] = useState('')
     const [businessList, setBusinessList] = useState([])
@@ -168,13 +168,16 @@ const Customers = () => {
 
     const handleManageAccount = (id) => {
         if (activeTab === '3') {
-            return history.push(`/customers/approval/${id}`)
+            return history.push(`/customers/approval/${id}`, { tab: activeTab, page: pageNumber })
         }
-        return history.push(`/customers/manage/${id}`)
+        return history.push(`/customers/manage/${id}`, { tab: activeTab, page: pageNumber })
     }
 
-    const handleMenuSelect = (key, id) => {
-        if (key === 'Active') {
+    const handleMenuSelect = (key, id, isSAApproved) => {
+        if (key === 'Approve') {
+            onAccountApprove(id, isSAApproved)
+        }
+        else if (key === 'Active') {
             handleStatusUpdate(id, 1)
         }
         else if (key === 'Draft') {
@@ -193,6 +196,20 @@ const Customers = () => {
         try {
             showToast({ ...options, action: 'loading' })
             await http.PUT(axios, url, body, config)
+            optimisticUpdate(customerId)
+            showToast(options)
+        } catch (error) {
+            message.destroy()
+        }
+    }
+
+    const onAccountApprove = async (customerId, isSuperAdminApproved) => {
+        const options = { item: 'Customer', v1Ing: 'Approving', v2: 'approved' }
+        const url = `customer/approveCustomerDirectly/${customerId}`
+        const body = { isSuperAdminApproved }
+        try {
+            showToast({ ...options, action: 'loading' })
+            await http.POST(axios, url, body, config)
             optimisticUpdate(customerId)
             showToast(options)
         } catch (error) {
@@ -251,6 +268,7 @@ const Customers = () => {
                                         data={account}
                                         btnTxt={cardBtnTxt}
                                         isAdmin={isAdmin}
+                                        optionOneLabel={activeTab === '3' ? 'Approve' : 'Active'}
                                         onSelect={handleMenuSelect}
                                         onClick={handleManageAccount}
                                     />

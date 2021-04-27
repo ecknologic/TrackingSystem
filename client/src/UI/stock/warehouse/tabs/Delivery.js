@@ -15,7 +15,7 @@ import RoutesFilter from '../../../../components/RoutesFilter';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomPagination from '../../../../components/CustomPagination';
 import { EditIconGrey, PlusIcon } from '../../../../components/SVG_Icons';
-import { getRouteOptions, getDriverOptions, getDeliveryColumns, getDistributorOptions, getCustomerOptions } from '../../../../assets/fixtures';
+import { getRouteOptions, getDriverOptions, getDeliveryColumns, getDistributorOptions, getCustomerOptions, getDropdownOptions } from '../../../../assets/fixtures';
 import { validateMobileNumber, validateNames, validateNumber, validateDCValues, validateEmailId } from '../../../../utils/validations';
 import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone, getStatusColor, doubleKeyComplexSearch, getProductsForUI } from '../../../../utils/Functions';
 
@@ -38,6 +38,7 @@ const Delivery = ({ date, source }) => {
     const [resetSearch, setResetSearch] = useState(false)
     const [customerList, setCustomerList] = useState([])
     const [distributorList, setDistributorList] = useState([])
+    const [locationList, setLocationList] = useState([])
     const [filterInfo, setFilterInfo] = useState([])
     const [filterON, setFilterON] = useState(false)
     const [searchON, setSeachON] = useState(false)
@@ -50,15 +51,22 @@ const Delivery = ({ date, source }) => {
     const deliveryColumns = useMemo(() => getDeliveryColumns(), [])
     const routeOptions = useMemo(() => getRouteOptions(routes), [routes])
     const driverOptions = useMemo(() => getDriverOptions(drivers), [drivers])
+    const locationOptions = useMemo(() => getDropdownOptions(locationList), [locationList])
     const distributorOptions = useMemo(() => getDistributorOptions(distributorList), [distributorList])
     const customerOptions = useMemo(() => getCustomerOptions(customerList), [customerList])
+    const childProps = useMemo(() => ({ routeOptions, driverOptions, locationOptions, distributorOptions, customerOptions }),
+        [routeOptions, driverOptions, locationOptions, distributorOptions, customerOptions])
     const config = { cancelToken: source.token }
+
+    useEffect(() => {
+        getRoutes()
+        getDrivers()
+        getLocationList()
+    }, [])
 
     useEffect(() => {
         setLoading(true)
         getDeliveries()
-        isEmpty(routes) && getRoutes()
-        isEmpty(drivers) && getDrivers()
 
         return () => {
             http.ABORT(source)
@@ -98,6 +106,15 @@ const Delivery = ({ date, source }) => {
         try {
             const data = await http.GET(axios, url, config)
             setCustomerList(data)
+        } catch (error) { }
+    }
+
+    const getLocationList = async () => {
+        const url = `bibo/getList/location`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setLocationList(data)
         } catch (error) { }
     }
 
@@ -417,12 +434,9 @@ const Delivery = ({ date, source }) => {
                     data={formData}
                     errors={formErrors}
                     disabledItems={disabledItems}
-                    driverOptions={driverOptions}
-                    routeOptions={routeOptions}
-                    customerOptions={customerOptions}
-                    distributorOptions={distributorOptions}
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    {...childProps}
                 />
             </CustomModal>
             <QuitModal

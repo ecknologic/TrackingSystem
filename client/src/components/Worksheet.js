@@ -20,7 +20,7 @@ const Worksheet = ({
             <Workbook filename={`${fileName}.xlsx`} element={renderButton()}>
                 <Workbook.Sheet data={rows} name={sheetName}>
                     {
-                        columns.map((item) => <Workbook.Column label={item.label} value={item.value} />)
+                        columns.map((item) => <Workbook.Column key={item.value} label={item.label} value={item.value} />)
                     }
                 </Workbook.Sheet>
             </Workbook>

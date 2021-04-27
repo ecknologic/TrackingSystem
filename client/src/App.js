@@ -61,8 +61,8 @@ const App = () => {
    const dashboardAuth = () => {
       if (!isUser) return <Redirect to='/' />
       else {
-         if (ROLE === MARKETINGADMIN) return <Redirect to='/manage-accounts' />
-         else if (ROLE === MARKETINGMANAGER) return <Redirect to='/manage-accounts' />
+         if (ROLE === MARKETINGADMIN) return <Redirect to='/customer-accounts' />
+         else if (ROLE === MARKETINGMANAGER) return <Redirect to='/customer-accounts' />
          else if (ROLE === WAREHOUSEADMIN) return <WarehouseDashboard />
          else if (ROLE === MOTHERPLANTADMIN) return <MotherplantDashboard />
          else if (ROLE === SUPERADMIN) return <SuperAdminDashboard />
@@ -93,9 +93,9 @@ const App = () => {
             <PageLayout>
                <Switch>
                   <Route path='/dashboard' render={dashboardAuth} />
-                  <Route path='/manage-accounts/add-account' render={byRole(<AddAccount />)} />
-                  <Route path='/manage-accounts/:accountId' render={byRole(<ViewAccount />)} />
-                  <Route path='/manage-accounts' render={byRole(<AccountsDashboard />)} />
+                  <Route path='/customer-accounts/add-account' render={byRole(<AddAccount />)} />
+                  <Route path='/customer-accounts/manage/:accountId' render={byRole(<ViewAccount />)} />
+                  <Route path='/customer-accounts/:tab?/:page?' render={byRole(<AccountsDashboard />)} />
                   <Route path='/add-customer' render={byRole(<AddAccount />)} />
                   <Route path='/manage-qc' render={byRole(<QualityControl />)} />
                   <Route path='/manage-production' render={byRole(<MotherplantStock />)} />
@@ -105,10 +105,10 @@ const App = () => {
                   <Route path='/manage-return-cans' render={byRole(<ReceivedEmptyCans />)} />
                   <Route path='/manage-invoices/dc-list/:invoiceId' render={byRole(<DeliveredDC />)} />
                   <Route path='/manage-invoices/manage' render={byRole(<ManageInvoices />)} />
-                  <Route path='/manage-invoices/:active?' render={byRole(<WarehouseInvoices />)} />
+                  <Route path='/manage-invoices/:tab?' render={byRole(<WarehouseInvoices />)} />
                   <Route path='/manage-empty-cans' render={byRole(<ReturnEmptyCans />)} />
                   <Route path='/manage-stock/staff/:employeeId' render={byRole(<ManageEmployee isDriver />)} />
-                  <Route path='/manage-stock/:active?' render={byRole(<WarehouseStock />)} />
+                  <Route path='/manage-stock/:tab?' render={byRole(<WarehouseStock />)} />
                   <Route path='/materials' render={byRole(<Materials />)} />
                   <Route path='/staff/manage/:employeeId' render={byRole(<ManageEmployee />)} />
                   <Route path='/drivers/manage/:employeeId' render={byRole(<ManageEmployee isDriver />)} />
@@ -121,7 +121,7 @@ const App = () => {
                   <Route path='/invoices/manage' render={byRole(<ManageInvoices />)} />
                   <Route path='/invoices/dc-list/:invoiceId' render={byRole(<DeliveredDC />)} />
                   <Route path='/invoices/edit/:invoiceId' render={byRole(<EditInvoice />)} />
-                  <Route path='/invoices/:active?' render={byRole(<Invoices />)} />
+                  <Route path='/invoices/:tab?' render={byRole(<Invoices />)} />
                   <Route path='/products' render={byRole(<Products />)} />
                   <Route path='/distributors' render={byRole(<Distributors />)} />
                   <Route path='/motherplants' render={byRole(<Motherplants />)} />
@@ -129,7 +129,7 @@ const App = () => {
                   <Route path='/customers/add-account' render={byRole(<AddAccount />)} />
                   <Route path='/customers/approval/:accountId' render={byRole(<ApproveAccount />)} />
                   <Route path='/customers/manage/:accountId' render={byRole(<ViewAccount />)} />
-                  <Route path='/customers/:active?' render={byRole(<Customers />)} />
+                  <Route path='/customers/:tab?/:page?' render={byRole(<Customers />)} />
                   <Route path='/unauthorized' render={Unauthorized} />
                   <Route render={noMatchAuth} />
                </Switch>

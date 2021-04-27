@@ -6,11 +6,12 @@ import SelectInput from '../../../../components/SelectInput';
 import DraggerInput from '../../../../components/DraggerInput';
 import UploadPreviewer from '../../../../components/UploadPreviewer';
 import { resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
+import CustomTextArea from '../../../../components/CustomTextArea';
 
 const DeliveryForm = (props) => {
 
     const { data, errors, devDays, onBlur, devDaysError = {}, disabled, onChange, onSelect, onDeselect,
-        warehouseOptions, routeOptions, sameAddress, onUpload, onRemove, isAdmin } = props
+        warehouseOptions, locationOptions, routeOptions, sameAddress, onUpload, onRemove, isAdmin } = props
 
     const {
         gstNo, gstProof, departmentId, routeId, phoneNumber, contactPerson, address, isApproved,
@@ -61,18 +62,17 @@ const DeliveryForm = (props) => {
                     </div>
                     <div className='input-container'>
                         <InputLabel name='Delivery Location' error={errors.deliveryLocation} mandatory />
-                        <CustomInput value={deliveryLocation} placeholder='Add Location'
-                            disabled={isDisabled} error={errors.deliveryLocation}
-                            onChange={(value) => onChange(value, 'deliveryLocation')}
+                        <SelectInput options={locationOptions} showSearch
+                            disabled={isDisabled} error={errors.deliveryLocation} value={deliveryLocation}
+                            onSelect={(value) => onChange(value, 'deliveryLocation')}
                         />
                     </div>
                 </div>
                 <div className='row'>
                     <div className='input-container stretch'>
                         <InputLabel name='Address' error={errors.address} mandatory />
-                        <CustomInput value={address} placeholder='Add Address'
-                            disabled={sameAddress || isDisabled} error={errors.address}
-                            onChange={(value) => onChange(value, 'address')}
+                        <CustomTextArea maxLength={256} disabled={sameAddress || isDisabled} error={errors.address} placeholder='Add Address'
+                            value={address} minRows={1} maxRows={2} onChange={(value) => onChange(value, 'address')}
                         />
                     </div>
                 </div>

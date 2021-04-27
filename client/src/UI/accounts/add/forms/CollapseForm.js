@@ -4,13 +4,14 @@ import { http } from '../../../../modules/http';
 import { getBase64 } from '../../../../utils/Functions';
 import InputLabel from '../../../../components/InputLabel';
 import SelectInput from '../../../../components/SelectInput';
-import DraggerInput from '../../../../components/DraggerInput';
 import CustomInput from '../../../../components/CustomInput';
+import DraggerInput from '../../../../components/DraggerInput';
+import CustomTextArea from '../../../../components/CustomTextArea';
 import UploadPreviewer from '../../../../components/UploadPreviewer';
 import { dayOptions, getRouteOptions, WEEKDAYS } from '../../../../assets/fixtures'
 import { validateIntFloat, validateMobileNumber, validateNames, validateNumber } from '../../../../utils/validations';
 
-const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => {
+const CollapseForm = ({ data, warehouseOptions, locationOptions, uniqueId, addressesErrors }) => {
 
     const [deliveryValues, setDeliveryValues] = useState({})
     const [errors, setErrors] = useState({})
@@ -161,20 +162,19 @@ const CollapseForm = ({ data, warehouseOptions, uniqueId, addressesErrors }) => 
                     </div>
                     <div className='input-container'>
                         <InputLabel name='Delivery Location' error={errors.deliveryLocation} mandatory />
-                        <CustomInput
-                            value={deliveryLocation} placeholder='Add Location'
-                            error={errors.deliveryLocation}
-                            onChange={(value) => onChange(value, 'deliveryLocation')} />
+                        <SelectInput options={locationOptions} showSearch
+                            error={errors.deliveryLocation} value={deliveryLocation}
+                            onSelect={(value) => onChange(value, 'deliveryLocation')}
+                        />
                     </div>
 
                 </div>
                 <div className='row'>
                     <div className='input-container stretch'>
                         <InputLabel name='Address' error={errors.address} mandatory />
-                        <CustomInput
-                            error={errors.address}
-                            value={address} placeholder='Add Address'
-                            onChange={(value) => onChange(value, 'address')} />
+                        <CustomTextArea maxLength={256} error={errors.address} placeholder='Add Address'
+                            value={address} minRows={1} maxRows={2} onChange={(value) => onChange(value, 'address')}
+                        />
                     </div>
                 </div>
                 <div className='row'>

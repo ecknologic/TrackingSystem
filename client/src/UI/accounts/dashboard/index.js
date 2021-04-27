@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Col, Empty, Row } from 'antd';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import Header from './header';
 import { http } from '../../../modules/http'
@@ -16,12 +16,13 @@ import { complexDateSort, complexSort, tripleKeyComplexSearch, filterAccounts, i
 const Accounts = () => {
     const history = useHistory()
     const { USERID, ROLE } = useUser()
+    const { page = 1 } = useParams()
     const [accountsClone, setAccountsClone] = useState([])
     const [filteredClone, setFilteredClone] = useState([])
     const [accounts, setAccounts] = useState([])
     const [loading, setLoading] = useState(true)
     const [pageSize, setPageSize] = useState(12)
-    const [pageNumber, setPageNumber] = useState(1)
+    const [pageNumber, setPageNumber] = useState(Number(page))
     const [totalCount, setTotalCount] = useState(null)
     const [filterON, setFilterON] = useState(false)
     const [searchON, setSeachON] = useState(false)
@@ -170,8 +171,8 @@ const Accounts = () => {
         else handleFilter(data)
     }
 
-    const goToAddAccount = () => history.push('/manage-accounts/add-account')
-    const goToViewAccount = (id) => history.push(`/manage-accounts/${id}`)
+    const goToAddAccount = () => history.push('/customer-accounts/add-account')
+    const goToViewAccount = (id) => history.push(`/customer-accounts/manage/${id}`, { page: pageNumber })
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize

@@ -3,7 +3,7 @@ $primary-color: #0062FF;
 .manage-accounts-header {
     display: flex;
     flex-direction: column;
-    height: 10em;
+    min-height: 10em;
     
     .heading-container {
         flex: 1.2;

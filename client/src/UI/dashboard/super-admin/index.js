@@ -15,6 +15,7 @@ const SuperAdminDashboard = () => {
     const [motherplantList, setMotherplantList] = useState([])
 
     const motherplantOptions = useMemo(() => getDepartmentOptions(motherplantList), [motherplantList])
+    const warehouseMenu = useMemo(() => getDepartmentMenu(warehouseList), [warehouseList])
     const motherplantMenu = useMemo(() => getDepartmentMenu(motherplantList), [motherplantList])
     const warehouseOptions = useMemo(() => getWarehouseOptions(warehouseList), [warehouseList])
     const source = useMemo(() => axios.CancelToken.source(), []);
@@ -53,7 +54,7 @@ const SuperAdminDashboard = () => {
                 </div>
                 <CustomersOverview />
                 <div className='equal-panels-container'>
-                    <TotalBusiness />
+                    <TotalBusiness warehouseList={warehouseList} depMenu={warehouseMenu} />
                     <InvoiceOverview />
                 </div>
                 <WaterQualityResults depMenu={motherplantMenu} motherplantList={motherplantList} />

@@ -48,7 +48,7 @@ const WaterQualityResults = ({ depMenu, motherplantList }) => {
 
     return (
         <>
-            <PanelHeader title='Water Quality Testing Results' depMenu={depMenu} onSelect={handleOperation} showShow showShift showDep />
+            <PanelHeader title='Water Quality Testing Results' depMenu={depMenu} onSelect={handleOperation} showShow showShift showDep depName='Mother Plant' />
             <div className='panel-body quality-testing-panel'>
                 {
                     isEmpty(results) ? <NoContent content={<Empty />} />

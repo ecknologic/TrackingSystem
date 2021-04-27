@@ -19,7 +19,7 @@ import SuccessMessage from '../../../components/SuccessMessage';
 import CollapseHeader from '../../../components/CollapseHeader';
 import { TRACKFORM, TODAYDATE } from '../../../utils/constants';
 import { DDownIcon, PlusIcon } from '../../../components/SVG_Icons'
-import { getRouteOptions, getWarehouseOptions, WEEKDAYS } from '../../../assets/fixtures';
+import { getDropdownOptions, getRouteOptions, getWarehouseOptions, WEEKDAYS } from '../../../assets/fixtures';
 import {
     getBase64, deepClone, getIdProofsForDB, getDevDaysForDB, getAddressesForDB, resetTrackForm,
     getProductsForDB, extractGADeliveryDetails, extractGADetails, isEmpty, showToast, extractCADetails, getMainPathname
@@ -56,11 +56,15 @@ const AddAccount = () => {
     const [addressesErrors, setAddressesErrors] = useState({})
     const hasExtraAddress = !!addresses.length
     const [warehouseList, setWarehouseList] = useState([])
+    const [locationList, setLocationList] = useState([])
+    const [businessList, setBusinessList] = useState([])
     const [routeList, setRouteList] = useState([])
     const [scrollDep, setScrollDep] = useState(false)
     const [createShake, setCreateShake] = useState(false)
     const [addShake, setAddShake] = useState(false)
     const [currentDepId, setCurrentDepId] = useState('')
+    const locationOptions = useMemo(() => getDropdownOptions(locationList), [locationList])
+    const businessOptions = useMemo(() => getDropdownOptions(businessList), [businessList])
     const warehouseOptions = useMemo(() => getWarehouseOptions(warehouseList), [warehouseList])
     const routeOptions = useMemo(() => getRouteOptions(routeList), [routeList])
     const mainUrl = useMemo(() => getMainPathname(pathname), [pathname])
@@ -77,6 +81,8 @@ const AddAccount = () => {
 
     useEffect(() => {
         getWarehouseList()
+        getLocationList()
+        getBusinessList()
         sessionStorage.removeItem('address0')
         sessionStorage.removeItem('address1')
         sessionStorage.removeItem('address2')
@@ -109,6 +115,24 @@ const AddAccount = () => {
             const data = await http.GET(axios, url, config)
             setRouteList(data)
             setCurrentDepId(departmentId)
+        } catch (error) { }
+    }
+
+    const getLocationList = async () => {
+        const url = `bibo/getList/location`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setLocationList(data)
+        } catch (error) { }
+    }
+
+    const getBusinessList = async () => {
+        const url = `bibo/getList/natureOfBusiness`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setBusinessList(data)
         } catch (error) { }
     }
 
@@ -481,6 +505,9 @@ const AddAccount = () => {
             message.destroy()
             if (!axios.isCancel(error)) {
                 setBtnDisabled(false)
+                if (error.response.status === 400) {
+                    message.error('Email/phone already corresponds to an existing account.')
+                }
             }
         }
     }
@@ -561,7 +588,7 @@ const AddAccount = () => {
     }
 
     const goBack = () => {
-        if (mainUrl === '/add-customer') history.push('/manage-accounts')
+        if (mainUrl === '/add-customer') history.push('/customer-accounts')
         else history.push(mainUrl)
     }
 
@@ -589,6 +616,7 @@ const AddAccount = () => {
                             errors={corporateErrors}
                             IDProofs={IDProofs}
                             IDProofErrors={IDProofErrors}
+                            businessOptions={businessOptions}
                             onUpload={handleProofUpload}
                             onRemove={handleProofRemove}
                             onChange={handleCorporateChange}
@@ -603,6 +631,7 @@ const AddAccount = () => {
                             IDProofs={IDProofs}
                             IDProofErrors={IDProofErrors}
                             routeOptions={routeOptions}
+                            locationOptions={locationOptions}
                             warehouseOptions={warehouseOptions}
                             onUpload={handleProofUpload}
                             onRemove={handleProofRemove}
@@ -647,6 +676,7 @@ const AddAccount = () => {
                                                     <CollapseForm
                                                         uniqueId={index}
                                                         data={item}
+                                                        locationOptions={locationOptions}
                                                         addressesErrors={addressesErrors}
                                                         warehouseOptions={warehouseOptions}
                                                     />
@@ -663,6 +693,7 @@ const AddAccount = () => {
                                 data={deliveryValues}
                                 errors={deliveryErrors}
                                 routeOptions={routeOptions}
+                                locationOptions={locationOptions}
                                 warehouseOptions={warehouseOptions}
                                 sameAddress={sameAddress && !hasExtraAddress}
                                 onRemove={handleProofRemove}

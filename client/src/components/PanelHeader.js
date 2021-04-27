@@ -162,7 +162,7 @@ const PanelHeader = memo((props) => {
                                 showDep ? (
                                     <div className='option'>
                                         <PanelDropdown
-                                            label='Motherplant'
+                                            label={depName}
                                             initValue='All'
                                             options={depMenu}
                                             onSelect={handleDepartmentSelect}

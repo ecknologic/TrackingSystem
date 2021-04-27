@@ -22,7 +22,7 @@ const sendMail = ({ message, mailId, body, attachment, invoiceId }) => {
     var mailOptions = {
         from: 'cc@bibowater.com',
         to: mailId,
-        subject: 'Bibo Invoice',
+        subject: message,
         text: 'Check your invoice details in the below attachment',
         attachments
     };
@@ -31,18 +31,20 @@ const sendMail = ({ message, mailId, body, attachment, invoiceId }) => {
         if (error) {
             console.log(error);
         } else {
-            if (invoiceId) {
-                try {
-                    fs.unlinkSync(`${invoiceId}.pdf`)
-                    //file removed
-                } catch (err) {
-                    console.error(err)
-                }
+            try {
+                fs.unlink(`${invoiceId}.pdf`, function (err) {
+                    if (err) return console.log(err);
+                    console.log('file deleted successfully');
+                })
+                //file removed
+            } catch (err) {
+                console.error(err)
             }
             console.log('Email sent: ' + info.response);
         }
     });
 }
+
 
 module.exports = {
     sendMail

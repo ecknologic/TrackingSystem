@@ -67,9 +67,10 @@ const Dashboard = ({ reFetch }) => {
     }
 
     const handleStatusUpdate = async (departmentId, status) => {
+        const departmentType = getPlantType()
         const options = { item: 'Department status', v1Ing: 'Updating', v2: 'updated' }
         const url = `warehouse/updateDepartmentStatus`
-        const body = { status, departmentId }
+        const body = { status, departmentId, departmentType }
         try {
             showToast({ ...options, action: 'loading' })
             await http.PUT(axios, url, body, config)
@@ -81,8 +82,9 @@ const Dashboard = ({ reFetch }) => {
     }
 
     const handleDelete = async (id) => {
+        const departmentType = getPlantType()
         const options = { item: 'Department', v1Ing: 'Deleting', v2: 'deleted' }
-        const url = `warehouse/deleteDepartment/${id}`
+        const url = `warehouse/deleteDepartment/${id}?departmentType=${departmentType}`
 
         try {
             showToast({ ...options, action: 'loading' })
