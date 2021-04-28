@@ -137,28 +137,6 @@ const ApprovalForm = (props) => {
                     />
                 </div>
                 <div className='input-container'>
-                    <InputLabel name='Nature Of Business' error={errors.natureOfBussiness} mandatory />
-                    <SelectInput
-                        value={natureOfBussiness}
-                        options={businessOptions}
-                        track disabled={disabled || !isCorporate}
-                        error={errors.natureOfBussiness}
-                        onSelect={(value) => onChange(value, 'natureOfBussiness')}
-                    />
-                </div>
-            </div>
-            <div className='row'>
-                <div className='input-container'>
-                    <InputLabel name='Contact Person' error={errors.customerName} mandatory />
-                    <CustomInput
-                        value={customerName}
-                        disabled={disabled}
-                        placeholder='Contact Person'
-                        error={errors.customerName}
-                        onChange={(value) => onChange(value, 'customerName')}
-                    />
-                </div>
-                <div className='input-container'>
                     <InputLabel name={emailLabel} error={errors.EmailId} mandatory />
                     <CustomInput
                         value={EmailId} type='email' disabled={disabled}
@@ -188,42 +166,26 @@ const ApprovalForm = (props) => {
                     />
                 </div>
             </div>
-            <div className='row'>
-                <div className='input-container'>
-                    <InputLabel name='Deposit Amount' error={errors.depositAmount} mandatory />
-                    <CustomInput value={depositAmount}
-                        disabled={disabled} placeholder='Deposit Amount'
-                        error={errors.depositAmount}
-                        onChange={(value) => onChange(value, 'depositAmount')}
-                    />
-                </div>
-                <div className='input-container'>
-                    <InputLabel name='Contract Period' error={errors.contractPeriod} mandatory />
-                    <CustomInput
-                        value={contractPeriod}
-                        disabled={disabled} placeholder='Contract Period'
-                        error={errors.contractPeriod}
-                        onChange={(value) => onChange(value, 'contractPeriod')}
-                    />
-                </div>
-            </div>
             {
                 isCorporate ? (
                     <div className='row'>
                         <div className='input-container'>
-                            <InputLabel name='Dispenser' error={errors.dispenserCount} mandatory />
+                            <InputLabel name='Contact Person' error={errors.customerName} mandatory />
                             <CustomInput
-                                value={dispenserCount}
-                                disabled={disabled} placeholder='Dispenser Qty'
-                                error={errors.dispenserCount}
-                                onChange={(value) => onChange(value, 'dispenserCount')}
+                                value={customerName}
+                                disabled={disabled}
+                                placeholder='Contact Person'
+                                error={errors.customerName}
+                                onChange={(value) => onChange(value, 'customerName')}
                             />
                         </div>
                         <div className='input-container'>
-                            <InputLabel name='PO Number' error={errors.poNo} />
-                            <CustomInput value={poNo}
-                                error={errors.poNo} placeholder='PO Number'
-                                onChange={(value) => onChange(value, 'poNo')}
+                            <InputLabel name='Contract Period' error={errors.contractPeriod} mandatory />
+                            <CustomInput
+                                value={contractPeriod}
+                                disabled={disabled} placeholder='Contract Period'
+                                error={errors.contractPeriod}
+                                onChange={(value) => onChange(value, 'contractPeriod')}
                             />
                         </div>
                     </div>
@@ -249,6 +211,48 @@ const ApprovalForm = (props) => {
                     />
                 </div>
             </div>
+            <div className='row'>
+                <div className='input-container'>
+                    <InputLabel name='Deposit Amount' error={errors.depositAmount} mandatory />
+                    <CustomInput value={depositAmount}
+                        disabled={disabled} placeholder='Deposit Amount'
+                        error={errors.depositAmount}
+                        onChange={(value) => onChange(value, 'depositAmount')}
+                    />
+                </div>
+                <div className='input-container'>
+                    <InputLabel name='Nature Of Business' error={errors.natureOfBussiness} mandatory />
+                    <SelectInput
+                        value={natureOfBussiness}
+                        options={businessOptions}
+                        track disabled={disabled || !isCorporate}
+                        error={errors.natureOfBussiness}
+                        onSelect={(value) => onChange(value, 'natureOfBussiness')}
+                    />
+                </div>
+            </div>
+            {
+                isCorporate ? (
+                    <div className='row'>
+                        <div className='input-container'>
+                            <InputLabel name='Dispenser' error={errors.dispenserCount} mandatory />
+                            <CustomInput
+                                value={dispenserCount}
+                                disabled={disabled} placeholder='Dispenser Qty'
+                                error={errors.dispenserCount}
+                                onChange={(value) => onChange(value, 'dispenserCount')}
+                            />
+                        </div>
+                        <div className='input-container'>
+                            <InputLabel name='PO Number' error={errors.poNo} />
+                            <CustomInput value={poNo}
+                                error={errors.poNo} placeholder='PO Number'
+                                onChange={(value) => onChange(value, 'poNo')}
+                            />
+                        </div>
+                    </div>
+                ) : null
+            }
             <div className='row'>
                 <div className='input-container'>
                     <InputLabel name='Registered Date' error={errors.registeredDate} />
