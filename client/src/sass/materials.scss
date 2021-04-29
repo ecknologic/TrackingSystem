@@ -5,6 +5,12 @@
     padding-bottom: 3em;
     background-color: #FAFAFB;
 
+    .current-stock-container {
+        .form-header-container {
+            padding: 0;
+        }
+    }
+
     .material-form-container {
         width: 60%;
         padding: 1.5em 0 0 2em;

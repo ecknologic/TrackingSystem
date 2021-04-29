@@ -129,17 +129,7 @@ const GeneralAccountForm = (props) => {
                             error={errors.pinCode} maxLength={6} onBlur={(value) => onBlur(value, 'pinCode')}
                             onChange={(value) => onChange(value, 'pinCode')}
                         />
-
                     </div>
-                    <div className='input-container'>
-                        <InputLabel name='Delivery Location' error={errors.deliveryLocation} mandatory />
-                        <SelectInput options={locationOptions} showSearch
-                            disabled={disabled} error={errors.deliveryLocation} value={deliveryLocation}
-                            onSelect={(value) => onChange(value, 'deliveryLocation')}
-                        />
-                    </div>
-                </div>
-                <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Email' error={errors.EmailId} mandatory />
                         <CustomInput value={EmailId} type='email'
@@ -148,10 +138,6 @@ const GeneralAccountForm = (props) => {
                             onBlur={(value) => onBlur(value, 'EmailId')}
                             onChange={(value) => onChange(value, 'EmailId')}
                         />
-                    </div>
-                    <div className='input-container'>
-                        <InputLabel name='Nature Of Business' error={errors.natureOfBussiness} />
-                        <CustomInput value={natureOfBussiness} disabled error={errors.natureOfBussiness} />
                     </div>
                 </div>
                 <div className='row'>
@@ -191,15 +177,28 @@ const GeneralAccountForm = (props) => {
                         />
                     </div>
                 </div>
+                <div className='row'>
+                    <div className='input-container'>
+                        <InputLabel name='Deposit Amount' error={errors.depositAmount} mandatory />
+                        <CustomInput
+                            value={depositAmount} disabled={disabled}
+                            placeholder='Deposit Amount' onChange={(value) => onChange(value, 'depositAmount')}
+                        />
+                    </div>
+                    <div className='input-container'>
+                        <InputLabel name='Nature Of Business' error={errors.natureOfBussiness} />
+                        <CustomInput value={natureOfBussiness} disabled error={errors.natureOfBussiness} />
+                    </div>
+                </div>
                 {
                     !accountOnly && (
                         <>
                             <div className='row'>
                                 <div className='input-container'>
-                                    <InputLabel name='Deposit Amount' error={errors.depositAmount} mandatory />
-                                    <CustomInput
-                                        value={depositAmount} disabled={disabled}
-                                        placeholder='Deposit Amount' onChange={(value) => onChange(value, 'depositAmount')}
+                                    <InputLabel name='Delivery Location' error={errors.deliveryLocation} mandatory />
+                                    <SelectInput options={locationOptions} showSearch
+                                        disabled={disabled} error={errors.deliveryLocation} value={deliveryLocation}
+                                        onSelect={(value) => onChange(value, 'deliveryLocation')}
                                     />
                                 </div>
                                 <div className='input-container'>

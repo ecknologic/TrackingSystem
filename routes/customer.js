@@ -507,7 +507,7 @@ router.post('/updateCustomer', async (req, res) => {
   // let customerDetailsQuery = "insert  into customerdetails (customerName,mobileNumber,EmailId,Address1,gstNo,registeredDate,invoicetype,natureOfBussiness,creditPeriodInDays,referredBy,isActive,qrcodeId,latitude,longitude,customerType,organizationName,createdBy) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
   customerQueries.checkCustomerExistsOrNot({ EmailId, mobileNumber }, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
-    else if (results.length && results[0].customerId == customerId) {
+    else if (results.length && results[0].customerId != customerId) {
       res.status(400).json({ status: 400, message: "This Customer already created" })
     }
     else {

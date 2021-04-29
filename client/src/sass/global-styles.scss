@@ -431,6 +431,11 @@ textarea, .ant-dropdown-menu {
     }
 }
 
+textarea.ant-input {
+    line-height: 1.6;
+    min-height: 2.7em !important;
+}
+
 // -------------- antd Input styles ------------------- //
 
 .ant-input, .ant-input-number {

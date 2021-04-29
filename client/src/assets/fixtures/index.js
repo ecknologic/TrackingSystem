@@ -149,12 +149,6 @@ export const getRoleOptions = (roles = []) => {
 export const getBatchOptions = (batches = []) => {
     return batches.map((item) => <Option key={item.productionQcId} value={item.productionQcId}>{item.batchId}</Option>)
 }
-export const getMaterialOptions = (materials = [{ name: 'Caps' }, { name: 'Bottles' }]) => {
-    return materials.map((item, index) => <Option key={index} value={item.name}>{item.name}</Option>)
-}
-export const getVendorOptions = (vendors = [{ name: 'Balaji Industries' }, { name: 'Praveen Builders' }]) => {
-    return vendors.map((item, index) => <Option key={index} value={item.name}>{item.name}</Option>)
-}
 export const getDriverOptions = (drivers = []) => {
     return drivers.map((item) => <Option key={item.driverId} value={item.driverId}>{item.driverName}</Option>)
 }
@@ -650,6 +644,44 @@ export const productionColumns = [
         dataIndex: 'action',
         key: 'action'
     },
+]
+
+export const currentStockColumns = [
+    {
+        title: 'Product Name',
+        dataIndex: 'itemName',
+        key: 'itemName',
+    },
+    {
+        title: 'Item Code',
+        dataIndex: 'itemCode',
+        key: 'itemCode',
+    },
+    {
+        title: 'Vendor Name',
+        dataIndex: 'vendorName',
+        key: 'vendorName',
+    },
+    {
+        title: 'Reorder Level',
+        dataIndex: 'reorderLevel',
+        key: 'reorderLevel',
+    },
+    {
+        title: 'Current Quantity',
+        dataIndex: 'itemQty',
+        key: 'itemQty',
+    },
+    {
+        title: 'Damaged',
+        dataIndex: 'damagedQty',
+        key: 'damagedQty',
+    },
+    {
+        title: 'Actions',
+        dataIndex: 'action',
+        key: 'action'
+    }
 ]
 
 export const getDispatchColumns = (type) => {

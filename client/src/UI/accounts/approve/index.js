@@ -452,7 +452,6 @@ const ApproveAccount = () => {
                                     <ApprovalForm
                                         IDProofs={IDProofs}
                                         businessOptions={businessOptions}
-                                        locationOptions={locationOptions}
                                         IDProofErrors={IDProofErrors}
                                         data={accountValues}
                                         errors={accountErrors}

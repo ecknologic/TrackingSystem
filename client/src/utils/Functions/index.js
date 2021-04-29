@@ -447,18 +447,18 @@ export const getPlantValuesForDB = ({ gstNo = '', gstProof = '', phoneNumber = '
 }
 
 export const extractCADetails = (data) => {
-    const { address: Address1 } = data
+    const { address: Address1, alternatePhNo, poNo } = data
     const clone = deepClone(data)
     delete clone.address
     delete clone.idProof_frontside
     delete clone.idProof_backside
     delete clone.registeredDate
     delete clone.loading
-    return { ...clone, Address1 }
+    return { ...clone, Address1, alternatePhNo: alternatePhNo || null, poNo: poNo || null }
 }
 
 export const extractGADetails = (data) => {
-    const { customerName: organizationName, address: Address1 } = data
+    const { customerName: organizationName, address: Address1, alternatePhNo, poNo } = data
     const clone = deepClone(data)
     delete clone.address
     delete clone.registeredDate
@@ -475,7 +475,7 @@ export const extractGADetails = (data) => {
     delete clone.product500ML
     delete clone.product300ML
     delete clone.loading
-    return { ...clone, Address1, organizationName }
+    return { ...clone, Address1, organizationName, alternatePhNo: alternatePhNo || null, poNo: poNo || null }
 }
 
 export const getAddressesForDB = (data, isUpdate) => {
