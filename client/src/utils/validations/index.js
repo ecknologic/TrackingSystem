@@ -72,7 +72,6 @@ export const validateAccountValues = (data, customerType, isInView) => {
         // if (!gstProof) errors.gstProof = text
     }
     else {
-        if (!deliveryLocation) errors.deliveryLocation = text
         if (!isInView) { // General account form in add account screen
             if (!departmentId) errors.departmentId = text
             if (!routeId) errors.routeId = text
