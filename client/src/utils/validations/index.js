@@ -144,6 +144,7 @@ export const validateDeliveryValues = (data) => {
     } = data
 
     if (!departmentId) errors.departmentId = text
+    if (!contactPerson) errors.contactPerson = text
     if (!routeId) errors.routeId = text
     if (!address) errors.address = text
     // if (gstNo && !gstProof) errors.gstProof = text
@@ -152,11 +153,6 @@ export const validateDeliveryValues = (data) => {
     else {
         const error = validateMobileNumber(phoneNumber, true)
         error && (errors.phoneNumber = error)
-    }
-    if (!contactPerson) errors.contactPerson = text
-    else {
-        const error = validateNames(contactPerson)
-        error && (errors.contactPerson = error)
     }
     if (!deliveryLocation) errors.deliveryLocation = text
 

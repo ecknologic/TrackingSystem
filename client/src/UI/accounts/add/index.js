@@ -150,10 +150,6 @@ const AddAccount = () => {
             const error = validateMobileNumber(value)
             setDeliveryErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key === 'contactPerson') {
-            const error = validateNames(value)
-            setDeliveryErrors(errors => ({ ...errors, [key]: error }))
-        }
         else if (key.includes('price')) {
             const error = validateIntFloat(value)
             setDeliveryErrors(errors => ({ ...errors, productNPrice: error }))
