@@ -29,16 +29,6 @@ const DCForm = (props) => {
         }
     }, [])
 
-    const renderDL = () => (
-        <div className='input-container'>
-            <InputLabel name='Delivery Location' error={errors.deliveryLocation} mandatory />
-            <SelectInput options={locationOptions} showSearch
-                disabled={disableAll || disableFew} error={errors.deliveryLocation} value={deliveryLocation}
-                onSelect={(value) => onChange(value, 'deliveryLocation')}
-            />
-        </div>
-    )
-
     return (
         <>
             <div className='app-form-container'>
@@ -108,23 +98,22 @@ const DCForm = (props) => {
                     </div>
                 </div>
                 <div className='row'>
-                    {
-                        isNewCustomer ?
-                            (
-                                <>
-                                    <div className='input-container'>
-                                        <InputLabel name='Email' error={errors.EmailId} mandatory />
-                                        <CustomInput
-                                            value={EmailId} type='email' disabled={disableAll || disableFew}
-                                            placeholder='Email' error={errors.EmailId}
-                                            onBlur={(value) => onBlur(value, 'EmailId')}
-                                            onChange={(value) => onChange(value, 'EmailId')}
-                                        />
-                                    </div>
-                                    {renderDL()}
-                                </>
-                            ) : renderDL()
-                    }
+                    <div className='input-container'>
+                        <InputLabel name='Email' error={errors.EmailId} mandatory />
+                        <CustomInput
+                            value={EmailId} type='email' disabled={disableAll || disableFew}
+                            placeholder='Email' error={errors.EmailId}
+                            onBlur={(value) => onBlur(value, 'EmailId')}
+                            onChange={(value) => onChange(value, 'EmailId')}
+                        />
+                    </div>
+                    <div className='input-container'>
+                        <InputLabel name='Delivery Location' error={errors.deliveryLocation} mandatory />
+                        <SelectInput options={locationOptions} showSearch
+                            disabled={disableAll || disableFew} error={errors.deliveryLocation} value={deliveryLocation}
+                            onSelect={(value) => onChange(value, 'deliveryLocation')}
+                        />
+                    </div>
                 </div>
                 <div className='row'>
                     <div className='input-container stretch'>

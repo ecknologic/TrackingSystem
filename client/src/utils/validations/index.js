@@ -848,6 +848,11 @@ export const validateDCValues = (data) => {
 
     const isDistributor = customerType === 'distributor'
     const isExistingCustomer = customerType === 'internal'
+    if (!EmailId) errors.EmailId = text
+    else {
+        const error = validateEmailId(EmailId)
+        error && (errors.EmailId = error)
+    }
 
     if (isDistributor) {
         if (!routeId) errors.routeId = text
@@ -864,11 +869,6 @@ export const validateDCValues = (data) => {
             if (!existingCustomerId) errors.existingCustomerId = text
         }
         else {
-            if (!EmailId) errors.EmailId = text
-            else {
-                const error = validateEmailId(EmailId)
-                error && (errors.EmailId = error)
-            }
             if (!customerName) errors.customerName = text
             else {
                 const error = validateNames(customerName)

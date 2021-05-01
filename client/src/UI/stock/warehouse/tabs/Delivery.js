@@ -172,7 +172,7 @@ const Delivery = ({ date, source }) => {
             const productsUI = getProductsForUI([])
             setFormData(data => ({
                 ...data, existingCustomerId: null, customerName: '', phoneNumber: null,
-                distributorId: null, deliveryLocation: '', address: '', ...productsUI
+                distributorId: null, deliveryLocation: null, address: '', ...productsUI
             }))
         }
         else if (key === 'distributorId') {
