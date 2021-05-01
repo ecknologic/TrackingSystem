@@ -1,19 +1,17 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Checkbox } from 'antd';
 
-const CheckboxOption = ({ value, option, onSelect, onDeselect }) => {
-    const [isChecked, setIsChecked] = useState(false)
+const CheckboxOption = ({ value, option, onSelect, onDeselect, checked = false }) => {
 
     const onChange = () => {
-        !isChecked && onSelect(value)
-        isChecked && onDeselect(value)
-        setIsChecked(!isChecked)
+        !checked && onSelect(value)
+        checked && onDeselect(value)
     }
 
     return (
         <Checkbox
             onChange={onChange}
-            indeterminate={isChecked}
+            indeterminate={checked}
             checked={false}
             className='app-checkbox-option'
         >

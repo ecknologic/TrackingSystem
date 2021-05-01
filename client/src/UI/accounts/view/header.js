@@ -1,6 +1,5 @@
 import React from 'react';
 import BackButton from '../../../components/BackButton';
-import Spinner from '../../../components/Spinner';
 import '../../../sass/accounts.scss'
 
 const Header = ({ data, onClick }) => {

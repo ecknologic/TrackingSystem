@@ -35,11 +35,11 @@ export const genderOptions = [
     <Option key='2' value='Female'>Female</Option>,
     <Option key='3' value='TransGender'>TransGender</Option>
 ]
-export const statusFilterOptions = [
+export const statusFilterList = [
     { value: 0, name: 'Draft' },
     { value: 1, name: 'Active' }
 ]
-export const accountFilterOptions = [
+export const accountFilterList = [
     { value: 'Corporate', name: 'Corporate' },
     { value: 'Individual', name: 'Individual' }
 ]

@@ -6,7 +6,7 @@ import CustomButton from '../../../components/CustomButton';
 import AccountsFilter from '../../../components/AccountsFilter';
 import '../../../sass/accounts.scss'
 
-const Header = ({ onClick, onSearch, onSort, onFilter, ...rest }) => {
+const Header = ({ onClick, onSearch, onSort }) => {
 
     return (
         <div className='manage-accounts-header'>
@@ -29,7 +29,7 @@ const Header = ({ onClick, onSearch, onSort, onFilter, ...rest }) => {
                 <div className='rest-container'>
                     <div className='op-container'>
                         <SortBy onSelect={onSort} />
-                        <AccountsFilter onChange={onFilter} {...rest} />
+                        <AccountsFilter />
                     </div>
                 </div>
             </div>

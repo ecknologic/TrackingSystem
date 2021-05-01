@@ -188,7 +188,11 @@ export const tripleKeyComplexSearch = (data, matcher, key1, key2, key3) => {
     })
 }
 export const filterAccounts = (accountsClone, filterInfo) => {
-    const { business, status, account, creator } = filterInfo
+    let { business = [], status = [], account = [], creator = [] } = filterInfo
+    business = business.filter(item => item.checked).map(item => item.value)
+    status = status.filter(item => item.checked).map(item => item.value)
+    account = account.filter(item => item.checked).map(item => item.value)
+    creator = creator.filter(item => item.checked).map(item => item.value)
     let singleFiltered = [], allFiltered = []
 
     if (!isEmpty(business) && !isEmpty(status) && !isEmpty(account) && !isEmpty(creator)) {

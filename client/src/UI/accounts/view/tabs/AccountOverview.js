@@ -13,7 +13,6 @@ import IDProofInfo from '../../../../components/IDProofInfo';
 import ConfirmModal from '../../../../components/CustomModal';
 import CustomButton from '../../../../components/CustomButton';
 import GeneralAccountForm from '../../add/forms/GeneralAccount';
-import { getDropdownOptions } from '../../../../assets/fixtures';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CorporateAccountForm from '../../add/forms/CorporateAccount';
 import { base64String, extractCADetails, extractGADetails, getBase64, getIdProofsForDB, getMainPathname, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';

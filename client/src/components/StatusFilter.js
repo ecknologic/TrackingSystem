@@ -2,7 +2,7 @@ import { Dropdown, Menu } from 'antd';
 import React, { useState, useRef } from 'react';
 import { FilterIconGrey } from './SVG_Icons';
 import CheckboxOption from './CheckboxOption';
-import { statusFilterOptions } from '../assets/fixtures'
+import { statusFilterList } from '../assets/fixtures'
 
 const StatusFilter = ({ onChange }) => {
 
@@ -24,7 +24,7 @@ const StatusFilter = ({ onChange }) => {
         <Menu className='app-accounts-filter'>
             <Menu.ItemGroup title='Select Status'>
                 {
-                    statusFilterOptions.map((item) => {
+                    statusFilterList.map((item) => {
                         return (
                             <Menu.Item key={item.value}>
                                 <CheckboxOption
