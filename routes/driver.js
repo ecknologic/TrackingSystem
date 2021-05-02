@@ -1,13 +1,16 @@
 var express = require('express');
 var router = express.Router();
 const db = require('../config/db.js');
+const auditQueries = require('../dbQueries/auditlogs/queries.js');
 const driverQueries = require('../dbQueries/driver/queries.js');
 const usersQueries = require('../dbQueries/users/queries.js');
 const { dbError, createHash, prepareOrderResponseObj } = require('../utils/functions.js');
+let userId;
 
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
     console.log('Time: ', Date.now());
+    userId = req.headers['userid']
     next();
 });
 
@@ -122,9 +125,13 @@ router.get('/getDriver/:driverId', (req, res) => {
 })
 
 router.delete('/deleteDriver/:driverId', (req, res) => {
-    driverQueries.deleteDriver(req.params.driverId, (err, results) => {
+    const { driverId } = req.params
+    driverQueries.deleteDriver(driverId, (err, results) => {
         if (err) res.json(dbError(err))
-        else res.json(results)
+        else {
+            auditQueries.createLog({ userId, description: "Driver Deleted", staffId: driverId, type: "driver" })
+            res.json(results)
+        }
     })
 })
 
@@ -141,25 +148,32 @@ router.post('/createDriver', (req, res) => {
             driverQueries.updateDriverLoginId({ driverName: req.body.userName, driverId: results.insertId }, (err, updated) => {
                 if (err) console.log("Driver update Err", err)
             })
+            auditQueries.createLog({ userId, description: "Driver created", staffId: results.insertId, type: "driver" })
             res.json(results)
         }
     })
 })
 
 router.put('/updateDriverStatus', (req, res) => {
+    const { driverId, status } = req.body
     driverQueries.updateDriverActiveStatus(req.body, (err, results) => {
         if (err) res.json(err);
-        else res.json(results)
+        else {
+            auditQueries.createLog({ userId, description: `Driver status changed to ${status == 1 ? "Active" : "Draft"}`, staffId: driverId, type: "driver" })
+            res.json(results)
+        }
     })
 })
 
 router.post('/updateDriver', (req, res) => {
+    const { driverId } = req.body
     driverQueries.updateDriver(req.body, (err, results) => {
         if (err) res.json(dbError(err))
         else {
             usersQueries.updateDependentDetails(req.body.dependentDetails, "driverDependentDetails", (err, success) => {
                 if (err) console.log("Driver Dependent Err", err)
             })
+            auditQueries.createLog({ userId, description: `Driver Updated`, staffId: driverId, type: "driver" })
             res.json(results)
         }
     })
