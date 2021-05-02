@@ -223,7 +223,7 @@ const CollapseForm = ({ data, warehouseOptions, locationOptions, uniqueId, addre
                         </div>
                         <div className='column'>
                             <div className='input-container'>
-                                <InputLabel name='2 Ltrs' />
+                                <InputLabel name='2 Ltrs (Box-1&times;9)' />
                                 <CustomInput value={product2L} placeholder='Qty'
                                     onChange={(value) => onChange(value, 'product2L')} />
                             </div>
@@ -236,7 +236,7 @@ const CollapseForm = ({ data, warehouseOptions, locationOptions, uniqueId, addre
                         </div>
                         <div className='column'>
                             <div className='input-container'>
-                                <InputLabel name='1 Ltrs' />
+                                <InputLabel name='1 Ltrs (Box-1&times;12)' />
                                 <CustomInput value={product1L} placeholder='Qty'
                                     onChange={(value) => onChange(value, 'product1L')} />
                             </div>
@@ -249,7 +249,7 @@ const CollapseForm = ({ data, warehouseOptions, locationOptions, uniqueId, addre
                         </div>
                         <div className='column'>
                             <div className='input-container'>
-                                <InputLabel name='500 Ml' />
+                                <InputLabel name='500 Ml (Box-1&times;24)' />
                                 <CustomInput value={product500ML} placeholder='Qty'
                                     onChange={(value) => onChange(value, 'product500ML')} />
                             </div>
@@ -262,7 +262,7 @@ const CollapseForm = ({ data, warehouseOptions, locationOptions, uniqueId, addre
                         </div>
                         <div className='column'>
                             <div className='input-container'>
-                                <InputLabel name='300 Ml' />
+                                <InputLabel name='300 Ml (Box-1&times;30)' />
                                 <CustomInput value={product300ML} placeholder='Qty'
                                     onChange={(value) => onChange(value, 'product300ML')} />
                             </div>

@@ -11,7 +11,8 @@ const DCForm = (props) => {
     const { data, errors, routeOptions, disabledItems, onBlur, driverOptions, distributorOptions, locationOptions, customerOptions, onChange } = props
 
     const { routeId, customerName, phoneNumber, address, driverId, product20L, product2L, product1L, deliveryLocation,
-        product500ML, product300ML, existingCustomerId, distributorId, customerType, creationType, EmailId } = data
+        product500ML, product300ML, existingCustomerId, distributorId, customerType, creationType, EmailId,
+        price20L, price2L, price1L, price500ML, price300ML } = data
 
     const disableAll = disabledItems === 'ALL' && disabledItems !== 'NONE'
     const disableFew = disabledItems === 'FEW'
@@ -140,41 +141,71 @@ const DCForm = (props) => {
                     </div>
                 </div>
                 <div className='columns'>
-                    <InputLabel name='Stock Details' error={errors.products} mandatory />
+                    <InputLabel name='Stock Details' error={errors.productNPrice} mandatory />
                     <div className='columns-container'>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='20 Ltrs' />
-                                <CustomInput value={product20L} disabled={disableAll}
+                                <CustomInput value={product20L} disabled={disableAll || disableFew}
                                     placeholder='Qty' onChange={(value) => onChange(value, 'product20L')} />
+                            </div>
+                            <div className='input-container'>
+                                <InputLabel name='Price' />
+                                <CustomInput value={price20L} disabled={disableAll || disableFew}
+                                    onBlur={(value) => onBlur(value, 'price20L')}
+                                    placeholder='Rs' onChange={(value) => onChange(value, 'price20L')} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='2 Ltrs (Box-1&times;9)' />
-                                <CustomInput value={product2L} disabled={disableAll}
+                                <CustomInput value={product2L} disabled={disableAll || disableFew}
                                     placeholder='Qty' onChange={(value) => onChange(value, 'product2L')} />
+                            </div>
+                            <div className='input-container'>
+                                <InputLabel name='Price' />
+                                <CustomInput value={price2L} disabled={disableAll || disableFew}
+                                    onBlur={(value) => onBlur(value, 'price2L')}
+                                    placeholder='Rs' onChange={(value) => onChange(value, 'price2L')} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='1 Ltrs (Box-1&times;12)' />
-                                <CustomInput value={product1L} disabled={disableAll}
+                                <CustomInput value={product1L} disabled={disableAll || disableFew}
                                     placeholder='Qty' onChange={(value) => onChange(value, 'product1L')} />
+                            </div>
+                            <div className='input-container'>
+                                <InputLabel name='Price' />
+                                <CustomInput value={price1L} disabled={disableAll || disableFew}
+                                    onBlur={(value) => onBlur(value, 'price1L')}
+                                    placeholder='Rs' onChange={(value) => onChange(value, 'price1L')} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='500 Ml (Box-1&times;24)' />
-                                <CustomInput value={product500ML} disabled={disableAll}
+                                <CustomInput value={product500ML} disabled={disableAll || disableFew}
                                     placeholder='Qty' onChange={(value) => onChange(value, 'product500ML')} />
+                            </div>
+                            <div className='input-container'>
+                                <InputLabel name='Price' />
+                                <CustomInput value={price500ML} disabled={disableAll || disableFew}
+                                    onBlur={(value) => onBlur(value, 'price500ML')}
+                                    placeholder='Rs' onChange={(value) => onChange(value, 'price500ML')} />
                             </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='300 Ml (Box-1&times;30)' />
-                                <CustomInput value={product300ML} disabled={disableAll}
+                                <CustomInput value={product300ML} disabled={disableAll || disableFew}
                                     placeholder='Qty' onChange={(value) => onChange(value, 'product300ML')} />
+                            </div>
+                            <div className='input-container'>
+                                <InputLabel name='Price' />
+                                <CustomInput value={price300ML} disabled={disableAll || disableFew}
+                                    onBlur={(value) => onBlur(value, 'price300ML')}
+                                    placeholder='Rs' onChange={(value) => onChange(value, 'price300ML')} />
                             </div>
                         </div>
                     </div>

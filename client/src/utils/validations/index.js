@@ -877,8 +877,6 @@ export const validateDCValues = (data) => {
         }
     }
 
-
-
     if (!address) errors.address = text
     if (!deliveryLocation) errors.deliveryLocation = text
     if (!phoneNumber) errors.phoneNumber = text
@@ -886,7 +884,7 @@ export const validateDCValues = (data) => {
         const error = validateMobileNumber(phoneNumber, true)
         error && (errors.phoneNumber = error)
     }
-    const productErrors = validateProducts(rest)
+    const productErrors = validateProductNPrice(rest)
     return { ...errors, ...productErrors }
 }
 

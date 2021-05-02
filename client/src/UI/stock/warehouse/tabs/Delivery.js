@@ -16,7 +16,7 @@ import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomPagination from '../../../../components/CustomPagination';
 import { EditIconGrey, PlusIcon } from '../../../../components/SVG_Icons';
 import { getRouteOptions, getDriverOptions, getDeliveryColumns, getDistributorOptions, getCustomerOptions, getDropdownOptions } from '../../../../assets/fixtures';
-import { validateMobileNumber, validateNames, validateNumber, validateDCValues, validateEmailId } from '../../../../utils/validations';
+import { validateMobileNumber, validateNames, validateNumber, validateDCValues, validateEmailId, validateIntFloat } from '../../../../utils/validations';
 import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone, getStatusColor, doubleKeyComplexSearch, getProductsForUI } from '../../../../utils/Functions';
 
 const Delivery = ({ date, source }) => {
@@ -124,9 +124,9 @@ const Delivery = ({ date, source }) => {
         try {
             showToast({ v1Ing: 'Fetching', action: 'loading' })
             const [data] = await http.GET(axios, url, config)
-            const { mobileNumber: phoneNumber, address, products, agencyName: customerName, deliveryLocation } = data
+            const { mobileNumber: phoneNumber, address, products, mailId: EmailId, agencyName: customerName, deliveryLocation } = data
             const productsUI = getProductsForUI(products)
-            setFormData(data => ({ ...data, phoneNumber, address, customerName, deliveryLocation, ...productsUI }))
+            setFormData(data => ({ ...data, phoneNumber, address, customerName, EmailId, deliveryLocation, ...productsUI }))
             showToast({ v2: 'fetched' })
         } catch (error) {
             message.destroy()
@@ -138,8 +138,10 @@ const Delivery = ({ date, source }) => {
 
         try {
             showToast({ v1Ing: 'Fetching', action: 'loading' })
-            const { data: [res] } = await http.GET(axios, url, config)
-            setFormData(data => ({ ...data, ...res }))
+            const { data: [data] } = await http.GET(axios, url, config)
+            const { products, ...res } = data
+            const productsUI = getProductsForUI(products)
+            setFormData(data => ({ ...data, ...res, ...productsUI }))
             showToast({ v2: 'fetched' })
         } catch (error) {
             message.destroy()
@@ -172,7 +174,7 @@ const Delivery = ({ date, source }) => {
             const productsUI = getProductsForUI([])
             setFormData(data => ({
                 ...data, existingCustomerId: null, customerName: '', phoneNumber: null,
-                distributorId: null, deliveryLocation: null, address: '', ...productsUI
+                distributorId: null, deliveryLocation: null, address: '', EmailId: '', ...productsUI
             }))
         }
         else if (key === 'distributorId') {
@@ -191,9 +193,13 @@ const Delivery = ({ date, source }) => {
             const error = validateMobileNumber(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key.includes('box') || key.includes('can')) {
+        else if (key.includes('product')) {
             const error = validateNumber(value)
-            setFormErrors(errors => ({ ...errors, products: error }))
+            setFormErrors(errors => ({ ...errors, productNPrice: error }))
+        }
+        else if (key.includes('price')) {
+            const error = validateIntFloat(value)
+            setFormErrors(errors => ({ ...errors, productNPrice: error }))
         }
     }
 
@@ -206,6 +212,10 @@ const Delivery = ({ date, source }) => {
         else if (key === 'EmailId') {
             const error = validateEmailId(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key.includes('price')) {
+            const error = validateIntFloat(value, true)
+            setFormErrors(errors => ({ ...errors, productNPrice: error }))
         }
     }
 
