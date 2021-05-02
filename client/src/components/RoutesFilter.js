@@ -2,7 +2,7 @@ import { Dropdown, Menu } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
 import SearchInput from './SearchInput';
 import { LinesIconGrey } from './SVG_Icons';
-import CheckboxOption from './CheckboxOptionFunc';
+import CheckboxOption from './CheckboxOption';
 import { doubleKeyComplexSearch } from '../utils/Functions';
 import '../sass/routesDropdown.scss'
 

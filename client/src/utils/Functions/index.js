@@ -188,7 +188,11 @@ export const tripleKeyComplexSearch = (data, matcher, key1, key2, key3) => {
     })
 }
 export const filterAccounts = (accountsClone, filterInfo) => {
-    const { business, status, account, creator } = filterInfo
+    let { business = [], status = [], account = [], creator = [] } = filterInfo
+    business = business.filter(item => item.checked).map(item => item.value)
+    status = status.filter(item => item.checked).map(item => item.value)
+    account = account.filter(item => item.checked).map(item => item.value)
+    creator = creator.filter(item => item.checked).map(item => item.value)
     let singleFiltered = [], allFiltered = []
 
     if (!isEmpty(business) && !isEmpty(status) && !isEmpty(account) && !isEmpty(creator)) {
@@ -492,13 +496,15 @@ export const getAddressesForDB = (data, isUpdate) => {
 export const getDCValuesForDB = (data) => {
 
     const { customerName, phoneNumber, address, routeId, driverId, EmailId,
-        product20L, product2L, product1L, product500ML, product300ML,
-        customerType, existingCustomerId, distributorId, creationType, deliveryLocation } = data
+        product20L, product2L, product1L, product500ML, product300ML, price20L, price2L, price1L,
+        price500ML, price300ML, customerType, existingCustomerId, distributorId, creationType, deliveryLocation } = data
 
     return {
         customerName, phoneNumber, address, routeId, driverId, EmailId,
         product20L: product20L || 0, product2L: product2L || 0, product1L: product1L || 0,
         product500ML: product500ML || 0, product300ML: product300ML || 0,
+        price20L: price20L || 0, price2L: price2L || 0, price1L: price1L || 0,
+        price500ML: price500ML || 0, price300ML: price300ML || 0,
         customerType, existingCustomerId, distributorId, creationType,
         deliveryLocation
     }

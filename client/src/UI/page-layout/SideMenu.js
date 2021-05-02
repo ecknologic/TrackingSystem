@@ -23,7 +23,6 @@ const SideMenu = () => {
     const clickRef = useRef('')
 
     const mainPathname = getMainPathname(pathname)
-
     const menu = useMemo(() => getSideMenuKey(pathname), [mainPathname])
 
     useEffect(() => {

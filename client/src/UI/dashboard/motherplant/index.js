@@ -3,7 +3,7 @@ import Header from '../../../components/ContentHeader';
 import ProductionStatus from './panels/ProductionStatus';
 import TotalStockStatus from './panels/TotalStockStatus';
 import RawMaterialStock from './panels/RawMaterialStock';
-import EmptyBottlesStock from './panels/EmptyBottlesStock';
+// import EmptyBottlesStock from './panels/EmptyBottlesStock';
 import WaterQualityResults from './panels/WaterQualityResults';
 import DispatchDetails from './panels/DispatchDetails';
 import '../../../sass/dashboard.scss'
@@ -16,7 +16,7 @@ const MotherplantDashboard = () => {
             <div className='dashboard-content'>
                 <ProductionStatus />
                 <TotalStockStatus />
-                <EmptyBottlesStock />
+                {/* <EmptyBottlesStock /> */}
                 <WaterQualityResults />
                 <div className='bottom-panels-container'>
                     <RawMaterialStock />

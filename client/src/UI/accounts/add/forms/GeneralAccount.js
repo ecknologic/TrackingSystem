@@ -245,7 +245,7 @@ const GeneralAccountForm = (props) => {
                                     </div>
                                     <div className='column'>
                                         <div className='input-container'>
-                                            <InputLabel name='2 Ltrs' />
+                                            <InputLabel name='2 Ltrs (Box-1&times;9)' />
                                             <CustomInput value={product2L} disabled={disabled}
                                                 placeholder='Qty' onChange={(value) => onChange(value, 'product2L')}
                                             />
@@ -260,7 +260,7 @@ const GeneralAccountForm = (props) => {
                                     </div>
                                     <div className='column'>
                                         <div className='input-container'>
-                                            <InputLabel name='1 Ltrs' />
+                                            <InputLabel name='1 Ltrs (Box-1&times;12)' />
                                             <CustomInput value={product1L} disabled={disabled}
                                                 placeholder='Qty' onChange={(value) => onChange(value, 'product1L')}
                                             />
@@ -275,7 +275,7 @@ const GeneralAccountForm = (props) => {
                                     </div>
                                     <div className='column'>
                                         <div className='input-container'>
-                                            <InputLabel name='500 Ml' />
+                                            <InputLabel name='500 Ml (Box-1&times;24)' />
                                             <CustomInput value={product500ML} disabled={disabled}
                                                 placeholder='Qty' onChange={(value) => onChange(value, 'product500ML')}
                                             />
@@ -290,7 +290,7 @@ const GeneralAccountForm = (props) => {
                                     </div>
                                     <div className='column'>
                                         <div className='input-container'>
-                                            <InputLabel name='300 Ml' />
+                                            <InputLabel name='300 Ml (Box-1&times;30)' />
                                             <CustomInput value={product300ML} disabled={disabled}
                                                 placeholder='Qty' onChange={(value) => onChange(value, 'product300ML')}
                                             />

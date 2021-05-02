@@ -10,8 +10,8 @@ import NoContent from '../../../components/NoContent';
 import AccountCard from '../../../components/AccountCard';
 import { MARKETINGMANAGER } from '../../../utils/constants';
 import CustomPagination from '../../../components/CustomPagination';
-import { getCreatorOptions, getDefaultOptions } from '../../../assets/fixtures';
-import { complexDateSort, complexSort, tripleKeyComplexSearch, filterAccounts, isEmpty } from '../../../utils/Functions'
+import useCustomerFilter from '../../../utils/hooks/useCustomerFilter';
+import { complexDateSort, complexSort, tripleKeyComplexSearch, filterAccounts } from '../../../utils/Functions'
 
 const Accounts = () => {
     const history = useHistory()
@@ -27,34 +27,43 @@ const Accounts = () => {
     const [filterON, setFilterON] = useState(false)
     const [searchON, setSeachON] = useState(false)
     const [sortBy, setSortBy] = useState('NEW - OLD')
-    const [businessList, setBusinessList] = useState([])
-    const [creatorList, setCreatorList] = useState([])
 
+    const { account, creator, business, status, hasFilters } = useCustomerFilter()
     const pageSizeOptions = useMemo(() => generatePageSizeOptions(), [window.innerWidth])
-    const businessOptions = useMemo(() => getDefaultOptions(businessList), [businessList])
-    const creatorOptions = useMemo(() => getCreatorOptions(creatorList), [creatorList])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
     const isSMManager = ROLE === MARKETINGMANAGER
 
     useEffect(() => {
         getAccounts()
-        getCreatorList()
-        getBusinessList()
 
         return () => {
             http.ABORT(source)
         }
     }, [])
 
+    useEffect(() => {
+        if (!loading) {
+            const filters = { business, status, account, creator }
+            if (!hasFilters) handleRemoveFilters()
+            else handleApplyFilters(filters, accountsClone)
+        }
+    }, [account, creator, business, status])
+
     const getAccounts = async () => {
         const url = getUrl()
 
         try {
             const { data } = await http.GET(axios, url, config)
+            if (hasFilters) {
+                const filters = { business, status, account, creator }
+                handleApplyFilters(filters, data)
+            }
+            else {
+                setAccounts(data)
+                setTotalCount(data.length)
+            }
             setAccountsClone(data)
-            setAccounts(data)
-            setTotalCount(data.length)
             setLoading(false)
         } catch (error) { }
     }
@@ -65,32 +74,6 @@ const Accounts = () => {
 
         if (isSMManager) return SMManagerUrl
         return selfUrl
-    }
-
-    const getBusinessList = async () => {
-        const url = `bibo/getList/natureOfBusiness`
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setBusinessList(data)
-        } catch (error) { }
-    }
-
-    const getCreatorList = async () => {
-        const roleName = getRoleName()
-        if (!roleName) return;
-
-        const url = `users/getUsersByRole/${roleName}`
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setCreatorList(data)
-        } catch (error) { }
-    }
-
-    const getRoleName = () => {
-        if (isSMManager) return 'SalesAndMarketing'
-        return ''
     }
 
     const handleSearch = (value) => {
@@ -147,8 +130,8 @@ const Accounts = () => {
         setAccounts(clone)
     }
 
-    const handleFilter = (filterInfo) => {
-        const filtered = filterAccounts(accountsClone, filterInfo)
+    const handleApplyFilters = (filterInfo, accounts) => {
+        const filtered = filterAccounts(accounts, filterInfo)
         setFilterON(true)
         setPageNumber(1)
         setAccounts(filtered)
@@ -156,19 +139,13 @@ const Accounts = () => {
         setTotalCount(filtered.length)
     }
 
-    const handleFilterClear = () => {
+    const handleRemoveFilters = () => {
         setPageNumber(1)
         setAccounts(accountsClone)
         setTotalCount(accountsClone.length)
         setFilteredClone([])
         setFilterON(false)
         handleSort(sortBy, false)
-    }
-
-    const onFilterChange = (data) => {
-        const { business, status, account, creator } = data
-        if (isEmpty(business) && isEmpty(status) && isEmpty(account) && isEmpty(creator)) handleFilterClear()
-        else handleFilter(data)
     }
 
     const goToAddAccount = () => history.push('/customer-accounts/add-account')
@@ -180,7 +157,7 @@ const Accounts = () => {
 
     return (
         <Fragment>
-            <Header onSearch={handleSearch} onSort={onSort} onFilter={onFilterChange} onClick={goToAddAccount} creatorOptions={creatorOptions} businessOptions={businessOptions} />
+            <Header onSearch={handleSearch} onSort={onSort} onClick={goToAddAccount} />
             <div className='account-manager-content'>
                 <Row gutter={[{ lg: 32, xl: 16 }, { lg: 16, xl: 16 }]}>
                     {

@@ -416,12 +416,15 @@ router.get("/getCustomerDetailsById/:customerId", (req, res) => {
 router.get("/getCustomerDetailsForDC/:customerId", (req, res) => {
   customerQueries.getCustomerDetailsForDC(req.params.customerId, (err, results) => {
     if (err) res.status(500).json(err);
-    // else if (results.length) {
-    // customerProductDetails(results[0].deliveryDetailsId, "customer").then(products => {
-    //     results[0].products = products
-    //     res.json({ status: 200, statusMessage: "Success", data: results })
-    //   })
-    // }
+    else if (results.length) {
+      getDeliveryDetails({ customerId: req.params.customerId, isSuperAdmin: 'false' }).then(response => {
+        customerProductDetails(response[0].deliveryDetailsId, "customer").then(products => {
+          console.log('products>>', products)
+          results[0].products = products
+          res.json({ status: 200, statusMessage: "Success", data: results })
+        })
+      })
+    }
     else {
       res.json({ status: 200, statusMessage: "Success", data: results })
     }

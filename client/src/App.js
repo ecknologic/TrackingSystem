@@ -25,6 +25,7 @@ import ApproveAccount from './UI/accounts/approve';
 import Materials from './UI/materials/super-admin';
 import Motherplants from './UI/plants/Motherplants';
 import MotherplantStock from './UI/stock/motherplant';
+import { FilterProvider } from './modules/filterContext';
 import WarehouseInvoices from './UI/invoices/warehouse';
 import AccountsDashboard from './UI/accounts/dashboard';
 import ReturnEmptyCans from './UI/empty-cans/warehouse';
@@ -88,53 +89,55 @@ const App = () => {
 
    return (
       <Router>
-         <Switch>
-            <Route exact path='/' render={loginAuth} />
-            <PageLayout>
-               <Switch>
-                  <Route path='/dashboard' render={dashboardAuth} />
-                  <Route path='/customer-accounts/add-account' render={byRole(<AddAccount />)} />
-                  <Route path='/customer-accounts/manage/:accountId' render={byRole(<ViewAccount />)} />
-                  <Route path='/customer-accounts/:tab?/:page?' render={byRole(<AccountsDashboard />)} />
-                  <Route path='/add-customer' render={byRole(<AddAccount />)} />
-                  <Route path='/manage-qc' render={byRole(<QualityControl />)} />
-                  <Route path='/manage-production' render={byRole(<MotherplantStock />)} />
-                  <Route path='/manage-dispatches' render={byRole(<Dispatches />)} />
-                  <Route path='/manage-materials' render={byRole(<MotherplantMaterials />)} />
-                  <Route path='/manage-routes' render={byRole(<Transport />)} />
-                  <Route path='/manage-return-cans' render={byRole(<ReceivedEmptyCans />)} />
-                  <Route path='/manage-invoices/dc-list/:invoiceId' render={byRole(<DeliveredDC />)} />
-                  <Route path='/manage-invoices/manage' render={byRole(<ManageInvoices />)} />
-                  <Route path='/manage-invoices/:tab?' render={byRole(<WarehouseInvoices />)} />
-                  <Route path='/manage-empty-cans' render={byRole(<ReturnEmptyCans />)} />
-                  <Route path='/manage-stock/staff/:employeeId' render={byRole(<ManageEmployee isDriver />)} />
-                  <Route path='/manage-stock/:tab?' render={byRole(<WarehouseStock />)} />
-                  <Route path='/materials' render={byRole(<Materials />)} />
-                  <Route path='/staff/manage/:employeeId' render={byRole(<ManageEmployee />)} />
-                  <Route path='/drivers/manage/:employeeId' render={byRole(<ManageEmployee isDriver />)} />
-                  <Route path='/distributors/manage/:distributorId' render={byRole(<ManageDistributor />)} />
-                  <Route path='/motherplants/manage/:plantId' render={byRole(<ManagePlant />)} />
-                  <Route path='/warehouses/manage/:plantId' render={byRole(<ManagePlant />)} />
-                  <Route path='/staff' render={byRole(<Staff />)} />
-                  <Route path='/routes' render={byRole(<Transport />)} />
-                  <Route path='/drivers' render={byRole(<Drivers />)} />
-                  <Route path='/invoices/manage' render={byRole(<ManageInvoices />)} />
-                  <Route path='/invoices/dc-list/:invoiceId' render={byRole(<DeliveredDC />)} />
-                  <Route path='/invoices/edit/:invoiceId' render={byRole(<EditInvoice />)} />
-                  <Route path='/invoices/:tab?' render={byRole(<Invoices />)} />
-                  <Route path='/products' render={byRole(<Products />)} />
-                  <Route path='/distributors' render={byRole(<Distributors />)} />
-                  <Route path='/motherplants' render={byRole(<Motherplants />)} />
-                  <Route path='/warehouses' render={byRole(<Warehouses />)} />
-                  <Route path='/customers/add-account' render={byRole(<AddAccount />)} />
-                  <Route path='/customers/approval/:accountId' render={byRole(<ApproveAccount />)} />
-                  <Route path='/customers/manage/:accountId' render={byRole(<ViewAccount />)} />
-                  <Route path='/customers/:tab?/:page?' render={byRole(<Customers />)} />
-                  <Route path='/unauthorized' render={Unauthorized} />
-                  <Route render={noMatchAuth} />
-               </Switch>
-            </PageLayout>
-         </Switch>
+         <FilterProvider>
+            <Switch>
+               <Route exact path='/' render={loginAuth} />
+               <PageLayout>
+                  <Switch>
+                     <Route path='/dashboard' render={dashboardAuth} />
+                     <Route path='/customer-accounts/add-account' render={byRole(<AddAccount />)} />
+                     <Route path='/customer-accounts/manage/:accountId' render={byRole(<ViewAccount />)} />
+                     <Route path='/customer-accounts/:tab?/:page?' render={byRole(<AccountsDashboard />)} />
+                     <Route path='/add-customer' render={byRole(<AddAccount />)} />
+                     <Route path='/manage-qc' render={byRole(<QualityControl />)} />
+                     <Route path='/manage-production' render={byRole(<MotherplantStock />)} />
+                     <Route path='/manage-dispatches' render={byRole(<Dispatches />)} />
+                     <Route path='/manage-materials' render={byRole(<MotherplantMaterials />)} />
+                     <Route path='/manage-routes' render={byRole(<Transport />)} />
+                     <Route path='/manage-return-cans' render={byRole(<ReceivedEmptyCans />)} />
+                     <Route path='/manage-invoices/dc-list/:invoiceId' render={byRole(<DeliveredDC />)} />
+                     <Route path='/manage-invoices/manage' render={byRole(<ManageInvoices />)} />
+                     <Route path='/manage-invoices/:tab?' render={byRole(<WarehouseInvoices />)} />
+                     <Route path='/manage-empty-cans' render={byRole(<ReturnEmptyCans />)} />
+                     <Route path='/manage-stock/staff/:employeeId' render={byRole(<ManageEmployee isDriver />)} />
+                     <Route path='/manage-stock/:tab?' render={byRole(<WarehouseStock />)} />
+                     <Route path='/materials' render={byRole(<Materials />)} />
+                     <Route path='/staff/manage/:employeeId' render={byRole(<ManageEmployee />)} />
+                     <Route path='/drivers/manage/:employeeId' render={byRole(<ManageEmployee isDriver />)} />
+                     <Route path='/distributors/manage/:distributorId' render={byRole(<ManageDistributor />)} />
+                     <Route path='/motherplants/manage/:plantId' render={byRole(<ManagePlant />)} />
+                     <Route path='/warehouses/manage/:plantId' render={byRole(<ManagePlant />)} />
+                     <Route path='/staff' render={byRole(<Staff />)} />
+                     <Route path='/routes' render={byRole(<Transport />)} />
+                     <Route path='/drivers' render={byRole(<Drivers />)} />
+                     <Route path='/invoices/manage' render={byRole(<ManageInvoices />)} />
+                     <Route path='/invoices/dc-list/:invoiceId' render={byRole(<DeliveredDC />)} />
+                     <Route path='/invoices/edit/:invoiceId' render={byRole(<EditInvoice />)} />
+                     <Route path='/invoices/:tab?' render={byRole(<Invoices />)} />
+                     <Route path='/products' render={byRole(<Products />)} />
+                     <Route path='/distributors' render={byRole(<Distributors />)} />
+                     <Route path='/motherplants' render={byRole(<Motherplants />)} />
+                     <Route path='/warehouses' render={byRole(<Warehouses />)} />
+                     <Route path='/customers/add-account' render={byRole(<AddAccount />)} />
+                     <Route path='/customers/approval/:accountId' render={byRole(<ApproveAccount />)} />
+                     <Route path='/customers/manage/:accountId' render={byRole(<ViewAccount />)} />
+                     <Route path='/customers/:tab?/:page?' render={byRole(<Customers />)} />
+                     <Route path='/unauthorized' render={Unauthorized} />
+                     <Route render={noMatchAuth} />
+                  </Switch>
+               </PageLayout>
+            </Switch>
+         </FilterProvider>
       </Router>
    );
 }

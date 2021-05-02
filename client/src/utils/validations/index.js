@@ -144,6 +144,7 @@ export const validateDeliveryValues = (data) => {
     } = data
 
     if (!departmentId) errors.departmentId = text
+    if (!contactPerson) errors.contactPerson = text
     if (!routeId) errors.routeId = text
     if (!address) errors.address = text
     // if (gstNo && !gstProof) errors.gstProof = text
@@ -152,11 +153,6 @@ export const validateDeliveryValues = (data) => {
     else {
         const error = validateMobileNumber(phoneNumber, true)
         error && (errors.phoneNumber = error)
-    }
-    if (!contactPerson) errors.contactPerson = text
-    else {
-        const error = validateNames(contactPerson)
-        error && (errors.contactPerson = error)
     }
     if (!deliveryLocation) errors.deliveryLocation = text
 
@@ -852,6 +848,11 @@ export const validateDCValues = (data) => {
 
     const isDistributor = customerType === 'distributor'
     const isExistingCustomer = customerType === 'internal'
+    if (!EmailId) errors.EmailId = text
+    else {
+        const error = validateEmailId(EmailId)
+        error && (errors.EmailId = error)
+    }
 
     if (isDistributor) {
         if (!routeId) errors.routeId = text
@@ -868,11 +869,6 @@ export const validateDCValues = (data) => {
             if (!existingCustomerId) errors.existingCustomerId = text
         }
         else {
-            if (!EmailId) errors.EmailId = text
-            else {
-                const error = validateEmailId(EmailId)
-                error && (errors.EmailId = error)
-            }
             if (!customerName) errors.customerName = text
             else {
                 const error = validateNames(customerName)
@@ -881,8 +877,6 @@ export const validateDCValues = (data) => {
         }
     }
 
-
-
     if (!address) errors.address = text
     if (!deliveryLocation) errors.deliveryLocation = text
     if (!phoneNumber) errors.phoneNumber = text
@@ -890,7 +884,7 @@ export const validateDCValues = (data) => {
         const error = validateMobileNumber(phoneNumber, true)
         error && (errors.phoneNumber = error)
     }
-    const productErrors = validateProducts(rest)
+    const productErrors = validateProductNPrice(rest)
     return { ...errors, ...productErrors }
 }
 

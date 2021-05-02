@@ -9,7 +9,7 @@ customerQueries.getCustomerDetails = (customerId, callback) => {
     executeGetQuery(query, callback)
 }
 customerQueries.getCustomerDetailsForDC = (customerId, callback) => {
-    let query = "SELECT mobileNumber as phoneNumber,Address1 as address, customerName from customerdetails WHERE customerId=" + customerId
+    let query = "SELECT mobileNumber as phoneNumber,Address1 as address,EmailId,customerName from customerdetails WHERE customerId=" + customerId
     executeGetQuery(query, callback)
 }
 customerQueries.getOrdersByDepartmentId = (departmentId, callback) => {

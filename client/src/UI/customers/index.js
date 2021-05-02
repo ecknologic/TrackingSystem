@@ -9,11 +9,11 @@ import useUser from '../../utils/hooks/useUser';
 import NoContent from '../../components/NoContent';
 import AccountCard from '../../components/AccountCard';
 import DeleteModal from '../../components/CustomModal';
-import { getDefaultOptions } from '../../assets/fixtures';
 import ConfirmMessage from '../../components/ConfirmMessage';
 import CustomPagination from '../../components/CustomPagination';
 import { ACCOUNTSADMIN, SUPERADMIN } from '../../utils/constants';
-import { complexDateSort, complexSort, tripleKeyComplexSearch, filterAccounts, showToast } from '../../utils/Functions'
+import useCustomerFilter from '../../utils/hooks/useCustomerFilter';
+import { complexDateSort, complexSort, tripleKeyComplexSearch, filterAccounts, showToast, isEmpty } from '../../utils/Functions'
 import '../../sass/customers.scss'
 
 const Customers = () => {
@@ -34,9 +34,8 @@ const Customers = () => {
     const [activeTab, setActiveTab] = useState(tab)
     const [modalDelete, setModalDelete] = useState(false)
     const [currentId, setCurrentId] = useState('')
-    const [businessList, setBusinessList] = useState([])
 
-    const businessOptions = useMemo(() => getDefaultOptions(businessList), [businessList])
+    const { account, business, status, hasFilters } = useCustomerFilter()
     const pageSizeOptions = useMemo(() => generatePageSizeOptions(), [window.innerWidth])
     const isAdmin = useMemo(() => ROLE === SUPERADMIN || ROLE === ACCOUNTSADMIN, [])
     const source = useMemo(() => axios.CancelToken.source(), [activeTab]);
@@ -45,31 +44,35 @@ const Customers = () => {
     useEffect(() => {
         setLoading(true)
         getAccounts()
-        getBusinessList()
 
         return () => {
             http.ABORT(source)
         }
     }, [activeTab])
 
+    useEffect(() => {
+        if (!loading) {
+            const filters = { business, status, account }
+            if (!hasFilters) handleRemoveFilters()
+            else handleApplyFilters(filters, accountsClone)
+        }
+    }, [account, business, status])
+
     const getAccounts = async () => {
         const url = `customer/${getUrl(activeTab)}`
 
         try {
             const data = await http.GET(axios, url, config)
+            if (hasFilters) {
+                const filters = { business, status, account }
+                handleApplyFilters(filters, data)
+            }
+            else {
+                setAccounts(data)
+                setTotalCount(data.length)
+            }
             setAccountsClone(data)
-            setAccounts(data)
-            setTotalCount(data.length)
             setLoading(false)
-        } catch (error) { }
-    }
-
-    const getBusinessList = async () => {
-        const url = `bibo/getList/natureOfBusiness`
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setBusinessList(data)
         } catch (error) { }
     }
 
@@ -142,8 +145,8 @@ const Customers = () => {
         } else setCardBtnTxt('Manage Account')
     }
 
-    const handleFilter = (filterInfo) => {
-        const filtered = filterAccounts(accountsClone, filterInfo)
+    const handleApplyFilters = (filterInfo, accounts) => {
+        const filtered = filterAccounts(accounts, filterInfo)
         setFilterON(true)
         setPageNumber(1)
         setAccounts(filtered)
@@ -151,19 +154,13 @@ const Customers = () => {
         setTotalCount(filtered.length)
     }
 
-    const handleFilterClear = () => {
+    const handleRemoveFilters = () => {
         setPageNumber(1)
         setAccounts(accountsClone)
         setTotalCount(accountsClone.length)
         setFilteredClone([])
         setFilterON(false)
         handleSort(sortBy, false)
-    }
-
-    const onFilterChange = (data) => {
-        const { business, status, account } = data
-        if (!business.length && !status.length && !account.length) handleFilterClear()
-        else handleFilter(data)
     }
 
     const handleManageAccount = (id) => {
@@ -257,7 +254,7 @@ const Customers = () => {
 
     return (
         <Fragment>
-            <Header activeTab={activeTab} onSearch={handleSearch} onSort={onSort} onFilter={onFilterChange} onChange={handleTabChange} onClick={goToAddAccount} businessOptions={businessOptions} />
+            <Header activeTab={activeTab} onSearch={handleSearch} onSort={onSort} onChange={handleTabChange} onClick={goToAddAccount} />
             <div className='account-manager-content'>
                 <Row gutter={[{ lg: 32, xl: 16 }, { lg: 16, xl: 16 }]}>
                     {
