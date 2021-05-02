@@ -7,7 +7,7 @@ warehouseQueries.getWarehouseList = async (callback) => {
 }
 warehouseQueries.getDCList = async (departmentId, callback) => {
     // let query = `select co.dcNo,co.distributorId, co.customerName,co.address,c.Address1 as deliveryAddress,c.gstNo,c.EmailId as customerEmailId,c.panNo,c.customerId,c.createdBy,d.address as deliveryAddress,d.gstNo,d.mailId as EmailId FROM customerorderdetails co LEFT JOIN customerdetails c ON co.existingCustomerId=c.customerId LEFT JOIN Distributors d ON co.distributorId=d.distributorId WHERE warehouseId=? AND co.creationType='manual'`;
-    let query = `SELECT co.dcNo,co.customerType,co.distributorId, co.customerName,co.address,c.panNo,c.customerId,c.createdBy,
+    let query = `SELECT co.customerOrderId,co.dcNo,co.customerType,co.distributorId, co.customerName,co.address,c.panNo,c.customerId,c.createdBy,
     CASE WHEN co.customertype='distributor' THEN d.deliveryLocation ELSE c.Address1 END AS deliveryAddress,
     CASE WHEN co.customertype='distributor' THEN d.gstNo ELSE c.gstNo END AS gstNo,
     CASE WHEN co.customertype='distributor' THEN d.mailId ELSE c.EmailId  END AS EmailId
