@@ -699,6 +699,7 @@ router.post('/updateDeliveryDetails', (req, res) => {
                 if (count == deliveryDetails.length) {
                   let data = await getAddedDeliveryDetails(results.insertId)
                   updateWHDelivery(req)
+                  auditQueries.createLog({ userId, description: "New Delivery details added", customerId: i.customer_Id, type: "customer" })
                   res.json({ status: 200, message: "Delivery Details Updated Successfully", data });
                 }
               })
