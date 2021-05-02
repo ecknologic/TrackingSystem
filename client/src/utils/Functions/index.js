@@ -1,6 +1,7 @@
 import dayjs from 'dayjs'
-import { message } from 'antd'
+import { v4 as uuidv4 } from 'uuid';
 import { TRACKFORM } from "../constants"
+import { message } from 'antd'
 
 export const editData = (updatedItem, data, idField) => {
     return new Promise(resolve => {
@@ -335,6 +336,59 @@ export const getProductsForDB = ({ product20L, price20L, product2L, price2L, pro
 
     return products
 }
+export const getProductsForTable = (productList, data, isLocal) => {
+    const { product20L, price20L, product2L, price2L, product1L,
+        price1L, product500ML, price500ML, product300ML, price300ML } = data
+
+    const products = productList.map(item => {
+        const { productName } = item
+        let newItem = {
+            ...item,
+            discount: 0,
+            key: uuidv4().slice(0, 7)
+        }
+
+        if (productName.startsWith('20')) {
+            newItem.quantity = product20L
+            newItem.productPrice = price20L
+        }
+        else if (productName.startsWith('2')) {
+            newItem.quantity = product2L
+            newItem.productPrice = price2L
+        }
+        else if (productName.startsWith('1')) {
+            newItem.quantity = product1L
+            newItem.productPrice = price1L
+        }
+        else if (productName.startsWith('500')) {
+            newItem.quantity = product500ML
+            newItem.productPrice = price500ML
+        }
+        else if (productName.startsWith('300')) {
+            newItem.quantity = product300ML
+            newItem.productPrice = price300ML
+        }
+
+        newItem = {
+            ...newItem,
+            ...getProductTableResults(newItem, isLocal),
+        }
+        return newItem
+
+    }).filter(item => item.quantity)
+
+    return products
+}
+export const getProductTableResults = (row, isLocal) => {
+    let { quantity, productPrice, discount, tax, cgst, sgst, igst } = row
+    const priceAfterDiscount = productPrice - (productPrice / 100 * discount)
+    const amount = Number((priceAfterDiscount * quantity).toFixed(2))
+    const totalTax = (amount / 100 * tax)
+    cgst = isLocal ? Number((totalTax / 2).toFixed(2)) : 0.00
+    sgst = isLocal ? Number((totalTax / 2).toFixed(2)) : 0.00
+    igst = isLocal ? 0.00 : Number((totalTax).toFixed(2))
+    return { amount, cgst, sgst, igst }
+};
 export const getProductsWithIdForDB = ({ product20L, price20L, product2L, price2L, product1L, price1L, product500ML, price500ML, product300ML, price300ML, product20LId, product2LId, product1LId, product500MLId, product300MLId }) => {
     const products = []
     const item1 = { productName: '20L', productPrice: price20L || 0, noOfJarsTobePlaced: product20L || 0, productId: product20LId }

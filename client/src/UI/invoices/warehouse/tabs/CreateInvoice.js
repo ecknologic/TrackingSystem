@@ -13,9 +13,9 @@ import useUser from '../../../../utils/hooks/useUser';
 import { TODAYDATE } from '../../../../utils/constants';
 import NoContent from '../../../../components/NoContent';
 import CustomButton from '../../../../components/CustomButton';
-import { isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 import { validateNumber, validateInvoiceValues } from '../../../../utils/validations';
 import { getProductOptions, getDDownOptions, getDCOptions } from '../../../../assets/fixtures';
+import { getProductsForTable, getProductTableResults, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
 const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
@@ -58,7 +58,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
     }, [])
 
     useEffect(() => {
-        const updatedData = dataSource.map((row) => ({ ...row, ...getResults(row) }))
+        const updatedData = dataSource.map((row) => ({ ...row, ...getProductTableResults(row, isLocal) }))
         setDataSource(updatedData)
     }, [isLocal])
 
@@ -69,7 +69,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
             setLoading(true)
             const data = await http.GET(axios, url, config)
             const { products, ...rest } = data
-            const { invoiceId, customerId } = rest
+            const { invoiceId } = rest
             setHeader({ title: `Invoice - ${invoiceId}` })
             setDataSource(products)
             setFormData(rest)
@@ -122,6 +122,29 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
         } catch (error) { }
     }
 
+    const getDCByCustomerOrderId = async (id) => {
+        const url = `warehouse/getDCDetailsByCOId/${id}`
+
+        try {
+            let isLocal = true
+            showToast({ v1Ing: 'Fetching', action: 'loading' })
+            const [dc] = await http.GET(axios, url, config)
+            let { customerId, distributorId } = dc
+            customerId = customerId || distributorId
+
+            if (!dc.gstNo) setIsLocal(true)
+            else if ((dc.gstNo || "").startsWith('36')) setIsLocal(true)
+            else { setIsLocal(false); isLocal = false }
+
+            setFormData(data => ({ ...data, ...dc, customerId }))
+            const data = getProductsForTable(productList, dc, isLocal)
+            setDataSource(data)
+            showToast({ v2: 'fetched' })
+        } catch (error) {
+            message.destroy()
+        }
+    }
+
     const resetProductErr = () => setFormErrors(errors => ({ ...errors, products: '' }))
 
     const handleAddProduct = () => {
@@ -154,25 +177,14 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
         if (dataIndex === 'productName') {
             const { tax, price: productPrice } = productList.find(item => item.productName === row.productName)
             const newRow = { ...row, productPrice, tax }
-            row = { ...newRow, ...getResults(newRow) }
+            row = { ...newRow, ...getProductTableResults(newRow, isLocal) }
         }
         else {
             const newRow = { ...row }
-            row = { ...newRow, ...getResults(newRow) }
+            row = { ...newRow, ...getProductTableResults(newRow, isLocal) }
         }
 
         return row
-    };
-
-    const getResults = (row) => {
-        let { quantity, productPrice, discount, tax, cgst, sgst, igst } = row
-        const priceAfterDiscount = productPrice - (productPrice / 100 * discount)
-        const amount = Number((priceAfterDiscount * quantity).toFixed(2))
-        const totalTax = (amount / 100 * tax)
-        cgst = isLocal ? Number((totalTax / 2).toFixed(2)) : 0.00
-        sgst = isLocal ? Number((totalTax / 2).toFixed(2)) : 0.00
-        igst = isLocal ? 0.00 : Number((totalTax).toFixed(2))
-        return { amount, cgst, sgst, igst }
     };
 
     const handleChange = (value, key) => {
@@ -180,14 +192,8 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
         if (key === 'dcNo') {
-            const dc = DCList.find(item => item.dcNo === value)
-            let { customerId, distributorId } = dc
-            customerId = customerId || distributorId
-            setFormData(data => ({ ...data, ...dc, customerId }))
-
-            if (!dc.gstNo) setIsLocal(true)
-            else if ((dc.gstNo || "").startsWith('36')) setIsLocal(true)
-            else setIsLocal(false)
+            const { customerOrderId } = DCList.find(item => item.dcNo === value)
+            getDCByCustomerOrderId(customerOrderId)
         }
 
         // Validations
@@ -294,7 +300,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
             <div className='checkbox-container'>
                 <div>
                     <Checkbox
-                        value={departmentStatus === 'Pending' ? false : true}
+                        checked={departmentStatus === 'Pending' ? false : true}
                         onChange={({ target: { checked } }) => handleCheckboxChange(checked)}
                     />
                     <span className='app-checkbox-text'>Customer has paid the amount?</span>
