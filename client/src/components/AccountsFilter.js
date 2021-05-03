@@ -66,23 +66,27 @@ const AccountsFilter = () => {
                     })
                 }
             </Menu.ItemGroup>
-            <Menu.ItemGroup title='Select Status'>
-                {
-                    status.map(({ name, value, checked }) => {
-                        return (
-                            <Menu.Item key={value}>
-                                <CheckboxOption
-                                    value={value}
-                                    option={name}
-                                    checked={checked}
-                                    onSelect={(value) => onSelect(value, 'status')}
-                                    onDeselect={(value) => onDeselect(value, 'status')}
-                                />
-                            </Menu.Item>
-                        )
-                    })
-                }
-            </Menu.ItemGroup>
+            {
+                !isEmpty(status) && (
+                    <Menu.ItemGroup title='Select Status'>
+                        {
+                            status.map(({ name, value, checked }) => {
+                                return (
+                                    <Menu.Item key={value}>
+                                        <CheckboxOption
+                                            value={value}
+                                            option={name}
+                                            checked={checked}
+                                            onSelect={(value) => onSelect(value, 'status')}
+                                            onDeselect={(value) => onDeselect(value, 'status')}
+                                        />
+                                    </Menu.Item>
+                                )
+                            })
+                        }
+                    </Menu.ItemGroup>
+                )
+            }
         </Menu>
     )
 

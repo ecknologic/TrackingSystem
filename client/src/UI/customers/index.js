@@ -35,7 +35,7 @@ const Customers = () => {
     const [modalDelete, setModalDelete] = useState(false)
     const [currentId, setCurrentId] = useState('')
 
-    const { account, business, status, hasFilters } = useCustomerFilter()
+    const { account, business, hasFilters } = useCustomerFilter()
     const pageSizeOptions = useMemo(() => generatePageSizeOptions(), [window.innerWidth])
     const isAdmin = useMemo(() => ROLE === SUPERADMIN || ROLE === ACCOUNTSADMIN, [])
     const source = useMemo(() => axios.CancelToken.source(), [activeTab]);
@@ -52,11 +52,11 @@ const Customers = () => {
 
     useEffect(() => {
         if (!loading) {
-            const filters = { business, status, account }
+            const filters = { business, account }
             if (!hasFilters) handleRemoveFilters()
             else handleApplyFilters(filters, accountsClone)
         }
-    }, [account, business, status])
+    }, [account, business])
 
     const getAccounts = async () => {
         const url = `customer/${getUrl(activeTab)}`
@@ -64,7 +64,7 @@ const Customers = () => {
         try {
             const data = await http.GET(axios, url, config)
             if (hasFilters) {
-                const filters = { business, status, account }
+                const filters = { business, account }
                 handleApplyFilters(filters, data)
             }
             else {

@@ -2,15 +2,15 @@ import { http, appApi } from './http';
 import { useLocation } from 'react-router';
 import React, { useEffect, useMemo, useState } from 'react';
 import useUser from '../utils/hooks/useUser';
-import { MARKETINGMANAGER } from '../utils/constants';
 import { getMainPathname } from '../utils/Functions';
+import { ACCOUNTSADMIN, MARKETINGMANAGER, SUPERADMIN } from '../utils/constants';
 import { accountFilterList, getDefaultOptions, statusFilterList } from '../assets/fixtures';
 const FilterContext = React.createContext([{}, () => { }]);
 
 const FilterProvider = ({ children }) => {
     const { ROLE } = useUser()
     const { pathname } = useLocation()
-    const isSMManager = ROLE === MARKETINGMANAGER
+
     const [creator, setCreator] = useState([])
     const [creatorList, setCreatorList] = useState([])
     const [business, setBusiness] = useState([])
@@ -18,6 +18,8 @@ const FilterProvider = ({ children }) => {
     const [status, setStatus] = useState([...statusFilterList])
     const [account, setAccount] = useState([...accountFilterList])
 
+    const isSMManager = useMemo(() => ROLE === MARKETINGMANAGER, [])
+    const isAdmin = useMemo(() => ROLE === SUPERADMIN || ROLE === ACCOUNTSADMIN, [])
     const mainPathname = useMemo(() => getMainPathname(pathname), [pathname])
 
     useEffect(() => {
@@ -28,6 +30,12 @@ const FilterProvider = ({ children }) => {
     useEffect(() => {
         reset()
     }, [mainPathname])
+
+    useEffect(() => {
+        if (isAdmin) {
+            setStatus([])
+        }
+    }, [isAdmin])
 
     async function getBusinessList() {
         const url = `bibo/getList/natureOfBusiness`
