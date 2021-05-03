@@ -9,7 +9,7 @@ import '../sass/accountCard.scss'
 
 const AccountCard = ({ data, onClick, btnTxt = 'Manage Account', onSelect, isAdmin, optionOneLabel = 'Active' }) => {
     const { customerId, isApproved, contactpersons, customerName, organizationName, address, natureOfBussiness,
-        isSuperAdminApproved, depositAmount } = data
+        isSuperAdminApproved, depositAmount, customerNo } = data
 
     const optionOne = isApproved ? 'Draft' : optionOneLabel
     const iconOne = isApproved ? <BlockIconGrey /> : <TickIconGrey />
@@ -37,7 +37,7 @@ const AccountCard = ({ data, onClick, btnTxt = 'Manage Account', onSelect, isAdm
                     {contacts > 1 ? <FriendsIconGrey className='friends icon' /> : <FriendIconGrey className='friend icon' />}
                     <div className='address-container'>
                         <span className='title clamp-1'>{organizationName || customerName}</span>
-                        <span className='id'>ID: {customerId}</span>
+                        <span className='id'>ID: {customerNo}</span>
                         <span className='address clamp-2'>{address}</span>
                     </div>
                 </div>
