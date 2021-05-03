@@ -9,7 +9,7 @@ customerQueries.getCustomerDetails = (customerId, callback) => {
     executeGetQuery(query, callback)
 }
 customerQueries.getCustomerDetailsForDC = (customerId, callback) => {
-    let query = "SELECT mobileNumber as phoneNumber,Address1 as address, customerName from customerdetails WHERE customerId=" + customerId
+    let query = "SELECT mobileNumber as phoneNumber,Address1 as address,EmailId,customerName from customerdetails WHERE customerId=" + customerId
     executeGetQuery(query, callback)
 }
 customerQueries.getOrdersByDepartmentId = (departmentId, callback) => {
@@ -21,7 +21,7 @@ customerQueries.getRoutesByDepartmentId = (departmentId, callback) => {
     executeGetQuery(query, callback)
 }
 customerQueries.getCustomersByCustomerType = (customerType, callback) => {
-    let query = "SELECT c.organizationName,c.isActive,c.customertype,c.isApproved,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.approvedDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.customertype=? and c.isApproved=1 and d.deleted=0  GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.isApproved,c.customerId,c.registeredDate,c.approvedDate ORDER BY c.lastApprovedDate DESC"
+    let query = "SELECT c.organizationName,c.customerNo,c.isActive,c.customertype,c.isApproved,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.approvedDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.customertype=? and c.isApproved=1 and d.deleted=0  GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.isApproved,c.customerId,c.registeredDate,c.approvedDate ORDER BY c.lastApprovedDate DESC"
     executeGetParamsQuery(query, [customerType], callback)
 }
 customerQueries.getInActiveCustomers = (callback) => {
@@ -201,7 +201,7 @@ customerQueries.getTotalInActiveDistributors = (input, callback) => {
     else executeGetParamsQuery(query, callback)
 }
 customerQueries.getCustomerDetailsByStatus = (status, callback) => {
-    let query = "SELECT c.organizationName,c.isSuperAdminApproved,c.depositAmount,c.customertype,c.isActive,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.isApproved=? and d.deleted=0 AND c.approvedDate IS NULL GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.customerId,c.registeredDate ORDER BY c.registeredDate DESC"
+    let query = "SELECT c.organizationName,c.customerNo,c.isSuperAdminApproved,c.depositAmount,c.customertype,c.isApproved,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.isApproved=? and d.deleted=0 AND c.approvedDate IS NULL GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.customerId,c.registeredDate ORDER BY c.registeredDate DESC"
     executeGetParamsQuery(query, [status], callback)
 }
 customerQueries.getsqlNo = (tableName, callback) => {
