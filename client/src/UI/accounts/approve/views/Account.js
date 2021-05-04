@@ -9,18 +9,11 @@ const AccountView = ({ data }) => {
     const {
         natureOfBussiness, address, customerName, mobileNumber, invoicetype, creditPeriodInDays, alternatePhNo,
         customertype, EmailId, registeredDate, depositAmount, referredBy, createdUserName, contractPeriod,
-        pinCode,
+        pinCode, salesAgent
     } = data
 
     const isCorporate = customertype === 'Corporate'
     const NOB = getBusinessTypes(natureOfBussiness)
-
-    const renderDA = () => (
-        <div className='input-container'>
-            <InputValue size='smaller' value='Deposit Amount' />
-            <InputValue size='large' value={depositAmount} />
-        </div>
-    )
 
     return (
         <>
@@ -75,36 +68,42 @@ const AccountView = ({ data }) => {
                     </div>
                 </div>
                 <div className='row half-stretch'>
-                    {
-                        referredBy ? <div className='input-container'>
-                            <InputValue size='smaller' value='Referred By' />
-                            <InputValue size='large' value={referredBy} />
-                        </div> : renderDA()
-                    }
+                    <div className='input-container'>
+                        <InputValue size='smaller' value='Sales & Collection Agent' />
+                        <InputValue size='large' value={salesAgent} />
+                    </div>
+                    <div className='input-container'>
+                        <InputValue size='smaller' value='Deposit Amount' />
+                        <InputValue size='large' value={depositAmount} />
+                    </div>
+                </div>
+                {
+                    isCorporate &&
+                    (
+                        <div className='row half-stretch'>
+                            <div className='input-container'>
+                                <InputValue size='smaller' value='Contract Period' />
+                                <InputValue size='large' value={contractPeriod} />
+                            </div>
+                            <div className='input-container'>
+                                <InputValue size='smaller' value='Credit Period in Days' />
+                                <InputValue size='large' value={creditPeriodInDays} />
+                            </div>
+                        </div>
+                    )
+                }
+                <div className='row half-stretch'>
                     <div className='input-container'>
                         <InputValue size='smaller' value='Created By' />
                         <InputValue size='large' value={createdUserName} />
                     </div>
-                </div>
-                <div className='row half-stretch'>
                     {
-                        isCorporate ? <div className='input-container'>
-                            <InputValue size='smaller' value='Credit Period in Days' />
-                            <InputValue size='large' value={creditPeriodInDays} />
+                        referredBy ? <div className='input-container'>
+                            <InputValue size='smaller' value='Referred By' />
+                            <InputValue size='large' value={referredBy} />
                         </div> : null
                     }
-                    {
-                        referredBy ? renderDA() : null
-                    }
                 </div>
-                {
-                    isCorporate ? <div className='row half-stretch'>
-                        <div className='input-container'>
-                            <InputValue size='smaller' value='Contract Period' />
-                            <InputValue size='large' value={contractPeriod} />
-                        </div>
-                    </div> : null
-                }
             </div>
         </>
     )

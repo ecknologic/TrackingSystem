@@ -17,7 +17,7 @@ const GeneralAccountForm = (props) => {
     const { Front, Back } = IDProofs
 
     const {
-        gstNo, address, natureOfBussiness, depositAmount, customerName, mobileNumber, registeredDate, pinCode,
+        gstNo, address, natureOfBussiness, depositAmount, customerName, mobileNumber, registeredDate, pinCode, salesAgent,
         invoicetype, EmailId, idProofType, gstProof, referredBy, routeId, departmentId, deliveryLocation, alternatePhNo,
         creditPeriodInDays, product20L, product2L, price20L, product1L, price2L, price1L, product500ML, price500ML, product300ML, price300ML
     } = data
@@ -188,6 +188,18 @@ const GeneralAccountForm = (props) => {
                     <div className='input-container'>
                         <InputLabel name='Nature Of Business' error={errors.natureOfBussiness} />
                         <CustomInput value={natureOfBussiness} disabled error={errors.natureOfBussiness} />
+                    </div>
+                </div>
+                <div className='row'>
+                    <div className='input-container'>
+                        <InputLabel name='Sales & Collection Agent' error={errors.salesAgent} mandatory />
+                        <SelectInput
+                            value={salesAgent}
+                            options={invoiceOptions}
+                            track disabled={disabled}
+                            error={errors.salesAgent}
+                            onSelect={(value) => onChange(value, 'salesAgent')}
+                        />
                     </div>
                 </div>
                 {
