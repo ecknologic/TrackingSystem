@@ -16,7 +16,7 @@ const ApprovalForm = (props) => {
     const {
         gstNo, natureOfBussiness, organizationName, address, customerName, mobileNumber, invoicetype,
         creditPeriodInDays, EmailId, referredBy, registeredDate, gstProof, customertype, depositAmount,
-        pinCode, contractPeriod, idProofType, dispenserCount, alternatePhNo, poNo } = data
+        pinCode, contractPeriod, idProofType, dispenserCount, alternatePhNo, poNo, salesAgent } = data
 
     const [proofName, setProofName] = useState('')
     const [idProps, setIdProps] = useState({})
@@ -253,6 +253,18 @@ const ApprovalForm = (props) => {
                     </div>
                 ) : null
             }
+            <div className='row'>
+                <div className='input-container'>
+                    <InputLabel name='Sales & Collection Agent' error={errors.salesAgent} mandatory />
+                    <SelectInput
+                        value={salesAgent}
+                        options={businessOptions}
+                        track disabled={disabled}
+                        error={errors.salesAgent}
+                        onSelect={(value) => onChange(value, 'salesAgent')}
+                    />
+                </div>
+            </div>
             <div className='row'>
                 <div className='input-container'>
                     <InputLabel name='Registered Date' error={errors.registeredDate} />

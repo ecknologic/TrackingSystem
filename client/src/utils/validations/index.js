@@ -61,7 +61,8 @@ export const validateAccountValues = (data, customerType, isInView) => {
     const {
         gstNo, panNo, adharNo, licenseNo, natureOfBussiness, organizationName, address, customerName, deliveryLocation,
         mobileNumber, invoicetype, creditPeriodInDays = "", EmailId, referredBy, idProofType, pinCode, alternatePhNo,
-        contractPeriod, dispenserCount, registeredDate, gstProof, depositAmount = "", departmentId, routeId, ...rest
+        contractPeriod, dispenserCount = "", registeredDate, gstProof, depositAmount = "", departmentId, routeId,
+        salesAgent, ...rest
     } = data
 
     if (customerType === 'Corporate') {
@@ -89,6 +90,7 @@ export const validateAccountValues = (data, customerType, isInView) => {
     if (!natureOfBussiness) errors.natureOfBussiness = text
     if (!customerName) errors.customerName = text
     if (!pinCode) errors.pinCode = text
+    if (!salesAgent) errors.salesAgent = text
     else {
         const error = validatePinCode(pinCode)
         error && (errors.pinCode = error)
