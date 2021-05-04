@@ -24,7 +24,6 @@ const StockDetails = ({ date, source }) => {
     const { WAREHOUSEID } = useUser()
     const [CAS, setCAS] = useState({})
     const [OFD, setOFC] = useState({})
-    const [EC, setEC] = useState({})
     const [REC, setREC] = useState({})
     const [TRC, setTRC] = useState({})
     const [motherplantList, setMotherplantList] = useState([])
@@ -56,7 +55,6 @@ const StockDetails = ({ date, source }) => {
     useEffect(() => {
         const isToday = dayjs(date).isSame(dayjs(TODAYDATE))
         getOFD()
-        getEC()
         getCAS()
         getREC()
         getTRC()
@@ -118,15 +116,6 @@ const StockDetails = ({ date, source }) => {
         try {
             const data = await http.GET(axios, url, config)
             setOFC(data)
-        } catch (error) { }
-    }
-
-    const getEC = async () => {
-        const url = `warehouse/getConfirmedEmptyCans/${WAREHOUSEID}`
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setEC(data)
         } catch (error) { }
     }
 
@@ -319,7 +308,7 @@ const StockDetails = ({ date, source }) => {
                 <span className='title'>Empty Cans details</span>
                 <span className='msg'>Empty and damaged cans are not included in correct stock details</span>
             </div>
-            <ECPanel confirmed={EC} mpReturned={REC} whReturned={TRC} onAdd={onAddEmptyCans} />
+            <ECPanel mpReturned={REC} whReturned={TRC} onAdd={onAddEmptyCans} />
             <ERCPanel />
             <DCPanel />
             <CustomModal
