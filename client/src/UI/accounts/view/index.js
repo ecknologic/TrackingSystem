@@ -12,6 +12,7 @@ import DeliveryChallan from './tabs/DeliveryChallan';
 import DeliveryDetails from './tabs/DeliveryDetails';
 import QuitModal from '../../../components/CustomModal';
 import CustomModal from '../../../components/CustomModal';
+import ActivityLogDetails from './tabs/ActivityLogDetails';
 import CustomButton from '../../../components/CustomButton';
 import { DocIconWhite } from '../../../components/SVG_Icons';
 import ConfirmMessage from '../../../components/ConfirmMessage';
@@ -311,6 +312,9 @@ const ViewAccount = () => {
                         </TabPane>
                         <TabPane tab="Invoice" key="4">
                             <Invoice accountId={accountId} />
+                        </TabPane>
+                        <TabPane tab="Activity Log Details" key="5">
+                            <ActivityLogDetails />
                         </TabPane>
                     </Tabs>
                 </div>

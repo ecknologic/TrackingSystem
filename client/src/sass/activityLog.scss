@@ -1,0 +1,21 @@
+.activity-log-container {
+
+    .date, .time {
+        color: #92929D;
+        font-family: 'PoppinsMedium500';
+        font-size: .95em;
+    }
+
+    .date-time {
+        margin: .4em 0 1.2em;
+    }
+
+    .date {
+        margin-top: 1em;
+        margin-right: 1em;
+    }
+
+    .ant-divider {
+        background-color: #E9E9E9;
+    }
+}
