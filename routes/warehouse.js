@@ -4,6 +4,7 @@ var router = express.Router();
 const db = require('../config/db.js');
 const auditQueries = require('../dbQueries/auditlogs/queries.js');
 const customerQueries = require('../dbQueries/Customer/queries.js');
+const departmenttransactionQueries = require('../dbQueries/departmenttransactions/queries.js');
 const motherPlantDbQueries = require('../dbQueries/motherplant/queries.js');
 const usersQueries = require('../dbQueries/users/queries.js');
 const warehouseQueries = require('../dbQueries/warehouse/queries.js');
@@ -138,6 +139,7 @@ router.post('/createDC', (req, res) => {
           if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
           else {
             req.body.existingCustomerId = data.insertId
+            auditQueries.createLog({ userId, description: "Customer created", customerId: data.insertId, type: "customer" })
             saveDC(req, res)
           }
         })
@@ -507,6 +509,7 @@ const saveDC = (req, res) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else {
       let inserted_id = results.insertId;
+      departmenttransactionQueries.createDepartmentTransaction({ userId, description: "DC  Created", transactionId: results.insertId, departmentId, type: 'warehouse', subType: 'delivery' })
       let updateQuery = "update customerorderdetails set dcNo=? where customerOrderId=?"
       let updateQueryValues = ["DC-" + inserted_id, inserted_id];
       db.query(updateQuery, updateQueryValues, (err1, results1) => {
