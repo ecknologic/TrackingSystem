@@ -17,9 +17,9 @@ import CustomButton from '../../../components/CustomButton';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import SuccessMessage from '../../../components/SuccessMessage';
 import CollapseHeader from '../../../components/CollapseHeader';
-import { TRACKFORM, TODAYDATE } from '../../../utils/constants';
 import { DDownIcon, PlusIcon } from '../../../components/SVG_Icons'
-import { getDropdownOptions, getRouteOptions, getWarehouseOptions, WEEKDAYS } from '../../../assets/fixtures';
+import { TRACKFORM, TODAYDATE, MARKETINGADMIN } from '../../../utils/constants';
+import { getDropdownOptions, getRouteOptions, getWarehouseOptions, getStaffOptions, WEEKDAYS } from '../../../assets/fixtures';
 import {
     getBase64, deepClone, getIdProofsForDB, getDevDaysForDB, getAddressesForDB, resetTrackForm,
     getProductsForDB, extractGADeliveryDetails, extractGADetails, isEmpty, showToast, extractCADetails, getMainPathname
@@ -59,6 +59,7 @@ const AddAccount = () => {
     const [locationList, setLocationList] = useState([])
     const [businessList, setBusinessList] = useState([])
     const [routeList, setRouteList] = useState([])
+    const [agentList, setAgentList] = useState([])
     const [scrollDep, setScrollDep] = useState(false)
     const [createShake, setCreateShake] = useState(false)
     const [addShake, setAddShake] = useState(false)
@@ -67,6 +68,7 @@ const AddAccount = () => {
     const businessOptions = useMemo(() => getDropdownOptions(businessList), [businessList])
     const warehouseOptions = useMemo(() => getWarehouseOptions(warehouseList), [warehouseList])
     const routeOptions = useMemo(() => getRouteOptions(routeList), [routeList])
+    const agentOptions = useMemo(() => getStaffOptions(agentList), [agentList])
     const mainUrl = useMemo(() => getMainPathname(pathname), [pathname])
 
     const customertype = corporate ? 'Corporate' : 'Individual'
@@ -83,6 +85,7 @@ const AddAccount = () => {
         getWarehouseList()
         getLocationList()
         getBusinessList()
+        getAgentList()
         sessionStorage.removeItem('address0')
         sessionStorage.removeItem('address1')
         sessionStorage.removeItem('address2')
@@ -133,6 +136,15 @@ const AddAccount = () => {
         try {
             const data = await http.GET(axios, url, config)
             setBusinessList(data)
+        } catch (error) { }
+    }
+
+    const getAgentList = async () => {
+        const url = `users/getUsersByRole/${MARKETINGADMIN}`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setAgentList(data)
         } catch (error) { }
     }
 
@@ -616,6 +628,7 @@ const AddAccount = () => {
                             errors={corporateErrors}
                             IDProofs={IDProofs}
                             IDProofErrors={IDProofErrors}
+                            agentOptions={agentOptions}
                             businessOptions={businessOptions}
                             onUpload={handleProofUpload}
                             onRemove={handleProofRemove}
@@ -631,6 +644,7 @@ const AddAccount = () => {
                             IDProofs={IDProofs}
                             IDProofErrors={IDProofErrors}
                             routeOptions={routeOptions}
+                            agentOptions={agentOptions}
                             locationOptions={locationOptions}
                             warehouseOptions={warehouseOptions}
                             onUpload={handleProofUpload}

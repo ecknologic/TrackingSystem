@@ -21,12 +21,12 @@ import ConfirmMessage from '../../../components/ConfirmMessage';
 import SuccessMessage from '../../../components/SuccessMessage';
 import CollapseHeader from '../../../components/CollapseHeader';
 import { DDownIcon, TrashIconLight } from '../../../components/SVG_Icons'
-import { getDropdownOptions, getWarehouseOptions } from '../../../assets/fixtures';
+import { getDropdownOptions, getStaffOptions, getWarehouseOptions } from '../../../assets/fixtures';
 import {
     getIdProofsForDB, getAddressesForDB, isEmpty, showToast, extractCADetails, base64String, getDevDays,
     getProductsForUI, resetSessionItems, getSessionItems, resetTrackForm, getBase64
 } from '../../../utils/Functions';
-import { ACCOUNTSADMIN, SUPERADMIN, TRACKFORM } from '../../../utils/constants';
+import { ACCOUNTSADMIN, MARKETINGADMIN, SUPERADMIN, TRACKFORM } from '../../../utils/constants';
 import {
     validateAccountValues, validateAddresses, validateIDNumbers, validateNames, validateNumber,
     validateMobileNumber, validateEmailId, compareMaxNumber, validateIDProofs
@@ -55,6 +55,7 @@ const ApproveAccount = () => {
     const [warehouseList, setWarehouseList] = useState([])
     const [locationList, setLocationList] = useState([])
     const [businessList, setBusinessList] = useState([])
+    const [agentList, setAgentList] = useState([])
     const [shake, setShake] = useState(false)
     const [saveDisabled, setSaveDisabled] = useState(false)
     const [btnDisabled, setBtnDisabled] = useState(false)
@@ -63,6 +64,7 @@ const ApproveAccount = () => {
     const warehouseOptions = useMemo(() => getWarehouseOptions(warehouseList), [warehouseList])
     const locationOptions = useMemo(() => getDropdownOptions(locationList), [locationList])
     const businessOptions = useMemo(() => getDropdownOptions(businessList), [businessList])
+    const agentOptions = useMemo(() => getStaffOptions(agentList), [agentList])
 
     const confirmMsg = 'Changes you made may not be saved.'
     const showTrashIcon = useMemo(() => addresses.length !== 1, [addresses.length])
@@ -75,6 +77,7 @@ const ApproveAccount = () => {
     useEffect(() => {
         getLocationList()
         getBusinessList()
+        getAgentList()
         resetSessionItems('address')
         const p1 = getAccount()
         const p2 = getAddresses()
@@ -157,6 +160,15 @@ const ApproveAccount = () => {
         try {
             const data = await http.GET(axios, url, config)
             setBusinessList(data)
+        } catch (error) { }
+    }
+
+    const getAgentList = async () => {
+        const url = `users/getUsersByRole/${MARKETINGADMIN}`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setAgentList(data)
         } catch (error) { }
     }
 
@@ -452,6 +464,7 @@ const ApproveAccount = () => {
                                     <ApprovalForm
                                         IDProofs={IDProofs}
                                         businessOptions={businessOptions}
+                                        agentOptions={agentOptions}
                                         IDProofErrors={IDProofErrors}
                                         data={accountValues}
                                         errors={accountErrors}

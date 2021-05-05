@@ -13,7 +13,7 @@ const DATEFORMAT = 'DD/MM/YYYY'
 const GeneralAccountForm = (props) => {
 
     const { data, errors, devDays, IDProofs, IDProofErrors, devDaysError, onChange, onBlur, onUpload, onSelect,
-        onDeselect, accountOnly, disabled, onRemove, routeOptions, warehouseOptions, locationOptions } = props
+        onDeselect, accountOnly, disabled, onRemove, routeOptions, warehouseOptions, locationOptions, agentOptions } = props
     const { Front, Back } = IDProofs
 
     const {
@@ -195,7 +195,7 @@ const GeneralAccountForm = (props) => {
                         <InputLabel name='Sales & Collection Agent' error={errors.salesAgent} mandatory />
                         <SelectInput
                             value={salesAgent}
-                            options={invoiceOptions}
+                            options={agentOptions}
                             track disabled={disabled}
                             error={errors.salesAgent}
                             onSelect={(value) => onChange(value, 'salesAgent')}

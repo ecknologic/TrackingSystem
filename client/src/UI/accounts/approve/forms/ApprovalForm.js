@@ -11,7 +11,8 @@ import { getIDInputValidationProps, getIdProofName, resetTrackForm, trackAccount
 const DATEFORMAT = 'DD/MM/YYYY'
 
 const ApprovalForm = (props) => {
-    const { data, errors, onChange, onBlur, onUpload, IDProofErrors, IDProofs, disabledItems, disabled, onRemove, businessOptions } = props
+    const { data, errors, onChange, onBlur, onUpload, IDProofErrors, IDProofs,
+        disabledItems, disabled, onRemove, businessOptions, agentOptions } = props
 
     const {
         gstNo, natureOfBussiness, organizationName, address, customerName, mobileNumber, invoicetype,
@@ -258,7 +259,7 @@ const ApprovalForm = (props) => {
                     <InputLabel name='Sales & Collection Agent' error={errors.salesAgent} mandatory />
                     <SelectInput
                         value={salesAgent}
-                        options={businessOptions}
+                        options={agentOptions}
                         track disabled={disabled}
                         error={errors.salesAgent}
                         onSelect={(value) => onChange(value, 'salesAgent')}
