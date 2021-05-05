@@ -1,7 +1,8 @@
 import React from 'react';
 import CustomButton from './CustomButton';
 
-const ECPanel = ({ mpReturned, whReturned, onAdd }) => {
+const ECPanel = ({ confirmed, mpReturned, whReturned, onAdd }) => {
+    const { emptycans: cec } = confirmed
     const { emptycans: rec } = mpReturned
     const { emptycans: trc } = whReturned
 
@@ -13,7 +14,7 @@ const ECPanel = ({ mpReturned, whReturned, onAdd }) => {
             <div className='box items'>
                 <span className='name'>Total Cans (20 ltr)</span>
                 <div className='numbers-container'>
-                    <span className='number'>{rec + trc}</span>
+                    <span className='number'>{cec}</span>
                 </div>
             </div>
             <div className='box items mother-plant'>
