@@ -24,8 +24,8 @@ usersQueries.getUsersById = async (userId, callback) => {
 usersQueries.saveDependentDetails = (input, tableName, callback) => {
     let query = `insert into ${tableName} (name,dob,gender,adhar_frontside,adhar_backside,mobileNumber,relation,userId,createdDateTime,adharNo) values(?,?,?,?,?,?,?,?,?,?)`;
     const { name, dob, gender, adharProof, adharNo, mobileNumber, relation, userId } = input
-    let adhar_front = Buffer.from(adharProof.Front.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-    let adhar_back = Buffer.from(adharProof.Back.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+    let adhar_front = adharProof && adharProof.Front && Buffer.from(adharProof.Front.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+    let adhar_back = adharProof && adharProof.Front && Buffer.from(adharProof.Back.replace(/^data:image\/\w+;base64,/, ""), 'base64')
     let requestBody = [name, dob, gender, adhar_front, adhar_back, mobileNumber, relation, userId, new Date(), adharNo]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
