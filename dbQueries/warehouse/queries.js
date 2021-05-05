@@ -23,7 +23,9 @@ warehouseQueries.getDeliveryDetails = (input, callback) => {
 }
 warehouseQueries.getTotalReturnCans = (input, callback) => { //Warehouse count
     const { departmentId, date } = input
-    let query = 'SELECT SUM(returnEmptyCans) AS emptycans FROM customerorderdetails WHERE DATE(deliveredDate)=? AND warehouseId=?'
+    // let query = 'SELECT SUM(returnEmptyCans) AS emptycans FROM customerorderdetails WHERE DATE(deliveredDate)=? AND warehouseId=?'
+    let query=`SELECT ABS(e.emptycans) AS emptycans FROM (SELECT (SELECT IFNULL(SUM(c.returnemptycans),0) FROM customerorderdetails c WHERE c.warehouseid=?)-(SELECT IFNULL(SUM(e.emptycans_count),0)
+    FROM EmptyCanDetails e  WHERE e.warehouseId=?) AS emptycans) AS e`
     return executeGetParamsQuery(query, [date, departmentId], callback)
 }
 

@@ -544,7 +544,7 @@ router.delete('/deleteDelivery/:deliveryId', (req, res) => {
   })
 })
 router.put('/updateCustomerOrderDetails', (req, res) => {
-  let { customerOrderId, warehouseId } = input
+  let { customerOrderId, warehouseId } = req.body
   customerQueries.updateOrderDetails(req.body, (err, data) => {
     if (err) res.status(500).json(dbError(err))
     else {
