@@ -13,7 +13,7 @@ invoiceQueries.getCustomerInvoices = async (customerId, callback) => {
 }
 
 invoiceQueries.getInvoiceByStatus = async (status, callback) => {
-    let query = `select * from Invoice where status=? ORDER BY updatedDateTime DESC`;
+    let query = `select * from Invoice where status=? ORDER BY invoiceId DESC`;
     return executeGetParamsQuery(query, [status], callback)
 }
 
