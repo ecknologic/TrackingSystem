@@ -33,7 +33,7 @@ customerQueries.getCustomerBillingAddress = (customerId, callback) => {
     executeGetParamsQuery(query, [customerId], callback)
 }
 customerQueries.getCustomerNames = (callback) => {
-    let query = "SELECT organizationName as customerName,customerId FROM customerdetails c WHERE isApproved=1 and deleted=0 ORDER BY lastDraftedDate DESC"
+    let query = "SELECT customerNo,organizationName as customerName,customerId FROM customerdetails c WHERE isApproved=1 and deleted=0 ORDER BY lastDraftedDate DESC"
     executeGetParamsQuery(query, callback)
 }
 customerQueries.getTotalCustomers = (input, callback) => {
