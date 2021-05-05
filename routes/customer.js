@@ -17,7 +17,8 @@ const usersQueries = require('../dbQueries/users/queries.js');
 const warehouseQueries = require('../dbQueries/warehouse/queries.js');
 const auditQueries = require('../dbQueries/auditlogs/queries.js');
 const departmenttransactionQueries = require('../dbQueries/departmenttransactions/queries.js');
-let departmentId, userId;
+const { compareCustomerData } = require('./utils/customer.js');
+let departmentId, userId, userName, userRole;
 
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -39,6 +40,8 @@ router.use(function timeLog(req, res, next) {
   console.log('Time: ', Date.now());
   departmentId = req.headers['departmentid']
   userId = req.headers['userid']
+  userName = req.headers['username']
+  userRole = req.headers['userrole']
   next();
 });
 // router.post('/uploadphoto', (req, res) => {
@@ -139,7 +142,7 @@ router.post('/createCustomer', async (req, res) => {
   let customerDetailsQuery = "insert  into customerdetails (customerName,mobileNumber,alternatePhNo,EmailId,Address1,Address2,gstNo,contactperson,panNo,adharNo,registeredDate,invoicetype,natureOfBussiness,creditPeriodInDays,referredBy,departmentId,deliveryDaysId,depositAmount,isActive,latitude,longitude,shippingAddress,shippingContactPerson,shippingContactNo,customerType,organizationName,createdBy,customer_id_proof,idProofType,pincode,dispenserCount,contractPeriod,rocNo,poNo,salesAgent) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
   // let customerDetailsQuery = "insert  into customerdetails (customerName,mobileNumber,EmailId,Address1,gstNo,registeredDate,invoicetype,natureOfBussiness,creditPeriodInDays,referredBy,isActive,qrcodeId,latitude,longitude,customerType,organizationName,createdBy) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
   let customerdetails = req.body;
-  const { customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactperson, panNo, adharNo, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, createdBy, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, alternateNumber,salesAgent } = customerdetails
+  const { customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactperson, panNo, adharNo, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, createdBy, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, alternateNumber, salesAgent } = customerdetails
   customerQueries.checkCustomerExistsOrNot({ EmailId, mobileNumber }, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else if (results.length) {
@@ -151,7 +154,7 @@ router.post('/createCustomer', async (req, res) => {
         .then(response => {
           let registeredDate = customerdetails.registeredDate ? customerdetails.registeredDate : new Date()
           let customer_id_proof = response[1] && response[1]
-          let insertQueryValues = [customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactperson, panNo, adharNo, registeredDate, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, response[0].latitude, response[0].longitude, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, createdBy, customer_id_proof, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo,salesAgent]
+          let insertQueryValues = [customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactperson, panNo, adharNo, registeredDate, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, response[0].latitude, response[0].longitude, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, createdBy, customer_id_proof, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, salesAgent]
           db.query(customerDetailsQuery, insertQueryValues, (err, results) => {
             if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
             else {
@@ -180,7 +183,7 @@ const saveDeliveryDetails = (customerId, customerdetails, res) => {
               saveProductDetails(i.products, results.insertId, customerId).then(productDetails => {
                 // console.log(count, customerdetails.deliveryDetails.length)
                 if (count == customerdetails.deliveryDetails.length) {
-                  auditQueries.createLog({ userId, description: "Customer created", customerId, type: "customer" })
+                  auditQueries.createLog({ userId, description: `Customer created by ${userRole} <b>(${userName})</b>`, customerId, type: "customer" })
                   res.json({ status: 200, message: "Customer Created Successfully" })
                 }
               })
@@ -312,7 +315,7 @@ router.post("/createOrderDelivery", (req, res) => {
   customerQueries.updateOrderDelivery(req.body, (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
-      auditQueries.createLog({ userId, description: "Delivery details Updated", customerId: results.length && results[0].existingCustomerId, type: "customer" })
+      auditQueries.createLog({ userId, description: `Delivery details Updated by ${userRole} <b>(${userName})</b>`, customerId: results.length && results[0].existingCustomerId, type: "customer" })
 
       departmenttransactionQueries.createDepartmentTransaction({ userId, description: "Order Updated", transactionId: deliveryDetailsId, departmentId, type: 'warehouse', subType: 'order' })
       res.json(results)
@@ -511,25 +514,32 @@ const getDeliveryDetails = ({ customerId, deliveryDetailsId, isSuperAdmin }) => 
 
 router.post('/updateCustomer', async (req, res) => {
   let customerdetails = req.body;
-  const { customer_id_proof, customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactperson, panNo, adharNo, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, customerId,salesAgent } = customerdetails
+  const { customer_id_proof, customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactperson, panNo, adharNo, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, customerId, salesAgent } = customerdetails
   // let customerDetailsQuery = "insert  into customerdetails (customerName,mobileNumber,EmailId,Address1,gstNo,registeredDate,invoicetype,natureOfBussiness,creditPeriodInDays,referredBy,isActive,qrcodeId,latitude,longitude,customerType,organizationName,createdBy) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-  customerQueries.checkCustomerExistsOrNot({ EmailId, mobileNumber }, (err, results) => {
+  customerQueries.checkCustomerExistsOrNot({ EmailId, mobileNumber }, async (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else if (results.length && results[0].customerId != customerId) {
       res.status(400).json({ status: 400, message: "This Customer already created" })
     }
     else {
+      const logs = await compareCustomerData(customerdetails, { userId, userRole, userName })
       let customerDetailsQuery = "UPDATE customerdetails SET customerName=?,mobileNumber=?,alternatePhNo=?,EmailId=?,Address1=?,Address2=?,gstNo=?,contactperson=?,panNo=?,adharNo=?,invoicetype=?,natureOfBussiness=?,creditPeriodInDays=?,referredBy=?,departmentId=?,deliveryDaysId=?,depositAmount=?,isActive=?,latitude=?,longitude=?,shippingAddress=?,shippingContactPerson=?,shippingContactNo=?,customerType=?,organizationName=?,idProofType=?,pincode=?, dispenserCount=?, contractPeriod=?,rocNo=?,poNo=?,customer_id_proof=?,salesAgent=? WHERE customerId=" + customerId;
       let promiseArray = req.body.idProofs[0] != null ? [getLatLongDetails(customerdetails), customer_id_proof ? updateProofs(req) : uploadImage(req)] : [getLatLongDetails(customerdetails)]
       Promise.all(promiseArray)
         .then(response => {
           let customerIdProof = req.body.idProofs[0] != null && customer_id_proof ? customer_id_proof : response[1]
-          let updateQueryValues = [customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactperson, panNo, adharNo, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, response[0].latitude, response[0].longitude, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, customerIdProof,salesAgent]
+          let updateQueryValues = [customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactperson, panNo, adharNo, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, response[0].latitude, response[0].longitude, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, customerIdProof, salesAgent]
           // let insertQueryValues = [customerdetails.customerName, customerdetails.mobileNumber, customerdetails.EmailId, customerdetails.Address1, customerdetails.gstNo, customerdetails.registeredDate, customerdetails.invoicetype, customerdetails.natureOfBussiness, customerdetails.creditPeriodInDays, customerdetails.referredBy, customerdetails.isActive, response[0], response[1].latitude, response[1].longitude, customerdetails.customerType, customerdetails.organizationName, customerdetails.createdBy]
           db.query(customerDetailsQuery, updateQueryValues, (err, results) => {
             if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
             else {
-              auditQueries.createLog({ userId, description: "Customer Updated", customerId: customerdetails.customerId, type: "customer" })
+
+              if (logs.length) {
+                auditQueries.createLog(logs, (err, data) => {
+                  if (err) console.log('log error', err)
+                  else console.log('log data', data)
+                })
+              }
               res.json({ status: 200, message: 'Customer Updated successfully' })
             }
           });
@@ -586,7 +596,7 @@ router.delete('/deleteCustomer/:customerId', (req, res) => {
       customerQueries.deleteCustomerDeliveries(customerId, (err, update) => {
         if (err) res.status(500).json(dbError(err))
         else {
-          auditQueries.createLog({ userId, description: `Customer Deleted`, customerId, type: "customer" })
+          auditQueries.createLog({ userId, description: `Customer Deleted by ${userRole} <b>(${userName})</b>`, customerId, type: "customer" })
           res.json(DELETEMESSAGE)
         }
       })
@@ -708,7 +718,7 @@ router.post('/updateDeliveryDetails', (req, res) => {
                 if (count == deliveryDetails.length) {
                   let data = await getAddedDeliveryDetails(results.insertId)
                   updateWHDelivery(req)
-                  auditQueries.createLog({ userId, description: "New Delivery details added", customerId: i.customer_Id, type: "customer" })
+                  auditQueries.createLog({ userId, description: `New Delivery details added by ${userRole} <b>(${userName})</b>`, customerId: i.customer_Id, type: "customer" })
                   res.json({ status: 200, message: "Delivery Details Updated Successfully", data });
                 }
               })
@@ -729,7 +739,7 @@ router.post('/updateDeliveryDetails', (req, res) => {
                 if (count == deliveryDetails.length) {
                   let data = await getAddedDeliveryDetails(i.deliveryDetailsId)
                   updateWHDelivery(req)
-                  auditQueries.createLog({ userId, description: "Delivery details Updated", customerId: i.customer_Id, type: "customer" })
+                  auditQueries.createLog({ userId, description: `Delivery details Updated by ${userRole} <b>(${userName})</b>`, customerId: i.customer_Id, type: "customer" })
                   res.json({ status: 200, message: "Delivery Details Updated Successfully", data });
                 }
                 // res.json({ status: 200, message: "Delivery Details Updated Successfully", data: getAddedDeliveryDetails(i.deliveryDetailsId) });

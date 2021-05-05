@@ -12,10 +12,16 @@ auditQueries.getAudits = (input, callback) => {
 
 //POST Request Methods
 auditQueries.createLog = (input, callback) => {
-    let { userId, description, customerId, type, departmentId } = input
     let query = `insert into auditlogs (userId, createdDateTime, description, customerId, type,departmentId) values(?,?,?,?,?,?)`;
-    let requestBody = [userId, new Date(), description, customerId, type, departmentId]
-    executePostOrUpdateQuery(query, requestBody, callback)
+
+    if (Array.isArray(input)) {
+        if (input.length) executePostOrUpdateQuery(query, [input], callback)
+    }
+    else {
+        let { userId, description, customerId, type, departmentId } = input
+        let requestBody = [userId, new Date(), description, customerId, type, departmentId]
+        executePostOrUpdateQuery(query, requestBody, callback)
+    }
 }
 
 module.exports = auditQueries

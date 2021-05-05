@@ -4,14 +4,15 @@ import { Divider } from 'antd';
 import parse from 'html-react-parser';
 import '../sass/activityLog.scss'
 
-const ActivityLog = ({ text }) => {
+const ActivityLog = ({ data }) => {
+    const { description, createdDateTime } = data
 
     return (
         <div className='activity-log-container'>
-            {parse(text)}
+            {parse(description)}
             <div className='date-time'>
-                <span className='date'>{dayjs().format('DD-MM-YYYY')}</span>
-                <span className='time' >{dayjs().format('hh:mm A')}</span>
+                <span className='date'>{dayjs(createdDateTime).format('DD-MM-YYYY')}</span>
+                <span className='time' >{dayjs(createdDateTime).format('hh:mm A')}</span>
             </div>
             <Divider />
         </div>

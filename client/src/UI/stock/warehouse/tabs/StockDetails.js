@@ -240,6 +240,7 @@ const StockDetails = ({ date, source }) => {
             showToast(options)
             onModalClose(true)
             getREC()
+            getEC()
         } catch (error) {
             message.destroy()
             if (!axios.isCancel(error)) {

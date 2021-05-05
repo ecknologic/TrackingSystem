@@ -28,6 +28,12 @@ export const getWarehoseId = () => {
     return 1
 }
 
+export const getUsername = () => {
+    const user = JSON.parse(sessionStorage.getItem('user'))
+    if (user) return user.USERNAME
+    return 1
+}
+
 export const getRoutesByRole = (role) => {
     switch (role) {
         case MARKETINGADMIN:

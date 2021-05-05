@@ -1,13 +1,17 @@
 import axios from 'axios';
+import { useParams } from 'react-router';
 import React, { useEffect, useMemo, useState } from 'react';
+import { http } from '../../../../modules/http';
 import ActivityLog from '../../../../components/ActivityLog';
 import CustomPagination from '../../../../components/CustomPagination';
-import { http } from '../../../../modules/http';
 
 const ActivityLogDetails = () => {
+    const { accountId } = useParams()
     const [pageSize, setPageSize] = useState(12)
     const [pageNumber, setPageNumber] = useState(1)
     const [totalCount, setTotalCount] = useState(null)
+    const [logs, setLogs] = useState([])
+
 
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
@@ -20,13 +24,13 @@ const ActivityLogDetails = () => {
         }
     }, [])
 
-    const getLogs = () => {
-        // const url = `invoice/getCustomerInvoices/${accountId}`
+    const getLogs = async () => {
+        const url = `logs/getAuditLogs?type=customer&id=${accountId}`
 
         try {
-            // const data = await http.GET(axios, url, config)
-            // setInvoices(data)
-            setTotalCount(100)
+            const data = await http.GET(axios, url, config)
+            setLogs(data)
+            setTotalCount(data.length)
             // setLoading(false)
         } catch (error) { }
     }
@@ -46,7 +50,7 @@ const ActivityLogDetails = () => {
     return (
         <div className='stock-delivery-container'>
             {
-                [...Array(totalCount)].slice(sliceFrom, sliceTo).map(() => <ActivityLog text='Motherplant Created by Super Admin <b>(Sukesh Pasupuleti)</b>' />)
+                logs.slice(sliceFrom, sliceTo).map((log, index) => <ActivityLog key={index} data={log} />)
             }
             {
                 !!totalCount && (

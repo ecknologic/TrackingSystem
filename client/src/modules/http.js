@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { message } from 'antd';
-import { ACCOUNTSADMIN, SUPERADMIN, MARKETINGADMIN, getRole, getUserId, getWarehoseId } from '../utils/constants'
+import { ACCOUNTSADMIN, SUPERADMIN, MARKETINGADMIN, getRole, getUserId, getWarehoseId, getUsername } from '../utils/constants'
 import { isAbsoluteUrl } from '../utils/Functions';
 message.config({ maxCount: 1 });
 
@@ -10,11 +10,15 @@ axios.interceptors.request.use(function (config) {
         config.url = `${process.env.REACT_APP_API_HOST}${config.url}`;
     }
 
+    const ROLE = getRole()
+
     config.headers.departmentId = getWarehoseId()
     config.headers.userId = getUserId()
-    config.headers.isSuperAdmin = getRole() === SUPERADMIN
-    config.headers.isAccountsAdmin = getRole() === ACCOUNTSADMIN
-    config.headers.isSalesAdmin = getRole() === MARKETINGADMIN
+    config.headers.userName = getUsername()
+    config.headers.userRole = ROLE
+    config.headers.isSuperAdmin = ROLE === SUPERADMIN
+    config.headers.isAccountsAdmin = ROLE === ACCOUNTSADMIN
+    config.headers.isSalesAdmin = ROLE === MARKETINGADMIN
 
     return config;
 })
