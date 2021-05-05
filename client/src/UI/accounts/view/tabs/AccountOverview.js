@@ -18,7 +18,7 @@ import CorporateAccountForm from '../../add/forms/CorporateAccount';
 import { base64String, extractCADetails, extractGADetails, getBase64, getIdProofsForDB, getMainPathname, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 import { validateIDProofs, validateAccountValues, validateIDNumbers, validateMobileNumber, validateNames, validateEmailId, validateNumber, compareMaxNumber, validatePinCode } from '../../../../utils/validations';
 
-const AccountOverview = ({ data, onUpdate, isAdmin, locationOptions, businessOptions }) => {
+const AccountOverview = ({ data, onUpdate, isAdmin, locationOptions, businessOptions, agentOptions }) => {
     const { gstProof, idProof_backside, idProof_frontside, isApproved, registeredDate,
         customertype, Address1, loading, adharNo, idProofType, panNo, gstNo,
         rocNo, licenseNo, voterId, passportNo } = data
@@ -239,6 +239,7 @@ const AccountOverview = ({ data, onUpdate, isAdmin, locationOptions, businessOpt
                                     IDProofs={IDProofs}
                                     data={accountValues}
                                     errors={accountErrors}
+                                    agentOptions={agentOptions}
                                     IDProofErrors={IDProofErrors}
                                     businessOptions={businessOptions}
                                     onBlur={handleBlur}
@@ -251,6 +252,7 @@ const AccountOverview = ({ data, onUpdate, isAdmin, locationOptions, businessOpt
                                     IDProofs={IDProofs}
                                     data={accountValues}
                                     errors={accountErrors}
+                                    agentOptions={agentOptions}
                                     locationOptions={locationOptions}
                                     IDProofErrors={IDProofErrors}
                                     onBlur={handleBlur}

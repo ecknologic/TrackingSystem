@@ -16,8 +16,8 @@ import ActivityLogDetails from './tabs/ActivityLogDetails';
 import CustomButton from '../../../components/CustomButton';
 import { DocIconWhite } from '../../../components/SVG_Icons';
 import ConfirmMessage from '../../../components/ConfirmMessage';
-import { ACCOUNTSADMIN, SUPERADMIN, TRACKFORM } from '../../../utils/constants';
-import { getDropdownOptions, getRouteOptions, getWarehouseOptions, WEEKDAYS } from '../../../assets/fixtures';
+import { ACCOUNTSADMIN, MARKETINGADMIN, SUPERADMIN, TRACKFORM } from '../../../utils/constants';
+import { getDropdownOptions, getRouteOptions, getStaffOptions, getWarehouseOptions, WEEKDAYS } from '../../../assets/fixtures';
 import { validateDeliveryValues, validateDevDays, validateIntFloat, validateMobileNumber, validateNumber } from '../../../utils/validations';
 import { extractDeliveryDetails, getProductsForDB, extractProductsFromForm, isEmpty, getDevDaysForDB, getBase64, resetTrackForm, showToast, getMainPathname } from '../../../utils/Functions';
 
@@ -37,6 +37,7 @@ const ViewAccount = () => {
     const [routeList, setRouteList] = useState([])
     const [locationList, setLocationList] = useState([])
     const [businessList, setBusinessList] = useState([])
+    const [agentList, setAgentList] = useState([])
     const [recentDelivery, setRecentDelivery] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
@@ -50,6 +51,7 @@ const ViewAccount = () => {
     const warehouseOptions = useMemo(() => getWarehouseOptions(warehouseList), [warehouseList])
     const locationOptions = useMemo(() => getDropdownOptions(locationList), [locationList])
     const businessOptions = useMemo(() => getDropdownOptions(businessList), [businessList])
+    const agentOptions = useMemo(() => getStaffOptions(agentList), [agentList])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
@@ -58,6 +60,7 @@ const ViewAccount = () => {
         getWarehouseList()
         getLocationList()
         getBusinessList()
+        getAgentList()
 
         return () => {
             http.ABORT(source)
@@ -111,6 +114,15 @@ const ViewAccount = () => {
             const data = await http.GET(axios, url, config)
             setRouteList(data)
             setCurrentDepId(departmentId)
+        } catch (error) { }
+    }
+
+    const getAgentList = async () => {
+        const url = `users/getUsersByRole/${MARKETINGADMIN}`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setAgentList(data)
         } catch (error) { }
     }
 
@@ -294,6 +306,7 @@ const ViewAccount = () => {
                             <AccountOverview
                                 data={account}
                                 isAdmin={isAdmin}
+                                agentOptions={agentOptions}
                                 businessOptions={businessOptions}
                                 locationOptions={locationOptions}
                                 onUpdate={handleAccountUpdate}
