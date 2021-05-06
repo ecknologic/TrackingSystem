@@ -10,8 +10,8 @@ router.post('/createWebUser', (req, res) => {
 
   let query = "insert into usermaster (userName,roleId,emailid,password,departmentId,mobileNumber,joinedDate,parentName,gender,dob,adharNo,address,permanentAddress,adhar_frontside,adhar_backside,accountNo,bankName,branchName,ifscCode,recommendedBy,recruitedBy,bloodGroup) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
   const { userName, roleId, emailid, password = "Bibo@123", privilegeDetails = [], departmentId, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, adharProof, accountNo, bankName, branchName, ifscCode, recommendedBy, recruitedBy, dependentDetails, bloodGroup } = req.body
-  let adhar_frontside = Buffer.from(adharProof.Front.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-  let adhar_backside = Buffer.from(adharProof.Back.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+  let adhar_frontside = adharProof && adharProof.Front && Buffer.from(adharProof.Front.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+  let adhar_backside = adharProof && adharProof.Back && Buffer.from(adharProof.Back.replace(/^data:image\/\w+;base64,/, ""), 'base64')
   let insertQueryValues = [userName, roleId, emailid, createHash(password), departmentId, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, adhar_frontside, adhar_backside, accountNo, bankName, branchName, ifscCode, recommendedBy, recruitedBy, bloodGroup]
   db.query(query, insertQueryValues, (err, results) => {
     if (err) res.status(500).json(dbError(err));
@@ -81,8 +81,8 @@ router.put('/updateUserStatus', (req, res) => {
 router.post('/updateWebUser', (req, res) => {
   let query = "UPDATE usermaster SET userName=?,roleId=?,departmentId=?,emailid=?, mobileNumber=?, joinedDate=?, parentName=?, gender=?, dob=?, adharNo=?, address=?, permanentAddress=?,adhar_frontside=?,adhar_backside=?,accountNo=?,bankName=?,branchName=?,ifscCode=?,recommendedBy=?,recruitedBy=?,bloodGroup=?  where userId=?";
   const { userName, roleId, departmentId, emailid, mobileNumber, userId, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, adharProof, dependentDetails, accountNo, bankName, branchName, ifscCode, recommendedBy, recruitedBy, removedDepartmentId, bloodGroup } = req.body
-  let adhar_frontside = Buffer.from(adharProof.Front.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-  let adhar_backside = Buffer.from(adharProof.Back.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+  let adhar_frontside = adharProof && adharProof.Front && Buffer.from(adharProof.Front.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+  let adhar_backside = adharProof && adharProof.Back && Buffer.from(adharProof.Back.replace(/^data:image\/\w+;base64,/, ""), 'base64')
   let insertQueryValues = [userName, roleId, departmentId, emailid, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, adhar_frontside, adhar_backside, accountNo, bankName, branchName, ifscCode, recommendedBy, recruitedBy, bloodGroup, userId]
   db.query(query, insertQueryValues, (err, results) => {
     if (err) res.send(err);

@@ -24,16 +24,16 @@ usersQueries.getUsersById = async (userId, callback) => {
 usersQueries.saveDependentDetails = (input, tableName, callback) => {
     let query = `insert into ${tableName} (name,dob,gender,adhar_frontside,adhar_backside,mobileNumber,relation,userId,createdDateTime,adharNo) values(?,?,?,?,?,?,?,?,?,?)`;
     const { name, dob, gender, adharProof, adharNo, mobileNumber, relation, userId } = input
-    let adhar_front = Buffer.from(adharProof.Front.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-    let adhar_back = Buffer.from(adharProof.Back.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+    let adhar_front = adharProof && adharProof.Front && Buffer.from(adharProof.Front.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+    let adhar_back = adharProof && adharProof.Back && Buffer.from(adharProof.Back.replace(/^data:image\/\w+;base64,/, ""), 'base64')
     let requestBody = [name, dob, gender, adhar_front, adhar_back, mobileNumber, relation, userId, new Date(), adharNo]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 usersQueries.updateDependentDetails = (input, tableName, callback) => {
     let query = `update ${tableName} set name=?,dob=?,gender=?,adhar_frontside=?,adhar_backside=?,mobileNumber=?,relation=?,adharNo=? where dependentId=?`;
     const { name, dob, gender, adharProof, mobileNumber, relation, dependentId, adharNo } = input
-    let adhar_front = Buffer.from(adharProof.Front.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-    let adhar_back = Buffer.from(adharProof.Back.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+    let adhar_front = adharProof && adharProof.Front && Buffer.from(adharProof.Front.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+    let adhar_back = adharProof && adharProof.Back && Buffer.from(adharProof.Back.replace(/^data:image\/\w+;base64,/, ""), 'base64')
     let requestBody = [name, dob, gender, adhar_front, adhar_back, mobileNumber, relation, adharNo, dependentId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }

@@ -17,7 +17,7 @@ import { DocIconWhite } from '../../../components/SVG_Icons';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import { ACCOUNTSADMIN, MARKETINGADMIN, SUPERADMIN, TRACKFORM } from '../../../utils/constants';
 import { getDropdownOptions, getRouteOptions, getStaffOptions, getWarehouseOptions, WEEKDAYS } from '../../../assets/fixtures';
-import { validateDeliveryValues, validateDevDays, validateIntFloat, validateMobileNumber, validateNumber } from '../../../utils/validations';
+import { validateDeliveryValues, validateDevDays, validateIntFloat, validateMobileNumber, validateNames, validateNumber } from '../../../utils/validations';
 import { extractDeliveryDetails, getProductsForDB, extractProductsFromForm, isEmpty, getDevDaysForDB, getBase64, resetTrackForm, showToast, getMainPathname } from '../../../utils/Functions';
 
 const ViewAccount = () => {
