@@ -12,12 +12,15 @@ auditQueries.getAudits = (input, callback) => {
 
 //POST Request Methods
 auditQueries.createLog = (input, callback) => {
-    let query = `insert into auditlogs (userId, createdDateTime, description, customerId, type,departmentId) values(?,?,?,?,?,?)`;
-
     if (Array.isArray(input)) {
-        if (input.length) executePostOrUpdateQuery(query, [input], callback)
+        if (input.length) {
+            const sql = input.map(item => "(" + item.userId + ", '" + dayjs(item.createdDateTime).format(FULLTIMEFORMAT) + "', '" + item.description + "', " + item.customerId + ", '" + item.type + "'" + ")")
+            let query = `insert into auditlogs (userId, createdDateTime, description, customerId, type) values ` + sql;
+            executeGetQuery(query, callback)
+        }
     }
     else {
+        let query = `insert into auditlogs (userId, createdDateTime, description, customerId, type,departmentId) values(?,?,?,?,?,?)`;
         let { userId, description, customerId, type, departmentId } = input
         let requestBody = [userId, new Date(), description, customerId, type, departmentId]
         executePostOrUpdateQuery(query, requestBody, callback)

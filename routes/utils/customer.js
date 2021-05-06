@@ -11,11 +11,6 @@ const compareCustomerData = (data, { userId, userRole, userName }) => {
                 const createdDateTime = new Date()
                 Object.entries(data).map(([key, newValue]) => {
                     const oldValue = oldData[key]
-                    console.log('key>>', key, oldValue != newValue && key != 'idProofs' && key != 'gstProof')
-                    if (key != 'idProofs' && key != 'gstProof') {
-                        console.log('old value >>>', oldValue)
-                        console.log('new value >>>', newValue)
-                    }
                     if (oldValue != newValue && key != 'idProofs' && key != 'gstProof') {
                         records.push({
                             oldValue,
@@ -28,7 +23,6 @@ const compareCustomerData = (data, { userId, userRole, userName }) => {
                         })
                     }
                 })
-                console.log('records>>', records)
                 resolve(records)
             }
             else {
