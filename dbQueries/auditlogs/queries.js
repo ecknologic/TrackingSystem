@@ -6,7 +6,7 @@ let auditQueries = {}
 
 auditQueries.getAudits = (input, callback) => {
     let { type, id } = input
-    let query = "SELECT c.customerName,u.userName,a.description,a.createdDateTime from auditlogs a INNER JOIN usermaster u ON a.userId=u.userId INNER JOIN customerdetails c ON a.customerId=c.customerId WHERE a.customerId=" + id
+    let query = "SELECT c.customerName,u.userName,a.auditId,a.description,a.createdDateTime from auditlogs a INNER JOIN usermaster u ON a.userId=u.userId INNER JOIN customerdetails c ON a.customerId=c.customerId WHERE a.customerId=" + id
     executeGetQuery(query, callback)
 }
 

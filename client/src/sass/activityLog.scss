@@ -1,4 +1,5 @@
 .activity-log-container {
+    font-family: 'PoppinsRegular400';
 
     .date, .time {
         color: #92929D;
@@ -17,5 +18,24 @@
 
     .ant-divider {
         background-color: #E9E9E9;
+    }
+}
+
+.records-container {
+    display: flex;
+    border-left: 1px solid #9D9D9D;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-left: 1.5em;
+    padding-left: 1em;
+    padding-top: .5em;
+    margin-bottom: 2em;
+
+    .first {
+        margin-bottom: 1.4em;
+    }
+
+    .title {
+        font-family: 'PoppinsMedium500';
     }
 }
