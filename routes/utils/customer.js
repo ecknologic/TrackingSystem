@@ -11,7 +11,7 @@ const compareCustomerData = (data, { userId, userRole, userName }) => {
                 const createdDateTime = new Date()
                 Object.entries(data).map(([key, updatedValue]) => {
                     const oldValue = oldData[key]
-                    if (oldValue != updatedValue && key != 'idProofs' && key != 'gstProof') {
+                    if (oldValue != updatedValue&& key != 'salesAgentName' && key != 'idProofs' && key != 'gstProof') {
                         records.push({
                             oldValue,
                             updatedValue,
