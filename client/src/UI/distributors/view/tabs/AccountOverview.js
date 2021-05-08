@@ -1,37 +1,30 @@
 import axios from 'axios';
 import { message } from 'antd';
-import { useHistory, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import React, { Fragment, useEffect, useState, useCallback, useMemo } from 'react';
-import Header from './header';
-import AccountView from '../views/Account';
-import { http } from '../../../modules/http'
-import DistributorForm from '../forms/Distributor';
-import Spinner from '../../../components/Spinner';
-import ScrollUp from '../../../components/ScrollUp';
-import { TRACKFORM } from '../../../utils/constants';
-import NoContent from '../../../components/NoContent';
-import QuitModal from '../../../components/CustomModal';
-import IDProofInfo from '../../../components/IDProofInfo';
-import CustomButton from '../../../components/CustomButton';
-import { getDropdownOptions } from '../../../assets/fixtures';
-import ConfirmMessage from '../../../components/ConfirmMessage';
-import { isEmpty, showToast, base64String, getBase64, getProductsForUI, getProductsWithIdForDB, extractDistributorDetails, extractProductsFromForm } from '../../../utils/Functions';
-import { validateNames, validateMobileNumber, validateEmailId, validateDistributorValues } from '../../../utils/validations';
-import '../../../sass/employees.scss'
+import AccountView from '../../views/Account';
+import { http } from '../../../../modules/http'
+import DistributorForm from '../../forms/Distributor';
+import Spinner from '../../../../components/Spinner';
+import ScrollUp from '../../../../components/ScrollUp';
+import NoContent from '../../../../components/NoContent';
+import IDProofInfo from '../../../../components/IDProofInfo';
+import CustomButton from '../../../../components/CustomButton';
+import { getDropdownOptions } from '../../../../assets/fixtures';
+import { isEmpty, showToast, base64String, getBase64, getProductsForUI, getProductsWithIdForDB, extractDistributorDetails, extractProductsFromForm } from '../../../../utils/Functions';
+import { validateNames, validateMobileNumber, validateEmailId, validateDistributorValues } from '../../../../utils/validations';
+import '../../../../sass/employees.scss'
 
-const ManageDistributor = () => {
+const ManageDistributor = ({ setHeaderContent, onGoBack }) => {
     const { distributorId } = useParams()
-    const history = useHistory()
-    const [headerContent, setHeaderContent] = useState({})
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [loading, setLoading] = useState(true)
     const [gstProof, setGstProof] = useState({})
     const [locationList, setLocationList] = useState([])
-    const [confirmModal, setConfirmModal] = useState(false)
-    const [shake, setShake] = useState(false)
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [editMode, setEditMode] = useState('')
+    const [shake, setShake] = useState(false)
 
     const locationOptions = useMemo(() => getDropdownOptions(locationList), [locationList])
     const source = useMemo(() => axios.CancelToken.source(), []);
@@ -39,7 +32,6 @@ const ManageDistributor = () => {
 
     useEffect(() => {
         getDistributor()
-        getLocationList()
 
         return () => {
             http.ABORT(source)
@@ -135,7 +127,7 @@ const ManageDistributor = () => {
             showToast({ ...options, action: 'loading' })
             await http.POST(axios, url, body, config)
             showToast(options)
-            goBack()
+            onGoBack()
         } catch (error) {
             message.destroy()
             if (!axios.isCancel(error)) {
@@ -144,26 +136,15 @@ const ManageDistributor = () => {
         }
     }
 
-    const handleEdit = () => setEditMode(true)
-    const onAccountCancel = useCallback(() => handleBack(), [])
-    const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
-    const handleConfirmModalOk = useCallback(() => { setConfirmModal(false); goBack() }, [])
-
-    const handleBack = () => {
-        const formHasChanged = sessionStorage.getItem(TRACKFORM)
-        if (formHasChanged) {
-            setConfirmModal(true)
-        }
-        else goBack()
+    const handleEdit = () => {
+        getLocationList()
+        setEditMode(true)
     }
-
-    const goBack = () => history.push('/distributors')
 
     return (
         <Fragment>
             <ScrollUp dep={editMode} />
-            <Header data={headerContent} onClick={handleBack} />
-            <div className='app-manage-content employee-manage-content'>
+            <div className='app-manage-content employee-manage-content app-no-padding'>
                 {
                     loading
                         ? <NoContent content={<Spinner />} />
@@ -191,7 +172,7 @@ const ManageDistributor = () => {
                                     </>
                             }
                             <div className={`app-footer-buttons-container ${editMode ? 'edit' : 'view'}`}>
-                                <CustomButton onClick={onAccountCancel} className='app-cancel-btn footer-btn' text='Cancel' />
+                                <CustomButton onClick={onGoBack} className='app-cancel-btn footer-btn' text='Cancel' />
                                 {
                                     editMode
                                         ? <CustomButton onClick={handleUpdate} className={`app-create-btn footer-btn ${btnDisabled && 'disabled'} ${shake && 'app-shake'} `} text='Update' />
@@ -205,15 +186,6 @@ const ManageDistributor = () => {
                         </>
                 }
             </div>
-            <QuitModal
-                visible={confirmModal}
-                onOk={handleConfirmModalOk}
-                onCancel={handleConfirmModalCancel}
-                title='Are you sure you want to leave?'
-                okTxt='Yes'
-            >
-                <ConfirmMessage msg='Changes you made may not be saved.' />
-            </QuitModal>
         </Fragment>
     )
 }

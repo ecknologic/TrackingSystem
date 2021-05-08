@@ -11,7 +11,7 @@ import Staff from './UI/employees/Staff';
 import PageLayout from './UI/page-layout';
 import AddAccount from './UI/accounts/add';
 import useUser from './utils/hooks/useUser';
-import ManagePlant from './UI/plants/manage';
+import ManagePlant from './UI/plants/view';
 import Drivers from './UI/employees/Drivers';
 import Distributors from './UI/distributors';
 import ViewAccount from './UI/accounts/view';
@@ -20,7 +20,6 @@ import Warehouses from './UI/plants/Warehouses';
 import Invoices from './UI/invoices/super-admin';
 import QualityControl from './UI/quality-control';
 import WarehouseStock from './UI/stock/warehouse';
-// import ManageEmployee from './UI/employees/manage';
 import ManageEmployee from './UI/employees/view';
 import ApproveAccount from './UI/accounts/approve';
 import Materials from './UI/materials/super-admin';
@@ -31,7 +30,7 @@ import WarehouseInvoices from './UI/invoices/warehouse';
 import AccountsDashboard from './UI/accounts/dashboard';
 import ReturnEmptyCans from './UI/empty-cans/warehouse';
 import EditInvoice from './UI/invoices/super-admin/edit';
-import ManageDistributor from './UI/distributors/manage';
+import ManageDistributor from './UI/distributors/view';
 import WarehouseDashboard from './UI/dashboard/warehouse';
 import ReceivedEmptyCans from './UI/empty-cans/motherplant';
 import SuperAdminDashboard from './UI/dashboard/super-admin';
@@ -126,7 +125,7 @@ const App = () => {
                      <Route path='/invoices/edit/:invoiceId' render={byRole(<EditInvoice />)} />
                      <Route path='/invoices/:tab?' render={byRole(<Invoices />)} />
                      <Route path='/products' render={byRole(<Products />)} />
-                     <Route path='/distributors' render={byRole(<Distributors />)} />
+                     <Route path='/distributors/:tab?/:page?' render={byRole(<Distributors />)} />
                      <Route path='/motherplants' render={byRole(<Motherplants />)} />
                      <Route path='/warehouses' render={byRole(<Warehouses />)} />
                      <Route path='/customers/add-account' render={byRole(<AddAccount />)} />

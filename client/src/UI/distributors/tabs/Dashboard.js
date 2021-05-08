@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Col, Empty, message, Row } from 'antd';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../modules/http'
 import MenuBar from '../../../components/MenuBar';
@@ -17,6 +17,7 @@ import { deepClone, doubleKeyComplexSearch, showToast, complexSort, complexDateS
 const Dashboard = ({ reFetch }) => {
     const { ROLE } = useUser()
     const history = useHistory()
+    const { page = 1 } = useParams()
     const [distributorsClone, setDistributorsClone] = useState([])
     const [filteredClone, setFilteredClone] = useState([])
     const [distributors, setDistributors] = useState([])
@@ -24,7 +25,7 @@ const Dashboard = ({ reFetch }) => {
     const [pageSize, setPageSize] = useState(12)
     const [filterON, setFilterON] = useState(false)
     const [searchON, setSeachON] = useState(false)
-    const [pageNumber, setPageNumber] = useState(1)
+    const [pageNumber, setPageNumber] = useState(Number(page))
     const [sortBy, setSortBy] = useState('NEW - OLD')
     const [totalCount, setTotalCount] = useState(null)
     const [modalDelete, setModalDelete] = useState(false)
@@ -209,7 +210,7 @@ const Dashboard = ({ reFetch }) => {
         setModalDelete(false)
     }, [])
 
-    const goToManageDistributor = (id) => history.push(`/distributors/manage/${id}`)
+    const goToManageDistributor = (id) => history.push(`/distributors/manage/${id}`, { page: pageNumber })
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize

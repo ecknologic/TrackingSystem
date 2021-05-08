@@ -346,7 +346,7 @@ const ManageEmployee = ({ isDriver, setHeaderContent, onGoBack }) => {
     return (
         <Fragment>
             <ScrollUp dep={editMode} />
-            <div className='app-manage-content employee-manage-content'>
+            <div className='app-manage-content employee-manage-content app-no-padding'>
                 {
                     loading
                         ? <NoContent content={<Spinner />} />

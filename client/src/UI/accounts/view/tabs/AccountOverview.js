@@ -228,7 +228,7 @@ const AccountOverview = ({ data, onUpdate, isAdmin, locationOptions, businessOpt
     }
 
     return (
-        <div className='account-view-account-overview app-manage-content'>
+        <div className='account-view-account-overview app-manage-content app-no-padding'>
             <ScrollUp dep={editMode} />
             {
                 loading ? <NoContent content={<Spinner />} />
