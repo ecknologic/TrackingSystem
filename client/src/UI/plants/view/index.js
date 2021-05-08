@@ -11,7 +11,7 @@ import ActivityLogDetails from '../../../components/ActivityLogDetails';
 
 const ViewPlant = () => {
     const history = useHistory()
-    const { employeeId } = useParams()
+    const { plantId } = useParams()
     const { pathname } = useLocation()
     const [headerContent, setHeaderContent] = useState({})
     const [confirmModal, setConfirmModal] = useState(false)
@@ -43,7 +43,7 @@ const ViewPlant = () => {
                             />
                         </TabPane>
                         <TabPane tab="Activity Log Details" key="2">
-                            <ActivityLogDetails type={type} id={employeeId} />
+                            <ActivityLogDetails type={type} id={plantId} />
                         </TabPane>
                     </Tabs>
                 </div>
