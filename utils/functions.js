@@ -224,7 +224,7 @@ const getFormatedNumber = (number) => {
     else if (number >= 100000) {
         number = getLakhs(number)
     }
-    else number = number.toLocaleString('en-IN')
+    else number = number.toFixed(2).toLocaleString('en-IN')
 
     return number
 }

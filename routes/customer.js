@@ -303,7 +303,7 @@ router.post("/approveCustomerDirectly/:customerId", (req, res) => {
       customerQueries.approveOutDeliveryDetails(customerId, (err, updatedDelivery) => {
         if (err) res.json({ status: 500, message: err.sqlMessage });
         else {
-          saveToCustomerOrderDetails(customerId, res, null, userId)
+          saveToCustomerOrderDetails(customerId, res, null, userId,userRole,userName)
         }
       })
     }
