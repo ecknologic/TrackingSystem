@@ -155,6 +155,10 @@ export const getSideMenuKey = (path) => {
         return '/manage-invoices'
     if (path.includes('/customers'))
         return '/customers'
+    if (path.includes('/staff'))
+        return '/staff'
+    if (path.includes('/drivers'))
+        return '/drivers'
     return path
 }
 

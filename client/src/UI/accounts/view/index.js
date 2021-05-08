@@ -12,10 +12,10 @@ import DeliveryChallan from './tabs/DeliveryChallan';
 import DeliveryDetails from './tabs/DeliveryDetails';
 import QuitModal from '../../../components/CustomModal';
 import CustomModal from '../../../components/CustomModal';
-import ActivityLogDetails from './tabs/ActivityLogDetails';
 import CustomButton from '../../../components/CustomButton';
 import { DocIconWhite } from '../../../components/SVG_Icons';
 import ConfirmMessage from '../../../components/ConfirmMessage';
+import ActivityLogDetails from '../../../components/ActivityLogDetails';
 import { ACCOUNTSADMIN, MARKETINGADMIN, SUPERADMIN, TRACKFORM } from '../../../utils/constants';
 import { getDropdownOptions, getRouteOptions, getStaffOptions, getWarehouseOptions, WEEKDAYS } from '../../../assets/fixtures';
 import { validateDeliveryValues, validateDevDays, validateIntFloat, validateMobileNumber, validateNumber } from '../../../utils/validations';
@@ -327,7 +327,7 @@ const ViewAccount = () => {
                             <Invoice accountId={accountId} />
                         </TabPane>
                         <TabPane tab="Activity Log Details" key="5">
-                            <ActivityLogDetails />
+                            <ActivityLogDetails id={accountId} type='customer' />
                         </TabPane>
                     </Tabs>
                 </div>

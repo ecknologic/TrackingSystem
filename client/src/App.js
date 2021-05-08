@@ -20,7 +20,8 @@ import Warehouses from './UI/plants/Warehouses';
 import Invoices from './UI/invoices/super-admin';
 import QualityControl from './UI/quality-control';
 import WarehouseStock from './UI/stock/warehouse';
-import ManageEmployee from './UI/employees/manage';
+// import ManageEmployee from './UI/employees/manage';
+import ManageEmployee from './UI/employees/view';
 import ApproveAccount from './UI/accounts/approve';
 import Materials from './UI/materials/super-admin';
 import Motherplants from './UI/plants/Motherplants';
@@ -117,9 +118,9 @@ const App = () => {
                      <Route path='/distributors/manage/:distributorId' render={byRole(<ManageDistributor />)} />
                      <Route path='/motherplants/manage/:plantId' render={byRole(<ManagePlant />)} />
                      <Route path='/warehouses/manage/:plantId' render={byRole(<ManagePlant />)} />
-                     <Route path='/staff' render={byRole(<Staff />)} />
+                     <Route path='/staff/:tab?/:page?' render={byRole(<Staff />)} />
                      <Route path='/routes' render={byRole(<Transport />)} />
-                     <Route path='/drivers' render={byRole(<Drivers />)} />
+                     <Route path='/drivers/:tab?/:page?' render={byRole(<Drivers />)} />
                      <Route path='/invoices/manage' render={byRole(<ManageInvoices />)} />
                      <Route path='/invoices/dc-list/:invoiceId' render={byRole(<DeliveredDC />)} />
                      <Route path='/invoices/edit/:invoiceId' render={byRole(<EditInvoice />)} />
