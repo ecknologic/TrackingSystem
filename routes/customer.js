@@ -17,7 +17,7 @@ const usersQueries = require('../dbQueries/users/queries.js');
 const warehouseQueries = require('../dbQueries/warehouse/queries.js');
 const auditQueries = require('../dbQueries/auditlogs/queries.js');
 const departmenttransactionQueries = require('../dbQueries/departmenttransactions/queries.js');
-const { compareCustomerData } = require('./utils/customer.js');
+const { compareCustomerData, compareCustomerDeliveryData } = require('./utils/customer.js');
 let departmentId, userId, userName, userRole;
 
 var storage = multer.diskStorage({
@@ -573,8 +573,8 @@ router.put('/updateCustomerStatus', (req, res) => {
         if (err) res.status(500).json(dbError(err))
         else {
           saveToCustomerOrderDetails(req.body.customerId, res)
-          auditQueries.createLog({ userId, description: `Customer status changed to ${status == 1 ? 'Active' : 'Draft'}`, customerId, type: "customer" })
-          res.json(UPDATEMESSAGE)
+          auditQueries.createLog({ userId, description: `Customer status changed to ${status == 1 ? 'Active' : 'Draft'}  by ${userRole} <b>(${userName})</b>`, customerId, type: "customer" })
+          // res.json(UPDATEMESSAGE)
         }
       })
     }
@@ -698,7 +698,7 @@ router.get('/generatePDF', (req, res) => {
     }
   })
 })
-router.post('/updateDeliveryDetails', (req, res) => {
+router.post('/updateDeliveryDetails', async (req, res) => {
   var deliveryDetails = req.body
   if (deliveryDetails.length) {
     let count = 0
@@ -726,6 +726,8 @@ router.post('/updateDeliveryDetails', (req, res) => {
           });
         })
       } else {
+        const { gstNo, deliveryLocation, address, phoneNumber, contactPerson, depositAmount, departmentId, isApproved, gstProof, routeId, deliveryDetailsId, customer_Id } = i
+        const logs = await compareCustomerDeliveryData({ gstNo, deliveryLocation, address, phoneNumber, contactPerson, depositAmount, departmentId, isApproved, gstProof, routeId }, { deliveryDetailsId, customerId: customer_Id, userId, userRole, userName })
         updateDeliveryDays(i.deliveryDays, i.deliverydaysid).then(async (deliveryDays) => {
           let latLong = await getLatLongDetails({ Address1: i.address })
           let deliveryDetailsQuery = "UPDATE DeliveryDetails SET gstNo=?,location=?,address=?,phoneNumber=?,contactPerson=?,depositAmount=?,departmentId=?,isActive=?,gstProof=?,latitude=?,longitude=?,routeId=? WHERE deliveryDetailsId=" + i.deliveryDetailsId;
@@ -739,8 +741,15 @@ router.post('/updateDeliveryDetails', (req, res) => {
                 if (count == deliveryDetails.length) {
                   let data = await getAddedDeliveryDetails(i.deliveryDetailsId)
                   updateWHDelivery(req)
-                  auditQueries.createLog({ userId, description: `Delivery details Updated by ${userRole} <b>(${userName})</b>`, customerId: i.customer_Id, type: "customer" })
                   res.json({ status: 200, message: "Delivery Details Updated Successfully", data });
+                  if (logs.length) {
+                    auditQueries.createLog(logs, (err, data) => {
+                      if (err) console.log('log error', err)
+                      else console.log('log data', data)
+                    })
+                  }
+
+                  // auditQueries.createLog({ userId, description: `Delivery details Updated by ${userRole} <b>(${userName})</b>`, customerId: i.customer_Id, type: "customer" })
                 }
                 // res.json({ status: 200, message: "Delivery Details Updated Successfully", data: getAddedDeliveryDetails(i.deliveryDetailsId) });
               })

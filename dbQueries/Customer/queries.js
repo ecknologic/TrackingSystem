@@ -1,6 +1,6 @@
 var dayjs = require('dayjs')
 const { FULLTIMEFORMAT } = require('../../utils/constants.js');
-const { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, dateComparisions } = require('../../utils/functions.js');
+const { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, dateComparisions, customerProductDetails } = require('../../utils/functions.js');
 const { getDeliverysByCustomerOrderId } = require('../warehouse/queries.js');
 let customerQueries = {}
 
@@ -280,6 +280,34 @@ customerQueries.getBusinessRequests = (callback) => {
     let query = 'Select * from businessaccountrequests ORDER BY requestedDate DESC'
     return executeGetQuery(query, callback)
 }
+customerQueries.getDeliveryDetailsById = ({ deliveryDetailsId, isSuperAdmin }) => {
+    return new Promise((resolve, reject) => {
+      let deliveryDetailsQuery = "SELECT gstNo,location as deliveryLocation,address,phoneNumber,contactPerson,depositAmount,departmentId,isActive as isApproved,gstProof,routeId from DeliveryDetails  WHERE deleted=0 AND deliveryDetailsId=?";
+     executePostOrUpdateQuery(deliveryDetailsQuery, [deliveryDetailsId], (err, results) => {
+        if (err) reject(err)
+        else {
+          if (results.length) {
+            // if (isSuperAdmin == 'true') {
+            //   let arr = [], count = 0;
+            //   for (let result of results) {
+            //     customerProductDetails(result.deliveryDetailsId).then(response => {
+            //       count++
+            //       if (err) reject(err);
+            //       else {
+            //         result['deliveryDays'] = JSON.parse(result.deliveryDays)
+            //         result["products"] = response;
+            //         arr.push(result)
+            //       }
+            //       if (count == results.length) resolve(arr);
+            //     });
+            //   }
+            // } else
+             resolve(results)
+          } else resolve([])
+        }
+      });
+    });
+  }
 
 //POST Request Methods
 customerQueries.saveCustomerOrderDetails = (input, callback) => {

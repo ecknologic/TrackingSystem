@@ -9,12 +9,12 @@ const compareCustomerData = (data, { userId, userRole, userName }) => {
                 const oldData = results[0]
                 const records = []
                 const createdDateTime = new Date()
-                Object.entries(data).map(([key, newValue]) => {
+                Object.entries(data).map(([key, updatedValue]) => {
                     const oldValue = oldData[key]
-                    if (oldValue != newValue && key != 'idProofs' && key != 'gstProof') {
+                    if (oldValue != updatedValue && key != 'idProofs' && key != 'gstProof') {
                         records.push({
                             oldValue,
-                            newValue,
+                            updatedValue,
                             createdDateTime,
                             userId,
                             description: `Updated Customer ${key} by ${userRole} <b>(${userName})</b>`,
@@ -32,4 +32,35 @@ const compareCustomerData = (data, { userId, userRole, userName }) => {
     })
 }
 
-module.exports = { compareCustomerData }
+
+const compareCustomerDeliveryData = (data, { deliveryDetailsId, customerId, userId, userRole, userName }) => {
+    return new Promise((resolve) => {
+        customerQueries.getDeliveryDetailsById({ deliveryDetailsId }).then(results => {
+            if (results.length) {
+                const oldData = results[0]
+                const records = []
+                const createdDateTime = new Date()
+                Object.entries(data).map(([key, updatedValue]) => {
+                    const oldValue = oldData[key]
+                    if (oldValue != updatedValue && key != 'idProofs' && key != 'gstProof') {
+                        records.push({
+                            oldValue,
+                            updatedValue,
+                            createdDateTime,
+                            userId,
+                            description: `Updated Customer Delivery Details ${key} by ${userRole} <b>(${userName})</b>`,
+                            customerId,
+                            type: "customer"
+                        })
+                    }
+                })
+                resolve(records)
+            }
+            else {
+                resolve([])
+            }
+        })
+    })
+}
+
+module.exports = { compareCustomerData, compareCustomerDeliveryData }
