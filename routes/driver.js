@@ -5,12 +5,15 @@ const auditQueries = require('../dbQueries/auditlogs/queries.js');
 const driverQueries = require('../dbQueries/driver/queries.js');
 const usersQueries = require('../dbQueries/users/queries.js');
 const { dbError, createHash, prepareOrderResponseObj } = require('../utils/functions.js');
-let userId;
+const { compareDriverData, compareDriverDependentDetails } = require('./utils/driver.js');
+let userId, adminUserName, userRole;
 
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
     console.log('Time: ', Date.now());
     userId = req.headers['userid']
+    adminUserName = req.headers['username']
+    userRole = req.headers['userrole']
     next();
 });
 
@@ -27,7 +30,6 @@ router.get('/validateQRCode', (req, res) => {
 });
 router.get('/getOrderDetails/:date', (req, res) => {
     var date = req.params.date;
-    console.log(date);
     const { driverId, warehouseId } = req.query;
     // let query = "SELECT c.customerOrderId,c.damagedCount,c.isDelivered,c.dcNo,c.returnEmptyCans,c.deliveryDate,cd.customerName,cd.Address1,cd.Address2,cd.latitude,cd.longitude,cd.mobileNumber FROM customerorderdetails c INNER JOIN customerdetails cd ON c.existingCustomerId = cd.customerId WHERE DATE(`deliveryDate`) ='" + date + "'"
     let query = "SELECT c.customerOrderId,c.damagedCount,c.isDelivered,c.dcNo,c.returnEmptyCans,c.deliveryDate,c.customerName,c.address,c.latitude,c.longitude,c.phoneNumber FROM customerorderdetails c  WHERE DATE(`deliveryDate`) =? AND c.driverId=? AND c.warehouseId=? AND routeId != 'NULL' AND driverId != 'NULL'"
@@ -148,7 +150,7 @@ router.post('/createDriver', (req, res) => {
             driverQueries.updateDriverLoginId({ driverName: req.body.userName, driverId: results.insertId }, (err, updated) => {
                 if (err) console.log("Driver update Err", err)
             })
-            auditQueries.createLog({ userId, description: "Driver created", staffId: results.insertId, type: "driver" })
+            auditQueries.createLog({ userId, description: `Driver created by ${userRole} <b>(${userName})</b>`, staffId: results.insertId, type: "driver" })
             res.json(results)
         }
     })
@@ -159,21 +161,38 @@ router.put('/updateDriverStatus', (req, res) => {
     driverQueries.updateDriverActiveStatus(req.body, (err, results) => {
         if (err) res.json(err);
         else {
-            auditQueries.createLog({ userId, description: `Driver status changed to ${status == 1 ? "Active" : "Draft"}`, staffId: driverId, type: "driver" })
+            auditQueries.createLog({ userId, description: `Driver status changed to ${status == 1 ? "Active" : "Draft"} by ${userRole} <b>(${userName})</b>`, staffId: driverId, type: "driver" })
             res.json(results)
         }
     })
 })
 
-router.post('/updateDriver', (req, res) => {
-    const { driverId } = req.body
-    driverQueries.updateDriver(req.body, (err, results) => {
+router.post('/updateDriver', async (req, res) => {
+    const { userName, emailid, departmentId, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, licenseNo, adhar_frontside, adhar_backside, license_frontside, license_backside, accountNo, bankName, branchName, ifscCode, recommendedBy, recruitedBy, driverId, dependentDetails } = req.body
+    let data = { userName, emailid, departmentId, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, licenseNo, adhar_frontside, adhar_backside, license_frontside, license_backside, accountNo, bankName, branchName, ifscCode, recommendedBy, recruitedBy }
+    const logs = await compareDriverData(data, { userId, userRole, adminUserName, staffId: driverId })
+    driverQueries.updateDriver(req.body, async (err, results) => {
         if (err) res.json(dbError(err))
         else {
-            usersQueries.updateDependentDetails(req.body.dependentDetails, "driverDependentDetails", (err, success) => {
+            if (logs.length) {
+                auditQueries.createLog(logs, (err, data) => {
+                    if (err) console.log('log error', err)
+                    else console.log('log data', data)
+                })
+            }
+            const { name, dob, gender, adharProof, mobileNumber, relation, dependentId, adharNo } = dependentDetails
+            const dependentlogs = await compareDriverDependentDetails({ name, dob, gender, adharProof, mobileNumber, relation, adharNo }, { userId, dependentId, userRole, adminUserName, staffId: driverId })
+            usersQueries.updateDependentDetails(dependentDetails, "driverDependentDetails", (err, success) => {
                 if (err) console.log("Driver Dependent Err", err)
+                else {
+                    if (dependentlogs.length) {
+                        auditQueries.createLog(dependentlogs, (err, data) => {
+                            if (err) console.log('log error', err)
+                            else console.log('log data', data)
+                        })
+                    }
+                }
             })
-            auditQueries.createLog({ userId, description: `Driver Updated`, staffId: driverId, type: "driver" })
             res.json(results)
         }
     })

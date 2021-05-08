@@ -9,7 +9,14 @@ driverQueries.getDriverById = async (driverId, callback) => {
     let query = "SELECT d.*,d.driverName as userName,s.adharNo as dependentAdharNo,s.adhar_frontside as dependentFrontProof,s.adhar_backside as dependentBackProof,JSON_OBJECT('name',s.name,'userId',s.userId,'dob',s.dob,'gender',s.gender,'mobileNumber',s.mobileNumber,'relation',s.relation,'dependentId',s.dependentId) dependentDetails,dep.departmentName from driverdetails d INNER JOIN driverDependentDetails s on d.driverId=s.userId LEFT JOIN departmentmaster dep ON d.departmentId=dep.departmentId where d.driverId=" + driverId;
     return executeGetQuery(query, callback)
 }
-
+driverQueries.getDriverDetailsById = async (driverId, callback) => {
+    let query = "SELECT driverName as userName, emailid, departmentId, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, licenseNo, adhar_frontside, adhar_backside, license_frontside, license_backside, accountNo, bankName, branchName, ifscCode, recommendedBy, recruitedBy from driverdetails where driverId=" + driverId;
+    return executeGetQuery(query, callback)
+}
+driverQueries.getDriverDependentDetailsById = async (dependentId, callback) => {
+    let query = "SELECT name, dob, gender, adhar_frontside,adhar_backside, mobileNumber, relation, adharNo from driverDependentDetails where dependentId=" + dependentId;
+    return executeGetQuery(query, callback)
+}
 driverQueries.getOrderDetailsByOrderId = async (orderId, callback) => {
     let query = `SELECT customerType from customerorderdetails where customerOrderId=${orderId}`
     return executeGetQuery(query, callback)

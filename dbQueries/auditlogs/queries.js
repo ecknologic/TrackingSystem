@@ -6,11 +6,10 @@ let auditQueries = {}
 
 auditQueries.getAudits = (input, callback) => {
     let { type = 'customer', id } = input
-    let query = `SELECT a.auditId,a.description,a.createdDateTime,a.oldValue,a.updatedValue from auditlogs a
-     INNER JOIN usermaster u ON a.userId=u.userId WHERE a.customerId=${id} ORDER BY a.createdDateTime DESC`
-    if (type == 'staff') {
+    let query = `SELECT a.auditId,a.description,a.createdDateTime,a.oldValue,a.updatedValue from auditlogs a WHERE a.customerId=${id} ORDER BY a.createdDateTime DESC`
+    if (type == 'staff' || type == 'driver') {
         query = `SELECT a.auditId,a.description,a.createdDateTime,a.oldValue,a.updatedValue from auditlogs a
-        INNER JOIN usermaster u ON a.userId=u.userId  WHERE a.staffId=${id} ORDER BY a.createdDateTime DESC`
+        WHERE a.staffId=${id} ORDER BY a.createdDateTime DESC`
     }
     executeGetQuery(query, callback)
 }
