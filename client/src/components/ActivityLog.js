@@ -5,8 +5,8 @@ import parse from 'html-react-parser';
 import '../sass/activityLog.scss'
 
 const ActivityLog = ({ data }) => {
-    const { description, createdDateTime, oldValue = null, newValue = null } = data
-    const hasRecords = oldValue !== null && newValue !== null
+    const { description, createdDateTime, oldValue = null, updatedValue = null } = data
+    const hasRecords = oldValue !== null && updatedValue !== null
 
     return (
         <div className='activity-log-container'>
@@ -25,7 +25,7 @@ const ActivityLog = ({ data }) => {
                         </div>
                         <div className='record-box'>
                             <div className='title'>New Record</div>
-                            {newValue}
+                            {updatedValue}
                         </div>
                     </div>
                 )

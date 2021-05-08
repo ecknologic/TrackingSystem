@@ -5,8 +5,13 @@ const { getDeliverysByCustomerOrderId } = require('../warehouse/queries.js');
 let auditQueries = {}
 
 auditQueries.getAudits = (input, callback) => {
-    let { type, id } = input
-    let query = "SELECT c.customerName,u.userName,a.auditId,a.description,a.createdDateTime from auditlogs a INNER JOIN usermaster u ON a.userId=u.userId INNER JOIN customerdetails c ON a.customerId=c.customerId WHERE a.customerId=" + id
+    let { type = 'customer', id } = input
+    let query = `SELECT a.auditId,a.description,a.createdDateTime,a.oldValue,a.updatedValue from auditlogs a
+     INNER JOIN usermaster u ON a.userId=u.userId WHERE a.customerId=${id} ORDER BY a.createdDateTime DESC`
+    if (type == 'staff') {
+        query = `SELECT a.auditId,a.description,a.createdDateTime,a.oldValue,a.updatedValue from auditlogs a
+        INNER JOIN usermaster u ON a.userId=u.userId  WHERE a.staffId=${id} ORDER BY a.createdDateTime DESC`
+    }
     executeGetQuery(query, callback)
 }
 
@@ -14,15 +19,17 @@ auditQueries.getAudits = (input, callback) => {
 auditQueries.createLog = (input, callback) => {
     if (Array.isArray(input)) {
         if (input.length) {
-            const sql = input.map(item => "(" + item.userId + ", '" + dayjs(item.createdDateTime).format(FULLTIMEFORMAT) + "', '" + item.description + "', " + item.customerId + ", '" + item.type + "'" + ")")
-            let query = `insert into auditlogs (userId, createdDateTime, description, customerId, type) values ` + sql;
+            const { staffId, customerId } = input[0]
+            const id = customerId ? 'customerId' : staffId ? 'staffId' : ""
+            const sql = input.map(item => "(" + item.userId + ", '" + dayjs(item.createdDateTime).format(FULLTIMEFORMAT) + "', '" + item.description + "', " + item[id] + ", '" + item.type + "'" + ", '" + item.oldValue + "'" + ", '" + item.updatedValue + "'" + ")")
+            let query = `insert into auditlogs (userId, createdDateTime, description, ${id}, type,oldValue,updatedValue) values ` + sql;
             executeGetQuery(query, callback)
         }
     }
     else {
-        let query = `insert into auditlogs (userId, createdDateTime, description, customerId, type,departmentId) values(?,?,?,?,?,?)`;
+        let query = `insert into auditlogs (userId, createdDateTime, description, customerId, type,departmentId,staffId,oldValue,updatedValue) values(?,?,?,?,?,?,?,?,?)`;
         let { userId, description, customerId, type, departmentId } = input
-        let requestBody = [userId, new Date(), description, customerId, type, departmentId]
+        let requestBody = [userId, new Date(), description, customerId, type, departmentId, staffId, oldValue, updatedValue]
         executePostOrUpdateQuery(query, requestBody, callback)
     }
 }

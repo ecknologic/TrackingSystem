@@ -5,10 +5,13 @@ var bcrypt = require("bcryptjs");
 const usersQueries = require('../dbQueries/users/queries.js');
 const { dbError, createHash } = require('../utils/functions.js');
 const auditQueries = require('../dbQueries/auditlogs/queries.js');
-let userId;
+const { compareWebUserData, compareWebUserDependentDetails } = require('./utils/users.js');
+let userId, adminUserName, userRole;
 
 router.use(function timeLog(req, res, next) {
   userId = req.headers['userid']
+  adminUserName = req.headers['username']
+  userRole = req.headers['userrole']
   next();
 });
 
@@ -41,7 +44,7 @@ router.post('/createWebUser', (req, res) => {
           db.query(privilegeQuery, queryValues, (privilegeErr, results) => {
             if (privilegeErr) res.status(500).json(dbError(privilegeErr));
             else {
-              auditQueries.createLog({ userId, description: "Staff created", staffId, type: "staff" })
+              auditQueries.createLog({ userId, description: `Staff created by ${userRole} <b>(${adminUserName})</b>`, staffId, type: "staff" })
               res.json({ status: 200, message: "User Added Successfully" });
             }
           })
@@ -66,7 +69,7 @@ router.delete('/deleteWebUser/:userId', (req, res) => {
   usersQueries.deleteWebUser(req.params.userId, (err, results) => {
     if (err) res.json(err);
     else {
-      auditQueries.createLog({ userId, description: "Staff updated", staffId: req.params.userId, type: "staff" })
+      auditQueries.createLog({ userId, description: `Staff deleted by ${userRole} <b>(${adminUserName})</b>`, staffId: req.params.userId, type: "staff" })
       res.json(results)
     }
   })
@@ -88,28 +91,44 @@ router.put('/updateUserStatus', (req, res) => {
   usersQueries.updateWebUserActiveStatus(req.body, (err, results) => {
     if (err) res.json(err);
     else {
-      auditQueries.createLog({ userId, description: `Staff status changed to ${status == 1 ? 'Active' : 'Draft'}`, staffId: req.params.userId, type: "staff" })
+      auditQueries.createLog({ userId, description: `Staff status changed to ${status == 1 ? 'Active' : 'Draft'} by ${userRole} <b>(${adminUserName})</b>`, staffId: req.params.userId, type: "staff" })
       res.json(results)
     }
   })
 })
-router.post('/updateWebUser', (req, res) => {
+router.post('/updateWebUser', async (req, res) => {
   let query = "UPDATE usermaster SET userName=?,roleId=?,departmentId=?,emailid=?, mobileNumber=?, joinedDate=?, parentName=?, gender=?, dob=?, adharNo=?, address=?, permanentAddress=?,adhar_frontside=?,adhar_backside=?,accountNo=?,bankName=?,branchName=?,ifscCode=?,recommendedBy=?,recruitedBy=?,bloodGroup=?  where userId=?";
   const { userName, roleId, departmentId, emailid, mobileNumber, userId: webUserId, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, adharProof, dependentDetails, accountNo, bankName, branchName, ifscCode, recommendedBy, recruitedBy, removedDepartmentId, bloodGroup } = req.body
   let adhar_frontside = adharProof && adharProof.Front && Buffer.from(adharProof.Front.replace(/^data:image\/\w+;base64,/, ""), 'base64')
   let adhar_backside = adharProof && adharProof.Back && Buffer.from(adharProof.Back.replace(/^data:image\/\w+;base64,/, ""), 'base64')
   let insertQueryValues = [userName, roleId, departmentId, emailid, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, adhar_frontside, adhar_backside, accountNo, bankName, branchName, ifscCode, recommendedBy, recruitedBy, bloodGroup, webUserId]
-  db.query(query, insertQueryValues, (err, results) => {
+  const logs = await compareWebUserData({ userName, roleId, departmentId, emailid, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, adhar_frontside, adhar_backside, accountNo, bankName, branchName, ifscCode, recommendedBy, recruitedBy, bloodGroup }, { staffId: webUserId, userId, userRole, adminUserName })
+  db.query(query, insertQueryValues, async (err, results) => {
     if (err) res.send(err);
     else {
       if (removedDepartmentId) {
         usersQueries.removeDepartmentAdmin(removedDepartmentId)
       }
-
-      auditQueries.createLog({ userId, description: `Staff Updated`, staffId: webUserId, type: "staff" })
+      if (logs.length) {
+        auditQueries.createLog(logs, (err, data) => {
+          if (err) console.log('log error', err)
+          else console.log('log data', data)
+        })
+      }
+      // auditQueries.createLog({ userId, description: `Staff Updated`, staffId: webUserId, type: "staff" })
       usersQueries.addDepartmentAdmin({ userId: webUserId, departmentId })
+      const { name, dob, gender, adharProof, mobileNumber, relation, dependentId, adharNo } = dependentDetails
+      const dependentlogs = await compareWebUserDependentDetails({ name, dob, gender, adharProof, mobileNumber, relation, adharNo }, { staffId: webUserId,dependentId, userId, userRole, adminUserName })
       usersQueries.updateDependentDetails(dependentDetails, "staffDependentDetails", (err, success) => {
         if (err) console.log("Update Staff Dependent Err", err)
+        else{
+          if (dependentlogs.length) {
+            auditQueries.createLog(dependentlogs, (err, data) => {
+              if (err) console.log('log error', err)
+              else console.log('log data', data)
+            })
+          }
+        }
       })
       // for (let i of userDetails.privilegeDetails) {
       //   let privilegeQuery = "UPDATE userPrivilegesMaster SET privilegeActions=? where privilegeId=? AND userId=?";
