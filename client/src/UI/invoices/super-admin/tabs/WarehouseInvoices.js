@@ -6,19 +6,17 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http'
 import Actions from '../../../../components/Actions';
 import Spinner from '../../../../components/Spinner';
-import { TODAYDATE, WAREHOUSEADMIN } from '../../../../utils/constants';
 import DateValue from '../../../../components/DateValue';
-import SearchInput from '../../../../components/SearchInput';
-import CustomButton from '../../../../components/CustomButton';
-import RoutesFilter from '../../../../components/RoutesFilter';
-import { getInvoiceColumns } from '../../../../assets/fixtures';
-import CustomRangeInput from '../../../../components/CustomRangeInput';
-import CustomPagination from '../../../../components/CustomPagination';
-import { deepClone, disableFutureDates, doubleKeyComplexSearch, getStatusColor, isEmpty, showToast } from '../../../../utils/Functions';
-import { ListViewIconGrey, ScheduleIcon, SendIconGrey, TickIconGrey } from '../../../../components/SVG_Icons';
-import CustomDateInput from '../../../../components/CustomDateInput';
 import InputLabel from '../../../../components/InputLabel';
 import InputValue from '../../../../components/InputValue';
+import SearchInput from '../../../../components/SearchInput';
+import RoutesFilter from '../../../../components/RoutesFilter';
+import { getInvoiceColumns } from '../../../../assets/fixtures';
+import CustomDateInput from '../../../../components/CustomDateInput';
+import CustomPagination from '../../../../components/CustomPagination';
+import { TODAYDATE, WAREHOUSEADMIN } from '../../../../utils/constants';
+import { ListViewIconGrey, ScheduleIcon, SendIconGrey, TickIconGrey } from '../../../../components/SVG_Icons';
+import { computeTotalAmount, deepClone, disableFutureDates, doubleKeyComplexSearch, getStatusColor, isEmpty, showToast } from '../../../../utils/Functions';
 const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
@@ -271,15 +269,4 @@ const renderStatus = (status) => {
     )
 }
 
-const computeTotalAmount = (data) => {
-    let totalAmount = 0
-    if (!isEmpty(data)) {
-        totalAmount = data.filter(({ status }) => status !== 'Paid')
-            .map(item => item.totalAmount)
-            .reduce((a, c) => a + c).toLocaleString('en-IN')
-    }
-
-    return `₹ ${totalAmount}`
-
-}
 export default WarehouseInvoices

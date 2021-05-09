@@ -6,16 +6,18 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http'
 import Actions from '../../../../components/Actions';
 import Spinner from '../../../../components/Spinner';
-import { SUPERADMIN, TODAYDATE } from '../../../../utils/constants';
 import DateValue from '../../../../components/DateValue';
+import InputValue from '../../../../components/InputValue';
+import InputLabel from '../../../../components/InputLabel';
 import SearchInput from '../../../../components/SearchInput';
 import CustomButton from '../../../../components/CustomButton';
 import RoutesFilter from '../../../../components/RoutesFilter';
 import { getInvoiceColumns } from '../../../../assets/fixtures';
+import { SUPERADMIN, TODAYDATE } from '../../../../utils/constants';
 import CustomRangeInput from '../../../../components/CustomRangeInput';
 import CustomPagination from '../../../../components/CustomPagination';
-import { deepClone, disableFutureDates, doubleKeyComplexSearch, getStatusColor, showToast } from '../../../../utils/Functions';
 import { ListViewIconGrey, ScheduleIcon, SendIconGrey, TickIconGrey } from '../../../../components/SVG_Icons';
+import { computeTotalAmount, deepClone, disableFutureDates, doubleKeyComplexSearch, getStatusColor, showToast } from '../../../../utils/Functions';
 const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
@@ -38,6 +40,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
     const [open, setOpen] = useState(false)
 
     const invoiceColumns = useMemo(() => getInvoiceColumns(), [])
+    const totalAmount = useMemo(() => computeTotalAmount(invoices), [invoices])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
@@ -239,10 +242,14 @@ const Dashboard = ({ reFetch, onUpdate }) => {
                     </div>
                 </div>
                 <div className='right'>
+                    <div className='field'>
+                        <InputLabel name='Total Amount' />
+                        <InputValue size='larger' value={totalAmount} />
+                    </div>
                     <SearchInput
                         placeholder='Search Invoice'
                         className='delivery-search'
-                        width='50%'
+                        width='40%'
                         reset={resetSearch}
                         onChange={handleSearch}
                     />

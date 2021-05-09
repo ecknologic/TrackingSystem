@@ -42,7 +42,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
     const footerValues = useMemo(() => computeFinalAmounts(dataSource), [dataSource])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
-    const { departmentStatus } = formData
+    const { departmentStatus, customerType } = formData
 
     useEffect(() => {
         if (editMode) getInvoice()
@@ -129,8 +129,8 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
             let isLocal = true
             showToast({ v1Ing: 'Fetching', action: 'loading' })
             const [dc] = await http.GET(axios, url, config)
-            let { customerId, distributorId } = dc
-            customerId = customerId || distributorId
+            const { existingCustomerId, distributorId } = dc
+            const customerId = existingCustomerId || distributorId
 
             if (!dc.gstNo) setIsLocal(true)
             else if ((dc.gstNo || "").startsWith('36')) setIsLocal(true)
@@ -138,6 +138,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
 
             setFormData(data => ({ ...data, ...dc, customerId }))
             const data = getProductsForTable(productList, dc, isLocal)
+            handleCheckboxChange(false)
             setDataSource(data)
             showToast({ v2: 'fetched' })
         } catch (error) {
@@ -297,15 +298,18 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
                 onSave={handleProductsSave}
                 onDelete={handleProductsDelete}
             />
-            <div className='checkbox-container'>
-                <div>
-                    <Checkbox
-                        checked={departmentStatus === 'Pending' ? false : true}
-                        onChange={({ target: { checked } }) => handleCheckboxChange(checked)}
-                    />
-                    <span className='app-checkbox-text'>Customer has paid the amount?</span>
+            {
+                customerType !== 'distributor' &&
+                <div className='checkbox-container'>
+                    <div>
+                        <Checkbox
+                            checked={departmentStatus === 'Pending' ? false : true}
+                            onChange={({ target: { checked } }) => handleCheckboxChange(checked)}
+                        />
+                        <span className='app-checkbox-text'>Customer has paid the amount?</span>
+                    </div>
                 </div>
-            </div>
+            }
             <InvoiceRestForm
                 data={formData}
                 errors={formErrors}

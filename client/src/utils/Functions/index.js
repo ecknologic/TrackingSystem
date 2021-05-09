@@ -43,6 +43,18 @@ export const resetSessionItems = (matcher) => {
         .map((key) => key.includes(matcher) && sessionStorage.removeItem(key))
 }
 
+export const computeTotalAmount = (data) => {
+    let totalAmount = 0
+    if (!isEmpty(data)) {
+        totalAmount = data.filter(({ status }) => status !== 'Paid')
+            .map(item => item.totalAmount)
+            .reduce((a, c) => a + c).toLocaleString('en-IN')
+    }
+
+    return `₹ ${totalAmount}`
+
+}
+
 export const showToast = (props) => {
     let { item = 'Data', action = 'success',
         v1Ing = 'Saving', v2 = 'saved', duration } = props

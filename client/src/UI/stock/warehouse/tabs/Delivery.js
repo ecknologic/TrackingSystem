@@ -6,12 +6,12 @@ import { http } from '../../../../modules/http';
 import Spinner from '../../../../components/Spinner';
 import Actions from '../../../../components/Actions';
 import useUser from '../../../../utils/hooks/useUser';
-import { TRACKFORM } from '../../../../utils/constants';
 import QuitModal from '../../../../components/CustomModal';
 import SearchInput from '../../../../components/SearchInput';
 import CustomModal from '../../../../components/CustomModal';
 import CustomButton from '../../../../components/CustomButton';
 import RoutesFilter from '../../../../components/RoutesFilter';
+import { TRACKFORM } from '../../../../utils/constants';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomPagination from '../../../../components/CustomPagination';
 import { EditIconGrey, PlusIcon } from '../../../../components/SVG_Icons';
@@ -299,6 +299,7 @@ const Delivery = ({ date, source }) => {
 
         if (!driverId) { // Set status to delivered
             body.isDelivered = 'Completed'
+            body.deliveredDate = new Date()
         }
 
         const options = { item: 'DC', v1Ing, v2 }

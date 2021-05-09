@@ -34,7 +34,7 @@ const DeliveredDC = ({ invoiceId }) => {
     const deliveryColumns = useMemo(() => getDeliveryColumns('date'), [])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
-    const { fromDate, toDate, customerId } = urlState
+    const { fromDate, toDate, customerId, customerType } = urlState
 
     useEffect(() => {
         setLoading(true)
@@ -49,7 +49,7 @@ const DeliveredDC = ({ invoiceId }) => {
         const startDate = dayjs(fromDate).format(APIDATEFORMAT)
         const endDate = dayjs(toDate).format(APIDATEFORMAT)
 
-        const url = `warehouse/getAllDcDetails?fromDate=${startDate}&toDate=${endDate}&customerIds=${[customerId]}`
+        const url = `warehouse/getAllDcDetails?fromDate=${startDate}&toDate=${endDate}&customerIds=${[customerId]}&customerType=${customerType}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -114,8 +114,8 @@ const DeliveredDC = ({ invoiceId }) => {
             key: customerOrderId || dcNo,
             dcnumber: dcNo,
             shopAddress: address,
-            route: RouteName,
             name: customerName,
+            route: RouteName || 'Not Assigned',
             driverName: driverName || 'Not Assigned',
             orderDetails: renderOrderDetails(dc),
             status: renderStatus(isDelivered),
