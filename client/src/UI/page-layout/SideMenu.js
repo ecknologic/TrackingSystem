@@ -107,6 +107,9 @@ const SideMenu = () => {
                             <Item key='/add-customer' icon={selected === '/add-customer' ? <FriendReqIcon /> : <FriendReqIconLight />}>
                                 Add Customer
                             </Item>
+                            <Item key='/manage-invoices' icon={selected === '/manage-invoices' ? <DocIcon /> : <DocIconLight />}>
+                                Invoices
+                            </Item>
                             <Item key='/customerDashboard' style={{ pointerEvents: 'none' }} icon={selected === '/customerDashboard' ? <SettingIcon /> : <SettingIconLight />}>
                                 Settings
                             </Item>

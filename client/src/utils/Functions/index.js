@@ -214,8 +214,6 @@ export const filterAccounts = (accountsClone, filterInfo) => {
     creator = creator.filter(item => item.checked).map(item => item.value)
     let singleFiltered = [], allFiltered = []
 
-    console.log('status>>>', status)
-    console.log('item', accountsClone)
     if (!isEmpty(business) && !isEmpty(status) && !isEmpty(account) && !isEmpty(creator)) {
         allFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && status.includes(item.isApproved) && account.includes(item.customertype) && creator.includes(item.createdBy))
     }

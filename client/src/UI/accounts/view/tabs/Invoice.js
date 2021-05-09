@@ -24,7 +24,7 @@ const Invoice = ({ accountId }) => {
     const [pageNumber, setPageNumber] = useState(1)
     const [totalCount, setTotalCount] = useState(null)
 
-    const isMarketingRole = useMemo(() => ROLE === MARKETINGADMIN || ROLE === MARKETINGMANAGER, [])
+    const isMarketingRole = useMemo(() => ROLE === MARKETINGADMIN || ROLE === MARKETINGMANAGER, [ROLE])
     const invoiceColumns = useMemo(() => getInvoiceColumns('single'), [])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }

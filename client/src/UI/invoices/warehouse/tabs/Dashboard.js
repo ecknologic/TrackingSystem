@@ -73,11 +73,6 @@ const Dashboard = ({ reFetch }) => {
         if (key === 'resend') {
         }
         else if (key === 'dcList') {
-            const startDate = dayjs(data.fromDate).format(APIDATEFORMAT)
-            const endDate = dayjs(data.toDate).format(APIDATEFORMAT)
-            console.log("start date", startDate)
-            console.log("end date", endDate)
-
             history.push(`/manage-invoices/dc-list/${data.invoiceId}`, data)
         }
         else handleStatusUpdate(data.invoiceId)

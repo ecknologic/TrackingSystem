@@ -28,11 +28,11 @@ const Accounts = () => {
     const [searchON, setSeachON] = useState(false)
     const [sortBy, setSortBy] = useState('NEW - OLD')
 
+    const isSMManager = useMemo(() => ROLE === MARKETINGMANAGER, [ROLE])
     const { account, creator, business, status, hasFilters } = useCustomerFilter()
     const pageSizeOptions = useMemo(() => generatePageSizeOptions(), [window.innerWidth])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
-    const isSMManager = ROLE === MARKETINGMANAGER
 
     useEffect(() => {
         getAccounts()

@@ -18,13 +18,12 @@ const FilterProvider = ({ children }) => {
     const [status, setStatus] = useState([...statusFilterList])
     const [account, setAccount] = useState([...accountFilterList])
 
-    const isSMManager = useMemo(() => ROLE === MARKETINGMANAGER, [])
-    const isAdmin = useMemo(() => ROLE === SUPERADMIN || ROLE === ACCOUNTSADMIN, [])
+    const isSMManager = useMemo(() => ROLE === MARKETINGMANAGER, [ROLE])
+    const isAdmin = useMemo(() => ROLE === SUPERADMIN || ROLE === ACCOUNTSADMIN, [ROLE])
     const mainPathname = useMemo(() => getMainPathname(pathname), [pathname])
 
     useEffect(() => {
         getBusinessList()
-        getCreatorList()
     }, [])
 
     useEffect(() => {
@@ -36,6 +35,10 @@ const FilterProvider = ({ children }) => {
             setStatus([])
         }
     }, [isAdmin])
+
+    useEffect(() => {
+        getCreatorList()
+    }, [isSMManager])
 
     async function getBusinessList() {
         const url = `bibo/getList/natureOfBusiness`
@@ -49,7 +52,6 @@ const FilterProvider = ({ children }) => {
 
     async function getCreatorList() {
         const roleName = getRoleName()
-        console.log('role Name', roleName)
         if (!roleName) return;
 
         const url = `users/getUsersByRole/${roleName}`
