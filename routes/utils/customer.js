@@ -94,9 +94,45 @@ const compareProductsData = (data, { type = "customer", customerId, userId, user
         })
     })
 }
+const compareOrderData = (data, { departmentId, transactionId, userId, userRole, userName }) => {
+    return new Promise((resolve) => {
+        customerQueries.getOrderDetails(transactionId, (err, results) => {
+            if (err) resolve([])
+            else if (results.length) {
+                const oldData = results[0]
+                const records = []
+                const createdDateTime = new Date()
+                Object.entries(data).map(([key, updatedValue]) => {
+                    const oldValue = oldData[key]
+                    if (oldValue != updatedValue && key != 'idProofs' && key != 'gstProof') {
+                        oldValue = key == 'routeId' ? routeName : driverName
+                        records.push({
+                            oldValue,
+                            updatedValue,  //Need routeName and driverName from frontEnd
+                            createdDateTime,
+                            userId,
+                            description: `Updated DC ${getDCKeyName(key)} by ${userRole} <b>(${userName})</b>`,
+                            transactionId,
+                            departmentId,
+                            type: 'warehouse', subType: 'delivery'
+                        })
+                    }
+                })
+                resolve(records)
+            }
+            else {
+                resolve([])
+            }
+        })
+    })
+}
 
 const getProductKeyName = (productName, key) => {
     if (key == 'noOfJarsTobePlaced') return `${productName} quantity`
     else if (key == 'productPrice') return `${productName} price`
 }
-module.exports = { compareCustomerData, compareProductsData, compareCustomerDeliveryData }
+const getDCKeyName = (key) => {
+    if (key == 'routeId') return `route`
+    else if (key == 'driverId') return `driver`
+}
+module.exports = { compareCustomerData, compareProductsData, compareCustomerDeliveryData, compareOrderData }

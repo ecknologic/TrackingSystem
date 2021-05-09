@@ -522,7 +522,7 @@ const saveDC = (req, res) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else {
       let inserted_id = results.insertId;
-      departmenttransactionQueries.createDepartmentTransaction({ userId, description: "DC  Created", transactionId: results.insertId, departmentId, type: 'warehouse', subType: 'delivery' })
+      departmenttransactionQueries.createDepartmentTransaction({ userId, description: `DC  Created by ${userRole} <b>(${userName})</b>`, transactionId: results.insertId, departmentId, type: 'warehouse', subType: 'delivery' })
       let updateQuery = "update customerorderdetails set dcNo=? where customerOrderId=?"
       let updateQueryValues = ["DC-" + inserted_id, inserted_id];
       db.query(updateQuery, updateQueryValues, (err1, results1) => {

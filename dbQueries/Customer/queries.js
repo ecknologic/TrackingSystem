@@ -344,6 +344,10 @@ customerQueries.updateDCNo = (insertedId, callback) => {
     let query = "UPDATE customerorderdetails SET DCNO=? WHERE customerOrderId=?"
     executePostOrUpdateQuery(query, [`DC-${insertedId}`, insertedId], callback)
 }
+customerQueries.getOrderDetails = (customerOrderId, callback) => {
+    let query = `select c.routeId,c.driverId,r.routeName,d.driverName from customerorderdetails c LEFT JOIN routes r ON c.routeId=r.RouteId LEFT JOIN driverdetails d ON c.driverId=d.driverId where customerOrderId=${customerOrderId}`;
+    executeGetQuery(query, callback)
+}
 customerQueries.updateOrderDetails = (input, callback) => {
     let { routeId, driverId, customerOrderId } = input
     let query = `update customerorderdetails SET routeId=?,driverId=? where customerOrderId=${customerOrderId}`;

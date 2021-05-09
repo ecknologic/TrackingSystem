@@ -17,7 +17,7 @@ const usersQueries = require('../dbQueries/users/queries.js');
 const warehouseQueries = require('../dbQueries/warehouse/queries.js');
 const auditQueries = require('../dbQueries/auditlogs/queries.js');
 const departmenttransactionQueries = require('../dbQueries/departmenttransactions/queries.js');
-const { compareCustomerData, compareCustomerDeliveryData, compareProductsData } = require('./utils/customer.js');
+const { compareCustomerData, compareCustomerDeliveryData, compareProductsData, compareOrderData } = require('./utils/customer.js');
 let departmentId, userId, userName, userRole;
 
 var storage = multer.diskStorage({
@@ -567,12 +567,19 @@ router.delete('/deleteDelivery/:deliveryId', (req, res) => {
     else res.json("Deleted successfully")
   })
 })
-router.put('/updateCustomerOrderDetails', (req, res) => {
-  let { customerOrderId, warehouseId } = req.body
+router.put('/updateCustomerOrderDetails', async (req, res) => {
+  let { customerOrderId, warehouseId:departmentId, routeId, driverId } = req.body
+  let logs = await compareOrderData({ routeId, driverId }, { transactionId: customerOrderId, departmentId, userId, userName, userRole })
   customerQueries.updateOrderDetails(req.body, (err, data) => {
     if (err) res.status(500).json(dbError(err))
     else {
-      departmenttransactionQueries.createDepartmentTransaction({ userId, description: "DC  Updated", transactionId: customerOrderId, departmentId: warehouseId, type: 'warehouse', subType: 'delivery' })
+      if (logs.length) {
+        departmenttransactionQueries.createDepartmentTransaction(logs, (err, data) => {
+          if (err) console.log('log error', err)
+          else console.log('log data', data)
+        })
+      }
+      // departmenttransactionQueries.createDepartmentTransaction({ userId, description: "DC  Updated", transactionId: customerOrderId, departmentId: warehouseId, type: 'warehouse', subType: 'delivery' })
       res.json(data)
     }
   })
