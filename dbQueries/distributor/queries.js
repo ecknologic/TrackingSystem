@@ -13,6 +13,10 @@ distributorQueries.getDistributorById = async (distributorId, callback) => {
     let query = `select * from Distributors where distributorId=${distributorId}`;
     return executeGetQuery(query, callback)
 }
+distributorQueries.getDistributorDetailsById = async (distributorId, callback) => {
+    let query = `select agencyName, contactPerson, mobileNumber, alternateNumber, address, mailId, alternateMailId, gstNo, gstProof, operationalArea,  deliveryLocation from Distributors where distributorId=${distributorId}`;
+    return executeGetQuery(query, callback)
+}
 
 //POST Request Methods
 distributorQueries.createDistributor = (input, callback) => {

@@ -4,10 +4,13 @@ const distributorQueries = require('../dbQueries/distributor/queries.js');
 const { dbError, saveProductDetails, customerProductDetails, updateProductDetails } = require('../utils/functions.js');
 const { UPDATEMESSAGE, DISTRIBUTOR } = require('../utils/constants');
 const auditQueries = require('../dbQueries/auditlogs/queries.js');
-let userId;
+const { compareDistributorData } = require('./utils/distributor.js');
+let userId,userName, userRole;
 
 router.use(function timeLog(req, res, next) {
-    userId = req.headers['userid']
+    userId = req.headers['userid'];
+    userName = req.headers['username']
+    userRole = req.headers['userrole']
     next();
 });
 
@@ -43,19 +46,27 @@ router.post("/createDistributor", (req, res) => {
         if (err) res.status(500).json(dbError(err));
         else {
             saveProductDetails({ products, deliveryDetailsId, distributorId: results.insertId, customerType: "distributor" }).then(result => {
-                auditQueries.createLog({ userId, description: `Distributor created`, customerId: results.insertId, type: "distributor" })
+                auditQueries.createLog({ userId, description: `Distributor created by ${userRole} <b>(${userName})</b>`, customerId: results.insertId, type: "distributor" })
                 res.json(result)
             })
         }
     })
 });
-router.post("/updateDistributor", (req, res) => {
-    const { products } = req.body;
+router.post("/updateDistributor", async(req, res) => {
+    const { products,agencyName, contactPerson, mobileNumber, alternateNumber, address, mailId, alternateMailId, gstNo, gstProof, operationalArea, distributorId, deliveryLocation } = req.body;
+   let data={agencyName, contactPerson, mobileNumber, alternateNumber, address, mailId, alternateMailId, gstNo, gstProof, operationalArea,  deliveryLocation}
+    const logs = await compareDistributorData(data, { customerId:distributorId,userId, userRole, userName })
     distributorQueries.updateDistributor(req.body, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
+            if (logs.length) {
+                auditQueries.createLog(logs, (err, data) => {
+                  if (err) console.log('log error', err)
+                  else console.log('log data', data)
+                })
+              }
             updateProductDetails(products).then(result => {
-                auditQueries.createLog({ userId, description: `Distributor Updated`, customerId: req.body.distributorId, type: "distributor" })
+                // auditQueries.createLog({ userId, description: `Distributor Updated`, customerId: req.body.distributorId, type: "distributor" })
                 res.json(UPDATEMESSAGE)
             })
         }
@@ -66,7 +77,7 @@ router.put('/updateDistributorStatus', (req, res) => {
     distributorQueries.updateDistributorStatus(req.body, (err, results) => {
         if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
         else {
-            auditQueries.createLog({ userId, description: `Distributor status changed to ${status == 1 ? 'Active' : 'Draft'}`, customerId: distributorId, type: "distributor" })
+            auditQueries.createLog({ userId, description: `Distributor status changed to ${status == 1 ? 'Active' : 'Draft'} by ${userRole} <b>(${userName})</b>`, customerId: distributorId, type: "distributor" })
             res.json(results);
         }
     });
@@ -76,7 +87,7 @@ router.delete('/deleteDistributor/:distributorId', (req, res) => {
     distributorQueries.deleteDistributor(distributorId, (err, results) => {
         if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
         else {
-            auditQueries.createLog({ userId, description: `Distributor Deleted`, customerId: distributorId, type: "distributor" })
+            auditQueries.createLog({ userId, description: `Distributor Deleted by ${userRole} <b>(${userName})</b>`, customerId: distributorId, type: "distributor" })
             res.json(results);
         }
     });

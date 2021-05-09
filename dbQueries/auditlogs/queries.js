@@ -6,10 +6,13 @@ let auditQueries = {}
 
 auditQueries.getAudits = (input, callback) => {
     let { type = 'customer', id } = input
-    let query = `SELECT a.auditId,a.description,a.createdDateTime,a.oldValue,a.updatedValue from auditlogs a WHERE a.customerId=${id} ORDER BY a.createdDateTime DESC`
+    let query;
     if (type == 'staff' || type == 'driver') {
         query = `SELECT a.auditId,a.description,a.createdDateTime,a.oldValue,a.updatedValue from auditlogs a
         WHERE a.staffId=${id} ORDER BY a.createdDateTime DESC`
+    }
+    else if (type == 'customer' || type == 'distributor') {
+        query = `SELECT a.auditId,a.description,a.createdDateTime,a.oldValue,a.updatedValue from auditlogs a WHERE a.customerId=${id} ORDER BY a.createdDateTime DESC`
     }
     executeGetQuery(query, callback)
 }
@@ -27,7 +30,7 @@ auditQueries.createLog = (input, callback) => {
     }
     else {
         let query = `insert into auditlogs (userId, createdDateTime, description, customerId, type,departmentId,staffId,oldValue,updatedValue) values(?,?,?,?,?,?,?,?,?)`;
-        let { userId, description, customerId, type, departmentId } = input
+        let { userId, description, customerId, type, staffId, departmentId } = input
         let requestBody = [userId, new Date(), description, customerId, type, departmentId, staffId, oldValue, updatedValue]
         executePostOrUpdateQuery(query, requestBody, callback)
     }
