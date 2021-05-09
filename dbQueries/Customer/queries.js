@@ -270,7 +270,7 @@ customerQueries.getQuotes = (callback) => {
     let query = 'Select * from quotes ORDER BY quotedDate DESC'
     return executeGetQuery(query, callback)
 }
-customerQueries.getProductDetailsById = (productId,callback) => {
+customerQueries.getProductDetailsById = (productId, callback) => {
     let query = "Select noOfJarsTobePlaced,productPrice,productName,id as productId FROM customerproductdetails where id=" + productId
     return executeGetQuery(query, callback)
 }
@@ -286,32 +286,32 @@ customerQueries.getBusinessRequests = (callback) => {
 }
 customerQueries.getDeliveryDetailsById = ({ deliveryDetailsId, isSuperAdmin }) => {
     return new Promise((resolve, reject) => {
-      let deliveryDetailsQuery = "SELECT gstNo,location as deliveryLocation,address,phoneNumber,contactPerson,depositAmount,departmentId,isActive as isApproved,gstProof,routeId from DeliveryDetails  WHERE deleted=0 AND deliveryDetailsId=?";
-     executePostOrUpdateQuery(deliveryDetailsQuery, [deliveryDetailsId], (err, results) => {
-        if (err) reject(err)
-        else {
-          if (results.length) {
-            // if (isSuperAdmin == 'true') {
-            //   let arr = [], count = 0;
-            //   for (let result of results) {
-            //     customerProductDetails(result.deliveryDetailsId).then(response => {
-            //       count++
-            //       if (err) reject(err);
-            //       else {
-            //         result['deliveryDays'] = JSON.parse(result.deliveryDays)
-            //         result["products"] = response;
-            //         arr.push(result)
-            //       }
-            //       if (count == results.length) resolve(arr);
-            //     });
-            //   }
-            // } else
-             resolve(results)
-          } else resolve([])
-        }
-      });
+        let deliveryDetailsQuery = "SELECT gstNo,location as deliveryLocation,address,phoneNumber,contactPerson,depositAmount,departmentId,isActive as isApproved,gstProof,routeId from DeliveryDetails  WHERE deleted=0 AND deliveryDetailsId=?";
+        executePostOrUpdateQuery(deliveryDetailsQuery, [deliveryDetailsId], (err, results) => {
+            if (err) reject(err)
+            else {
+                if (results.length) {
+                    // if (isSuperAdmin == 'true') {
+                    //   let arr = [], count = 0;
+                    //   for (let result of results) {
+                    //     customerProductDetails(result.deliveryDetailsId).then(response => {
+                    //       count++
+                    //       if (err) reject(err);
+                    //       else {
+                    //         result['deliveryDays'] = JSON.parse(result.deliveryDays)
+                    //         result["products"] = response;
+                    //         arr.push(result)
+                    //       }
+                    //       if (count == results.length) resolve(arr);
+                    //     });
+                    //   }
+                    // } else
+                    resolve(results)
+                } else resolve([])
+            }
+        });
     });
-  }
+}
 
 //POST Request Methods
 customerQueries.saveCustomerOrderDetails = (input, callback) => {
@@ -409,10 +409,13 @@ customerQueries.generatePDF = (input, callback) => {
     const { fromDate, toDate, customerIds } = input
     let query = `SELECT c.gstNo,c.customerId,c.createdBy,c.EmailId,c.customerName,c.organizationName,
     c.address1,c.gstNo,c.panNo,c.mobileNumber,
-    JSON_ARRAYAGG(JSON_OBJECT('deliveryAddress',co.address,'location',co.deliveryLocation,'20LCans',co.20LCans,'price20L',co.price20L,'1LBoxes',co.1LBoxes,
-    'price1L',co.price1L, '500MLBoxes',co.500MLBoxes,'price500ML',co.price500ML,'300MLBoxes',co.300MLBoxes,'price300ML',co.price300ML,'2LBoxes',co.2LBoxes,'price2L',co.price2L)) as products
+    JSON_ARRAYAGG(JSON_OBJECT('deliveryAddress',co.address,'location',co.deliveryLocation,'20LCans',co.20LCans,
+    'price20L',co.price20L,'1LBoxes',co.1LBoxes,
+    'price1L',co.price1L, '500MLBoxes',co.500MLBoxes,'price500ML',co.price500ML,'300MLBoxes',
+    co.300MLBoxes,'price300ML',co.price300ML,'2LBoxes',co.2LBoxes,'price2L',co.price2L)) as products
     FROM customerdetails c INNER JOIN  customerorderdetails co ON c.customerId=co.existingCustomerId
-    INNER JOIN DeliveryDetails d ON d.customer_Id=c.customerId  WHERE c.invoicetype!='complimentary' AND co.isDelivered='Completed' AND customerId NOT IN (SELECT customerId FROM Invoice WHERE fromdate=? AND todate=?)
+    INNER JOIN DeliveryDetails d ON d.customer_Id=c.customerId  WHERE c.invoicetype!='complimentary'
+     AND co.isDelivered='Completed' AND customerId NOT IN (SELECT customerId FROM Invoice WHERE fromdate >=DATE(?) and toDate<=DATE(?))
     AND( DATE(co.deliveryDate) BETWEEN ? AND ?) GROUP BY c.customerId`
     let options = [fromDate, toDate, fromDate, toDate]
     if (customerIds.length) {
@@ -421,7 +424,8 @@ customerQueries.generatePDF = (input, callback) => {
         JSON_ARRAYAGG(JSON_OBJECT('deliveryAddress',co.address,'location',co.deliveryLocation,'20LCans',co.20LCans,'price20L',co.price20L,'1LBoxes',co.1LBoxes,
         'price1L',co.price1L, '500MLBoxes',co.500MLBoxes,'price500ML',co.price500ML,'300MLBoxes',co.300MLBoxes,'price300ML',co.price300ML,'2LBoxes',co.2LBoxes,'price2L',co.price2L)) as products
         FROM customerdetails c INNER JOIN  customerorderdetails co ON c.customerId=co.existingCustomerId
-        INNER JOIN DeliveryDetails d ON d.customer_Id=c.customerId  WHERE c.invoicetype!='complimentary' AND co.isDelivered='Completed' AND customerId NOT IN (SELECT customerId FROM Invoice WHERE fromdate=? AND todate=?)
+        INNER JOIN DeliveryDetails d ON d.customer_Id=c.customerId  WHERE c.invoicetype!='complimentary' 
+        AND co.isDelivered='Completed' AND customerId NOT IN (SELECT customerId FROM Invoice WHERE fromdate >=DATE(?) and toDate<=DATE(?))
         AND( DATE(co.deliveryDate) BETWEEN ? AND ?) AND c.customerId IN (?) GROUP BY c.customerId`
         options = [fromDate, toDate, fromDate, toDate, customerIds]
     }
