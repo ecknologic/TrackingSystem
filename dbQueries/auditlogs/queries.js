@@ -14,6 +14,9 @@ auditQueries.getAudits = (input, callback) => {
     else if (type == 'customer' || type == 'distributor') {
         query = `SELECT a.auditId,a.description,a.createdDateTime,a.oldValue,a.updatedValue from auditlogs a WHERE a.customerId=${id} ORDER BY a.createdDateTime DESC`
     }
+    else if (type == 'motherplant' || type == 'warehouse') {
+        query = `SELECT a.auditId,a.description,a.createdDateTime,a.oldValue,a.updatedValue from auditlogs a WHERE a.departmentId=${id} ORDER BY a.createdDateTime DESC`
+    }
     executeGetQuery(query, callback)
 }
 
@@ -21,8 +24,8 @@ auditQueries.getAudits = (input, callback) => {
 auditQueries.createLog = (input, callback) => {
     if (Array.isArray(input)) {
         if (input.length) {
-            const { staffId, customerId } = input[0]
-            const id = customerId ? 'customerId' : staffId ? 'staffId' : ""
+            const { staffId, customerId, departmentId } = input[0]
+            const id = customerId ? 'customerId' : staffId ? 'staffId' : departmentId ? 'departmentId' : ""
             const sql = input.map(item => "(" + item.userId + ", '" + dayjs(item.createdDateTime).format(FULLTIMEFORMAT) + "', '" + item.description + "', " + item[id] + ", '" + item.type + "'" + ", '" + item.oldValue + "'" + ", '" + item.updatedValue + "'" + ")")
             let query = `insert into auditlogs (userId, createdDateTime, description, ${id}, type,oldValue,updatedValue) values ` + sql;
             executeGetQuery(query, callback)
