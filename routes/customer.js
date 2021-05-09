@@ -17,7 +17,7 @@ const usersQueries = require('../dbQueries/users/queries.js');
 const warehouseQueries = require('../dbQueries/warehouse/queries.js');
 const auditQueries = require('../dbQueries/auditlogs/queries.js');
 const departmenttransactionQueries = require('../dbQueries/departmenttransactions/queries.js');
-const { compareCustomerData, compareCustomerDeliveryData } = require('./utils/customer.js');
+const { compareCustomerData, compareCustomerDeliveryData, compareProductsData } = require('./utils/customer.js');
 let departmentId, userId, userName, userRole;
 
 var storage = multer.diskStorage({
@@ -228,15 +228,29 @@ const saveProductDetails = (products, deliveryDetailsId, customerId) => {
     }
   })
 }
-const updateProductDetails = (products) => {
-  return new Promise((resolve, reject) => {
+const updateProductDetails = (products, customerId) => {
+  return new Promise(async (resolve, reject) => {
     if (products.length) {
+      let logs = [], count = 0
       for (let i of products) {
+        let productLog = await compareProductsData(i, { type: "customer", customerId, userId, userRole, userName })
+        logs.push(...productLog)
         let deliveryProductsQuery = "UPDATE customerproductdetails SET noOfJarsTobePlaced=?,productPrice=?,productName=? where id=" + i.productId;
         let updateQueryValues = [i.noOfJarsTobePlaced, i.productPrice, i.productName]
         db.query(deliveryProductsQuery, updateQueryValues, (err, results) => {
           if (err) reject(err);
-          else resolve(results)
+          else {
+            count++
+            if (count == products.length) {
+              if (logs.length) {
+                auditQueries.createLog(logs, (err, data) => {
+                  if (err) console.log('log error', err)
+                  else console.log('log data', data)
+                })
+              }
+            }
+            resolve(results)
+          }
         });
       }
     }
@@ -303,7 +317,7 @@ router.post("/approveCustomerDirectly/:customerId", (req, res) => {
       customerQueries.approveOutDeliveryDetails(customerId, (err, updatedDelivery) => {
         if (err) res.json({ status: 500, message: err.sqlMessage });
         else {
-          saveToCustomerOrderDetails(customerId, res, null, userId,userRole,userName)
+          saveToCustomerOrderDetails(customerId, res, null, userId, userRole, userName)
         }
       })
     }
@@ -737,7 +751,7 @@ router.post('/updateDeliveryDetails', async (req, res) => {
             if (err) res.json({ status: 500, message: err.sqlMessage });
             else {
               count++
-              updateProductDetails(i.products).then(async (productDetails) => {
+              updateProductDetails(i.products, i.customer_Id).then(async (productDetails) => {
                 if (count == deliveryDetails.length) {
                   let data = await getAddedDeliveryDetails(i.deliveryDetailsId)
                   updateWHDelivery(req)

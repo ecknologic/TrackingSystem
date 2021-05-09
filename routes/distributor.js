@@ -1,11 +1,13 @@
 var express = require('express');
 var router = express.Router();
 const distributorQueries = require('../dbQueries/distributor/queries.js');
-const { dbError, saveProductDetails, customerProductDetails, updateProductDetails } = require('../utils/functions.js');
+const { dbError, saveProductDetails, customerProductDetails } = require('../utils/functions.js');
 const { UPDATEMESSAGE, DISTRIBUTOR } = require('../utils/constants');
 const auditQueries = require('../dbQueries/auditlogs/queries.js');
 const { compareDistributorData } = require('./utils/distributor.js');
-let userId,userName, userRole;
+const { compareProductsData } = require('./utils/customer.js');
+const db = require('../config/db.js')
+let userId, userName, userRole;
 
 router.use(function timeLog(req, res, next) {
     userId = req.headers['userid'];
@@ -52,26 +54,54 @@ router.post("/createDistributor", (req, res) => {
         }
     })
 });
-router.post("/updateDistributor", async(req, res) => {
-    const { products,agencyName, contactPerson, mobileNumber, alternateNumber, address, mailId, alternateMailId, gstNo, gstProof, operationalArea, distributorId, deliveryLocation } = req.body;
-   let data={agencyName, contactPerson, mobileNumber, alternateNumber, address, mailId, alternateMailId, gstNo, gstProof, operationalArea,  deliveryLocation}
-    const logs = await compareDistributorData(data, { customerId:distributorId,userId, userRole, userName })
+router.post("/updateDistributor", async (req, res) => {
+    const { products, agencyName, contactPerson, mobileNumber, alternateNumber, address, mailId, alternateMailId, gstNo, gstProof, operationalArea, distributorId, deliveryLocation } = req.body;
+    let data = { agencyName, contactPerson, mobileNumber, alternateNumber, address, mailId, alternateMailId, gstNo, gstProof, operationalArea, deliveryLocation }
+    const logs = await compareDistributorData(data, { customerId: distributorId, userId, userRole, userName })
     distributorQueries.updateDistributor(req.body, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
             if (logs.length) {
                 auditQueries.createLog(logs, (err, data) => {
-                  if (err) console.log('log error', err)
-                  else console.log('log data', data)
+                    if (err) console.log('log error', err)
+                    else console.log('log data', data)
                 })
-              }
-            updateProductDetails(products).then(result => {
+            }
+            updateProductDetails(products, { customerId: distributorId, userId, userRole, userName }).then(result => {
                 // auditQueries.createLog({ userId, description: `Distributor Updated`, customerId: req.body.distributorId, type: "distributor" })
                 res.json(UPDATEMESSAGE)
             })
         }
     })
 });
+const updateProductDetails = (products, { customerId, userId, userRole, userName }) => {
+    return new Promise(async (resolve, reject) => {
+        if (products.length) {
+            let logs = [], count = 0;
+            for (let i of products) {
+                let productLog = await compareProductsData(i, { type: "distributor", customerId, userId, userRole, userName })
+                logs.push(...productLog)
+                let deliveryProductsQuery = "UPDATE customerproductdetails SET noOfJarsTobePlaced=?,productPrice=?,productName=? where id=" + i.productId;
+                let updateQueryValues = [i.noOfJarsTobePlaced, i.productPrice, i.productName]
+                db.query(deliveryProductsQuery, updateQueryValues, (err, results) => {
+                    if (err) reject(err);
+                    else {
+                        count++
+                        if (count == products.length) {
+                            if (logs.length) {
+                                auditQueries.createLog(logs, (err, data) => {
+                                    if (err) console.log('log error', err)
+                                    else console.log('log data', data)
+                                })
+                            }
+                        }
+                        resolve(results)
+                    }
+                });
+            }
+        }
+    })
+}
 router.put('/updateDistributorStatus', (req, res) => {
     const { distributorId, status } = req.body
     distributorQueries.updateDistributorStatus(req.body, (err, results) => {

@@ -270,6 +270,10 @@ customerQueries.getQuotes = (callback) => {
     let query = 'Select * from quotes ORDER BY quotedDate DESC'
     return executeGetQuery(query, callback)
 }
+customerQueries.getProductDetailsById = (productId,callback) => {
+    let query = "Select noOfJarsTobePlaced,productPrice,productName,id as productId FROM customerproductdetails where id=" + productId
+    return executeGetQuery(query, callback)
+}
 
 // customerQueries.getMembershipCustomers = (callback) => {
 //     let query = 'Select * from membershipcustomers ORDER BY registeredDateTime DESC'

@@ -11,7 +11,7 @@ const compareCustomerData = (data, { userId, userRole, userName }) => {
                 const createdDateTime = new Date()
                 Object.entries(data).map(([key, updatedValue]) => {
                     const oldValue = oldData[key]
-                    if (oldValue != updatedValue&& key != 'salesAgentName' && key != 'idProofs' && key != 'gstProof') {
+                    if (oldValue != updatedValue && key != 'salesAgentName' && key != 'idProofs' && key != 'gstProof') {
                         records.push({
                             oldValue,
                             updatedValue,
@@ -63,4 +63,40 @@ const compareCustomerDeliveryData = (data, { deliveryDetailsId, customerId, user
     })
 }
 
-module.exports = { compareCustomerData, compareCustomerDeliveryData }
+const compareProductsData = (data, { type = "customer", customerId, userId, userRole, userName }) => {
+    const { productId, productName } = data;
+    return new Promise((resolve) => {
+        customerQueries.getProductDetailsById(productId, (err, results) => {
+            if (err) resolve([])
+            else if (results.length) {
+                const oldData = results[0]
+                const records = []
+                const createdDateTime = new Date()
+                Object.entries(data).map(([key, updatedValue]) => {
+                    const oldValue = oldData[key]
+                    if (oldValue != updatedValue && key != 'idProofs' && key != 'gstProof') {
+                        records.push({
+                            oldValue,
+                            updatedValue,
+                            createdDateTime,
+                            userId,
+                            description: `Updated ${type == 'customer' ? 'Customer' : 'Distributor'} product ${getProductKeyName(productName, key)} by ${userRole} <b>(${userName})</b>`,
+                            customerId,
+                            type
+                        })
+                    }
+                })
+                resolve(records)
+            }
+            else {
+                resolve([])
+            }
+        })
+    })
+}
+
+const getProductKeyName = (productName, key) => {
+    if (key == 'noOfJarsTobePlaced') return `${productName} quantity`
+    else if (key == 'productPrice') return `${productName} price`
+}
+module.exports = { compareCustomerData, compareProductsData, compareCustomerDeliveryData }
