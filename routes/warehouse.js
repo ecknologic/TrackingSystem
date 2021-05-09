@@ -150,6 +150,7 @@ router.post('/createDC', (req, res) => {
         customerQueries.createAdhocUser({ ...req.body, customertype: 'Individual' }, (err, data) => {
           if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
           else {
+            console.log("data", data)
             req.body.existingCustomerId = data.insertId
             auditQueries.createLog({ userId:adminUserId, description: `Customer created by ${userRole} <b>(${userName})</b>`, customerId: data.insertId, type: "customer" })
             saveDC(req, res)
@@ -514,9 +515,9 @@ router.get('/getDCDetailsByCOId/:COId', (req, res) => {
 })
 
 const saveDC = (req, res) => {
-  let { customerName, phoneNumber, address, routeId, driverId, product20L, product1L, product500ML, product300ML, product2L, warehouseId, customerType, existingCustomerId, distributorId, creationType, isDelivered = 'InProgress', deliveryLocation, price20L, price2L, price1L, price500ML, price300ML, EmailId } = req.body;
-  let dcCreateQuery = "insert into customerorderdetails (customerName,phoneNumber,address,routeId,driverId,20LCans,1LBoxes,500MLBoxes,300MLBoxes,2LBoxes,warehouseId,customerType,existingCustomerId,distributorId,creationType,isDelivered,deliveryLocation,price20L,price2L,price1L,price500ML,price300ML,EmailId) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-  let insertQueryValues = [customerName, phoneNumber, address, routeId, driverId, product20L, product1L, product500ML, product300ML, product2L, warehouseId, customerType, existingCustomerId, distributorId, creationType, isDelivered, deliveryLocation, price20L, price2L, price1L, price500ML, price300ML, EmailId]
+  let { customerName, phoneNumber, address, routeId, driverId, product20L, product1L, product500ML, product300ML, product2L, warehouseId, customerType, existingCustomerId, distributorId, creationType, isDelivered = 'InProgress', deliveryLocation, price20L, price2L, price1L, price500ML, price300ML, EmailId, deliveredDate } = req.body;
+  let dcCreateQuery = "insert into customerorderdetails (customerName,phoneNumber,address,routeId,driverId,20LCans,1LBoxes,500MLBoxes,300MLBoxes,2LBoxes,warehouseId,customerType,existingCustomerId,distributorId,creationType,isDelivered,deliveryLocation,price20L,price2L,price1L,price500ML,price300ML,EmailId,deliveredDate) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+  let insertQueryValues = [customerName, phoneNumber, address, routeId, driverId, product20L, product1L, product500ML, product300ML, product2L, warehouseId, customerType, existingCustomerId, distributorId, creationType, isDelivered, deliveryLocation, price20L, price2L, price1L, price500ML, price300ML, EmailId, deliveredDate && new Date()]
   db.query(dcCreateQuery, insertQueryValues, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else {
