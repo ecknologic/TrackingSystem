@@ -10,6 +10,10 @@ motherPlantDbQueries.getMotherPlantById = async (motherPlantId, callback) => {
     let query = `select d.*,u.userName,u.mobileNumber,u.emailid,u.RoleId as roleId from departmentmaster d INNER JOIN usermaster u on d.adminId=u.userId WHERE d.departmentId=${motherPlantId}`;
     return executeGetQuery(query, callback)
 }
+motherPlantDbQueries.getDepartmentDetailsById = async (departmentId, callback) => {
+    let query = `select address, departmentName, city, state, pinCode, adminId, phoneNumber,gstNo from departmentmaster  WHERE departmentId=${departmentId}`;
+    return executeGetQuery(query, callback)
+}
 motherPlantDbQueries.getProductionDetails = async (departmentId, callback) => {
     let query = `select * from production WHERE departmentId=${departmentId} ORDER BY productionDate DESC`;
     return executeGetQuery(query, callback)

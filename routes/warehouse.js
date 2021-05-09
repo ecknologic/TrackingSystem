@@ -10,11 +10,14 @@ const usersQueries = require('../dbQueries/users/queries.js');
 const warehouseQueries = require('../dbQueries/warehouse/queries.js');
 const { DATEFORMAT, INSERTMESSAGE, UPDATEMESSAGE, WEEKDAYS } = require('../utils/constants.js');
 const { customerProductDetails, dbError, getCompareData, getFormatedNumber, getGraphData, getCompareCustomersData } = require('../utils/functions.js');
-var departmentId, userId;
+const { compareDepartmentData } = require('./utils/department.js');
+var departmentId, adminUserId, userName, userRole;
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
   departmentId = req.headers['departmentid']
-  userId = req.headers['userid']
+  adminUserId = req.headers['userid']
+  userName = req.headers['username']
+  userRole = req.headers['userrole']
   console.log('Time: ', Date.now());
   next();
 });
@@ -102,22 +105,31 @@ router.post('/createWarehouse', (req, res) => {
       usersQueries.updateUserDepartment({ departmentId: results.insertId, userId: req.body.adminId }, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
-          auditQueries.createLog({ userId, description: "Warehouse Created", departmentId: results.insertId, type: 'warehouse' })
+          auditQueries.createLog({ userId: adminUserId, description: `Warehouse Created by ${userRole} <b>(${userName})</b>`, departmentId: results.insertId, type: 'warehouse' })
           res.json(results);
         }
       })
     }
   });
 });
-router.post('/updateWarehouse', (req, res) => {
-  const { departmentId, adminId: userId, removedAdminId } = req.body
+router.post('/updateWarehouse', async (req, res) => {
+  const { departmentId, adminId: userId, removedAdminId, address, departmentName, city, state, pinCode, adminId, phoneNumber, gstNo } = req.body
+  let data = {
+    address, departmentName, city, state, pinCode, adminId, phoneNumber, gstNo
+  }
+  const logs = await compareDepartmentData(data, { type: 'warehouse', departmentId, adminUserId, userRole, userName })
   warehouseQueries.updateWarehouse(req.body, (err, results) => {
     if (err) res.status(500).json(dbError(err));
     else {
       usersQueries.updateUserDepartment({ departmentId, userId, removedAdminId }, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
-          auditQueries.createLog({ userId, description: "Warehouse Updated", departmentId, type: 'warehouse' })
+          if (logs.length) {
+            auditQueries.createLog(logs, (err, data) => {
+              if (err) console.log('log error', err)
+              else console.log('log data', data)
+            })
+          }
           res.json(results);
         }
       })
@@ -139,7 +151,7 @@ router.post('/createDC', (req, res) => {
           if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
           else {
             req.body.existingCustomerId = data.insertId
-            auditQueries.createLog({ userId, description: "Customer created", customerId: data.insertId, type: "customer" })
+            auditQueries.createLog({ userId:adminUserId, description: `Customer created by ${userRole} <b>(${userName})</b>`, customerId: data.insertId, type: "customer" })
             saveDC(req, res)
           }
         })
@@ -333,7 +345,7 @@ router.put('/updateDepartmentStatus', (req, res) => {
   warehouseQueries.updateDepartmentStatus(req.body, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else {
-      auditQueries.createLog({ userId, description: `${departmentType} status changed to ${status == 1 ? "Active" : "Inactive"}`, departmentId, type: departmentType })
+      auditQueries.createLog({ userId:adminUserId, description: `${departmentType} status changed to ${status == 1 ? "Active" : "Inactive"} by ${userRole} <b>(${userName})</b>`, departmentId, type: departmentType })
       res.json(results);
     }
   });
@@ -344,7 +356,7 @@ router.delete('/deleteDepartment/:departmentId', (req, res) => {
   warehouseQueries.deleteDepartment(departmentId, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else {
-      auditQueries.createLog({ userId, description: `${departmentType} deleted`, departmentId, type: departmentType })
+      auditQueries.createLog({ userId:adminUserId, description: `${departmentType} deleted by ${userRole} <b>(${userName})</b>`, departmentId, type: departmentType })
       res.json(results);
     }
   });
