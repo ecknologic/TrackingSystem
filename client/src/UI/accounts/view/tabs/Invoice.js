@@ -15,7 +15,7 @@ import { deepClone, getStatusColor, showToast } from '../../../../utils/Function
 import { DocIconGrey, ListViewIconGrey, SendIconGrey, TickIconGrey } from '../../../../components/SVG_Icons';
 const DATEFORMAT = 'DD/MM/YYYY'
 
-const Invoice = ({ reFetch, accountId }) => {
+const Invoice = ({ accountId }) => {
     const { ROLE } = useUser()
     const history = useHistory()
     const [invoices, setInvoices] = useState([])
@@ -30,14 +30,12 @@ const Invoice = ({ reFetch, accountId }) => {
     const config = { cancelToken: source.token }
 
     useEffect(() => {
+        getInvoices()
+
         return () => {
             http.ABORT(source)
         }
     }, [])
-
-    useEffect(async () => {
-        getInvoices()
-    }, [reFetch])
 
     const getInvoices = async () => {
         const url = `invoice/getCustomerInvoices/${accountId}`

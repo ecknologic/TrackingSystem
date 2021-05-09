@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import useUser from '../utils/hooks/useUser';
 import { getMainPathname } from '../utils/Functions';
 import { ACCOUNTSADMIN, MARKETINGMANAGER, SUPERADMIN } from '../utils/constants';
-import { accountFilterList, getDefaultOptions, statusFilterList } from '../assets/fixtures';
+import { accountFilterList, getDefaultOptions, statusFilterList, getCreatorOptions } from '../assets/fixtures';
 const FilterContext = React.createContext([{}, () => { }]);
 
 const FilterProvider = ({ children }) => {
@@ -49,14 +49,15 @@ const FilterProvider = ({ children }) => {
 
     async function getCreatorList() {
         const roleName = getRoleName()
+        console.log('role Name', roleName)
         if (!roleName) return;
 
         const url = `users/getUsersByRole/${roleName}`
 
         try {
             const creator = await http.GET(appApi, url)
-            setCreator(getDefaultOptions(creator))
-            setCreatorList(getDefaultOptions(creator))
+            setCreator(getCreatorOptions(creator))
+            setCreatorList(getCreatorOptions(creator))
         } catch (error) { }
     }
 

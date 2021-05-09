@@ -26,6 +26,7 @@ const ViewAccount = () => {
     const history = useHistory()
     const { accountId } = useParams()
     const { pathname, state } = useLocation()
+    const [reFetch, setreFetch] = useState(false)
     const [account, setAccount] = useState({ loading: true })
     const [headerContent, setHeaderContent] = useState({})
     const [formData, setFormData] = useState({})
@@ -226,6 +227,7 @@ const ViewAccount = () => {
             setRecentDelivery(data)
             showToast(options)
             onModalClose(true)
+            setreFetch(!reFetch)
         } catch (error) {
             message.destroy()
             if (!axios.isCancel(error)) {
@@ -271,6 +273,7 @@ const ViewAccount = () => {
 
     const handleAccountUpdate = useCallback((title, address) => {
         setHeaderContent({ title, address })
+        setreFetch(!reFetch)
     }, [])
 
     const handleConfirmModalCancel = useCallback(() => {
@@ -285,6 +288,8 @@ const ViewAccount = () => {
         const path = `${mainPathname}/${tab}/${page}`
         history.push(path)
     }
+
+    const onUpdate = () => setreFetch(!reFetch)
 
     return (
         <Fragment>
@@ -314,6 +319,7 @@ const ViewAccount = () => {
                         </TabPane>
                         <TabPane tab="Delivery Details" key="2">
                             <DeliveryDetails
+                                onUpdate={onUpdate}
                                 isAdmin={isAdmin}
                                 recentDelivery={recentDelivery}
                                 locationOptions={locationOptions}
@@ -327,7 +333,7 @@ const ViewAccount = () => {
                             <Invoice accountId={accountId} />
                         </TabPane>
                         <TabPane tab="Activity Log Details" key="5">
-                            <ActivityLogDetails id={accountId} type='customer' />
+                            <ActivityLogDetails id={accountId} type='customer' reFetch={reFetch} />
                         </TabPane>
                     </Tabs>
                 </div>

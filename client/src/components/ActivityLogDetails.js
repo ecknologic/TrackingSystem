@@ -7,7 +7,7 @@ import NoContent from '../components/NoContent';
 import ActivityLog from '../components/ActivityLog';
 import CustomPagination from '../components/CustomPagination';
 
-const ActivityLogDetails = ({ id, type }) => {
+const ActivityLogDetails = ({ id, type, reFetch }) => {
     const [pageSize, setPageSize] = useState(12)
     const [pageNumber, setPageNumber] = useState(1)
     const [loading, setLoading] = useState(true)
@@ -18,12 +18,14 @@ const ActivityLogDetails = ({ id, type }) => {
     const config = { cancelToken: source.token }
 
     useEffect(() => {
-        getLogs()
-
         return () => {
             http.ABORT(source)
         }
     }, [])
+
+    useEffect(() => {
+        getLogs()
+    }, [reFetch])
 
     const getLogs = async () => {
         const url = `logs/getAuditLogs?type=${type}&id=${id}`

@@ -111,7 +111,7 @@ export const getDropdownOptions = (options = []) => {
     return options.map((item) => <Option key={item.value} value={item.value}>{item.name}</Option>)
 }
 export const getCreatorOptions = (creators = []) => {
-    return creators.map((item) => ({ value: item.userId, option: item.userName }))
+    return creators.map((item) => ({ value: item.userId, name: item.userName }))
 }
 export const getDepartmentMenu = (departments = []) => {
     return departments.map((item) => <Menu.Item key={item.departmentName} >{item.departmentName}</Menu.Item>)

@@ -15,7 +15,7 @@ import IDProofInfo from '../../../../components/IDProofInfo';
 import CustomButton from '../../../../components/CustomButton';
 import { WAREHOUSEADMIN } from '../../../../utils/constants';
 import { getDepartmentOptions, getRoleOptions } from '../../../../assets/fixtures';
-import { isEmpty, showToast, base64String, getBase64, getValidDate } from '../../../../utils/Functions';
+import { isEmpty, showToast, base64String, getBase64, getValidDate, resetTrackForm } from '../../../../utils/Functions';
 import {
     validateIDNumbers, validateNames, validateMobileNumber, validateEmailId, validateIDProofs,
     validateEmployeeValues, validateDependentValues, validateNumber, validateIFSCCode
@@ -328,7 +328,9 @@ const ManageEmployee = ({ isDriver, setHeaderContent, onGoBack }) => {
             showToast({ ...options, action: 'loading' })
             await http.POST(axios, url, body, config)
             showToast(options)
-            onGoBack()
+            resetTrackForm()
+            setEditMode(false)
+            setBtnDisabled(false)
         } catch (error) {
             message.destroy()
             if (!axios.isCancel(error)) {
