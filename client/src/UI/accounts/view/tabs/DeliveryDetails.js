@@ -16,7 +16,7 @@ import { getRouteOptions, WEEKDAYS } from '../../../../assets/fixtures';
 import { getDevDays, getProductsWithIdForDB, getProductsForUI, isEmpty, extractDeliveryDetails, extractProductsFromForm, deepClone, getBase64, getDevDaysForDB, base64String, resetTrackForm, showToast } from '../../../../utils/Functions';
 import { validateDeliveryValues, validateDevDays, validateIntFloat, validateMobileNumber, validateNames, validateNumber } from '../../../../utils/validations';
 
-const DeliveryDetails = ({ isAdmin, recentDelivery, ...rest }) => {
+const DeliveryDetails = ({ isAdmin, recentDelivery, onUpdate, ...rest }) => {
     const { accountId } = useParams()
     const [delivery, setDelivery] = useState([])
     const [loading, setLoading] = useState(true)
@@ -277,6 +277,7 @@ const DeliveryDetails = ({ isAdmin, recentDelivery, ...rest }) => {
             onModalClose(true)
             setBtnDisabled(false)
             setViewedArr([])
+            onUpdate()
         } catch (error) {
             message.destroy()
             if (!axios.isCancel(error)) {

@@ -11,7 +11,7 @@ import NoContent from '../../../../components/NoContent';
 import IDProofInfo from '../../../../components/IDProofInfo';
 import { getStaffOptions } from '../../../../assets/fixtures';
 import CustomButton from '../../../../components/CustomButton';
-import { isEmpty, showToast, base64String, getMainPathname, getBase64, getPlantValuesForDB } from '../../../../utils/Functions';
+import { isEmpty, showToast, base64String, getMainPathname, getBase64, getPlantValuesForDB, resetTrackForm } from '../../../../utils/Functions';
 import { validateNames, validateMobileNumber, validatePinCode, validatePlantValues } from '../../../../utils/validations';
 import '../../../../sass/plants.scss'
 
@@ -150,7 +150,9 @@ const ManagePlant = ({ setHeaderContent, onGoBack }) => {
             showToast({ ...options, action: 'loading' })
             await http.POST(axios, url, body, config)
             showToast(options)
-            onGoBack()
+            resetTrackForm()
+            setEditMode(false)
+            setBtnDisabled(false)
         } catch (error) {
             message.destroy()
             if (!axios.isCancel(error)) {

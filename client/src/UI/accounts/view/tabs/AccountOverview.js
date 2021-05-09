@@ -199,6 +199,7 @@ const AccountOverview = ({ data, onUpdate, isAdmin, locationOptions, businessOpt
             resetTrackForm()
             onUpdate(organizationName, Address1)
             showToast(options)
+            setEditMode(false)
         } catch (error) {
             message.destroy()
             if (!axios.isCancel(error)) {

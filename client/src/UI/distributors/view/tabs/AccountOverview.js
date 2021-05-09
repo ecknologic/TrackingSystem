@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { message } from 'antd';
 import { useParams } from 'react-router-dom';
-import React, { Fragment, useEffect, useState, useCallback, useMemo } from 'react';
+import React, { Fragment, useEffect, useState, useMemo } from 'react';
 import AccountView from '../../views/Account';
 import { http } from '../../../../modules/http'
 import DistributorForm from '../../forms/Distributor';
@@ -11,7 +11,7 @@ import NoContent from '../../../../components/NoContent';
 import IDProofInfo from '../../../../components/IDProofInfo';
 import CustomButton from '../../../../components/CustomButton';
 import { getDropdownOptions } from '../../../../assets/fixtures';
-import { isEmpty, showToast, base64String, getBase64, getProductsForUI, getProductsWithIdForDB, extractDistributorDetails, extractProductsFromForm } from '../../../../utils/Functions';
+import { isEmpty, showToast, base64String, getBase64, getProductsForUI, getProductsWithIdForDB, extractDistributorDetails, extractProductsFromForm, resetTrackForm } from '../../../../utils/Functions';
 import { validateNames, validateMobileNumber, validateEmailId, validateDistributorValues } from '../../../../utils/validations';
 import '../../../../sass/employees.scss'
 
@@ -127,7 +127,9 @@ const ManageDistributor = ({ setHeaderContent, onGoBack }) => {
             showToast({ ...options, action: 'loading' })
             await http.POST(axios, url, body, config)
             showToast(options)
-            onGoBack()
+            resetTrackForm()
+            setEditMode(false)
+            setBtnDisabled(false)
         } catch (error) {
             message.destroy()
             if (!axios.isCancel(error)) {
