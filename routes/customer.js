@@ -17,7 +17,7 @@ const usersQueries = require('../dbQueries/users/queries.js');
 const warehouseQueries = require('../dbQueries/warehouse/queries.js');
 const auditQueries = require('../dbQueries/auditlogs/queries.js');
 const departmenttransactionQueries = require('../dbQueries/departmenttransactions/queries.js');
-const { compareCustomerData, compareCustomerDeliveryData, compareProductsData, compareOrderData } = require('./utils/customer.js');
+const { compareCustomerData, compareCustomerDeliveryData, compareProductsData, compareOrderData, compareCustomerOrderData } = require('./utils/customer.js');
 let departmentId, userId, userName, userRole;
 
 var storage = multer.diskStorage({
@@ -324,14 +324,20 @@ router.post("/approveCustomerDirectly/:customerId", (req, res) => {
   })
 });
 
-router.post("/createOrderDelivery", (req, res) => {
-  const { deliveryDetailsId } = input
+router.post("/createOrderDelivery", async (req, res) => {
+  const { deliveryDetailsId, routeId, driverId, driverName, routeName, vehicleId, vehicleName } = req.body
+  let logs = await compareCustomerOrderData({ routeId, driverId, driverName, routeName, vehicleId, vehicleName }, { transactionId: deliveryDetailsId, departmentId, userId, userName, userRole })
   customerQueries.updateOrderDelivery(req.body, (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
-      auditQueries.createLog({ userId, description: `Delivery details Updated by ${userRole} <b>(${userName})</b>`, customerId: results.length && results[0].existingCustomerId, type: "customer" })
-
-      departmenttransactionQueries.createDepartmentTransaction({ userId, description: "Order Updated", transactionId: deliveryDetailsId, departmentId, type: 'warehouse', subType: 'order' })
+      // auditQueries.createLog({ userId, description: `Delivery details Updated by ${userRole} <b>(${userName})</b>`, customerId: results.length && results[0].existingCustomerId, type: "customer" })
+      if (logs.length) {
+        departmenttransactionQueries.createDepartmentTransaction(logs, (err, data) => {
+          if (err) console.log('log error', err)
+          else console.log('log data', data)
+        })
+      }
+      // departmenttransactionQueries.createDepartmentTransaction({ userId, description: "Order Updated", transactionId: deliveryDetailsId, departmentId, type: 'warehouse', subType: 'order' })
       res.json(results)
     }
   })
@@ -568,8 +574,8 @@ router.delete('/deleteDelivery/:deliveryId', (req, res) => {
   })
 })
 router.put('/updateCustomerOrderDetails', async (req, res) => {
-  let { customerOrderId, warehouseId:departmentId, routeId, driverId } = req.body
-  let logs = await compareOrderData({ routeId, driverId }, { transactionId: customerOrderId, departmentId, userId, userName, userRole })
+  let { customerOrderId, warehouseId: departmentId, routeId, driverId, driverName, routeName } = req.body
+  let logs = await compareOrderData({ routeId, driverId, driverName, routeName }, { transactionId: customerOrderId, departmentId, userId, userName, userRole })
   customerQueries.updateOrderDetails(req.body, (err, data) => {
     if (err) res.status(500).json(dbError(err))
     else {

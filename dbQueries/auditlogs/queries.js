@@ -33,7 +33,7 @@ auditQueries.createLog = (input, callback) => {
     }
     else {
         let query = `insert into auditlogs (userId, createdDateTime, description, customerId, type,departmentId,staffId,oldValue,updatedValue) values(?,?,?,?,?,?,?,?,?)`;
-        let { userId, description, customerId, type, staffId, departmentId } = input
+        let { userId, description, customerId, type, staffId, departmentId, oldValue, updatedValue } = input
         let requestBody = [userId, new Date(), description, customerId, type, departmentId, staffId, oldValue, updatedValue]
         executePostOrUpdateQuery(query, requestBody, callback)
     }

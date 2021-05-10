@@ -444,10 +444,16 @@ customerQueries.updateOrderDelivery = (input, callback) => {
     const { driverId, routeId, vehicleId, deliveryDetailsId } = input
     let query = "update DeliveryDetails set driverId=?,routeId=?,vehicleId=? where deliveryDetailsId=?"
     executePostOrUpdateQuery(query, [driverId, routeId, vehicleId, deliveryDetailsId], () => {
-        let getQuery = 'SELECT d.registeredDate,d.existingCustomerId,d.location,d.contactPerson,d.deliveryDetailsId,d.isActive as isApproved,d.vehicleId,r.routeName,r.routeId,dri.driverName,dri.driverId,dri.mobileNumber FROM DeliveryDetails d INNER JOIN routes r ON d.routeId=r.routeId left JOIN driverdetails dri ON d.driverId=dri.driverid WHERE d.deliveryDetailsId=' + deliveryDetailsId
+        let getQuery = 'SELECT d.registeredDate,d.customer_Id,d.location,d.contactPerson,d.deliveryDetailsId,d.isActive as isApproved,d.vehicleId,r.routeName,r.routeId,dri.driverName,dri.driverId,dri.mobileNumber FROM DeliveryDetails d INNER JOIN routes r ON d.routeId=r.routeId left JOIN driverdetails dri ON d.driverId=dri.driverid WHERE d.deliveryDetailsId=' + deliveryDetailsId
         return executeGetQuery(getQuery, callback)
     })
 }
+
+customerQueries.getOrderDetailsById = (deliveryDetailsId, callback) => {
+    let query = 'SELECT d.vehicleId,r.routeName,r.routeId,dri.driverName,dri.driverId FROM DeliveryDetails d INNER JOIN routes r ON d.routeId=r.routeId left JOIN driverdetails dri ON d.driverId=dri.driverid WHERE d.deliveryDetailsId=' + deliveryDetailsId
+    return executeGetQuery(query, callback)
+}
+
 customerQueries.generateCustomerPDF = (input, callback) => {
     const { fromDate, toDate, customerId } = input
     let query = `SELECT c.gstNo,c.customerId,c.createdBy,c.EmailId,c.customerName,c.organizationName,
