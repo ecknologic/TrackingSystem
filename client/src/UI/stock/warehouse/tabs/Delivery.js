@@ -6,23 +6,25 @@ import { http } from '../../../../modules/http';
 import Spinner from '../../../../components/Spinner';
 import Actions from '../../../../components/Actions';
 import useUser from '../../../../utils/hooks/useUser';
+import { TRACKFORM } from '../../../../utils/constants';
 import QuitModal from '../../../../components/CustomModal';
 import SearchInput from '../../../../components/SearchInput';
 import CustomModal from '../../../../components/CustomModal';
 import CustomButton from '../../../../components/CustomButton';
 import RoutesFilter from '../../../../components/RoutesFilter';
-import { TRACKFORM } from '../../../../utils/constants';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomPagination from '../../../../components/CustomPagination';
-import { EditIconGrey, PlusIcon } from '../../../../components/SVG_Icons';
+import { EditIconGrey, ListViewIconGrey, PlusIcon } from '../../../../components/SVG_Icons';
 import { getRouteOptions, getDriverOptions, getDeliveryColumns, getDistributorOptions, getCustomerOptions, getDropdownOptions } from '../../../../assets/fixtures';
 import { validateMobileNumber, validateNames, validateNumber, validateDCValues, validateEmailId, validateIntFloat } from '../../../../utils/validations';
 import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone, getStatusColor, doubleKeyComplexSearch, getProductsForUI } from '../../../../utils/Functions';
+import ActivityLogContent from '../../../../components/ActivityLogContent';
 
 const Delivery = ({ date, source }) => {
     const defaultValue = { customerType: 'newCustomer', creationType: 'manual' }
     const { WAREHOUSEID: warehouseId } = useUser()
     const [routes, setRoutes] = useState([])
+    const [logs, setLogs] = useState([])
     const [drivers, setDrivers] = useState([])
     const [loading, setLoading] = useState(true)
     const [deliveriesClone, setDeliveriesClone] = useState([])
@@ -33,6 +35,7 @@ const Delivery = ({ date, source }) => {
     const [pageSize, setPageSize] = useState(10)
     const [totalCount, setTotalCount] = useState(null)
     const [pageNumber, setPageNumber] = useState(1)
+    const [logModal, setLogModal] = useState(false)
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
     const [resetSearch, setResetSearch] = useState(false)
@@ -166,6 +169,17 @@ const Delivery = ({ date, source }) => {
         } catch (error) { }
     }
 
+    const getLogs = async (COId) => {
+        const url = `logs/getDepartmentLogs?type=delivery&id=${COId}`
+
+        try {
+            showToast({ v1Ing: 'Fetching', action: 'loading' })
+            const data = await http.GET(axios, url, config)
+            showToast({ v2: 'fetched' })
+            setLogs(data)
+        } catch (error) { }
+    }
+
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
@@ -257,6 +271,10 @@ const Delivery = ({ date, source }) => {
             setFormData(data)
             setDCModal(true)
         }
+        else if (key === 'logs') {
+            await getLogs(data.customerOrderId)
+            setLogModal(true)
+        }
     }
 
     const handlePageChange = (number) => {
@@ -279,22 +297,28 @@ const Delivery = ({ date, source }) => {
         }
 
         const dcValues = getDCValuesForDB(formData)
-        const { customerOrderId, driverId } = formData
+        const { customerOrderId, driverId, routeId } = formData
 
         let url = 'warehouse/createDC'
         let method = 'POST'
         let v1Ing = 'Adding'
         let v2 = 'added'
 
+        const body = {
+            ...dcValues, warehouseId, customerOrderId
+        }
+
         if (customerOrderId) {
             url = 'customer/updateCustomerOrderDetails'
             method = 'PUT'
             v1Ing = 'Updating'
             v2 = 'updated'
-        }
 
-        const body = {
-            ...dcValues, warehouseId, customerOrderId
+            const { driverName } = drivers.find(item => item.driverId === driverId)
+            const { RouteName } = routes.find(item => item.RouteId === routeId)
+
+            body.driverName = driverName
+            body.routeName = RouteName
         }
 
         if (!driverId) { // Set status to delivered
@@ -335,6 +359,10 @@ const Delivery = ({ date, source }) => {
         setBtnDisabled(false)
         setFormData(defaultValue)
         setFormErrors({})
+    }
+
+    const onLogModalClose = () => {
+        setLogModal(false)
     }
 
     const handleSearch = (value) => {
@@ -384,6 +412,7 @@ const Delivery = ({ date, source }) => {
 
     const handleDCModalCancel = useCallback(() => onModalClose(), [])
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
+    const handleLogModalCancel = useCallback(() => onLogModalClose(), [])
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
@@ -459,6 +488,17 @@ const Delivery = ({ date, source }) => {
             >
                 <ConfirmMessage msg='Changes you made may not be saved.' />
             </QuitModal>
+            <CustomModal
+                className='app-form-modal'
+                visible={logModal}
+                onOk={handleLogModalCancel}
+                onCancel={handleLogModalCancel}
+                title='Activity Log Details'
+                okTxt='Close'
+                hideCancel
+            >
+                <ActivityLogContent data={logs} />
+            </CustomModal>
         </div>
     )
 }
@@ -480,5 +520,8 @@ const renderOrderDetails = ({ product20L, product2L, product1L, product500ML, pr
     500 ml - ${Number(product500ML)} boxes, 300 ml - ${Number(product300ML)} boxes
     `
 }
-const options = [<Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>]
+const options = [
+    <Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>,
+    <Menu.Item key="logs" icon={<ListViewIconGrey />}>Acvitity Logs</Menu.Item>
+]
 export default Delivery

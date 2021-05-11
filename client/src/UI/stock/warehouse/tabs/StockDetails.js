@@ -131,7 +131,7 @@ const StockDetails = ({ date, source }) => {
     }
 
     const getREC = async () => {
-        const url = `warehouse/getReturnedEmptyCans/${WAREHOUSEID}`
+        const url = `warehouse/getReturnedEmptyCans/${date}`
 
         try {
             const data = await http.GET(axios, url, config)

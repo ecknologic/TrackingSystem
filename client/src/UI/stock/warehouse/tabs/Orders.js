@@ -11,11 +11,12 @@ import QuitModal from '../../../../components/CustomModal';
 import CustomModal from '../../../../components/CustomModal';
 import SearchInput from '../../../../components/SearchInput';
 import DeliveryForm from '../../../accounts/add/forms/Delivery';
-import { EditIconGrey } from '../../../../components/SVG_Icons';
+import { EditIconGrey, ListViewIconGrey } from '../../../../components/SVG_Icons';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomPagination from '../../../../components/CustomPagination';
 import { orderColumns, getRouteOptions, getDriverOptions, getVehicleOptions, getWarehouseOptions, getDropdownOptions } from '../../../../assets/fixtures';
 import { isEmpty, resetTrackForm, showToast, deepClone, getProductsForUI, base64String, getDevDays, doubleKeyComplexSearch } from '../../../../utils/Functions';
+import ActivityLogContent from '../../../../components/ActivityLogContent';
 
 const Orders = () => {
     const { WAREHOUSEID } = useUser()
@@ -24,12 +25,14 @@ const Orders = () => {
     const [vehicles, setVehicles] = useState([])
     const [loading, setLoading] = useState(true)
     const [orders, setOrders] = useState([])
+    const [logs, setLogs] = useState([])
     const [ordersClone, setOrdersClone] = useState([])
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [pageSize, setPageSize] = useState(10)
     const [totalCount, setTotalCount] = useState(null)
     const [pageNumber, setPageNumber] = useState(1)
+    const [logModal, setLogModal] = useState(false)
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [DCModal, setDCModal] = useState(false)
     const [viewModal, setViewModal] = useState(false)
@@ -156,6 +159,17 @@ const Orders = () => {
         } catch (error) { }
     }
 
+    const getLogs = async (DDId) => {
+        const url = `logs/getDepartmentLogs?type=order&id=${DDId}`
+
+        try {
+            showToast({ v1Ing: 'Fetching', action: 'loading' })
+            const data = await http.GET(axios, url, config)
+            showToast({ v2: 'fetched' })
+            setLogs(data)
+        } catch (error) { }
+    }
+
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
@@ -177,7 +191,6 @@ const Orders = () => {
     }
 
     const handleMenuSelect = async (key, data) => {
-        setIsFetched(true)
         if (key === 'view') {
             handleView(data.deliveryDetailsId)
         }
@@ -193,7 +206,12 @@ const Orders = () => {
                 setLabel('Add')
             }
 
+            setIsFetched(true)
             setDCModal(true)
+        }
+        else if (key === 'logs') {
+            await getLogs(data.deliveryDetailsId)
+            setLogModal(true)
         }
     }
 
@@ -239,8 +257,12 @@ const Orders = () => {
             return
         }
 
+        const { driverName } = drivers.find(item => item.driverId === driverId)
+        const { RouteName: routeName } = routes.find(item => item.RouteId === routeId)
+        const { vehicleName } = vehicles.find(item => item.vehicleId === driverId)
+
         let url = 'customer/createOrderDelivery'
-        const body = { ...formData }
+        const body = { ...formData, driverName, routeName, vehicleName }
 
         try {
             setBtnDisabled(true)
@@ -282,6 +304,10 @@ const Orders = () => {
         setLabel("Add")
     }
 
+    const onLogModalClose = () => {
+        setLogModal(false)
+    }
+
     const handleSearch = (value) => {
         setPageNumber(1)
         if (value === "") {
@@ -317,6 +343,7 @@ const Orders = () => {
     const handleDCModalCancel = useCallback(() => onModalClose(), [])
     const handleViewModalCancel = useCallback(() => onModalClose(), [])
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
+    const handleLogModalCancel = useCallback(() => onLogModalClose(), [])
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
@@ -402,6 +429,17 @@ const Orders = () => {
             >
                 <ConfirmMessage msg='Changes you made may not be saved.' />
             </QuitModal>
+            <CustomModal
+                className='app-form-modal'
+                visible={logModal}
+                onOk={handleLogModalCancel}
+                onCancel={handleLogModalCancel}
+                title='Activity Log Details'
+                okTxt='Close'
+                hideCancel
+            >
+                <ActivityLogContent data={logs} />
+            </CustomModal>
         </div>
     )
 }
@@ -414,6 +452,7 @@ const renderOrderDetails = ({ product20L, product2L, product1L, product500ML, pr
 }
 const getActions = (driverName) => {
     return [<Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>,
-    <Menu.Item key="delivery" icon={<EditIconGrey />}>{`${driverName ? "Update" : "Add"} Delivery`}</Menu.Item>]
+    <Menu.Item key="delivery" icon={<EditIconGrey />}>{`${driverName ? "Update" : "Add"} Delivery`}</Menu.Item>,
+    <Menu.Item key="logs" icon={<ListViewIconGrey />}>Acvitity Logs</Menu.Item>]
 }
 export default Orders

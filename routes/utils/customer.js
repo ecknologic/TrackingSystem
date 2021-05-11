@@ -103,7 +103,7 @@ const compareOrderData = (data, { departmentId, transactionId, userId, userRole,
                 const records = []
                 const createdDateTime = new Date()
                 Object.entries(data).map(([key, updatedValue]) => {
-                    const oldValue = oldData[key]
+                    let oldValue = oldData[key]
                     if (oldValue != updatedValue && key != 'routeName' && key != 'driverName' && key != 'idProofs' && key != 'gstProof') {
                         const { routeName, driverName } = data
                         const { routeName: route, driverName: driver } = oldData

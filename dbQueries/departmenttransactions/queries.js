@@ -4,9 +4,9 @@ const { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, dateCo
 let departmenttransactionQueries = {}
 
 departmenttransactionQueries.getDepartmentTransactions = (input, callback) => {
-    const { id } = input
-    let query = "SELECT a.auditId,a.description,a.createdDateTime,a.oldValue,a.updatedValue from departmenttransactions a.transactionId" + id
-    executeGetQuery(query, callback)
+    const { id, type } = input
+    let query = "SELECT a.transactionId as auditId,a.description,a.createdDateTime,a.oldValue,a.updatedValue from departmenttransactions a WHERE a.transactionId=? AND subType=?"
+    executeGetParamsQuery(query, [id, type], callback)
 }
 
 //POST Request Methods

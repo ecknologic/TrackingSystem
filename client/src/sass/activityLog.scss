@@ -1,6 +1,7 @@
 .activity-log-container {
     font-family: 'PoppinsRegular400';
-
+    margin-bottom: 1.2em;
+    
     .date, .time {
         color: #92929D;
         font-family: 'PoppinsMedium500';
@@ -18,6 +19,7 @@
 
     .ant-divider {
         background-color: #E9E9E9;
+        margin-top: 2em;
     }
 }
 
@@ -29,7 +31,6 @@
     margin-left: 1.5em;
     padding-left: 1em;
     padding-top: .5em;
-    margin-bottom: 2em;
 
     .first {
         margin-bottom: 1.4em;

@@ -152,7 +152,7 @@ router.post('/createDC', (req, res) => {
           else {
             console.log("data", data)
             req.body.existingCustomerId = data.insertId
-            auditQueries.createLog({ userId:adminUserId, description: `Customer created by ${userRole} <b>(${userName})</b>`, customerId: data.insertId, type: "customer" })
+            auditQueries.createLog({ userId: adminUserId, description: `Customer created by ${userRole} <b>(${userName})</b>`, customerId: data.insertId, type: "customer" })
             saveDC(req, res)
           }
         })
@@ -324,7 +324,7 @@ router.get('/getConfirmedEmptyCans/:date', (req, res) => {
   });
 });
 router.get('/getReturnedEmptyCans/:date', (req, res) => {
-  warehouseQueries.getReturnedEmptyCans(departmentId, req.params.date, (err, results) => {
+  warehouseQueries.getReturnedEmptyCans({ departmentId, date: req.params.date }, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else res.json(results[0]);
   });
@@ -346,7 +346,7 @@ router.put('/updateDepartmentStatus', (req, res) => {
   warehouseQueries.updateDepartmentStatus(req.body, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else {
-      auditQueries.createLog({ userId:adminUserId, description: `${departmentType} status changed to ${status == 1 ? "Active" : "Inactive"} by ${userRole} <b>(${userName})</b>`, departmentId, type: departmentType })
+      auditQueries.createLog({ userId: adminUserId, description: `${departmentType} status changed to ${status == 1 ? "Active" : "Inactive"} by ${userRole} <b>(${userName})</b>`, departmentId, type: departmentType })
       res.json(results);
     }
   });
@@ -357,7 +357,7 @@ router.delete('/deleteDepartment/:departmentId', (req, res) => {
   warehouseQueries.deleteDepartment(departmentId, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else {
-      auditQueries.createLog({ userId:adminUserId, description: `${departmentType} deleted by ${userRole} <b>(${userName})</b>`, departmentId, type: departmentType })
+      auditQueries.createLog({ userId: adminUserId, description: `${departmentType} deleted by ${userRole} <b>(${userName})</b>`, departmentId, type: departmentType })
       res.json(results);
     }
   });

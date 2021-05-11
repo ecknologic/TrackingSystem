@@ -14,18 +14,20 @@ import SearchInput from '../../../../components/SearchInput';
 import DateDropdown from '../../../../components/DateDropdown';
 import CustomButton from '../../../../components/CustomButton';
 import RoutesFilter from '../../../../components/RoutesFilter';
-import { EyeIconGrey } from '../../../../components/SVG_Icons';
 import { getDeliveryColumns } from '../../../../assets/fixtures';
 import CustomDateInput from '../../../../components/CustomDateInput';
 import CustomPagination from '../../../../components/CustomPagination';
 import CustomRangeInput from '../../../../components/CustomRangeInput';
-import { getStatusColor, doubleKeyComplexSearch } from '../../../../utils/Functions';
+import { EyeIconGrey, ListViewIconGrey } from '../../../../components/SVG_Icons';
+import { getStatusColor, doubleKeyComplexSearch, showToast } from '../../../../utils/Functions';
+import ActivityLogContent from '../../../../components/ActivityLogContent';
 const APIDATEFORMAT = 'YYYY-MM-DD'
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
 const DeliveredDC = () => {
     const { WAREHOUSEID } = useUser()
     const [customerList, setCustomerList] = useState([])
+    const [logs, setLogs] = useState([])
     const [loading, setLoading] = useState(true)
     const [customerIds, setCustomerIds] = useState([])
     const [filterBtnDisabled, setFilterBtnDisabled] = useState(true)
@@ -37,6 +39,7 @@ const DeliveredDC = () => {
     const [totalCount, setTotalCount] = useState(null)
     const [pageNumber, setPageNumber] = useState(1)
     const [DCModal, setDCModal] = useState(false)
+    const [logModal, setLogModal] = useState(false)
     const [startDate, setStartDate] = useState(TODAYDATE)
     const [endDate, setEndDate] = useState(TODAYDATE)
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
@@ -70,6 +73,17 @@ const DeliveredDC = () => {
         } catch (error) { }
     }
 
+    const getLogs = async (COId) => {
+        const url = `logs/getDepartmentLogs?type=delivery&id=${COId}`
+
+        try {
+            showToast({ v1Ing: 'Fetching', action: 'loading' })
+            const data = await http.GET(axios, url, config)
+            showToast({ v2: 'fetched' })
+            setLogs(data)
+        } catch (error) { }
+    }
+
     const getDeliveries = async () => {
         const url = `warehouse/getAllDcDetails?fromDate=${startDate}&toDate=${endDate}&departmentId=${WAREHOUSEID}&customerIds=${customerIds}`
 
@@ -90,11 +104,15 @@ const DeliveredDC = () => {
         setFilterBtnDisabled(false)
     }
 
-    const handleMenuSelect = (key, data) => {
+    const handleMenuSelect = async (key, data) => {
         if (key === 'view') {
             setTitle(data.dcNo)
             setFormData(data)
             setDCModal(true)
+        }
+        else if (key === 'logs') {
+            await getLogs(data.customerOrderId)
+            setLogModal(true)
         }
     }
 
@@ -164,6 +182,10 @@ const DeliveredDC = () => {
         setFormData({})
     }
 
+    const onLogModalClose = () => {
+        setLogModal(false)
+    }
+
     const handleSearch = (value) => {
         setPageNumber(1)
         if (value === "") {
@@ -184,8 +206,8 @@ const DeliveredDC = () => {
             key: customerOrderId || dcNo,
             dcnumber: dcNo,
             shopAddress: address,
-            route: RouteName,
             name: customerName,
+            route: RouteName || 'Not Assigned',
             returnEmptyCans: returnEmptyCans || 0,
             driverName: driverName || 'Not Assigned',
             orderDetails: renderOrderDetails(dc),
@@ -197,6 +219,7 @@ const DeliveredDC = () => {
 
 
     const handleDCModalCancel = useCallback(() => onModalClose(), [])
+    const handleLogModalCancel = useCallback(() => onLogModalClose(), [])
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
@@ -286,6 +309,17 @@ const DeliveredDC = () => {
             >
                 <DCView data={formData} />
             </CustomModal>
+            <CustomModal
+                className='app-form-modal'
+                visible={logModal}
+                onOk={handleLogModalCancel}
+                onCancel={handleLogModalCancel}
+                title='Activity Log Details'
+                okTxt='Close'
+                hideCancel
+            >
+                <ActivityLogContent data={logs} />
+            </CustomModal>
         </div>
     )
 }
@@ -307,5 +341,8 @@ const renderOrderDetails = ({ product20L, product2L, product1L, product500ML, pr
     500 ml - ${Number(product500ML)} boxes, 300 ml - ${Number(product300ML)} boxes
     `
 }
-const options = [<Menu.Item key="view" icon={<EyeIconGrey />}>View</Menu.Item>]
+const options = [
+    <Menu.Item key="view" icon={<EyeIconGrey />}>View</Menu.Item>,
+    <Menu.Item key="logs" icon={<ListViewIconGrey />}>Acvitity Logs</Menu.Item>
+]
 export default DeliveredDC
