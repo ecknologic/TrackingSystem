@@ -6,6 +6,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http'
 import Actions from '../../../../components/Actions';
 import Spinner from '../../../../components/Spinner';
+import useUser from '../../../../utils/hooks/useUser';
 import DateValue from '../../../../components/DateValue';
 import InputValue from '../../../../components/InputValue';
 import InputLabel from '../../../../components/InputLabel';
@@ -13,32 +14,39 @@ import SearchInput from '../../../../components/SearchInput';
 import CustomButton from '../../../../components/CustomButton';
 import RoutesFilter from '../../../../components/RoutesFilter';
 import { getInvoiceColumns } from '../../../../assets/fixtures';
-import { SUPERADMIN, TODAYDATE } from '../../../../utils/constants';
-import CustomRangeInput from '../../../../components/CustomRangeInput';
+import CustomDateInput from '../../../../components/CustomDateInput';
 import CustomPagination from '../../../../components/CustomPagination';
+import CustomRangeInput from '../../../../components/CustomRangeInput';
+import { MARKETINGMANAGER, TODAYDATE } from '../../../../utils/constants';
 import { ListViewIconGrey, ScheduleIcon, SendIconGrey, TickIconGrey } from '../../../../components/SVG_Icons';
-import { computeTotalAmount, deepClone, disableFutureDates, doubleKeyComplexSearch, getStatusColor, showToast } from '../../../../utils/Functions';
+import { computeTotalAmount, deepClone, disableFutureDates, doubleKeyComplexSearch, getStatusColor, isEmpty, showToast } from '../../../../utils/Functions';
 const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
 const Dashboard = ({ reFetch, onUpdate }) => {
+    const { ROLE } = useUser()
     const history = useHistory()
     const [invoices, setInvoices] = useState([])
     const [invoicesClone, setInvoicesClone] = useState([])
+    const [filteredClone, setFilteredClone] = useState([])
     const [loading, setLoading] = useState(true)
     const [pageSize, setPageSize] = useState(12)
     const [pageNumber, setPageNumber] = useState(1)
     const [customerIds, setCustomerIds] = useState([])
     const [totalCount, setTotalCount] = useState(null)
     const [customerList, setCustomerList] = useState([])
+    const [creatorList, setCreatorList] = useState([])
     const [selectedRange, setSelectedRange] = useState([])
     const [startDate, setStartDate] = useState(TODAYDATE)
+    const [selectedDate, setSelectedDate] = useState(TODAYDATE)
     const [generateDisabled, setGenerateDisabled] = useState(true)
     const [endDate, setEndDate] = useState(TODAYDATE)
     const [resetSearch, setResetSearch] = useState(false)
+    const [filterON, setFilterON] = useState(false)
     const [searchON, setSeachON] = useState(false)
     const [open, setOpen] = useState(false)
 
+    const isSMManager = useMemo(() => ROLE === MARKETINGMANAGER, [ROLE])
     const invoiceColumns = useMemo(() => getInvoiceColumns(), [])
     const totalAmount = useMemo(() => computeTotalAmount(invoices), [invoices])
     const source = useMemo(() => axios.CancelToken.source(), []);
@@ -46,6 +54,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
 
     useEffect(() => {
         getCustomerList()
+        isSMManager && getCreatorList()
 
         return () => {
             http.ABORT(source)
@@ -58,7 +67,11 @@ const Dashboard = ({ reFetch, onUpdate }) => {
     }, [reFetch])
 
     const getInvoices = async () => {
-        const url = 'invoice/getInvoices/Pending'
+        let url = 'invoice/getInvoices/Pending'
+
+        if (isSMManager) {
+            url = 'invoice/getInvoicesByRole/5' // 5 is Sales and Marketing Admin Role
+        }
 
         try {
             const data = await http.GET(axios, url, config)
@@ -75,6 +88,15 @@ const Dashboard = ({ reFetch, onUpdate }) => {
         try {
             const data = await http.GET(axios, url, config)
             setCustomerList(data)
+        } catch (error) { }
+    }
+
+    const getCreatorList = async () => {
+        const url = 'users/getUsersByRole/SalesAndMarketing'
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setCreatorList(data)
         } catch (error) { }
     }
 
@@ -109,8 +131,28 @@ const Dashboard = ({ reFetch, onUpdate }) => {
 
     const onFilterChange = (data) => {
         setPageNumber(1)
-        setCustomerIds(data)
-        setGenerateDisabled(false)
+
+        if (isSMManager) {
+            if (isEmpty(data)) {
+                setInvoices(invoicesClone)
+                setTotalCount(invoicesClone.length)
+                setFilterON(false)
+            }
+            else generateFiltered(invoicesClone, data)
+        }
+        else {
+            setCustomerIds(data)
+            setGenerateDisabled(false)
+        }
+    }
+
+    const generateFiltered = (original, filterInfo) => {
+        const filtered = original.filter((item) => filterInfo.includes(item.salesPerson))
+        setInvoices(filtered)
+        setFilteredClone(filtered)
+        setTotalCount(filtered.length)
+        setFilterON(true)
+        searchON && setResetSearch(!resetSearch)
     }
 
     const handleFilter = () => {
@@ -128,22 +170,35 @@ const Dashboard = ({ reFetch, onUpdate }) => {
         else handleStatusUpdate(data.invoiceId)
     }
 
-    const handleViewInvoice = (invoice) => history.push('/invoices/manage', { invoice, FOR: SUPERADMIN })
+    const handleViewInvoice = (invoice) => history.push('/invoices/manage', { invoice, FOR: ROLE })
 
     const datePickerStatus = (status) => {
         !status && setOpen(false)
     }
 
     const handleDateSelect = (selected) => {
-        const [from, to] = selected
-        setStartDate(from.format(APIDATEFORMAT))
-        setEndDate(to.format(APIDATEFORMAT))
-        setOpen(false)
-        setSelectedRange(selected)
-        setGenerateDisabled(false)
-        setTimeout(() => setSelectedRange([]), 820)
         setPageNumber(1)
-        setGenerateDisabled(false)
+
+        if (isSMManager) {
+            setOpen(false)
+            setSelectedDate(dayjs(selected).format(APIDATEFORMAT))
+            const filtered = invoicesClone.filter(item => dayjs(selected).format(DATEFORMAT) == dayjs(item.invoiceDate).format(DATEFORMAT))
+            setInvoices(filtered)
+            setFilteredClone(filtered)
+            setTotalCount(filtered.length)
+            setFilterON(true)
+            searchON && setResetSearch(!resetSearch)
+        }
+        else {
+            const [from, to] = selected
+            setStartDate(from.format(APIDATEFORMAT))
+            setEndDate(to.format(APIDATEFORMAT))
+            setOpen(false)
+            setSelectedRange(selected)
+            setGenerateDisabled(false)
+            setTimeout(() => setSelectedRange([]), 820)
+            setGenerateDisabled(false)
+        }
     }
 
     const optimisticUpdate = (id, status) => {
@@ -177,7 +232,8 @@ const Dashboard = ({ reFetch, onUpdate }) => {
             setSeachON(false)
             return
         }
-        const result = doubleKeyComplexSearch(invoicesClone, value, 'invoiceId', 'customerName')
+        const data = (filterON && isSMManager) ? filteredClone : invoicesClone
+        const result = doubleKeyComplexSearch(data, value, 'invoiceId', 'customerName')
         setTotalCount(result.length)
         setInvoices(result)
         setSeachON(true)
@@ -210,37 +266,68 @@ const Dashboard = ({ reFetch, onUpdate }) => {
     return (
         <div className='stock-delivery-container'>
             <div className='header'>
-                <div className='left'>
-                    <RoutesFilter
-                        data={customerList}
-                        title='Select Customers'
-                        keyValue='customerId'
-                        keyLabel='customerName'
-                        onChange={onFilterChange}
-                    />
-                    <DateValue date={startDate} to={endDate} />
-                    <div className='app-date-picker-wrapper'>
-                        <div className='date-picker' onClick={() => setOpen(true)}>
-                            <ScheduleIcon />
-                            <span>Select Date</span>
-                        </div>
-                        <CustomButton
-                            style={{ marginLeft: '1em' }}
-                            className={`${generateDisabled ? 'disabled' : ''}`}
-                            text='Generate'
-                            onClick={handleFilter}
-                        />
-                        <CustomRangeInput // Hidden in the DOM
-                            open={open}
-                            value={selectedRange}
-                            style={{ left: 0 }}
-                            className='app-date-panel-picker'
-                            onChange={handleDateSelect}
-                            disabledDate={disableFutureDates}
-                            onOpenChange={datePickerStatus}
-                        />
-                    </div>
-                </div>
+                {
+                    isSMManager ?
+                        (
+                            <div className='left'>
+                                <RoutesFilter
+                                    data={creatorList}
+                                    title='Select Creators'
+                                    keyValue='userId'
+                                    keyLabel='userName'
+                                    onChange={onFilterChange}
+                                />
+                                <DateValue date={selectedDate} />
+                                <div className='app-date-picker-wrapper'>
+                                    <div className='date-picker' onClick={() => setOpen(true)}>
+                                        <ScheduleIcon />
+                                        <span>Select Date</span>
+                                    </div>
+                                    <CustomDateInput // Hidden in the DOM
+                                        open={open}
+                                        style={{ left: 0 }}
+                                        value={selectedDate}
+                                        className='app-date-panel-picker'
+                                        onChange={handleDateSelect}
+                                        onOpenChange={datePickerStatus}
+                                        disabledDate={disableFutureDates}
+                                    />
+                                </div>
+                            </div>
+                        ) : (
+                            <div className='left'>
+                                <RoutesFilter
+                                    data={customerList}
+                                    title='Select Customers'
+                                    keyValue='customerId'
+                                    keyLabel='customerName'
+                                    onChange={onFilterChange}
+                                />
+                                <DateValue date={startDate} to={endDate} />
+                                <div className='app-date-picker-wrapper'>
+                                    <div className='date-picker' onClick={() => setOpen(true)}>
+                                        <ScheduleIcon />
+                                        <span>Select Date</span>
+                                    </div>
+                                    <CustomButton
+                                        style={{ marginLeft: '1em' }}
+                                        className={`${generateDisabled ? 'disabled' : ''}`}
+                                        text='Generate'
+                                        onClick={handleFilter}
+                                    />
+                                    <CustomRangeInput // Hidden in the DOM
+                                        open={open}
+                                        value={selectedRange}
+                                        style={{ left: 0 }}
+                                        className='app-date-panel-picker'
+                                        onChange={handleDateSelect}
+                                        disabledDate={disableFutureDates}
+                                        onOpenChange={datePickerStatus}
+                                    />
+                                </div>
+                            </div>
+                        )
+                }
                 <div className='right'>
                     <div className='field'>
                         <InputLabel name='Total Amount' />

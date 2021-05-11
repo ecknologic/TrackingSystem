@@ -10,7 +10,6 @@ const FilterContext = React.createContext([{}, () => { }]);
 const FilterProvider = ({ children }) => {
     const { ROLE } = useUser()
     const { pathname } = useLocation()
-
     const [creator, setCreator] = useState([])
     const [creatorList, setCreatorList] = useState([])
     const [business, setBusiness] = useState([])

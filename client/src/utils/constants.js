@@ -40,7 +40,7 @@ export const getRoutesByRole = (role) => {
             return ['/add-customer', '/customer-accounts', '/invoices']
 
         case MARKETINGMANAGER:
-            return ['/add-customer', '/customer-accounts', '/manage-invoices']
+            return ['/add-customer', '/customer-accounts', '/invoices']
 
         case SUPERADMIN:
             return ['/customers', '/materials', '/motherplants', '/warehouses', '/staff', '/drivers',
