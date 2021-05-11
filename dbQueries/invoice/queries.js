@@ -7,6 +7,11 @@ invoiceQueries.getInvoices = async (status, callback) => {
     return executeGetQuery(query, callback)
 }
 
+invoiceQueries.getInvoicesByRole = async (roleId, callback) => {
+    let query = `select i.* from Invoice i INNER JOIN usermaster u ON i.salesPerson=u.userId WHERE u.roleId=?  ORDER BY invoiceId DESC`;
+    return executeGetParamsQuery(query, [roleId], callback)
+}
+
 invoiceQueries.getCustomerInvoices = async (customerId, callback) => {
     let query = `select * from Invoice where customerId=? ORDER BY invoiceId DESC`;
     return executeGetParamsQuery(query, [customerId], callback)
