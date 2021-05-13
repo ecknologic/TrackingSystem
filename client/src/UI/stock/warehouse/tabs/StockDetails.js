@@ -20,16 +20,13 @@ import { getASValuesForDB, isEmpty, resetTrackForm, showToast } from '../../../.
 import { validateNumber, validateASValues, validateRECValues } from '../../../../utils/validations';
 import { getDriverOptions, getWarehouseOptions, getVehicleOptions } from '../../../../assets/fixtures';
 
-const StockDetails = ({ date, source }) => {
+const StockDetails = ({ date, driverList, vehicleList, motherplantList }) => {
     const { WAREHOUSEID } = useUser()
     const [CAS, setCAS] = useState({})
     const [OFD, setOFC] = useState({})
     const [EC, setEC] = useState({})
     const [REC, setREC] = useState({})
     const [TRC, setTRC] = useState({})
-    const [motherplantList, setMotherplantList] = useState([])
-    const [driverList, setDriverList] = useState([])
-    const [vehicleList, setVehicleList] = useState([])
     const [newStock, setNewStock] = useState({})
     const [arrivedStock, setArrivedStock] = useState([])
     const [formData, setFormData] = useState({})
@@ -39,12 +36,12 @@ const StockDetails = ({ date, source }) => {
     const [confirmBtnDisabled, setConfirmBtnDisabled] = useState(false)
     const [modal, setModal] = useState(false)
     const [addModal, setAddModal] = useState(false)
-    const [fetchList, setFetchList] = useState(false)
     const [shake, setShake] = useState(false)
 
     const motherplantOptions = useMemo(() => getWarehouseOptions(motherplantList), [motherplantList])
     const driverOptions = useMemo(() => getDriverOptions(driverList), [driverList])
     const vehicleOptions = useMemo(() => getVehicleOptions(vehicleList), [vehicleList])
+    const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
@@ -67,41 +64,6 @@ const StockDetails = ({ date, source }) => {
             setArrivedStock([])
         }
     }, [date])
-
-    useEffect(() => {
-        if (fetchList) {
-            getMotherplantList()
-            getDriverList()
-            getVehicleList()
-        }
-    }, [fetchList])
-
-    const getMotherplantList = async () => {
-        const url = 'bibo/getDepartmentsList?departmentType=MotherPlant'
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setMotherplantList(data)
-        } catch (error) { }
-    }
-
-    const getDriverList = async () => {
-        const url = `bibo/getdriverDetails/${WAREHOUSEID}`
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setDriverList(data)
-        } catch (error) { }
-    }
-
-    const getVehicleList = async () => {
-        const url = `bibo/getVehicleDetails`
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setVehicleList(data)
-        } catch (error) { }
-    }
 
     const getCAS = async () => {
         const url = `warehouse/currentActiveStockDetails/${date}?warehouseId=${WAREHOUSEID}`
@@ -213,7 +175,6 @@ const StockDetails = ({ date, source }) => {
     }
 
     const onAddEmptyCans = () => {
-        setFetchList(true)
         setAddModal(true)
     }
 

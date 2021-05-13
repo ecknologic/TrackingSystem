@@ -509,7 +509,7 @@ export const orderColumns = [
     },
 ]
 
-export const getStockColumns = (isWHAdmin) => {
+export const getStockColumns = (isDamaged, adminType) => {
 
     const columns = [
         {
@@ -554,18 +554,21 @@ export const getStockColumns = (isWHAdmin) => {
         },
     ]
 
-    if (isWHAdmin) {
-        columns.splice(2, 2, {
-            title: 'Warehouse',
-            dataIndex: 'departmentName',
-            key: 'departmentName'
-        }, {
+    if (isDamaged) {
+        columns.splice(3, 1, {
             title: 'Damage Details',
             dataIndex: 'stockDetails',
             key: 'stockDetails',
         })
     }
 
+    if (adminType === 'MPAdmin') {
+        columns.splice(2, 1, {
+            title: 'Warehouse',
+            dataIndex: 'departmentName',
+            key: 'departmentName'
+        })
+    }
 
     return columns;
 }

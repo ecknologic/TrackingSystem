@@ -5,17 +5,17 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
 import Spinner from '../../../../components/Spinner';
 import Actions from '../../../../components/Actions';
-import ArrivedStockView from '../forms/ArrivedStock';
-import SearchInput from '../../../../components/SearchInput';
-import RoutesFilter from '../../../../components/RoutesFilter';
 import CustomModal from '../../../../components/CustomModal';
-import { EyeIconGrey } from '../../../../components/SVG_Icons';
+import SearchInput from '../../../../components/SearchInput';
 import { getStockColumns } from '../../../../assets/fixtures';
+import { EyeIconGrey } from '../../../../components/SVG_Icons';
+import RoutesFilter from '../../../../components/RoutesFilter';
+import ArrivedStockView from '../../warehouse/forms/ArrivedStock';
 import CustomPagination from '../../../../components/CustomPagination';
 import { doubleKeyComplexSearch, getStatusColor, isEmpty, showToast } from '../../../../utils/Functions';
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
-const StockReceived = ({ motherplantList }) => {
+const DamagedStock = ({ motherplantList }) => {
     const [loading, setLoading] = useState(true)
     const [stock, setStock] = useState([])
     const [stockClone, setStockClone] = useState([])
@@ -29,20 +29,20 @@ const StockReceived = ({ motherplantList }) => {
     const [filteredClone, setFilteredClone] = useState([])
     const [resetSearch, setResetSearch] = useState(false)
 
-    const receivedStockColumns = useMemo(() => getStockColumns(), [])
+    const damagedStockColumns = useMemo(() => getStockColumns(true), [])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
-        getReceivedStock()
+        getDamagedStock()
 
         return () => {
             http.ABORT(source)
         }
     }, [])
 
-    const getReceivedStock = async () => {
-        const url = 'warehouse/getReceivedStock'
+    const getDamagedStock = async () => {
+        const url = 'warehouse/getDamagedStock'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -108,7 +108,7 @@ const StockReceived = ({ motherplantList }) => {
             return
         }
         const data = filterON ? filteredClone : stockClone
-        const result = doubleKeyComplexSearch(data, value, 'dcNo', 'departmentName')
+        const result = doubleKeyComplexSearch(stockClone, value, 'dcNo', 'departmentName')
         setTotalCount(result.length)
         setStock(result)
         setSeachON(true)
@@ -160,7 +160,7 @@ const StockReceived = ({ motherplantList }) => {
                 <Table
                     loading={{ spinning: loading, indicator: <Spinner /> }}
                     dataSource={dataSource.slice(sliceFrom, sliceTo)}
-                    columns={receivedStockColumns}
+                    columns={damagedStockColumns}
                     pagination={false}
                     scroll={{ x: true }}
                 />
@@ -207,4 +207,4 @@ const renderStockDetails = ({ product20L, product1L, product2L, product500ML, pr
     `
 }
 const options = [<Menu.Item key="view" icon={<EyeIconGrey />}>View</Menu.Item>]
-export default StockReceived
+export default DamagedStock

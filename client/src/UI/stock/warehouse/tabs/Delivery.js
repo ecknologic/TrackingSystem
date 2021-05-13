@@ -20,12 +20,10 @@ import { validateMobileNumber, validateNames, validateNumber, validateDCValues, 
 import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone, getStatusColor, doubleKeyComplexSearch, getProductsForUI } from '../../../../utils/Functions';
 import ActivityLogContent from '../../../../components/ActivityLogContent';
 
-const Delivery = ({ date, source }) => {
+const Delivery = ({ date, routeList, locationList, driverList }) => {
     const defaultValue = { customerType: 'newCustomer', creationType: 'manual' }
     const { WAREHOUSEID: warehouseId } = useUser()
-    const [routes, setRoutes] = useState([])
     const [logs, setLogs] = useState([])
-    const [drivers, setDrivers] = useState([])
     const [loading, setLoading] = useState(true)
     const [deliveriesClone, setDeliveriesClone] = useState([])
     const [filteredClone, setFilteredClone] = useState([])
@@ -41,7 +39,6 @@ const Delivery = ({ date, source }) => {
     const [resetSearch, setResetSearch] = useState(false)
     const [customerList, setCustomerList] = useState([])
     const [distributorList, setDistributorList] = useState([])
-    const [locationList, setLocationList] = useState([])
     const [filterInfo, setFilterInfo] = useState([])
     const [filterON, setFilterON] = useState(false)
     const [searchON, setSeachON] = useState(false)
@@ -52,20 +49,15 @@ const Delivery = ({ date, source }) => {
     const [mode, setMode] = useState(false)
 
     const deliveryColumns = useMemo(() => getDeliveryColumns(), [])
-    const routeOptions = useMemo(() => getRouteOptions(routes), [routes])
-    const driverOptions = useMemo(() => getDriverOptions(drivers), [drivers])
+    const routeOptions = useMemo(() => getRouteOptions(routeList), [routeList])
+    const driverOptions = useMemo(() => getDriverOptions(driverList), [driverList])
     const locationOptions = useMemo(() => getDropdownOptions(locationList), [locationList])
     const distributorOptions = useMemo(() => getDistributorOptions(distributorList), [distributorList])
     const customerOptions = useMemo(() => getCustomerOptions(customerList), [customerList])
     const childProps = useMemo(() => ({ routeOptions, driverOptions, locationOptions, distributorOptions, customerOptions }),
         [routeOptions, driverOptions, locationOptions, distributorOptions, customerOptions])
+    const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
-
-    useEffect(() => {
-        getRoutes()
-        getDrivers()
-        getLocationList()
-    }, [])
 
     useEffect(() => {
         setLoading(true)
@@ -75,24 +67,6 @@ const Delivery = ({ date, source }) => {
             http.ABORT(source)
         }
     }, [date])
-
-    const getRoutes = async () => {
-        const url = `customer/getRoutes/${warehouseId}`
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setRoutes(data)
-        } catch (error) { }
-    }
-
-    const getDrivers = async () => {
-        const url = `bibo/getdriverDetails/${warehouseId}`
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setDrivers(data)
-        } catch (error) { }
-    }
 
     const getDistributorList = async () => {
         const url = 'distributor/getDistributorsList'
@@ -109,15 +83,6 @@ const Delivery = ({ date, source }) => {
         try {
             const data = await http.GET(axios, url, config)
             setCustomerList(data)
-        } catch (error) { }
-    }
-
-    const getLocationList = async () => {
-        const url = `bibo/getList/location`
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setLocationList(data)
         } catch (error) { }
     }
 
@@ -314,8 +279,8 @@ const Delivery = ({ date, source }) => {
             v1Ing = 'Updating'
             v2 = 'updated'
 
-            const { driverName } = drivers.find(item => item.driverId === driverId)
-            const { RouteName } = routes.find(item => item.RouteId === routeId)
+            const { driverName } = driverList.find(item => item.driverId === driverId)
+            const { RouteName } = routeList.find(item => item.RouteId === routeId)
 
             body.driverName = driverName
             body.routeName = RouteName
@@ -422,7 +387,7 @@ const Delivery = ({ date, source }) => {
             <div className='header'>
                 <div className='left'>
                     <RoutesFilter
-                        data={routes}
+                        data={routeList}
                         keyValue='RouteId'
                         keyLabel='RouteName'
                         title='Select Routes'
