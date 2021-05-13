@@ -60,7 +60,7 @@ router.get('/getdriverDetails/:warehouseId', (req, res) => {
 
 router.get('/getNewStockDetails/:id', (req, res) => {
   let input = {
-    date: dayjs().format('YYYY-MM-DD'),
+    date: dayjs(req.query.date).format('YYYY-MM-DD'),
     departmentId: req.params.id
   }
   motherPlantDbQueries.getCurrentDispatchDetailsByDate(input, (err, results) => {

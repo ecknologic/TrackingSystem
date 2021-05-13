@@ -51,18 +51,12 @@ const StockDetails = ({ date, driverList, vehicleList, motherplantList }) => {
     }, [])
 
     useEffect(() => {
-        const isToday = dayjs(date).isSame(dayjs(TODAYDATE))
         getOFD()
         getEC()
         getCAS()
         getREC()
         getTRC()
-
-        if (isToday) getNewStock()
-        else {
-            setNewStock({})
-            setArrivedStock([])
-        }
+        getNewStock()
     }, [date])
 
     const getCAS = async () => {
@@ -111,7 +105,7 @@ const StockDetails = ({ date, driverList, vehicleList, motherplantList }) => {
     }
 
     const getNewStock = async () => {
-        const url = `warehouse/getNewStockDetails/${WAREHOUSEID}`
+        const url = `warehouse/getNewStockDetails/${WAREHOUSEID}?date=${date}`
 
         try {
             const data = await http.GET(axios, url, config)
