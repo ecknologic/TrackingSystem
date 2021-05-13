@@ -114,7 +114,7 @@ warehouseQueries.getReturnedEmptyCans = async ({ departmentId, date }, callback)
     // let query = "SELECT (SELECT SUM(c.returnemptycans) FROM customerorderdetails c WHERE c.warehouseid=?)-(SELECT SUM(e.emptycans_count)  FROM EmptyCanDetails e  WHERE e.isconfirmed=1 AND e.warehouseId=?) AS emptycans";
     // let query = `SELECT ABS(e.emptycans) AS emptycans FROM (SELECT (SELECT IFNULL(SUM(c.returnemptycans),0) FROM customerorderdetails c WHERE c.warehouseid=?)-(SELECT IFNULL(SUM(e.emptycans_count),0)
     // FROM EmptyCanDetails e  WHERE e.status='Pending' AND e.warehouseId=?) AS emptycans) AS e`
-    let query = `SELECT IFNULL(SUM(e.emptycans_count),0) AS emptycans FROM EmptyCanDetails e  WHERE  e.warehouseId=? AND DATE(createdDateTime)<=?`
+    let query = `SELECT IFNULL(SUM(e.emptycans_count),0) AS emptycans FROM EmptyCanDetails e  WHERE  e.warehouseId=? AND DATE(createdDateTime)=?`
     return executeGetParamsQuery(query, [departmentId, date], callback)
 }
 warehouseQueries.getConfirmedEmptyCans = async (warehouseId, date, callback) => {
