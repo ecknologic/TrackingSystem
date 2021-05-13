@@ -73,7 +73,7 @@ cron.schedule('0 0 2 * * *', function () {
   saveToCustomerOrderDetails()
 });
 
-function saveToCustomerOrderDetails(customerId, res, deliveryDetailsId, userId,userRole,userName) {
+function saveToCustomerOrderDetails(customerId, res, deliveryDetailsId, userId, userRole, userName) {
   var day = days[new Date().getDay()];
 
   let customerDeliveryDaysQuery = "SELECT c.deliveryDetailsId,c.customer_Id,c.phoneNumber,c.address,c.contactPerson,c.departmentId,c.routeId,c.driverId,c.latitude,c.longitude,c.location as deliveryLocation FROM DeliveryDetails c INNER JOIN  customerdeliverydays cd ON cd.deliveryDaysId=c.deliverydaysid  WHERE c.deleted=0 AND c.isActive=1 AND " + day + "=1";
@@ -93,7 +93,10 @@ function saveToCustomerOrderDetails(customerId, res, deliveryDetailsId, userId,u
       }
     }
     else {
-      auditQueries.createLog({ userId, description: `Customer ${deliveryDetailsId ? 'Delivery Details' : ""} Approved by ${userRole} <b>(${userName})</b>`, customerId, type: "customer" })
+      auditQueries.createLog({ userId, description: `Customer ${deliveryDetailsId ? 'Delivery Details' : ""} Approved by ${userRole} <b>(${userName})</b>`, customerId, type: "customer" }, (err, data) => {
+        if (err) console.log('errors>>>>', err)
+        else console.log('data>>>', data)
+      })
       res.json('Customer approved successfully')
     }
   });
