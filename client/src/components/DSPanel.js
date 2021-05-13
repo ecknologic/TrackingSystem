@@ -1,7 +1,7 @@
 import React from 'react';
 import CustomButton from './CustomButton';
 
-const DSPanel = () => {
+const DSPanel = ({ onAdd }) => {
 
     return (
         <div className='stock-panel ds-panel-container'>
@@ -40,6 +40,7 @@ const DSPanel = () => {
             </div>
             <div className='buttons'>
                 <CustomButton text='Get Reports' className='app-stock-btn' />
+                <span className='add' onClick={onAdd}>Add Damaged Stock</span>
             </div>
         </div>
     )

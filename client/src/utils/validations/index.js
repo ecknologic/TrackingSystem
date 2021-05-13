@@ -909,6 +909,17 @@ export const validateASValues = (data) => {
     return { ...errors, ...productErrors }
 }
 
+export const validateDSValues = (data) => {
+    let errors = {}
+    const text = 'Required'
+
+    const { details, ...rest } = data
+    if (!details) errors.details = text
+
+    const productErrors = validateDamagedProducts(rest)
+    return { ...errors, ...productErrors }
+}
+
 export const validateRECValues = (data) => {
     let errors = {}
     const text = 'Required'
