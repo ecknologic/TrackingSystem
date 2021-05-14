@@ -43,6 +43,7 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
     const [logModal, setLogModal] = useState(false)
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
+    const [rescheduleModal, setRescheduleModal] = useState(false)
     const [resetSearch, setResetSearch] = useState(false)
     const [customerList, setCustomerList] = useState([])
     const [distributorList, setDistributorList] = useState([])
@@ -240,6 +241,7 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
 
     const handleRowDateSelect = (value) => {
         setSelectedDate(dayjs(value).format(format))
+        setRescheduleModal(true)
         setROpen(false)
     }
 
@@ -267,7 +269,7 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
         }
         else if (key === 'reschedule') {
             setROpen(true)
-            setCurrentDC(dcNo)
+            setCurrentDC(data)
         }
     }
 
@@ -334,6 +336,19 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
         }
     }
 
+    const handleReschedule = async () => {
+        const { customerOrderId, existingCustomerId } = currentDC
+        const options = { item: 'DC', v1Ing: 'Rescheduling', v2: 'rescheduled' }
+
+        const url = 'warehouse/rescheduleDc'
+        const body = { customerOrderId, date: selectedDate, existingCustomerId }
+        try {
+            showToast({ ...options, action: 'loading' })
+            await http.PUT(axios, url, body, config)
+            showToast(options)
+        } catch (error) { }
+    }
+
     const optimisticUpdate = (data, method) => {
         if (method === 'PUT') {
             const clone = deepClone(deliveries)
@@ -387,7 +402,7 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
             status: renderStatus(isDelivered),
             action: <>
                 <CustomDateInput // Hidden in the DOM
-                    open={currentDC === dcNo && rOpen}
+                    open={currentDC.dcNo === dcNo && rOpen}
                     value={selectedDate}
                     style={{ left: 0 }}
                     onChange={handleRowDateSelect}
@@ -407,6 +422,11 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
         onModalClose()
     }, [])
 
+    const handleRescheduleModalOk = () => {
+        setRescheduleModal(false);
+        handleReschedule()
+    }
+
     const onCreateDC = () => {
         isEmpty(distributorList) && getDistributorList()
         isEmpty(customerList) && getCustomerList()
@@ -418,6 +438,7 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
 
     const handleDCModalCancel = useCallback(() => onModalClose(), [])
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
+    const handleRescheduleModalCancel = useCallback(() => setRescheduleModal(false), [])
     const handleLogModalCancel = useCallback(() => onLogModalClose(), [])
 
     const sliceFrom = (pageNumber - 1) * pageSize
@@ -500,6 +521,15 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
                     {...childProps}
                 />
             </CustomModal>
+            <QuitModal
+                visible={rescheduleModal}
+                onOk={handleRescheduleModalOk}
+                onCancel={handleRescheduleModalCancel}
+                title='Are you sure you want to reschedule?'
+                okTxt='Yes'
+            >
+                <ConfirmMessage msg={`${currentDC.dcNo} will be rescheduled to ${dayjs(selectedDate).format('DD/MM/YYYY')}`} />
+            </QuitModal>
             <QuitModal
                 visible={confirmModal}
                 onOk={handleConfirmModalOk}
