@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import axios from 'axios';
 import { Menu, message, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -6,24 +7,30 @@ import { http } from '../../../../modules/http';
 import Spinner from '../../../../components/Spinner';
 import Actions from '../../../../components/Actions';
 import useUser from '../../../../utils/hooks/useUser';
-import { TRACKFORM } from '../../../../utils/constants';
 import QuitModal from '../../../../components/CustomModal';
 import SearchInput from '../../../../components/SearchInput';
 import CustomModal from '../../../../components/CustomModal';
 import CustomButton from '../../../../components/CustomButton';
 import RoutesFilter from '../../../../components/RoutesFilter';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
+import { TODAYDATE, TRACKFORM } from '../../../../utils/constants';
+import CustomDateInput from '../../../../components/CustomDateInput';
 import CustomPagination from '../../../../components/CustomPagination';
-import { EditIconGrey, ListViewIconGrey, PlusIcon } from '../../../../components/SVG_Icons';
+import ActivityLogContent from '../../../../components/ActivityLogContent';
+import { EditIconGrey, ListViewIconGrey, PlusIcon, ScheduleIcon, ScheduleIconGrey } from '../../../../components/SVG_Icons';
 import { getRouteOptions, getDriverOptions, getDeliveryColumns, getDistributorOptions, getCustomerOptions, getDropdownOptions } from '../../../../assets/fixtures';
 import { validateMobileNumber, validateNames, validateNumber, validateDCValues, validateEmailId, validateIntFloat } from '../../../../utils/validations';
-import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone, getStatusColor, doubleKeyComplexSearch, getProductsForUI } from '../../../../utils/Functions';
-import ActivityLogContent from '../../../../components/ActivityLogContent';
+import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone, getStatusColor, doubleKeyComplexSearch, getProductsForUI, disablePastDates } from '../../../../utils/Functions';
+const format = 'YYYY-MM-DD'
 
 const Delivery = ({ date, routeList, locationList, driverList }) => {
     const defaultValue = { customerType: 'newCustomer', creationType: 'manual' }
     const { WAREHOUSEID: warehouseId } = useUser()
     const [logs, setLogs] = useState([])
+    const [open, setOpen] = useState(false)
+    const [rOpen, setROpen] = useState(false)
+    const [currentDC, setCurrentDC] = useState('')
+    const [selectedDate, setSelectedDate] = useState()
     const [loading, setLoading] = useState(true)
     const [deliveriesClone, setDeliveriesClone] = useState([])
     const [filteredClone, setFilteredClone] = useState([])
@@ -218,9 +225,27 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
         searchON && setResetSearch(!resetSearch)
     }
 
+    const datePickerStatus = (status) => {
+        !status && setOpen(false)
+    }
+
+    const dateRowPickerStatus = (status) => {
+        !status && setROpen(false)
+    }
+
+    const handleDateSelect = (value) => {
+        setSelectedDate(dayjs(value).format(format))
+        setOpen(false)
+    }
+
+    const handleRowDateSelect = (value) => {
+        setSelectedDate(dayjs(value).format(format))
+        setROpen(false)
+    }
+
     const handleMenuSelect = async (key, data) => {
+        const { dcNo, isDelivered } = data
         if (key === 'view') {
-            const { dcNo, isDelivered } = data
             setTitle(dcNo)
 
             try {
@@ -239,6 +264,10 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
         else if (key === 'logs') {
             await getLogs(data.customerOrderId)
             setLogModal(true)
+        }
+        else if (key === 'reschedule') {
+            setROpen(true)
+            setCurrentDC(dcNo)
         }
     }
 
@@ -356,9 +385,21 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
             driverName: driverName || 'Not Assigned',
             orderDetails: renderOrderDetails(dc),
             status: renderStatus(isDelivered),
-            action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, dc)} />
+            action: <>
+                <CustomDateInput // Hidden in the DOM
+                    open={currentDC === dcNo && rOpen}
+                    value={selectedDate}
+                    style={{ left: 0 }}
+                    onChange={handleRowDateSelect}
+                    onOpenChange={dateRowPickerStatus}
+                    disabledDate={disablePastDates}
+                    className='app-date-panel-picker'
+                    getPopupContainer={node => node.parentNode.parentNode}
+                />
+                <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, dc)} />
+            </>
         }
-    }), [deliveries, distributorList, customerList])
+    }), [deliveries, distributorList, customerList, rOpen, currentDC])
 
     const handleConfirmModalOk = useCallback(() => {
         setConfirmModal(false);
@@ -394,6 +435,21 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
                         onChange={onFilterChange}
                     />
                     <CustomButton text='Add New DC' onClick={onCreateDC} className='app-add-new-btn' icon={<PlusIcon />} />
+                    <div className='app-date-picker-wrapper'>
+                        <div className='date-picker' onClick={() => setOpen(true)}>
+                            <ScheduleIcon />
+                            <span>Bulk Reschedule</span>
+                        </div>
+                        <CustomDateInput // Hidden in the DOM
+                            open={open}
+                            style={{ left: 0 }}
+                            value={selectedDate}
+                            className='app-date-panel-picker'
+                            onChange={handleDateSelect}
+                            onOpenChange={datePickerStatus}
+                            disabledDate={disablePastDates}
+                        />
+                    </div>
                 </div>
                 <div className='right'>
                     <SearchInput
@@ -487,6 +543,7 @@ const renderOrderDetails = ({ product20L, product2L, product1L, product500ML, pr
 }
 const options = [
     <Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>,
-    <Menu.Item key="logs" icon={<ListViewIconGrey />}>Acvitity Logs</Menu.Item>
+    <Menu.Item key="logs" icon={<ListViewIconGrey />}>Acvitity Logs</Menu.Item>,
+    <Menu.Item key="reschedule" icon={<ScheduleIconGrey />}>Reschedule</Menu.Item>
 ]
 export default Delivery
