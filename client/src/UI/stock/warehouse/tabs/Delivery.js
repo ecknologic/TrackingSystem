@@ -21,6 +21,7 @@ import { EditIconGrey, ListViewIconGrey, PlusIcon, ScheduleIcon, ScheduleIconGre
 import { getRouteOptions, getDriverOptions, getDeliveryColumns, getDistributorOptions, getCustomerOptions, getDropdownOptions } from '../../../../assets/fixtures';
 import { validateMobileNumber, validateNames, validateNumber, validateDCValues, validateEmailId, validateIntFloat } from '../../../../utils/validations';
 import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone, getStatusColor, doubleKeyComplexSearch, getProductsForUI, disablePastDates } from '../../../../utils/Functions';
+import CustomRangeInput from '../../../../components/CustomRangeInput'
 const format = 'YYYY-MM-DD'
 
 const Delivery = ({ date, routeList, locationList, driverList }) => {

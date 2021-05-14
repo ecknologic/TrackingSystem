@@ -83,7 +83,7 @@ router.get('/getTotalInvoicesCount', (req, res) => {
                 if (err) res.status(500).json(dbError(err));
                 else {
                     depInvoices.map(item => {
-                        if (item.status == "Pending"||item.status == "Inprogress") pendingCount = pendingCount + item.totalCount
+                        if (item.status == "Pending" || item.status == "Inprogress") pendingCount = pendingCount + item.totalCount
                         if (item.status == "Paid") paidCount = paidCount + item.totalCount
                     })
                     res.json({ paidCount, pendingCount, totalCount: paidCount + pendingCount })
@@ -92,6 +92,21 @@ router.get('/getTotalInvoicesCount', (req, res) => {
         }
     });
 });
+
+router.get('/getDepartmentInvoicesCount', (req, res) => {
+    let pendingCount = 0, paidCount = 0
+    invoiceQueries.getDepartmentInvoicesCount(req.query, (err, depInvoices) => {
+        if (err) res.status(500).json(dbError(err));
+        else {
+            depInvoices.map(item => {
+                if (item.status == "Pending" || item.status == "Inprogress") pendingCount = pendingCount + item.totalCount
+                if (item.status == "Paid") paidCount = paidCount + item.totalCount
+            })
+            res.json({ paidCount, pendingCount, totalCount: paidCount + pendingCount })
+        }
+    })
+});
+
 router.put('/deleteInvoiceProducts', (req, res) => {
     invoiceQueries.deleteInvoiceProducts(req.body.deleted, (err, results) => {
         if (err) res.status(500).json(dbError(err));
