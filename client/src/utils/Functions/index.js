@@ -215,19 +215,19 @@ export const filterAccounts = (accountsClone, filterInfo) => {
     let singleFiltered = [], allFiltered = []
 
     if (!isEmpty(business) && !isEmpty(status) && !isEmpty(account) && !isEmpty(creator)) {
-        allFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && status.includes(item.isApproved) && account.includes(item.customertype) && creator.includes(item.createdBy))
+        allFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && status.includes(item.isApproved) && account.includes(item.customertype) && (creator.includes(item.createdBy) || creator.includes(item.salesAgent)))
     }
     else if (!isEmpty(business) && !isEmpty(status) && !isEmpty(account)) {
         allFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && status.includes(item.isApproved) && account.includes(item.customertype))
     }
     else if (!isEmpty(business) && !isEmpty(status) && !isEmpty(creator)) {
-        allFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && status.includes(item.isApproved) && creator.includes(item.createdBy))
+        allFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && status.includes(item.isApproved) && (creator.includes(item.createdBy) || creator.includes(item.salesAgent)))
     }
     else if (!isEmpty(business) && !isEmpty(account) && !isEmpty(creator)) {
-        allFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && account.includes(item.customertype) && creator.includes(item.createdBy))
+        allFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && account.includes(item.customertype) && (creator.includes(item.createdBy) || creator.includes(item.salesAgent)))
     }
     else if (!isEmpty(account) && !isEmpty(status) && !isEmpty(creator)) {
-        allFiltered = accountsClone.filter((item) => account.includes(item.customertype) && status.includes(item.isApproved) && creator.includes(item.createdBy))
+        allFiltered = accountsClone.filter((item) => account.includes(item.customertype) && status.includes(item.isApproved) && (creator.includes(item.createdBy) || creator.includes(item.salesAgent)))
     }
     else if (!isEmpty(business) && !isEmpty(status)) {
         allFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && status.includes(item.isApproved))
@@ -239,13 +239,13 @@ export const filterAccounts = (accountsClone, filterInfo) => {
         allFiltered = accountsClone.filter((item) => status.includes(item.isApproved) && account.includes(item.customertype))
     }
     else if (!isEmpty(business) && !isEmpty(creator)) {
-        allFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && creator.includes(item.createdBy))
+        allFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && (creator.includes(item.createdBy) || creator.includes(item.salesAgent)))
     }
     else if (!isEmpty(status) && !isEmpty(creator)) {
-        allFiltered = accountsClone.filter((item) => status.includes(item.isApproved) && creator.includes(item.createdBy))
+        allFiltered = accountsClone.filter((item) => status.includes(item.isApproved) && (creator.includes(item.createdBy) || creator.includes(item.salesAgent)))
     }
     else if (!isEmpty(account) && !isEmpty(creator)) {
-        allFiltered = accountsClone.filter((item) => account.includes(item.customertype) && creator.includes(item.createdBy))
+        allFiltered = accountsClone.filter((item) => account.includes(item.customertype) && (creator.includes(item.createdBy) || creator.includes(item.salesAgent)))
     }
     else {
         singleFiltered = accountsClone.filter((item) => {
@@ -256,7 +256,7 @@ export const filterAccounts = (accountsClone, filterInfo) => {
                 return business.includes(item.natureOfBussiness)
             }
             else if (!isEmpty(creator)) {
-                return creator.includes(item.createdBy)
+                return creator.includes(item.createdBy) || creator.includes(item.salesAgent)
             }
             return status.includes(item.isApproved)
         })
