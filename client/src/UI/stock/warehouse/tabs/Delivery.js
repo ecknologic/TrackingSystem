@@ -7,13 +7,13 @@ import { http } from '../../../../modules/http';
 import Spinner from '../../../../components/Spinner';
 import Actions from '../../../../components/Actions';
 import useUser from '../../../../utils/hooks/useUser';
+import { TRACKFORM } from '../../../../utils/constants';
 import QuitModal from '../../../../components/CustomModal';
 import SearchInput from '../../../../components/SearchInput';
 import CustomModal from '../../../../components/CustomModal';
 import CustomButton from '../../../../components/CustomButton';
 import RoutesFilter from '../../../../components/RoutesFilter';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
-import { TODAYDATE, TRACKFORM } from '../../../../utils/constants';
 import CustomDateInput from '../../../../components/CustomDateInput';
 import CustomPagination from '../../../../components/CustomPagination';
 import ActivityLogContent from '../../../../components/ActivityLogContent';
@@ -21,7 +21,6 @@ import { EditIconGrey, ListViewIconGrey, PlusIcon, ScheduleIcon, ScheduleIconGre
 import { getRouteOptions, getDriverOptions, getDeliveryColumns, getDistributorOptions, getCustomerOptions, getDropdownOptions } from '../../../../assets/fixtures';
 import { validateMobileNumber, validateNames, validateNumber, validateDCValues, validateEmailId, validateIntFloat } from '../../../../utils/validations';
 import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone, getStatusColor, doubleKeyComplexSearch, getProductsForUI, disablePastDates } from '../../../../utils/Functions';
-import CustomRangeInput from '../../../../components/CustomRangeInput'
 const format = 'YYYY-MM-DD'
 
 const Delivery = ({ date, routeList, locationList, driverList }) => {
@@ -463,17 +462,6 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
                 </div>
             </div>
             <div className='app-table delivery-table'>
-                <div className='app-date-picker-wrapper'>
-                    <CustomRangeInput // Hidden in the DOM
-                        open={open}
-                        // value={selectedRange}
-                        style={{ left: 0 }}
-                        className='app-date-panel-picker'
-                        onChange={handleDateSelect}
-                        onOpenChange={datePickerStatus}
-                        disabledDate={disablePastDates}
-                    />
-                </div>
                 <Table
                     loading={{ spinning: loading, indicator: <Spinner /> }}
                     dataSource={dataSource.slice(sliceFrom, sliceTo)}
