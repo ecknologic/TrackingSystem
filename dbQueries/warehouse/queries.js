@@ -165,6 +165,11 @@ warehouseQueries.getDepartmentStaff = async (warehouseId, callback) => {
     let query = "SELECT d.driverId,d.driverName as userName,d.isActive,d.emailid,d.address,d.mobileNumber,dep.departmentName from driverdetails d INNER JOIN departmentmaster dep on d.departmentId=dep.departmentId where d.departmentId=? AND d.deleted='0' ORDER BY d.createdDateTime DESC";
     return executeGetParamsQuery(query, [warehouseId], callback)
 }
+warehouseQueries.checkDcSchedule = async (input, callback) => {
+    const { existingCustomerId = 318, date = '2021-05-13' } = input
+    let query = `select dcNo,customerOrderId from customerorderdetails WHERE existingCustomerId=? AND DATE(deliveryDate)=?`;
+    return executeGetParamsQuery(query, [existingCustomerId, date], callback)
+}
 //POST Request Methods
 warehouseQueries.saveWarehouseStockDetails = (input, callback) => {
     const { isDamaged, departmentId, product20L, product1L, product300ML, product2L, product500ML, damaged500MLBoxes, damaged300MLBoxes, damaged2LBoxes, damaged20LCans, damaged1LBoxes, deliveryDate, dcNo, damagedDesc } = input
@@ -243,5 +248,15 @@ warehouseQueries.deleteRoute = (RouteId, callback) => {
     let query = "update routes set deleted=? where RouteId=?";
     let requestBody = [1, RouteId]
     executePostOrUpdateQuery(query, requestBody, callback)
+}
+warehouseQueries.rescheduleDC = async (input, callback) => {
+    const { customerOrderId, date } = input
+    let query = `Update customerorderdetails SET deliveryDate=?  WHERE customerOrderId=?`;
+    return executeGetParamsQuery(query, [new Date(date), customerOrderId], callback)
+}
+warehouseQueries.closeDC = async (input, callback) => {
+    const { customerOrderId } = input
+    let query = `Update customerorderdetails SET isDelivered=?  WHERE customerOrderId=?`;
+    return executeGetParamsQuery(query, ['Notdelivered', customerOrderId], callback)
 }
 module.exports = warehouseQueries

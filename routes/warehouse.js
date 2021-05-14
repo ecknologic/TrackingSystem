@@ -514,6 +514,23 @@ router.get('/getDCDetailsByCOId/:COId', (req, res) => {
   })
 })
 
+router.put('/rescheduleDc', (req, res) => {
+  warehouseQueries.checkDcSchedule(req.body, (deliveryErr, deliveryDetails) => {
+    if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
+    else if (!deliveryDetails.length) {
+      warehouseQueries.rescheduleDC(req.body, (deliveryErr, rescheduled) => {
+        if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
+        else res.json('Rescheduled successfully')
+      })
+    } else {
+      warehouseQueries.closeDC(req.body, (deliveryErr, closedDetails) => {
+        if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
+        else res.json('success')
+      })
+    }
+  })
+})
+
 const saveDC = (req, res) => {
   let { customerName, phoneNumber, address, routeId, driverId, product20L, product1L, product500ML, product300ML, product2L, warehouseId, customerType, existingCustomerId, distributorId, creationType, isDelivered = 'InProgress', deliveryLocation, price20L, price2L, price1L, price500ML, price300ML, EmailId, deliveredDate } = req.body;
   let dcCreateQuery = "insert into customerorderdetails (customerName,phoneNumber,address,routeId,driverId,20LCans,1LBoxes,500MLBoxes,300MLBoxes,2LBoxes,warehouseId,customerType,existingCustomerId,distributorId,creationType,isDelivered,deliveryLocation,price20L,price2L,price1L,price500ML,price300ML,EmailId,deliveredDate) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
