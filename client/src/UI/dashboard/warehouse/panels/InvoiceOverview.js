@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http, appApi } from '../../../../modules/http';
 import PanelHeader from '../../../../components/PanelHeader';
 import { TODAYDATE as d } from '../../../../utils/constants';
@@ -7,7 +7,7 @@ import InvoiceOverviewCardSmall from '../../../../components/InvoiceOverviewCard
 const options = { startDate: d, endDate: d, fromStart: true }
 
 const InvoiceOverview = () => {
-    const [results, setResults] = useState(dummyWaterResults)
+    const [invoices, setInvoices] = useState(dummyWaterResults)
     const [opData, setOpData] = useState(() => options)
     const [graph, setGraph] = useState(defaultPie)
     const source = useMemo(() => appApi.CancelToken.source(), []);
@@ -15,19 +15,19 @@ const InvoiceOverview = () => {
 
 
     useEffect(() => {
-        getTestResults(opData)
+        getInvoices(opData)
 
         return () => {
             http.ABORT(source)
         }
     }, [])
 
-    const getTestResults = async () => {
-        const url = 'invoice/getTotalInvoicesCount'
+    const getInvoices = async ({ startDate, endDate, fromStart, departmentId = 'All' }) => {
+        const url = `invoice/getDepartmentInvoicesCount?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}&departmentId=${departmentId}`
 
         try {
             const data = await http.GET(appApi, url, config)
-            setResults(data)
+            setInvoices(data)
             const graph = getPieData(data)
             setGraph(graph)
         } catch (error) { }
@@ -35,7 +35,7 @@ const InvoiceOverview = () => {
 
     const handleInvoiceOp = useCallback((data) => {
         const newData = { ...opData, ...data }
-        getTestResults(newData)
+        getInvoices(newData)
         setOpData(newData)
     }, [opData])
 
@@ -44,7 +44,7 @@ const InvoiceOverview = () => {
             <div className='header'>
                 <PanelHeader title='Invoice Overview' onSelect={handleInvoiceOp} showShow />
             </div>
-            <InvoiceOverviewCardSmall data={results} graph={graph} />
+            <InvoiceOverviewCardSmall data={invoices} graph={graph} />
         </div>
     )
 }
