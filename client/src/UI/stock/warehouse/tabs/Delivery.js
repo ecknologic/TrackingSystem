@@ -14,16 +14,18 @@ import CustomButton from '../../../../components/CustomButton';
 import RoutesFilter from '../../../../components/RoutesFilter';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomPagination from '../../../../components/CustomPagination';
-import { EditIconGrey, ListViewIconGrey, PlusIcon } from '../../../../components/SVG_Icons';
+import { EditIconGrey, ListViewIconGrey, PlusIcon, ScheduleIconGrey } from '../../../../components/SVG_Icons';
 import { getRouteOptions, getDriverOptions, getDeliveryColumns, getDistributorOptions, getCustomerOptions, getDropdownOptions } from '../../../../assets/fixtures';
 import { validateMobileNumber, validateNames, validateNumber, validateDCValues, validateEmailId, validateIntFloat } from '../../../../utils/validations';
-import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone, getStatusColor, doubleKeyComplexSearch, getProductsForUI } from '../../../../utils/Functions';
+import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone, getStatusColor, doubleKeyComplexSearch, getProductsForUI, disablePastDates } from '../../../../utils/Functions';
 import ActivityLogContent from '../../../../components/ActivityLogContent';
+import CustomRangeInput from '../../../../components/CustomRangeInput';
 
 const Delivery = ({ date, routeList, locationList, driverList }) => {
     const defaultValue = { customerType: 'newCustomer', creationType: 'manual' }
     const { WAREHOUSEID: warehouseId } = useUser()
     const [logs, setLogs] = useState([])
+    const [open, setOpen] = useState(false)
     const [loading, setLoading] = useState(true)
     const [deliveriesClone, setDeliveriesClone] = useState([])
     const [filteredClone, setFilteredClone] = useState([])
@@ -218,6 +220,21 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
         searchON && setResetSearch(!resetSearch)
     }
 
+    const datePickerStatus = (status) => {
+        !status && setOpen(false)
+    }
+
+    const handleDateSelect = (selected) => {
+        // const [from, to] = selected
+        // const startDate = from.format(APIDATEFORMAT)
+        // const endDate = to.format(APIDATEFORMAT)
+        // setTime(`${from.format(DATEFORMAT)} to ${to.format(DATEFORMAT)}`)
+        setOpen(false)
+        // setSelectedRange(selected)
+        // onSelect({ startDate, endDate, fromStart: false, type: '' })
+        // setTimeout(() => setSelectedRange([]), 820)
+    }
+
     const handleMenuSelect = async (key, data) => {
         if (key === 'view') {
             const { dcNo, isDelivered } = data
@@ -239,6 +256,9 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
         else if (key === 'logs') {
             await getLogs(data.customerOrderId)
             setLogModal(true)
+        }
+        else if (key === 'reschedule') {
+            setOpen(true)
         }
     }
 
@@ -406,6 +426,17 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
                 </div>
             </div>
             <div className='app-table delivery-table'>
+                <div className='app-date-picker-wrapper'>
+                    <CustomRangeInput // Hidden in the DOM
+                        open={open}
+                        // value={selectedRange}
+                        style={{ left: 0 }}
+                        className='app-date-panel-picker'
+                        onChange={handleDateSelect}
+                        onOpenChange={datePickerStatus}
+                        disabledDate={disablePastDates}
+                    />
+                </div>
                 <Table
                     loading={{ spinning: loading, indicator: <Spinner /> }}
                     dataSource={dataSource.slice(sliceFrom, sliceTo)}
@@ -487,6 +518,7 @@ const renderOrderDetails = ({ product20L, product2L, product1L, product500ML, pr
 }
 const options = [
     <Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>,
-    <Menu.Item key="logs" icon={<ListViewIconGrey />}>Acvitity Logs</Menu.Item>
+    <Menu.Item key="logs" icon={<ListViewIconGrey />}>Acvitity Logs</Menu.Item>,
+    // <Menu.Item key="reschedule" icon={<ScheduleIconGrey />}>Reschedule</Menu.Item>
 ]
 export default Delivery

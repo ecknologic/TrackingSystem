@@ -710,6 +710,11 @@ export const disableFutureDates = (current) => {
     return current.valueOf() > Date.now();
 }
 
+export const disablePastDates = (current) => {
+    if (!current) return false
+    return current.valueOf() < Date.now();
+}
+
 export const getStatusColor = (status) => {
     switch (status) {
         case 'Confirmed':
