@@ -462,6 +462,17 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
                 </div>
             </div>
             <div className='app-table delivery-table'>
+                <div className='app-date-picker-wrapper'>
+                    <CustomRangeInput // Hidden in the DOM
+                        open={open}
+                        // value={selectedRange}
+                        style={{ left: 0 }}
+                        className='app-date-panel-picker'
+                        onChange={handleDateSelect}
+                        onOpenChange={datePickerStatus}
+                        disabledDate={disablePastDates}
+                    />
+                </div>
                 <Table
                     loading={{ spinning: loading, indicator: <Spinner /> }}
                     dataSource={dataSource.slice(sliceFrom, sliceTo)}
