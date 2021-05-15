@@ -29,6 +29,22 @@ $textColor:rgba(0,0,0,0.85);
     }
 }
 
+.dashboard-content-other {
+    background-color: #FAFAFB;
+    display: flex;
+    width: 100%;
+
+    .left-content {
+        width: 71%;
+    }
+
+    .right-content {
+        width: 29%;
+        padding-left: 1.5em;
+        padding-bottom: 2.5em;
+    }
+}
+
 .panel-header {
     width: 100%;
     display: flex;
@@ -246,7 +262,8 @@ $textColor:rgba(0,0,0,0.85);
     padding-bottom: 2.5em;
     width: 100%;
 
-    .invoice-overview-panel,.total-business-panel {
+    .invoice-overview-panel,
+    .total-business-panel {
         flex: 1;
         
         .header {
@@ -402,7 +419,7 @@ $textColor:rgba(0,0,0,0.85);
     
     .panel-body {
         padding-top: 1em;
-        height: 100%;
+        height: calc(100% - 55px);
 
         .no-content {
             height: calc(100vh - 13em);
@@ -415,5 +432,44 @@ $textColor:rgba(0,0,0,0.85);
 
     .panel-details {
         height: 100%;
+    }
+}
+
+.pending-approval-panel {
+    .panel-body {
+        height: calc(100% - 75px);
+    }
+}
+
+.visited-customers-panel {
+
+    .vcp__body {
+        width: 100%;
+        display: flex;
+    }
+
+    .vcp__body__left {
+        width: 60%;
+        
+    }
+
+    .vcp__body__right {
+        width: 40%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        row-gap: .6em;
+        column-gap: .6em;
+        padding-left: 1em;
+    }
+}
+
+.executive-overview-panel {
+
+    .eop__body {
+        display: grid;
+        grid-template-columns: repeat( auto-fit, minmax(11em, 1fr) );;
+        row-gap: 1.5em;
+        column-gap: 1em;
+        justify-content: space-between;
     }
 }

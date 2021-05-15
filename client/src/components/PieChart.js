@@ -10,7 +10,7 @@ const PieChart = ({ data }) => {
         data: data,
         angleField: 'value',
         colorField: 'type',
-        color: ['#34B53A', '#FFB200'],
+        color: ['#34B53A', '#FFB200', '#E01F1F'],
         radius: 1,
         legend: false,
         pieStyle: {

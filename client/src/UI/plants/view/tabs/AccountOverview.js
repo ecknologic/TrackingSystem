@@ -169,7 +169,7 @@ const ManagePlant = ({ setHeaderContent, onGoBack }) => {
     return (
         <Fragment>
             <ScrollUp dep={editMode} />
-            <div className='app-manage-content plant-manage-content app-no-padding'>
+            <div className='app-manage-content plant-manage-content p-0'>
                 {
                     loading
                         ? <NoContent content={<Spinner />} />

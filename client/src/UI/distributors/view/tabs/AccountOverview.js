@@ -146,7 +146,7 @@ const ManageDistributor = ({ setHeaderContent, onGoBack }) => {
     return (
         <Fragment>
             <ScrollUp dep={editMode} />
-            <div className='app-manage-content employee-manage-content app-no-padding'>
+            <div className='app-manage-content employee-manage-content p-0'>
                 {
                     loading
                         ? <NoContent content={<Spinner />} />

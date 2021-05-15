@@ -25,12 +25,13 @@ import ApproveAccount from './UI/accounts/approve';
 import Materials from './UI/materials/super-admin';
 import Motherplants from './UI/plants/Motherplants';
 import MotherplantStock from './UI/stock/motherplant';
-import { FilterProvider } from './modules/filterContext';
+import ManageDistributor from './UI/distributors/view';
 import WarehouseInvoices from './UI/invoices/warehouse';
 import AccountsDashboard from './UI/accounts/dashboard';
 import ReturnEmptyCans from './UI/empty-cans/warehouse';
+import { FilterProvider } from './modules/filterContext';
 import EditInvoice from './UI/invoices/super-admin/edit';
-import ManageDistributor from './UI/distributors/view';
+import MarketingDashboard from './UI/dashboard/marketing';
 import WarehouseDashboard from './UI/dashboard/warehouse';
 import ReceivedEmptyCans from './UI/empty-cans/motherplant';
 import SuperAdminDashboard from './UI/dashboard/super-admin';
@@ -63,7 +64,7 @@ const App = () => {
       if (!isUser) return <Redirect to='/' />
       else {
          if (ROLE === MARKETINGADMIN) return <Redirect to='/customer-accounts' />
-         else if (ROLE === MARKETINGMANAGER) return <Redirect to='/customer-accounts' />
+         else if (ROLE === MARKETINGMANAGER) return <MarketingDashboard />
          else if (ROLE === WAREHOUSEADMIN) return <WarehouseDashboard />
          else if (ROLE === MOTHERPLANTADMIN) return <MotherplantDashboard />
          else if (ROLE === SUPERADMIN) return <SuperAdminDashboard />

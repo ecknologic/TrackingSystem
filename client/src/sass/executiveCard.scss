@@ -1,0 +1,37 @@
+.executive-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: #FFF;
+    border-radius: .6em;
+    padding: 0 1em;
+    height: 15em;
+    width: 11em;
+    text-align: center;
+
+    span {
+        padding-top: .4em;
+    }
+
+    .ec__image {
+        text-align: center;
+
+        img {
+            border-radius: 50%;
+            width: 5em;
+            height: 5em;
+        }
+    }
+
+    .ec__designation {
+        color: #B4B3B3;
+        font-size: .85em;
+        font-family: 'PoppinsRegular400';
+    }
+
+    .ec__footer {
+        font-family: 'PoppinsSemiBold600';
+        font-size: .8em;
+    }
+
+}
