@@ -8,11 +8,13 @@ import Actions from '../../../../components/Actions';
 import Spinner from '../../../../components/Spinner';
 import { TODAYDATE } from '../../../../utils/constants';
 import DateValue from '../../../../components/DateValue';
+import InputLabel from '../../../../components/InputLabel';
+import InputValue from '../../../../components/InputValue';
 import SearchInput from '../../../../components/SearchInput';
 import { getInvoiceColumns } from '../../../../assets/fixtures';
 import CustomDateInput from '../../../../components/CustomDateInput';
 import CustomPagination from '../../../../components/CustomPagination';
-import { deepClone, disableFutureDates, doubleKeyComplexSearch, getStatusColor, showToast } from '../../../../utils/Functions';
+import { computeTotalAmount, deepClone, disableFutureDates, doubleKeyComplexSearch, getStatusColor, showToast } from '../../../../utils/Functions';
 import { ListViewIconGrey, ScheduleIcon, SendIconGrey, TickIconGrey } from '../../../../components/SVG_Icons';
 const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
@@ -32,6 +34,7 @@ const Dashboard = ({ reFetch }) => {
     const [filterON, setFilterON] = useState(false)
     const [open, setOpen] = useState(false)
 
+    const totalAmount = useMemo(() => computeTotalAmount(invoices), [invoices])
     const invoiceColumns = useMemo(() => getInvoiceColumns('dcNo'), [])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
@@ -180,11 +183,15 @@ const Dashboard = ({ reFetch }) => {
                     </div>
                 </div>
                 <div className='right'>
+                    <div className='field'>
+                        <InputLabel name='Total Amount' />
+                        <InputValue size='larger' value={totalAmount} />
+                    </div>
                     <SearchInput
                         placeholder='Search Invoice'
                         className='delivery-search'
                         reset={resetSearch}
-                        width='50%'
+                        width='40%'
                         onChange={handleSearch}
                     />
                 </div>
