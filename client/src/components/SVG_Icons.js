@@ -98,6 +98,15 @@ const EyeComponent = ({ color }) => (
         </g>
     </svg>
 )
+const EyeHideComponent = ({ color }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+        <g fill="none" fillRule="evenodd">
+            <path d="M-2-2h24v24H-2z" />
+            <path d="M-2-2h24v24H-2z" />
+            <path fill={color} d="M19.73.26c.36.36.36.94 0 1.3l-3.4 3.4a12.18 12.18 0 013.6 4.67c.1.24.1.5 0 .74-1.88 4.22-5.7 6.9-9.93 6.9-1.69 0-3.3-.42-4.77-1.2l-3.66 3.66a.92.92 0 01-1.3 0 .91.91 0 010-1.29l3.4-3.4a12.18 12.18 0 01-3.6-4.67.9.9 0 010-.74c1.88-4.22 5.7-6.9 9.93-6.9 1.69 0 3.3.42 4.77 1.2L18.43.28a.92.92 0 011.3 0zm-4.7 6l-1.9 1.9a3.64 3.64 0 01-4.98 4.98L6.6 14.7a8.2 8.2 0 003.41.74c3.36 0 6.45-2.09 8.09-5.45a10.23 10.23 0 00-3.05-3.74zM10 4.55c-3.36 0-6.45 2.09-8.09 5.45.75 1.54 1.8 2.82 3.05 3.74l1.9-1.9a3.64 3.64 0 014.98-4.98l1.57-1.57A8.2 8.2 0 0010 4.55zm1.76 4.99l-2.22 2.22a1.82 1.82 0 002.22-2.22zM10 8.18a1.82 1.82 0 00-1.76 2.28l2.22-2.22c-.14-.04-.3-.06-.46-.06z" />
+        </g>
+    </svg>
+)
 const MoreComponent = ({ color }) => (
     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="4">
         <path fill={color} fillRule="evenodd" d="M14 2a2 2 0 114 0 2 2 0 01-4 0zM7 2a2 2 0 114 0 2 2 0 01-4 0zM0 2a2 2 0 114 0 2 2 0 01-4 0z" />
@@ -300,6 +309,7 @@ const DocSvg = () => <DocComponent color={primaryColor} />
 const MoreSvgGrey = () => <MoreComponent color={greyColor} />
 const EyeSvgWhite = () => <EyeComponent color={whiteColor} />
 const EyeSvgGrey = () => <EyeComponent color={greyColor} />
+const EyeHideSvgGrey = () => <EyeHideComponent color={greyColor} />
 const FileSvgWhite = () => <FileComponent color={whiteColor} />
 const FileSvgGrey = () => <FileComponent color={greyColor} />
 const DashboardSvg = () => <DashboardComponent color={primaryColor} />
@@ -365,6 +375,7 @@ export const DocIcon = props => <Icon component={DocSvg} {...props} />
 export const MoreIconGrey = props => <Icon component={MoreSvgGrey} {...props} />
 export const EyeIconWhite = props => <Icon component={EyeSvgWhite} {...props} />
 export const EyeIconGrey = props => <Icon component={EyeSvgGrey} {...props} />
+export const EyeHideIconGrey = props => <Icon component={EyeHideSvgGrey} {...props} />
 export const FileIconWhite = props => <Icon component={FileSvgWhite} {...props} />
 export const FileIconGrey = props => <Icon component={FileSvgGrey} {...props} />
 export const ListViewIcon = props => <Icon component={ListViewSvg} {...props} />

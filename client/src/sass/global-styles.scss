@@ -455,6 +455,17 @@ textarea.ant-input {
     }
 }
 
+.ant-input-affix-wrapper {
+    border-radius: .6em;
+    padding: 0 11px;
+}
+
+.ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover,
+.ant-input-affix-wrapper-focused {
+    border-color: $primaryColor;
+    box-shadow: none;
+}
+
 .ant-input-number-focused {
     border-color: $primaryColor;
     box-shadow: none !important;

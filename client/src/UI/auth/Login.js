@@ -5,7 +5,7 @@ import { Form, Row, Col, Input, Card, Button, Checkbox, message } from 'antd'
 import useUser from '../../utils/hooks/useUser';
 import { createOrUpdateAPI } from '../../utils/apis';
 import image from '../../assets/images/login_img.png'
-import { BiboIcon } from '../../components/SVG_Icons';
+import { BiboIcon, EyeHideIconGrey, EyeIconGrey } from '../../components/SVG_Icons';
 import './login.css'
 
 const Login = () => {
@@ -86,7 +86,9 @@ const Login = () => {
                                     </Form.Item>
                                     <Form.Item>
                                         <h5>Password</h5>
-                                        <Input type="password" onPressEnter={() => loginBtn()} placeholder="Password" value={password} onChange={(e) => onInputChange(e.target.value, "password")} />
+                                        <Input.Password type="password" onPressEnter={() => loginBtn()} placeholder="Password" value={password} onChange={(e) => onInputChange(e.target.value, "password")}
+                                            iconRender={visible => (visible ? <EyeIconGrey /> : <EyeHideIconGrey />)}
+                                        />
                                         <p className="errors">{errors.password}</p>
                                     </Form.Item>
                                     <p className="forgotpasswordLink">
