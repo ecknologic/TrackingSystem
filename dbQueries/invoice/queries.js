@@ -39,9 +39,9 @@ invoiceQueries.getDepartmentInvoiceByDCNO = (dcNo, callback) => {
 
 invoiceQueries.getInvoiceById = async (input, callback) => {
     const { invoiceId, departmentInvoice } = input
-    let query = `select i.*,JSON_ARRAYAGG(json_object('key',p.id,'discount',p.discount,'productName',p.productName,'productPrice',ROUND(p.productPrice,1),'quantity',p.quantity,'tax',p.tax,'amount',ROUND(p.amount),'cgst',ROUND(p.cgst),'sgst',ROUND(p.sgst),'igst',ROUND(p.igst),'address',p.address,'deliveryAddress',p.deliveryAddress)) as products,c.organizationName, c.gstNo, c.panNo, c.mobileNumber,c.Address1 from Invoice i INNER JOIN invoiceProductsDetails p ON i.invoiceId=p.invoiceId INNER JOIN customerdetails c ON c.customerId=i.customerId where i.invoiceId=? AND p.deleted=0`;
+    let query = `select i.*,JSON_ARRAYAGG(json_object('key',p.id,'discount',p.discount,'productName',p.productName,'productPrice',CAST(p.productPrice AS DECIMAL(10,2)),'quantity',p.quantity,'tax',p.tax,'amount',ROUND(p.amount),'cgst',ROUND(p.cgst),'sgst',ROUND(p.sgst),'igst',ROUND(p.igst),'address',p.address,'deliveryAddress',p.deliveryAddress)) as products,c.organizationName, c.gstNo, c.panNo, c.mobileNumber,c.Address1 from Invoice i INNER JOIN invoiceProductsDetails p ON i.invoiceId=p.invoiceId INNER JOIN customerdetails c ON c.customerId=i.customerId where i.invoiceId=? AND p.deleted=0`;
     if (departmentInvoice) query = `SELECT i.*,JSON_ARRAYAGG(JSON_OBJECT('key',p.id,'discount',p.discount,'productName',p.productName,
-    'productPrice',ROUND(p.productPrice,1),'quantity',p.quantity,'tax',p.tax,'amount',
+    'productPrice',CAST(p.productPrice AS DECIMAL(10,2)),'quantity',p.quantity,'tax',p.tax,'amount',
     ROUND(p.amount),'cgst',ROUND(p.cgst),'sgst',ROUND(p.sgst),'igst',ROUND(p.igst),
     'address',p.address,'deliveryAddress',p.deliveryAddress)) AS products,
     CASE WHEN i.customertype='distributor' THEN d.agencyName ELSE c.organizationName  END AS organizationName,
