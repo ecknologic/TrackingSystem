@@ -60,6 +60,8 @@ app.use("/invoice", checkUserExists, require('./routes/Invoice'));
 
 app.use("/logs", checkUserExists, require('./routes/auditlogs'));
 
+app.use("/reports", checkUserExists, require('./routes/Reports'));
+
 app.use("/bibo", require('./routes/loginAuthentication.js'));
 
 app.use(function (req, res, next) {
