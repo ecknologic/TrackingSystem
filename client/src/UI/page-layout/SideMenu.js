@@ -101,8 +101,8 @@ const SideMenu = () => {
                 {
                     ROLE === MARKETINGADMIN || ROLE === MARKETINGMANAGER ?
                         <>
-                            <Item key='/customer-accounts' icon={selected === '/customer-accounts' ? <ProjectIcon /> : <ProjectIconLight />}>
-                                Manage Accounts
+                            <Item key='/customers' icon={selected === '/customers' ? <ProjectIcon /> : <ProjectIconLight />}>
+                                Customers
                             </Item>
                             <Item key='/add-customer' icon={selected === '/add-customer' ? <FriendReqIcon /> : <FriendReqIconLight />}>
                                 Add Customer
@@ -156,6 +156,11 @@ const SideMenu = () => {
                             <Item key='/invoices' icon={selected === '/invoices' ? <DocIcon /> : <DocIconLight />}>
                                 Invoices
                             </Item>
+                            <SubMenu icon={<ReportIconLight />} title='Reports'>
+                                <Item key='/new-customers-report' icon={selected === '/new-customers-report' ? <FriendIcon /> : <FriendIconLight />}>
+                                    New Customers
+                                </Item>
+                            </SubMenu>
                             <Item key='/settings' style={{ pointerEvents: 'none' }} icon={selected === '/settings' ? <SettingIcon /> : <SettingIconLight />}>
                                 Settings
                             </Item>

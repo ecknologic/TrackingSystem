@@ -34,6 +34,7 @@ import EditInvoice from './UI/invoices/super-admin/edit';
 import MarketingDashboard from './UI/dashboard/marketing';
 import WarehouseDashboard from './UI/dashboard/warehouse';
 import ReceivedEmptyCans from './UI/empty-cans/motherplant';
+import NewCustomersReport from './UI/reports/new-customers';
 import SuperAdminDashboard from './UI/dashboard/super-admin';
 import ManageInvoices from './UI/invoices/super-admin/manage';
 import MotherplantDashboard from './UI/dashboard/motherplant';
@@ -63,7 +64,7 @@ const App = () => {
    const dashboardAuth = () => {
       if (!isUser) return <Redirect to='/' />
       else {
-         if (ROLE === MARKETINGADMIN) return <Redirect to='/customer-accounts' />
+         if (ROLE === MARKETINGADMIN) return <Redirect to='/customers' />
          else if (ROLE === MARKETINGMANAGER) return <MarketingDashboard />
          else if (ROLE === WAREHOUSEADMIN) return <WarehouseDashboard />
          else if (ROLE === MOTHERPLANTADMIN) return <MotherplantDashboard />
@@ -133,6 +134,7 @@ const App = () => {
                      <Route path='/customers/approval/:accountId' render={byRole(<ApproveAccount />)} />
                      <Route path='/customers/manage/:accountId' render={byRole(<ViewAccount />)} />
                      <Route path='/customers/:tab?/:page?' render={byRole(<Customers />)} />
+                     <Route path='/new-customers-report' render={byRole(<NewCustomersReport />)} />
                      <Route path='/unauthorized' render={Unauthorized} />
                      <Route render={noMatchAuth} />
                   </Switch>

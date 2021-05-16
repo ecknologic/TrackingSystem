@@ -2,12 +2,11 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http, appApi } from '../../../../modules/http';
 import PanelHeader from '../../../../components/PanelHeader';
 import { TODAYDATE as d } from '../../../../utils/constants';
-import { dummyWaterResults } from '../../../../assets/fixtures';
 import ExecutiveCard from '../../../../components/ExecutiveCard';
 const options = { startDate: d, endDate: d, fromStart: true }
 
 const ExecutiveOverview = () => {
-    const [invoices, setInvoices] = useState(dummyWaterResults)
+    const [invoices, setInvoices] = useState([])
     const [opData, setOpData] = useState(() => options)
     const source = useMemo(() => appApi.CancelToken.source(), []);
     const config = { cancelToken: source.token }

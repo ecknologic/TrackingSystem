@@ -2,12 +2,12 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http, appApi } from '../../../../modules/http';
 import PanelHeader from '../../../../components/PanelHeader';
 import { TODAYDATE as d } from '../../../../utils/constants';
-import { defaultPie, dummyWaterResults } from '../../../../assets/fixtures';
+import { defaultPie } from '../../../../assets/fixtures';
 import InvoiceOverviewCardSmall from '../../../../components/InvoiceOverviewCardSmall';
 const options = { startDate: d, endDate: d, fromStart: true }
 
 const InvoiceOverview = () => {
-    const [invoices, setInvoices] = useState(dummyWaterResults)
+    const [invoices, setInvoices] = useState([])
     const [opData, setOpData] = useState(() => options)
     const [graph, setGraph] = useState(defaultPie)
     const source = useMemo(() => appApi.CancelToken.source(), []);

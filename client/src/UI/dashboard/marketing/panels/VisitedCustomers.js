@@ -3,12 +3,12 @@ import { http, appApi } from '../../../../modules/http';
 import StatusCard from '../../../../components/StatusCard';
 import PanelHeader from '../../../../components/PanelHeader';
 import { TODAYDATE as d } from '../../../../utils/constants';
-import { defaultPie, dummyWaterResults } from '../../../../assets/fixtures';
+import { defaultPie } from '../../../../assets/fixtures';
 import CustomerOnboardCard from '../../../../components/CustomerOnboardCard';
 const options = { startDate: d, endDate: d, fromStart: true }
 
 const VisitedCustomers = () => {
-    const [invoices, setInvoices] = useState(dummyWaterResults)
+    const [invoices, setInvoices] = useState([])
     const [opData, setOpData] = useState(() => options)
     const [graph, setGraph] = useState(defaultPie)
     const source = useMemo(() => appApi.CancelToken.source(), []);

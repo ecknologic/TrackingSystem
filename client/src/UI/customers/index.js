@@ -11,9 +11,9 @@ import AccountCard from '../../components/AccountCard';
 import DeleteModal from '../../components/CustomModal';
 import ConfirmMessage from '../../components/ConfirmMessage';
 import CustomPagination from '../../components/CustomPagination';
-import { ACCOUNTSADMIN, SUPERADMIN } from '../../utils/constants';
 import useCustomerFilter from '../../utils/hooks/useCustomerFilter';
-import { complexDateSort, complexSort, tripleKeyComplexSearch, filterAccounts, showToast, isEmpty } from '../../utils/Functions'
+import { ACCOUNTSADMIN, MANAGEACCOUNT, SUPERADMIN, VIEWDETAILS } from '../../utils/constants';
+import { complexDateSort, complexSort, tripleKeyComplexSearch, filterAccounts, showToast } from '../../utils/Functions'
 import '../../sass/customers.scss'
 
 const Customers = () => {
@@ -22,7 +22,7 @@ const Customers = () => {
     const { tab = '1', page = 1 } = useParams()
     const [accountsClone, setAccountsClone] = useState([])
     const [filteredClone, setFilteredClone] = useState([])
-    const [cardBtnTxt, setCardBtnTxt] = useState('Manage Account')
+    const [cardBtnTxt, setCardBtnTxt] = useState(MANAGEACCOUNT)
     const [accounts, setAccounts] = useState([])
     const [loading, setLoading] = useState(true)
     const [pageSize, setPageSize] = useState(12)
@@ -35,7 +35,7 @@ const Customers = () => {
     const [modalDelete, setModalDelete] = useState(false)
     const [currentId, setCurrentId] = useState('')
 
-    const { account, business, hasFilters } = useCustomerFilter()
+    const { account, creator, business, hasFilters } = useCustomerFilter()
     const pageSizeOptions = useMemo(() => generatePageSizeOptions(), [window.innerWidth])
     const isAdmin = useMemo(() => ROLE === SUPERADMIN || ROLE === ACCOUNTSADMIN, [])
     const source = useMemo(() => axios.CancelToken.source(), [activeTab]);
@@ -45,6 +45,11 @@ const Customers = () => {
         setLoading(true)
         getAccounts()
 
+        if (activeTab === '3') {
+            if (isAdmin) setCardBtnTxt(VIEWDETAILS)
+            else setCardBtnTxt(MANAGEACCOUNT)
+        }
+
         return () => {
             http.ABORT(source)
         }
@@ -52,11 +57,11 @@ const Customers = () => {
 
     useEffect(() => {
         if (!loading) {
-            const filters = { business, account }
+            const filters = { creator, business, account }
             if (!hasFilters) handleRemoveFilters()
             else handleApplyFilters(filters, accountsClone)
         }
-    }, [account, business])
+    }, [account, creator, business])
 
     const getAccounts = async () => {
         const url = `customer/${getUrl(activeTab)}`
@@ -141,8 +146,8 @@ const Customers = () => {
         setPageNumber(1)
         setActiveTab(key)
         if (key === '3') {
-            setCardBtnTxt('View Details')
-        } else setCardBtnTxt('Manage Account')
+            setCardBtnTxt(VIEWDETAILS)
+        } else setCardBtnTxt(MANAGEACCOUNT)
     }
 
     const handleApplyFilters = (filterInfo, accounts) => {
@@ -164,7 +169,7 @@ const Customers = () => {
     }
 
     const handleManageAccount = (id) => {
-        if (activeTab === '3') {
+        if (cardBtnTxt === VIEWDETAILS) {
             return history.push(`/customers/approval/${id}`, { tab: activeTab, page: pageNumber })
         }
         return history.push(`/customers/manage/${id}`, { tab: activeTab, page: pageNumber })

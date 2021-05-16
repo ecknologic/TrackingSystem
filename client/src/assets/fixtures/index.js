@@ -1045,78 +1045,45 @@ export const defaultPie = [
         value: 0,
     }
 ]
-
-export const dummyWaterResults = [
+export const newCustomersReportColumns = [
     {
-        "levels": [
-            {
-                "tds": 35,
-                "phLevel": 6.5,
-                "qcLevel": "1",
-                "ozoneLevel": 5.5,
-                "testResult": "Approved",
-                "managerName": "Naveen",
-                "testingDate": "2021-01-30 06:36:59.000000"
-            },
-            {
-                "tds": 45,
-                "phLevel": 5.5,
-                "qcLevel": "2",
-                "ozoneLevel": 6.5,
-                "testResult": "Approved",
-                "managerName": "Chandra",
-                "testingDate": "2021-01-30 06:38:06.000000"
-            }
-        ],
-        "batchId": "A-3001-21",
-        "departmentName": "Patancheruvu Plant"
+        title: 'S. No',
+        dataIndex: 'sNo',
+        key: 'sNo',
     },
     {
-        "levels": [
-            {
-                "tds": 1,
-                "phLevel": 1,
-                "qcLevel": "1",
-                "ozoneLevel": 1,
-                "testResult": "Approved",
-                "managerName": "MANAGER ",
-                "testingDate": "2021-02-03 16:54:29.000000"
-            },
-            {
-                "tds": 3,
-                "phLevel": 3,
-                "qcLevel": "2",
-                "ozoneLevel": 3,
-                "testResult": "Approved",
-                "managerName": "DESCRIPTION",
-                "testingDate": "2021-02-03 16:56:32.000000"
-            }
-        ],
-        "batchId": "A-0302-22",
-        "departmentName": "Gajuwaka Plant"
+        title: 'Customer ID',
+        dataIndex: 'customerNo',
+        key: 'customerNo',
     },
     {
-        "levels": [
-            {
-                "tds": 1,
-                "phLevel": 1,
-                "qcLevel": "1",
-                "ozoneLevel": 1,
-                "testResult": "Approved",
-                "managerName": "MANAGER ",
-                "testingDate": "2021-02-03 16:54:29.000000"
-            },
-            {
-                "tds": 3,
-                "phLevel": 3,
-                "qcLevel": "2",
-                "ozoneLevel": 3,
-                "testResult": "Approved",
-                "managerName": "DESCRIPTION",
-                "testingDate": "2021-02-03 16:56:32.000000"
-            }
-        ],
-        "batchId": "A-0302-23",
-        "departmentName": "Kukatpally Plant"
+        title: 'Customer Name',
+        dataIndex: 'customerName',
+        key: 'customerName',
+    },
+    {
+        title: 'Executive Name',
+        dataIndex: 'salesAgent',
+        key: 'salesAgent',
+    },
+    {
+        title: 'No. of Bottles Placed',
+        dataIndex: 'quantity',
+        key: 'quantity',
+    },
+    {
+        title: 'Price',
+        dataIndex: 'productPrice',
+        key: 'productPrice',
+    },
+    {
+        title: 'Deposit',
+        dataIndex: 'depositAmount',
+        key: 'depositAmount',
+    },
+    {
+        title: 'Dispensers Placed',
+        dataIndex: 'dispenserCount',
+        key: 'dispenserCount',
     }
 ]

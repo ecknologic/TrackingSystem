@@ -8,6 +8,8 @@ export const WAREHOUSEADMIN = 'WarehouseAdmin'
 export const SUPERADMIN = 'SuperAdmin'
 export const ACCOUNTSADMIN = 'Accounts'
 export const MOTHERPLANTADMIN = 'MotherPlantAdmin'
+export const MANAGEACCOUNT = 'Manage Account'
+export const VIEWDETAILS = 'View Details'
 export const TODAYDATE = dayjs().format('YYYY-MM-DD')
 
 export const getUserId = () => {
@@ -37,14 +39,14 @@ export const getUsername = () => {
 export const getRoutesByRole = (role) => {
     switch (role) {
         case MARKETINGADMIN:
-            return ['/add-customer', '/customer-accounts', '/invoices']
+            return ['/add-customer', '/customers', '/invoices']
 
         case MARKETINGMANAGER:
-            return ['/add-customer', '/customer-accounts', '/invoices']
+            return ['/add-customer', '/customers', '/invoices']
 
         case SUPERADMIN:
             return ['/customers', '/materials', '/motherplants', '/warehouses', '/staff', '/drivers',
-                '/products', '/routes', '/distributors', '/invoices', '/roles']
+                '/products', '/routes', '/distributors', '/invoices', '/roles', '/new-customers-report']
 
         case ACCOUNTSADMIN:
             return ['/customers', '/invoices']
