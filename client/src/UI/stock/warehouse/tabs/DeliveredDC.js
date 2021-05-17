@@ -19,7 +19,7 @@ import CustomDateInput from '../../../../components/CustomDateInput';
 import CustomPagination from '../../../../components/CustomPagination';
 import CustomRangeInput from '../../../../components/CustomRangeInput';
 import { EyeIconGrey, ListViewIconGrey } from '../../../../components/SVG_Icons';
-import { getStatusColor, doubleKeyComplexSearch, showToast } from '../../../../utils/Functions';
+import { getStatusColor, doubleKeyComplexSearch, showToast, disableFutureDates } from '../../../../utils/Functions';
 import ActivityLogContent from '../../../../components/ActivityLogContent';
 const APIDATEFORMAT = 'YYYY-MM-DD'
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
@@ -40,8 +40,8 @@ const DeliveredDC = () => {
     const [pageNumber, setPageNumber] = useState(1)
     const [DCModal, setDCModal] = useState(false)
     const [logModal, setLogModal] = useState(false)
-    const [startDate, setStartDate] = useState(TODAYDATE)
-    const [endDate, setEndDate] = useState(TODAYDATE)
+    const [startDate, setStartDate] = useState()
+    const [endDate, setEndDate] = useState()
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
     const [selectedRange, setSelectedRange] = useState([])
     const [resetSearch, setResetSearch] = useState(false)
@@ -84,8 +84,12 @@ const DeliveredDC = () => {
         } catch (error) { }
     }
 
-    const getDeliveries = async () => {
-        const url = `warehouse/getAllDcDetails?fromDate=${startDate}&toDate=${endDate}&departmentId=${WAREHOUSEID}&customerIds=${customerIds}`
+    const getDeliveries = async (startDate, endDate) => {
+        let url = `warehouse/getAllDcDetails?departmentId=${WAREHOUSEID}&customerIds=${customerIds}`
+
+        if (startDate && endDate) {
+            url = `warehouse/getAllDcDetails?fromDate=${startDate}&toDate=${endDate}&departmentId=${WAREHOUSEID}&customerIds=${customerIds}`
+        }
 
         try {
             const data = await http.GET(axios, url, config)
@@ -152,7 +156,7 @@ const DeliveredDC = () => {
         setClearBtnDisabled(false)
         setFilterBtnDisabled(true)
         setLoading(true)
-        getDeliveries()
+        getDeliveries(startDate, endDate)
     }
 
     const handleFilterClear = async () => {
@@ -161,8 +165,6 @@ const DeliveredDC = () => {
         setCustomerIds([])
         setCustomerList([])
         setSelectedDate(TODAYDATE)
-        setStartDate(TODAYDATE)
-        setEndDate(TODAYDATE)
         setLoading(true)
         await getDeliveries()
         setCustomerList(customerList)
@@ -257,6 +259,7 @@ const DeliveredDC = () => {
                             className='app-date-panel-picker'
                             onChange={handleRangeSelect}
                             onOpenChange={datePickerStatus}
+                            disabledDate={disableFutureDates}
                         />
                         <CustomDateInput // Hidden in the DOM
                             open={dateOpen}
@@ -265,6 +268,7 @@ const DeliveredDC = () => {
                             className='app-date-panel-picker'
                             onChange={handleDateSelect}
                             onOpenChange={datePickerStatus}
+                            disabledDate={disableFutureDates}
                         />
                     </div>
                 </div>
