@@ -523,11 +523,14 @@ router.put('/rescheduleDc', (req, res) => {
         else res.json('Rescheduled successfully')
       })
     } else {
-      warehouseQueries.closeDC(req.body, (deliveryErr, closedDetails) => {
-        if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
-        else res.json('success')
-      })
+      res.status(406).send('DC Already exists')
     }
+  })
+})
+router.put('/closeDC', (req, res) => {
+  warehouseQueries.closeDC(req.body, (deliveryErr, closedDetails) => {
+    if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
+    else res.json('success')
   })
 })
 

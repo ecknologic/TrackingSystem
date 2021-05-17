@@ -363,9 +363,10 @@ router.get("/getCustomerDetails/:creatorId", (req, res) => {
   })
 });
 
-router.get("/getMarketingCustomerDetails", (req, res) => { // maraketing manager and all maraketing admins
-  let customerDetailsQuery = "SELECT c.customerNo,c.salesAgent,c.organizationName,c.createdBy,c.isActive,c.customertype,c.isApproved,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id LEFT JOIN usermaster u ON c.createdBy=u.userId WHERE u.RoleId=5 OR u.RoleId=7 AND d.deleted='0'  GROUP BY c.customerNo,c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.isApproved,c.customerId,c.registeredDate,c.createdBy ORDER BY c.registeredDate DESC"
-  db.query(customerDetailsQuery, (err, results) => {
+router.get("/getMarketingCustomerDetailsByType/:customerType", (req, res) => { // maraketing manager and all maraketing admins
+  const { customerType } = req.params
+  let customerDetailsQuery = "SELECT c.customerNo,c.salesAgent,c.organizationName,c.createdBy,c.isActive,c.customertype,c.isApproved,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id LEFT JOIN usermaster u ON c.createdBy=u.userId WHERE (u.RoleId=5 OR u.RoleId=7 OR c.createdBy=?) AND d.deleted='0' and c.customertype=?  GROUP BY c.customerNo,c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.isApproved,c.customerId,c.registeredDate,c.createdBy ORDER BY c.registeredDate DESC"
+  db.query(customerDetailsQuery, [userId, customerType], (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
       res.json({ status: 200, statusMessage: "Success", data: results })
@@ -407,8 +408,9 @@ router.get("/getOrders", (req, res) => {
   })
 });
 
-router.get("/getCustomerDetailsByType/:customertype", (req, res) => {
-  customerQueries.getCustomersByCustomerType(req.params.customertype, (err, customersData) => {
+router.get("/getCustomerDetailsByType", (req, res) => {
+  const { customerType, userId } = req.query
+  customerQueries.getCustomersByCustomerType({ customerType, userId }, (err, customersData) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
       res.json(customersData)
@@ -416,22 +418,40 @@ router.get("/getCustomerDetailsByType/:customertype", (req, res) => {
   })
 });
 router.get("/getInActiveCustomers", (req, res) => {
-  customerQueries.getInActiveCustomers((err, customersData) => {
+  const { userId } = req.query
+  customerQueries.getInActiveCustomers(userId, (err, customersData) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
       res.json(customersData)
     }
   })
 });
-router.get("/getCustomerDetailsByStatus/:approvedStatus", (req, res) => {
-  customerQueries.getCustomerDetailsByStatus(req.params.approvedStatus, (err, customersData) => {
+router.get("/getMarketingInActiveCustomers", (req, res) => {
+  customerQueries.getMarketingInActiveCustomers(userId, (err, customersData) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
       res.json(customersData)
     }
   })
 });
-
+router.get("/getCustomerDetailsByStatus", (req, res) => {
+  const { status, userId } = req.query
+  customerQueries.getCustomerDetailsByStatus({ status, userId }, (err, customersData) => {
+    if (err) res.json({ status: 500, message: err.sqlMessage });
+    else {
+      res.json(customersData)
+    }
+  })
+});
+router.get("/getMarketingCustomerDetailsByStatus", (req, res) => {
+  const { status } = req.query
+  customerQueries.getMarketingCustomerDetailsByStatus({ status, userId }, (err, customersData) => {
+    if (err) res.json({ status: 500, message: err.sqlMessage });
+    else {
+      res.json(customersData)
+    }
+  })
+});
 router.get("/getCustomerDetailsById/:customerId", (req, res) => {
   customerQueries.getCustomerDetails(req.params.customerId, (err, results) => {
     if (err) res.status(500).json(err);

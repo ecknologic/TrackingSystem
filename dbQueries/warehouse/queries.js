@@ -35,7 +35,12 @@ warehouseQueries.getAllDcDetails = (input, callback) => {
     if (customerIds && fromDate && toDate && departmentId) {
         query = `select c.returnEmptyCans,c.customerOrderId,c.deliveredDate,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS product20L,c.1LBoxes AS product1L,c.500MLBoxes AS product500ML,c.300MLBoxes AS product300ML,c.2LBoxes AS product2L,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c LEFT JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE ${customerId} IN (?) AND (DATE(deliveryDate) BETWEEN ? AND ?) AND warehouseId=? AND isDelivered='Completed' ORDER BY c.dcNo DESC`;
         options = [customerIds, fromDate, toDate, departmentId]
-    } else if (customerIds && fromDate && toDate && !departmentId) {
+    }
+    else if (fromDate && toDate && departmentId) {
+        query = `select c.returnEmptyCans,c.customerOrderId,c.deliveredDate,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS product20L,c.1LBoxes AS product1L,c.500MLBoxes AS product500ML,c.300MLBoxes AS product300ML,c.2LBoxes AS product2L,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c LEFT JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE (DATE(deliveryDate) BETWEEN ? AND ?) AND warehouseId=? AND isDelivered='Completed' ORDER BY c.dcNo DESC`;
+        options = [fromDate, toDate, departmentId]
+    }
+    else if (customerIds && fromDate && toDate && !departmentId) {
         query = `select c.returnEmptyCans,c.customerOrderId,c.deliveredDate,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS product20L,c.1LBoxes AS product1L,c.500MLBoxes AS product500ML,c.300MLBoxes AS product300ML,c.2LBoxes AS product2L,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c LEFT JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE ${customerId} IN (?) AND (DATE(deliveryDate) BETWEEN ? AND ?) AND isDelivered='Completed' ORDER BY c.dcNo DESC`;
         options = [customerIds, fromDate, toDate]
     }
@@ -251,12 +256,12 @@ warehouseQueries.deleteRoute = (RouteId, callback) => {
 }
 warehouseQueries.rescheduleDC = async (input, callback) => {
     const { customerOrderId, date } = input
-    let query = `Update customerorderdetails SET deliveryDate=?  WHERE customerOrderId=?`;
-    return executeGetParamsQuery(query, [new Date(date), customerOrderId], callback)
+    let query = `Update customerorderdetails SET deliveryDate=?,rescheduled=?  WHERE customerOrderId=?`;
+    return executeGetParamsQuery(query, [new Date(date), 1, customerOrderId], callback)
 }
 warehouseQueries.closeDC = async (input, callback) => {
     const { customerOrderId } = input
     let query = `Update customerorderdetails SET isDelivered=?  WHERE customerOrderId=?`;
-    return executeGetParamsQuery(query, ['Notdelivered', customerOrderId], callback)
+    return executeGetParamsQuery(query, ['Cancelled', customerOrderId], callback)
 }
 module.exports = warehouseQueries
