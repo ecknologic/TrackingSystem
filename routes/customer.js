@@ -369,7 +369,7 @@ router.get("/getMarketingCustomerDetailsByType/:customerType", (req, res) => { /
   db.query(customerDetailsQuery, [userId, customerType], (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
-      res.json({ status: 200, statusMessage: "Success", data: results })
+      res.json(results)
     }
   })
 });

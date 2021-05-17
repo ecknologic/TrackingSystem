@@ -12,12 +12,12 @@ import DeleteModal from '../../components/CustomModal';
 import ConfirmMessage from '../../components/ConfirmMessage';
 import CustomPagination from '../../components/CustomPagination';
 import useCustomerFilter from '../../utils/hooks/useCustomerFilter';
-import { ACCOUNTSADMIN, MANAGEACCOUNT, SUPERADMIN, VIEWDETAILS } from '../../utils/constants';
+import { ACCOUNTSADMIN, MANAGEACCOUNT, MARKETINGADMIN, MARKETINGMANAGER, SUPERADMIN, VIEWDETAILS } from '../../utils/constants';
 import { complexDateSort, complexSort, tripleKeyComplexSearch, filterAccounts, showToast } from '../../utils/Functions'
 import '../../sass/customers.scss'
 
 const Customers = () => {
-    const { ROLE } = useUser()
+    const { ROLE, USERID } = useUser()
     const history = useHistory()
     const { tab = '1', page = 1 } = useParams()
     const [accountsClone, setAccountsClone] = useState([])
@@ -37,7 +37,9 @@ const Customers = () => {
 
     const { account, creator, business, hasFilters } = useCustomerFilter()
     const pageSizeOptions = useMemo(() => generatePageSizeOptions(), [window.innerWidth])
-    const isAdmin = useMemo(() => ROLE === SUPERADMIN || ROLE === ACCOUNTSADMIN, [])
+    const isAdmin = useMemo(() => ROLE === SUPERADMIN || ROLE === ACCOUNTSADMIN, [ROLE])
+    const isSalesAdmin = useMemo(() => ROLE === MARKETINGADMIN, [ROLE])
+    const isMarketingManager = useMemo(() => ROLE === MARKETINGMANAGER, [ROLE])
     const source = useMemo(() => axios.CancelToken.source(), [activeTab]);
     const config = { cancelToken: source.token }
 
@@ -82,10 +84,26 @@ const Customers = () => {
     }
 
     const getUrl = (tab) => {
-        if (tab === '1') return `getCustomerDetailsByType/Corporate`
-        else if (tab === '2') return `getCustomerDetailsByType/Individual`
-        else if (tab === '3') return `getCustomerDetailsByStatus/0`
-        else if (tab === '4') return `getInActiveCustomers`
+        if (tab === '1') {
+            if (isAdmin) return 'getCustomerDetailsByType?customerType=Corporate'
+            else if (isSalesAdmin) return `getCustomerDetailsByType?customerType=Corporate&userId=${USERID}`
+            else if (isMarketingManager) return 'getMarketingCustomerDetailsByType/Corporate'
+        }
+        else if (tab === '2') {
+            if (isAdmin) return 'getCustomerDetailsByType?customerType=Individual'
+            else if (isSalesAdmin) return `getCustomerDetailsByType?customerType=Individual&userId=${USERID}`
+            else if (isMarketingManager) return 'getMarketingCustomerDetailsByType/Individual'
+        }
+        else if (tab === '3') {
+            if (isAdmin) return 'getCustomerDetailsByStatus?status=0'
+            else if (isSalesAdmin) return `getCustomerDetailsByStatus?status=0&userId=${USERID}`
+            else if (isMarketingManager) return 'getMarketingCustomerDetailsByStatus?status=0'
+        }
+        else if (tab === '4') {
+            if (isAdmin) return 'getInActiveCustomers'
+            else if (isSalesAdmin) return `getInActiveCustomers?userId=${USERID}`
+            else if (isMarketingManager) return 'getMarketingInActiveCustomers'
+        }
     }
 
     const handleSearch = (value) => {
