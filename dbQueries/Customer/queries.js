@@ -224,9 +224,13 @@ customerQueries.getCustomerDetailsByStatus = (input, callback) => {
     executeGetParamsQuery(query, options, callback)
 }
 customerQueries.getMarketingCustomerDetailsByStatus = (input, callback) => {
-    const { status, userId } = input
+    const { status, userId, startDate, endDate, fromStart } = input
     let query = "SELECT c.organizationName,c.customerNo,c.salesAgent,c.isSuperAdminApproved,c.depositAmount,c.customertype,c.isApproved,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id LEFT JOIN usermaster u ON c.createdBy=u.userId WHERE (u.RoleId=5 OR u.RoleId=7 OR c.createdBy=?) AND c.isApproved=? and d.deleted=0 AND c.approvedDate IS NULL GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.customerId,c.registeredDate ORDER BY c.registeredDate DESC"
     let options = [userId, status]
+    if (fromStart !== 'true') {
+        query = "SELECT c.organizationName,c.customerNo,c.salesAgent,c.isSuperAdminApproved,c.depositAmount,c.customertype,c.isApproved,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id LEFT JOIN usermaster u ON c.createdBy=u.userId WHERE (u.RoleId=5 OR u.RoleId=7 OR c.createdBy=?) AND c.isApproved=? and d.deleted=0 AND DATE(registeredDate)>=? AND DATE(registeredDate)<=? AND c.approvedDate IS NULL GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.customerId,c.registeredDate ORDER BY c.registeredDate DESC"
+        options = [userId, status, startDate, endDate]
+    }
     executeGetParamsQuery(query, options, callback)
 }
 customerQueries.getsqlNo = (tableName, callback) => {
@@ -336,6 +340,15 @@ customerQueries.getDeliveryDetailsById = ({ deliveryDetailsId, isSuperAdmin }) =
             }
         });
     });
+}
+
+customerQueries.getCustomerEnquiryById = (enquiryId, callback) => {
+    let query = `Select * from customerenquirydetails WHERE enquiryId=${enquiryId}`
+    return executeGetQuery(query, callback)
+}
+customerQueries.getCustomerEnquiries = (createdBy, callback) => {
+    let query = `Select enquiryId,customerName,address,mobileNumber,revisitDate from customerenquirydetails WHERE createdBy=${createdBy} ORDER BY registeredDate DESC`
+    return executeGetQuery(query, callback)
 }
 
 //POST Request Methods
@@ -517,6 +530,20 @@ customerQueries.createBusinessRequest = (input, callback) => {
     const { organizationName, email, mobileNumber, requestedDate = new Date(), pincode, address, address2, natureOfBussiness } = input
     let query = "insert  into businessaccountrequests (organizationName,email,mobileNumber,requestedDate,pincode,address,address2,natureOfBussiness) values(?,?,?,?,?,?,?,?)";
     let requestBody = [organizationName, email, mobileNumber, requestedDate, pincode, address, address2, natureOfBussiness]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+
+customerQueries.createCustomerEnquiry = (input, callback) => {
+    const { customerName, EmailId, mobileNumber, registeredDate = new Date(), address, createdBy, accountStatus, salesAgent, revisitDate } = input
+    let query = "insert  into customerenquirydetails (customerName,EmailId,mobileNumber,registeredDate,address,createdBy,accountStatus,salesAgent,revisitDate) values(?,?,?,?,?,?,?,?,?)";
+    let requestBody = [customerName, EmailId, mobileNumber, registeredDate, address, createdBy, accountStatus, salesAgent, revisitDate]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+
+customerQueries.updateCustomerEnquiry = (input, callback) => {
+    const { customerName, EmailId, mobileNumber, address, createdBy, accountStatus, salesAgent, revisitDate, enquiryId } = input
+    let query = "Update customerenquirydetails SET customerName=?,EmailId=?,mobileNumber=?,address=?,createdBy=?,accountStatus=?,salesAgent=?,revisitDate=? WHERE enquiryId=?";
+    let requestBody = [customerName, EmailId, mobileNumber, address, createdBy, accountStatus, salesAgent, revisitDate, enquiryId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 

@@ -17,4 +17,11 @@ router.get('/getNewCustomerBT', (req, res) => {
   })
 })
 
+router.get('/getEnquiriesCount', (req, res) => {
+  reportsQueries.getEnquiriesCountBySalesAgent((err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.json(results)
+  })
+})
+
 module.exports = router;

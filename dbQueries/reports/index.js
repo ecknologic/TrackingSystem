@@ -10,4 +10,8 @@ reportsQueries.getNewCustomerBTDetails = async (callback) => {
     return executeGetQuery(query, callback)
 }
 
+reportsQueries.getEnquiriesCountBySalesAgent = async (callback) => {
+    let query = `SELECT COUNT(*) AS totalCustomersCount,u.userName FROM customerenquirydetails c INNER JOIN usermaster u ON c.salesAgent=u.userId GROUP BY c.salesAgent`;
+    return executeGetQuery(query, callback)
+}
 module.exports = reportsQueries

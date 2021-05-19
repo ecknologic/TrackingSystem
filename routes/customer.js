@@ -445,7 +445,7 @@ router.get("/getCustomerDetailsByStatus", (req, res) => {
 });
 router.get("/getMarketingCustomerDetailsByStatus", (req, res) => {
   const { status } = req.query
-  customerQueries.getMarketingCustomerDetailsByStatus({ status, userId }, (err, customersData) => {
+  customerQueries.getMarketingCustomerDetailsByStatus({ ...req.query, userId }, (err, customersData) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
       res.json(customersData)
@@ -906,6 +906,35 @@ router.post('/createMembership', async (req, res) => {
         }
       });
     })
+});
+
+
+router.get('/getCustomerEnquiries/:createdBy', async (req, res) => {
+  customerQueries.getCustomerEnquiries(req.params.createdBy, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.json(results)
+  })
+});
+
+router.get('/getCustomerEnquiry/:enquiryId', async (req, res) => {
+  customerQueries.getCustomerEnquiryById(req.params.enquiryId, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.json(results)
+  })
+});
+
+router.post('/createCustomerEnquiry', async (req, res) => {
+  customerQueries.createCustomerEnquiry(req.body, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.json({ status: 200, message: "Created successfully" })
+  })
+});
+
+router.put('/updateCustomerEnquiry', async (req, res) => {
+  customerQueries.updateCustomerEnquiry(req.body, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.json({ status: 200, message: "Updated successfully" })
+  })
 });
 
 const updateWHDelivery = (req) => {
