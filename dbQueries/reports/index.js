@@ -11,7 +11,21 @@ reportsQueries.getNewCustomerBTDetails = async (callback) => {
 }
 
 reportsQueries.getEnquiriesCountBySalesAgent = async (callback) => {
-    let query = `SELECT COUNT(*) AS totalCustomersCount,u.userName FROM customerenquirydetails c INNER JOIN usermaster u ON c.salesAgent=u.userId GROUP BY c.salesAgent`;
+    let query = `SELECT COUNT(c.salesAgent) AS totalCustomersCount,u.userName FROM 
+    customerenquirydetails c RIGHT JOIN usermaster u ON c.salesAgent=u.userId WHERE u.RoleId=5 GROUP BY c.salesAgent,u.userName`;
+    return executeGetQuery(query, callback)
+}
+
+reportsQueries.getVisitedCustomersReport = async (callback) => {
+    let query = `SELECT COUNT(*) AS visitedCustomers,  SUM(revisitDate IS NOT NULL AND EmailId NOT IN (SELECT EmailId FROM customerdetails )) AS revisitCustomers
+    FROM customerenquirydetails`;
+    return executeGetQuery(query, callback)
+}
+
+reportsQueries.getVisitedCustomersReportByStatus = async (callback) => {
+    let query = ` SELECT COUNT(*) AS customersCount,cd.isApproved FROM customerenquirydetails c
+    LEFT JOIN customerdetails cd ON c.EmailId=cd.EmailId
+    WHERE c.EmailId  IN (SELECT EmailId FROM customerdetails ) GROUP BY cd.isApproved`;
     return executeGetQuery(query, callback)
 }
 module.exports = reportsQueries
