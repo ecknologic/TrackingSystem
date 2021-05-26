@@ -18,17 +18,17 @@ router.get('/getNewCustomerBT', (req, res) => {
 })
 
 router.get('/getEnquiriesCount', (req, res) => {
-  reportsQueries.getEnquiriesCountBySalesAgent((err, results) => {
+  reportsQueries.getEnquiriesCountBySalesAgent(req.query, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else res.json(results)
   })
 })
 
 router.get('/getVisitedCustomersReport', (req, res) => {
-  reportsQueries.getVisitedCustomersReport((err, results) => {
+  reportsQueries.getVisitedCustomersReport(req.query, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else {
-      reportsQueries.getVisitedCustomersReportByStatus((err, results1) => {
+      reportsQueries.getVisitedCustomersReportByStatus(req.query, (err, results1) => {
         if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
         else {
           let onboardedCustomers = 0, pendingApprovals = 0
