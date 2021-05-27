@@ -1,13 +1,26 @@
 const { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery } = require('../../utils/functions.js');
 let reportsQueries = {}
 
-reportsQueries.getNewCustomerBTDetails = async (callback) => {
+reportsQueries.getNewCustomerBTDetails = async (input, callback) => {
+    const { fromDate, toDate, fromStart } = input;
     let query = `SELECT c.customerNo,c.customerName,u.userName AS salesAgent,
     c.depositAmount,IFNULL(c.dispenserCount,0)AS dispenserCount ,SUM(cp.noOfJarsTobePlaced) quantity,
     CAST(cp.productPrice AS DECIMAL(10,2)) productPrice
     FROM customerdetails c INNER JOIN usermaster u ON c.salesAgent=u.userId INNER JOIN customerproductdetails cp ON c.customerId=cp.customerId WHERE cp.customerType='customer' AND cp.productName='20L' GROUP BY cp.customerId,cp.productPrice
      ORDER BY c.registeredDate DESC`;
+
+    if (fromStart != 'true') {
+        query = `SELECT c.customerNo,c.customerName,u.userName AS salesAgent,
+         c.depositAmount,IFNULL(c.dispenserCount,0)AS dispenserCount ,SUM(cp.noOfJarsTobePlaced) quantity,
+         CAST(cp.productPrice AS DECIMAL(10,2)) productPrice
+         FROM customerdetails c INNER JOIN usermaster u ON c.salesAgent=u.userId INNER JOIN customerproductdetails cp ON c.customerId=cp.customerId WHERE cp.customerType='customer' AND cp.productName='20L' AND  DATE(c.registeredDate) BETWEEN ? AND ? GROUP BY cp.customerId,cp.productPrice
+         ORDER BY c.registeredDate DESC`;
+        options = [fromDate, toDate]
+        return executeGetParamsQuery(query, options, callback)
+    }
+
     return executeGetQuery(query, callback)
+
 }
 
 reportsQueries.getEnquiriesCountBySalesAgent = async (input, callback) => {

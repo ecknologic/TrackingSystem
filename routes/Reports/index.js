@@ -11,7 +11,7 @@ router.use(function timeLog(req, res, next) {
 });
 
 router.get('/getNewCustomerBT', (req, res) => {
-  reportsQueries.getNewCustomerBTDetails((err, results) => {
+  reportsQueries.getNewCustomerBTDetails(req.query, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else res.json(results)
   })
