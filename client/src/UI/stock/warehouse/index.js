@@ -32,7 +32,7 @@ const WarehouseStock = () => {
 
     const childProps = useMemo(() => ({ driverList, routeList, warehouseList, vehicleList, locationList, motherplantList }),
         [driverList, routeList, warehouseList, vehicleList, locationList, motherplantList])
-    const source = useMemo(() => axios.CancelToken.source(), []);
+    const source = useMemo(() => axios.CancelToken.source(), [selectedDate, activeTab]);
     const config = { cancelToken: source.token }
 
     useEffect(() => {

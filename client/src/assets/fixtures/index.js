@@ -30,6 +30,10 @@ export const statusOptions = [
     <Option key='1' value={1}>Active</Option>,
     <Option key='2' value={0}>Draft</Option>
 ]
+export const AccountStatusOptions = [
+    <Option key='1' value='revisit'>Revisit</Option>,
+    <Option key='2' value='notintrested'>Not Interested</Option>
+]
 export const genderOptions = [
     <Option key='1' value='Male'>Male</Option>,
     <Option key='2' value='Female'>Female</Option>,

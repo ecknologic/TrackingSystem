@@ -39,7 +39,7 @@ export const getUsername = () => {
 export const getRoutesByRole = (role) => {
     switch (role) {
         case MARKETINGADMIN:
-            return ['/add-customer', '/customers', '/invoices']
+            return ['/add-customer', '/customers', '/invoices', '/visited-customers']
 
         case MARKETINGMANAGER:
             return ['/add-customer', '/customers', '/invoices']

@@ -43,14 +43,8 @@ const StockDetails = ({ date, driverList, vehicleList, motherplantList }) => {
     const motherplantOptions = useMemo(() => getWarehouseOptions(motherplantList), [motherplantList])
     const driverOptions = useMemo(() => getDriverOptions(driverList), [driverList])
     const vehicleOptions = useMemo(() => getVehicleOptions(vehicleList), [vehicleList])
-    const source = useMemo(() => axios.CancelToken.source(), []);
+    const source = useMemo(() => axios.CancelToken.source(), [date]);
     const config = { cancelToken: source.token }
-
-    useEffect(() => {
-        return () => {
-            http.ABORT(source)
-        }
-    }, [])
 
     useEffect(() => {
         getOFD()
@@ -59,6 +53,10 @@ const StockDetails = ({ date, driverList, vehicleList, motherplantList }) => {
         getREC()
         getTRC()
         getNewStock()
+
+        return () => {
+            http.ABORT(source)
+        }
     }, [date])
 
     const getCAS = async () => {

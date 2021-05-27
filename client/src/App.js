@@ -28,6 +28,7 @@ import MotherplantStock from './UI/stock/motherplant';
 import ManageDistributor from './UI/distributors/view';
 import WarehouseInvoices from './UI/invoices/warehouse';
 import AccountsDashboard from './UI/accounts/dashboard';
+import VisitedCustomers from './UI/visited-customers';
 import ReturnEmptyCans from './UI/empty-cans/warehouse';
 import { FilterProvider } from './modules/filterContext';
 import EditInvoice from './UI/invoices/super-admin/edit';
@@ -135,6 +136,7 @@ const App = () => {
                      <Route path='/customers/manage/:accountId' render={byRole(<ViewAccount />)} />
                      <Route path='/customers/:tab?/:page?' render={byRole(<Customers />)} />
                      <Route path='/new-customers-report' render={byRole(<NewCustomersReport />)} />
+                     <Route path='/visited-customers/:tab?/:page?' render={byRole(<VisitedCustomers />)} />
                      <Route path='/unauthorized' render={Unauthorized} />
                      <Route render={noMatchAuth} />
                   </Switch>

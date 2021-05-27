@@ -64,9 +64,10 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
     const customerOptions = useMemo(() => getCustomerOptions(customerList), [customerList])
     const childProps = useMemo(() => ({ routeOptions, driverOptions, locationOptions, distributorOptions, customerOptions }),
         [routeOptions, driverOptions, locationOptions, distributorOptions, customerOptions])
-    const source = useMemo(() => axios.CancelToken.source(), []);
+    const source = useMemo(() => axios.CancelToken.source(), [date]);
     const config = { cancelToken: source.token }
 
+    console.log('data.>>>', date)
     useEffect(() => {
         setLoading(true)
         getDeliveries()

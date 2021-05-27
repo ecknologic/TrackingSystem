@@ -416,6 +416,33 @@ export const validateQCValues = (data) => {
     return errors
 }
 
+export const validateEnquiryValues = (data) => {
+    let errors = {};
+    const text = 'Required'
+    const { customerName, mobileNumber, address, EmailId, accountStatus, salesAgent, revisitDate } = data
+
+    if (!customerName) errors.customerName = text
+    if (!address) errors.address = text
+    if (!accountStatus) errors.accountStatus = text
+    if (!salesAgent) errors.salesAgent = text
+
+    if (accountStatus !== 'notintrested') {
+        if (!revisitDate) errors.revisitDate = text
+    }
+    if (!mobileNumber) errors.mobileNumber = text
+    else {
+        const error = validateMobileNumber(mobileNumber, true)
+        error && (errors.mobileNumber = error)
+    }
+    if (!EmailId) errors.EmailId = text
+    else {
+        const error = validateEmailId(EmailId)
+        error && (errors.EmailId = error)
+    }
+
+    return errors
+}
+
 export const validateProductValues = (data) => {
     let errors = {};
     const text = 'Required'

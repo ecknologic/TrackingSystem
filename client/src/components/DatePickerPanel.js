@@ -10,8 +10,8 @@ import CustomDateInput from '../components/CustomDateInput';
 import '../sass/datePickerPanel.scss'
 const format = 'YYYY-MM-DD';
 const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-const DatePickerPanel = ({ onChange, onSelect }) => {
+const fn = () => { }
+const DatePickerPanel = ({ onChange, onSelect = fn }) => {
     const [open, setOpen] = useState(false)
     const [daysInMonth, SetdaysInMonth] = useState(0)
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)

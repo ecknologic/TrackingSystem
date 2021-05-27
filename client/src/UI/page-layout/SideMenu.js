@@ -99,7 +99,7 @@ const SideMenu = () => {
                         : null
                 }
                 {
-                    ROLE === MARKETINGADMIN || ROLE === MARKETINGMANAGER ?
+                    ROLE === MARKETINGADMIN ?
                         <>
                             <Item key='/customers' icon={selected === '/customers' ? <ProjectIcon /> : <ProjectIconLight />}>
                                 Customers
@@ -107,14 +107,27 @@ const SideMenu = () => {
                             <Item key='/add-customer' icon={selected === '/add-customer' ? <FriendReqIcon /> : <FriendReqIconLight />}>
                                 Add Customer
                             </Item>
-                            {
-                                ROLE === MARKETINGMANAGER &&
-                                (
-                                    <Item key='/invoices' icon={selected === '/invoices' ? <DocIcon /> : <DocIconLight />}>
-                                        Invoices
-                                    </Item>
-                                )
-                            }
+                            <Item key='/visited-customers' icon={selected === '/visited-customers' ? <FriendIcon /> : <FriendIconLight />}>
+                                Visited Customers
+                            </Item>
+                            <Item key='/customerDashboard' style={{ pointerEvents: 'none' }} icon={selected === '/customerDashboard' ? <SettingIcon /> : <SettingIconLight />}>
+                                Settings
+                            </Item>
+                        </>
+                        : null
+                }
+                {
+                    ROLE === MARKETINGMANAGER ?
+                        <>
+                            <Item key='/customers' icon={selected === '/customers' ? <ProjectIcon /> : <ProjectIconLight />}>
+                                Customers
+                            </Item>
+                            <Item key='/add-customer' icon={selected === '/add-customer' ? <FriendReqIcon /> : <FriendReqIconLight />}>
+                                Add Customer
+                            </Item>
+                            <Item key='/invoices' icon={selected === '/invoices' ? <DocIcon /> : <DocIconLight />}>
+                                Invoices
+                            </Item>
                             <Item key='/customerDashboard' style={{ pointerEvents: 'none' }} icon={selected === '/customerDashboard' ? <SettingIcon /> : <SettingIconLight />}>
                                 Settings
                             </Item>
