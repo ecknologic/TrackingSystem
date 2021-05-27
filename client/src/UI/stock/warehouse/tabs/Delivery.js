@@ -72,10 +72,13 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
         setLoading(true)
         getDeliveries()
 
+    }, [date])
+
+    useEffect(() => {
         return () => {
             http.ABORT(source)
         }
-    }, [date])
+    }, [])
 
     const getDistributorList = async () => {
         const url = 'distributor/getDistributorsList'
@@ -127,7 +130,6 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
 
     const getDeliveries = async () => {
         const url = `warehouse/deliveryDetails/${date}`
-
         try {
             const data = await http.GET(axios, url, config)
             setPageNumber(1)

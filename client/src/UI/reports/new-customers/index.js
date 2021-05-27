@@ -43,7 +43,7 @@ const NewCustomersReport = () => {
 
     useEffect(() => {
         setLoading(true)
-        getReports()
+        getReports({ fromStart: true })
         getCustomerList()
 
         return () => {
@@ -60,8 +60,8 @@ const NewCustomersReport = () => {
         } catch (error) { }
     }
 
-    const getReports = async () => {
-        const url = `reports/getNewCustomerBT?fromDate=${startDate}&toDate=${endDate}&departmentId=${WAREHOUSEID}&customerIds=${customerIds}`
+    const getReports = async ({ fromStart = false }) => {
+        const url = `reports/getNewCustomerBT?fromDate=${startDate}&toDate=${endDate}&fromStart=${fromStart}&departmentId=${WAREHOUSEID}&customerIds=${customerIds}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -110,7 +110,7 @@ const NewCustomersReport = () => {
         setClearBtnDisabled(false)
         setFilterBtnDisabled(true)
         setLoading(true)
-        getReports()
+        getReports({ fromStart: false })
     }
 
     const handleFilterClear = async () => {
@@ -122,7 +122,7 @@ const NewCustomersReport = () => {
         setStartDate(TODAYDATE)
         setEndDate(TODAYDATE)
         setLoading(true)
-        await getReports()
+        await getReports({ fromStart: true })
         setCustomerList(customerList)
     }
 

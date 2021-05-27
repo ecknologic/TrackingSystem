@@ -8,7 +8,7 @@ import CustomerOnboardCard from '../../../../components/CustomerOnboardCard';
 const options = { startDate: d, endDate: d, fromStart: true }
 
 const VisitedCustomers = () => {
-    const [invoices, setInvoices] = useState([])
+    const [visitedReport, setVisitedReport] = useState([])
     const [opData, setOpData] = useState(() => options)
     const [graph, setGraph] = useState(defaultPie)
     const source = useMemo(() => appApi.CancelToken.source(), []);
@@ -16,19 +16,19 @@ const VisitedCustomers = () => {
 
 
     useEffect(() => {
-        getInvoices(opData)
+        getVisitedCustomersReport(opData)
 
         return () => {
             http.ABORT(source)
         }
     }, [])
 
-    const getInvoices = async ({ startDate, endDate, fromStart, departmentId = 'All' }) => {
-        const url = `invoice/getDepartmentInvoicesCount?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}&departmentId=${departmentId}`
+    const getVisitedCustomersReport = async ({ startDate, endDate, fromStart, departmentId = 'All' }) => {
+        const url = `reports/getVisitedCustomersReport?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}&departmentId=${departmentId}`
 
         try {
             const data = await http.GET(appApi, url, config)
-            setInvoices(data)
+            setVisitedReport(data)
             const graph = getPieData(data)
             setGraph(graph)
         } catch (error) { }
@@ -36,22 +36,23 @@ const VisitedCustomers = () => {
 
     const handleInvoiceOp = useCallback((data) => {
         const newData = { ...opData, ...data }
-        getInvoices(newData)
+        getVisitedCustomersReport(newData)
         setOpData(newData)
     }, [opData])
 
+    const { onboardedCustomers = 0, pendingApprovals = 0, revisitCustomers = 0, visitedCustomers = 0 } = visitedReport
     return (
         <div className='visited-customers-panel'>
             <PanelHeader title='Visited Customers' onSelect={handleInvoiceOp} showShow />
             <div className='vcp__body panel-body'>
                 <div className='vcp__body__left'>
-                    <CustomerOnboardCard data={invoices} graph={graph} />
+                    <CustomerOnboardCard data={visitedReport} graph={graph} />
                 </div>
                 <div className='vcp__body__right'>
-                    <StatusCard count={443} title='Onboarded Customers' />
-                    <StatusCard count={54} title='Approvals Pending' />
-                    <StatusCard count={23} title='Requests Pending' />
-                    <StatusCard count={933} title='Inactive Customers' />
+                    <StatusCard count={visitedCustomers} title='Total Visited Customers' />
+                    <StatusCard count={onboardedCustomers} title='Onboarded Customers' />
+                    <StatusCard count={pendingApprovals} title='Approval Pending' />
+                    <StatusCard count={revisitCustomers} title='Revisit Customers' />
                 </div>
             </div>
         </div>

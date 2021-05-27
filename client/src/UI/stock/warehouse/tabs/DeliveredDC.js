@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import axios from 'axios';
 import { Menu, Table } from 'antd';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { http } from '../../../../modules/http';
 import Actions from '../../../../components/Actions';
 import Spinner from '../../../../components/Spinner';
@@ -49,6 +49,7 @@ const DeliveredDC = () => {
     const [dateOpen, setDateOpen] = useState(false)
     const [rangeOpen, setRangeOpen] = useState(false)
     const [title, setTitle] = useState('')
+    const [isCleared, setIsCleared] = useState(false)
 
     const deliveryColumns = useMemo(() => getDeliveryColumns('extra'), [])
     const source = useMemo(() => axios.CancelToken.source(), []);
@@ -63,6 +64,10 @@ const DeliveredDC = () => {
             http.ABORT(source)
         }
     }, [])
+
+    useEffect(() => {
+        if (!customerIds.length) getDeliveries()
+    }, [customerIds])
 
     const getCustomerList = async () => {
         const url = `customer/getCustomerNames`
@@ -156,6 +161,7 @@ const DeliveredDC = () => {
         setClearBtnDisabled(false)
         setFilterBtnDisabled(true)
         setLoading(true)
+        setIsCleared(false)
         getDeliveries(startDate, endDate)
     }
 
@@ -166,7 +172,7 @@ const DeliveredDC = () => {
         setCustomerList([])
         setSelectedDate(TODAYDATE)
         setLoading(true)
-        await getDeliveries()
+        setIsCleared(true)
         setCustomerList(customerList)
     }
 
@@ -236,6 +242,7 @@ const DeliveredDC = () => {
                         keyValue='customerId'
                         keyLabel='customerName'
                         onChange={onFilterChange}
+                        isCleared={isCleared}
                     />
                     <DateValue date={startDate} to={endDate} />
                     <div className='app-date-picker-wrapper'>

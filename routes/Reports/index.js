@@ -11,17 +11,42 @@ router.use(function timeLog(req, res, next) {
 });
 
 router.get('/getNewCustomerBT', (req, res) => {
-  reportsQueries.getNewCustomerBTDetails((err, results) => {
+  reportsQueries.getNewCustomerBTDetails(req.query, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else res.json(results)
   })
 })
 
 router.get('/getEnquiriesCount', (req, res) => {
-  reportsQueries.getEnquiriesCountBySalesAgent((err, results) => {
+  reportsQueries.getEnquiriesCountBySalesAgent(req.query, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else res.json(results)
   })
 })
+
+router.get('/getVisitedCustomersReport', (req, res) => {
+  reportsQueries.getVisitedCustomersReport(req.query, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else {
+      reportsQueries.getVisitedCustomersReportByStatus(req.query, (err, results1) => {
+        if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+        else {
+          let onboardedCustomers = 0, pendingApprovals = 0
+          if (results1.length) {
+            if (results1[0].isApproved == 1) {
+              onboardedCustomers = results1[0].customersCount
+              pendingApprovals = results1[1].customersCount
+            } else {
+              pendingApprovals = results1[0].customersCount
+              onboardedCustomers = results1[1].customersCount
+            }
+          }
+          res.json({ ...results[0], onboardedCustomers, pendingApprovals })
+        }
+      })
+    }
+  })
+})
+
 
 module.exports = router;
