@@ -350,6 +350,11 @@ customerQueries.getCustomerEnquiries = (createdBy, callback) => {
     let query = `Select enquiryId,customerName,address,mobileNumber,revisitDate from customerenquirydetails WHERE createdBy=${createdBy} ORDER BY registeredDate DESC`
     return executeGetQuery(query, callback)
 }
+customerQueries.getCustomerEnquiryProducts = (enquiryId, callback) => {
+    let query = "SELECT cp.productName,cp.productPrice,cp.noOfJarsTobePlaced,cp.id AS productId FROM customerproductdetails cp WHERE enquiryId=?";
+    let options = [enquiryId]
+    return executeGetParamsQuery(query, options, callback)
+}
 
 //POST Request Methods
 customerQueries.saveCustomerOrderDetails = (input, callback) => {
@@ -534,16 +539,16 @@ customerQueries.createBusinessRequest = (input, callback) => {
 }
 
 customerQueries.createCustomerEnquiry = (input, callback) => {
-    const { customerName, EmailId, mobileNumber, registeredDate = new Date(), address, createdBy, accountStatus, salesAgent, revisitDate } = input
-    let query = "insert  into customerenquirydetails (customerName,EmailId,mobileNumber,registeredDate,address,createdBy,accountStatus,salesAgent,revisitDate) values(?,?,?,?,?,?,?,?,?)";
-    let requestBody = [customerName, EmailId, mobileNumber, registeredDate, address, createdBy, accountStatus, salesAgent, revisitDate]
+    const { customerName, EmailId, mobileNumber, registeredDate = new Date(), address, createdBy, accountStatus, salesAgent, revisitDate, contactperson, customertype, natureOfBussiness } = input
+    let query = "insert  into customerenquirydetails (customerName,EmailId,mobileNumber,registeredDate,address,createdBy,accountStatus,salesAgent,revisitDate,contactperson,customertype, natureOfBussiness) values(?,?,?,?,?,?,?,?,?,?,?,?)";
+    let requestBody = [customerName, EmailId, mobileNumber, registeredDate, address, createdBy, accountStatus, salesAgent, revisitDate, contactperson, customertype, natureOfBussiness]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
 customerQueries.updateCustomerEnquiry = (input, callback) => {
-    const { customerName, EmailId, mobileNumber, address, createdBy, accountStatus, salesAgent, revisitDate, enquiryId } = input
-    let query = "Update customerenquirydetails SET customerName=?,EmailId=?,mobileNumber=?,address=?,createdBy=?,accountStatus=?,salesAgent=?,revisitDate=? WHERE enquiryId=?";
-    let requestBody = [customerName, EmailId, mobileNumber, address, createdBy, accountStatus, salesAgent, revisitDate, enquiryId]
+    const { customerName, EmailId, mobileNumber, address, createdBy, accountStatus, salesAgent, revisitDate, enquiryId, contactperson, customertype, natureOfBussiness } = input
+    let query = "Update customerenquirydetails SET customerName=?,EmailId=?,mobileNumber=?,address=?,createdBy=?,accountStatus=?,salesAgent=?,revisitDate=?, contactperson=?, customertype=?, natureOfBussiness=? WHERE enquiryId=?";
+    let requestBody = [customerName, EmailId, mobileNumber, address, createdBy, accountStatus, salesAgent, revisitDate, contactperson, customertype, natureOfBussiness, enquiryId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 

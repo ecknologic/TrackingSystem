@@ -13,6 +13,7 @@ const { customerProductDetails, dbError, getCompareCustomersData, getCompareDist
 const { saveToCustomerOrderDetails } = require('./utilities');
 const { createInvoice } = require('./Invoice/invoice');
 const { UPDATEMESSAGE, DELETEMESSAGE } = require('../utils/constants.js');
+const { saveEnquiryProductDetails, updateEnquiryProductDetails } = require('../utils/functions');
 const usersQueries = require('../dbQueries/users/queries.js');
 const warehouseQueries = require('../dbQueries/warehouse/queries.js');
 const auditQueries = require('../dbQueries/auditlogs/queries.js');
@@ -919,21 +920,35 @@ router.get('/getCustomerEnquiries/:createdBy', async (req, res) => {
 router.get('/getCustomerEnquiry/:enquiryId', async (req, res) => {
   customerQueries.getCustomerEnquiryById(req.params.enquiryId, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
-    else res.json(results)
+    else if (!results.length) res.json(results)
+    else {
+      customerQueries.getCustomerEnquiryProducts(req.params.enquiryId, (err, products) => {
+        results[0].products = products
+        res.json(results)
+      })
+    }
   })
 });
 
 router.post('/createCustomerEnquiry', async (req, res) => {
   customerQueries.createCustomerEnquiry(req.body, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
-    else res.json({ status: 200, message: "Created successfully" })
+    else {
+      saveEnquiryProductDetails(req, body.products, results.insertId).then(response => {
+        res.json({ status: 200, message: "Created successfully" })
+      })
+    }
   })
 });
 
 router.put('/updateCustomerEnquiry', async (req, res) => {
   customerQueries.updateCustomerEnquiry(req.body, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
-    else res.json({ status: 200, message: "Updated successfully" })
+    else {
+      updateEnquiryProductDetails(req, body.products).then(response => {
+        res.json({ status: 200, message: "Updated successfully" })
+      })
+    }
   })
 });
 
