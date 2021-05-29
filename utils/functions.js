@@ -313,7 +313,7 @@ const saveEnquiryProductDetails = (products, enquiryId) => {
     return new Promise((resolve, reject) => {
         if (products.length) {
             for (let i of products) {
-                let enquiryProductsQuery = "insert  into customerenquiryproducts (enquiryId,noOfJarsTobePlaced,productPrice,productName) values(?,?,?,?,?)";
+                let enquiryProductsQuery = "insert  into customerenquiryproducts (enquiryId,noOfJarsTobePlaced,productPrice,productName) values(?,?,?,?)";
                 let insertQueryValues = [enquiryId, i.noOfJarsTobePlaced, i.productPrice, i.productName]
                 db.query(enquiryProductsQuery, insertQueryValues, (err, results) => {
                     if (err) reject(err);

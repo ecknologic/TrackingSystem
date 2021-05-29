@@ -4,9 +4,10 @@ import NameCard from './NameCard';
 import PrimaryButton from './PrimaryButton';
 import '../sass/accountCard.scss'
 import '../sass/distributorCard.scss'
+import { getAccountStatusUI } from '../utils/Functions';
 
 const VisitedCustomerCard = ({ data, onClick, btnTxt = 'View Details' }) => {
-    const { revisitDate, customerName, accountStatus, contactPerson, mobileNumber, address, enquiryId } = data
+    const { revisitDate, customerName, accountStatus, contactperson, mobileNumber, address, enquiryId } = data
 
     return (
         <div className='account-card-container distributor-card-container'>
@@ -22,14 +23,14 @@ const VisitedCustomerCard = ({ data, onClick, btnTxt = 'View Details' }) => {
                 <div className='contact-container'>
                     <span className='type1'>Contact Details</span>
                     <div className='contacts'>
-                        <NameCard name={contactPerson} />
+                        <NameCard name={contactperson} />
                         <span className='mobile'>{mobileNumber}</span>
                     </div>
                 </div>
                 <div className='contact-container role'>
                     <span className='type1'>Account Status</span>
                     <div className='contacts'>
-                        <span >{accountStatus}</span>
+                        <span >{getAccountStatusUI(accountStatus)}</span>
                     </div>
                 </div>
             </div>

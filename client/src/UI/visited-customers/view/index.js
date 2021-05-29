@@ -11,7 +11,7 @@ import ActivityLogDetails from '../../../components/ActivityLogDetails';
 
 const ManageDistributor = () => {
     const history = useHistory()
-    const { distributorId } = useParams()
+    const { enquiryId } = useParams()
     const { pathname, state } = useLocation()
     const [headerContent, setHeaderContent] = useState({})
     const [confirmModal, setConfirmModal] = useState(false)
@@ -46,7 +46,7 @@ const ManageDistributor = () => {
                             />
                         </TabPane>
                         <TabPane tab="Activity Log Details" key="2">
-                            <ActivityLogDetails type='distributor' id={distributorId} />
+                            <ActivityLogDetails type='customerEnquiry' id={enquiryId} />
                         </TabPane>
                     </Tabs>
                 </div>

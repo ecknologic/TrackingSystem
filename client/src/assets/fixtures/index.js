@@ -88,6 +88,10 @@ export const testResultOptions = [
     <Option key="1" value="Approved">Approve</Option>,
     <Option key="2" value="Rejected">Reject</Option>
 ]
+export const accountTypeOptions = [
+    <Option key="1" value="Corporate">Corporate</Option>,
+    <Option key="2" value="Individual">Individual</Option>
+]
 export const calendarMenu = [
     <Menu.Item key="Till Now" >Till Now</Menu.Item>,
     <Menu.Item key="Today" >Today</Menu.Item>,

@@ -18,9 +18,9 @@ const Dashboard = ({ reFetch }) => {
     const { ROLE, USERID } = useUser()
     const history = useHistory()
     const { page = 1 } = useParams()
-    const [distributorsClone, setDistributorsClone] = useState([])
+    const [enquiriesClone, setEnquiriesClone] = useState([])
     const [filteredClone, setFilteredClone] = useState([])
-    const [distributors, setDistributors] = useState([])
+    const [enquiries, setEnquiries] = useState([])
     const [loading, setLoading] = useState(true)
     const [pageSize, setPageSize] = useState(12)
     const [filterON, setFilterON] = useState(false)
@@ -44,16 +44,16 @@ const Dashboard = ({ reFetch }) => {
 
     useEffect(() => {
         setLoading(true)
-        getDistributors()
+        getCustomerEnquiries()
     }, [reFetch])
 
-    const getDistributors = async () => {
+    const getCustomerEnquiries = async () => {
         const url = `customer/getCustomerEnquiries/${USERID}`
 
         try {
             const data = await http.GET(axios, url, config)
-            setDistributors(data)
-            setDistributorsClone(data)
+            setEnquiries(data)
+            setEnquiriesClone(data)
             setTotalCount(data.length)
             setLoading(false)
         } catch (error) { }
@@ -62,14 +62,14 @@ const Dashboard = ({ reFetch }) => {
     const handleSearch = (value) => {
         setPageNumber(1)
         if (value === "") {
-            setTotalCount(distributorsClone.length)
-            setDistributors(distributorsClone)
+            setTotalCount(enquiriesClone.length)
+            setEnquiries(enquiriesClone)
             setSeachON(false)
             return
         }
-        const result = doubleKeyComplexSearch(distributorsClone, value, 'agencyName', 'operationalArea')
+        const result = doubleKeyComplexSearch(enquiriesClone, value, 'customerName', 'contactperson')
         setTotalCount(result.length)
-        setDistributors(result)
+        setEnquiries(result)
         setSeachON(true)
     }
 
@@ -78,24 +78,24 @@ const Dashboard = ({ reFetch }) => {
     }
 
     const handleSort = (type, filterON) => {
-        const clone = [...(filterON ? filteredClone : distributorsClone)]
+        const clone = [...(filterON ? filteredClone : enquiriesClone)]
 
         if (type === 'Z - A') {
-            complexSort(clone, 'agencyName', 'desc')
+            complexSort(clone, 'customerName', 'desc')
         }
         else if (type === 'A - Z') {
-            complexSort(clone, 'agencyName')
+            complexSort(clone, 'customerName')
         }
         else if (type === 'OLD - NEW') {
-            complexDateSort(clone, 'createdDateTime')
+            complexDateSort(clone, 'registeredDate')
         }
         else {
-            complexDateSort(clone, 'createdDateTime', 'desc')
+            complexDateSort(clone, 'registeredDate', 'desc')
         }
 
-        filterON ? setFilteredClone(clone) : setDistributorsClone(clone)
+        filterON ? setFilteredClone(clone) : setEnquiriesClone(clone)
         setTotalCount(clone.length)
-        setDistributors(clone)
+        setEnquiries(clone)
         setSortBy(type)
     }
 
@@ -107,18 +107,18 @@ const Dashboard = ({ reFetch }) => {
 
     const handleFilter = (filterInfo) => {
         const { status } = filterInfo
-        const filtered = distributorsClone.filter((item) => status.includes(item.isActive))
+        const filtered = enquiriesClone.filter((item) => status.includes(item.isActive))
         setFilterON(true)
         setPageNumber(1)
-        setDistributors(filtered)
+        setEnquiries(filtered)
         setFilteredClone(filtered)
         setTotalCount(filtered.length)
     }
 
     const handleFilterClear = () => {
         setPageNumber(1)
-        setDistributors(distributorsClone)
-        setTotalCount(distributorsClone.length)
+        setEnquiries(enquiriesClone)
+        setTotalCount(enquiriesClone.length)
         setFilteredClone([])
         setFilterON(false)
         handleSort(sortBy, false)
@@ -133,7 +133,7 @@ const Dashboard = ({ reFetch }) => {
         setPageNumber(number)
     }
 
-    const goToManageDistributor = (id) => history.push(`/distributors/manage/${id}`, { page: pageNumber })
+    const goToManageEnquiry = (id) => history.push(`/visited-customers/manage/${id}`, { page: pageNumber })
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
@@ -145,11 +145,11 @@ const Dashboard = ({ reFetch }) => {
                 <Row gutter={[{ lg: 32, xl: 16 }, { lg: 16, xl: 16 }]}>
                     {
                         loading ? <NoContent content={<Spinner />} />
-                            : distributors.length ? distributors.slice(sliceFrom, sliceTo).map((distributor) => (
-                                <Col lg={{ span: 12 }} xl={{ span: 8 }} xxl={{ span: 6 }} key={distributor.distributorId}>
+                            : enquiries.length ? enquiries.slice(sliceFrom, sliceTo).map((enquiry) => (
+                                <Col lg={{ span: 12 }} xl={{ span: 8 }} xxl={{ span: 6 }} key={enquiry.enquiryId}>
                                     <VisitedCustomerCard
-                                        data={distributor}
-                                        onClick={goToManageDistributor}
+                                        data={enquiry}
+                                        onClick={goToManageEnquiry}
                                     />
                                 </Col>
                             )) : <NoContent content={<Empty />} />

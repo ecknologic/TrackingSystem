@@ -18,7 +18,7 @@ const usersQueries = require('../dbQueries/users/queries.js');
 const warehouseQueries = require('../dbQueries/warehouse/queries.js');
 const auditQueries = require('../dbQueries/auditlogs/queries.js');
 const departmenttransactionQueries = require('../dbQueries/departmenttransactions/queries.js');
-const { compareCustomerData, compareCustomerDeliveryData, compareProductsData, compareOrderData, compareCustomerOrderData } = require('./utils/customer.js');
+const { compareCustomerData, compareCustomerDeliveryData, compareProductsData, compareOrderData, compareCustomerOrderData, compareCustomerEnquiryData } = require('./utils/customer.js');
 let departmentId, userId, userName, userRole;
 
 var storage = multer.diskStorage({
@@ -934,7 +934,8 @@ router.post('/createCustomerEnquiry', async (req, res) => {
   customerQueries.createCustomerEnquiry(req.body, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else {
-      saveEnquiryProductDetails(req, body.products, results.insertId).then(response => {
+      saveEnquiryProductDetails(req.body.products, results.insertId).then(response => {
+        auditQueries.createLog({ userId, description: `Customer Enquiry created by ${userRole} <b>(${userName})</b>`, customerId: results.insertId, type: "customerEnquiry" })
         res.json({ status: 200, message: "Created successfully" })
       })
     }
@@ -942,10 +943,18 @@ router.post('/createCustomerEnquiry', async (req, res) => {
 });
 
 router.put('/updateCustomerEnquiry', async (req, res) => {
+  const { enquiryId, customerName, address, mobileNumber, EmailId, createdBy, accountStatus, salesAgent, revisitDate, contactperson, customertype, natureOfBussiness, state, city } = req.body
+  const logs = await compareCustomerEnquiryData({ enquiryId, customerName, address, mobileNumber, EmailId, createdBy, accountStatus, salesAgent, revisitDate, contactperson, customertype, natureOfBussiness, state, city }, { userId, userRole, userName })
   customerQueries.updateCustomerEnquiry(req.body, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else {
-      updateEnquiryProductDetails(req, body.products).then(response => {
+      updateEnquiryProductDetails(req.body.products).then(response => {
+        if (logs.length) {
+          auditQueries.createLog(logs, (err, data) => {
+            if (err) console.log('log error', err)
+            else console.log('log data', data)
+          })
+        }
         res.json({ status: 200, message: "Updated successfully" })
       })
     }

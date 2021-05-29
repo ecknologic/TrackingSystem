@@ -166,6 +166,39 @@ const compareCustomerOrderData = (data, { departmentId, transactionId, userId, u
     })
 }
 
+const compareCustomerEnquiryData = (data, { userId, userRole, userName }) => {
+    const { enquiryId } = data
+    return new Promise((resolve) => {
+        customerQueries.getCustomerEnquiryById(enquiryId, (err, results) => {
+            if (err) resolve([])
+            else if (results.length) {
+                // console.log("data", JSON.stringify(data))
+                const oldData = results[0]
+                const records = []
+                const createdDateTime = new Date()
+                Object.entries(data).map(([key, updatedValue]) => {
+                    const oldValue = oldData[key]
+                    if (oldValue != updatedValue && key != 'salesAgentName' && key != 'products' && key != 'idProofs' && key != 'gstProof') {
+                        records.push({
+                            oldValue,
+                            updatedValue,
+                            createdDateTime,
+                            userId,
+                            description: `Updated Enquiry ${key} by ${userRole} <b>(${userName})</b>`,
+                            customerId: enquiryId,
+                            type: "customerEnquiry"
+                        })
+                    }
+                })
+                resolve(records)
+            }
+            else {
+                resolve([])
+            }
+        })
+    })
+}
+
 const getProductKeyName = (productName, key) => {
     if (key == 'noOfJarsTobePlaced') return `${productName} quantity`
     else if (key == 'productPrice') return `${productName} price`
@@ -176,4 +209,4 @@ const getDCKeyName = (key) => {
     else if (key == 'driverId') return `driver`
     else if (key == 'vehicleId') return `vehicle`
 }
-module.exports = { compareCustomerData, compareCustomerOrderData, compareProductsData, compareCustomerDeliveryData, compareOrderData }
+module.exports = { compareCustomerData, compareCustomerEnquiryData, compareCustomerOrderData, compareProductsData, compareCustomerDeliveryData, compareOrderData }

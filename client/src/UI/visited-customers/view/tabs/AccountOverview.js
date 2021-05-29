@@ -4,29 +4,31 @@ import { useParams } from 'react-router-dom';
 import React, { Fragment, useEffect, useState, useMemo } from 'react';
 import AccountView from '../../views/Account';
 import { http } from '../../../../modules/http'
-import DistributorForm from '../../forms/Distributor';
+import EnquiryForm from '../../forms/Enquiry';
 import Spinner from '../../../../components/Spinner';
 import ScrollUp from '../../../../components/ScrollUp';
 import NoContent from '../../../../components/NoContent';
 import IDProofInfo from '../../../../components/IDProofInfo';
 import CustomButton from '../../../../components/CustomButton';
-import { getDropdownOptions } from '../../../../assets/fixtures';
+import { getDropdownOptions, getStaffOptions } from '../../../../assets/fixtures';
 import { isEmpty, showToast, base64String, getBase64, getProductsForUI, getProductsWithIdForDB, extractDistributorDetails, extractProductsFromForm, resetTrackForm } from '../../../../utils/Functions';
-import { validateNames, validateMobileNumber, validateEmailId, validateDistributorValues } from '../../../../utils/validations';
+import { validateNames, validateMobileNumber, validateEmailId, validateDistributorValues, validateEnquiryValues } from '../../../../utils/validations';
 import '../../../../sass/employees.scss'
+import { MARKETINGADMIN } from '../../../../utils/constants';
 
 const ManageDistributor = ({ setHeaderContent, onGoBack }) => {
-    const { distributorId } = useParams()
+    const { enquiryId } = useParams()
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [loading, setLoading] = useState(true)
-    const [gstProof, setGstProof] = useState({})
-    const [locationList, setLocationList] = useState([])
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [editMode, setEditMode] = useState('')
     const [shake, setShake] = useState(false)
+    const [agentList, setAgentList] = useState([])
+    const [businessList, setBusinessList] = useState([])
 
-    const locationOptions = useMemo(() => getDropdownOptions(locationList), [locationList])
+    const agentOptions = useMemo(() => getStaffOptions(agentList), [agentList])
+    const businessOptions = useMemo(() => getDropdownOptions(businessList), [businessList])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
@@ -38,29 +40,42 @@ const ManageDistributor = ({ setHeaderContent, onGoBack }) => {
         }
     }, [])
 
+    useEffect(() => {
+        if (editMode) {
+            getAgentList()
+            getBusinessList()
+        }
+    }, [editMode])
+
+    const getAgentList = async () => {
+        const url = `users/getUsersByRole/${MARKETINGADMIN}`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setAgentList(data)
+        } catch (error) { }
+    }
+    const getBusinessList = async () => {
+        const url = `bibo/getList/natureOfBusiness`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setBusinessList(data)
+        } catch (error) { }
+    }
+
     const getDistributor = async () => {
-        const url = `distributor/getDistributor/${distributorId}`
+        const url = `customer/getCustomerEnquiry/${enquiryId}`
 
         try {
             const [data] = await http.GET(axios, url, config)
             const { products, ...rest } = data
-            const { gstProof: gst, agencyName, gstNo } = rest
-            const gstProof = base64String(gst?.data)
+            const { customerName } = rest
             const productsUI = getProductsForUI(products)
 
-            setGstProof({ idProofType: 'gstNo', Front: gstProof, gstNo })
-            setHeaderContent({ title: agencyName })
-            setFormData({ ...rest, gstProof, ...productsUI })
+            setHeaderContent({ title: customerName })
+            setFormData({ ...rest, ...productsUI })
             setLoading(false)
-        } catch (error) { }
-    }
-
-    const getLocationList = async () => {
-        const url = `bibo/getList/location`
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setLocationList(data)
         } catch (error) { }
     }
 
@@ -68,12 +83,12 @@ const ManageDistributor = ({ setHeaderContent, onGoBack }) => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
-        // Validations
-        if (key === 'agencyName' || key === 'operationalArea' || key === 'contactPerson') {
-            const error = validateNames(value)
-            setFormErrors(errors => ({ ...errors, [key]: error }))
+        if (value === 'notintrested') {
+            setFormData(data => ({ ...data, revisitDate: '' }))
         }
-        else if (key === 'mobileNumber' || key === 'alternateNumber') {
+
+        // Validations
+        if (key === 'mobileNumber') {
             const error = validateMobileNumber(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -82,27 +97,19 @@ const ManageDistributor = ({ setHeaderContent, onGoBack }) => {
     const handleBlur = (value, key) => {
 
         // Validations
-        if (key === 'mailId' || key === 'alternateMailId') {
+        if (key === 'EmailId') {
             const error = validateEmailId(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key === 'mobileNumber' || key === 'alternateNumber') {
+        else if (key === 'mobileNumber') {
             const error = validateMobileNumber(value, true)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
     }
 
-    const handleUpload = (file) => {
-        getBase64(file, async (buffer) => {
-            setFormData(data => ({ ...data, gstProof: buffer, isNewFile: true }))
-            setFormErrors(errors => ({ ...errors, gstProof: '' }))
-        })
-    }
-
-    const handleRemove = () => setFormData(data => ({ ...data, gstProof: '' }))
-
+ 
     const handleUpdate = async () => {
-        const formErrors = validateDistributorValues(formData)
+        const formErrors = validateEnquiryValues(formData)
 
         if (!isEmpty(formErrors)) {
             setShake(true)
@@ -113,19 +120,15 @@ const ManageDistributor = ({ setHeaderContent, onGoBack }) => {
 
         const productsUI = extractProductsFromForm(formData)
         const products = getProductsWithIdForDB(productsUI)
-        const data = extractDistributorDetails(formData)
 
-        let body = { ...data, products }
-        if (!formData.isNewFile) {
-            delete body.gstProof
-        }
-        const url = 'distributor/updateDistributor'
-        const options = { item: 'Distributor', v1Ing: 'Updating', v2: 'updated' }
+        let body = { ...formData, products }
+        const url = 'customer/updateCustomerEnquiry'
+        const options = { item: 'Enquiry', v1Ing: 'Updating', v2: 'updated' }
 
         try {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
-            await http.POST(axios, url, body, config)
+            await http.PUT(axios, url, body, config)
             showToast(options)
             resetTrackForm()
             setEditMode(false)
@@ -139,7 +142,6 @@ const ManageDistributor = ({ setHeaderContent, onGoBack }) => {
     }
 
     const handleEdit = () => {
-        getLocationList()
         setEditMode(true)
     }
 
@@ -152,24 +154,23 @@ const ManageDistributor = ({ setHeaderContent, onGoBack }) => {
                         ? <NoContent content={<Spinner />} />
                         : <>
                             <div className='employee-title-container'>
-                                <span className='title'>Distributor Details</span>
+                                <span className='title'>Enquiry Details</span>
                             </div>
                             {
                                 editMode ? (
                                     <>
-                                        <DistributorForm
+                                        <EnquiryForm
                                             data={formData}
                                             errors={formErrors}
                                             onBlur={handleBlur}
                                             onChange={handleChange}
-                                            onUpload={handleUpload}
-                                            onRemove={handleRemove}
-                                            locationOptions={locationOptions}
+                                            agentOptions={agentOptions}
+                                            businessOptions={businessOptions}
                                         />
                                     </>
                                 ) :
                                     <>
-                                        <IDProofInfo data={gstProof} />
+                                        {/* <IDProofInfo data={gstProof} /> */}
                                         <AccountView data={formData} />
                                     </>
                             }

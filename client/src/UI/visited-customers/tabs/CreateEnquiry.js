@@ -5,7 +5,7 @@ import EnquiryForm from '../forms/Enquiry';
 import { http } from '../../../modules/http';
 import useUser from '../../../utils/hooks/useUser';
 import { MARKETINGADMIN } from '../../../utils/constants';
-import { getStaffOptions } from '../../../assets/fixtures';
+import { getDropdownOptions, getStaffOptions } from '../../../assets/fixtures';
 import CustomButton from '../../../components/CustomButton';
 import { validateMobileNumber, validateEmailId, validateEnquiryValues } from '../../../utils/validations';
 import { extractDistributorDetails, extractProductsFromForm, getProductsForDB, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
@@ -16,14 +16,17 @@ const CreateEnquiry = ({ goToTab }) => {
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [agentList, setAgentList] = useState([])
+    const [businessList, setBusinessList] = useState([])
     const [shake, setShake] = useState(false)
 
     const agentOptions = useMemo(() => getStaffOptions(agentList), [agentList])
+    const businessOptions = useMemo(() => getDropdownOptions(businessList), [businessList])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
         getAgentList()
+        getBusinessList()
 
         return () => {
             http.ABORT(source)
@@ -36,6 +39,15 @@ const CreateEnquiry = ({ goToTab }) => {
         try {
             const data = await http.GET(axios, url, config)
             setAgentList(data)
+        } catch (error) { }
+    }
+
+    const getBusinessList = async () => {
+        const url = `bibo/getList/natureOfBusiness`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setBusinessList(data)
         } catch (error) { }
     }
 
@@ -69,6 +81,7 @@ const CreateEnquiry = ({ goToTab }) => {
 
     const handleSubmit = async () => {
         const formErrors = validateEnquiryValues(formData)
+        const products = getProductsForDB(formData)
 
         if (!isEmpty(formErrors)) {
             setShake(true)
@@ -78,7 +91,7 @@ const CreateEnquiry = ({ goToTab }) => {
         }
 
         const body = {
-            ...formData, createdBy: USERID
+            ...formData, products, createdBy: USERID
         }
         const url = 'customer/createCustomerEnquiry'
         const options = { item: 'Customer Enquiry', v1Ing: 'Adding', v2: 'added' }
@@ -116,6 +129,7 @@ const CreateEnquiry = ({ goToTab }) => {
                 onBlur={handleBlur}
                 onChange={handleChange}
                 agentOptions={agentOptions}
+                businessOptions={businessOptions}
             />
             <div className='app-footer-buttons-container'>
                 <CustomButton

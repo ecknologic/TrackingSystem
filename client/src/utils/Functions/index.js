@@ -749,3 +749,8 @@ export const getStatusColor = (status) => {
 export const renderRoute = () => {
 
 }
+
+export const getAccountStatusUI=(accountStatus)=>{
+    if(accountStatus=='notintrested') return 'Not Intrested'
+    else return 'Revisit'
+}
