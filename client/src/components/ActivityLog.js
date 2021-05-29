@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import React from 'react';
 import { Divider } from 'antd';
 import parse from 'html-react-parser';
+import { checkNullOrNot } from '../utils/Functions'
 import '../sass/activityLog.scss'
 
 const ActivityLog = ({ data }) => {
@@ -21,11 +22,11 @@ const ActivityLog = ({ data }) => {
                     <div className='records-container'>
                         <div className='record-box first'>
                             <div className='title'>Old Record</div>
-                            {oldValue}
+                            {checkNullOrNot(oldValue)}
                         </div>
                         <div className='record-box'>
                             <div className='title'>New Record</div>
-                            {updatedValue}
+                            {checkNullOrNot(updatedValue)}
                         </div>
                     </div>
                 )
@@ -34,5 +35,6 @@ const ActivityLog = ({ data }) => {
         </div>
     )
 }
+
 
 export default ActivityLog

@@ -302,7 +302,7 @@ router.post("/approveCustomer/:customerId", (req, res) => {
       customerQueries.approveDeliveryDetails(req.body.deliveryDetailsIds, (err, updatedDelivery) => {
         if (err) res.json({ status: 500, message: err.sqlMessage });
         else {
-          saveToCustomerOrderDetails(customerId, res, null, userId)
+          saveToCustomerOrderDetails(customerId, res, null, userId, userRole, userName)
         }
       })
     }
@@ -348,7 +348,7 @@ router.get("/approveDelivery/:deliveryDetailsId", (req, res) => {
   customerQueries.approveDeliveryDetails([deliveryDetailsId], (err, data) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
-      saveToCustomerOrderDetails(null, res, deliveryDetailsId)
+      saveToCustomerOrderDetails(null, res, deliveryDetailsId, userId, userRole, userName)
       // res.json('Delivery Details Approved Successfully')
     }
   })

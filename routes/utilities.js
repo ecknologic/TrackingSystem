@@ -58,7 +58,8 @@ const insertToCustomerOrderDetails = (result, res, sendResponse, userId, userRol
           })
           if (sendResponse && res) {
             if (userId) {
-              auditQueries.createLog({ userId, description: `Customer ${deliveryDetailsId ? 'Delivery Details' : ""} Approved by ${userRole} <b>(${userName})</b>`, customerId, type: "customer" }, (err, data) => {
+              console.log("customer_Id", result)
+              auditQueries.createLog({ userId, description: `Customer ${deliveryDetailsId ? 'Delivery Details' : ""} Approved by ${userRole} <b>(${userName})</b>`, customerId: result.customer_Id, type: "customer" }, (err, data) => {
                 if (err) console.log('errors>>>>', err)
                 else console.log('data>>>', data)
               })

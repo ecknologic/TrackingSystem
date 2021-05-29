@@ -754,3 +754,7 @@ export const getAccountStatusUI=(accountStatus)=>{
     if(accountStatus=='notintrested') return 'Not Intrested'
     else return 'Revisit'
 }
+
+export const checkNullOrNot = (value) => {
+    return value == 'null' ? '-' : value
+}

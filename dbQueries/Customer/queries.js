@@ -216,6 +216,7 @@ customerQueries.getTotalInActiveDistributors = (input, callback) => {
 }
 customerQueries.getCustomerDetailsByStatus = (input, callback) => {
     const { status, userId } = input
+    let options = [status]
     let query = "SELECT c.organizationName,c.customerNo,c.isSuperAdminApproved,c.depositAmount,c.customertype,c.isApproved,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.isApproved=? and d.deleted=0 AND c.approvedDate IS NULL GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.customerId,c.registeredDate ORDER BY c.registeredDate DESC"
     if (userId) {
         query = "SELECT c.organizationName,c.customerNo,c.isSuperAdminApproved,c.depositAmount,c.customertype,c.isApproved,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.isApproved=? and (createdBy=? OR salesAgent=?) and d.deleted=0 AND c.approvedDate IS NULL GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.customerId,c.registeredDate ORDER BY c.registeredDate DESC"
@@ -366,7 +367,7 @@ customerQueries.saveCustomerOrderDetails = (input, callback) => {
         product300ML, price300ML, product2L, price2L, deliveryLocation } = input
     let query = `insert into customerorderdetails (customerName,phoneNumber,address,routeId,driverId,existingCustomerId,latitude,longitude,dcNo,warehouseId,customerType,20LCans, price20L, 1LBoxes, price1L, 500MLBoxes, price500ML,300MLBoxes, price300ML,2LBoxes,price2L,deliveryLocation) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
     let requestBody = [contactPerson, phoneNumber, address, routeId, driverId, customer_Id, latitude, longitude, dcNo, departmentId, customerType, product20L, price20L, product1L, price1L, product500ML, price500ML, product300ML, price300ML, product2L, price2L, deliveryLocation]
-   
+
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 customerQueries.approveCustomer = (input, callback) => {
@@ -544,16 +545,16 @@ customerQueries.createBusinessRequest = (input, callback) => {
 }
 
 customerQueries.createCustomerEnquiry = (input, callback) => {
-    const { customerName, EmailId, mobileNumber, registeredDate = new Date(), address, createdBy, accountStatus, salesAgent, revisitDate, contactperson, customertype, natureOfBussiness,state,city } = input
+    const { customerName, EmailId, mobileNumber, registeredDate = new Date(), address, createdBy, accountStatus, salesAgent, revisitDate, contactperson, customertype, natureOfBussiness, state, city } = input
     let query = "insert  into customerenquirydetails (customerName,EmailId,mobileNumber,registeredDate,address,createdBy,accountStatus,salesAgent,revisitDate,contactperson,customertype, natureOfBussiness,state,city) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-    let requestBody = [customerName, EmailId, mobileNumber, registeredDate, address, createdBy, accountStatus, salesAgent, revisitDate != '' ? revisitDate : null, contactperson, customertype, natureOfBussiness,state,city]
+    let requestBody = [customerName, EmailId, mobileNumber, registeredDate, address, createdBy, accountStatus, salesAgent, revisitDate != '' ? revisitDate : null, contactperson, customertype, natureOfBussiness, state, city]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
 customerQueries.updateCustomerEnquiry = (input, callback) => {
-    const { customerName, EmailId, mobileNumber, address, createdBy, accountStatus, salesAgent, revisitDate, enquiryId, contactperson, customertype, natureOfBussiness,state,city } = input
+    const { customerName, EmailId, mobileNumber, address, createdBy, accountStatus, salesAgent, revisitDate, enquiryId, contactperson, customertype, natureOfBussiness, state, city } = input
     let query = "Update customerenquirydetails SET customerName=?,EmailId=?,mobileNumber=?,address=?,createdBy=?,accountStatus=?,salesAgent=?,revisitDate=?, contactperson=?, customertype=?, natureOfBussiness=?,state=?,city=? WHERE enquiryId=?";
-    let requestBody = [customerName, EmailId, mobileNumber, address, createdBy, accountStatus, salesAgent, revisitDate != '' ? revisitDate : null, contactperson, customertype, natureOfBussiness, state,city,enquiryId]
+    let requestBody = [customerName, EmailId, mobileNumber, address, createdBy, accountStatus, salesAgent, revisitDate != '' ? revisitDate : null, contactperson, customertype, natureOfBussiness, state, city, enquiryId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
