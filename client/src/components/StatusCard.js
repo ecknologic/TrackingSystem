@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import '../sass/statusCard.scss'
 
-const StatusCard = memo(({ count, title }) => {
+const StatusCard = memo(({ count, title, showViewDetails = true }) => {
 
     return (
         <div className='status-card'>
@@ -9,9 +9,9 @@ const StatusCard = memo(({ count, title }) => {
                 <span className='count'>{count}</span>
                 <span className='name'>{title}</span>
             </div>
-            <div className='sc__footer'>
+            {showViewDetails ? <div className='sc__footer'>
                 <span className='text'>View Details</span>
-            </div>
+            </div> : null}
         </div>
     )
 })

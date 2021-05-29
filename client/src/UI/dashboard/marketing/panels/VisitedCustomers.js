@@ -49,10 +49,10 @@ const VisitedCustomers = () => {
                     <CustomerOnboardCard data={visitedReport} graph={graph} />
                 </div>
                 <div className='vcp__body__right'>
-                    <StatusCard count={visitedCustomers} title='Total Visited Customers' />
-                    <StatusCard count={onboardedCustomers} title='Onboarded Customers' />
-                    <StatusCard count={pendingApprovals} title='Approval Pending' />
-                    <StatusCard count={revisitCustomers} title='Revisit Customers' />
+                    <StatusCard count={visitedCustomers} showViewDetails={false} title='Total Visited Customers' />
+                    <StatusCard count={onboardedCustomers} showViewDetails={false} title='Onboarded Customers' />
+                    <StatusCard count={pendingApprovals} showViewDetails={false} title='Approval Pending' />
+                    <StatusCard count={revisitCustomers} showViewDetails={false} title='Revisit Customers' />
                 </div>
             </div>
         </div>
