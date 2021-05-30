@@ -1,10 +1,11 @@
 import axios from 'axios';
+import dayjs from 'dayjs';
 import { message } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import EnquiryForm from '../forms/Enquiry';
 import { http } from '../../../modules/http';
 import useUser from '../../../utils/hooks/useUser';
-import { MARKETINGADMIN } from '../../../utils/constants';
+import { MARKETINGADMIN, DATEFORMAT } from '../../../utils/constants';
 import { getDropdownOptions, getStaffOptions } from '../../../assets/fixtures';
 import CustomButton from '../../../components/CustomButton';
 import { validateMobileNumber, validateEmailId, validateEnquiryValues } from '../../../utils/validations';
@@ -82,6 +83,8 @@ const CreateEnquiry = ({ goToTab }) => {
     const handleSubmit = async () => {
         const formErrors = validateEnquiryValues(formData)
         const products = getProductsForDB(formData)
+        const revisitDate = formData.revisitDate ? dayjs(formData.revisitDate).format(DATEFORMAT) : null
+
 
         if (!isEmpty(formErrors)) {
             setShake(true)
@@ -91,7 +94,7 @@ const CreateEnquiry = ({ goToTab }) => {
         }
 
         const body = {
-            ...formData, products, createdBy: USERID
+            ...formData, revisitDate, products, createdBy: USERID
         }
         const url = 'customer/createCustomerEnquiry'
         const options = { item: 'Customer Enquiry', v1Ing: 'Adding', v2: 'added' }

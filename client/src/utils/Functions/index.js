@@ -751,7 +751,7 @@ export const renderRoute = () => {
 }
 
 export const getAccountStatusUI=(accountStatus)=>{
-    if(accountStatus=='notintrested') return 'Not Intrested'
+    if(accountStatus=='notintrested') return 'Not Interested'
     else return 'Revisit'
 }
 

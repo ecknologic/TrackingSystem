@@ -11,6 +11,7 @@ export const MOTHERPLANTADMIN = 'MotherPlantAdmin'
 export const MANAGEACCOUNT = 'Manage Account'
 export const VIEWDETAILS = 'View Details'
 export const TODAYDATE = dayjs().format('YYYY-MM-DD')
+export const DATEFORMAT = 'YYYY-MM-DD'
 
 export const getUserId = () => {
     const user = JSON.parse(sessionStorage.getItem('user'))
@@ -42,7 +43,7 @@ export const getRoutesByRole = (role) => {
             return ['/add-customer', '/customers', '/invoices', '/visited-customers']
 
         case MARKETINGMANAGER:
-            return ['/add-customer', '/customers', '/invoices','/visited-customers']
+            return ['/add-customer', '/customers', '/invoices', '/visited-customers']
 
         case SUPERADMIN:
             return ['/customers', '/materials', '/motherplants', '/warehouses', '/staff', '/drivers',

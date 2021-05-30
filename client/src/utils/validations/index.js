@@ -419,12 +419,16 @@ export const validateQCValues = (data) => {
 export const validateEnquiryValues = (data) => {
     let errors = {};
     const text = 'Required'
-    const { customerName, mobileNumber, address, EmailId, accountStatus, salesAgent, revisitDate,...rest } = data
+    const { customerName, mobileNumber, address, EmailId, accountStatus, salesAgent, revisitDate, contactperson, customertype, state, city, ...rest } = data
 
     if (!customerName) errors.customerName = text
     if (!address) errors.address = text
     if (!accountStatus) errors.accountStatus = text
     if (!salesAgent) errors.salesAgent = text
+    if (!contactperson) errors.contactperson = text
+    if (!customertype) errors.customertype = text
+    if (!state) errors.state = text
+    if (!city) errors.city = text
 
     if (accountStatus !== 'notintrested') {
         if (!revisitDate) errors.revisitDate = text

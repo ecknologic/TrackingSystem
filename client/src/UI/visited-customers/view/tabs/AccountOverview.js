@@ -1,4 +1,5 @@
 import axios from 'axios';
+import dayjs from 'dayjs';
 import { message } from 'antd';
 import { useParams } from 'react-router-dom';
 import React, { Fragment, useEffect, useState, useMemo } from 'react';
@@ -14,7 +15,7 @@ import { getDropdownOptions, getStaffOptions } from '../../../../assets/fixtures
 import { isEmpty, showToast, base64String, getBase64, getProductsForUI, getProductsWithIdForDB, extractDistributorDetails, extractProductsFromForm, resetTrackForm } from '../../../../utils/Functions';
 import { validateNames, validateMobileNumber, validateEmailId, validateDistributorValues, validateEnquiryValues } from '../../../../utils/validations';
 import '../../../../sass/employees.scss'
-import { MARKETINGADMIN } from '../../../../utils/constants';
+import { MARKETINGADMIN, DATEFORMAT } from '../../../../utils/constants';
 
 const ManageDistributor = ({ setHeaderContent, onGoBack }) => {
     const { enquiryId } = useParams()
@@ -107,7 +108,7 @@ const ManageDistributor = ({ setHeaderContent, onGoBack }) => {
         }
     }
 
- 
+
     const handleUpdate = async () => {
         const formErrors = validateEnquiryValues(formData)
 
@@ -120,8 +121,9 @@ const ManageDistributor = ({ setHeaderContent, onGoBack }) => {
 
         const productsUI = extractProductsFromForm(formData)
         const products = getProductsWithIdForDB(productsUI)
+        const revisitDate = formData.revisitDate ? dayjs(formData.revisitDate).format(DATEFORMAT) : null
 
-        let body = { ...formData, products }
+        let body = { ...formData, revisitDate, products }
         const url = 'customer/updateCustomerEnquiry'
         const options = { item: 'Enquiry', v1Ing: 'Updating', v2: 'updated' }
 
