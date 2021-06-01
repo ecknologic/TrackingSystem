@@ -3,30 +3,34 @@ const { executeGetQuery, executePostOrUpdateQuery, executeGetParamsQuery } = req
 let invoiceQueries = {}
 
 invoiceQueries.getInvoices = async (status, callback) => {
-    let query = `select * from Invoice ORDER BY invoiceId DESC`;
+    let query = `SELECT i.*,c.Address1 AS billingAddress FROM Invoice i INNER JOIN customerdetails c ON i.customerId=c.customerId ORDER BY invoiceId DESC`;
     return executeGetQuery(query, callback)
 }
 
 invoiceQueries.getInvoicesByRole = async (roleId, callback) => {
-    let query = `select i.* from Invoice i INNER JOIN usermaster u ON i.salesPerson=u.userId WHERE u.roleId=?  ORDER BY invoiceId DESC`;
+    let query = `select i.*,c.Address1 AS billingAddress from Invoice i INNER JOIN customerdetails c ON i.customerId=c.customerId INNER JOIN usermaster u ON i.salesPerson=u.userId WHERE u.roleId=?  ORDER BY invoiceId DESC`;
     return executeGetParamsQuery(query, [roleId], callback)
 }
 
 invoiceQueries.getCustomerInvoices = async (customerId, callback) => {
-    let query = `select * from Invoice where customerId=? ORDER BY invoiceId DESC`;
+    let query = `select i.*,c.Address1 AS billingAddress from Invoice i INNER JOIN customerdetails c ON i.customerId=c.customerId where customerId=? ORDER BY invoiceId DESC`;
     return executeGetParamsQuery(query, [customerId], callback)
 }
 
 invoiceQueries.getInvoiceByStatus = async (status, callback) => {
-    let query = `select * from Invoice where status=? ORDER BY invoiceId DESC`;
+    let query = `select i.*,c.Address1 AS billingAddress from Invoice i INNER JOIN customerdetails c ON i.customerId=c.customerId where status=? ORDER BY invoiceId DESC`;
     return executeGetParamsQuery(query, [status], callback)
 }
 
 invoiceQueries.getInvoiceByDepartment = async (departmentId, callback) => {
-    let query = `select * from departmentInvoices where departmentId=? ORDER BY updatedDateTime DESC`;
+    let query = `select d.*,CASE WHEN d.customerType='distributor' THEN dis.deliveryLocation ELSE c.Address1 END AS billingAddress from departmentInvoices d LEFT JOIN customerdetails c 
+    ON d.customerId=c.customerId LEFT JOIN Distributors dis ON
+     d.customerId=dis.distributorId where departmentId=? ORDER BY updatedDateTime DESC`;
 
     if (departmentId == "null" || !departmentId) {
-        query = `select d.*, dep.departmentName from departmentInvoices d INNER JOIN departmentmaster dep ON d.departmentId=dep.departmentId ORDER BY updatedDateTime DESC`;
+        query = `select d.*, dep.departmentName,CASE WHEN d.customerType='distributor' THEN dis.deliveryLocation ELSE c.Address1 END AS billingAddress from departmentInvoices d LEFT JOIN customerdetails c 
+        ON d.customerId=c.customerId LEFT JOIN Distributors dis ON
+         d.customerId=dis.distributorId INNER JOIN departmentmaster dep ON d.departmentId=dep.departmentId ORDER BY updatedDateTime DESC`;
         return executeGetQuery(query, callback)
     }
 
