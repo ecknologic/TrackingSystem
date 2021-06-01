@@ -331,6 +331,11 @@ export const getInvoiceColumns = (type) => {
             key: 'customerName',
         },
         {
+            title: 'Billing Address',
+            dataIndex: 'billingAddress',
+            key: 'billingAddress',
+        },
+        {
             title: 'Due Date',
             dataIndex: 'dueDate',
             key: 'dueDate',
@@ -356,7 +361,7 @@ export const getInvoiceColumns = (type) => {
         columns.splice(2, 1)
     }
     else if (type === 'dcNo') {
-        columns.splice(3, 1, {
+        columns.splice(4, 1, {
             title: 'DC Number',
             dataIndex: 'dcNo',
             key: 'dcNo',
@@ -388,6 +393,11 @@ export const paymentColumns = [
         title: 'Customer Name',
         dataIndex: 'customerName',
         key: 'customerName',
+    },
+    {
+        title: 'Billing Address',
+        dataIndex: 'billingAddress',
+        key: 'billingAddress',
     },
     {
         title: 'Mode',

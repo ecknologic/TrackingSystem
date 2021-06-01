@@ -137,7 +137,7 @@ const Dashboard = ({ reFetch }) => {
     }
 
     const dataSource = useMemo(() => invoices.map((invoice) => {
-        const { invoiceId, invoiceDate, totalAmount, customerName, dueDate, departmentStatus, dcNo } = invoice
+        const { invoiceId, invoiceDate, totalAmount, customerName, dueDate, departmentStatus, dcNo, billingAddress } = invoice
 
         const options = [
             <Menu.Item key="resend" icon={<SendIconGrey />}>Resend</Menu.Item>,
@@ -150,6 +150,7 @@ const Dashboard = ({ reFetch }) => {
             dcNo,
             customerName,
             totalAmount,
+            billingAddress,
             status: renderStatus(departmentStatus),
             dueDate: dayjs(dueDate).format(DATEFORMAT),
             date: dayjs(invoiceDate).format(DATEFORMAT),

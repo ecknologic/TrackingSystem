@@ -25,7 +25,7 @@ invoiceQueries.getInvoiceByStatus = async (status, callback) => {
 invoiceQueries.getInvoiceByDepartment = async (departmentId, callback) => {
     let query = `select d.*,CASE WHEN d.customerType='distributor' THEN dis.deliveryLocation ELSE c.Address1 END AS billingAddress from departmentInvoices d LEFT JOIN customerdetails c 
     ON d.customerId=c.customerId LEFT JOIN Distributors dis ON
-     d.customerId=dis.distributorId where departmentId=? ORDER BY updatedDateTime DESC`;
+     d.customerId=dis.distributorId where d.departmentId=? ORDER BY updatedDateTime DESC`;
 
     if (departmentId == "null" || !departmentId) {
         query = `select d.*, dep.departmentName,CASE WHEN d.customerType='distributor' THEN dis.deliveryLocation ELSE c.Address1 END AS billingAddress from departmentInvoices d LEFT JOIN customerdetails c 

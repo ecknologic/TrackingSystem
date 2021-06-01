@@ -168,7 +168,7 @@ const WarehouseInvoices = ({ reFetch }) => {
     }
 
     const dataSource = useMemo(() => invoices.map((invoice) => {
-        const { invoiceId, invoiceDate, totalAmount, customerName, departmentName, dueDate, status } = invoice
+        const { invoiceId, invoiceDate, totalAmount, customerName, departmentName, dueDate, status, billingAddress } = invoice
 
         const canPay = status === 'Inprogress'
         const options = [
@@ -182,6 +182,7 @@ const WarehouseInvoices = ({ reFetch }) => {
             customerName,
             totalAmount,
             departmentName,
+            billingAddress,
             status: renderStatus(status),
             dueDate: dayjs(dueDate).format(DATEFORMAT),
             date: dayjs(invoiceDate).format(DATEFORMAT),
@@ -262,7 +263,7 @@ const renderStatus = (status) => {
     const modifiedStatus = status === 'Inprogress' ? 'In Progress' : status
     const color = getStatusColor(modifiedStatus)
     return (
-        <div className='status'>
+        <div className='status nowrap'>
             <span className='app-dot' style={{ background: color }}></span>
             <span className='status-text'>{modifiedStatus}</span>
         </div>
