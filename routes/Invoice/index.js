@@ -384,6 +384,19 @@ router.post("/updateInvoice", (req, res) => {
     updateInvoice(req, res)
     // })
 });
+
+router.post('/addInvoicePayment', (req, res) => {
+    invoiceQueries.updateInvoicePaymentDetails(req.body, (err, data) => {
+        if (err) res.status(500).json(dbError(err));
+        else {
+            invoiceQueries.addInvoicePayment(req.body, (err, results) => {
+                if (err) res.status(500).json(dbError(err));
+                else res.send("Added successfully");
+            });
+        }
+    })
+});
+
 const saveInvoice = async (requestObj, res, response) => {
     // req.body.invoicePdf = pdfData.toString('base64')
     invoiceQueries.createInvoice(requestObj, (err, results) => {

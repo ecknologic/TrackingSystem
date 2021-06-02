@@ -94,6 +94,13 @@ invoiceQueries.getDepartmentInvoicesCount = async (input, callback) => {
 }
 
 //POST Request Methods
+invoiceQueries.addInvoicePayment = (input, callback) => {
+    const { invoiceId, amountPaid, customerId, customerType, paymentDate, paymentMode } = input
+    let query = "insert into Invoice (invoiceId,amountPaid,  customerId, customerType, paymentDate, paymentMode) values(?,?,?,?,?,?)";
+    let requestBody = [invoiceId, amountPaid, customerId, customerType, paymentDate, paymentMode]
+    executePostOrUpdateQuery(query, requestBody, callback)
+}
+
 invoiceQueries.createInvoice = (input, callback) => {
     const { customerId, invoiceDate, dueDate, fromDate, toDate, salesPerson, invoiceId, hsnCode, poNo, totalAmount, customerName, mailIds } = input
     let query = "insert into Invoice (customerId,invoiceDate,dueDate,salesPerson,invoiceId,hsnCode,poNo,totalAmount,customerName,fromDate,toDate,mailIds) values(?,?,?,?,?,?,?,?,?,?,?,?)";
@@ -179,4 +186,12 @@ invoiceQueries.updateDepartmentInvoiceStatus = (input, callback) => {
     let query = "update departmentInvoices SET updatedDateTime=?,departmentStatus=?, status=? WHERE invoiceId=?";
     executePostOrUpdateQuery(query, [new Date(), departmentStatus, status, invoiceId], callback)
 }
+
+invoiceQueries.updateInvoicePaymentDetails = (input, callback) => {
+    const { invoiceId, noOfPayments, pendingAmount } = input
+    let status = pendingAmount == 0 ? 'Paid' : 'Pending'
+    let query = "update Invoice SET updatedDateTime=?,noOfPayments=?, pendingAmount=?,status=? WHERE invoiceId=?";
+    executePostOrUpdateQuery(query, [new Date(), noOfPayments, pendingAmount, status, invoiceId], callback)
+}
+
 module.exports = invoiceQueries
