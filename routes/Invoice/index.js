@@ -397,6 +397,13 @@ router.post('/addInvoicePayment', (req, res) => {
     })
 });
 
+router.post('/getInvoicePayments', (req, res) => {
+    invoiceQueries.getInvoicePayments((err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.json(results);
+    });
+});
+
 const saveInvoice = async (requestObj, res, response) => {
     // req.body.invoicePdf = pdfData.toString('base64')
     invoiceQueries.createInvoice(requestObj, (err, results) => {

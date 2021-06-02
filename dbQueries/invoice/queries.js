@@ -75,6 +75,17 @@ invoiceQueries.getInvoicesCount = async (input, callback) => {
     return executeGetParamsQuery(query, options, callback)
 }
 
+invoiceQueries.getInvoicePayments = async (input, callback) => {
+    const { startDate, endDate, fromStart } = input
+    let query = "SELECT * FROM invoicepaymentlogs WHERE DATE(`paymentDate`) <= ? ORDER BY createdDateTime DESC";
+    let options = [endDate]
+    if (fromStart && fromStart !== 'true') {
+        query = "SELECT * FROM invoicepaymentlogs WHERE DATE(`paymentDate`) >= ? AND DATE(`paymentDate`) <= ? ORDER BY createdDateTime DESC";
+        options = [startDate, endDate]
+    }
+    return executeGetParamsQuery(query, options, callback)
+}
+
 invoiceQueries.getDepartmentInvoicesCount = async (input, callback) => {
     const { startDate, endDate, fromStart, departmentId = 'All' } = input
     let query = "SELECT COUNT(*) AS totalCount,status FROM departmentInvoices WHERE DATE(`invoiceDate`) <= ? GROUP BY status";
