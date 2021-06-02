@@ -343,7 +343,7 @@ motherPlantDbQueries.getTotalRevenueChange = async (input, callback) => {
 //POST Request Methods
 motherPlantDbQueries.createQC = async (input, callback) => {
     let query = "insert into qualitycontrol (reportdate,batchId,testType,reportImage,description) values(?,?,?,?,?)";
-    let reportImage = Buffer.from(input.reportImage.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+    let reportImage = input.reportImage && Buffer.from(input.reportImage.replace(/^data:image\/\w+;base64,/, ""), 'base64')
     let requestBody = [input.reportdate, input.batchId, input.testType, reportImage, input.description]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
@@ -417,7 +417,7 @@ motherPlantDbQueries.createRMReceipt = async (input, callback) => {
     let query = "insert into rawmaterialreceipt (receiptNo,invoiceNo,taxAmount,invoiceAmount,rawmaterialId,invoiceDate,departmentId,managerName,receiptImage) values(?,?,?,?,?,?,?,?,?)";
     const { receiptNo, invoiceNo, taxAmount, invoiceAmount, rawmaterialid, invoiceDate: date, departmentId, managerName } = input
     let invoiceDate = new Date(date)
-    let receiptImage = Buffer.from(input.receiptImage.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+    let receiptImage = input.receiptImage && Buffer.from(input.receiptImage.replace(/^data:image\/\w+;base64,/, ""), 'base64')
     let requestBody = [receiptNo, invoiceNo, taxAmount, invoiceAmount, rawmaterialid, invoiceDate, departmentId, managerName, receiptImage]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }

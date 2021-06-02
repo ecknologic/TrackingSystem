@@ -150,7 +150,7 @@ router.post('/createDriver', (req, res) => {
             driverQueries.updateDriverLoginId({ driverName: req.body.userName, driverId: results.insertId }, (err, updated) => {
                 if (err) console.log("Driver update Err", err)
             })
-            auditQueries.createLog({ userId, description: `Driver created by ${userRole} <b>(${userName})</b>`, staffId: results.insertId, type: "driver" })
+            auditQueries.createLog({ userId, description: `Driver created by ${userRole} <b>(${adminUserName})</b>`, staffId: results.insertId, type: "driver" })
             res.json(results)
         }
     })
@@ -161,7 +161,7 @@ router.put('/updateDriverStatus', (req, res) => {
     driverQueries.updateDriverActiveStatus(req.body, (err, results) => {
         if (err) res.json(err);
         else {
-            auditQueries.createLog({ userId, description: `Driver status changed to ${status == 1 ? "Active" : "Draft"} by ${userRole} <b>(${userName})</b>`, staffId: driverId, type: "driver" })
+            auditQueries.createLog({ userId, description: `Driver status changed to ${status == 1 ? "Active" : "Draft"} by ${userRole} <b>(${adminUserName})</b>`, staffId: driverId, type: "driver" })
             res.json(results)
         }
     })
