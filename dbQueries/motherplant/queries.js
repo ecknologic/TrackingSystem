@@ -275,7 +275,7 @@ motherPlantDbQueries.getPDDetailsByDate = async (input, callback) => {
 }
 motherPlantDbQueries.getTotalPDDetails = async (input, callback) => {
     let { departmentId, startDate, endDate, fromStart, batchIds: bIds } = input;
-    const batchIds = bIds.split(',')
+    const batchIds = bIds && bIds.split(',')
     let options = [departmentId, endDate, batchIds]
     let query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM dispatches p WHERE departmentId=? AND DATE(`dispatchedDate`)<=? AND batchId IN (?)";
 

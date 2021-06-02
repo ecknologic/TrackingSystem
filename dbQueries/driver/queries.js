@@ -27,7 +27,7 @@ driverQueries.createDriver = async (input, callback) => {
     const { userName, emailid, departmentId, mobileNumber, password, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, licenseNo, adharProof, licenseProof, accountNo, bankName, branchName, ifscCode, recommendedBy, recruitedBy } = input;
     let query = "insert into driverdetails (driverName,emailid,password,departmentId,mobileNumber,joinedDate,parentName,gender,dob,adharNo,address,permanentAddress,licenseNo,adhar_frontside, adhar_backside, license_frontside, license_backside,accountNo, bankName, branchName, ifscCode, recommendedBy, recruitedBy) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     let adhar_frontside = adharProof.Front && Buffer.from(adharProof.Front.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-    let adhar_backside = adharProof.BackBuffer.from(adharProof.Back.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+    let adhar_backside = adharProof.Back && Buffer.from(adharProof.Back.replace(/^data:image\/\w+;base64,/, ""), 'base64')
     let license_frontside = licenseProof.Front && Buffer.from(licenseProof.Front.replace(/^data:image\/\w+;base64,/, ""), 'base64')
     let license_backside = licenseProof.Back && Buffer.from(licenseProof.Back.replace(/^data:image\/\w+;base64,/, ""), 'base64')
 
@@ -40,7 +40,7 @@ driverQueries.updateDriver = async (input, callback) => {
     const { userName, emailid, departmentId, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, licenseNo, driverId, adharProof, licenseProof, accountNo, bankName, branchName, ifscCode, recommendedBy, recruitedBy } = input;
     let query = "update driverdetails set driverName=?,emailid=?,departmentId=?,mobileNumber=?,joinedDate=?,parentName=?,gender=?,dob=?,adharNo=?,address=?,permanentAddress=?,licenseNo=?,adhar_frontside=?, adhar_backside=?, license_frontside=?, license_backside=?,accountNo=?, bankName=?, branchName=?, ifscCode=?, recommendedBy=?,recruitedBy=?  where driverId=?";
     let adhar_frontside = adharProof.Front && Buffer.from(adharProof.Front.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-    let adhar_backside = adharProof.BackBuffer.from(adharProof.Back.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+    let adhar_backside = adharProof.Back && Buffer.from(adharProof.Back.replace(/^data:image\/\w+;base64,/, ""), 'base64')
     let license_frontside = licenseProof.Front && Buffer.from(licenseProof.Front.replace(/^data:image\/\w+;base64,/, ""), 'base64')
     let license_backside = licenseProof.Back && Buffer.from(licenseProof.Back.replace(/^data:image\/\w+;base64,/, ""), 'base64')
     let requestBody = [userName, emailid, departmentId, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, licenseNo, adhar_frontside, adhar_backside, license_frontside, license_backside, accountNo, bankName, branchName, ifscCode, recommendedBy, recruitedBy, driverId]
