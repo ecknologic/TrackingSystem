@@ -151,10 +151,10 @@ router.post("/generateMultipleInvoices", (req, res) => {
                         let arr = []
                         const { fromDate, toDate } = req.body
                         for (let [index, i] of customersArr.entries()) {
-                            let { gstNo, products, customerId, creditPeriodInDays, organizationName, EmailId, createdBy } = i
+                            let { gstNo, products, customerId, creditPeriodInDays, organizationName, customerName, EmailId, createdBy } = i
                             let finalProducts = [];
                             let obj = {
-                                customerName: organizationName,
+                                customerName: organizationName || customerName,
                                 gstNo,
                                 invoiceDate: formatDate(new Date()),
                                 customerId: customerId,
@@ -504,16 +504,21 @@ const addProducts = (products) => {
             newData["2LBoxes"] += item["2LBoxes"]
             newData["300MLBoxes"] += item["300MLBoxes"]
             newData["500MLBoxes"] += item["500MLBoxes"]
-            newData["price1L"] += item["price1L"]
-            newData["price2L"] += item["price2L"]
-            newData["price20L"] += item["price20L"]
-            newData["price300ML"] += item["price300ML"]
-            newData["price500ML"] += item["price500ML"]
+            newData["price1L"] = getLargestPrice(newData["price1L"], item["price1L"])
+            newData["price2L"] = getLargestPrice(newData["price2L"], item["price2L"])
+            newData["price20L"] = getLargestPrice(newData["price20L"], item["price20L"])
+            newData["price300ML"] = getLargestPrice(newData["price300ML"], item["price300ML"])
+            newData["price500ML"] = getLargestPrice(newData["price500ML"], item["price500ML"])
             newData["address"] = item["address"]
             newData["deliveryAddress"] = item["deliveryAddress"]
         }
     })
     return [newData]
+}
+
+const getLargestPrice = (previousPrice, newPrice) => {
+    if (previousPrice > newPrice) return previousPrice
+    return newPrice
 }
 const prepareProductObj = (product) => {
     const { invoiceId, productName, quantity, productPrice, tax = 18, gstNo, address, deliveryAddress } = product
