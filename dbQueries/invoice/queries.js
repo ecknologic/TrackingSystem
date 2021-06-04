@@ -13,7 +13,7 @@ invoiceQueries.getInvoicesByRole = async (roleId, callback) => {
 }
 
 invoiceQueries.getCustomerInvoices = async (customerId, callback) => {
-    let query = `select i.*,c.Address1 AS billingAddress from Invoice i INNER JOIN customerdetails c ON i.customerId=c.customerId where customerId=? ORDER BY invoiceId DESC`;
+    let query = `select i.*,c.Address1 AS billingAddress from Invoice i INNER JOIN customerdetails c ON i.customerId=c.customerId where i.customerId=? ORDER BY invoiceId DESC`;
     return executeGetParamsQuery(query, [customerId], callback)
 }
 
