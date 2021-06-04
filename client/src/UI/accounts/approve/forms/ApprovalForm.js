@@ -17,7 +17,7 @@ const ApprovalForm = (props) => {
     const {
         gstNo, natureOfBussiness, organizationName, address, customerName, mobileNumber, invoicetype,
         creditPeriodInDays, EmailId, referredBy, registeredDate, gstProof, customertype, depositAmount,
-        pinCode, contractPeriod, idProofType, dispenserCount, alternatePhNo, poNo, salesAgent } = data
+        pinCode, contractPeriod, idProofType, dispenserCount, alternatePhNo, poNo, salesAgent, contactPerson } = data
 
     const [proofName, setProofName] = useState('')
     const [idProps, setIdProps] = useState({})
@@ -171,13 +171,13 @@ const ApprovalForm = (props) => {
                 isCorporate ? (
                     <div className='row'>
                         <div className='input-container'>
-                            <InputLabel name='Contact Person' error={errors.customerName} mandatory />
+                            <InputLabel name='Contact Person' error={errors.contactPerson} mandatory />
                             <CustomInput
-                                value={customerName}
+                                value={contactPerson}
                                 disabled={disabled}
                                 placeholder='Contact Person'
-                                error={errors.customerName}
-                                onChange={(value) => onChange(value, 'customerName')}
+                                error={errors.contactPerson}
+                                onChange={(value) => onChange(value, 'contactPerson')}
                             />
                         </div>
                         <div className='input-container'>

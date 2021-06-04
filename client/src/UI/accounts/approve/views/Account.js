@@ -9,7 +9,7 @@ const AccountView = ({ data }) => {
     const {
         natureOfBussiness, address, customerName, mobileNumber, invoicetype, creditPeriodInDays, alternatePhNo,
         customertype, EmailId, registeredDate, depositAmount, referredBy, createdUserName, contractPeriod,
-        pinCode, salesAgentName
+        pinCode, salesAgentName, contactPerson
     } = data
 
     const isCorporate = customertype === 'Corporate'
@@ -50,7 +50,7 @@ const AccountView = ({ data }) => {
                 <div className='row half-stretch'>
                     <div className='input-container'>
                         <InputValue size='smaller' value='Contact Person' />
-                        <InputValue size='large' value={customerName} />
+                        <InputValue size='large' value={contactPerson || customerName} />
                     </div>
                     <div className='input-container'>
                         <InputValue size='smaller' value='Nature of Business' />

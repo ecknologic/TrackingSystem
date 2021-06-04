@@ -521,8 +521,7 @@ const AddAccount = () => {
     }
 
     const setDDForSameAddress = () => {
-        const { gstNo, customerName: contactPerson,
-            address, mobileNumber: phoneNumber, gstProof } = corporateValues
+        const { gstNo, contactPerson, address, mobileNumber: phoneNumber, gstProof } = corporateValues
         const prefill = { gstNo, address, contactPerson, phoneNumber, gstProof }
 
         setDeliveryValues(data => ({ ...data, ...prefill }))
@@ -535,8 +534,7 @@ const AddAccount = () => {
 
     const preFillDDForm = (value, key) => {
         let newKey = key
-        if (key === 'customerName') newKey = 'contactPerson'
-        else if (key === 'mobileNumber') newKey = 'phoneNumber'
+        if (key === 'mobileNumber') newKey = 'phoneNumber'
         setDeliveryValues(data => ({ ...data, [newKey]: value }))
     }
     const onCorporateBtnClick = () => {
