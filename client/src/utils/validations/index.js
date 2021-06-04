@@ -62,17 +62,19 @@ export const validateAccountValues = (data, customerType, isInView) => {
         gstNo, panNo, adharNo, licenseNo, natureOfBussiness, organizationName, address, customerName, deliveryLocation,
         mobileNumber, invoicetype, creditPeriodInDays = "", EmailId, referredBy, idProofType, pinCode, alternatePhNo,
         contractPeriod, dispenserCount = "", registeredDate, gstProof, depositAmount = "", departmentId, routeId,
-        salesAgent, ...rest
+        salesAgent, contactPerson, ...rest
     } = data
 
     if (customerType === 'Corporate') {
         if (!organizationName) errors.organizationName = text
         if (!contractPeriod) errors.contractPeriod = text
+        if (!contactPerson) errors.contactPerson = text
         if (dispenserCount === null || !String(dispenserCount)) errors.dispenserCount = text
         // if (!gstNo) errors.gstNo = text
         // if (!gstProof) errors.gstProof = text
     }
     else {
+        if (!customerName) errors.customerName = text
         if (!isInView) { // General account form in add account screen
             if (!departmentId) errors.departmentId = text
             if (!routeId) errors.routeId = text
@@ -88,7 +90,6 @@ export const validateAccountValues = (data, customerType, isInView) => {
     if (!invoicetype) errors.invoicetype = text
     if (!registeredDate) errors.registeredDate = text
     if (!natureOfBussiness) errors.natureOfBussiness = text
-    if (!customerName) errors.customerName = text
     if (!pinCode) errors.pinCode = text
     if (!salesAgent) errors.salesAgent = text
     else {
