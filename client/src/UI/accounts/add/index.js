@@ -595,10 +595,7 @@ const AddAccount = () => {
         else goBack()
     }
 
-    const goBack = () => {
-        if (mainUrl === '/add-customer') history.push('/customer-accounts')
-        else history.push(mainUrl)
-    }
+    const goBack = () => history.push('/customers')
 
     return (
         <Fragment>

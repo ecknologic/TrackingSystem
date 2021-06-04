@@ -346,6 +346,11 @@ export const getInvoiceColumns = (type) => {
             key: 'totalAmount',
         },
         {
+            title: 'Balance Due',
+            dataIndex: 'pendingAmount',
+            key: 'pendingAmount',
+        },
+        {
             title: 'Status',
             dataIndex: 'status',
             key: 'status',

@@ -2,7 +2,8 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 import { Menu, message, Table } from 'antd';
 import { useHistory } from 'react-router-dom';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import PaymentForm from '../forms/Payment';
 import { http } from '../../../../modules/http'
 import Actions from '../../../../components/Actions';
 import Spinner from '../../../../components/Spinner';
@@ -10,13 +11,17 @@ import DateValue from '../../../../components/DateValue';
 import InputLabel from '../../../../components/InputLabel';
 import InputValue from '../../../../components/InputValue';
 import SearchInput from '../../../../components/SearchInput';
+import CustomModal from '../../../../components/CustomModal';
+import ConfirmModal from '../../../../components/CustomModal';
 import RoutesFilter from '../../../../components/RoutesFilter';
-import { getInvoiceColumns } from '../../../../assets/fixtures';
+import { validateIntFloat } from '../../../../utils/validations';
+import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomDateInput from '../../../../components/CustomDateInput';
 import CustomPagination from '../../../../components/CustomPagination';
-import { TODAYDATE, WAREHOUSEADMIN } from '../../../../utils/constants';
+import { TODAYDATE, TRACKFORM, WAREHOUSEADMIN } from '../../../../utils/constants';
+import { getDropdownOptions, getInvoiceColumns } from '../../../../assets/fixtures';
 import { ListViewIconGrey, ScheduleIcon, SendIconGrey, TickIconGrey } from '../../../../components/SVG_Icons';
-import { computeTotalAmount, deepClone, disableFutureDates, doubleKeyComplexSearch, getStatusColor, isEmpty, showToast } from '../../../../utils/Functions';
+import { computeTotalAmount, deepClone, disableFutureDates, doubleKeyComplexSearch, getStatusColor, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
@@ -29,6 +34,11 @@ const WarehouseInvoices = ({ reFetch }) => {
     const [pageNumber, setPageNumber] = useState(1)
     const [totalCount, setTotalCount] = useState(null)
     const [warehouseList, setWarehouseList] = useState([])
+    const [paymentList, setPaymentList] = useState([])
+    const [formData, setFormData] = useState({})
+    const [formErrors, setFormErrors] = useState({})
+    const [payModal, setPayModal] = useState(false)
+    const [confirmModal, setConfirmModal] = useState(false)
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
     const [filteredClone, setFilteredClone] = useState([])
     const [filterON, setFilterON] = useState(false)
@@ -36,6 +46,7 @@ const WarehouseInvoices = ({ reFetch }) => {
     const [searchON, setSeachON] = useState(false)
     const [open, setOpen] = useState(false)
 
+    const paymentOptions = useMemo(() => getDropdownOptions(paymentList), [paymentList])
     const invoiceColumns = useMemo(() => getInvoiceColumns('warehouse'), [])
     const totalAmount = useMemo(() => computeTotalAmount(invoices), [invoices])
     const source = useMemo(() => axios.CancelToken.source(), []);
@@ -43,6 +54,7 @@ const WarehouseInvoices = ({ reFetch }) => {
 
     useEffect(() => {
         getWarehouseList()
+        getPaymentList()
 
         return () => {
             http.ABORT(source)
@@ -75,6 +87,35 @@ const WarehouseInvoices = ({ reFetch }) => {
         } catch (error) { }
     }
 
+    const getPaymentList = async () => {
+        const url = `bibo/getList/paymentMode`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setPaymentList(data)
+        } catch (error) { }
+    }
+
+    const handleChange = (value, key) => {
+        setFormData(data => ({ ...data, [key]: value }))
+        setFormErrors(errors => ({ ...errors, [key]: '' }))
+
+        // Validations
+        if (key === 'amountPaid') {
+            const error = validateIntFloat(value)
+            setFormErrors(errors => ({ ...errors, amountPaid: error }))
+        }
+    }
+
+    const handleBlur = (value, key) => {
+
+        // Validations
+        if (key === 'amountPaid') {
+            const error = validateIntFloat(value, true)
+            setFormErrors(errors => ({ ...errors, amountPaid: error }))
+        }
+    }
+
     const handlePageChange = (number) => {
         setPageNumber(number)
     }
@@ -104,12 +145,16 @@ const WarehouseInvoices = ({ reFetch }) => {
     }
 
     const handleMenuSelect = (key, data) => {
+        const { noOfPayments, pendingAmount: amountPaid } = data
         if (key === 'resend') {
         }
         else if (key === 'dcList') {
             history.push(`/invoices/dc-list/${data.invoiceId}`, data)
         }
-        else handleStatusUpdate(data.invoiceId)
+        else if (key === 'paid') {
+            setFormData({ ...data, noOfPayments: noOfPayments + 1, amountPaid })
+            setPayModal(true)
+        }
     }
 
     const handleViewInvoice = (invoice) => history.push('/invoices/manage', { invoice, FOR: WAREHOUSEADMIN })
@@ -130,23 +175,24 @@ const WarehouseInvoices = ({ reFetch }) => {
         searchON && setResetSearch(!resetSearch)
     }
 
-    const optimisticUpdate = (id, status) => {
+    const optimisticUpdate = (data) => {
         let clone = deepClone(invoices);
-        const index = clone.findIndex(item => item.invoiceId === id)
-        clone[index].status = status;
+        const index = clone.findIndex(item => item.invoiceId === data.invoiceId)
+        clone[index] = data;
         setInvoices(clone)
     }
 
-    const handleStatusUpdate = async (invoiceId) => {
-        const status = 'Paid'
-        const options = { item: 'Invoice status', v1Ing: 'Updating', v2: 'updated' }
-        const url = `invoice/updateDepartmentInvoiceStatus`
-        const body = { status, invoiceId, departmentStatus: status }
+    const handlePayment = async () => {
+        const { pendingAmount, amountPaid } = formData
+        const options = { item: 'Invoice payment', v1Ing: 'Updating', v2: 'updated' }
+        const url = `invoice/addInvoicePayment`
+        const body = { ...formData, pendingAmount: pendingAmount - amountPaid }
         try {
             showToast({ ...options, action: 'loading' })
-            await http.PUT(axios, url, body, config)
-            optimisticUpdate(invoiceId, status)
+            const [data] = await http.POST(axios, url, body, config)
+            optimisticUpdate(data)
             showToast(options)
+            onModalClose(true)
         } catch (error) {
             message.destroy()
         }
@@ -167,8 +213,18 @@ const WarehouseInvoices = ({ reFetch }) => {
         setSeachON(true)
     }
 
+    const onModalClose = (hasSaved) => {
+        const formHasChanged = sessionStorage.getItem(TRACKFORM)
+        if (formHasChanged && !hasSaved) {
+            return setConfirmModal(true)
+        }
+        setPayModal(false)
+        setFormData({})
+        setFormErrors({})
+    }
+
     const dataSource = useMemo(() => invoices.map((invoice) => {
-        const { invoiceId, invoiceDate, totalAmount, customerName, departmentName, dueDate, status, billingAddress } = invoice
+        const { invoiceId, invoiceDate, totalAmount, customerName, departmentName, dueDate, status, billingAddress, pendingAmount } = invoice
 
         const canPay = status === 'Inprogress'
         const options = [
@@ -183,6 +239,7 @@ const WarehouseInvoices = ({ reFetch }) => {
             totalAmount,
             departmentName,
             billingAddress,
+            pendingAmount,
             status: renderStatus(status),
             dueDate: dayjs(dueDate).format(DATEFORMAT),
             date: dayjs(invoiceDate).format(DATEFORMAT),
@@ -190,6 +247,15 @@ const WarehouseInvoices = ({ reFetch }) => {
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, invoice)} />
         }
     }), [invoices])
+
+    const handleConfirmModalOk = useCallback(() => {
+        setConfirmModal(false);
+        resetTrackForm()
+        onModalClose()
+    }, [])
+
+    const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
+    const handleModalCancel = useCallback(() => onModalClose(), [])
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
@@ -256,6 +322,32 @@ const WarehouseInvoices = ({ reFetch }) => {
                         onPageSizeChange={handleSizeChange}
                     />)
             }
+            <CustomModal
+                hideCancel
+                okTxt='Add'
+                visible={payModal}
+                title='Payment'
+                onOk={handlePayment}
+                onCancel={handleModalCancel}
+                className='app-form-modal'
+            >
+                <PaymentForm
+                    data={formData}
+                    errors={formErrors}
+                    paymentOptions={paymentOptions}
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                />
+            </CustomModal>
+            <ConfirmModal
+                visible={confirmModal}
+                onOk={handleConfirmModalOk}
+                onCancel={handleConfirmModalCancel}
+                title='Are you sure you want to leave?'
+                okTxt='Yes'
+            >
+                <ConfirmMessage msg='Changes you made may not be saved.' />
+            </ConfirmModal>
         </div>
     )
 }

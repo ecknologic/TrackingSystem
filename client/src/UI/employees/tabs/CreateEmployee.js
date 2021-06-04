@@ -300,6 +300,7 @@ const CreateEmployee = ({ goToTab }) => {
         setFormData({})
         setDepValues({})
         setAdharProof({})
+        setDepAdharProof({})
         setLicenseProof({})
         setFormErrors({})
     }

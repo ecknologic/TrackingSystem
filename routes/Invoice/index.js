@@ -391,7 +391,7 @@ router.post('/addInvoicePayment', (req, res) => {
         else {
             invoiceQueries.addInvoicePayment(req.body, (err, results) => {
                 if (err) res.status(500).json(dbError(err));
-                else res.send("Added successfully");
+                else res.json(results);
             });
         }
     })

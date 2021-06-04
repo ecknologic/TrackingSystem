@@ -107,9 +107,12 @@ invoiceQueries.getDepartmentInvoicesCount = async (input, callback) => {
 //POST Request Methods
 invoiceQueries.addInvoicePayment = (input, callback) => {
     const { invoiceId, amountPaid, customerId, customerType, paymentDate, paymentMode } = input
-    let query = "insert into Invoice (invoiceId,amountPaid,  customerId, customerType, paymentDate, paymentMode) values(?,?,?,?,?,?)";
+    let query = "insert into invoicepaymentlogs (invoiceId,amountPaid,  customerId, customerType, paymentDate, paymentMode) values(?,?,?,?,?,?)";
     let requestBody = [invoiceId, amountPaid, customerId, customerType, paymentDate, paymentMode]
-    executePostOrUpdateQuery(query, requestBody, callback)
+    executePostOrUpdateQuery(query, requestBody, () => {
+        let getQuery = 'SELECT * FROM Invoice WHERE invoiceId=?'
+        return executeGetParamsQuery(getQuery, [invoiceId], callback)
+    })
 }
 
 invoiceQueries.createInvoice = (input, callback) => {
