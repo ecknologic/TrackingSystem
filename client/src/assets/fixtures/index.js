@@ -936,16 +936,16 @@ export const productionTBColumns = [
         dataIndex: 'level2',
         key: 'level2',
     },
-    {
-        title: 'Level-3 Inputs',
-        dataIndex: 'level3',
-        key: 'level3',
-    },
-    {
-        title: 'Level-4 Inputs',
-        dataIndex: 'level4',
-        key: 'level4',
-    },
+    // {
+    //     title: 'Level-3 Inputs',
+    //     dataIndex: 'level3',
+    //     key: 'level3',
+    // },
+    // {
+    //     title: 'Level-4 Inputs',
+    //     dataIndex: 'level4',
+    //     key: 'level4',
+    // },
     {
         title: 'Tested Manager',
         dataIndex: 'managerName',
