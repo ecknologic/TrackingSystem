@@ -366,7 +366,7 @@ router.get("/getCustomerDetails/:creatorId", (req, res) => {
 
 router.get("/getMarketingCustomerDetailsByType/:customerType", (req, res) => { // maraketing manager and all maraketing admins
   const { customerType } = req.params
-  let customerDetailsQuery = "SELECT c.customerNo,c.salesAgent,c.organizationName,c.createdBy,c.isActive,c.customertype,c.isApproved,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id LEFT JOIN usermaster u ON c.createdBy=u.userId WHERE (u.RoleId=5 OR u.RoleId=7 OR c.createdBy=?) AND d.deleted='0' and c.customertype=?  GROUP BY c.customerNo,c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.isApproved,c.customerId,c.registeredDate,c.createdBy ORDER BY c.registeredDate DESC"
+  let customerDetailsQuery = "SELECT c.customerNo,c.salesAgent,c.organizationName,c.createdBy,c.isActive,c.customertype,c.isApproved,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id LEFT JOIN usermaster u ON c.createdBy=u.userId WHERE (u.RoleId=5 OR u.RoleId=7 OR c.createdBy=?) AND d.deleted='0' AND c.isApproved=1 and c.customertype=?  GROUP BY c.customerNo,c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.isApproved,c.customerId,c.registeredDate,c.createdBy ORDER BY c.registeredDate DESC"
   db.query(customerDetailsQuery, [userId, customerType], (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
