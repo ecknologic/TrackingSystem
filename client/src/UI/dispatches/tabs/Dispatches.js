@@ -113,12 +113,12 @@ const Dispatches = ({ reFetch }) => {
 
     const dataSource = useMemo(() => dispatches.map((dispatch) => {
         const { DCNO: dcnumber, batchId, dispatchedDate, vehicleNo,
-            dispatchAddress, vehicleType, driverName, status } = dispatch
+            dispatchAddress, driverName, status } = dispatch
         return {
             key: dcnumber,
             dcnumber,
             batchId,
-            vehicleNo: vehicleNo + ' ' + vehicleType,
+            vehicleNo,
             driverName,
             dispatchTo: dispatchAddress,
             dateAndTime: dayjs(dispatchedDate).format(DATEANDTIMEFORMAT),

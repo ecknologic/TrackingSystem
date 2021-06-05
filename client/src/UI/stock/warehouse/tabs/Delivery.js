@@ -103,9 +103,9 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
         try {
             showToast({ v1Ing: 'Fetching', action: 'loading' })
             const [data] = await http.GET(axios, url, config)
-            const { mobileNumber: phoneNumber, address, products, mailId: EmailId, agencyName: customerName, deliveryLocation } = data
+            const { mobileNumber: phoneNumber, address, products, mailId: EmailId, agencyName: customerName, deliveryLocation, contactPerson } = data
             const productsUI = getProductsForUI(products)
-            setFormData(data => ({ ...data, phoneNumber, address, customerName, EmailId, deliveryLocation, ...productsUI }))
+            setFormData(data => ({ ...data, phoneNumber, address, customerName, EmailId, deliveryLocation, contactPerson, ...productsUI }))
             showToast({ v2: 'fetched' })
         } catch (error) {
             message.destroy()
@@ -162,7 +162,7 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
         if (key === 'customerType') {
             const productsUI = getProductsForUI([])
             setFormData(data => ({
-                ...data, existingCustomerId: null, customerName: '', phoneNumber: null,
+                ...data, existingCustomerId: null, customerName: '', phoneNumber: null, contactPerson: '',
                 distributorId: null, deliveryLocation: null, address: '', EmailId: '', ...productsUI
             }))
         }
