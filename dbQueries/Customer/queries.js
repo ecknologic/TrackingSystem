@@ -468,7 +468,7 @@ customerQueries.generatePDF = (input, callback) => {
     co.300MLBoxes,'price300ML',co.price300ML,'2LBoxes',co.2LBoxes,'price2L',co.price2L)) as products
     FROM customerdetails c INNER JOIN  customerorderdetails co ON c.customerId=co.existingCustomerId
     WHERE c.invoicetype!='complimentary'
-     AND co.isDelivered='Completed' AND customerId NOT IN (SELECT customerId FROM Invoice WHERE fromdate >=DATE(?) and toDate<=DATE(?))
+     AND co.isDelivered='Completed' AND co.customerType='internal' AND customerId NOT IN (SELECT customerId FROM Invoice WHERE fromdate >=DATE(?) and toDate<=DATE(?))
     AND( DATE(co.deliveryDate) BETWEEN ? AND ?) GROUP BY c.customerId`
     let options = [fromDate, toDate, fromDate, toDate]
     if (customerIds.length) {
@@ -478,7 +478,7 @@ customerQueries.generatePDF = (input, callback) => {
         'price1L',co.price1L, '500MLBoxes',co.500MLBoxes,'price500ML',co.price500ML,'300MLBoxes',co.300MLBoxes,'price300ML',co.price300ML,'2LBoxes',co.2LBoxes,'price2L',co.price2L)) as products
         FROM customerdetails c INNER JOIN  customerorderdetails co ON c.customerId=co.existingCustomerId
         WHERE c.invoicetype!='complimentary' 
-        AND co.isDelivered='Completed' AND customerId NOT IN (SELECT customerId FROM Invoice WHERE fromdate >=DATE(?) and toDate<=DATE(?))
+        AND co.isDelivered='Completed' AND co.customerType='internal' AND customerId NOT IN (SELECT customerId FROM Invoice WHERE fromdate >=DATE(?) and toDate<=DATE(?))
         AND( DATE(co.deliveryDate) BETWEEN ? AND ?) AND c.customerId IN (?) GROUP BY c.customerId`
         options = [fromDate, toDate, fromDate, toDate, customerIds]
     }
