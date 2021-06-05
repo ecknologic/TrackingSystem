@@ -67,7 +67,6 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
     const source = useMemo(() => axios.CancelToken.source(), [date]);
     const config = { cancelToken: source.token }
 
-    console.log('data.>>>', date)
     useEffect(() => {
         setLoading(true)
         getDeliveries()
@@ -249,9 +248,11 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
     }
 
     const handleMenuSelect = async (key, data) => {
-        const { dcNo, isDelivered } = data
+        const { dcNo, isDelivered, customerType } = data
         if (key === 'view') {
-            setTitle(dcNo)
+            const title = `${dcNo} - ${customerType === 'newCustomer' ? 'New Customer'
+                : customerType === 'internal' ? 'Existing Customer' : 'Distributor'}`
+            setTitle(title)
 
             try {
                 showToast({ v1Ing: 'Fetching', action: 'loading' })
