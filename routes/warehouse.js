@@ -225,7 +225,7 @@ router.get('/getAllDcDetails', (req, res) => {
 
 
 router.get('/getTotalReturnCans/:date', (req, res) => {
-  warehouseQueries.getTotalReturnCans({ departmentId, date: req.params.date }, (err, results) => {
+  warehouseQueries.getTotalWarehouseReturnCans({ departmentId, date: req.params.date }, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else res.json(results[0]);
   });
@@ -324,7 +324,7 @@ router.get('/getConfirmedEmptyCans/:date', (req, res) => {
   });
 });
 router.get('/getReturnedEmptyCans/:date', (req, res) => {
-  warehouseQueries.getReturnedEmptyCans({ departmentId, date: req.params.date }, (err, results) => {
+  warehouseQueries.getReturnedEmptyCansToMotherPlant({ departmentId, date: req.params.date }, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else res.json(results[0]);
   });
