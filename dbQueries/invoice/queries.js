@@ -115,19 +115,31 @@ invoiceQueries.addInvoicePayment = (input, callback) => {
     })
 }
 
+invoiceQueries.addDepartmentInvoicePayment = (input, callback) => {
+    const { invoiceId, amountPaid, customerId, customerType, paymentDate, paymentMode, departmentId } = input
+    let query = "insert into departmentInvoicepaymentlogs (invoiceId,amountPaid,customerId, customerType, paymentDate, paymentMode,departmentId) values(?,?,?,?,?,?,?)";
+    let requestBody = [invoiceId, amountPaid, customerId, customerType, paymentDate, paymentMode, departmentId]
+    executePostOrUpdateQuery(query, requestBody, () => {
+        let getQuery = 'SELECT * FROM departmentInvoices WHERE invoiceId=?'
+        return executeGetParamsQuery(getQuery, [invoiceId], callback)
+    })
+}
+
 invoiceQueries.createInvoice = (input, callback) => {
     const { customerId, invoiceDate, dueDate, fromDate, toDate, salesPerson, invoiceId, hsnCode, poNo, totalAmount, customerName, mailIds } = input
     let query = "insert into Invoice (customerId,invoiceDate,dueDate,salesPerson,invoiceId,hsnCode,poNo,totalAmount,pendingAmount,customerName,fromDate,toDate,mailIds) values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
     // var gstProofImage = Buffer.from(gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-    let requestBody = [customerId, invoiceDate, dueDate, salesPerson, invoiceId, hsnCode, poNo, totalAmount,totalAmount, customerName, fromDate, toDate, mailIds]
+    let requestBody = [customerId, invoiceDate, dueDate, salesPerson, invoiceId, hsnCode, poNo, totalAmount, totalAmount, customerName, fromDate, toDate, mailIds]
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 
 invoiceQueries.createDepartmentInvoice = (input, callback) => {
-    const { dcNo, customerId, invoiceDate, dueDate, fromDate, toDate, salesPerson, invoiceId, hsnCode, poNo, totalAmount, customerName, departmentId, mailIds, status = 'Pending', departmentStatus = 'Pending', customerType = 'customer' } = input
-    let query = "insert into departmentInvoices (dcNo,customerId,invoiceDate,dueDate,salesPerson,invoiceId,hsnCode,poNo,totalAmount,customerName,fromDate,toDate,departmentId,status,mailIds,departmentStatus,customerType) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    const { dcNo, customerId, invoiceDate, dueDate, fromDate, toDate, salesPerson, invoiceId, hsnCode, poNo, totalAmount, customerName, departmentId, mailIds, status = 'Pending', departmentStatus = 'Pending', customerType = 'customer', paymentMode } = input
+    const pendingAmount = departmentStatus == "Pending" ? totalAmount : 0
+    const noOfPayments = departmentStatus == "Pending" ? 1 : 0
+    let query = "insert into departmentInvoices (dcNo,customerId,invoiceDate,dueDate,salesPerson,invoiceId,hsnCode,poNo,totalAmount,customerName,fromDate,toDate,departmentId,status,mailIds,departmentStatus,pendingAmount,customerType,paymentMode,noOfPayments) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     // var gstProofImage = Buffer.from(gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-    let requestBody = [dcNo, customerId, invoiceDate, dueDate, salesPerson, invoiceId, hsnCode, poNo, totalAmount, customerName, fromDate, toDate, departmentId, status, mailIds, departmentStatus, customerType]
+    let requestBody = [dcNo, customerId, invoiceDate, dueDate, salesPerson, invoiceId, hsnCode, poNo, totalAmount, customerName, fromDate, toDate, departmentId, status, mailIds, departmentStatus, pendingAmount, customerType, paymentMode, noOfPayments]
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 
@@ -205,6 +217,13 @@ invoiceQueries.updateInvoicePaymentDetails = (input, callback) => {
     const { invoiceId, noOfPayments, pendingAmount } = input
     let status = pendingAmount == 0 ? 'Paid' : 'Pending'
     let query = "update Invoice SET updatedDateTime=?,noOfPayments=?, pendingAmount=?,status=? WHERE invoiceId=?";
+    executePostOrUpdateQuery(query, [new Date(), noOfPayments, pendingAmount, status, invoiceId], callback)
+}
+
+invoiceQueries.updateDepartmentInvoicePaymentDetails = (input, callback) => {
+    const { invoiceId, noOfPayments, pendingAmount } = input
+    let status = pendingAmount == 0 ? 'Paid' : 'Pending'
+    let query = "update departmentInvoices SET updatedDateTime=?,noOfPayments=?, pendingAmount=?,status=? WHERE invoiceId=?";
     executePostOrUpdateQuery(query, [new Date(), noOfPayments, pendingAmount, status, invoiceId], callback)
 }
 

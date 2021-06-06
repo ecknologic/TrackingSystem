@@ -397,6 +397,18 @@ router.post('/addInvoicePayment', (req, res) => {
     })
 });
 
+router.post('/addDepartmentInvoicePayment', (req, res) => {
+    invoiceQueries.updateDepartmentInvoicePaymentDetails(req.body, (err, data) => {
+        if (err) res.status(500).json(dbError(err));
+        else {
+            invoiceQueries.addDepartmentInvoicePayment({ ...req.body, departmentId }, (err, results) => {
+                if (err) res.status(500).json(dbError(err));
+                else res.json(results);
+            });
+        }
+    })
+});
+
 router.post('/getInvoicePayments', (req, res) => {
     invoiceQueries.getInvoicePayments((err, results) => {
         if (err) res.status(500).json(dbError(err));
