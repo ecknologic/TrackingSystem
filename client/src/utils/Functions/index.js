@@ -551,7 +551,7 @@ export const extractGADetails = (data) => {
     delete clone.product500ML
     delete clone.product300ML
     delete clone.loading
-    return { ...clone, Address1, organizationName, alternatePhNo: alternatePhNo || null, poNo: poNo || null }
+    return { ...clone, Address1, organizationName, contactPerson: organizationName, alternatePhNo: alternatePhNo || null, poNo: poNo || null }
 }
 
 export const getAddressesForDB = (data, isUpdate) => {
