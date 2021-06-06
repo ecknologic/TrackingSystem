@@ -3,11 +3,12 @@ import React, { useEffect } from 'react';
 import InputLabel from '../../../../components/InputLabel';
 import CustomInput from '../../../../components/CustomInput';
 import SelectInput from '../../../../components/SelectInput';
-import { resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
+import CustomDateInput from '../../../../components/CustomDateInput';
+import { disableFutureDates, resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 
 const PaymentForm = ({ data, paymentOptions = [], errors, onChange, onBlur }) => {
 
-    const { customerName, amountPaid, noOfPayments, invoiceId, invoiceDate, paymentMode } = data
+    const { customerName, amountPaid, noOfPayments, invoiceId, paymentDate, paymentMode } = data
 
     useEffect(() => {
         resetTrackForm()
@@ -47,6 +48,14 @@ const PaymentForm = ({ data, paymentOptions = [], errors, onChange, onBlur }) =>
                     <SelectInput track
                         options={paymentOptions} value={paymentMode}
                         error={errors.paymentMode} onSelect={(value) => onChange(value, 'paymentMode')}
+                    />
+                </div>
+                <div className='input-container'>
+                    <InputLabel name='Payment Date' error={errors.paymentDate} mandatory />
+                    <CustomDateInput
+                        track error={errors.paymentDate}
+                        value={paymentDate} disabledDate={disableFutureDates}
+                        onChange={(value) => onChange(value, 'paymentDate')}
                     />
                 </div>
             </div>

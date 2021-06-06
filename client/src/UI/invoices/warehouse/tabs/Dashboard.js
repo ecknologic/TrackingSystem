@@ -13,13 +13,13 @@ import InputValue from '../../../../components/InputValue';
 import SearchInput from '../../../../components/SearchInput';
 import CustomModal from '../../../../components/CustomModal';
 import ConfirmModal from '../../../../components/CustomModal';
-import { validateIntFloat } from '../../../../utils/validations';
+import { validateIntFloat, validatePaymentValues } from '../../../../utils/validations';
 import { TODAYDATE, TRACKFORM } from '../../../../utils/constants';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomDateInput from '../../../../components/CustomDateInput';
 import CustomPagination from '../../../../components/CustomPagination';
 import { getDropdownOptions, getInvoiceColumns } from '../../../../assets/fixtures';
-import { computeTotalAmount, deepClone, disableFutureDates, doubleKeyComplexSearch, getStatusColor, showToast, resetTrackForm } from '../../../../utils/Functions';
+import { computeTotalAmount, deepClone, disableFutureDates, doubleKeyComplexSearch, getStatusColor, showToast, resetTrackForm, isEmpty } from '../../../../utils/Functions';
 import { ListViewIconGrey, ScheduleIcon, SendIconGrey, TickIconGrey } from '../../../../components/SVG_Icons';
 const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
@@ -41,6 +41,7 @@ const Dashboard = ({ reFetch }) => {
     const [payModal, setPayModal] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
     const [searchON, setSeachON] = useState(false)
+    const [shake, setShake] = useState(false)
     const [filterON, setFilterON] = useState(false)
     const [open, setOpen] = useState(false)
 
@@ -152,6 +153,15 @@ const Dashboard = ({ reFetch }) => {
     }
 
     const handlePayment = async () => {
+        const formErrors = validatePaymentValues(formData)
+
+        if (!isEmpty(formErrors)) {
+            setShake(true)
+            setTimeout(() => setShake(false), 820)
+            setFormErrors(formErrors)
+            return
+        }
+
         const { pendingAmount, amountPaid } = formData
         const options = { item: 'Invoice payment', v1Ing: 'Updating', v2: 'updated' }
         const url = `invoice/addInvoicePayment`
@@ -290,7 +300,7 @@ const Dashboard = ({ reFetch }) => {
                 title='Payment'
                 onOk={handlePayment}
                 onCancel={handleModalCancel}
-                className='app-form-modal'
+                className={`app-form-modal ${shake && 'app-shake'}`}
             >
                 <PaymentForm
                     data={formData}

@@ -14,7 +14,7 @@ import SearchInput from '../../../../components/SearchInput';
 import CustomModal from '../../../../components/CustomModal';
 import ConfirmModal from '../../../../components/CustomModal';
 import RoutesFilter from '../../../../components/RoutesFilter';
-import { validateIntFloat } from '../../../../utils/validations';
+import { validateIntFloat, validatePaymentValues } from '../../../../utils/validations';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomDateInput from '../../../../components/CustomDateInput';
 import CustomPagination from '../../../../components/CustomPagination';
@@ -44,6 +44,7 @@ const WarehouseInvoices = ({ reFetch }) => {
     const [filterON, setFilterON] = useState(false)
     const [resetSearch, setResetSearch] = useState(false)
     const [searchON, setSeachON] = useState(false)
+    const [shake, setShake] = useState(false)
     const [open, setOpen] = useState(false)
 
     const paymentOptions = useMemo(() => getDropdownOptions(paymentList), [paymentList])
@@ -183,6 +184,15 @@ const WarehouseInvoices = ({ reFetch }) => {
     }
 
     const handlePayment = async () => {
+        const formErrors = validatePaymentValues(formData)
+
+        if (!isEmpty(formErrors)) {
+            setShake(true)
+            setTimeout(() => setShake(false), 820)
+            setFormErrors(formErrors)
+            return
+        }
+
         const { pendingAmount, amountPaid } = formData
         const options = { item: 'Invoice payment', v1Ing: 'Updating', v2: 'updated' }
         const url = `invoice/addInvoicePayment`
@@ -224,9 +234,9 @@ const WarehouseInvoices = ({ reFetch }) => {
     }
 
     const dataSource = useMemo(() => invoices.map((invoice) => {
-        const { invoiceId, invoiceDate, totalAmount, customerName, departmentName, dueDate, status, billingAddress, pendingAmount } = invoice
+        const { invoiceId, invoiceDate, totalAmount, customerName, departmentName, dueDate, departmentStatus, billingAddress, pendingAmount } = invoice
 
-        const canPay = status === 'Inprogress'
+        const canPay = departmentStatus !== 'Paid'
         const options = [
             <Menu.Item key="resend" icon={<SendIconGrey />}>Resend</Menu.Item>,
             <Menu.Item key="dcList" icon={<ListViewIconGrey />}>DC List</Menu.Item>,
@@ -240,7 +250,7 @@ const WarehouseInvoices = ({ reFetch }) => {
             departmentName,
             billingAddress,
             pendingAmount,
-            status: renderStatus(status),
+            status: renderStatus(departmentStatus),
             dueDate: dayjs(dueDate).format(DATEFORMAT),
             date: dayjs(invoiceDate).format(DATEFORMAT),
             invoiceId: <span className='app-link' onClick={() => handleViewInvoice(invoice)}>{invoiceId}</span>,
@@ -329,7 +339,7 @@ const WarehouseInvoices = ({ reFetch }) => {
                 title='Payment'
                 onOk={handlePayment}
                 onCancel={handleModalCancel}
-                className='app-form-modal'
+                className={`app-form-modal ${shake && 'app-shake'}`}
             >
                 <PaymentForm
                     data={formData}

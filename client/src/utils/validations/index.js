@@ -648,6 +648,22 @@ export const validateRequestMaterialValues = (data) => {
     return errors
 }
 
+export const validatePaymentValues = (data) => {
+    let errors = {};
+    const text = 'Required'
+    const { customerName, amountPaid, noOfPayments, paymentDate, paymentMode } = data
+
+    if (!customerName) errors.customerName = text
+    if (!paymentDate) errors.paymentDate = text
+    if (!noOfPayments) errors.noOfPayments = text
+    if (!paymentMode) errors.paymentMode = text
+    if (!amountPaid) errors.amountPaid = text
+    else {
+        const error = validateNumber(amountPaid)
+        error && (errors.amountPaid = error)
+    }
+    return errors
+}
 export const validateReceivedMaterialValues = (data) => {
     let errors = {};
     const text = 'Required'

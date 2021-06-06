@@ -16,7 +16,7 @@ import CustomModal from '../../../../components/CustomModal';
 import ConfirmModal from '../../../../components/CustomModal';
 import CustomButton from '../../../../components/CustomButton';
 import RoutesFilter from '../../../../components/RoutesFilter';
-import { validateIntFloat } from '../../../../utils/validations';
+import { validateIntFloat, validatePaymentValues } from '../../../../utils/validations';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomDateInput from '../../../../components/CustomDateInput';
 import CustomPagination from '../../../../components/CustomPagination';
@@ -53,6 +53,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
     const [endDate, setEndDate] = useState(TODAYDATE)
     const [resetSearch, setResetSearch] = useState(false)
     const [filterON, setFilterON] = useState(false)
+    const [shake, setShake] = useState(false)
     const [searchON, setSeachON] = useState(false)
     const [open, setOpen] = useState(false)
 
@@ -254,6 +255,15 @@ const Dashboard = ({ reFetch, onUpdate }) => {
     }
 
     const handlePayment = async () => {
+        const formErrors = validatePaymentValues(formData)
+
+        if (!isEmpty(formErrors)) {
+            setShake(true)
+            setTimeout(() => setShake(false), 820)
+            setFormErrors(formErrors)
+            return
+        }
+
         const { pendingAmount, amountPaid } = formData
         const options = { item: 'Invoice payment', v1Ing: 'Updating', v2: 'updated' }
         const url = `invoice/addInvoicePayment`
@@ -435,7 +445,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
                 title='Payment'
                 onOk={handlePayment}
                 onCancel={handleModalCancel}
-                className='app-form-modal'
+                className={`app-form-modal ${shake && 'app-shake'}`}
             >
                 <PaymentForm
                     data={formData}

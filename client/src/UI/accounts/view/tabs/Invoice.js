@@ -10,13 +10,13 @@ import useUser from '../../../../utils/hooks/useUser';
 import SearchInput from '../../../../components/SearchInput';
 import CustomModal from '../../../../components/CustomModal';
 import ConfirmModal from '../../../../components/CustomModal';
-import { validateIntFloat } from '../../../../utils/validations';
+import { validateIntFloat, validatePaymentValues } from '../../../../utils/validations';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import PaymentForm from '../../../invoices/super-admin/forms/Payment';
 import CustomPagination from '../../../../components/CustomPagination';
 import { getDropdownOptions, getInvoiceColumns } from '../../../../assets/fixtures';
 import { MARKETINGADMIN, MARKETINGMANAGER, TRACKFORM } from '../../../../utils/constants';
-import { deepClone, getStatusColor, showToast, resetTrackForm } from '../../../../utils/Functions';
+import { deepClone, getStatusColor, showToast, resetTrackForm, isEmpty } from '../../../../utils/Functions';
 import { DocIconGrey, ListViewIconGrey, SendIconGrey, TickIconGrey } from '../../../../components/SVG_Icons';
 const DATEFORMAT = 'DD/MM/YYYY'
 
@@ -33,6 +33,7 @@ const Invoice = ({ accountId }) => {
     const [formErrors, setFormErrors] = useState({})
     const [payModal, setPayModal] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
+    const [shake, setShake] = useState(false)
 
     const paymentOptions = useMemo(() => getDropdownOptions(paymentList), [paymentList])
     const isMarketingRole = useMemo(() => ROLE === MARKETINGADMIN || ROLE === MARKETINGMANAGER, [ROLE])
@@ -113,14 +114,23 @@ const Invoice = ({ accountId }) => {
 
     const handleViewInvoice = (invoice, id) => history.push('/invoices/manage', { invoice, FOR: 'CUSTOMER', id })
 
-    const optimisticUpdate = (id, status) => {
+    const optimisticUpdate = (data) => {
         let clone = deepClone(invoices);
-        const index = clone.findIndex(item => item.invoiceId === id)
-        clone[index].status = status;
+        const index = clone.findIndex(item => item.invoiceId === data.invoiceId)
+        clone[index] = data;
         setInvoices(clone)
     }
 
     const handlePayment = async () => {
+        const formErrors = validatePaymentValues(formData)
+
+        if (!isEmpty(formErrors)) {
+            setShake(true)
+            setTimeout(() => setShake(false), 820)
+            setFormErrors(formErrors)
+            return
+        }
+
         const { pendingAmount, amountPaid } = formData
         const options = { item: 'Invoice payment', v1Ing: 'Updating', v2: 'updated' }
         const url = `invoice/addInvoicePayment`
@@ -221,7 +231,7 @@ const Invoice = ({ accountId }) => {
                 title='Payment'
                 onOk={handlePayment}
                 onCancel={handleModalCancel}
-                className='app-form-modal'
+                className={`app-form-modal ${shake && 'app-shake'}`}
             >
                 <PaymentForm
                     data={formData}
