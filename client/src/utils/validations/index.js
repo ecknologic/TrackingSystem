@@ -878,7 +878,7 @@ export const validateDCValues = (data) => {
     const text = 'Required'
 
     const { routeId, customerName, customerType, existingCustomerId, phoneNumber, address,
-        driverId, distributorId, EmailId, deliveryLocation, ...rest } = data
+        driverId, distributorId, EmailId, deliveryLocation, contactPerson, ...rest } = data
 
     const isDistributor = customerType === 'distributor'
     const isExistingCustomer = customerType === 'internal'
@@ -886,6 +886,10 @@ export const validateDCValues = (data) => {
     else {
         const error = validateEmailId(EmailId)
         error && (errors.EmailId = error)
+    }
+
+    if (isDistributor || isExistingCustomer) {
+        if (!contactPerson) errors.contactPerson = text
     }
 
     if (isDistributor) {

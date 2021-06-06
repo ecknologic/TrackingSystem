@@ -12,7 +12,7 @@ const DCForm = (props) => {
 
     const { routeId, customerName, phoneNumber, address, driverId, product20L, product2L, product1L, deliveryLocation,
         product500ML, product300ML, existingCustomerId, distributorId, customerType, creationType, EmailId,
-        price20L, price2L, price1L, price500ML, price300ML } = data
+        price20L, price2L, price1L, price500ML, price300ML, contactPerson } = data
 
     const disableAll = disabledItems === 'ALL' && disabledItems !== 'NONE'
     const disableFew = disabledItems === 'FEW'
@@ -108,6 +108,18 @@ const DCForm = (props) => {
                             onChange={(value) => onChange(value, 'EmailId')}
                         />
                     </div>
+                    <div className='input-container'>
+                        <InputLabel name='Contact Person' error={errors.contactPerson} mandatory={isExistingCustomer || isDistributor} />
+                        <CustomInput
+                            value={contactPerson}
+                            disabled={disableAll || disableFew}
+                            placeholder='Contact Person'
+                            error={errors.contactPerson}
+                            onChange={(value) => onChange(value, 'contactPerson')}
+                        />
+                    </div>
+                </div>
+                <div className='row'>
                     <div className='input-container'>
                         <InputLabel name='Delivery Location' error={errors.deliveryLocation} mandatory />
                         <SelectInput options={locationOptions} showSearch

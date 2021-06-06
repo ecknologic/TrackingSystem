@@ -567,7 +567,7 @@ export const getAddressesForDB = (data, isUpdate) => {
 
 export const getDCValuesForDB = (data) => {
 
-    const { customerName, phoneNumber, address, routeId, driverId, EmailId,
+    const { customerName, phoneNumber, address, routeId, driverId, EmailId, contactPerson,
         product20L, product2L, product1L, product500ML, product300ML, price20L, price2L, price1L,
         price500ML, price300ML, customerType, existingCustomerId, distributorId, creationType, deliveryLocation } = data
 
@@ -578,7 +578,7 @@ export const getDCValuesForDB = (data) => {
         price20L: price20L || 0, price2L: price2L || 0, price1L: price1L || 0,
         price500ML: price500ML || 0, price300ML: price300ML || 0,
         customerType, existingCustomerId, distributorId, creationType,
-        deliveryLocation
+        deliveryLocation, contactPerson
     }
 }
 
@@ -750,8 +750,8 @@ export const renderRoute = () => {
 
 }
 
-export const getAccountStatusUI=(accountStatus)=>{
-    if(accountStatus=='notintrested') return 'Not Interested'
+export const getAccountStatusUI = (accountStatus) => {
+    if (accountStatus == 'notintrested') return 'Not Interested'
     else return 'Revisit'
 }
 

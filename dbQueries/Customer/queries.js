@@ -9,7 +9,7 @@ customerQueries.getCustomerDetails = (customerId, callback) => {
     executeGetQuery(query, callback)
 }
 customerQueries.getCustomerDetailsForDC = (customerId, callback) => {
-    let query = "SELECT mobileNumber as phoneNumber,Address1 as address,EmailId,customerName from customerdetails WHERE customerId=" + customerId
+    let query = "SELECT mobileNumber as phoneNumber,Address1 as address,EmailId,contactPerson,customerName from customerdetails WHERE customerId=" + customerId
     executeGetQuery(query, callback)
 }
 customerQueries.getOrdersByDepartmentId = (departmentId, callback) => {
@@ -363,10 +363,10 @@ customerQueries.saveCustomerOrderDetails = (input, callback) => {
     //     product300ML, price300ML, product2L, price2L, product1000ML, price1000ML, deliveryLocation } = input
     // let query = `insert into customerorderdetails (customerName,phoneNumber,address,routeId,driverId,existingCustomerId,latitude,longitude,dcNo,warehouseId,customerType,20LCans, price20L, 1LBoxes, price1L, 500MLBoxes, price500ML,300MLBoxes, price300ML,1000MLBoxes, price1000ML,2LBoxes,price2L,deliveryLocation) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
     // let requestBody = [contactPerson, phoneNumber, address, routeId, driverId, customer_Id, latitude, longitude, dcNo, departmentId, customerType, product20L, price20L, product1L, price1L, product500ML, price500ML, product300ML, price300ML, product1000ML, price1000ML, product2L, price2L, deliveryLocation]
-    let { contactPerson, customerName,phoneNumber, address, routeId, driverId, customer_Id, latitude, longitude, dcNo, departmentId, customerType, product20L, price20L, product1L, price1L, product500ML, price500ML,
+    let { contactPerson, customerName, phoneNumber, address, routeId, driverId, customer_Id, latitude, longitude, dcNo, departmentId, customerType, product20L, price20L, product1L, price1L, product500ML, price500ML,
         product300ML, price300ML, product2L, price2L, deliveryLocation } = input
     let query = `insert into customerorderdetails (customerName,contactPerson,phoneNumber,address,routeId,driverId,existingCustomerId,latitude,longitude,dcNo,warehouseId,customerType,20LCans, price20L, 1LBoxes, price1L, 500MLBoxes, price500ML,300MLBoxes, price300ML,2LBoxes,price2L,deliveryLocation) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
-    let requestBody = [customerName,contactPerson, phoneNumber, address, routeId, driverId, customer_Id, latitude, longitude, dcNo, departmentId, customerType, product20L, price20L, product1L, price1L, product500ML, price500ML, product300ML, price300ML, product2L, price2L, deliveryLocation]
+    let requestBody = [customerName, contactPerson, phoneNumber, address, routeId, driverId, customer_Id, latitude, longitude, dcNo, departmentId, customerType, product20L, price20L, product1L, price1L, product500ML, price500ML, product300ML, price300ML, product2L, price2L, deliveryLocation]
 
     executePostOrUpdateQuery(query, requestBody, callback)
 }
