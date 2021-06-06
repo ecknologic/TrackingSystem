@@ -19,7 +19,7 @@ import ConfirmMessage from '../../../../components/ConfirmMessage';
 import EmptyCansForm from '../../../empty-cans/warehouse/forms/EmptyCans';
 import { getASValuesForDB, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 import { getDriverOptions, getWarehouseOptions, getVehicleOptions } from '../../../../assets/fixtures';
-import { validateNumber, validateASValues, validateRECValues, validateDSValues } from '../../../../utils/validations';
+import { validateNumber, validateASValues, validateRECValues, validateDSValues, compareMaxNumber } from '../../../../utils/validations';
 
 const StockDetails = ({ date, driverList, vehicleList, motherplantList }) => {
     const { WAREHOUSEID } = useUser()
@@ -130,6 +130,7 @@ const StockDetails = ({ date, driverList, vehicleList, motherplantList }) => {
     }
 
     const handleChange = (value, key) => {
+        const { emptycans } = EC
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
@@ -155,7 +156,7 @@ const StockDetails = ({ date, driverList, vehicleList, motherplantList }) => {
             setFormErrors(errors => ({ ...errors, damaged: error }))
         }
         else if (key === 'emptycans_count') {
-            const error = validateNumber(value)
+            const error = compareMaxNumber(value, emptycans, 'cans')
             setFormErrors(errors => ({ ...errors, emptycans_count: error }))
         }
     }
@@ -177,7 +178,7 @@ const StockDetails = ({ date, driverList, vehicleList, motherplantList }) => {
     }
 
     const handleCansReturn = async () => {
-        const formErrors = validateRECValues(formData)
+        const formErrors = validateRECValues(formData, EC.emptycans)
 
         if (!isEmpty(formErrors)) {
             setShake(true)

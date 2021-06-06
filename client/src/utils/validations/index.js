@@ -108,6 +108,7 @@ export const validateAccountValues = (data, customerType, isInView) => {
     else {
         const error = compareMaxNumber(creditPeriodInDays, 90, 'days')
         error && (errors.creditPeriodInDays = error)
+        error && (errors.creditPeriodInDays = error)
     }
     if (depositAmount === null || !String(depositAmount)) errors.depositAmount = text
     else {
@@ -973,7 +974,7 @@ export const validateDSValues = (data) => {
     return { ...errors, ...productErrors }
 }
 
-export const validateRECValues = (data) => {
+export const validateRECValues = (data, max) => {
     let errors = {}
     const text = 'Required'
 
@@ -989,7 +990,10 @@ export const validateRECValues = (data) => {
     if (!vehicleId) errors.vehicleId = text
     if (!details) errors.details = text
     if (!emptycans_count) errors.details = text
-
+    else {
+        const error = compareMaxNumber(emptycans_count, max, 'cans')
+        error && (errors.emptycans_count = error)
+    }
     return errors
 }
 
