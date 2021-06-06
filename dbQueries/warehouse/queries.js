@@ -21,7 +21,7 @@ warehouseQueries.getDeliveryDetails = (input, callback) => {
     let query = "select c.customerOrderId,c.deliveryLocation,c.contactPerson,c.EmailId,c.existingCustomerId,c.distributorId,c.creationType,c.customerType,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS product20L,c.1LBoxes AS product1L,c.500MLBoxes AS product500ML,c.300MLBoxes AS product300ML,c.2LBoxes AS product2L,c.price20L, c.price2L, c.price1L, c.price500ML, c.price300ML,r.*,d.driverName,d.mobileNumber,CASE WHEN c.creationType='manual' THEN c.EmailId ELSE cd.EmailId  END AS EmailId FROM customerorderdetails c LEFT JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid left JOIN customerdetails cd ON c.existingCustomerId=cd.customerId  WHERE DATE(`deliveryDate`) = ? AND warehouseId=? ORDER BY c.dcNo DESC";
     return executeGetParamsQuery(query, [date, departmentId], callback)
 }
-warehouseQueries.getTotalReturnCans = (input, callback) => { //Warehouse count
+warehouseQueries.getTotalWarehouseReturnCans = (input, callback) => { //Warehouse count
     const { departmentId, date } = input
     let query = 'SELECT SUM(returnEmptyCans) AS emptycans FROM customerorderdetails WHERE DATE(deliveredDate)=? AND warehouseId=?'
     return executeGetParamsQuery(query, [date, departmentId], callback)
@@ -115,7 +115,7 @@ warehouseQueries.getOrderDetailsByDepartment = async (departmentId, callback) =>
     let query = `select d.deliveryDetailsId,d.address,r.RouteName from DeliveryDetails d INNER JOIN routes r ON d.routeId=r.routeId WHERE d.departmentId=? AND d.deleted=0 AND d.isActive=1`;
     return executeGetParamsQuery(query, [departmentId], callback)
 }
-warehouseQueries.getReturnedEmptyCans = async ({ departmentId, date }, callback) => {
+warehouseQueries.getReturnedEmptyCansToMotherPlant = async ({ departmentId, date }, callback) => {
     // let query = "SELECT (SELECT SUM(c.returnemptycans) FROM customerorderdetails c WHERE c.warehouseid=?)-(SELECT SUM(e.emptycans_count)  FROM EmptyCanDetails e  WHERE e.isconfirmed=1 AND e.warehouseId=?) AS emptycans";
     // let query = `SELECT ABS(e.emptycans) AS emptycans FROM (SELECT (SELECT IFNULL(SUM(c.returnemptycans),0) FROM customerorderdetails c WHERE c.warehouseid=?)-(SELECT IFNULL(SUM(e.emptycans_count),0)
     // FROM EmptyCanDetails e  WHERE e.status='Pending' AND e.warehouseId=?) AS emptycans) AS e`
