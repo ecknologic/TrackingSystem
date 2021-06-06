@@ -14,7 +14,7 @@ import { TODAYDATE } from '../../../../utils/constants';
 import NoContent from '../../../../components/NoContent';
 import CustomButton from '../../../../components/CustomButton';
 import { validateNumber, validateInvoiceValues } from '../../../../utils/validations';
-import { getProductOptions, getDDownOptions, getDCOptions } from '../../../../assets/fixtures';
+import { getProductOptions, getDDownOptions, getDCOptions, getDropdownOptions } from '../../../../assets/fixtures';
 import { getProductsForTable, getProductTableResults, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
@@ -30,6 +30,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [productList, setProductList] = useState([])
+    const [paymentList, setPaymentList] = useState([])
     const [customerList, setCustomerList] = useState([])
     const [dataSource, setDataSource] = useState(editMode ? [] : initData)
     const [shake, setShake] = useState(false)
@@ -38,6 +39,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
 
     const DCOptions = useMemo(() => getDCOptions(DCList), [DCList])
     const GSTOptions = useMemo(() => getDDownOptions(GSTList), [GSTList])
+    const paymentOptions = useMemo(() => getDropdownOptions(paymentList), [paymentList])
     const productOptions = useMemo(() => getProductOptions(productList), [productList])
     const footerValues = useMemo(() => computeFinalAmounts(dataSource), [dataSource])
     const source = useMemo(() => axios.CancelToken.source(), []);
@@ -49,6 +51,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
         else getInvoiceId()
         getCustomerList()
         getProductList()
+        getPaymentList()
         getGSTList()
         getDCList()
 
@@ -122,6 +125,15 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
         } catch (error) { }
     }
 
+    const getPaymentList = async () => {
+        const url = `bibo/getList/paymentMode`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setPaymentList(data)
+        } catch (error) { }
+    }
+
     const getDCByCustomerOrderId = async (id) => {
         const url = `warehouse/getDCDetailsByCOId/${id}`
 
@@ -136,7 +148,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
             else if ((dc.gstNo || "").startsWith('36')) setIsLocal(true)
             else { setIsLocal(false); isLocal = false }
 
-            setFormData(data => ({ ...data, ...dc, customerId }))
+            setFormData(data => ({ ...data, ...dc, customerId, paymentMode: null }))
             const data = getProductsForTable(productList, dc, isLocal)
             handleCheckboxChange(false)
             setDataSource(data)
@@ -208,6 +220,10 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
         const status = checked ? 'InProgress' : 'Pending'
         const departmentStatus = checked ? 'Paid' : 'Pending'
         setFormData(data => ({ ...data, departmentStatus, status }))
+
+        if (!checked) {
+            setFormData(data => ({ ...data, paymentMode: null }))
+        }
     }
 
     const handleSubmit = async () => {
@@ -313,6 +329,8 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
             <InvoiceRestForm
                 data={formData}
                 errors={formErrors}
+                hasPaid={departmentStatus === 'Pending' ? false : true}
+                paymentOptions={paymentOptions}
                 onChange={handleChange}
             />
             <div className='app-footer-buttons-container'>

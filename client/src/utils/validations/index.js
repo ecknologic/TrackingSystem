@@ -480,12 +480,13 @@ export const validateInvoiceValues = (data, isWHAdmin) => {
     let errors = {};
     const text = 'Required'
     const { customerId, customerName, poNo, hsnCode, invoiceDate, dueDate,
-        TAndC, fromDate, toDate, products, dcNo } = data;
+        TAndC, fromDate, toDate, products, dcNo, paymentMode, departmentStatus } = data;
 
     if (isWHAdmin) {
         if (!customerName) errors.customerName = text;
         if (!dcNo) errors.dcNo = text;
         if (!TAndC) errors.TAndC = text;
+        if (departmentStatus === 'Paid' && !paymentMode) errors.paymentMode = text
         if (isEmpty(products)) errors.products = 'Atleast 1 product is required'
         else {
             const error = validateTableProducts(products)
