@@ -652,7 +652,7 @@ export const validateRequestMaterialValues = (data) => {
 export const validatePaymentValues = (data) => {
     let errors = {};
     const text = 'Required'
-    const { customerName, amountPaid, noOfPayments, paymentDate, paymentMode } = data
+    const { customerName, amountPaid, noOfPayments, paymentDate, paymentMode, pendingAmount } = data
 
     if (!customerName) errors.customerName = text
     if (!paymentDate) errors.paymentDate = text
@@ -660,7 +660,7 @@ export const validatePaymentValues = (data) => {
     if (!paymentMode) errors.paymentMode = text
     if (!amountPaid) errors.amountPaid = text
     else {
-        const error = validateNumber(amountPaid)
+        const error = compareMaxIntFloat(amountPaid, pendingAmount, '')
         error && (errors.amountPaid = error)
     }
     return errors
@@ -1111,6 +1111,15 @@ export const validateNumber = (value, isBlur) => {
 
 export const compareMaxNumber = (value, max, unit) => {
     const error = validateNumber(value)
+    if (error) return error
+    if (Number(value) > max) {
+        return `Should not exceed ${max} ${unit}`
+    }
+
+    return ''
+}
+export const compareMaxIntFloat = (value, max, unit, isBlur) => {
+    const error = validateIntFloat(value, isBlur)
     if (error) return error
     if (Number(value) > max) {
         return `Should not exceed ${max} ${unit}`

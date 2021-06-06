@@ -47,7 +47,7 @@ const Payments = ({ reFetch, onUpdate }) => {
     }, [reFetch])
 
     const getInvoices = async () => {
-        const url = 'invoice/getInvoices/Paid'
+        const url = 'invoice/getInvoicePayments'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -133,22 +133,23 @@ const Payments = ({ reFetch, onUpdate }) => {
     }
 
     const dataSource = useMemo(() => invoices.map((invoice) => {
-        const { invoiceId, invoiceDate, totalAmount, customerName, dueDate, status, billingAddress } = invoice
+        const { invoiceId, invoiceDate, amountPaid, customerName, dueDate, paymentMode, status, billingAddress } = invoice
 
         const options = [
             <Menu.Item key="resend" icon={<SendIconGrey />}>Resend</Menu.Item>,
             <Menu.Item key="dcList" icon={<ListViewIconGrey />}>DC List</Menu.Item>,
-            <Menu.Item key="due" icon={<DocIconGrey />}>Due</Menu.Item>
+            // <Menu.Item key="due" icon={<DocIconGrey />}>Due</Menu.Item>
         ]
 
         return {
             key: invoiceId,
             customerName,
-            totalAmount,
             billingAddress,
+            paymentMode,
+            totalAmount: amountPaid,
             dueDate: dayjs(dueDate).format(DATEFORMAT),
             date: dayjs(invoiceDate).format(DATEFORMAT),
-            status: renderStatus(status),
+            status: renderStatus('Paid'),
             invoiceId: <span className='app-link' onClick={() => handleViewInvoice(invoice)}>{invoiceId}</span>,
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, invoice)} />
         }

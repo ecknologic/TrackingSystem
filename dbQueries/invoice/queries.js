@@ -75,15 +75,15 @@ invoiceQueries.getInvoicesCount = async (input, callback) => {
     return executeGetParamsQuery(query, options, callback)
 }
 
-invoiceQueries.getInvoicePayments = async (input, callback) => {
-    const { startDate, endDate, fromStart } = input
-    let query = "SELECT * FROM invoicepaymentlogs WHERE DATE(`paymentDate`) <= ? ORDER BY createdDateTime DESC";
-    let options = [endDate]
-    if (fromStart && fromStart !== 'true') {
-        query = "SELECT * FROM invoicepaymentlogs WHERE DATE(`paymentDate`) >= ? AND DATE(`paymentDate`) <= ? ORDER BY createdDateTime DESC";
-        options = [startDate, endDate]
-    }
-    return executeGetParamsQuery(query, options, callback)
+invoiceQueries.getInvoicePayments = async (callback) => {
+    // const { startDate, endDate, fromStart } = input
+    let query = "SELECT i.*,IFNULL(c.organizationName, c.customerName) as customerName,c.Address1 as billingAddress FROM invoicepaymentlogs i INNER JOIN customerdetails c ON i.customerId=c.customerId ORDER BY createdDateTime DESC";
+    // let options = [endDate]
+    // if (fromStart && fromStart !== 'true') {
+    //     query = "SELECT * FROM invoicepaymentlogs WHERE DATE(`paymentDate`) >= ? AND DATE(`paymentDate`) <= ? ORDER BY createdDateTime DESC";
+    //     options = [startDate, endDate]
+    // }
+    return executeGetQuery(query, callback)
 }
 
 invoiceQueries.getDepartmentInvoicesCount = async (input, callback) => {
@@ -106,11 +106,11 @@ invoiceQueries.getDepartmentInvoicesCount = async (input, callback) => {
 
 //POST Request Methods
 invoiceQueries.addInvoicePayment = (input, callback) => {
-    const { invoiceId, amountPaid, customerId, customerType, paymentDate, paymentMode } = input
-    let query = "insert into invoicepaymentlogs (invoiceId,amountPaid,  customerId, customerType, paymentDate, paymentMode) values(?,?,?,?,?,?)";
-    let requestBody = [invoiceId, amountPaid, customerId, customerType, paymentDate, paymentMode]
+    const { invoiceId, amountPaid, customerId, paymentDate, paymentMode } = input
+    let query = "insert into invoicepaymentlogs (invoiceId,amountPaid, customerId, paymentDate, paymentMode) values(?,?,?,?,?)";
+    let requestBody = [invoiceId, amountPaid, customerId, paymentDate, paymentMode]
     executePostOrUpdateQuery(query, requestBody, () => {
-        let getQuery = 'SELECT * FROM Invoice WHERE invoiceId=?'
+        let getQuery = 'select i.*,c.Address1 AS billingAddress from Invoice i INNER JOIN customerdetails c ON i.customerId=c.customerId WHERE invoiceId=?'
         return executeGetParamsQuery(getQuery, [invoiceId], callback)
     })
 }
@@ -120,7 +120,9 @@ invoiceQueries.addDepartmentInvoicePayment = (input, callback) => {
     let query = "insert into departmentInvoicepaymentlogs (invoiceId,amountPaid,customerId, customerType, paymentDate, paymentMode,departmentId) values(?,?,?,?,?,?,?)";
     let requestBody = [invoiceId, amountPaid, customerId, customerType, paymentDate, paymentMode, departmentId]
     executePostOrUpdateQuery(query, requestBody, () => {
-        let getQuery = 'SELECT * FROM departmentInvoices WHERE invoiceId=?'
+        let getQuery = `select d.*, dep.departmentName,CASE WHEN d.customerType='distributor' THEN dis.deliveryLocation ELSE c.Address1 END AS billingAddress from departmentInvoices d LEFT JOIN customerdetails c 
+        ON d.customerId=c.customerId LEFT JOIN Distributors dis ON
+         d.customerId=dis.distributorId INNER JOIN departmentmaster dep ON d.departmentId=dep.departmentId where invoiceId=?`
         return executeGetParamsQuery(getQuery, [invoiceId], callback)
     })
 }

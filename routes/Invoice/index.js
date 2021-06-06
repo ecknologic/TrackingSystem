@@ -401,7 +401,7 @@ router.post('/addDepartmentInvoicePayment', (req, res) => {
     invoiceQueries.updateDepartmentInvoicePaymentDetails(req.body, (err, data) => {
         if (err) res.status(500).json(dbError(err));
         else {
-            invoiceQueries.addDepartmentInvoicePayment({ ...req.body, departmentId }, (err, results) => {
+            invoiceQueries.addDepartmentInvoicePayment(req.body, (err, results) => {
                 if (err) res.status(500).json(dbError(err));
                 else res.json(results);
             });
@@ -409,7 +409,7 @@ router.post('/addDepartmentInvoicePayment', (req, res) => {
     })
 });
 
-router.post('/getInvoicePayments', (req, res) => {
+router.get('/getInvoicePayments', (req, res) => {
     invoiceQueries.getInvoicePayments((err, results) => {
         if (err) res.status(500).json(dbError(err));
         else res.json(results);

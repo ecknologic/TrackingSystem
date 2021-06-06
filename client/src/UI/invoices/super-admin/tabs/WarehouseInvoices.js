@@ -14,12 +14,12 @@ import SearchInput from '../../../../components/SearchInput';
 import CustomModal from '../../../../components/CustomModal';
 import ConfirmModal from '../../../../components/CustomModal';
 import RoutesFilter from '../../../../components/RoutesFilter';
-import { validateIntFloat, validatePaymentValues } from '../../../../utils/validations';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomDateInput from '../../../../components/CustomDateInput';
 import CustomPagination from '../../../../components/CustomPagination';
 import { TODAYDATE, TRACKFORM, WAREHOUSEADMIN } from '../../../../utils/constants';
 import { getDropdownOptions, getInvoiceColumns } from '../../../../assets/fixtures';
+import { compareMaxIntFloat, validateIntFloat, validatePaymentValues } from '../../../../utils/validations';
 import { ListViewIconGrey, ScheduleIcon, SendIconGrey, TickIconGrey } from '../../../../components/SVG_Icons';
 import { computeTotalAmount, deepClone, disableFutureDates, doubleKeyComplexSearch, getStatusColor, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 const DATEFORMAT = 'DD/MM/YYYY'
@@ -98,22 +98,23 @@ const WarehouseInvoices = ({ reFetch }) => {
     }
 
     const handleChange = (value, key) => {
+        const { pendingAmount } = formData
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
         // Validations
         if (key === 'amountPaid') {
-            const error = validateIntFloat(value)
-            setFormErrors(errors => ({ ...errors, amountPaid: error }))
+            const error = compareMaxIntFloat(value, pendingAmount, '')
+            setFormErrors(errors => ({ ...errors, [key]: error }))
         }
     }
 
     const handleBlur = (value, key) => {
-
+        const { pendingAmount } = formData
         // Validations
         if (key === 'amountPaid') {
-            const error = validateIntFloat(value, true)
-            setFormErrors(errors => ({ ...errors, amountPaid: error }))
+            const error = compareMaxIntFloat(value, pendingAmount, '', true)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
         }
     }
 
@@ -195,7 +196,7 @@ const WarehouseInvoices = ({ reFetch }) => {
 
         const { pendingAmount, amountPaid } = formData
         const options = { item: 'Invoice payment', v1Ing: 'Updating', v2: 'updated' }
-        const url = `invoice/addInvoicePayment`
+        const url = `invoice/addDepartmentInvoicePayment`
         const body = { ...formData, pendingAmount: pendingAmount - amountPaid }
         try {
             showToast({ ...options, action: 'loading' })
@@ -234,13 +235,17 @@ const WarehouseInvoices = ({ reFetch }) => {
     }
 
     const dataSource = useMemo(() => invoices.map((invoice) => {
-        const { invoiceId, invoiceDate, totalAmount, customerName, departmentName, dueDate, departmentStatus, billingAddress, pendingAmount } = invoice
+        const { invoiceId, invoiceDate, totalAmount, customerName, departmentName, dueDate, status, departmentStatus, billingAddress, pendingAmount } = invoice
 
-        const canPay = departmentStatus !== 'Paid'
+        let actualStatus = ''
+        if ((departmentStatus === 'Paid' || departmentStatus === 'Pending') && status === 'Paid') actualStatus = 'Paid'
+        else if (departmentStatus === 'Paid' && (status === '' || status === 'Pending')) actualStatus = 'In Progress'
+        else if (departmentStatus == 'Pending' && status === 'Pending') actualStatus = 'Pending'
+
         const options = [
             <Menu.Item key="resend" icon={<SendIconGrey />}>Resend</Menu.Item>,
             <Menu.Item key="dcList" icon={<ListViewIconGrey />}>DC List</Menu.Item>,
-            <Menu.Item key="paid" className={canPay ? '' : 'disabled'} icon={<TickIconGrey />}>Paid</Menu.Item>,
+            <Menu.Item key="paid" className={actualStatus === 'In Progress' ? '' : 'disabled'} icon={<TickIconGrey />}>Paid</Menu.Item>,
         ]
 
         return {
@@ -250,7 +255,7 @@ const WarehouseInvoices = ({ reFetch }) => {
             departmentName,
             billingAddress,
             pendingAmount,
-            status: renderStatus(departmentStatus),
+            status: renderStatus(actualStatus),
             dueDate: dayjs(dueDate).format(DATEFORMAT),
             date: dayjs(invoiceDate).format(DATEFORMAT),
             invoiceId: <span className='app-link' onClick={() => handleViewInvoice(invoice)}>{invoiceId}</span>,

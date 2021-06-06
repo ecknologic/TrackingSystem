@@ -203,12 +203,12 @@ const Dashboard = ({ reFetch }) => {
     }
 
     const dataSource = useMemo(() => invoices.map((invoice) => {
-        const { invoiceId, invoiceDate, totalAmount, customerName, dueDate, departmentStatus, dcNo, pendingAmount, billingAddress } = invoice
+        const { invoiceId, invoiceDate, totalAmount, customerName, dueDate, dcNo, status, pendingAmount, billingAddress } = invoice
 
         const options = [
             <Menu.Item key="resend" icon={<SendIconGrey />}>Resend</Menu.Item>,
             <Menu.Item key="dcList" icon={<ListViewIconGrey />}>DC List</Menu.Item>,
-            <Menu.Item key="paid" className={departmentStatus === 'Paid' ? 'disabled' : ''} icon={<TickIconGrey />}>Paid</Menu.Item>,
+            <Menu.Item key="paid" className={status === 'Paid' ? 'disabled' : ''} icon={<TickIconGrey />}>Paid</Menu.Item>,
         ]
 
         return {
@@ -218,7 +218,7 @@ const Dashboard = ({ reFetch }) => {
             totalAmount,
             billingAddress,
             pendingAmount,
-            status: renderStatus(departmentStatus),
+            status: renderStatus(status),
             dueDate: dayjs(dueDate).format(DATEFORMAT),
             date: dayjs(invoiceDate).format(DATEFORMAT),
             invoiceId: <span className='app-link' onClick={() => handleViewInvoice(invoice)}>{invoiceId}</span>,
@@ -325,7 +325,7 @@ const Dashboard = ({ reFetch }) => {
 const renderStatus = (status) => {
     const color = getStatusColor(status)
     return (
-        <div className='status'>
+        <div className='status nowrap'>
             <span className='app-dot' style={{ background: color }}></span>
             <span className='status-text'>{status}</span>
         </div>
