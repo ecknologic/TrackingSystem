@@ -86,6 +86,21 @@ invoiceQueries.getInvoicePayments = async (callback) => {
     return executeGetQuery(query, callback)
 }
 
+invoiceQueries.getUnclearedInvoices = async (input, callback) => {
+    let { startDate, endDate, fromStart } = input;
+    let query = `SELECT i.invoiceId,IFNULL(c.organizationName,c.customerName) AS customerName,c.Address1 AS billingAddress,i.pendingAmount FROM Invoice i
+    INNER JOIN customerdetails c ON i.customerId=c.customerId WHERE DATE(createdDateTime) <=?`
+    let options = [endDate]
+
+    if (fromStart !== 'true') {
+        query = `SELECT i.invoiceId,IFNULL(c.organizationName,c.customerName) AS customerName,c.Address1 AS billingAddress,i.pendingAmount FROM Invoice i
+        INNER JOIN customerdetails c ON i.customerId=c.customerId WHERE DATE(createdDateTime) BETWEEN ? AND ?`
+        options = [startDate, endDate]
+    }
+    return executeGetParamsQuery(query, options, callback)
+}
+
+
 invoiceQueries.getDepartmentInvoicesCount = async (input, callback) => {
     const { startDate, endDate, fromStart, departmentId = 'All' } = input
     let query = "SELECT COUNT(*) AS totalCount,status FROM departmentInvoices WHERE DATE(`invoiceDate`) <= ? GROUP BY status";

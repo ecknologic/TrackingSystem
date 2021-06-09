@@ -416,6 +416,13 @@ router.get('/getInvoicePayments', (req, res) => {
     });
 });
 
+router.get('/getUnclearedInvoices', (req, res) => {
+    invoiceQueries.getUnclearedInvoices(req.query,(err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.json(results);
+    });
+});
+
 const saveInvoice = async (requestObj, res, response) => {
     // req.body.invoicePdf = pdfData.toString('base64')
     invoiceQueries.createInvoice(requestObj, (err, results) => {
