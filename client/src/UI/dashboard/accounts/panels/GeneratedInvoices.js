@@ -36,24 +36,24 @@ const GeneratedInvoiceOverview = () => {
         } catch (error) { }
     }
 
-    const handleInvoiceOp = useCallback((data) => {
-        const newData = { ...opData, ...data }
-        getTestResults(newData)
-        setOpData(newData)
-    }, [opData])
+    // const handleInvoiceOp = useCallback((data) => {
+    //     const newData = { ...opData, ...data }
+    //     getTestResults(newData)
+    //     setOpData(newData)
+    // }, [opData])
 
-    const handleMembershipOp = useCallback((data) => {
-        // const newData = { ...opData, ...data }
-        // getTestResults(newData)
-        // setOpData(newData)
-    }, [opData])
+    // const handleMembershipOp = useCallback((data) => {
+    //     // const newData = { ...opData, ...data }
+    //     // getTestResults(newData)
+    //     // setOpData(newData)
+    // }, [opData])
 
-    const handleClick = () => { }
+    // const handleClick = () => { }
 
     return (
         <div className='invoice-overview-panel mr-1'>
             <InvoiceOverviewCard className='generated-invoice-overview' data={results} graph={graph} />
-            <div className='second-header'>
+            {/* <div className='second-header'>
                 <PanelHeader title='Memberships' onSelect={handleMembershipOp} showShow />
             </div>
             <div className='second-overview-card'>
@@ -71,7 +71,7 @@ const GeneratedInvoiceOverview = () => {
                     onClick={handleClick}
                     suffix={<RightChevronIconLight className='chev' />}
                 />
-            </div>
+            </div> */}
         </div>
     )
 }

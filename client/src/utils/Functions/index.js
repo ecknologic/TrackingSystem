@@ -758,3 +758,32 @@ export const getAccountStatusUI = (accountStatus) => {
 export const checkNullOrNot = (value) => {
     return value == 'null' ? '-' : value
 }
+
+export const getFormatedNumber = (number) => {
+    number = number || 0
+    if (number >= 10000000) {
+        number = getCrores(number)
+    }
+    else if (number >= 100000) {
+        number = getLakhs(number)
+    }
+    else number = number.toLocaleString('en-IN')
+
+    return number
+}
+
+const getLakhs = (amount) => {
+    let minified = (amount / 100000)
+    if (minified % 1 !== 0) {
+        minified = minified.toFixed(1);
+    }
+    return `${minified.toLocaleString('en-IN')} L`;
+}
+
+const getCrores = (amount) => {
+    let minified = (amount / 10000000)
+    if (minified % 1 !== 0) {
+        minified = minified.toFixed(2);
+    }
+    return `${minified.toLocaleString('en-IN')} Cr`;
+}
