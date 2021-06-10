@@ -149,7 +149,7 @@ const ClosedCustomersReport = () => {
         setSeachON(true)
     }
 
-    const dataSource = useMemo(() => reports.map((dc, index) => ({ ...dc, sNo: index + 1 })), [reports])
+    const dataSource = useMemo(() => reports.map((dc, index) => ({ ...dc, closureStatus: dc.closureStatus || '-', sNo: index + 1 })), [reports])
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
