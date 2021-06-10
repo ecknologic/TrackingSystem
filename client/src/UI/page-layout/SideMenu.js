@@ -176,6 +176,12 @@ const SideMenu = () => {
                                 <Item key='/new-customers-report' icon={selected === '/new-customers-report' ? <FriendIcon /> : <FriendIconLight />}>
                                     New Customers
                                 </Item>
+                                <Item key='/closed-customers-report' icon={selected === '/closed-customers-report' ? <FriendIcon /> : <FriendIconLight />}>
+                                    Closed Customers
+                                </Item>
+                                <Item key='/dispensers-viability-report' icon={selected === '/dispensers-viability-report' ? <FriendIcon /> : <FriendIconLight />}>
+                                    Dispensers Viability
+                                </Item>
                             </SubMenu>
                             <Item key='/settings' style={{ pointerEvents: 'none' }} icon={selected === '/settings' ? <SettingIcon /> : <SettingIconLight />}>
                                 Settings

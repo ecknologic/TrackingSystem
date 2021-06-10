@@ -29,7 +29,6 @@ import ManageDistributor from './UI/distributors/view';
 import WarehouseInvoices from './UI/invoices/warehouse';
 import AccountsDashboard from './UI/accounts/dashboard';
 import VisitedCustomers from './UI/visited-customers';
-import ManageVisitedCustomer from './UI/visited-customers/view';
 import ReturnEmptyCans from './UI/empty-cans/warehouse';
 import { FilterProvider } from './modules/filterContext';
 import EditInvoice from './UI/invoices/super-admin/edit';
@@ -42,7 +41,10 @@ import AccountsAdminDashboard from './UI/dashboard/accounts';
 import ManageInvoices from './UI/invoices/super-admin/manage';
 import MotherplantDashboard from './UI/dashboard/motherplant';
 import MotherplantMaterials from './UI/materials/motherplant';
+import ManageVisitedCustomer from './UI/visited-customers/view';
 import DeliveredDC from './UI/invoices/super-admin/delivered-dc';
+import ClosedCustomersReport from './UI/reports/closed-customers';
+import DispensersViabilityReport from './UI/reports/dispensers-viability';
 
 const App = () => {
    const { isLogged: isUser, ROLE } = useUser()
@@ -138,6 +140,8 @@ const App = () => {
                      <Route path='/customers/manage/:accountId' render={byRole(<ViewAccount />)} />
                      <Route path='/customers/:tab?/:page?' render={byRole(<Customers />)} />
                      <Route path='/new-customers-report' render={byRole(<NewCustomersReport />)} />
+                     <Route path='/closed-customers-report' render={byRole(<ClosedCustomersReport />)} />
+                     <Route path='/dispensers-viability-report' render={byRole(<DispensersViabilityReport />)} />
                      <Route path='/visited-customers/manage/:enquiryId' render={byRole(<ManageVisitedCustomer />)} />
                      <Route path='/visited-customers/:tab?/:page?' render={byRole(<VisitedCustomers />)} />
                      <Route path='/unauthorized' render={Unauthorized} />

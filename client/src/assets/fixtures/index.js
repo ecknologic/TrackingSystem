@@ -1110,3 +1110,72 @@ export const newCustomersReportColumns = [
         key: 'dispenserCount',
     }
 ]
+export const closedCustomersReportColumns = [
+    {
+        title: 'S. No',
+        dataIndex: 'sNo',
+        key: 'sNo',
+    },
+    {
+        title: 'Customer ID',
+        dataIndex: 'customerId',
+        key: 'customerId',
+    },
+    {
+        title: 'Customer Name',
+        dataIndex: 'customerName',
+        key: 'customerName',
+    },
+    {
+        title: 'Deposit',
+        dataIndex: 'depositAmount',
+        key: 'depositAmount',
+    },
+    {
+        title: 'No. of Bottles with Customer',
+        dataIndex: 'noOfBottlesWithCustomer',
+        key: 'noOfBottlesWithCustomer',
+    },
+    {
+        title: 'Amount Due',
+        dataIndex: 'pendingAmount',
+        key: 'pendingAmount',
+    },
+    {
+        title: 'Status of Closure',
+        dataIndex: 'closureStatus',
+        key: 'closureStatus',
+    }
+]
+export const dispensersViabilityReportColumns = [
+    {
+        title: 'S. No',
+        dataIndex: 'sNo',
+        key: 'sNo',
+    },
+    {
+        title: 'Customer ID',
+        dataIndex: 'customerId',
+        key: 'customerId',
+    },
+    {
+        title: 'Customer Name',
+        dataIndex: 'customerName',
+        key: 'customerName',
+    },
+    {
+        title: 'Price',
+        dataIndex: 'price',
+        key: 'price',
+    },
+    {
+        title: 'Invoice Amount',
+        dataIndex: 'invoiceAmount',
+        key: 'invoiceAmount',
+    },
+    {
+        title: 'No. of Coolers Placed',
+        dataIndex: 'dispenserCount',
+        key: 'dispenserCount',
+    }
+]
