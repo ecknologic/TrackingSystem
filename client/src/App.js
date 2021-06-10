@@ -38,6 +38,7 @@ import WarehouseDashboard from './UI/dashboard/warehouse';
 import ReceivedEmptyCans from './UI/empty-cans/motherplant';
 import NewCustomersReport from './UI/reports/new-customers';
 import SuperAdminDashboard from './UI/dashboard/super-admin';
+import AccountsAdminDashboard from './UI/dashboard/accounts';
 import ManageInvoices from './UI/invoices/super-admin/manage';
 import MotherplantDashboard from './UI/dashboard/motherplant';
 import MotherplantMaterials from './UI/materials/motherplant';
@@ -71,7 +72,7 @@ const App = () => {
          else if (ROLE === WAREHOUSEADMIN) return <WarehouseDashboard />
          else if (ROLE === MOTHERPLANTADMIN) return <MotherplantDashboard />
          else if (ROLE === SUPERADMIN) return <SuperAdminDashboard />
-         else if (ROLE === ACCOUNTSADMIN) return <Redirect to='/customers' />
+         else if (ROLE === ACCOUNTSADMIN) return <AccountsAdminDashboard />
          return <NoContent content='Screen Not designed for your role' />
       }
    }

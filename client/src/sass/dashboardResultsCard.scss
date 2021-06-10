@@ -12,3 +12,13 @@
         max-width: 100%;
     }
 }
+
+.accounts-dashboard-results-card {
+    .panel-footer, .panel-stats {
+        width: 50%;
+    }
+
+    .bar-chart {
+        max-width: 80%;
+    }
+}
