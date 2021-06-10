@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
 import PanelHeader from '../../../../components/PanelHeader';
 import { TODAYDATE as d } from '../../../../utils/constants';
-import TotalRevenueCard from '../../../../components/TotalRevenueCard';
+import AccountsTotalRevenueCard from '../../../../components/AccountsTotalRevenueCard';
 const options = { startDate: d, endDate: d, fromStart: true, departmentId: 'All', type: 'Till Now' }
 
 const TotalBusiness = ({ warehouseList, depMenu }) => {
@@ -43,7 +43,7 @@ const TotalBusiness = ({ warehouseList, depMenu }) => {
             <div className='header'>
                 <PanelHeader title='Total Business' onSelect={handleOperation} showShow />
             </div>
-            <TotalRevenueCard data={business} />
+            <AccountsTotalRevenueCard data={business} />
         </div>
     )
 }

@@ -50,3 +50,21 @@
         width: 100%;
     }
 }
+
+.accounts-total-revenue-card {
+
+    .sub-panels-container {
+        display: flex;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .sub-panel {
+        display: block;
+        width: auto;
+    }
+
+    .empty-bottles-stock-card {
+        flex-basis: 24%;
+    }
+}
