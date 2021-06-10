@@ -68,7 +68,7 @@ reportsQueries.getVisitedCustomersReportByStatus = async (input, callback) => {
 }
 
 reportsQueries.getDispensersViabilityReport = async (callback) => {
-    let query = `   SELECT IFNULL(c.organizationName,c.customerName)AS customerName,c.customerId,
+    let query = `SELECT IFNULL(c.organizationName,c.customerName)AS customerName,c.customerId,
     IFNULL(c.dispenserCount,0)AS dispenserCount,MAX(cp.productPrice) AS price, 
     CAST(SUM(co.20LCans*cp.productPrice+(cp.productPrice*12/100))AS DECIMAL(10,2)) AS  invoiceAmount
      FROM customerdetails c INNER JOIN customerproductdetails cp ON c.customerId=cp.customerId INNER JOIN 
@@ -78,7 +78,7 @@ reportsQueries.getDispensersViabilityReport = async (callback) => {
     return executeGetQuery(query, callback)
 }
 
-reportsQueries.getClosedCustomerReport = async (callback) => {
+reportsQueries.getClosedCustomersReport = async (callback) => {
     let query = `SELECT co.existingCustomerId AS customerId,IFNULL(c.organizationName,c.customerName) AS customerName,
     IFNULL(SUM(co.20LCans-returnEmptyCans),0) AS  noOfBottlesWithCustomer,IFNULL(c.depositAmount,0) AS depositAmount,
     IFNULL(CAST(SUM(i.pendingAmount)AS DECIMAL(10,2)),0) AS pendingAmount
@@ -87,7 +87,7 @@ reportsQueries.getClosedCustomerReport = async (callback) => {
     return executeGetQuery(query, callback)
 }
 
-reportsQueries.getInActiveCustomerReport = async (callback) => {
+reportsQueries.getInActiveCustomersReport = async (callback) => {
     let query = `SELECT co.existingCustomerId,IFNULL(c.customerName,c.organizationName) AS customerName,
     SUM(co.20LCans) AS  lastmonthQuantity,  SUM(co.20LCans*co.price20L+(co.price20L*12/100)) AS  lastmonthAmount,
     MAX(co.deliveredDate) AS lastdeliveredDate
