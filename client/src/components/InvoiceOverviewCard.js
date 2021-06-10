@@ -2,12 +2,12 @@ import React, { memo } from 'react';
 import PieChart from './PieChart';
 import '../sass/invoiceOverviewCard.scss'
 
-const InvoiceOverviewCard = memo(({ data, graph }) => {
+const InvoiceOverviewCard = memo(({ data, graph, className }) => {
 
     const { paidCount, pendingCount, totalCount } = data
 
     return (
-        <div className='invoice-overview-card'>
+        <div className={`invoice-overview-card ${className}`}>
             <div className='heading'>
                 <span className='title'>Total Generated Invoices</span>
                 <span className='number'>{totalCount || 0}</span>

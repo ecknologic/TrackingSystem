@@ -435,6 +435,21 @@ $textColor:rgba(0,0,0,0.85);
     }
 }
 
+.uncleared-invoices-panel {
+    height: calc(100% - 46px - 1em);
+    margin-top: 1em;
+
+    .panel-header {
+        padding-right: 2em;
+        padding-top: 1em;
+    }
+
+    .head {
+        display: flex;
+        justify-content: flex-end;
+    }
+}
+
 .pending-approval-panel {
     .panel-body {
         height: calc(100% - 75px);
