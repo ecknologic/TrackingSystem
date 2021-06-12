@@ -19,13 +19,13 @@ import CustomDateInput from '../../../../components/CustomDateInput';
 import CustomPagination from '../../../../components/CustomPagination';
 import { TODAYDATE, TRACKFORM, WAREHOUSEADMIN } from '../../../../utils/constants';
 import { getDropdownOptions, getInvoiceColumns } from '../../../../assets/fixtures';
-import { compareMaxIntFloat, validateIntFloat, validatePaymentValues } from '../../../../utils/validations';
+import { compareMaxIntFloat, validatePaymentValues } from '../../../../utils/validations';
 import { ListViewIconGrey, ScheduleIcon, SendIconGrey, TickIconGrey } from '../../../../components/SVG_Icons';
 import { computeTotalAmount, deepClone, disableFutureDates, doubleKeyComplexSearch, getStatusColor, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
-const WarehouseInvoices = ({ reFetch }) => {
+const WarehouseInvoices = () => {
     const history = useHistory()
     const [invoices, setInvoices] = useState([])
     const [invoicesClone, setInvoicesClone] = useState([])
@@ -49,11 +49,12 @@ const WarehouseInvoices = ({ reFetch }) => {
 
     const paymentOptions = useMemo(() => getDropdownOptions(paymentList), [paymentList])
     const invoiceColumns = useMemo(() => getInvoiceColumns('warehouse'), [])
-    const totalAmount = useMemo(() => computeTotalAmount(invoices), [invoices])
+    const totalAmount = useMemo(() => computeTotalAmount(invoices, 'pendingAmount'), [invoices, payModal])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
+        getInvoices()
         getWarehouseList()
         getPaymentList()
 
@@ -61,11 +62,6 @@ const WarehouseInvoices = ({ reFetch }) => {
             http.ABORT(source)
         }
     }, [])
-
-    useEffect(async () => {
-        setLoading(true)
-        getInvoices()
-    }, [reFetch])
 
     const getInvoices = async () => {
         const url = 'invoice/getDepartmentInvoices'

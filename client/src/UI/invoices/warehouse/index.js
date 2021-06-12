@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import React, { Fragment, useState } from 'react';
 import Dashboard from './tabs/Dashboard';
 import CreateInvoice from './tabs/CreateInvoice';
+import Payments from '../super-admin/tabs/Payments';
 import Header from '../../../components/ContentHeader';
 import '../../../sass/invoices.scss';
 
@@ -10,6 +11,7 @@ const Invoices = () => {
     const { tab = '1' } = useParams()
     const [activeTab, setActiveTab] = useState(tab)
     const [reFetch, setreFetch] = useState(false)
+    const [reFetch2, setreFetch2] = useState(false)
 
     const handleGoToTab = (key) => {
         setActiveTab(key)
@@ -30,10 +32,13 @@ const Invoices = () => {
                         activeKey={activeTab}
                     >
                         <TabPane tab="Invoices" key="1">
-                            <Dashboard reFetch={reFetch} />
+                            <Dashboard reFetch={reFetch} onUpdate={() => setreFetch2(!reFetch2)} />
                         </TabPane>
                         <TabPane tab="Create New Invoice" key="2">
                             <CreateInvoice goToTab={handleGoToTab} />
+                        </TabPane>
+                        <TabPane tab="Received Payments" key="3">
+                            <Payments reFetch={reFetch2} />
                         </TabPane>
                     </Tabs>
                 </div>

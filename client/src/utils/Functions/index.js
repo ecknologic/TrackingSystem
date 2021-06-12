@@ -43,11 +43,11 @@ export const resetSessionItems = (matcher) => {
         .map((key) => key.includes(matcher) && sessionStorage.removeItem(key))
 }
 
-export const computeTotalAmount = (data) => {
+export const computeTotalAmount = (data, key = 'totalAmount') => {
     let totalAmount = 0
     if (!isEmpty(data)) {
         totalAmount = data.filter(({ status }) => status !== 'Paid')
-            .map(item => item.totalAmount)
+            .map(item => item[key])
             .reduce((a, c) => a + c).toLocaleString('en-IN')
     }
 

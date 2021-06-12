@@ -60,7 +60,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
     const paymentOptions = useMemo(() => getDropdownOptions(paymentList), [paymentList])
     const isSMManager = useMemo(() => ROLE === MARKETINGMANAGER, [ROLE])
     const invoiceColumns = useMemo(() => getInvoiceColumns(), [])
-    const totalAmount = useMemo(() => computeTotalAmount(invoices), [invoices])
+    const totalAmount = useMemo(() => computeTotalAmount(invoices, 'pendingAmount'), [invoices, payModal])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
@@ -274,6 +274,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
             optimisticUpdate(data)
             showToast(options)
             onModalClose(true)
+            onUpdate()
         } catch (error) {
             message.destroy()
         }

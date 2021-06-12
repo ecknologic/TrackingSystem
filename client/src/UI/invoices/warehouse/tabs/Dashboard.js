@@ -24,7 +24,7 @@ import { ListViewIconGrey, ScheduleIcon, SendIconGrey, TickIconGrey } from '../.
 const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
-const Dashboard = ({ reFetch }) => {
+const Dashboard = ({ reFetch, onUpdate }) => {
     const history = useHistory()
     const [invoices, setInvoices] = useState([])
     const [invoicesClone, setInvoicesClone] = useState([])
@@ -46,7 +46,7 @@ const Dashboard = ({ reFetch }) => {
     const [open, setOpen] = useState(false)
 
     const paymentOptions = useMemo(() => getDropdownOptions(paymentList), [paymentList])
-    const totalAmount = useMemo(() => computeTotalAmount(invoices), [invoices])
+    const totalAmount = useMemo(() => computeTotalAmount(invoices, 'pendingAmount'), [invoices, payModal])
     const invoiceColumns = useMemo(() => getInvoiceColumns('dcNo'), [])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
@@ -172,6 +172,7 @@ const Dashboard = ({ reFetch }) => {
             optimisticUpdate(data)
             showToast(options)
             onModalClose(true)
+            onUpdate()
         } catch (error) {
             message.destroy()
         }
@@ -203,12 +204,12 @@ const Dashboard = ({ reFetch }) => {
     }
 
     const dataSource = useMemo(() => invoices.map((invoice) => {
-        const { invoiceId, invoiceDate, totalAmount, customerName, dueDate, dcNo, status, pendingAmount, billingAddress } = invoice
+        const { invoiceId, invoiceDate, totalAmount, customerName, dueDate, dcNo, departmentStatus, pendingAmount, billingAddress } = invoice
 
         const options = [
             <Menu.Item key="resend" icon={<SendIconGrey />}>Resend</Menu.Item>,
             <Menu.Item key="dcList" icon={<ListViewIconGrey />}>DC List</Menu.Item>,
-            <Menu.Item key="paid" className={status === 'Paid' ? 'disabled' : ''} icon={<TickIconGrey />}>Paid</Menu.Item>,
+            <Menu.Item key="paid" className={departmentStatus === 'Paid' ? 'disabled' : ''} icon={<TickIconGrey />}>Paid</Menu.Item>,
         ]
 
         return {
@@ -218,7 +219,7 @@ const Dashboard = ({ reFetch }) => {
             totalAmount,
             billingAddress,
             pendingAmount,
-            status: renderStatus(status),
+            status: renderStatus(departmentStatus),
             dueDate: dayjs(dueDate).format(DATEFORMAT),
             date: dayjs(invoiceDate).format(DATEFORMAT),
             invoiceId: <span className='app-link' onClick={() => handleViewInvoice(invoice)}>{invoiceId}</span>,
