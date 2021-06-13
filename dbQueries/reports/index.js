@@ -31,7 +31,7 @@ reportsQueries.getEnquiriesCountBySalesAgent = async (input, callback) => {
 
     if (fromStart != 'true') {
         query = `SELECT COUNT(c.salesAgent) AS totalCustomersCount,u.userName FROM 
-        customerenquirydetails c RIGHT JOIN usermaster u ON c.salesAgent=u.userId WHERE u.RoleId=5 AND DATE(c.registeredDate) BETWEEN ? AND ? GROUP BY c.salesAgent,u.userName`;
+        customerenquirydetails c RIGHT JOIN usermaster u ON c.salesAgent=u.userId AND DATE(c.registeredDate) BETWEEN ? AND ? WHERE u.RoleId=5  GROUP BY c.salesAgent,u.userName`;
         options = [startDate, endDate]
     }
     return executeGetParamsQuery(query, options, callback)
