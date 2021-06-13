@@ -483,6 +483,7 @@ $textColor:rgba(0,0,0,0.85);
     .eop__body {
         display: flex;
         flex-wrap: wrap;
+        min-height: 15em;
     }
 
     .eop__body .executive-card {

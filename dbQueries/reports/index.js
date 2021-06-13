@@ -26,7 +26,7 @@ reportsQueries.getNewCustomerBTDetails = async (input, callback) => {
 reportsQueries.getEnquiriesCountBySalesAgent = async (input, callback) => {
     const { startDate, endDate, fromStart } = input
     let query = `SELECT COUNT(c.salesAgent) AS totalCustomersCount,u.userName FROM 
-    customerenquirydetails c RIGHT JOIN usermaster u ON c.salesAgent=u.userId WHERE u.RoleId=5 AND DATE(registeredDate)<=? GROUP BY c.salesAgent,u.userName`;
+    customerenquirydetails c RIGHT JOIN usermaster u ON c.salesAgent=u.userId WHERE u.RoleId=5 GROUP BY c.salesAgent,u.userName`;
     let options = [endDate]
 
     if (fromStart != 'true') {
