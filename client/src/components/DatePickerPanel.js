@@ -11,7 +11,7 @@ import '../sass/datePickerPanel.scss'
 const format = 'YYYY-MM-DD';
 const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const fn = () => { }
-const DatePickerPanel = ({ onChange, onSelect = fn }) => {
+const DatePickerPanel = ({ onChange, onSelect = fn, disabledDate }) => {
     const [open, setOpen] = useState(false)
     const [daysInMonth, SetdaysInMonth] = useState(0)
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
@@ -106,6 +106,7 @@ const DatePickerPanel = ({ onChange, onSelect = fn }) => {
                     selectedDate={selectedDate}
                     onSelect={handleSlideSelect}
                     daysInMonth={daysInMonth}
+                    disabledDate={disabledDate}
                 />
                 <div className='app-date-picker-wrapper'>
                     <div className='date-picker' onClick={() => setOpen(true)}>
@@ -119,7 +120,7 @@ const DatePickerPanel = ({ onChange, onSelect = fn }) => {
                         className='app-date-panel-picker'
                         onChange={handleDateSelect}
                         onOpenChange={datePickerStatus}
-                        disabledDate={disableFutureDates}
+                        disabledDate={disabledDate ? disableFutureDates : null}
                     />
                 </div>
             </div>

@@ -8,7 +8,7 @@ import { TODAYDATE } from '../utils/constants';
 import WeekSlider from './WeekSlider';
 import '../sass/dateSlider.scss'
 
-const DateSlider = ({ data, selected, selectedDate, month, onSelect }) => {
+const DateSlider = ({ data, selected, selectedDate, month, onSelect, disabledDate }) => {
     const sliderRef = useRef()
     const [slidesToShow, setSlidesToShow] = useState(9)
     const [weekStart, setWeekStart] = useState('')
@@ -68,7 +68,7 @@ const DateSlider = ({ data, selected, selectedDate, month, onSelect }) => {
                             key={item.date}
                             item={item}
                             todaysDay={todaysDay}
-                            disable={disableNextDates}
+                            disable={disabledDate ? disableNextDates : null}
                             selected={selected}
                             onSelect={onSelect}
                         />

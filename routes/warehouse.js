@@ -143,9 +143,10 @@ router.post('/createDC', (req, res) => {
     customerQueries.checkCustomerExistsOrNot({ EmailId, mobileNumber: phoneNumber }, (err, results) => {
       if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
       else if (results.length) {
-        req.body.existingCustomerId = results[0].customerId
-        req.body.customerType = 'internal'
-        saveDC(req, res)
+        // req.body.existingCustomerId = results[0].customerId
+        // req.body.customerType = 'internal'
+        // saveDC(req, res)
+        res.status(405).json('User already exists.')
       } else {
         customerQueries.createAdhocUser({ ...req.body, customertype: 'Individual' }, (err, data) => {
           if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
@@ -523,14 +524,14 @@ router.put('/rescheduleDc', (req, res) => {
         else res.json('Rescheduled successfully')
       })
     } else {
-      res.status(406).send('DC Already exists')
+      res.status(405).send('DC Already exists')
     }
   })
 })
 router.put('/closeDC', (req, res) => {
   warehouseQueries.closeDC(req.body, (deliveryErr, closedDetails) => {
     if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
-    else res.json('success')
+    else res.json(closedDetails)
   })
 })
 

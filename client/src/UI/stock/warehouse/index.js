@@ -134,7 +134,11 @@ const WarehouseStock = () => {
                 {
                     showDatePanel && (
                         <div className='date-picker-panel'>
-                            <DatePickerPanel onChange={handleDateChange} onSelect={handleDateSelect} />
+                            <DatePickerPanel
+                                onChange={handleDateChange}
+                                onSelect={handleDateSelect}
+                                disabledDate={activeTab !== '2'}
+                            />
                         </div>
                     )
                 }
