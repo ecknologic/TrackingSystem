@@ -63,7 +63,7 @@ const SalesResults = ({ depOptions }) => {
         <ColumnChart data={graph} columnWidthRatio={columnWidthRatio} />
     )
 
-    return <DashboardResultsCard className='accounts-dashboard-results-card' Header={Header} Stats={Stats} Chart={Chart} />
+    return <DashboardResultsCard isFirst Header={Header} Stats={Stats} Chart={Chart} />
 }
 
 export default SalesResults

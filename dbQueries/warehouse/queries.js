@@ -262,6 +262,12 @@ warehouseQueries.rescheduleDC = async (input, callback) => {
 warehouseQueries.closeDC = async (input, callback) => {
     const { customerOrderId } = input
     let query = `Update customerorderdetails SET isDelivered=?  WHERE customerOrderId=?`;
-    return executeGetParamsQuery(query, ['Cancelled', customerOrderId], callback)
+    return executeGetParamsQuery(query, ['Cancelled', customerOrderId], (err, data) => {
+        if (err) console.log(err)
+        else {
+            let query = "select c.customerOrderId,c.deliveryLocation,c.contactPerson,c.EmailId,c.existingCustomerId,c.distributorId,c.creationType,c.customerType,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS product20L,c.1LBoxes AS product1L,c.500MLBoxes AS product500ML,c.300MLBoxes AS product300ML,c.2LBoxes AS product2L,c.price20L, c.price2L, c.price1L, c.price500ML, c.price300ML,r.*,d.driverName,d.mobileNumber,CASE WHEN c.creationType='manual' THEN c.EmailId ELSE cd.EmailId  END AS EmailId FROM customerorderdetails c LEFT JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid left JOIN customerdetails cd ON c.existingCustomerId=cd.customerId  WHERE customerOrderId=?";
+            executePostOrUpdateQuery(query, [customerOrderId], callback)
+        }
+    })
 }
 module.exports = warehouseQueries

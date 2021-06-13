@@ -12,8 +12,8 @@ import { paymentColumns } from '../../../../assets/fixtures';
 import SearchInput from '../../../../components/SearchInput';
 import CustomDateInput from '../../../../components/CustomDateInput';
 import CustomPagination from '../../../../components/CustomPagination';
+import { ListViewIconGrey, ScheduleIcon, SendIconGrey } from '../../../../components/SVG_Icons';
 import { deepClone, doubleKeyComplexSearch, getStatusColor, showToast } from '../../../../utils/Functions';
-import { DocIconGrey, ListViewIconGrey, ScheduleIcon, SendIconGrey } from '../../../../components/SVG_Icons';
 const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
@@ -137,8 +137,7 @@ const Payments = ({ reFetch, onUpdate }) => {
 
         const options = [
             <Menu.Item key="resend" icon={<SendIconGrey />}>Resend</Menu.Item>,
-            <Menu.Item key="dcList" icon={<ListViewIconGrey />}>DC List</Menu.Item>,
-            // <Menu.Item key="due" icon={<DocIconGrey />}>Due</Menu.Item>
+            <Menu.Item key="dcList" icon={<ListViewIconGrey />}>DC List</Menu.Item>
         ]
 
         return {

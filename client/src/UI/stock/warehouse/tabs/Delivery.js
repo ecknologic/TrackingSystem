@@ -43,6 +43,7 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
     const [logModal, setLogModal] = useState(false)
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
+    const [cancelModal, setCancelModal] = useState(false)
     const [rescheduleModal, setRescheduleModal] = useState(false)
     const [resetSearch, setResetSearch] = useState(false)
     const [customerList, setCustomerList] = useState([])
@@ -336,8 +337,28 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
             optimisticUpdate(data, method)
             onModalClose(true)
         } catch (error) {
-            setBtnDisabled(false)
+            message.destroy()
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+                if (error.response.status === 405) {
+                    message.error('Email/phone already corresponds to an existing account.')
+                }
+            }
         }
+    }
+
+    const handleCancelDC = async () => {
+        const { customerOrderId } = currentDC
+        const options = { item: 'DC', v1Ing: 'Cancelling', v2: 'cancelled' }
+
+        const url = 'warehouse/closeDc'
+        const body = { customerOrderId }
+        try {
+            showToast({ ...options, action: 'loading' })
+            let [data = {}] = await http.PUT(axios, url, body, config)
+            showToast(options)
+            optimisticUpdate(data, 'PUT')
+        } catch (error) { }
     }
 
     const handleReschedule = async () => {
@@ -350,7 +371,20 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
             showToast({ ...options, action: 'loading' })
             await http.PUT(axios, url, body, config)
             showToast(options)
-        } catch (error) { }
+            optimisticRemove(customerOrderId)
+        } catch (error) {
+            message.destroy()
+            if (!axios.isCancel(error)) {
+                if (error.response.status === 405) {
+                    setCancelModal(true)
+                }
+            }
+        }
+    }
+
+    const optimisticRemove = (id) => {
+        const data = deliveries.filter(dc => dc.customerOrderId !== id)
+        setDeliveries(data)
     }
 
     const optimisticUpdate = (data, method) => {
@@ -395,6 +429,13 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
 
     const dataSource = useMemo(() => deliveries.map((dc) => {
         const { dcNo, customerOrderId, address, RouteName, driverName, customerName, isDelivered } = dc
+
+        const options = [
+            <Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>,
+            <Menu.Item key="logs" icon={<ListViewIconGrey />}>Acvitity Logs</Menu.Item>,
+            <Menu.Item key="reschedule" className={isDelivered === 'Cancelled' ? 'disabled' : ''} icon={<ScheduleIconGrey />}>Reschedule</Menu.Item>
+        ]
+
         return {
             key: customerOrderId || dcNo,
             dcnumber: dcNo,
@@ -428,7 +469,13 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
 
     const handleRescheduleModalOk = () => {
         setRescheduleModal(false);
+        setSelectedDate()
         handleReschedule()
+    }
+
+    const handleCancelModalOk = () => {
+        setCancelModal(false);
+        handleCancelDC()
     }
 
     const onCreateDC = () => {
@@ -442,7 +489,8 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
 
     const handleDCModalCancel = useCallback(() => onModalClose(), [])
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
-    const handleRescheduleModalCancel = useCallback(() => setRescheduleModal(false), [])
+    const handleRescheduleModalCancel = useCallback(() => { setRescheduleModal(false); setSelectedDate() }, [])
+    const handleCancelModalCancel = useCallback(() => setCancelModal(false), [])
     const handleLogModalCancel = useCallback(() => onLogModalClose(), [])
 
     const sliceFrom = (pageNumber - 1) * pageSize
@@ -535,6 +583,15 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
                 <ConfirmMessage msg={`${currentDC.dcNo} will be rescheduled to ${dayjs(selectedDate).format('DD/MM/YYYY')}`} />
             </QuitModal>
             <QuitModal
+                visible={cancelModal}
+                onOk={handleCancelModalOk}
+                onCancel={handleCancelModalCancel}
+                title='DC already exists for the selected date'
+                okTxt='Yes'
+            >
+                <ConfirmMessage msg={`Do you want to cancel ${currentDC.dcNo}`} />
+            </QuitModal>
+            <QuitModal
                 visible={confirmModal}
                 onOk={handleConfirmModalOk}
                 onCancel={handleConfirmModalCancel}
@@ -560,7 +617,7 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
 
 const renderStatus = (status) => {
     const color = getStatusColor(status)
-    const text = status === 'Completed' ? 'Delivered' : status === 'Postponed' ? status : 'Pending'
+    const text = status === 'Completed' ? 'Delivered' : status
     return (
         <div className='status'>
             <span className='app-dot' style={{ background: color }}></span>
@@ -575,9 +632,4 @@ const renderOrderDetails = ({ product20L, product2L, product1L, product500ML, pr
     500 ml - ${Number(product500ML)} boxes, 300 ml - ${Number(product300ML)} boxes
     `
 }
-const options = [
-    <Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>,
-    <Menu.Item key="logs" icon={<ListViewIconGrey />}>Acvitity Logs</Menu.Item>,
-    <Menu.Item key="reschedule" icon={<ScheduleIconGrey />}>Reschedule</Menu.Item>
-]
 export default Delivery

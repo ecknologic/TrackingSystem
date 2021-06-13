@@ -26,7 +26,7 @@ reportsQueries.getNewCustomerBTDetails = async (input, callback) => {
 reportsQueries.getEnquiriesCountBySalesAgent = async (input, callback) => {
     const { startDate, endDate, fromStart } = input
     let query = `SELECT COUNT(c.salesAgent) AS totalCustomersCount,u.userName FROM 
-    customerenquirydetails c RIGHT JOIN usermaster u ON c.salesAgent=u.userId WHERE u.RoleId=5 AND DATE(registeredDate)<=? GROUP BY c.salesAgent,u.userName`;
+    customerenquirydetails c RIGHT JOIN usermaster u ON c.salesAgent=u.userId WHERE u.RoleId=5 GROUP BY c.salesAgent,u.userName`;
     let options = [endDate]
 
     if (fromStart != 'true') {
@@ -69,7 +69,7 @@ reportsQueries.getVisitedCustomersReportByStatus = async (input, callback) => {
 
 reportsQueries.getDispensersViabilityReport = async (input, callback) => {
     const { startDate, endDate, fromStart } = input
-    let query = `SELECT IFNULL(c.organizationName,c.customerName)AS customerName,c.customerId,
+    let query = `SELECT IFNULL(c.organizationName,c.customerName)AS customerName,c.customerNo as customerId,
     IFNULL(c.dispenserCount,0)AS dispenserCount,MAX(cp.productPrice) AS price, 
     CAST(SUM(co.20LCans*cp.productPrice+(cp.productPrice*12/100))AS DECIMAL(10,2)) AS  invoiceAmount
     FROM customerdetails c INNER JOIN customerproductdetails cp ON c.customerId=cp.customerId INNER JOIN 
@@ -79,7 +79,7 @@ reportsQueries.getDispensersViabilityReport = async (input, callback) => {
     let options = [endDate]
 
     if (fromStart != 'true') {
-        query = `SELECT IFNULL(c.organizationName,c.customerName)AS customerName,c.customerId,
+        query = `SELECT IFNULL(c.organizationName,c.customerName)AS customerName,c.customerNo as customerId,
         IFNULL(c.dispenserCount,0)AS dispenserCount,MAX(cp.productPrice) AS price, 
         CAST(SUM(co.20LCans*cp.productPrice+(cp.productPrice*12/100))AS DECIMAL(10,2)) AS  invoiceAmount
          FROM customerdetails c INNER JOIN customerproductdetails cp ON c.customerId=cp.customerId INNER JOIN 
@@ -94,7 +94,7 @@ reportsQueries.getDispensersViabilityReport = async (input, callback) => {
 
 reportsQueries.getClosedCustomersReport = async (input, callback) => {
     const { startDate, endDate, fromStart } = input
-    let query = `SELECT co.existingCustomerId AS customerId,IFNULL(c.organizationName,c.customerName) AS customerName,
+    let query = `SELECT c.customerNo as customerId,,IFNULL(c.organizationName,c.customerName) AS customerName,
    IFNULL(SUM(co.20LCans-returnEmptyCans),0) AS  noOfBottlesWithCustomer,IFNULL(c.depositAmount,0) AS depositAmount,
    IFNULL(CAST(SUM(i.pendingAmount)AS DECIMAL(10,2)),0) AS pendingAmount
    FROM customerorderdetails co INNER JOIN customerdetails c ON c.customerId=co.existingCustomerId LEFT JOIN Invoice i ON 
@@ -103,7 +103,7 @@ reportsQueries.getClosedCustomersReport = async (input, callback) => {
     let options = [endDate]
 
     if (fromStart != 'true') {
-        query = `SELECT co.existingCustomerId AS customerId,IFNULL(c.organizationName,c.customerName) AS customerName,
+        query = `SELECT c.customerNo as customerId,,IFNULL(c.organizationName,c.customerName) AS customerName,
         IFNULL(SUM(co.20LCans-returnEmptyCans),0) AS  noOfBottlesWithCustomer,IFNULL(c.depositAmount,0) AS depositAmount,
         IFNULL(CAST(SUM(i.pendingAmount)AS DECIMAL(10,2)),0) AS pendingAmount
         FROM customerorderdetails co INNER JOIN customerdetails c ON c.customerId=co.existingCustomerId LEFT JOIN Invoice i ON 

@@ -56,7 +56,7 @@ const UnclearedInvoiceOverview = () => {
     return (
         <div className='invoice-overview-panel'>
             <div className='header'>
-                <PanelHeader title={`Uncleared Invoices ${results.length}`} onSelect={handleOperation} showShow />
+                <PanelHeader title={`Pending Invoices ${results.length}`} onSelect={handleOperation} showShow />
             </div>
             <div className='todays-orders-panel uncleared-invoices-panel'>
                 <div className='panel-header'>

@@ -10,7 +10,6 @@ import NoContent from '../../../../components/NoContent';
 import DCView from '../../../accounts/view/views/DCView';
 import CustomModal from '../../../../components/CustomModal';
 import PanelHeader from '../../../../components/PanelHeader';
-import CustomerCard from '../../../../components/CustomerCard';
 const options = { startDate: d, endDate: d, fromStart: true }
 
 const PendingApprovals = () => {
@@ -76,7 +75,7 @@ const PendingApprovals = () => {
                                             {
                                                 orders.map((item) => <div className='order-card-container'>
                                                     <span className='title clamp-2'>ID: {item.customerNo}</span>
-                                                    <span className='title clamp-2'>Name: {item.organizationName||item.customerName}</span>
+                                                    <span className='title clamp-2'>Name: {item.organizationName || item.customerName}</span>
                                                     <span className='address clamp-2'>Address:{item.address}</span>
                                                     <span className='stock clamp-2'>CustomerType:{item.customertype}</span>
                                                     {/* <span className='stat-head'>Delivery Status</span> */}

@@ -436,7 +436,7 @@ $textColor:rgba(0,0,0,0.85);
 }
 
 .uncleared-invoices-panel {
-    height: calc(100% - 46px - 1em);
+    height: 29em;
     margin-top: 1em;
 
     .panel-header {
@@ -481,10 +481,13 @@ $textColor:rgba(0,0,0,0.85);
 .executive-overview-panel {
 
     .eop__body {
-        display: grid;
-        grid-template-columns: repeat( auto-fit, minmax(11em, 1fr) );;
-        row-gap: 1.5em;
-        column-gap: 1em;
-        justify-content: space-between;
+        display: flex;
+        flex-wrap: wrap;
+        min-height: 15em;
+    }
+
+    .eop__body .executive-card {
+        margin-right: 1em;
+        margin-bottom: 1em;
     }
 }
