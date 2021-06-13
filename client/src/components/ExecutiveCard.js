@@ -7,8 +7,8 @@ const ExecutiveCard = memo(({ item }) => {
     return (
         <div className='executive-card'>
             <div className='ec__image'>
-                {/* <AvatarText name={userName}/> */}
-                <img src={Profile} alt='' />
+                <AvatarText name={userName} />
+                {/* <img src={Profile} alt='' /> */}
             </div>
             <span className='ec__name'>{userName}</span>
             <span className='ec__designation'>Sales & Marketing Admin</span>
