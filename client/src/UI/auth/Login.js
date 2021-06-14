@@ -32,6 +32,7 @@ const Login = () => {
                             role: ROLE, roleId: ROLEID } = response;
                         let user = { USERID, isLogged, USERNAME, WAREHOUSEID, ROLE, ROLEID }
                         setUser(user)
+                        sessionStorage.clear()
                         sessionStorage.setItem("user", JSON.stringify(user))
                         message.success("Logged in successfully.")
                         history.replace('/dashboard')
@@ -63,7 +64,7 @@ const Login = () => {
                             <h2>Hella narwhal Cosby sweater <br />McSweeney's, salvia kitsch before they <br />sold out High Life.</h2>
                             <p>
                                 Takamaru Ayako <br />
-                            Manager an inVision
+                                Manager an inVision
                             </p>
                         </div>
                     </div>
