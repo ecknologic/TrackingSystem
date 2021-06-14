@@ -351,6 +351,12 @@ customerQueries.getCustomerEnquiries = (createdBy, callback) => {
     let query = `Select enquiryId,customerName,accountStatus,contactperson,address,mobileNumber,revisitDate,registeredDate from customerenquirydetails WHERE createdBy=${createdBy} ORDER BY registeredDate DESC`
     return executeGetQuery(query, callback)
 }
+
+customerQueries.getAllCustomerEnquiries = (callback) => {
+    let query = `Select enquiryId,customerName,accountStatus,contactperson,address,mobileNumber,revisitDate,registeredDate from customerenquirydetails ORDER BY registeredDate DESC`
+    return executeGetQuery(query, callback)
+}
+
 customerQueries.getCustomerEnquiryProducts = (enquiryId, callback) => {
     let query = "SELECT cp.productName,cp.productPrice,cp.noOfJarsTobePlaced,cp.id AS productId FROM customerenquiryproducts cp WHERE enquiryId=?";
     let options = [enquiryId]
