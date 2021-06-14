@@ -164,7 +164,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
 
         const { pendingAmount, amountPaid } = formData
         const options = { item: 'Invoice payment', v1Ing: 'Updating', v2: 'updated' }
-        const url = `invoice/addInvoicePayment`
+        const url = `invoice/addDepartmentInvoicePayment`
         const body = { ...formData, pendingAmount: pendingAmount - amountPaid }
         try {
             showToast({ ...options, action: 'loading' })
