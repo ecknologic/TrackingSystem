@@ -86,6 +86,11 @@ invoiceQueries.getInvoicePayments = async (callback) => {
     return executeGetQuery(query, callback)
 }
 
+invoiceQueries.getDepartmentInvoicePayments = async (callback) => {
+    let query = "SELECT i.*,IFNULL(c.organizationName, c.customerName) as customerName,c.Address1 as billingAddress FROM departmentInvoicepaymentlogs i INNER JOIN customerdetails c ON i.customerId=c.customerId ORDER BY createdDateTime DESC";
+    return executeGetQuery(query, callback)
+}
+
 invoiceQueries.getUnclearedInvoices = async (input, callback) => {
     let { startDate, endDate, fromStart } = input;
     let query = `SELECT i.invoiceId,IFNULL(c.organizationName,c.customerName) AS customerName,c.Address1 AS billingAddress,i.pendingAmount FROM Invoice i

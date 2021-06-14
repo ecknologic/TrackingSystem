@@ -917,6 +917,13 @@ router.get('/getCustomerEnquiries/:createdBy', async (req, res) => {
   })
 });
 
+router.get('/getCustomerEnquiries', async (req, res) => {
+  customerQueries.getAllCustomerEnquiries((err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.json(results)
+  })
+});
+
 router.get('/getCustomerEnquiry/:enquiryId', async (req, res) => {
   customerQueries.getCustomerEnquiryById(req.params.enquiryId, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });

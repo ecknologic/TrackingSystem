@@ -416,6 +416,13 @@ router.get('/getInvoicePayments', (req, res) => {
     });
 });
 
+router.get('/getDepartmentInvoicePayments', (req, res) => {
+    invoiceQueries.getDepartmentInvoicePayments((err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.json(results);
+    });
+});
+
 router.get('/getUnclearedInvoices', (req, res) => {
     invoiceQueries.getUnclearedInvoices(req.query,(err, results) => {
         if (err) res.status(500).json(dbError(err));
