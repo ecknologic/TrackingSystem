@@ -424,9 +424,24 @@ router.get('/getDepartmentInvoicePayments', (req, res) => {
 });
 
 router.get('/getUnclearedInvoices', (req, res) => {
-    invoiceQueries.getUnclearedInvoices(req.query,(err, results) => {
+    invoiceQueries.getUnclearedInvoices(req.query, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else res.json(results);
+    });
+});
+
+router.get('/getUnclearedInvoices/count', (req, res) => {
+    invoiceQueries.getUnclearedInvoicesCount(req.query, (err, invoiceCount) => {
+        if (err) res.status(500).json(dbError(err));
+        else {
+            invoiceQueries.getUnclearedDepartmentInvoicesCount(req.query, (err, departmentCount) => {
+                if (err) res.status(500).json(dbError(err));
+                else {
+                    let count = invoiceCount[0].totalCount + departmentCount[0].totalCount
+                    res.json(count);
+                }
+            });
+        }
     });
 });
 
@@ -463,6 +478,7 @@ const saveDepartmentInvoice = async (requestObj, res, response) => {
                     if (err) res.status(500).json(dbError(err));
                     else {
                         getInvoiceByInvoiceId({ invoiceId, departmentId })
+                        if (requestObj.departmentStatus != "Pending") addDepartmentPayment(invoiceId, requestObj)
                         response && res.json({ message: 'Invoice created successfully' })
                     }
                 })
@@ -470,6 +486,17 @@ const saveDepartmentInvoice = async (requestObj, res, response) => {
         }
     })
 }
+
+const addDepartmentPayment = (invoiceId, requestObj) => {
+    const { totalAmount: amountPaid, departmentId, customerId, customerType, paymentDate = new Date(), paymentMode } = requestObj
+    let obj = {
+        invoiceId, amountPaid, customerId, customerType, paymentDate, paymentMode, departmentId
+    }
+    invoiceQueries.addDepartmentInvoicePayment(obj, (err, results) => {
+        if (err) console.log('err', err);
+    });
+}
+
 const updateInvoice = (req, res) => {
     // req.body.invoicePdf = pdfData.toString('base64')
     invoiceQueries.updateInvoice(req.body, (err, results) => {

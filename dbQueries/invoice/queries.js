@@ -94,12 +94,37 @@ invoiceQueries.getDepartmentInvoicePayments = async (callback) => {
 invoiceQueries.getUnclearedInvoices = async (input, callback) => {
     let { startDate, endDate, fromStart } = input;
     let query = `SELECT i.invoiceId,IFNULL(c.organizationName,c.customerName) AS customerName,c.Address1 AS billingAddress,i.pendingAmount FROM Invoice i
-    INNER JOIN customerdetails c ON i.customerId=c.customerId WHERE DATE(createdDateTime) <=?`
+    INNER JOIN customerdetails c ON i.customerId=c.customerId WHERE i.pendingAmount>0 AND DATE(createdDateTime) <=?`
     let options = [endDate]
 
     if (fromStart !== 'true') {
         query = `SELECT i.invoiceId,IFNULL(c.organizationName,c.customerName) AS customerName,c.Address1 AS billingAddress,i.pendingAmount FROM Invoice i
-        INNER JOIN customerdetails c ON i.customerId=c.customerId WHERE DATE(createdDateTime) BETWEEN ? AND ?`
+        INNER JOIN customerdetails c ON i.customerId=c.customerId WHERE i.pendingAmount>0 AND DATE(createdDateTime) BETWEEN ? AND ?`
+        options = [startDate, endDate]
+    }
+    return executeGetParamsQuery(query, options, callback)
+}
+
+invoiceQueries.getUnclearedInvoicesCount = async (input, callback) => {
+    let { startDate, endDate, fromStart } = input;
+    let query = `SELECT COUNT(*) as totalCount FROM Invoice WHERE pendingAmount>0 AND DATE(createdDateTime) <=?`
+    let options = [endDate]
+
+    if (fromStart !== 'true') {
+        query = `
+        SELECT COUNT(*) as totalCount FROM Invoice WHERE pendingAmount>0 AND DATE(createdDateTime) BETWEEN ? AND ?`
+        options = [startDate, endDate]
+    }
+    return executeGetParamsQuery(query, options, callback)
+}
+
+invoiceQueries.getUnclearedDepartmentInvoicesCount = async (input, callback) => {
+    let { startDate, endDate, fromStart } = input;
+    let query = `SELECT COUNT(*) as totalCount FROM departmentInvoices WHERE pendingAmount>0 AND DATE(createdDateTime) <=?`
+    let options = [endDate]
+
+    if (fromStart !== 'true') {
+        query = `SELECT COUNT(*) as totalCount FROM departmentInvoices WHERE pendingAmount>0 AND DATE(createdDateTime) BETWEEN ? AND ?`
         options = [startDate, endDate]
     }
     return executeGetParamsQuery(query, options, callback)
@@ -156,9 +181,10 @@ invoiceQueries.createInvoice = (input, callback) => {
 }
 
 invoiceQueries.createDepartmentInvoice = (input, callback) => {
-    const { dcNo, customerId, invoiceDate, dueDate, fromDate, toDate, salesPerson, invoiceId, hsnCode, poNo, totalAmount, customerName, departmentId, mailIds, status = 'Pending', departmentStatus = 'Pending', customerType = 'customer', paymentMode } = input
+    const { dcNo, customerId, invoiceDate, dueDate, fromDate, toDate, salesPerson, invoiceId, hsnCode, poNo, totalAmount, customerName, departmentId, mailIds, departmentStatus = 'Pending', customerType = 'customer', paymentMode } = input
     const pendingAmount = departmentStatus == "Pending" ? totalAmount : 0
-    const noOfPayments = departmentStatus == "Pending" ? 1 : 0
+    const noOfPayments = departmentStatus != "Pending" ? 1 : 0
+    const status = "Pending"
     let query = "insert into departmentInvoices (dcNo,customerId,invoiceDate,dueDate,salesPerson,invoiceId,hsnCode,poNo,totalAmount,customerName,fromDate,toDate,departmentId,status,mailIds,departmentStatus,pendingAmount,customerType,paymentMode,noOfPayments) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     // var gstProofImage = Buffer.from(gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
     let requestBody = [dcNo, customerId, invoiceDate, dueDate, salesPerson, invoiceId, hsnCode, poNo, totalAmount, customerName, fromDate, toDate, departmentId, status, mailIds, departmentStatus, pendingAmount, customerType, paymentMode, noOfPayments]
