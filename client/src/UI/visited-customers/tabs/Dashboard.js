@@ -1,21 +1,16 @@
 import axios from 'axios';
-import { Col, Empty, message, Row } from 'antd';
+import { Col, Empty, Row } from 'antd';
 import { useHistory, useParams } from 'react-router-dom';
-import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../modules/http'
 import MenuBar from '../../../components/MenuBar';
 import Spinner from '../../../components/Spinner';
-import useUser from '../../../utils/hooks/useUser';
 import NoContent from '../../../components/NoContent';
-import { SUPERADMIN } from '../../../utils/constants';
-import DeleteModal from '../../../components/CustomModal';
-import ConfirmMessage from '../../../components/ConfirmMessage';
-import VisitedCustomerCard from '../../../components/VisitedCustomerCard';
 import CustomPagination from '../../../components/CustomPagination';
-import { deepClone, doubleKeyComplexSearch, showToast, complexSort, complexDateSort, isEmpty } from '../../../utils/Functions';
+import VisitedCustomerCard from '../../../components/VisitedCustomerCard';
+import { doubleKeyComplexSearch, complexSort, complexDateSort, isEmpty } from '../../../utils/Functions';
 
 const Dashboard = ({ reFetch }) => {
-    const { ROLE, USERID } = useUser()
     const history = useHistory()
     const { page = 1 } = useParams()
     const [enquiriesClone, setEnquiriesClone] = useState([])
@@ -28,10 +23,7 @@ const Dashboard = ({ reFetch }) => {
     const [pageNumber, setPageNumber] = useState(Number(page))
     const [sortBy, setSortBy] = useState('NEW - OLD')
     const [totalCount, setTotalCount] = useState(null)
-    const [modalDelete, setModalDelete] = useState(false)
-    const [currentId, setCurrentId] = useState('')
 
-    const isSuperAdmin = useMemo(() => ROLE === SUPERADMIN, [])
     const pageSizeOptions = useMemo(() => generatePageSizeOptions(), [window.innerWidth])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
@@ -48,7 +40,7 @@ const Dashboard = ({ reFetch }) => {
     }, [reFetch])
 
     const getCustomerEnquiries = async () => {
-        const url = `customer/getCustomerEnquiries/${USERID}`
+        const url = `customer/getCustomerEnquiries`
 
         try {
             const data = await http.GET(axios, url, config)
