@@ -60,7 +60,7 @@ const ClosedCustomersReport = () => {
         } catch (error) { }
     }
 
-    const getReports = async ({ fromStart = false }) => {
+    const getReports = async ({ fromStart = true }) => {
         const url = `reports/getClosedCustomersReport?fromDate=${startDate}&toDate=${endDate}&fromStart=${fromStart}&departmentId=${WAREHOUSEID}&customerIds=${customerIds}`
 
         try {
