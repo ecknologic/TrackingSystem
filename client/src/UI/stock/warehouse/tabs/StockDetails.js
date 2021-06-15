@@ -202,7 +202,7 @@ const StockDetails = ({ date, driverList, vehicleList, motherplantList }) => {
             getREC()
             getEC()
         } catch (error) {
-            Westroy()
+            message.destroy()
             if (!axios.isCancel(error)) {
                 setBtnDisabled(false)
             }

@@ -22,7 +22,7 @@ const SideMenu = () => {
     const [confirm, setConfirm] = useState(false)
     const clickRef = useRef('')
 
-    const showDashboard = ROLE === SUPERADMIN || ROLE === WAREHOUSEADMIN || ROLE === MOTHERPLANTADMIN
+    const showDashboard = ROLE === SUPERADMIN || ROLE === ACCOUNTSADMIN || ROLE === WAREHOUSEADMIN || ROLE === MOTHERPLANTADMIN
     const mainPathname = getMainPathname(pathname)
     const menu = useMemo(() => getSideMenuKey(pathname), [mainPathname])
 
@@ -139,7 +139,7 @@ const SideMenu = () => {
                             </Item>
                             <Item key='/customerDashboard' style={{ pointerEvents: 'none' }} icon={selected === '/customerDashboard' ? <SettingIcon /> : <SettingIconLight />}>
                                 Settings
-                            </Item> */}
+                            </Item>
                         </>
                         : null
                 }
@@ -181,7 +181,8 @@ const SideMenu = () => {
                             <Item key='/visited-customers' icon={selected === '/visited-customers' ? <FriendIcon /> : <FriendIconLight />}>
                                 Visited Customers
                             </Item>
-                            <SubMenu icon={<ReportIconLight />} title='Reports'>
+                            {/* Below item should be: uncommented  */}
+                            {/* <SubMenu icon={<ReportIconLight />} title='Reports'>
                                 <Item key='/new-customers-report' icon={selected === '/new-customers-report' ? <FriendIcon /> : <FriendIconLight />}>
                                     New Customers
                                 </Item>
@@ -194,7 +195,7 @@ const SideMenu = () => {
                             </SubMenu>
                             <Item key='/settings' style={{ pointerEvents: 'none' }} icon={selected === '/settings' ? <SettingIcon /> : <SettingIconLight />}>
                                 Settings
-                            </Item>
+                            </Item> */}
                         </>
                         : null
                 }
