@@ -92,7 +92,7 @@ invoiceQueries.getDepartmentInvoicePayments = async (callback) => {
 }
 
 invoiceQueries.getUnclearedInvoices = async (input, callback) => {
-    let { startDate, endDate, fromStart } = input;
+    let { startDate, endDate, fromStart, limit } = input;
     let query = `SELECT i.invoiceId,IFNULL(c.organizationName,c.customerName) AS customerName,c.Address1 AS billingAddress,i.pendingAmount FROM Invoice i
     INNER JOIN customerdetails c ON i.customerId=c.customerId WHERE i.pendingAmount>0 AND DATE(createdDateTime) <=?`
     let options = [endDate]
@@ -102,6 +102,11 @@ invoiceQueries.getUnclearedInvoices = async (input, callback) => {
         INNER JOIN customerdetails c ON i.customerId=c.customerId WHERE i.pendingAmount>0 AND DATE(createdDateTime) BETWEEN ? AND ?`
         options = [startDate, endDate]
     }
+    if (limit) {
+        query = query + ` LIMIT ${limit}`
+    }
+
+    console.log(JSON.stringify(query))
     return executeGetParamsQuery(query, options, callback)
 }
 

@@ -45,7 +45,7 @@ const UnclearedInvoiceOverview = () => {
     }
 
     const getUnclearedInvoices = async ({ startDate, endDate, fromStart }) => {
-        const url = `invoice/getUnclearedInvoices?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}`
+        const url = `invoice/getUnclearedInvoices?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}&limit=5`
 
         try {
             const data = await http.GET(axios, url, config)

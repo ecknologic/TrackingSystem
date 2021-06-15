@@ -248,6 +248,14 @@ const Dashboard = ({ reFetch, onUpdate }) => {
     }
 
     const optimisticUpdate = (data) => {
+        const { pendingAmount } = data
+
+        if (pendingAmount === 0) {
+            const filtered = invoices.filter(item => item.invoiceId !== data.invoiceId)
+            setInvoices(filtered)
+            return
+        }
+
         let clone = deepClone(invoices);
         const index = clone.findIndex(item => item.invoiceId === data.invoiceId)
         clone[index] = data;

@@ -137,7 +137,7 @@ const Payments = ({ reFetch, onUpdate }) => {
     }
 
     const dataSource = useMemo(() => invoices.map((invoice) => {
-        const { invoiceId, invoiceDate, amountPaid, customerName, dueDate, paymentMode, status, billingAddress } = invoice
+        const { invoiceId, paymentId, invoiceDate, amountPaid, customerName, dueDate, paymentMode, billingAddress } = invoice
 
         const options = [
             <Menu.Item key="resend" icon={<SendIconGrey />}>Resend</Menu.Item>,
@@ -145,7 +145,7 @@ const Payments = ({ reFetch, onUpdate }) => {
         ]
 
         return {
-            key: invoiceId,
+            key: paymentId,
             customerName,
             billingAddress,
             paymentMode,
