@@ -18,6 +18,7 @@ const options = { startDate: d, endDate: d, fromStart: true }
 const UnclearedInvoiceOverview = () => {
     const { ROLE } = useUser()
     const history = useHistory()
+    const [count, setCount] = useState(0)
     const [loading, setLoading] = useState(true)
     const [results, setResults] = useState([])
     const [opData, setOpData] = useState(() => options)
@@ -27,11 +28,21 @@ const UnclearedInvoiceOverview = () => {
 
     useEffect(() => {
         getUnclearedInvoices(opData)
+        getCount(opData)
 
         return () => {
             http.ABORT(source)
         }
     }, [])
+
+    const getCount = async ({ startDate, endDate, fromStart }) => {
+        const url = `invoice/getUnclearedInvoices/count?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setCount(data)
+        } catch (error) { }
+    }
 
     const getUnclearedInvoices = async ({ startDate, endDate, fromStart }) => {
         const url = `invoice/getUnclearedInvoices?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}`
@@ -46,6 +57,7 @@ const UnclearedInvoiceOverview = () => {
     const handleOperation = useCallback((data) => {
         const newData = { ...opData, ...data }
         setLoading(true)
+        getCount(newData)
         getUnclearedInvoices(newData)
         setOpData(newData)
     }, [opData])
@@ -56,7 +68,7 @@ const UnclearedInvoiceOverview = () => {
     return (
         <div className='invoice-overview-panel'>
             <div className='header'>
-                <PanelHeader title={`Pending Invoices ${results.length}`} onSelect={handleOperation} showShow />
+                <PanelHeader title={`Pending Invoices ${count}`} onSelect={handleOperation} showShow />
             </div>
             <div className='todays-orders-panel uncleared-invoices-panel'>
                 <div className='panel-header'>
