@@ -26,6 +26,13 @@ router.get('/getInvoices', (req, res) => {
     });
 });
 
+router.get('/getInvoicesByRole/:roleId', (req, res) => {
+    invoiceQueries.getInvoicesByRole(req.params.roleId, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.send(results);
+    });
+});
+
 router.get('/getCustomerInvoices/:customerId', (req, res) => {
     invoiceQueries.getCustomerInvoices(req.params.customerId, (err, results) => {
         if (err) res.status(500).json(dbError(err));
@@ -72,10 +79,34 @@ router.get('/getTotalInvoicesCount', (req, res) => {
                 if (item.status == "Pending") pendingCount = item.totalCount
                 if (item.status == "Paid") paidCount = item.totalCount
             })
-            res.json({ paidCount, pendingCount, totalCount: paidCount + pendingCount })
+            invoiceQueries.getDepartmentInvoicesCount(req.query, (err, depInvoices) => {
+                if (err) res.status(500).json(dbError(err));
+                else {
+                    depInvoices.map(item => {
+                        if (item.status == "Pending" || item.status == "Inprogress") pendingCount = pendingCount + item.totalCount
+                        if (item.status == "Paid") paidCount = paidCount + item.totalCount
+                    })
+                    res.json({ paidCount, pendingCount, totalCount: paidCount + pendingCount })
+                }
+            })
         }
     });
 });
+
+router.get('/getDepartmentInvoicesCount', (req, res) => {
+    let pendingCount = 0, paidCount = 0
+    invoiceQueries.getDepartmentInvoicesCount(req.query, (err, depInvoices) => {
+        if (err) res.status(500).json(dbError(err));
+        else {
+            depInvoices.map(item => {
+                if (item.status == "Pending" || item.status == "Inprogress") pendingCount = pendingCount + item.totalCount
+                if (item.status == "Paid") paidCount = paidCount + item.totalCount
+            })
+            res.json({ paidCount, pendingCount, totalCount: paidCount + pendingCount })
+        }
+    })
+});
+
 router.put('/deleteInvoiceProducts', (req, res) => {
     invoiceQueries.deleteInvoiceProducts(req.body.deleted, (err, results) => {
         if (err) res.status(500).json(dbError(err));
@@ -120,10 +151,10 @@ router.post("/generateMultipleInvoices", (req, res) => {
                         let arr = []
                         const { fromDate, toDate } = req.body
                         for (let [index, i] of customersArr.entries()) {
-                            let { gstNo, products, customerId, creditPeriodInDays, organizationName, EmailId, createdBy } = i
+                            let { gstNo, products, customerId, creditPeriodInDays, organizationName, customerName, EmailId, createdBy } = i
                             let finalProducts = [];
                             let obj = {
-                                customerName: organizationName,
+                                customerName: organizationName || customerName,
                                 gstNo,
                                 invoiceDate: formatDate(new Date()),
                                 customerId: customerId,
@@ -353,6 +384,67 @@ router.post("/updateInvoice", (req, res) => {
     updateInvoice(req, res)
     // })
 });
+
+router.post('/addInvoicePayment', (req, res) => {
+    invoiceQueries.updateInvoicePaymentDetails(req.body, (err, data) => {
+        if (err) res.status(500).json(dbError(err));
+        else {
+            invoiceQueries.addInvoicePayment(req.body, (err, results) => {
+                if (err) res.status(500).json(dbError(err));
+                else res.json(results);
+            });
+        }
+    })
+});
+
+router.post('/addDepartmentInvoicePayment', (req, res) => {
+    invoiceQueries.updateDepartmentInvoicePaymentDetails(req.body, (err, data) => {
+        if (err) res.status(500).json(dbError(err));
+        else {
+            invoiceQueries.addDepartmentInvoicePayment(req.body, (err, results) => {
+                if (err) res.status(500).json(dbError(err));
+                else res.json(results);
+            });
+        }
+    })
+});
+
+router.get('/getInvoicePayments', (req, res) => {
+    invoiceQueries.getInvoicePayments((err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.json(results);
+    });
+});
+
+router.get('/getDepartmentInvoicePayments', (req, res) => {
+    invoiceQueries.getDepartmentInvoicePayments((err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.json(results);
+    });
+});
+
+router.get('/getUnclearedInvoices', (req, res) => {
+    invoiceQueries.getUnclearedInvoices(req.query, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.json(results);
+    });
+});
+
+router.get('/getUnclearedInvoices/count', (req, res) => {
+    invoiceQueries.getUnclearedInvoicesCount(req.query, (err, invoiceCount) => {
+        if (err) res.status(500).json(dbError(err));
+        else {
+            invoiceQueries.getUnclearedDepartmentInvoicesCount(req.query, (err, departmentCount) => {
+                if (err) res.status(500).json(dbError(err));
+                else {
+                    let count = invoiceCount[0].totalCount + departmentCount[0].totalCount
+                    res.json(count);
+                }
+            });
+        }
+    });
+});
+
 const saveInvoice = async (requestObj, res, response) => {
     // req.body.invoicePdf = pdfData.toString('base64')
     invoiceQueries.createInvoice(requestObj, (err, results) => {
@@ -386,6 +478,7 @@ const saveDepartmentInvoice = async (requestObj, res, response) => {
                     if (err) res.status(500).json(dbError(err));
                     else {
                         getInvoiceByInvoiceId({ invoiceId, departmentId })
+                        if (requestObj.departmentStatus != "Pending") addDepartmentPayment(invoiceId, requestObj)
                         response && res.json({ message: 'Invoice created successfully' })
                     }
                 })
@@ -393,6 +486,17 @@ const saveDepartmentInvoice = async (requestObj, res, response) => {
         }
     })
 }
+
+const addDepartmentPayment = (invoiceId, requestObj) => {
+    const { totalAmount: amountPaid, departmentId, customerId, customerType, paymentDate = new Date(), paymentMode } = requestObj
+    let obj = {
+        invoiceId, amountPaid, customerId, customerType, paymentDate, paymentMode, departmentId
+    }
+    invoiceQueries.addDepartmentInvoicePayment(obj, (err, results) => {
+        if (err) console.log('err', err);
+    });
+}
+
 const updateInvoice = (req, res) => {
     // req.body.invoicePdf = pdfData.toString('base64')
     invoiceQueries.updateInvoice(req.body, (err, results) => {
@@ -453,16 +557,21 @@ const addProducts = (products) => {
             newData["2LBoxes"] += item["2LBoxes"]
             newData["300MLBoxes"] += item["300MLBoxes"]
             newData["500MLBoxes"] += item["500MLBoxes"]
-            newData["price1L"] += item["price1L"]
-            newData["price2L"] += item["price2L"]
-            newData["price20L"] += item["price20L"]
-            newData["price300ML"] += item["price300ML"]
-            newData["price500ML"] += item["price500ML"]
+            newData["price1L"] = getLargestPrice(newData["price1L"], item["price1L"])
+            newData["price2L"] = getLargestPrice(newData["price2L"], item["price2L"])
+            newData["price20L"] = getLargestPrice(newData["price20L"], item["price20L"])
+            newData["price300ML"] = getLargestPrice(newData["price300ML"], item["price300ML"])
+            newData["price500ML"] = getLargestPrice(newData["price500ML"], item["price500ML"])
             newData["address"] = item["address"]
             newData["deliveryAddress"] = item["deliveryAddress"]
         }
     })
     return [newData]
+}
+
+const getLargestPrice = (previousPrice, newPrice) => {
+    if (previousPrice > newPrice) return previousPrice
+    return newPrice
 }
 const prepareProductObj = (product) => {
     const { invoiceId, productName, quantity, productPrice, tax = 18, gstNo, address, deliveryAddress } = product

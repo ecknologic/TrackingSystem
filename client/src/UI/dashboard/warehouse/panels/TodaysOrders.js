@@ -76,7 +76,7 @@ const TodaysOrders = () => {
                     </div>
                 </div>
             </div>
-            <div className='panel-body'>
+            <div className='panel-body pb-0'>
                 {
                     loading ? <NoContent content={<Spinner />} />
                         : isEmpty(orders) ? <NoContent content={<Empty />} />

@@ -6,7 +6,7 @@ import AccountsFilter from '../../components/AccountsFilter';
 import { PlusIconGrey } from '../../components/SVG_Icons';
 import CustomButton from '../../components/CustomButton';
 
-const Header = ({ activeTab, onChange, onSearch, onSort, onFilter, onClick, businessOptions }) => {
+const Header = ({ activeTab, onChange, onSearch, onSort, onClick }) => {
 
     return (
         <div className='customers-header'>
@@ -40,7 +40,7 @@ const Header = ({ activeTab, onChange, onSearch, onSort, onFilter, onClick, busi
                 <div className='rest-container'>
                     <div className='op-container'>
                         <SortBy onSelect={onSort} />
-                        <AccountsFilter onChange={onFilter} businessOptions={businessOptions} />
+                        <AccountsFilter />
                     </div>
                 </div>
             </div>

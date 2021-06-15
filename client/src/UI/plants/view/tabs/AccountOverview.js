@@ -1,33 +1,26 @@
 import axios from 'axios';
 import { message } from 'antd';
-import { useHistory, useLocation, useParams } from 'react-router-dom';
-import React, { Fragment, useEffect, useMemo, useState, useCallback } from 'react';
-import Header from './header';
-import PlantForm from '../forms/Plant';
-import AccountView from '../views/Account';
-import { http } from '../../../modules/http'
-import Spinner from '../../../components/Spinner';
-import ScrollUp from '../../../components/ScrollUp';
-import { TRACKFORM } from '../../../utils/constants';
-import NoContent from '../../../components/NoContent';
-import QuitModal from '../../../components/CustomModal';
-import IDProofInfo from '../../../components/IDProofInfo';
-import { getStaffOptions } from '../../../assets/fixtures';
-import CustomButton from '../../../components/CustomButton';
-import ConfirmMessage from '../../../components/ConfirmMessage';
-import { isEmpty, showToast, base64String, getMainPathname, getBase64, getPlantValuesForDB } from '../../../utils/Functions';
-import { validateNames, validateMobileNumber, validatePinCode, validatePlantValues } from '../../../utils/validations';
-import '../../../sass/plants.scss'
+import { useLocation, useParams } from 'react-router-dom';
+import React, { Fragment, useEffect, useMemo, useState } from 'react';
+import PlantForm from '../../forms/Plant';
+import AccountView from '../../views/Account';
+import { http } from '../../../../modules/http'
+import Spinner from '../../../../components/Spinner';
+import ScrollUp from '../../../../components/ScrollUp';
+import NoContent from '../../../../components/NoContent';
+import IDProofInfo from '../../../../components/IDProofInfo';
+import { getStaffOptions } from '../../../../assets/fixtures';
+import CustomButton from '../../../../components/CustomButton';
+import { isEmpty, showToast, base64String, getMainPathname, getBase64, getPlantValuesForDB, resetTrackForm } from '../../../../utils/Functions';
+import { validateNames, validateMobileNumber, validatePinCode, validatePlantValues } from '../../../../utils/validations';
+import '../../../../sass/plants.scss'
 
-const ManagePlant = () => {
+const ManagePlant = ({ setHeaderContent, onGoBack }) => {
     const { plantId } = useParams()
-    const history = useHistory()
     const { pathname } = useLocation()
     const [accountValues, setAccountValues] = useState({ loading: true })
-    const [headerContent, setHeaderContent] = useState({})
     const [loading, setLoading] = useState(true)
     const [gstProof, setGstProof] = useState({})
-    const [confirmModal, setConfirmModal] = useState(false)
     const [accountErrors, setAccountErrors] = useState({})
     const [editMode, setEditMode] = useState(false)
     const [shake, setShake] = useState(false)
@@ -157,7 +150,9 @@ const ManagePlant = () => {
             showToast({ ...options, action: 'loading' })
             await http.POST(axios, url, body, config)
             showToast(options)
-            goBack()
+            resetTrackForm()
+            setEditMode(false)
+            setBtnDisabled(false)
         } catch (error) {
             message.destroy()
             if (!axios.isCancel(error)) {
@@ -171,25 +166,10 @@ const ManagePlant = () => {
         setEditMode(true)
     }
 
-    const onAccountCancel = useCallback(() => handleBack(), [])
-    const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
-    const handleConfirmModalOk = useCallback(() => { setConfirmModal(false); goBack() }, [])
-
-    const handleBack = () => {
-        const formHasChanged = sessionStorage.getItem(TRACKFORM)
-        if (formHasChanged) {
-            setConfirmModal(true)
-        }
-        else goBack()
-    }
-
-    const goBack = () => history.push(mainUrl)
-
     return (
         <Fragment>
             <ScrollUp dep={editMode} />
-            <Header data={headerContent} onClick={handleBack} />
-            <div className='app-manage-content plant-manage-content'>
+            <div className='app-manage-content plant-manage-content p-0'>
                 {
                     loading
                         ? <NoContent content={<Spinner />} />
@@ -221,7 +201,7 @@ const ManagePlant = () => {
                                     </>
                             }
                             <div className={`app-footer-buttons-container ${editMode ? 'edit' : 'view'}`}>
-                                <CustomButton onClick={onAccountCancel} className='app-cancel-btn footer-btn' text='Cancel' />
+                                <CustomButton onClick={onGoBack} className='app-cancel-btn footer-btn' text='Cancel' />
                                 {
                                     editMode
                                         ? <CustomButton onClick={handleUpdate} className={`app-create-btn footer-btn ${btnDisabled && 'disabled'} ${shake && 'app-shake'}`} text='Update' />
@@ -235,15 +215,6 @@ const ManagePlant = () => {
                         </>
                 }
             </div>
-            <QuitModal
-                visible={confirmModal}
-                onOk={handleConfirmModalOk}
-                onCancel={handleConfirmModalCancel}
-                title='Are you sure you want to leave?'
-                okTxt='Yes'
-            >
-                <ConfirmMessage msg='Changes you made may not be saved.' />
-            </QuitModal>
         </Fragment>
     )
 }

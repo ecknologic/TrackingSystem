@@ -2,27 +2,30 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 import { Menu, message, Table } from 'antd';
 import { useHistory } from 'react-router-dom';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import PaymentForm from '../forms/Payment';
 import { http } from '../../../../modules/http'
 import Actions from '../../../../components/Actions';
 import Spinner from '../../../../components/Spinner';
-import { TODAYDATE, WAREHOUSEADMIN } from '../../../../utils/constants';
 import DateValue from '../../../../components/DateValue';
-import SearchInput from '../../../../components/SearchInput';
-import CustomButton from '../../../../components/CustomButton';
-import RoutesFilter from '../../../../components/RoutesFilter';
-import { getInvoiceColumns } from '../../../../assets/fixtures';
-import CustomRangeInput from '../../../../components/CustomRangeInput';
-import CustomPagination from '../../../../components/CustomPagination';
-import { deepClone, disableFutureDates, doubleKeyComplexSearch, getStatusColor, isEmpty, showToast } from '../../../../utils/Functions';
-import { ListViewIconGrey, ScheduleIcon, SendIconGrey, TickIconGrey } from '../../../../components/SVG_Icons';
-import CustomDateInput from '../../../../components/CustomDateInput';
 import InputLabel from '../../../../components/InputLabel';
 import InputValue from '../../../../components/InputValue';
+import SearchInput from '../../../../components/SearchInput';
+import CustomModal from '../../../../components/CustomModal';
+import ConfirmModal from '../../../../components/CustomModal';
+import RoutesFilter from '../../../../components/RoutesFilter';
+import ConfirmMessage from '../../../../components/ConfirmMessage';
+import CustomDateInput from '../../../../components/CustomDateInput';
+import CustomPagination from '../../../../components/CustomPagination';
+import { TODAYDATE, TRACKFORM, WAREHOUSEADMIN } from '../../../../utils/constants';
+import { getDropdownOptions, getInvoiceColumns } from '../../../../assets/fixtures';
+import { compareMaxIntFloat, validatePaymentValues } from '../../../../utils/validations';
+import { ListViewIconGrey, ScheduleIcon, SendIconGrey, TickIconGrey } from '../../../../components/SVG_Icons';
+import { computeTotalAmount, deepClone, disableFutureDates, doubleKeyComplexSearch, getStatusColor, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
-const WarehouseInvoices = ({ reFetch }) => {
+const WarehouseInvoices = () => {
     const history = useHistory()
     const [invoices, setInvoices] = useState([])
     const [invoicesClone, setInvoicesClone] = useState([])
@@ -31,30 +34,34 @@ const WarehouseInvoices = ({ reFetch }) => {
     const [pageNumber, setPageNumber] = useState(1)
     const [totalCount, setTotalCount] = useState(null)
     const [warehouseList, setWarehouseList] = useState([])
+    const [paymentList, setPaymentList] = useState([])
+    const [formData, setFormData] = useState({})
+    const [formErrors, setFormErrors] = useState({})
+    const [payModal, setPayModal] = useState(false)
+    const [confirmModal, setConfirmModal] = useState(false)
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
     const [filteredClone, setFilteredClone] = useState([])
     const [filterON, setFilterON] = useState(false)
     const [resetSearch, setResetSearch] = useState(false)
     const [searchON, setSeachON] = useState(false)
+    const [shake, setShake] = useState(false)
     const [open, setOpen] = useState(false)
 
+    const paymentOptions = useMemo(() => getDropdownOptions(paymentList), [paymentList])
     const invoiceColumns = useMemo(() => getInvoiceColumns('warehouse'), [])
-    const totalAmount = useMemo(() => computeTotalAmount(invoices), [invoices])
+    const totalAmount = useMemo(() => computeTotalAmount(invoices, 'pendingAmount'), [invoices, payModal])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
+        getInvoices()
         getWarehouseList()
+        getPaymentList()
 
         return () => {
             http.ABORT(source)
         }
     }, [])
-
-    useEffect(async () => {
-        setLoading(true)
-        getInvoices()
-    }, [reFetch])
 
     const getInvoices = async () => {
         const url = 'invoice/getDepartmentInvoices'
@@ -75,6 +82,36 @@ const WarehouseInvoices = ({ reFetch }) => {
             const data = await http.GET(axios, url, config)
             setWarehouseList(data)
         } catch (error) { }
+    }
+
+    const getPaymentList = async () => {
+        const url = `bibo/getList/paymentMode`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setPaymentList(data)
+        } catch (error) { }
+    }
+
+    const handleChange = (value, key) => {
+        const { pendingAmount } = formData
+        setFormData(data => ({ ...data, [key]: value }))
+        setFormErrors(errors => ({ ...errors, [key]: '' }))
+
+        // Validations
+        if (key === 'amountPaid') {
+            const error = compareMaxIntFloat(value, pendingAmount, '')
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+    }
+
+    const handleBlur = (value, key) => {
+        const { pendingAmount } = formData
+        // Validations
+        if (key === 'amountPaid') {
+            const error = compareMaxIntFloat(value, pendingAmount, '', true)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
     }
 
     const handlePageChange = (number) => {
@@ -106,12 +143,16 @@ const WarehouseInvoices = ({ reFetch }) => {
     }
 
     const handleMenuSelect = (key, data) => {
+        const { noOfPayments, pendingAmount: amountPaid } = data
         if (key === 'resend') {
         }
         else if (key === 'dcList') {
             history.push(`/invoices/dc-list/${data.invoiceId}`, data)
         }
-        else handleStatusUpdate(data.invoiceId)
+        else if (key === 'paid') {
+            setFormData({ ...data, noOfPayments: noOfPayments + 1, amountPaid })
+            setPayModal(true)
+        }
     }
 
     const handleViewInvoice = (invoice) => history.push('/invoices/manage', { invoice, FOR: WAREHOUSEADMIN })
@@ -132,23 +173,33 @@ const WarehouseInvoices = ({ reFetch }) => {
         searchON && setResetSearch(!resetSearch)
     }
 
-    const optimisticUpdate = (id, status) => {
+    const optimisticUpdate = (data) => {
         let clone = deepClone(invoices);
-        const index = clone.findIndex(item => item.invoiceId === id)
-        clone[index].status = status;
+        const index = clone.findIndex(item => item.invoiceId === data.invoiceId)
+        clone[index] = data;
         setInvoices(clone)
     }
 
-    const handleStatusUpdate = async (invoiceId) => {
-        const status = 'Paid'
-        const options = { item: 'Invoice status', v1Ing: 'Updating', v2: 'updated' }
-        const url = `invoice/updateDepartmentInvoiceStatus`
-        const body = { status, invoiceId, departmentStatus: status }
+    const handlePayment = async () => {
+        const formErrors = validatePaymentValues(formData)
+
+        if (!isEmpty(formErrors)) {
+            setShake(true)
+            setTimeout(() => setShake(false), 820)
+            setFormErrors(formErrors)
+            return
+        }
+
+        const { pendingAmount, amountPaid } = formData
+        const options = { item: 'Invoice payment', v1Ing: 'Updating', v2: 'updated' }
+        const url = `invoice/addDepartmentInvoicePayment`
+        const body = { ...formData, pendingAmount: pendingAmount - amountPaid }
         try {
             showToast({ ...options, action: 'loading' })
-            await http.PUT(axios, url, body, config)
-            optimisticUpdate(invoiceId, status)
+            const [data] = await http.POST(axios, url, body, config)
+            optimisticUpdate(data)
             showToast(options)
+            onModalClose(true)
         } catch (error) {
             message.destroy()
         }
@@ -169,14 +220,28 @@ const WarehouseInvoices = ({ reFetch }) => {
         setSeachON(true)
     }
 
-    const dataSource = useMemo(() => invoices.map((invoice) => {
-        const { invoiceId, invoiceDate, totalAmount, customerName, departmentName, dueDate, status } = invoice
+    const onModalClose = (hasSaved) => {
+        const formHasChanged = sessionStorage.getItem(TRACKFORM)
+        if (formHasChanged && !hasSaved) {
+            return setConfirmModal(true)
+        }
+        setPayModal(false)
+        setFormData({})
+        setFormErrors({})
+    }
 
-        const canPay = status === 'Inprogress'
+    const dataSource = useMemo(() => invoices.map((invoice) => {
+        const { invoiceId, invoiceDate, totalAmount, customerName, departmentName, dueDate, status, departmentStatus, billingAddress, pendingAmount } = invoice
+
+        let actualStatus = ''
+        if ((departmentStatus === 'Paid' || departmentStatus === 'Pending') && status === 'Paid') actualStatus = 'Paid'
+        else if (departmentStatus === 'Paid' && (status === '' || status === 'Pending')) actualStatus = 'In Progress'
+        else if (departmentStatus == 'Pending' && status === 'Pending') actualStatus = 'Pending'
+
         const options = [
             <Menu.Item key="resend" icon={<SendIconGrey />}>Resend</Menu.Item>,
             <Menu.Item key="dcList" icon={<ListViewIconGrey />}>DC List</Menu.Item>,
-            <Menu.Item key="paid" className={canPay ? '' : 'disabled'} icon={<TickIconGrey />}>Paid</Menu.Item>,
+            <Menu.Item key="paid" className={actualStatus === 'In Progress' ? '' : 'disabled'} icon={<TickIconGrey />}>Paid</Menu.Item>,
         ]
 
         return {
@@ -184,13 +249,24 @@ const WarehouseInvoices = ({ reFetch }) => {
             customerName,
             totalAmount,
             departmentName,
-            status: renderStatus(status),
+            billingAddress,
+            pendingAmount,
+            status: renderStatus(actualStatus),
             dueDate: dayjs(dueDate).format(DATEFORMAT),
             date: dayjs(invoiceDate).format(DATEFORMAT),
             invoiceId: <span className='app-link' onClick={() => handleViewInvoice(invoice)}>{invoiceId}</span>,
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, invoice)} />
         }
     }), [invoices])
+
+    const handleConfirmModalOk = useCallback(() => {
+        setConfirmModal(false);
+        resetTrackForm()
+        onModalClose()
+    }, [])
+
+    const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
+    const handleModalCancel = useCallback(() => onModalClose(), [])
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
@@ -257,6 +333,32 @@ const WarehouseInvoices = ({ reFetch }) => {
                         onPageSizeChange={handleSizeChange}
                     />)
             }
+            <CustomModal
+                hideCancel
+                okTxt='Add'
+                visible={payModal}
+                title='Payment'
+                onOk={handlePayment}
+                onCancel={handleModalCancel}
+                className={`app-form-modal ${shake && 'app-shake'}`}
+            >
+                <PaymentForm
+                    data={formData}
+                    errors={formErrors}
+                    paymentOptions={paymentOptions}
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                />
+            </CustomModal>
+            <ConfirmModal
+                visible={confirmModal}
+                onOk={handleConfirmModalOk}
+                onCancel={handleConfirmModalCancel}
+                title='Are you sure you want to leave?'
+                okTxt='Yes'
+            >
+                <ConfirmMessage msg='Changes you made may not be saved.' />
+            </ConfirmModal>
         </div>
     )
 }
@@ -264,22 +366,11 @@ const renderStatus = (status) => {
     const modifiedStatus = status === 'Inprogress' ? 'In Progress' : status
     const color = getStatusColor(modifiedStatus)
     return (
-        <div className='status'>
+        <div className='status nowrap'>
             <span className='app-dot' style={{ background: color }}></span>
             <span className='status-text'>{modifiedStatus}</span>
         </div>
     )
 }
 
-const computeTotalAmount = (data) => {
-    let totalAmount = 0
-    if (!isEmpty(data)) {
-        totalAmount = data.filter(({ status }) => status !== 'Paid')
-            .map(item => item.totalAmount)
-            .reduce((a, c) => a + c).toLocaleString('en-IN')
-    }
-
-    return `₹ ${totalAmount}`
-
-}
 export default WarehouseInvoices

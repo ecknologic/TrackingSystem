@@ -3,14 +3,14 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { http } from '../../../../modules/http';
 import PanelHeader from '../../../../components/PanelHeader';
 import { TODAYDATE as d } from '../../../../utils/constants';
-import { defaultPie, dummyWaterResults } from '../../../../assets/fixtures';
+import { defaultPie } from '../../../../assets/fixtures';
 import InvoiceOverviewCard from '../../../../components/InvoiceOverviewCard';
 // import CustomButton from '../../../../components/CustomButton';
 // import { RightChevronIconLight } from '../../../../components/SVG_Icons';
 const options = { startDate: d, endDate: d, fromStart: true }
 
 const InvoiceOverview = () => {
-    const [results, setResults] = useState(dummyWaterResults)
+    const [results, setResults] = useState([])
     const [opData, setOpData] = useState(() => options)
     const [graph, setGraph] = useState(defaultPie)
     const source = useMemo(() => axios.CancelToken.source(), []);

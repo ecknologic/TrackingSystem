@@ -11,31 +11,30 @@ import QuitModal from '../../../../components/CustomModal';
 import CustomModal from '../../../../components/CustomModal';
 import SearchInput from '../../../../components/SearchInput';
 import DeliveryForm from '../../../accounts/add/forms/Delivery';
-import { EditIconGrey } from '../../../../components/SVG_Icons';
+import { EditIconGrey, ListViewIconGrey } from '../../../../components/SVG_Icons';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomPagination from '../../../../components/CustomPagination';
 import { orderColumns, getRouteOptions, getDriverOptions, getVehicleOptions, getWarehouseOptions, getDropdownOptions } from '../../../../assets/fixtures';
 import { isEmpty, resetTrackForm, showToast, deepClone, getProductsForUI, base64String, getDevDays, doubleKeyComplexSearch } from '../../../../utils/Functions';
+import ActivityLogContent from '../../../../components/ActivityLogContent';
 
-const Orders = () => {
+const Orders = ({ driverList, vehicleList, locationList, warehouseList }) => {
     const { WAREHOUSEID } = useUser()
-    const [routes, setRoutes] = useState([])
-    const [drivers, setDrivers] = useState([])
-    const [vehicles, setVehicles] = useState([])
+    const [routeList, setRouteList] = useState([])
     const [loading, setLoading] = useState(true)
     const [orders, setOrders] = useState([])
+    const [logs, setLogs] = useState([])
     const [ordersClone, setOrdersClone] = useState([])
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [pageSize, setPageSize] = useState(10)
     const [totalCount, setTotalCount] = useState(null)
     const [pageNumber, setPageNumber] = useState(1)
+    const [logModal, setLogModal] = useState(false)
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [DCModal, setDCModal] = useState(false)
     const [viewModal, setViewModal] = useState(false)
     const [currentDepId, setCurrentDepId] = useState('')
-    const [locationList, setLocationList] = useState([])
-    const [warehouseList, setWarehouseList] = useState([])
     const [confirmModal, setConfirmModal] = useState(false)
     const [options, setOptions] = useState({})
     const [isFetched, setIsFetched] = useState(false)
@@ -44,9 +43,9 @@ const Orders = () => {
     const [label, setLabel] = useState('Add')
     const [viewedArr, setViewedArr] = useState([])
 
-    const routeOptions = useMemo(() => getRouteOptions(routes), [routes])
-    const driverOptions = useMemo(() => getDriverOptions(drivers), [drivers])
-    const vehicleOptions = useMemo(() => getVehicleOptions(vehicles), [vehicles])
+    const routeOptions = useMemo(() => getRouteOptions(routeList), [routeList])
+    const driverOptions = useMemo(() => getDriverOptions(driverList), [driverList])
+    const vehicleOptions = useMemo(() => getVehicleOptions(vehicleList), [vehicleList])
     const warehouseOptions = useMemo(() => getWarehouseOptions(warehouseList), [warehouseList])
     const locationOptions = useMemo(() => getDropdownOptions(locationList), [locationList])
 
@@ -65,12 +64,7 @@ const Orders = () => {
     const fetchData = async () => {
         if (!isFetched) {
             showToast(toastLoading)
-            const p1 = getRouteList(WAREHOUSEID)
-            const p2 = getDriverList()
-            const p3 = getVehicleList()
-            const p4 = getWarehouseList()
-            const p5 = getLocationList()
-            await Promise.all([p1, p2, p3, p4, p5])
+            await getRouteList(WAREHOUSEID)
             message.destroy()
         }
     }
@@ -80,44 +74,8 @@ const Orders = () => {
 
         try {
             const data = await http.GET(axios, url, config)
-            setRoutes(data)
+            setRouteList(data)
             setCurrentDepId(depId)
-        } catch (error) { }
-    }
-
-    const getDriverList = async () => {
-        const url = `bibo/getdriverDetails/${WAREHOUSEID}`
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setDrivers(data)
-        } catch (error) { }
-    }
-
-    const getVehicleList = async () => {
-        const url = `bibo/getVehicleDetails`
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setVehicles(data)
-        } catch (error) { }
-    }
-
-    const getWarehouseList = async () => {
-        const url = 'bibo/getDepartmentsList?departmentType=warehouse'
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setWarehouseList(data)
-        } catch (ex) { }
-    }
-
-    const getLocationList = async () => {
-        const url = `bibo/getList/location`
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setLocationList(data)
         } catch (error) { }
     }
 
@@ -156,12 +114,23 @@ const Orders = () => {
         } catch (error) { }
     }
 
+    const getLogs = async (DDId) => {
+        const url = `logs/getDepartmentLogs?type=order&id=${DDId}`
+
+        try {
+            showToast({ v1Ing: 'Fetching', action: 'loading' })
+            const data = await http.GET(axios, url, config)
+            showToast({ v2: 'fetched' })
+            setLogs(data)
+        } catch (error) { }
+    }
+
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
         if (key === 'driverId') {
-            let selectedDriver = drivers.find(driver => driver.driverId === Number(value))
+            let selectedDriver = driverList.find(driver => driver.driverId === Number(value))
             let { mobileNumber = null } = selectedDriver || {}
             setFormData(data => ({ ...data, mobileNumber }))
             setFormErrors(errors => ({ ...errors, mobileNumber: '' }))
@@ -177,7 +146,6 @@ const Orders = () => {
     }
 
     const handleMenuSelect = async (key, data) => {
-        setIsFetched(true)
         if (key === 'view') {
             handleView(data.deliveryDetailsId)
         }
@@ -193,7 +161,12 @@ const Orders = () => {
                 setLabel('Add')
             }
 
+            setIsFetched(true)
             setDCModal(true)
+        }
+        else if (key === 'logs') {
+            await getLogs(data.deliveryDetailsId)
+            setLogModal(true)
         }
     }
 
@@ -214,7 +187,6 @@ const Orders = () => {
 
     const handleView = async (id) => {
         const delivery = viewedArr.find(item => item.deliveryDetailsId === id)
-        isEmpty(warehouseList) && getWarehouseList()
 
         if (delivery) {
             const { departmentId } = delivery
@@ -239,8 +211,12 @@ const Orders = () => {
             return
         }
 
+        const { driverName } = driverList.find(item => item.driverId === driverId)
+        const { RouteName: routeName } = routeList.find(item => item.RouteId === routeId)
+        const { vehicleName } = vehicleList.find(item => item.vehicleId === driverId)
+
         let url = 'customer/createOrderDelivery'
-        const body = { ...formData }
+        const body = { ...formData, driverName, routeName, vehicleName }
 
         try {
             setBtnDisabled(true)
@@ -282,6 +258,10 @@ const Orders = () => {
         setLabel("Add")
     }
 
+    const onLogModalClose = () => {
+        setLogModal(false)
+    }
+
     const handleSearch = (value) => {
         setPageNumber(1)
         if (value === "") {
@@ -317,6 +297,7 @@ const Orders = () => {
     const handleDCModalCancel = useCallback(() => onModalClose(), [])
     const handleViewModalCancel = useCallback(() => onModalClose(), [])
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
+    const handleLogModalCancel = useCallback(() => onLogModalClose(), [])
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
@@ -402,6 +383,17 @@ const Orders = () => {
             >
                 <ConfirmMessage msg='Changes you made may not be saved.' />
             </QuitModal>
+            <CustomModal
+                className='app-form-modal'
+                visible={logModal}
+                onOk={handleLogModalCancel}
+                onCancel={handleLogModalCancel}
+                title='Activity Log Details'
+                okTxt='Close'
+                hideCancel
+            >
+                <ActivityLogContent data={logs} />
+            </CustomModal>
         </div>
     )
 }
@@ -414,6 +406,7 @@ const renderOrderDetails = ({ product20L, product2L, product1L, product500ML, pr
 }
 const getActions = (driverName) => {
     return [<Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>,
-    <Menu.Item key="delivery" icon={<EditIconGrey />}>{`${driverName ? "Update" : "Add"} Delivery`}</Menu.Item>]
+    <Menu.Item key="delivery" icon={<EditIconGrey />}>{`${driverName ? "Update" : "Add"} Delivery`}</Menu.Item>,
+    <Menu.Item key="logs" icon={<ListViewIconGrey />}>Acvitity Logs</Menu.Item>]
 }
 export default Orders

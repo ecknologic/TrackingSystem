@@ -62,17 +62,19 @@ export const validateAccountValues = (data, customerType, isInView) => {
         gstNo, panNo, adharNo, licenseNo, natureOfBussiness, organizationName, address, customerName, deliveryLocation,
         mobileNumber, invoicetype, creditPeriodInDays = "", EmailId, referredBy, idProofType, pinCode, alternatePhNo,
         contractPeriod, dispenserCount = "", registeredDate, gstProof, depositAmount = "", departmentId, routeId,
-        salesAgent, ...rest
+        salesAgent, contactPerson, ...rest
     } = data
 
     if (customerType === 'Corporate') {
         if (!organizationName) errors.organizationName = text
         if (!contractPeriod) errors.contractPeriod = text
+        if (!contactPerson) errors.contactPerson = text
         if (dispenserCount === null || !String(dispenserCount)) errors.dispenserCount = text
         // if (!gstNo) errors.gstNo = text
         // if (!gstProof) errors.gstProof = text
     }
     else {
+        if (!customerName) errors.customerName = text
         if (!isInView) { // General account form in add account screen
             if (!departmentId) errors.departmentId = text
             if (!routeId) errors.routeId = text
@@ -88,7 +90,6 @@ export const validateAccountValues = (data, customerType, isInView) => {
     if (!invoicetype) errors.invoicetype = text
     if (!registeredDate) errors.registeredDate = text
     if (!natureOfBussiness) errors.natureOfBussiness = text
-    if (!customerName) errors.customerName = text
     if (!pinCode) errors.pinCode = text
     if (!salesAgent) errors.salesAgent = text
     else {
@@ -106,6 +107,7 @@ export const validateAccountValues = (data, customerType, isInView) => {
     if (creditPeriodInDays === null || !String(creditPeriodInDays)) errors.creditPeriodInDays = text
     else {
         const error = compareMaxNumber(creditPeriodInDays, 90, 'days')
+        error && (errors.creditPeriodInDays = error)
         error && (errors.creditPeriodInDays = error)
     }
     if (depositAmount === null || !String(depositAmount)) errors.depositAmount = text
@@ -146,6 +148,7 @@ export const validateDeliveryValues = (data) => {
     } = data
 
     if (!departmentId) errors.departmentId = text
+    if (!contactPerson) errors.contactPerson = text
     if (!routeId) errors.routeId = text
     if (!address) errors.address = text
     // if (gstNo && !gstProof) errors.gstProof = text
@@ -154,11 +157,6 @@ export const validateDeliveryValues = (data) => {
     else {
         const error = validateMobileNumber(phoneNumber, true)
         error && (errors.phoneNumber = error)
-    }
-    if (!contactPerson) errors.contactPerson = text
-    else {
-        const error = validateNames(contactPerson)
-        error && (errors.contactPerson = error)
     }
     if (!deliveryLocation) errors.deliveryLocation = text
 
@@ -420,6 +418,37 @@ export const validateQCValues = (data) => {
     return errors
 }
 
+export const validateEnquiryValues = (data) => {
+    let errors = {};
+    const text = 'Required'
+    const { customerName, mobileNumber, address, EmailId, accountStatus, salesAgent, revisitDate, contactperson, customertype, state, city, ...rest } = data
+
+    if (!customerName) errors.customerName = text
+    if (!address) errors.address = text
+    if (!accountStatus) errors.accountStatus = text
+    if (!salesAgent) errors.salesAgent = text
+    if (!contactperson) errors.contactperson = text
+    if (!customertype) errors.customertype = text
+    if (!state) errors.state = text
+    if (!city) errors.city = text
+
+    if (accountStatus !== 'notintrested') {
+        if (!revisitDate) errors.revisitDate = text
+    }
+    if (!mobileNumber) errors.mobileNumber = text
+    else {
+        const error = validateMobileNumber(mobileNumber, true)
+        error && (errors.mobileNumber = error)
+    }
+    if (!EmailId) errors.EmailId = text
+    else {
+        const error = validateEmailId(EmailId)
+        error && (errors.EmailId = error)
+    }
+
+    return errors
+}
+
 export const validateProductValues = (data) => {
     let errors = {};
     const text = 'Required'
@@ -452,12 +481,13 @@ export const validateInvoiceValues = (data, isWHAdmin) => {
     let errors = {};
     const text = 'Required'
     const { customerId, customerName, poNo, hsnCode, invoiceDate, dueDate,
-        TAndC, fromDate, toDate, products, dcNo } = data;
+        TAndC, fromDate, toDate, products, dcNo, paymentMode, departmentStatus } = data;
 
     if (isWHAdmin) {
         if (!customerName) errors.customerName = text;
         if (!dcNo) errors.dcNo = text;
         if (!TAndC) errors.TAndC = text;
+        if (departmentStatus === 'Paid' && !paymentMode) errors.paymentMode = text
         if (isEmpty(products)) errors.products = 'Atleast 1 product is required'
         else {
             const error = validateTableProducts(products)
@@ -620,6 +650,22 @@ export const validateRequestMaterialValues = (data) => {
     return errors
 }
 
+export const validatePaymentValues = (data) => {
+    let errors = {};
+    const text = 'Required'
+    const { customerName, amountPaid, noOfPayments, paymentDate, paymentMode, pendingAmount } = data
+
+    if (!customerName) errors.customerName = text
+    if (!paymentDate) errors.paymentDate = text
+    if (!noOfPayments) errors.noOfPayments = text
+    if (!paymentMode) errors.paymentMode = text
+    if (!amountPaid) errors.amountPaid = text
+    else {
+        const error = compareMaxIntFloat(amountPaid, pendingAmount, '')
+        error && (errors.amountPaid = error)
+    }
+    return errors
+}
 export const validateReceivedMaterialValues = (data) => {
     let errors = {};
     const text = 'Required'
@@ -850,10 +896,19 @@ export const validateDCValues = (data) => {
     const text = 'Required'
 
     const { routeId, customerName, customerType, existingCustomerId, phoneNumber, address,
-        driverId, distributorId, EmailId, deliveryLocation, ...rest } = data
+        driverId, distributorId, EmailId, deliveryLocation, contactPerson, ...rest } = data
 
     const isDistributor = customerType === 'distributor'
     const isExistingCustomer = customerType === 'internal'
+    if (!EmailId) errors.EmailId = text
+    else {
+        const error = validateEmailId(EmailId)
+        error && (errors.EmailId = error)
+    }
+
+    if (isDistributor || isExistingCustomer) {
+        if (!contactPerson) errors.contactPerson = text
+    }
 
     if (isDistributor) {
         if (!routeId) errors.routeId = text
@@ -870,11 +925,6 @@ export const validateDCValues = (data) => {
             if (!existingCustomerId) errors.existingCustomerId = text
         }
         else {
-            if (!EmailId) errors.EmailId = text
-            else {
-                const error = validateEmailId(EmailId)
-                error && (errors.EmailId = error)
-            }
             if (!customerName) errors.customerName = text
             else {
                 const error = validateNames(customerName)
@@ -883,8 +933,6 @@ export const validateDCValues = (data) => {
         }
     }
 
-
-
     if (!address) errors.address = text
     if (!deliveryLocation) errors.deliveryLocation = text
     if (!phoneNumber) errors.phoneNumber = text
@@ -892,7 +940,7 @@ export const validateDCValues = (data) => {
         const error = validateMobileNumber(phoneNumber, true)
         error && (errors.phoneNumber = error)
     }
-    const productErrors = validateProducts(rest)
+    const productErrors = validateProductNPrice(rest)
     return { ...errors, ...productErrors }
 }
 
@@ -915,7 +963,18 @@ export const validateASValues = (data) => {
     return { ...errors, ...productErrors }
 }
 
-export const validateRECValues = (data) => {
+export const validateDSValues = (data) => {
+    let errors = {}
+    const text = 'Required'
+
+    const { details, ...rest } = data
+    if (!details) errors.details = text
+
+    const productErrors = validateDamagedProducts(rest)
+    return { ...errors, ...productErrors }
+}
+
+export const validateRECValues = (data, max) => {
     let errors = {}
     const text = 'Required'
 
@@ -931,7 +990,10 @@ export const validateRECValues = (data) => {
     if (!vehicleId) errors.vehicleId = text
     if (!details) errors.details = text
     if (!emptycans_count) errors.details = text
-
+    else {
+        const error = compareMaxNumber(emptycans_count, max, 'cans')
+        error && (errors.emptycans_count = error)
+    }
     return errors
 }
 
@@ -1053,6 +1115,15 @@ export const validateNumber = (value, isBlur) => {
 
 export const compareMaxNumber = (value, max, unit) => {
     const error = validateNumber(value)
+    if (error) return error
+    if (Number(value) > max) {
+        return `Should not exceed ${max} ${unit}`
+    }
+
+    return ''
+}
+export const compareMaxIntFloat = (value, max, unit, isBlur) => {
+    const error = validateIntFloat(value, isBlur)
     if (error) return error
     if (Number(value) > max) {
         return `Should not exceed ${max} ${unit}`

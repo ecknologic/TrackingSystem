@@ -1,24 +1,52 @@
+import axios from 'axios';
 import { Tabs } from 'antd';
+import React, { Fragment, useState, useCallback, useMemo, useEffect } from 'react';
+import { http } from '../../../modules/http';
+import CurrentStock from './tabs/CurrentStock';
 import ScrollUp from '../../../components/ScrollUp';
-import NoContent from '../../../components/NoContent';
-import Header from '../../../components/ContentHeader';
 import RequestMaterial from './tabs/RequestMaterial';
 import AddMaterials from './tabs/AddReceivedMaterials';
+import Header from '../../../components/ContentHeader';
 import ReceivedMaterials from './tabs/ReceivedMaterials';
+import { getDropdownOptions } from '../../../assets/fixtures';
 import ReportsDropdown from '../../../components/ReportsDropdown';
 import RequestedMaterialStatus from './tabs/RequestedMaterialStatus';
-import React, { Fragment, useState, useCallback, useMemo } from 'react';
-import { getMaterialOptions, getVendorOptions } from '../../../assets/fixtures';
 import '../../../sass/materials.scss'
 
 const Materials = () => {
     const [activeTab, setActiveTab] = useState('1')
     const [reFetch, setreFetch] = useState(false)
+    const [vendorList, setVendorList] = useState([])
+    const [materialList, setMaterialList] = useState([])
 
-    const materialOptions = useMemo(() => getMaterialOptions(), [])
-    const vendorOptions = useMemo(() => getVendorOptions(), [])
+    const materialOptions = useMemo(() => getDropdownOptions(materialList), [materialList])
+    const vendorOptions = useMemo(() => getDropdownOptions(vendorList), [vendorList])
     const childProps = useMemo(() => ({ materialOptions, vendorOptions }), [materialOptions, vendorOptions])
+    const source = useMemo(() => axios.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
 
+    useEffect(() => {
+        getVendorList()
+        getMaterialList()
+    }, [])
+
+    const getVendorList = async () => {
+        const url = `bibo/getList/vendor`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setVendorList(data)
+        } catch (error) { }
+    }
+
+    const getMaterialList = async () => {
+        const url = `bibo/getList/itemName`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setMaterialList(data)
+        } catch (error) { }
+    }
 
     const handleGoToTab = useCallback((key) => {
         toggleRefetch()
@@ -53,10 +81,9 @@ const Materials = () => {
                         <TabPane tab="Received Materials" key="4">
                             <ReceivedMaterials />
                         </TabPane>
-                        {/* Below item should be: uncommented */}
-                        {/* <TabPane tab="Current Stock" key="5" disabled>
-                            <NoContent content='Design is in progress' />
-                        </TabPane> */}
+                        <TabPane tab="Current Stock" key="5">
+                            <CurrentStock />
+                        </TabPane>
                     </Tabs>
                 </div>
             </div>

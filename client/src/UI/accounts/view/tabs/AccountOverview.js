@@ -13,7 +13,6 @@ import IDProofInfo from '../../../../components/IDProofInfo';
 import ConfirmModal from '../../../../components/CustomModal';
 import CustomButton from '../../../../components/CustomButton';
 import GeneralAccountForm from '../../add/forms/GeneralAccount';
-import { getDropdownOptions } from '../../../../assets/fixtures';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CorporateAccountForm from '../../add/forms/CorporateAccount';
 import { base64String, extractCADetails, extractGADetails, getBase64, getIdProofsForDB, getMainPathname, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
@@ -200,6 +199,7 @@ const AccountOverview = ({ data, onUpdate, isAdmin, locationOptions, businessOpt
             resetTrackForm()
             onUpdate(organizationName, Address1)
             showToast(options)
+            setEditMode(false)
         } catch (error) {
             message.destroy()
             if (!axios.isCancel(error)) {
@@ -229,7 +229,7 @@ const AccountOverview = ({ data, onUpdate, isAdmin, locationOptions, businessOpt
     }
 
     return (
-        <div className='account-view-account-overview app-manage-content'>
+        <div className='account-view-account-overview app-manage-content p-0'>
             <ScrollUp dep={editMode} />
             {
                 loading ? <NoContent content={<Spinner />} />

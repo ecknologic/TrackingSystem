@@ -6,11 +6,14 @@ const { INSERTMESSAGE, UPDATEMESSAGE, WEEKDAYS } = require('../utils/constants')
 const dayjs = require('dayjs');
 const usersQueries = require('../dbQueries/users/queries');
 const auditQueries = require('../dbQueries/auditlogs/queries');
-let departmentId, userId;
+const { compareDepartmentData } = require('./utils/department');
+let departmentId, adminUserId, userName, userRole;
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
     departmentId = req.headers['departmentid']
-    userId = req.headers['userid']
+    adminUserId = req.headers['userid']
+    userName = req.headers['username']
+    userRole = req.headers['userrole']
     next();
 });
 
@@ -83,22 +86,31 @@ router.post('/createMotherPlant', (req, res) => {
             usersQueries.updateUserDepartment({ departmentId: results.insertId, userId: req.body.adminId }, (err, userResults) => {
                 if (err) res.status(500).json(dbError(err));
                 else {
-                    auditQueries.createLog({ userId, description: "Motherplant Created", departmentId: results.insertId, type: "motherplant" })
+                    auditQueries.createLog({ userId:adminUserId, description: `Motherplant Created by ${userRole} <b>(${userName})</b>`, departmentId: results.insertId, type: "motherplant" })
                     res.json(userResults);
                 }
             })
         }
     });
 });
-router.post('/updateMotherPlant', (req, res) => {
-    const { departmentId, adminId: userId, removedAdminId } = req.body
+router.post('/updateMotherPlant', async (req, res) => {
+    const { departmentId, adminId: userId, removedAdminId, address, departmentName, city, state, pinCode, adminId, phoneNumber, gstNo } = req.body
+    let data = {
+        address, departmentName, city, state, pinCode, adminId, phoneNumber, gstNo
+    }
+    const logs = await compareDepartmentData(data, { departmentId, type:'motherplant',adminUserId, userRole, userName })
     motherPlantDbQueries.updateMotherPlant(req.body, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
             usersQueries.updateUserDepartment({ departmentId, userId, removedAdminId }, (err, userResults) => {
                 if (err) res.status(500).json(dbError(err));
                 else {
-                    auditQueries.createLog({ userId, description: "Motherplant Updated", departmentId, type: "motherplant" })
+                    if (logs.length) {
+                        auditQueries.createLog(logs, (err, data) => {
+                            if (err) console.log('log error', err)
+                            else console.log('log data', data)
+                        })
+                    }
                     res.json(userResults);
                 }
             })

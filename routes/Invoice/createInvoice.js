@@ -62,13 +62,13 @@ function generateCustomerInformation(doc, invoice) {
         .text("Original for receipient", 0, customerInformationTop, { align: "right" })
         .text("Duplicate for transporter", { align: "right" })
         .text("Triplicate for supplier", { align: "right" })
-        .text("Invoice No:" + invoiceId, 40, customerInformationTop)
+        .text("Invoice No: " + invoiceId, 30, customerInformationTop)
         .font("Helvetica-Bold")
         .text(invoice.invoice_nr, 150, customerInformationTop)
         .font("Helvetica")
-        .text("Invoice Date:", 40, customerInformationTop + 15)
+        .text("Invoice Date:", 30, customerInformationTop + 15)
         .text(formatDate(new Date()), 100, customerInformationTop + 15)
-        .text("Period of supply:", 40, customerInformationTop + 30)
+        .text("Period of supply:", 30, customerInformationTop + 30)
         .text(
             formatDate(new Date(fromDate)) + '  to  ' + formatDate(new Date(toDate)),
             115,
@@ -88,9 +88,9 @@ function generateInvoiceTable(doc, invoice) {
         invoiceTableTop,
         "Product",
         "HSN CODE",
-        "% GST",
         "Quantity",
         "Price",
+        "% GST",
         "Taxable Value",
         "CGST",
         "SGST",
@@ -165,9 +165,9 @@ function generateInvoiceTable(doc, invoice) {
             position,
             product,
             HSNCODE,
-            gst,
             quantity,
             price,
+            gst,
             amount,
             cgst,
             sgst,
@@ -227,17 +227,17 @@ function billingTable(doc, invoice) {
         .fontSize(10)
         .text(`${organizationName || customerName} `, 30, billingInfoTop + 30)
         .fontSize(8)
-        .text(`${Address1}`, 30, billingInfoTop + 42, { width: 200 })
-        .text(`Contact No: ${mobileNumber} `, 30, Address1.length > 50 ? billingInfoTop + 75 : billingInfoTop + 50, { width: 200 })
-        .text(`GST NO: ${gstNo || "NA"} `, 30, billingInfoTop + 100)
-        .text(`State Code: ${statusCode}`, 30, billingInfoTop + 115)
+        .text(`${Address1}`, 30, billingInfoTop + 45, { width: 200 })
+        .text(`Contact No: ${mobileNumber} `, 30, Address1.length > 50 ? billingInfoTop + 78 : billingInfoTop + 55, { width: 200 })
+        .text(`GST NO: ${gstNo || "NA"} `, 30, billingInfoTop + 103)
+        .text(`State Code: ${statusCode}`, 30, billingInfoTop + 118)
         .fontSize(10)
         .text(`${organizationName || customerName} `, 310, billingInfoTop + 30)
         .fontSize(8)
-        .text(`${deliveryAddress}`, 310, billingInfoTop + 42, { width: 200 })
-        .text(`Contact No: ${mobileNumber} `, 310, deliveryAddress.length > 50 ? billingInfoTop + 75 : billingInfoTop + 50, { width: 200 })
-        .text(`GST NO: ${gstNo || "NA"} `, 310, billingInfoTop + 100)
-        .text(`State Code: ${statusCode}`, 310, billingInfoTop + 115)
+        .text(`${deliveryAddress}`, 310, billingInfoTop + 45, { width: 200 })
+        .text(`Contact No: ${mobileNumber} `, 310, deliveryAddress.length > 50 ? billingInfoTop + 78 : billingInfoTop + 55, { width: 200 })
+        .text(`GST NO: ${gstNo || "NA"} `, 310, billingInfoTop + 103)
+        .text(`State Code: ${statusCode}`, 310, billingInfoTop + 118)
 
 }
 function generateFooter(doc) {
@@ -256,9 +256,9 @@ function generateIndividualTableRow(
     y,
     product,
     hsnCode,
-    GST,
     quantity,
     price,
+    GST,
     taxValue = 5420,
     CGST = 280,
     SGST = 280,
@@ -277,9 +277,9 @@ function generateIndividualTableRow(
         .fontSize(9)
         .text(product, 40, y, { align: "left" })
         .text(hsnCode, 130, y, { align: "left" })
-        .text(GST, 200, y, { align: "left" })
-        .text(quantity, 250, y, { align: "left" })
-        .text(price, 310, y, { align: "left" })
+        .text(quantity, 210, y, { align: "ceter" })
+        .text(price, 260, y, { align: "left" })
+        .text(GST, 320, y, { align: "left" })
         .text(taxValue, 370, y, { align: "left" })
         .text(CGST, 440, y, { align: "left" })
         .text(SGST, 490, y, { align: "left" })
@@ -304,7 +304,7 @@ function formatDate(date) {
     const month = date.getMonth() + 1;
     const year = date.getFullYear();
 
-    return year + "/" + month + "/" + day;
+    return day + "/" + month + "/" + year;
 }
 const getResults = (row) => {
     let { quantity, price, discount = 0, gst, cgst, sgst, igst, gstNo } = row

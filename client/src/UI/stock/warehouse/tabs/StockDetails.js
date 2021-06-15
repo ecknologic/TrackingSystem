@@ -7,29 +7,27 @@ import ArrivedStockForm from '../forms/ArrivedStock';
 import DCPanel from '../../../../components/DCPanel';
 import DSPanel from '../../../../components/DSPanel';
 import ECPanel from '../../../../components/ECPanel';
+import DamagedStockForm from '../forms/DamagedStock';
 import useUser from '../../../../utils/hooks/useUser';
 import ERCPanel from '../../../../components/ERCPanel';
 import OFDPanel from '../../../../components/OFDPanel';
 import CASPanel from '../../../../components/CASPanel';
+import { TRACKFORM } from '../../../../utils/constants';
 import CustomModal from '../../../../components/CustomModal';
 import ConfirmModal from '../../../../components/CustomModal';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
-import { TODAYDATE, TRACKFORM } from '../../../../utils/constants';
 import EmptyCansForm from '../../../empty-cans/warehouse/forms/EmptyCans';
 import { getASValuesForDB, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
-import { validateNumber, validateASValues, validateRECValues } from '../../../../utils/validations';
 import { getDriverOptions, getWarehouseOptions, getVehicleOptions } from '../../../../assets/fixtures';
+import { validateNumber, validateASValues, validateRECValues, validateDSValues, compareMaxNumber } from '../../../../utils/validations';
 
-const StockDetails = ({ date, source }) => {
+const StockDetails = ({ date, driverList, vehicleList, motherplantList }) => {
     const { WAREHOUSEID } = useUser()
     const [CAS, setCAS] = useState({})
     const [OFD, setOFC] = useState({})
     const [EC, setEC] = useState({})
     const [REC, setREC] = useState({})
     const [TRC, setTRC] = useState({})
-    const [motherplantList, setMotherplantList] = useState([])
-    const [driverList, setDriverList] = useState([])
-    const [vehicleList, setVehicleList] = useState([])
     const [newStock, setNewStock] = useState({})
     const [arrivedStock, setArrivedStock] = useState([])
     const [formData, setFormData] = useState({})
@@ -38,70 +36,28 @@ const StockDetails = ({ date, source }) => {
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmBtnDisabled, setConfirmBtnDisabled] = useState(false)
     const [modal, setModal] = useState(false)
-    const [addModal, setAddModal] = useState(false)
-    const [fetchList, setFetchList] = useState(false)
+    const [addEmptyModal, setAddEmptyModal] = useState(false)
+    const [addDamagedModal, setAddDamagedModal] = useState(false)
     const [shake, setShake] = useState(false)
 
     const motherplantOptions = useMemo(() => getWarehouseOptions(motherplantList), [motherplantList])
     const driverOptions = useMemo(() => getDriverOptions(driverList), [driverList])
     const vehicleOptions = useMemo(() => getVehicleOptions(vehicleList), [vehicleList])
+    const source = useMemo(() => axios.CancelToken.source(), [date]);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
-        return () => {
-            http.ABORT(source)
-        }
-    }, [])
-
-    useEffect(() => {
-        const isToday = dayjs(date).isSame(dayjs(TODAYDATE))
         getOFD()
         getEC()
         getCAS()
         getREC()
         getTRC()
+        getNewStock()
 
-        if (isToday) getNewStock()
-        else {
-            setNewStock({})
-            setArrivedStock([])
+        return () => {
+            http.ABORT(source)
         }
     }, [date])
-
-    useEffect(() => {
-        if (fetchList) {
-            getMotherplantList()
-            getDriverList()
-            getVehicleList()
-        }
-    }, [fetchList])
-
-    const getMotherplantList = async () => {
-        const url = 'bibo/getDepartmentsList?departmentType=MotherPlant'
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setMotherplantList(data)
-        } catch (error) { }
-    }
-
-    const getDriverList = async () => {
-        const url = `bibo/getdriverDetails/${WAREHOUSEID}`
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setDriverList(data)
-        } catch (error) { }
-    }
-
-    const getVehicleList = async () => {
-        const url = `bibo/getVehicleDetails`
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setVehicleList(data)
-        } catch (error) { }
-    }
 
     const getCAS = async () => {
         const url = `warehouse/currentActiveStockDetails/${date}?warehouseId=${WAREHOUSEID}`
@@ -131,7 +87,7 @@ const StockDetails = ({ date, source }) => {
     }
 
     const getREC = async () => {
-        const url = `warehouse/getReturnedEmptyCans/${WAREHOUSEID}`
+        const url = `warehouse/getReturnedEmptyCans/${date}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -149,7 +105,7 @@ const StockDetails = ({ date, source }) => {
     }
 
     const getNewStock = async () => {
-        const url = `warehouse/getNewStockDetails/${WAREHOUSEID}`
+        const url = `warehouse/getNewStockDetails/${WAREHOUSEID}?date=${date}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -174,6 +130,7 @@ const StockDetails = ({ date, source }) => {
     }
 
     const handleChange = (value, key) => {
+        const { emptycans } = EC
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
@@ -199,7 +156,7 @@ const StockDetails = ({ date, source }) => {
             setFormErrors(errors => ({ ...errors, damaged: error }))
         }
         else if (key === 'emptycans_count') {
-            const error = validateNumber(value)
+            const error = compareMaxNumber(value, emptycans, 'cans')
             setFormErrors(errors => ({ ...errors, emptycans_count: error }))
         }
     }
@@ -213,12 +170,15 @@ const StockDetails = ({ date, source }) => {
     }
 
     const onAddEmptyCans = () => {
-        setFetchList(true)
-        setAddModal(true)
+        setAddEmptyModal(true)
+    }
+
+    const onAddDamagedStock = () => {
+        setAddDamagedModal(true)
     }
 
     const handleCansReturn = async () => {
-        const formErrors = validateRECValues(formData)
+        const formErrors = validateRECValues(formData, EC.emptycans)
 
         if (!isEmpty(formErrors)) {
             setShake(true)
@@ -241,6 +201,35 @@ const StockDetails = ({ date, source }) => {
             onModalClose(true)
             getREC()
             getEC()
+        } catch (error) {
+            Westroy()
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+            }
+        }
+    }
+
+    const handleAddDamagedStock = async () => {
+        const formErrors = validateDSValues(formData)
+
+        if (!isEmpty(formErrors)) {
+            setShake(true)
+            setTimeout(() => setShake(false), 820)
+            setFormErrors(formErrors)
+            return
+        }
+
+        let url = 'warehouse/addDamagedStock'
+        const body = { ...formData }
+        const options = { item: 'Damaged Stock', v1Ing: 'Adding', v2: 'added' }
+
+        try {
+            setBtnDisabled(true)
+            showToast({ ...options, action: 'loading' })
+            await http.POST(axios, url, body, config)
+            showToast(options)
+            onModalClose(true)
+            //hit Damaged Stock API
         } catch (error) {
             message.destroy()
             if (!axios.isCancel(error)) {
@@ -290,7 +279,8 @@ const StockDetails = ({ date, source }) => {
             return setConfirmModal(true)
         }
         setModal(false)
-        setAddModal(false)
+        setAddEmptyModal(false)
+        setAddDamagedModal(false)
         setBtnDisabled(false)
         setFormData({})
         setFormErrors({})
@@ -315,7 +305,7 @@ const StockDetails = ({ date, source }) => {
                 onConfirm={onArrivedStockConfirm}
             />
             <OFDPanel data={OFD} />
-            <DSPanel />
+            <DSPanel onAdd={onAddDamagedStock} />
             <div className='empty-cans-header'>
                 <span className='title'>Empty Cans details</span>
                 <span className='msg'>Empty and damaged cans are not included in correct stock details</span>
@@ -341,7 +331,7 @@ const StockDetails = ({ date, source }) => {
             </CustomModal>
             <CustomModal
                 className={`app-form-modal app-view-modal stock-details-modal ${shake ? 'app-shake' : ''}`}
-                visible={addModal}
+                visible={addEmptyModal}
                 btnDisabled={btnDisabled}
                 onOk={handleCansReturn}
                 onCancel={handleModalCancel}
@@ -354,6 +344,21 @@ const StockDetails = ({ date, source }) => {
                     driverOptions={driverOptions}
                     vehicleOptions={vehicleOptions}
                     motherplantOptions={motherplantOptions}
+                    onChange={handleChange}
+                />
+            </CustomModal>
+            <CustomModal
+                className={`app-form-modal app-view-modal stock-details-modal ${shake ? 'app-shake' : ''}`}
+                visible={addDamagedModal}
+                btnDisabled={btnDisabled}
+                onOk={handleAddDamagedStock}
+                onCancel={handleModalCancel}
+                title='Damaged Stock Details'
+                okTxt='Add Damaged Stock'
+            >
+                <DamagedStockForm
+                    data={formData}
+                    errors={formErrors}
                     onChange={handleChange}
                 />
             </CustomModal>

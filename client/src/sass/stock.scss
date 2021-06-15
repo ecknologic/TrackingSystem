@@ -213,6 +213,14 @@
             }
         }
     }
+
+    .add {
+        color: #007AFF;
+        font-family: 'PoppinsBold700';
+        font-size: .85em;
+        cursor: pointer;
+        align-self: flex-start;
+    }
 }
 
 .cas-panel-container,.ds-panel-container,.ofd-panel-container {
@@ -237,13 +245,6 @@
                 padding-right: 1em;
             }
         }
-    }
-    .add {
-        color: #007AFF;
-        font-family: 'PoppinsBold700';
-        font-size: .85em;
-        cursor: pointer;
-        align-self: flex-start;
     }
 }
 

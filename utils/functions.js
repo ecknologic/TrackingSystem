@@ -309,6 +309,35 @@ const updateProductDetails = (products) => {
         }
     })
 }
+const saveEnquiryProductDetails = (products, enquiryId) => {
+    return new Promise((resolve, reject) => {
+        if (products.length) {
+            for (let i of products) {
+                let enquiryProductsQuery = "insert  into customerenquiryproducts (enquiryId,noOfJarsTobePlaced,productPrice,productName) values(?,?,?,?)";
+                let insertQueryValues = [enquiryId, i.noOfJarsTobePlaced, i.productPrice, i.productName]
+                db.query(enquiryProductsQuery, insertQueryValues, (err, results) => {
+                    if (err) reject(err);
+                    else resolve(results)
+                });
+            }
+        }
+    })
+}
+
+const updateEnquiryProductDetails = (products) => {
+    return new Promise((resolve, reject) => {
+        if (products.length) {
+            for (let i of products) {
+                let deliveryProductsQuery = "UPDATE customerenquiryproducts SET noOfJarsTobePlaced=?,productPrice=?,productName=? where id=" + i.productId;
+                let updateQueryValues = [i.noOfJarsTobePlaced, i.productPrice, i.productName]
+                db.query(deliveryProductsQuery, updateQueryValues, (err, results) => {
+                    if (err) reject(err);
+                    else resolve(results)
+                });
+            }
+        }
+    })
+}
 const prepareOrderResponseObj = (i) => {
     let responseObj = {
         "customerId": i.customerId,
@@ -338,5 +367,5 @@ const prepareOrderResponseObj = (i) => {
 module.exports = {
     executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, checkDepartmentExists, productionCount,
     getCompareData, dateComparisions, checkUserExists, dbError, getBatchId, customerProductDetails, createHash, convertToWords,
-    saveProductDetails, updateProductDetails, getFormatedNumber, getCompareCustomersData, getCompareDistributorsData, getGraphData, formatDate, prepareOrderResponseObj
+    saveProductDetails, saveEnquiryProductDetails, updateEnquiryProductDetails, updateProductDetails, getFormatedNumber, getCompareCustomersData, getCompareDistributorsData, getGraphData, formatDate, prepareOrderResponseObj
 }

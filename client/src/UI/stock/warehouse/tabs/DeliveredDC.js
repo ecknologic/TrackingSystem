@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import axios from 'axios';
 import { Menu, Table } from 'antd';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { http } from '../../../../modules/http';
 import Actions from '../../../../components/Actions';
 import Spinner from '../../../../components/Spinner';
@@ -14,18 +14,20 @@ import SearchInput from '../../../../components/SearchInput';
 import DateDropdown from '../../../../components/DateDropdown';
 import CustomButton from '../../../../components/CustomButton';
 import RoutesFilter from '../../../../components/RoutesFilter';
-import { EyeIconGrey } from '../../../../components/SVG_Icons';
 import { getDeliveryColumns } from '../../../../assets/fixtures';
 import CustomDateInput from '../../../../components/CustomDateInput';
 import CustomPagination from '../../../../components/CustomPagination';
 import CustomRangeInput from '../../../../components/CustomRangeInput';
-import { getStatusColor, doubleKeyComplexSearch } from '../../../../utils/Functions';
+import { EyeIconGrey, ListViewIconGrey } from '../../../../components/SVG_Icons';
+import { getStatusColor, doubleKeyComplexSearch, showToast, disableFutureDates } from '../../../../utils/Functions';
+import ActivityLogContent from '../../../../components/ActivityLogContent';
 const APIDATEFORMAT = 'YYYY-MM-DD'
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
 const DeliveredDC = () => {
     const { WAREHOUSEID } = useUser()
     const [customerList, setCustomerList] = useState([])
+    const [logs, setLogs] = useState([])
     const [loading, setLoading] = useState(true)
     const [customerIds, setCustomerIds] = useState([])
     const [filterBtnDisabled, setFilterBtnDisabled] = useState(true)
@@ -37,8 +39,9 @@ const DeliveredDC = () => {
     const [totalCount, setTotalCount] = useState(null)
     const [pageNumber, setPageNumber] = useState(1)
     const [DCModal, setDCModal] = useState(false)
-    const [startDate, setStartDate] = useState(TODAYDATE)
-    const [endDate, setEndDate] = useState(TODAYDATE)
+    const [logModal, setLogModal] = useState(false)
+    const [startDate, setStartDate] = useState()
+    const [endDate, setEndDate] = useState()
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
     const [selectedRange, setSelectedRange] = useState([])
     const [resetSearch, setResetSearch] = useState(false)
@@ -46,6 +49,7 @@ const DeliveredDC = () => {
     const [dateOpen, setDateOpen] = useState(false)
     const [rangeOpen, setRangeOpen] = useState(false)
     const [title, setTitle] = useState('')
+    const [isCleared, setIsCleared] = useState(false)
 
     const deliveryColumns = useMemo(() => getDeliveryColumns('extra'), [])
     const source = useMemo(() => axios.CancelToken.source(), []);
@@ -61,6 +65,10 @@ const DeliveredDC = () => {
         }
     }, [])
 
+    useEffect(() => {
+        if (!customerIds.length) getDeliveries()
+    }, [customerIds])
+
     const getCustomerList = async () => {
         const url = `customer/getCustomerNames`
 
@@ -70,8 +78,23 @@ const DeliveredDC = () => {
         } catch (error) { }
     }
 
-    const getDeliveries = async () => {
-        const url = `warehouse/getAllDcDetails?fromDate=${startDate}&toDate=${endDate}&departmentId=${WAREHOUSEID}&customerIds=${customerIds}`
+    const getLogs = async (COId) => {
+        const url = `logs/getDepartmentLogs?type=delivery&id=${COId}`
+
+        try {
+            showToast({ v1Ing: 'Fetching', action: 'loading' })
+            const data = await http.GET(axios, url, config)
+            showToast({ v2: 'fetched' })
+            setLogs(data)
+        } catch (error) { }
+    }
+
+    const getDeliveries = async (startDate, endDate) => {
+        let url = `warehouse/getAllDcDetails?departmentId=${WAREHOUSEID}&customerIds=${customerIds}`
+
+        if (startDate && endDate) {
+            url = `warehouse/getAllDcDetails?fromDate=${startDate}&toDate=${endDate}&departmentId=${WAREHOUSEID}&customerIds=${customerIds}`
+        }
 
         try {
             const data = await http.GET(axios, url, config)
@@ -90,11 +113,15 @@ const DeliveredDC = () => {
         setFilterBtnDisabled(false)
     }
 
-    const handleMenuSelect = (key, data) => {
+    const handleMenuSelect = async (key, data) => {
         if (key === 'view') {
             setTitle(data.dcNo)
             setFormData(data)
             setDCModal(true)
+        }
+        else if (key === 'logs') {
+            await getLogs(data.customerOrderId)
+            setLogModal(true)
         }
     }
 
@@ -134,7 +161,8 @@ const DeliveredDC = () => {
         setClearBtnDisabled(false)
         setFilterBtnDisabled(true)
         setLoading(true)
-        getDeliveries()
+        setIsCleared(false)
+        getDeliveries(startDate, endDate)
     }
 
     const handleFilterClear = async () => {
@@ -143,10 +171,8 @@ const DeliveredDC = () => {
         setCustomerIds([])
         setCustomerList([])
         setSelectedDate(TODAYDATE)
-        setStartDate(TODAYDATE)
-        setEndDate(TODAYDATE)
         setLoading(true)
-        await getDeliveries()
+        setIsCleared(true)
         setCustomerList(customerList)
     }
 
@@ -162,6 +188,10 @@ const DeliveredDC = () => {
     const onModalClose = () => {
         setDCModal(false)
         setFormData({})
+    }
+
+    const onLogModalClose = () => {
+        setLogModal(false)
     }
 
     const handleSearch = (value) => {
@@ -184,8 +214,8 @@ const DeliveredDC = () => {
             key: customerOrderId || dcNo,
             dcnumber: dcNo,
             shopAddress: address,
-            route: RouteName,
             name: customerName,
+            route: RouteName || 'Not Assigned',
             returnEmptyCans: returnEmptyCans || 0,
             driverName: driverName || 'Not Assigned',
             orderDetails: renderOrderDetails(dc),
@@ -197,6 +227,7 @@ const DeliveredDC = () => {
 
 
     const handleDCModalCancel = useCallback(() => onModalClose(), [])
+    const handleLogModalCancel = useCallback(() => onLogModalClose(), [])
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
@@ -211,6 +242,7 @@ const DeliveredDC = () => {
                         keyValue='customerId'
                         keyLabel='customerName'
                         onChange={onFilterChange}
+                        isCleared={isCleared}
                     />
                     <DateValue date={startDate} to={endDate} />
                     <div className='app-date-picker-wrapper'>
@@ -234,6 +266,7 @@ const DeliveredDC = () => {
                             className='app-date-panel-picker'
                             onChange={handleRangeSelect}
                             onOpenChange={datePickerStatus}
+                            disabledDate={disableFutureDates}
                         />
                         <CustomDateInput // Hidden in the DOM
                             open={dateOpen}
@@ -242,6 +275,7 @@ const DeliveredDC = () => {
                             className='app-date-panel-picker'
                             onChange={handleDateSelect}
                             onOpenChange={datePickerStatus}
+                            disabledDate={disableFutureDates}
                         />
                     </div>
                 </div>
@@ -286,6 +320,17 @@ const DeliveredDC = () => {
             >
                 <DCView data={formData} />
             </CustomModal>
+            <CustomModal
+                className='app-form-modal'
+                visible={logModal}
+                onOk={handleLogModalCancel}
+                onCancel={handleLogModalCancel}
+                title='Activity Log Details'
+                okTxt='Close'
+                hideCancel
+            >
+                <ActivityLogContent data={logs} />
+            </CustomModal>
         </div>
     )
 }
@@ -307,5 +352,8 @@ const renderOrderDetails = ({ product20L, product2L, product1L, product500ML, pr
     500 ml - ${Number(product500ML)} boxes, 300 ml - ${Number(product300ML)} boxes
     `
 }
-const options = [<Menu.Item key="view" icon={<EyeIconGrey />}>View</Menu.Item>]
+const options = [
+    <Menu.Item key="view" icon={<EyeIconGrey />}>View</Menu.Item>,
+    <Menu.Item key="logs" icon={<ListViewIconGrey />}>Acvitity Logs</Menu.Item>
+]
 export default DeliveredDC

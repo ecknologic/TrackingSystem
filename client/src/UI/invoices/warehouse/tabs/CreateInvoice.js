@@ -13,9 +13,9 @@ import useUser from '../../../../utils/hooks/useUser';
 import { TODAYDATE } from '../../../../utils/constants';
 import NoContent from '../../../../components/NoContent';
 import CustomButton from '../../../../components/CustomButton';
-import { isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 import { validateNumber, validateInvoiceValues } from '../../../../utils/validations';
-import { getProductOptions, getDDownOptions, getDCOptions } from '../../../../assets/fixtures';
+import { getProductOptions, getDDownOptions, getDCOptions, getDropdownOptions } from '../../../../assets/fixtures';
+import { getProductsForTable, getProductTableResults, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
 const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
@@ -30,6 +30,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [productList, setProductList] = useState([])
+    const [paymentList, setPaymentList] = useState([])
     const [customerList, setCustomerList] = useState([])
     const [dataSource, setDataSource] = useState(editMode ? [] : initData)
     const [shake, setShake] = useState(false)
@@ -38,17 +39,19 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
 
     const DCOptions = useMemo(() => getDCOptions(DCList), [DCList])
     const GSTOptions = useMemo(() => getDDownOptions(GSTList), [GSTList])
+    const paymentOptions = useMemo(() => getDropdownOptions(paymentList), [paymentList])
     const productOptions = useMemo(() => getProductOptions(productList), [productList])
     const footerValues = useMemo(() => computeFinalAmounts(dataSource), [dataSource])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
-    const { departmentStatus } = formData
+    const { departmentStatus, customerType } = formData
 
     useEffect(() => {
         if (editMode) getInvoice()
         else getInvoiceId()
         getCustomerList()
         getProductList()
+        getPaymentList()
         getGSTList()
         getDCList()
 
@@ -58,7 +61,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
     }, [])
 
     useEffect(() => {
-        const updatedData = dataSource.map((row) => ({ ...row, ...getResults(row) }))
+        const updatedData = dataSource.map((row) => ({ ...row, ...getProductTableResults(row, isLocal) }))
         setDataSource(updatedData)
     }, [isLocal])
 
@@ -69,7 +72,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
             setLoading(true)
             const data = await http.GET(axios, url, config)
             const { products, ...rest } = data
-            const { invoiceId, customerId } = rest
+            const { invoiceId } = rest
             setHeader({ title: `Invoice - ${invoiceId}` })
             setDataSource(products)
             setFormData(rest)
@@ -122,6 +125,39 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
         } catch (error) { }
     }
 
+    const getPaymentList = async () => {
+        const url = `bibo/getList/paymentMode`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setPaymentList(data)
+        } catch (error) { }
+    }
+
+    const getDCByCustomerOrderId = async (id) => {
+        const url = `warehouse/getDCDetailsByCOId/${id}`
+
+        try {
+            let isLocal = true
+            showToast({ v1Ing: 'Fetching', action: 'loading' })
+            const [dc] = await http.GET(axios, url, config)
+            const { existingCustomerId, distributorId } = dc
+            const customerId = existingCustomerId || distributorId
+
+            if (!dc.gstNo) setIsLocal(true)
+            else if ((dc.gstNo || "").startsWith('36')) setIsLocal(true)
+            else { setIsLocal(false); isLocal = false }
+
+            setFormData(data => ({ ...data, ...dc, customerId, paymentMode: null }))
+            const data = getProductsForTable(productList, dc, isLocal)
+            handleCheckboxChange(false)
+            setDataSource(data)
+            showToast({ v2: 'fetched' })
+        } catch (error) {
+            message.destroy()
+        }
+    }
+
     const resetProductErr = () => setFormErrors(errors => ({ ...errors, products: '' }))
 
     const handleAddProduct = () => {
@@ -154,25 +190,14 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
         if (dataIndex === 'productName') {
             const { tax, price: productPrice } = productList.find(item => item.productName === row.productName)
             const newRow = { ...row, productPrice, tax }
-            row = { ...newRow, ...getResults(newRow) }
+            row = { ...newRow, ...getProductTableResults(newRow, isLocal) }
         }
         else {
             const newRow = { ...row }
-            row = { ...newRow, ...getResults(newRow) }
+            row = { ...newRow, ...getProductTableResults(newRow, isLocal) }
         }
 
         return row
-    };
-
-    const getResults = (row) => {
-        let { quantity, productPrice, discount, tax, cgst, sgst, igst } = row
-        const priceAfterDiscount = productPrice - (productPrice / 100 * discount)
-        const amount = Number((priceAfterDiscount * quantity).toFixed(2))
-        const totalTax = (amount / 100 * tax)
-        cgst = isLocal ? Number((totalTax / 2).toFixed(2)) : 0.00
-        sgst = isLocal ? Number((totalTax / 2).toFixed(2)) : 0.00
-        igst = isLocal ? 0.00 : Number((totalTax).toFixed(2))
-        return { amount, cgst, sgst, igst }
     };
 
     const handleChange = (value, key) => {
@@ -180,14 +205,8 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
         if (key === 'dcNo') {
-            const dc = DCList.find(item => item.dcNo === value)
-            let { customerId, distributorId } = dc
-            customerId = customerId || distributorId
-            setFormData(data => ({ ...data, ...dc, customerId }))
-
-            if (!dc.gstNo) setIsLocal(true)
-            else if ((dc.gstNo || "").startsWith('36')) setIsLocal(true)
-            else setIsLocal(false)
+            const { customerOrderId } = DCList.find(item => item.dcNo === value)
+            getDCByCustomerOrderId(customerOrderId)
         }
 
         // Validations
@@ -201,6 +220,10 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
         const status = checked ? 'InProgress' : 'Pending'
         const departmentStatus = checked ? 'Paid' : 'Pending'
         setFormData(data => ({ ...data, departmentStatus, status }))
+
+        if (!checked) {
+            setFormData(data => ({ ...data, paymentMode: null }))
+        }
     }
 
     const handleSubmit = async () => {
@@ -291,18 +314,23 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
                 onSave={handleProductsSave}
                 onDelete={handleProductsDelete}
             />
-            <div className='checkbox-container'>
-                <div>
-                    <Checkbox
-                        value={departmentStatus === 'Pending' ? false : true}
-                        onChange={({ target: { checked } }) => handleCheckboxChange(checked)}
-                    />
-                    <span className='app-checkbox-text'>Customer has paid the amount?</span>
+            {
+                customerType !== 'distributor' &&
+                <div className='checkbox-container'>
+                    <div>
+                        <Checkbox
+                            checked={departmentStatus === 'Pending' ? false : true}
+                            onChange={({ target: { checked } }) => handleCheckboxChange(checked)}
+                        />
+                        <span className='app-checkbox-text'>Customer has paid the amount?</span>
+                    </div>
                 </div>
-            </div>
+            }
             <InvoiceRestForm
                 data={formData}
                 errors={formErrors}
+                hasPaid={departmentStatus === 'Pending' ? false : true}
+                paymentOptions={paymentOptions}
                 onChange={handleChange}
             />
             <div className='app-footer-buttons-container'>

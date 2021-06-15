@@ -30,16 +30,20 @@ export const statusOptions = [
     <Option key='1' value={1}>Active</Option>,
     <Option key='2' value={0}>Draft</Option>
 ]
+export const AccountStatusOptions = [
+    <Option key='1' value='revisit'>Revisit</Option>,
+    <Option key='2' value='notintrested'>Not Interested</Option>
+]
 export const genderOptions = [
     <Option key='1' value='Male'>Male</Option>,
     <Option key='2' value='Female'>Female</Option>,
     <Option key='3' value='TransGender'>TransGender</Option>
 ]
-export const statusFilterOptions = [
+export const statusFilterList = [
     { value: 0, name: 'Draft' },
     { value: 1, name: 'Active' }
 ]
-export const accountFilterOptions = [
+export const accountFilterList = [
     { value: 'Corporate', name: 'Corporate' },
     { value: 'Individual', name: 'Individual' }
 ]
@@ -84,6 +88,10 @@ export const testResultOptions = [
     <Option key="1" value="Approved">Approve</Option>,
     <Option key="2" value="Rejected">Reject</Option>
 ]
+export const accountTypeOptions = [
+    <Option key="1" value="Corporate">Corporate</Option>,
+    <Option key="2" value="Individual">Individual</Option>
+]
 export const calendarMenu = [
     <Menu.Item key="Till Now" >Till Now</Menu.Item>,
     <Menu.Item key="Today" >Today</Menu.Item>,
@@ -111,7 +119,7 @@ export const getDropdownOptions = (options = []) => {
     return options.map((item) => <Option key={item.value} value={item.value}>{item.name}</Option>)
 }
 export const getCreatorOptions = (creators = []) => {
-    return creators.map((item) => ({ value: item.userId, option: item.userName }))
+    return creators.map((item) => ({ value: item.userId, name: item.userName }))
 }
 export const getDepartmentMenu = (departments = []) => {
     return departments.map((item) => <Menu.Item key={item.departmentName} >{item.departmentName}</Menu.Item>)
@@ -148,12 +156,6 @@ export const getRoleOptions = (roles = []) => {
 }
 export const getBatchOptions = (batches = []) => {
     return batches.map((item) => <Option key={item.productionQcId} value={item.productionQcId}>{item.batchId}</Option>)
-}
-export const getMaterialOptions = (materials = [{ name: 'Caps' }, { name: 'Bottles' }]) => {
-    return materials.map((item, index) => <Option key={index} value={item.name}>{item.name}</Option>)
-}
-export const getVendorOptions = (vendors = [{ name: 'Balaji Industries' }, { name: 'Praveen Builders' }]) => {
-    return vendors.map((item, index) => <Option key={index} value={item.name}>{item.name}</Option>)
 }
 export const getDriverOptions = (drivers = []) => {
     return drivers.map((item) => <Option key={item.driverId} value={item.driverId}>{item.driverName}</Option>)
@@ -329,6 +331,11 @@ export const getInvoiceColumns = (type) => {
             key: 'customerName',
         },
         {
+            title: 'Billing Address',
+            dataIndex: 'billingAddress',
+            key: 'billingAddress',
+        },
+        {
             title: 'Due Date',
             dataIndex: 'dueDate',
             key: 'dueDate',
@@ -337,6 +344,11 @@ export const getInvoiceColumns = (type) => {
             title: 'Amount',
             dataIndex: 'totalAmount',
             key: 'totalAmount',
+        },
+        {
+            title: 'Balance Due',
+            dataIndex: 'pendingAmount',
+            key: 'pendingAmount',
         },
         {
             title: 'Status',
@@ -354,7 +366,7 @@ export const getInvoiceColumns = (type) => {
         columns.splice(2, 1)
     }
     else if (type === 'dcNo') {
-        columns.splice(3, 1, {
+        columns.splice(4, 1, {
             title: 'DC Number',
             dataIndex: 'dcNo',
             key: 'dcNo',
@@ -386,6 +398,11 @@ export const paymentColumns = [
         title: 'Customer Name',
         dataIndex: 'customerName',
         key: 'customerName',
+    },
+    {
+        title: 'Billing Address',
+        dataIndex: 'billingAddress',
+        key: 'billingAddress',
     },
     {
         title: 'Mode',
@@ -515,7 +532,7 @@ export const orderColumns = [
     },
 ]
 
-export const getStockColumns = (isWHAdmin) => {
+export const getStockColumns = (isDamaged, adminType) => {
 
     const columns = [
         {
@@ -560,18 +577,21 @@ export const getStockColumns = (isWHAdmin) => {
         },
     ]
 
-    if (isWHAdmin) {
-        columns.splice(2, 2, {
-            title: 'Warehouse',
-            dataIndex: 'departmentName',
-            key: 'departmentName'
-        }, {
+    if (isDamaged) {
+        columns.splice(3, 1, {
             title: 'Damage Details',
             dataIndex: 'stockDetails',
             key: 'stockDetails',
         })
     }
 
+    if (adminType === 'MPAdmin') {
+        columns.splice(2, 1, {
+            title: 'Warehouse',
+            dataIndex: 'departmentName',
+            key: 'departmentName'
+        })
+    }
 
     return columns;
 }
@@ -650,6 +670,44 @@ export const productionColumns = [
         dataIndex: 'action',
         key: 'action'
     },
+]
+
+export const currentStockColumns = [
+    {
+        title: 'Product Name',
+        dataIndex: 'itemName',
+        key: 'itemName',
+    },
+    {
+        title: 'Item Code',
+        dataIndex: 'itemCode',
+        key: 'itemCode',
+    },
+    {
+        title: 'Vendor Name',
+        dataIndex: 'vendorName',
+        key: 'vendorName',
+    },
+    {
+        title: 'Reorder Level',
+        dataIndex: 'reorderLevel',
+        key: 'reorderLevel',
+    },
+    {
+        title: 'Current Quantity',
+        dataIndex: 'itemQty',
+        key: 'itemQty',
+    },
+    {
+        title: 'Damaged',
+        dataIndex: 'damagedQty',
+        key: 'damagedQty',
+    },
+    {
+        title: 'Actions',
+        dataIndex: 'action',
+        key: 'action'
+    }
 ]
 
 export const getDispatchColumns = (type) => {
@@ -878,16 +936,16 @@ export const productionTBColumns = [
         dataIndex: 'level2',
         key: 'level2',
     },
-    {
-        title: 'Level-3 Inputs',
-        dataIndex: 'level3',
-        key: 'level3',
-    },
-    {
-        title: 'Level-4 Inputs',
-        dataIndex: 'level4',
-        key: 'level4',
-    },
+    // {
+    //     title: 'Level-3 Inputs',
+    //     dataIndex: 'level3',
+    //     key: 'level3',
+    // },
+    // {
+    //     title: 'Level-4 Inputs',
+    //     dataIndex: 'level4',
+    //     key: 'level4',
+    // },
     {
         title: 'Tested Manager',
         dataIndex: 'managerName',
@@ -1010,78 +1068,114 @@ export const defaultPie = [
         value: 0,
     }
 ]
-
-export const dummyWaterResults = [
+export const newCustomersReportColumns = [
     {
-        "levels": [
-            {
-                "tds": 35,
-                "phLevel": 6.5,
-                "qcLevel": "1",
-                "ozoneLevel": 5.5,
-                "testResult": "Approved",
-                "managerName": "Naveen",
-                "testingDate": "2021-01-30 06:36:59.000000"
-            },
-            {
-                "tds": 45,
-                "phLevel": 5.5,
-                "qcLevel": "2",
-                "ozoneLevel": 6.5,
-                "testResult": "Approved",
-                "managerName": "Chandra",
-                "testingDate": "2021-01-30 06:38:06.000000"
-            }
-        ],
-        "batchId": "A-3001-21",
-        "departmentName": "Patancheruvu Plant"
+        title: 'S. No',
+        dataIndex: 'sNo',
+        key: 'sNo',
     },
     {
-        "levels": [
-            {
-                "tds": 1,
-                "phLevel": 1,
-                "qcLevel": "1",
-                "ozoneLevel": 1,
-                "testResult": "Approved",
-                "managerName": "MANAGER ",
-                "testingDate": "2021-02-03 16:54:29.000000"
-            },
-            {
-                "tds": 3,
-                "phLevel": 3,
-                "qcLevel": "2",
-                "ozoneLevel": 3,
-                "testResult": "Approved",
-                "managerName": "DESCRIPTION",
-                "testingDate": "2021-02-03 16:56:32.000000"
-            }
-        ],
-        "batchId": "A-0302-22",
-        "departmentName": "Gajuwaka Plant"
+        title: 'Customer ID',
+        dataIndex: 'customerNo',
+        key: 'customerNo',
     },
     {
-        "levels": [
-            {
-                "tds": 1,
-                "phLevel": 1,
-                "qcLevel": "1",
-                "ozoneLevel": 1,
-                "testResult": "Approved",
-                "managerName": "MANAGER ",
-                "testingDate": "2021-02-03 16:54:29.000000"
-            },
-            {
-                "tds": 3,
-                "phLevel": 3,
-                "qcLevel": "2",
-                "ozoneLevel": 3,
-                "testResult": "Approved",
-                "managerName": "DESCRIPTION",
-                "testingDate": "2021-02-03 16:56:32.000000"
-            }
-        ],
-        "batchId": "A-0302-23",
-        "departmentName": "Kukatpally Plant"
+        title: 'Customer Name',
+        dataIndex: 'customerName',
+        key: 'customerName',
+    },
+    {
+        title: 'Executive Name',
+        dataIndex: 'salesAgent',
+        key: 'salesAgent',
+    },
+    {
+        title: 'No. of Bottles Placed',
+        dataIndex: 'quantity',
+        key: 'quantity',
+    },
+    {
+        title: 'Price',
+        dataIndex: 'productPrice',
+        key: 'productPrice',
+    },
+    {
+        title: 'Deposit',
+        dataIndex: 'depositAmount',
+        key: 'depositAmount',
+    },
+    {
+        title: 'Dispensers Placed',
+        dataIndex: 'dispenserCount',
+        key: 'dispenserCount',
+    }
+]
+export const closedCustomersReportColumns = [
+    {
+        title: 'S. No',
+        dataIndex: 'sNo',
+        key: 'sNo',
+    },
+    {
+        title: 'Customer ID',
+        dataIndex: 'customerId',
+        key: 'customerId',
+    },
+    {
+        title: 'Customer Name',
+        dataIndex: 'customerName',
+        key: 'customerName',
+    },
+    {
+        title: 'Deposit',
+        dataIndex: 'depositAmount',
+        key: 'depositAmount',
+    },
+    {
+        title: 'No. of Bottles with Customer',
+        dataIndex: 'noOfBottlesWithCustomer',
+        key: 'noOfBottlesWithCustomer',
+    },
+    {
+        title: 'Amount Due',
+        dataIndex: 'pendingAmount',
+        key: 'pendingAmount',
+    },
+    {
+        title: 'Status of Closure',
+        dataIndex: 'closureStatus',
+        key: 'closureStatus',
+    }
+]
+export const dispensersViabilityReportColumns = [
+    {
+        title: 'S. No',
+        dataIndex: 'sNo',
+        key: 'sNo',
+    },
+    {
+        title: 'Customer ID',
+        dataIndex: 'customerId',
+        key: 'customerId',
+    },
+    {
+        title: 'Customer Name',
+        dataIndex: 'customerName',
+        key: 'customerName',
+    },
+    {
+        title: 'Price',
+        dataIndex: 'price',
+        key: 'price',
+    },
+    {
+        title: 'Invoice Amount',
+        dataIndex: 'invoiceAmount',
+        key: 'invoiceAmount',
+    },
+    {
+        title: 'No. of Coolers Placed',
+        dataIndex: 'dispenserCount',
+        key: 'dispenserCount',
     }
 ]

@@ -7,8 +7,8 @@ import { getStatusColor } from '../../../../utils/Functions';
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
 const DCView = ({ data }) => {
-    const { dcNo, RouteName, mobileNumber, product20L, product2L, product1L, product500ML,
-        product300ML, address, driverName, isDelivered, deliveredDate, returnEmptyCans } = data
+    const { dcNo, RouteName, mobileNumber, product20L, product2L, product1L, product500ML, contactPerson,
+        product300ML, address, driverName, isDelivered, deliveredDate, returnEmptyCans, customerName } = data
 
     const color = getStatusColor(isDelivered)
     const text = isDelivered === 'Completed' ? 'Delivered' : isDelivered === 'Postponed' ? isDelivered : 'Pending'
@@ -29,8 +29,19 @@ const DCView = ({ data }) => {
             <Divider />
             <div className='row'>
                 <div className='input-container'>
+                    <InputLabel name='Customer Name' />
+                    <InputValue size='smaller' value={customerName} />
+                </div>
+                <div className='input-container'>
+                    <InputLabel name='Contact Person' />
+                    <InputValue size='smaller' value={contactPerson || '--'} />
+                </div>
+            </div>
+            <Divider />
+            <div className='row'>
+                <div className='input-container'>
                     <InputLabel name='Route' />
-                    <InputValue size='large' value={RouteName} />
+                    <InputValue size='smaller' value={RouteName || 'Not Assigned'} />
                 </div>
                 {
                     isDelivered === 'Completed' &&
@@ -45,15 +56,12 @@ const DCView = ({ data }) => {
             <Divider />
             <div className='row'>
                 <div className='input-container'>
+                    <InputLabel name='Driver Name And Number' />
+                    <InputValue size='smaller' value={`${driverName || 'Not Assigned'}, ${mobileNumber || '--'}`} />
+                </div>
+                <div className='input-container'>
                     <InputLabel name='Location Details' />
                     <InputValue size='smaller' value={address} />
-                </div>
-            </div>
-            <Divider />
-            <div className='row'>
-                <div className='input-container'>
-                    <InputLabel name='Contact Name And Number' />
-                    <InputValue size='smaller' value={`${driverName}, ${mobileNumber || '--'}`} />
                 </div>
             </div>
             <Divider />

@@ -3,11 +3,11 @@ import InputLabel from '../../../../components/InputLabel';
 import InputValue from '../../../../components/InputValue';
 import CustomTextArea from '../../../../components/CustomTextArea';
 import { resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
-import Checkbox from 'antd/lib/checkbox/Checkbox';
+import SelectInput from '../../../../components/SelectInput';
 
-const InvoiceRestForm = ({ data, errors, onChange }) => {
+const InvoiceRestForm = ({ data, errors, paymentOptions, onChange, hasPaid }) => {
 
-    const { TAndC, EmailId } = data
+    const { TAndC, EmailId, paymentMode } = data
 
     useEffect(() => {
         resetTrackForm()
@@ -20,6 +20,17 @@ const InvoiceRestForm = ({ data, errors, onChange }) => {
 
     return (
         <div className='app-form-container invoice-form-container'>
+            {
+                hasPaid && <div className='row'>
+                    <div className='input-container'>
+                        <InputLabel name='Payment Mode' mandatory error={errors.paymentMode} />
+                        <SelectInput track
+                            options={paymentOptions} value={paymentMode}
+                            error={errors.paymentMode} onSelect={(value) => onChange(value, 'paymentMode')}
+                        />
+                    </div>
+                </div>
+            }
             <div className='row'>
                 <div className='input-container stretch'>
                     <InputLabel name='Terms & Conditions' error={errors.TAndC} mandatory />

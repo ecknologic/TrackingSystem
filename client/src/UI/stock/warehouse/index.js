@@ -1,14 +1,16 @@
 import axios from 'axios';
 import { Tabs } from 'antd';
 import { useParams } from 'react-router';
-import React, { Fragment, useMemo, useState } from 'react';
+import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import Orders from './tabs/Orders';
 import Staff from './tabs/Staff';
 import Delivery from './tabs/Delivery';
 import { http } from '../../../modules/http';
 import DeliveredDC from './tabs/DeliveredDC';
 import StockDetails from './tabs/StockDetails';
+import DamagedStock from './tabs/DamagedStock';
 import StockReceived from './tabs/StockReceived';
+import useUser from '../../../utils/hooks/useUser';
 import { TODAYDATE } from '../../../utils/constants';
 import Header from '../../../components/ContentHeader';
 import ReportsDropdown from '../../../components/ReportsDropdown';
@@ -17,10 +19,88 @@ import '../../../sass/stock.scss'
 
 const WarehouseStock = () => {
     const { tab = '1' } = useParams()
+    const { WAREHOUSEID } = useUser()
     const [activeTab, setActiveTab] = useState(tab)
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
+    const [routeList, setRouteList] = useState([])
+    const [driverList, setDriverList] = useState([])
+    const [vehicleList, setVehicleList] = useState([])
+    const [locationList, setLocationList] = useState([])
+    const [warehouseList, setWarehouseList] = useState([])
+    const [motherplantList, setMotherplantList] = useState([])
     const showDatePanel = activeTab === '1' || activeTab === '2'
+
+    const childProps = useMemo(() => ({ driverList, routeList, warehouseList, vehicleList, locationList, motherplantList }),
+        [driverList, routeList, warehouseList, vehicleList, locationList, motherplantList])
     const source = useMemo(() => axios.CancelToken.source(), [selectedDate, activeTab]);
+    const config = { cancelToken: source.token }
+
+    useEffect(() => {
+        getRouteList()
+        getDriverList()
+        getVehicleList()
+        getLocationList()
+        getWarehouseList()
+        getMotherplantList()
+
+        return () => {
+            http.ABORT(source)
+        }
+    }, [])
+
+    const getRouteList = async () => {
+        const url = `customer/getRoutes/${WAREHOUSEID}`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setRouteList(data)
+        } catch (error) { }
+    }
+
+    const getDriverList = async () => {
+        const url = `bibo/getdriverDetails/${WAREHOUSEID}`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setDriverList(data)
+        } catch (error) { }
+    }
+
+    const getVehicleList = async () => {
+        const url = `bibo/getVehicleDetails`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setVehicleList(data)
+        } catch (error) { }
+    }
+
+    const getLocationList = async () => {
+        const url = `bibo/getList/location`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setLocationList(data)
+        } catch (error) { }
+    }
+
+    const getWarehouseList = async () => {
+        const url = 'bibo/getDepartmentsList?departmentType=warehouse'
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setWarehouseList(data)
+        } catch (ex) { }
+    }
+
+    const getMotherplantList = async () => {
+        const url = 'bibo/getDepartmentsList?departmentType=MotherPlant'
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setMotherplantList(data)
+        } catch (error) { }
+    }
 
     const handleDateChange = (date) => {
         setSelectedDate(date)
@@ -49,23 +129,29 @@ const WarehouseStock = () => {
                         <TabPane tab="Delivered DC" key="4" />
                         <TabPane tab="Staff" key="5" />
                         <TabPane tab="Stock Received" key="6" />
+                        <TabPane tab="Damaged Stock" key="7" />
                     </Tabs>
                 </div>
                 {
                     showDatePanel && (
                         <div className='date-picker-panel'>
-                            <DatePickerPanel onChange={handleDateChange} onSelect={handleDateSelect} />
+                            <DatePickerPanel
+                                onChange={handleDateChange}
+                                onSelect={handleDateSelect}
+                                disabledDate={activeTab !== '2'}
+                            />
                         </div>
                     )
                 }
                 {
-                    activeTab === '1' ? <StockDetails date={selectedDate} source={source} />
-                        : activeTab === '2' ? <Delivery date={selectedDate} source={source} />
-                            : activeTab === '3' ? <Orders />
+                    activeTab === '1' ? <StockDetails date={selectedDate} {...childProps} />
+                        : activeTab === '2' ? <Delivery date={selectedDate} {...childProps} />
+                            : activeTab === '3' ? <Orders {...childProps} />
                                 : activeTab === '4' ? <DeliveredDC />
                                     : activeTab === '5' ? <Staff />
-                                        : activeTab === '6' ? <StockReceived />
-                                            : null
+                                        : activeTab === '6' ? <StockReceived motherplantList={motherplantList} />
+                                            : activeTab === '7' ? <DamagedStock motherplantList={motherplantList} />
+                                                : null
                 }
             </div>
         </Fragment>

@@ -10,6 +10,10 @@ motherPlantDbQueries.getMotherPlantById = async (motherPlantId, callback) => {
     let query = `select d.*,u.userName,u.mobileNumber,u.emailid,u.RoleId as roleId from departmentmaster d INNER JOIN usermaster u on d.adminId=u.userId WHERE d.departmentId=${motherPlantId}`;
     return executeGetQuery(query, callback)
 }
+motherPlantDbQueries.getDepartmentDetailsById = async (departmentId, callback) => {
+    let query = `select address, departmentName, city, state, pinCode, adminId, phoneNumber,gstNo from departmentmaster  WHERE departmentId=${departmentId}`;
+    return executeGetQuery(query, callback)
+}
 motherPlantDbQueries.getProductionDetails = async (departmentId, callback) => {
     let query = `select * from production WHERE departmentId=${departmentId} ORDER BY productionDate DESC`;
     return executeGetQuery(query, callback)
@@ -193,7 +197,7 @@ motherPlantDbQueries.getProdQCTestedBatches = async (departmentId, callback) => 
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getCurrentProductionDetailsByDate = async (input, callback) => {
-    let query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes,GROUP_CONCAT(p.batchId) AS batchIds FROM production p WHERE departmentId=? AND DATE(`productionDate`)<=?";
+    let query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes,GROUP_CONCAT(p.batchId) AS batchIds FROM production p WHERE departmentId=? AND isApproved=1 AND DATE(`productionDate`)<=?";
     return executeGetParamsQuery(query, [input.departmentId, input.date], callback)
 }
 motherPlantDbQueries.getTotalProductionDetails = async (input, callback) => {
@@ -271,7 +275,7 @@ motherPlantDbQueries.getPDDetailsByDate = async (input, callback) => {
 }
 motherPlantDbQueries.getTotalPDDetails = async (input, callback) => {
     let { departmentId, startDate, endDate, fromStart, batchIds: bIds } = input;
-    const batchIds = bIds.split(',')
+    const batchIds = bIds && bIds.split(',')
     let options = [departmentId, endDate, batchIds]
     let query = "SELECT SUM(p.product20L) AS total20LCans,SUM(p.product1L) AS total1LBoxes,SUM(p.product500ML) total500MLBoxes,SUM(p.product300ML) total300MLBoxes,SUM(p.product2L) total2LBoxes FROM dispatches p WHERE departmentId=? AND DATE(`dispatchedDate`)<=? AND batchId IN (?)";
 
@@ -302,18 +306,18 @@ motherPlantDbQueries.getQCLevelsDetails = async (input, callback) => {
 motherPlantDbQueries.getTotalRevenue = async (input, callback) => {
     let { startDate, endDate, fromStart, departmentId } = input;
     let options = [endDate]
-    let query = `SELECT (SUM(20LCans * (price20L + (price20L * 12 / 100))))product20LCount, (SUM(1LBoxes * (price1L + (price1L * 18 / 100))))product1LCount, (SUM(500MLBoxes * (price500ML + (price500ML * 18 / 100))))product500MLCount, (SUM(300MLBoxes * (price300ML + (price300ML * 18 / 100))))product300MLCount, (SUM(2LBoxes * (price2L + (price2L * 18 / 100)))) product2LCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)<=?`;
+    let query = `SELECT CAST((SUM(20LCans * (price20L + (price20L * 12 / 100)))) AS DECIMAL(10,2)) product20LCount, CAST((SUM(1LBoxes * (price1L + (price1L * 18 / 100)))) AS DECIMAL(10,2)) product1LCount, CAST((SUM(500MLBoxes * (price500ML + (price500ML * 18 / 100)))) AS DECIMAL(10,2)) product500MLCount, CAST((SUM(300MLBoxes * (price300ML + (price300ML * 18 / 100)))) AS DECIMAL(10,2)) product300MLCount, CAST((SUM(2LBoxes * (price2L + (price2L * 18 / 100)))) AS DECIMAL(10,2)) product2LCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)<=?`;
     if (fromStart !== 'true' && departmentId == "All") {
         options = [startDate, endDate]
-        query = ` SELECT (SUM(20LCans * (price20L + (price20L * 12 / 100))))product20LCount, (SUM(1LBoxes * (price1L + (price1L * 18 / 100))))product1LCount, (SUM(500MLBoxes * (price500ML + (price500ML * 18 / 100))))product500MLCount, (SUM(300MLBoxes * (price300ML + (price300ML * 18 / 100))))product300MLCount, (SUM(2LBoxes * (price2L + (price2L * 18 / 100)))) product2LCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)>=? AND DATE(deliveredDate)<=?`;
+        query = ` SELECT CAST((SUM(20LCans * (price20L + (price20L * 12 / 100)))) AS DECIMAL(10,2)) product20LCount, CAST((SUM(1LBoxes * (price1L + (price1L * 18 / 100)))) AS DECIMAL(10,2)) product1LCount, CAST((SUM(500MLBoxes * (price500ML + (price500ML * 18 / 100)))) AS DECIMAL(10,2)) product500MLCount, CAST((SUM(300MLBoxes * (price300ML + (price300ML * 18 / 100)))) AS DECIMAL(10,2)) product300MLCount, CAST((SUM(2LBoxes * (price2L + (price2L * 18 / 100)))) AS DECIMAL(10,2)) product2LCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)>=? AND DATE(deliveredDate)<=?`;
     }
     else if (fromStart !== 'true' && departmentId !== "All") {
         options = [startDate, endDate, departmentId]
-        query = ` SELECT (SUM(20LCans * (price20L + (price20L * 12 / 100))))product20LCount, (SUM(1LBoxes * (price1L + (price1L * 18 / 100))))product1LCount, (SUM(500MLBoxes * (price500ML + (price500ML * 18 / 100))))product500MLCount, (SUM(300MLBoxes * (price300ML + (price300ML * 18 / 100))))product300MLCount, (SUM(2LBoxes * (price2L + (price2L * 18 / 100)))) product2LCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)>=? AND DATE(deliveredDate)<=? AND warehouseId=?`;
+        query = ` SELECT CAST((SUM(20LCans * (price20L + (price20L * 12 / 100)))) AS DECIMAL(10,2)) product20LCount, CAST((SUM(1LBoxes * (price1L + (price1L * 18 / 100)))) AS DECIMAL(10,2)) product1LCount, CAST((SUM(500MLBoxes * (price500ML + (price500ML * 18 / 100)))) AS DECIMAL(10,2)) product500MLCount, CAST((SUM(300MLBoxes * (price300ML + (price300ML * 18 / 100)))) AS DECIMAL(10,2)) product300MLCount, CAST((SUM(2LBoxes * (price2L + (price2L * 18 / 100)))) AS DECIMAL(10,2)) product2LCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)>=? AND DATE(deliveredDate)<=? AND warehouseId=?`;
     }
     else if (fromStart == 'true' && departmentId !== "All") {
         options = [endDate, departmentId]
-        query = `SELECT (SUM(20LCans * (price20L + (price20L * 12 / 100))))product20LCount, (SUM(1LBoxes * (price1L + (price1L * 18 / 100))))product1LCount, (SUM(500MLBoxes * (price500ML + (price500ML * 18 / 100))))product500MLCount, (SUM(300MLBoxes * (price300ML + (price300ML * 18 / 100))))product300MLCount, (SUM(2LBoxes * (price2L + (price2L * 18 / 100)))) product2LCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)<=? AND warehouseId=?`;
+        query = `SELECT CAST((SUM(20LCans * (price20L + (price20L * 12 / 100)))) AS DECIMAL(10,2)) product20LCount, CAST((SUM(1LBoxes * (price1L + (price1L * 18 / 100)))) AS DECIMAL(10,2)) product1LCount, CAST((SUM(500MLBoxes * (price500ML + (price500ML * 18 / 100)))) AS DECIMAL(10,2)) product500MLCount, CAST((SUM(300MLBoxes * (price300ML + (price300ML * 18 / 100)))) AS DECIMAL(10,2)) product300MLCount, CAST((SUM(2LBoxes * (price2L + (price2L * 18 / 100)))) AS DECIMAL(10,2)) product2LCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)<=? AND warehouseId=?`;
     }
     return executeGetParamsQuery(query, options, callback)
 }
@@ -321,25 +325,25 @@ motherPlantDbQueries.getTotalRevenueChange = async (input, callback) => {
     let { startDate, endDate, fromStart, type, departmentId } = input;
     const { startDate: newStartDate, endDate: newEndDate } = dateComparisions(startDate, endDate, type)
     let options = [newEndDate]
-    let query = `SELECT (SUM(20LCans * (price20L + (price20L * 12 / 100))))product20LCount, (SUM(1LBoxes * (price1L + (price1L * 18 / 100))))product1LCount, (SUM(500MLBoxes * (price500ML + (price500ML * 18 / 100))))product500MLCount, (SUM(300MLBoxes * (price300ML + (price300ML * 18 / 100))))product300MLCount, (SUM(2LBoxes * (price2L + (price2L * 18 / 100)))) product2LCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)<=?`;
+    let query = `SELECT CAST((SUM(20LCans * (price20L + (price20L * 12 / 100)))) AS DECIMAL(10,2)) product20LCount, CAST((SUM(1LBoxes * (price1L + (price1L * 18 / 100)))) AS DECIMAL(10,2)) product1LCount, CAST((SUM(500MLBoxes * (price500ML + (price500ML * 18 / 100)))) AS DECIMAL(10,2)) product500MLCount, CAST((SUM(300MLBoxes * (price300ML + (price300ML * 18 / 100)))) AS DECIMAL(10,2)) product300MLCount, CAST((SUM(2LBoxes * (price2L + (price2L * 18 / 100)))) AS DECIMAL(10,2)) product2LCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)<=?`;
     if (fromStart !== 'true' && departmentId == "All") {
         options = [newStartDate, newEndDate]
-        query = ` SELECT (SUM(20LCans * (price20L + (price20L * 12 / 100))))product20LCount, (SUM(1LBoxes * (price1L + (price1L * 18 / 100))))product1LCount, (SUM(500MLBoxes * (price500ML + (price500ML * 18 / 100))))product500MLCount, (SUM(300MLBoxes * (price300ML + (price300ML * 18 / 100))))product300MLCount, (SUM(2LBoxes * (price2L + (price2L * 18 / 100)))) product2LCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)>=? AND DATE(deliveredDate)<=?`;
+        query = ` SELECT CAST((SUM(20LCans * (price20L + (price20L * 12 / 100)))) AS DECIMAL(10,2)) product20LCount, CAST((SUM(1LBoxes * (price1L + (price1L * 18 / 100)))) AS DECIMAL(10,2)) product1LCount, CAST((SUM(500MLBoxes * (price500ML + (price500ML * 18 / 100)))) AS DECIMAL(10,2)) product500MLCount, CAST((SUM(300MLBoxes * (price300ML + (price300ML * 18 / 100)))) AS DECIMAL(10,2)) product300MLCount, CAST((SUM(2LBoxes * (price2L + (price2L * 18 / 100)))) AS DECIMAL(10,2)) product2LCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)>=? AND DATE(deliveredDate)<=?`;
     }
     else if (fromStart !== 'true' && departmentId !== "All") {
         options = [newStartDate, newEndDate, departmentId]
-        query = ` SELECT (SUM(20LCans * (price20L + (price20L * 12 / 100))))product20LCount, (SUM(1LBoxes * (price1L + (price1L * 18 / 100))))product1LCount, (SUM(500MLBoxes * (price500ML + (price500ML * 18 / 100))))product500MLCount, (SUM(300MLBoxes * (price300ML + (price300ML * 18 / 100))))product300MLCount, (SUM(2LBoxes * (price2L + (price2L * 18 / 100)))) product2LCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)>=? AND DATE(deliveredDate)<=? AND warehouseId=?`;
+        query = ` SELECT CAST((SUM(20LCans * (price20L + (price20L * 12 / 100)))) AS DECIMAL(10,2)) product20LCount, CAST((SUM(1LBoxes * (price1L + (price1L * 18 / 100)))) AS DECIMAL(10,2)) product1LCount, CAST((SUM(500MLBoxes * (price500ML + (price500ML * 18 / 100)))) AS DECIMAL(10,2)) product500MLCount, CAST((SUM(300MLBoxes * (price300ML + (price300ML * 18 / 100)))) AS DECIMAL(10,2)) product300MLCount, CAST((SUM(2LBoxes * (price2L + (price2L * 18 / 100)))) AS DECIMAL(10,2)) product2LCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)>=? AND DATE(deliveredDate)<=? AND warehouseId=?`;
     }
     if (fromStart == 'true' && departmentId !== "All") {
         options = [newStartDate, newEndDate, departmentId]
-        query = ` SELECT (SUM(20LCans * (price20L + (price20L * 12 / 100))))product20LCount, (SUM(1LBoxes * (price1L + (price1L * 18 / 100))))product1LCount, (SUM(500MLBoxes * (price500ML + (price500ML * 18 / 100))))product500MLCount, (SUM(300MLBoxes * (price300ML + (price300ML * 18 / 100))))product300MLCount, (SUM(2LBoxes * (price2L + (price2L * 18 / 100)))) product2LCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)>=? AND DATE(deliveredDate)<=? AND warehouseId=?`;
+        query = ` SELECT CAST((SUM(20LCans * (price20L + (price20L * 12 / 100)))) AS DECIMAL(10,2)) product20LCount, CAST((SUM(1LBoxes * (price1L + (price1L * 18 / 100)))) AS DECIMAL(10,2)) product1LCount, CAST((SUM(500MLBoxes * (price500ML + (price500ML * 18 / 100)))) AS DECIMAL(10,2)) product500MLCount, CAST((SUM(300MLBoxes * (price300ML + (price300ML * 18 / 100)))) AS DECIMAL(10,2)) product300MLCount, CAST((SUM(2LBoxes * (price2L + (price2L * 18 / 100)))) AS DECIMAL(10,2)) product2LCount FROM customerorderdetails WHERE isDelivered='Completed' AND DATE(deliveredDate)>=? AND DATE(deliveredDate)<=? AND warehouseId=?`;
     }
     return executeGetParamsQuery(query, options, callback)
 }
 //POST Request Methods
 motherPlantDbQueries.createQC = async (input, callback) => {
     let query = "insert into qualitycontrol (reportdate,batchId,testType,reportImage,description) values(?,?,?,?,?)";
-    let reportImage = Buffer.from(input.reportImage.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+    let reportImage = input.reportImage && Buffer.from(input.reportImage.replace(/^data:image\/\w+;base64,/, ""), 'base64')
     let requestBody = [input.reportdate, input.batchId, input.testType, reportImage, input.description]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
@@ -413,7 +417,7 @@ motherPlantDbQueries.createRMReceipt = async (input, callback) => {
     let query = "insert into rawmaterialreceipt (receiptNo,invoiceNo,taxAmount,invoiceAmount,rawmaterialId,invoiceDate,departmentId,managerName,receiptImage) values(?,?,?,?,?,?,?,?,?)";
     const { receiptNo, invoiceNo, taxAmount, invoiceAmount, rawmaterialid, invoiceDate: date, departmentId, managerName } = input
     let invoiceDate = new Date(date)
-    let receiptImage = Buffer.from(input.receiptImage.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+    let receiptImage = input.receiptImage && Buffer.from(input.receiptImage.replace(/^data:image\/\w+;base64,/, ""), 'base64')
     let requestBody = [receiptNo, invoiceNo, taxAmount, invoiceAmount, rawmaterialid, invoiceDate, departmentId, managerName, receiptImage]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }

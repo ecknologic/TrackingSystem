@@ -21,11 +21,20 @@ usersQueries.getUsersById = async (userId, callback) => {
     let query = "SELECT u.*,s.adharNo as dependentAdharNo,s.adhar_frontside as dependentFrontProof,s.adhar_backside as dependentBackProof,JSON_OBJECT('name',s.name,'userId',s.userId,'dob',s.dob,'gender',s.gender,'mobileNumber',s.mobileNumber,'relation',s.relation,'dependentId',s.dependentId) dependentDetails from usermaster u INNER JOIN staffDependentDetails s on u.userId=s.userId where u.userId=" + userId;
     return executeGetQuery(query, callback)
 }
+usersQueries.getUserDetailsById = async (userId, callback) => {
+    let query = "SELECT userName,roleId,departmentId,emailid, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress,adhar_frontside,adhar_backside,accountNo,bankName,branchName,ifscCode,recommendedBy,recruitedBy,bloodGroup from usermaster where userId=" + userId;
+    return executeGetQuery(query, callback)
+}
+usersQueries.getDependentDetailsById = async (dependentId, callback) => {
+    let query = "SELECT name, dob, gender, adhar_frontside,adhar_backside, mobileNumber, relation, adharNo from staffDependentDetails where dependentId=" + dependentId;
+    return executeGetQuery(query, callback)
+}
+
 usersQueries.saveDependentDetails = (input, tableName, callback) => {
     let query = `insert into ${tableName} (name,dob,gender,adhar_frontside,adhar_backside,mobileNumber,relation,userId,createdDateTime,adharNo) values(?,?,?,?,?,?,?,?,?,?)`;
     const { name, dob, gender, adharProof, adharNo, mobileNumber, relation, userId } = input
     let adhar_front = adharProof && adharProof.Front && Buffer.from(adharProof.Front.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-    let adhar_back = adharProof && adharProof.Back && Buffer.from(adharProof.Back.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+    let adhar_back = adharProof && adharProof.Front && Buffer.from(adharProof.Back.replace(/^data:image\/\w+;base64,/, ""), 'base64')
     let requestBody = [name, dob, gender, adhar_front, adhar_back, mobileNumber, relation, userId, new Date(), adharNo]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }

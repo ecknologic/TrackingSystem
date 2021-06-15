@@ -1,0 +1,65 @@
+.customer-onboard-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding:1em 10% .7em 10%;
+    background-color: #fff;
+    border-radius: .6em;
+
+    .heading {
+        display: flex;
+        justify-content: center;
+
+        .title, .number {
+            font-family: 'PoppinsBold700';
+            font-size: 1.1em;
+            color: #354052;
+        }
+
+        .title {
+            width: 50%;
+            text-align: center;
+            padding-right: .5em;
+        }
+    }
+
+    .pie-chart-stats {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 1em 0;
+
+        .pie-chart > div > div {
+            display: flex;
+            justify-content: center;
+        }
+
+        .stats {
+            padding: 2em 0;
+            align-content: center;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            .title {
+                font-size: .95em;
+                font-family: 'PoppinsRegular400';
+                color: rgba(0,0,0,0.85);
+                padding-right: 1em;
+                padding-left: .3em;
+            }
+        }
+
+        .app-dot {
+            display: inline-block;
+            width: 9px;
+            height: 9px;
+        }
+    }
+}

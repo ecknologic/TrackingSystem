@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import axios from 'axios';
 import { Menu, message, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -13,17 +14,23 @@ import CustomModal from '../../../../components/CustomModal';
 import CustomButton from '../../../../components/CustomButton';
 import RoutesFilter from '../../../../components/RoutesFilter';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
+import CustomDateInput from '../../../../components/CustomDateInput';
 import CustomPagination from '../../../../components/CustomPagination';
-import { EditIconGrey, PlusIcon } from '../../../../components/SVG_Icons';
+import ActivityLogContent from '../../../../components/ActivityLogContent';
+import { EditIconGrey, ListViewIconGrey, PlusIcon, ScheduleIcon, ScheduleIconGrey } from '../../../../components/SVG_Icons';
 import { getRouteOptions, getDriverOptions, getDeliveryColumns, getDistributorOptions, getCustomerOptions, getDropdownOptions } from '../../../../assets/fixtures';
-import { validateMobileNumber, validateNames, validateNumber, validateDCValues, validateEmailId } from '../../../../utils/validations';
-import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone, getStatusColor, doubleKeyComplexSearch, getProductsForUI } from '../../../../utils/Functions';
+import { validateMobileNumber, validateNames, validateNumber, validateDCValues, validateEmailId, validateIntFloat } from '../../../../utils/validations';
+import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone, getStatusColor, doubleKeyComplexSearch, getProductsForUI, disablePastDates } from '../../../../utils/Functions';
+const format = 'YYYY-MM-DD'
 
-const Delivery = ({ date, source }) => {
+const Delivery = ({ date, routeList, locationList, driverList }) => {
     const defaultValue = { customerType: 'newCustomer', creationType: 'manual' }
     const { WAREHOUSEID: warehouseId } = useUser()
-    const [routes, setRoutes] = useState([])
-    const [drivers, setDrivers] = useState([])
+    const [logs, setLogs] = useState([])
+    const [open, setOpen] = useState(false)
+    const [rOpen, setROpen] = useState(false)
+    const [currentDC, setCurrentDC] = useState('')
+    const [selectedDate, setSelectedDate] = useState()
     const [loading, setLoading] = useState(true)
     const [deliveriesClone, setDeliveriesClone] = useState([])
     const [filteredClone, setFilteredClone] = useState([])
@@ -33,12 +40,14 @@ const Delivery = ({ date, source }) => {
     const [pageSize, setPageSize] = useState(10)
     const [totalCount, setTotalCount] = useState(null)
     const [pageNumber, setPageNumber] = useState(1)
+    const [logModal, setLogModal] = useState(false)
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
+    const [cancelModal, setCancelModal] = useState(false)
+    const [rescheduleModal, setRescheduleModal] = useState(false)
     const [resetSearch, setResetSearch] = useState(false)
     const [customerList, setCustomerList] = useState([])
     const [distributorList, setDistributorList] = useState([])
-    const [locationList, setLocationList] = useState([])
     const [filterInfo, setFilterInfo] = useState([])
     const [filterON, setFilterON] = useState(false)
     const [searchON, setSeachON] = useState(false)
@@ -49,47 +58,27 @@ const Delivery = ({ date, source }) => {
     const [mode, setMode] = useState(false)
 
     const deliveryColumns = useMemo(() => getDeliveryColumns(), [])
-    const routeOptions = useMemo(() => getRouteOptions(routes), [routes])
-    const driverOptions = useMemo(() => getDriverOptions(drivers), [drivers])
+    const routeOptions = useMemo(() => getRouteOptions(routeList), [routeList])
+    const driverOptions = useMemo(() => getDriverOptions(driverList), [driverList])
     const locationOptions = useMemo(() => getDropdownOptions(locationList), [locationList])
     const distributorOptions = useMemo(() => getDistributorOptions(distributorList), [distributorList])
     const customerOptions = useMemo(() => getCustomerOptions(customerList), [customerList])
     const childProps = useMemo(() => ({ routeOptions, driverOptions, locationOptions, distributorOptions, customerOptions }),
         [routeOptions, driverOptions, locationOptions, distributorOptions, customerOptions])
+    const source = useMemo(() => axios.CancelToken.source(), [date]);
     const config = { cancelToken: source.token }
-
-    useEffect(() => {
-        getRoutes()
-        getDrivers()
-        getLocationList()
-    }, [])
 
     useEffect(() => {
         setLoading(true)
         getDeliveries()
 
+    }, [date])
+
+    useEffect(() => {
         return () => {
             http.ABORT(source)
         }
-    }, [date])
-
-    const getRoutes = async () => {
-        const url = `customer/getRoutes/${warehouseId}`
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setRoutes(data)
-        } catch (error) { }
-    }
-
-    const getDrivers = async () => {
-        const url = `bibo/getdriverDetails/${warehouseId}`
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setDrivers(data)
-        } catch (error) { }
-    }
+    }, [])
 
     const getDistributorList = async () => {
         const url = 'distributor/getDistributorsList'
@@ -109,24 +98,15 @@ const Delivery = ({ date, source }) => {
         } catch (error) { }
     }
 
-    const getLocationList = async () => {
-        const url = `bibo/getList/location`
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setLocationList(data)
-        } catch (error) { }
-    }
-
     const getDistributor = async (id) => {
         const url = `distributor/getDistributor/${id}`
 
         try {
             showToast({ v1Ing: 'Fetching', action: 'loading' })
             const [data] = await http.GET(axios, url, config)
-            const { mobileNumber: phoneNumber, address, products, agencyName: customerName, deliveryLocation } = data
+            const { mobileNumber: phoneNumber, address, products, mailId: EmailId, agencyName: customerName, deliveryLocation, contactPerson } = data
             const productsUI = getProductsForUI(products)
-            setFormData(data => ({ ...data, phoneNumber, address, customerName, deliveryLocation, ...productsUI }))
+            setFormData(data => ({ ...data, phoneNumber, address, customerName, EmailId, deliveryLocation, contactPerson, ...productsUI }))
             showToast({ v2: 'fetched' })
         } catch (error) {
             message.destroy()
@@ -138,8 +118,10 @@ const Delivery = ({ date, source }) => {
 
         try {
             showToast({ v1Ing: 'Fetching', action: 'loading' })
-            const { data: [res] } = await http.GET(axios, url, config)
-            setFormData(data => ({ ...data, ...res }))
+            const { data: [data] } = await http.GET(axios, url, config)
+            const { products, ...res } = data
+            const productsUI = getProductsForUI(products)
+            setFormData(data => ({ ...data, ...res, ...productsUI }))
             showToast({ v2: 'fetched' })
         } catch (error) {
             message.destroy()
@@ -148,7 +130,6 @@ const Delivery = ({ date, source }) => {
 
     const getDeliveries = async () => {
         const url = `warehouse/deliveryDetails/${date}`
-
         try {
             const data = await http.GET(axios, url, config)
             setPageNumber(1)
@@ -164,6 +145,17 @@ const Delivery = ({ date, source }) => {
         } catch (error) { }
     }
 
+    const getLogs = async (COId) => {
+        const url = `logs/getDepartmentLogs?type=delivery&id=${COId}`
+
+        try {
+            showToast({ v1Ing: 'Fetching', action: 'loading' })
+            const data = await http.GET(axios, url, config)
+            showToast({ v2: 'fetched' })
+            setLogs(data)
+        } catch (error) { }
+    }
+
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
@@ -171,8 +163,8 @@ const Delivery = ({ date, source }) => {
         if (key === 'customerType') {
             const productsUI = getProductsForUI([])
             setFormData(data => ({
-                ...data, existingCustomerId: null, customerName: '', phoneNumber: null,
-                distributorId: null, deliveryLocation: '', address: '', ...productsUI
+                ...data, existingCustomerId: null, customerName: '', phoneNumber: null, contactPerson: '',
+                distributorId: null, deliveryLocation: null, address: '', EmailId: '', ...productsUI
             }))
         }
         else if (key === 'distributorId') {
@@ -191,9 +183,13 @@ const Delivery = ({ date, source }) => {
             const error = validateMobileNumber(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key.includes('box') || key.includes('can')) {
+        else if (key.includes('product')) {
             const error = validateNumber(value)
-            setFormErrors(errors => ({ ...errors, products: error }))
+            setFormErrors(errors => ({ ...errors, productNPrice: error }))
+        }
+        else if (key.includes('price')) {
+            const error = validateIntFloat(value)
+            setFormErrors(errors => ({ ...errors, productNPrice: error }))
         }
     }
 
@@ -206,6 +202,10 @@ const Delivery = ({ date, source }) => {
         else if (key === 'EmailId') {
             const error = validateEmailId(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key.includes('price')) {
+            const error = validateIntFloat(value, true)
+            setFormErrors(errors => ({ ...errors, productNPrice: error }))
         }
     }
 
@@ -229,10 +229,31 @@ const Delivery = ({ date, source }) => {
         searchON && setResetSearch(!resetSearch)
     }
 
+    const datePickerStatus = (status) => {
+        !status && setOpen(false)
+    }
+
+    const dateRowPickerStatus = (status) => {
+        !status && setROpen(false)
+    }
+
+    const handleDateSelect = (value) => {
+        setSelectedDate(dayjs(value).format(format))
+        setOpen(false)
+    }
+
+    const handleRowDateSelect = (value) => {
+        setSelectedDate(dayjs(value).format(format))
+        setRescheduleModal(true)
+        setROpen(false)
+    }
+
     const handleMenuSelect = async (key, data) => {
+        const { dcNo, isDelivered, customerType } = data
         if (key === 'view') {
-            const { dcNo, isDelivered } = data
-            setTitle(dcNo)
+            const title = `${dcNo} - ${customerType === 'newCustomer' ? 'New Customer'
+                : customerType === 'internal' ? 'Existing Customer' : 'Distributor'}`
+            setTitle(title)
 
             try {
                 showToast({ v1Ing: 'Fetching', action: 'loading' })
@@ -246,6 +267,14 @@ const Delivery = ({ date, source }) => {
             setMode(isDisabled ? 'view' : 'edit')
             setFormData(data)
             setDCModal(true)
+        }
+        else if (key === 'logs') {
+            await getLogs(data.customerOrderId)
+            setLogModal(true)
+        }
+        else if (key === 'reschedule') {
+            setROpen(true)
+            setCurrentDC(data)
         }
     }
 
@@ -269,26 +298,33 @@ const Delivery = ({ date, source }) => {
         }
 
         const dcValues = getDCValuesForDB(formData)
-        const { customerOrderId, driverId } = formData
+        const { customerOrderId, driverId, routeId } = formData
 
         let url = 'warehouse/createDC'
         let method = 'POST'
         let v1Ing = 'Adding'
         let v2 = 'added'
 
+        const body = {
+            ...dcValues, warehouseId, customerOrderId
+        }
+
         if (customerOrderId) {
             url = 'customer/updateCustomerOrderDetails'
             method = 'PUT'
             v1Ing = 'Updating'
             v2 = 'updated'
-        }
 
-        const body = {
-            ...dcValues, warehouseId, customerOrderId
+            const { driverName } = driverList.find(item => item.driverId === driverId)
+            const { RouteName } = routeList.find(item => item.RouteId === routeId)
+
+            body.driverName = driverName
+            body.routeName = RouteName
         }
 
         if (!driverId) { // Set status to delivered
             body.isDelivered = 'Completed'
+            body.deliveredDate = new Date()
         }
 
         const options = { item: 'DC', v1Ing, v2 }
@@ -301,8 +337,54 @@ const Delivery = ({ date, source }) => {
             optimisticUpdate(data, method)
             onModalClose(true)
         } catch (error) {
-            setBtnDisabled(false)
+            message.destroy()
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+                if (error.response.status === 405) {
+                    message.error('Email/phone already corresponds to an existing account.')
+                }
+            }
         }
+    }
+
+    const handleCancelDC = async () => {
+        const { customerOrderId } = currentDC
+        const options = { item: 'DC', v1Ing: 'Cancelling', v2: 'cancelled' }
+
+        const url = 'warehouse/closeDc'
+        const body = { customerOrderId }
+        try {
+            showToast({ ...options, action: 'loading' })
+            let [data = {}] = await http.PUT(axios, url, body, config)
+            showToast(options)
+            optimisticUpdate(data, 'PUT')
+        } catch (error) { }
+    }
+
+    const handleReschedule = async () => {
+        const { customerOrderId, existingCustomerId } = currentDC
+        const options = { item: 'DC', v1Ing: 'Rescheduling', v2: 'rescheduled' }
+
+        const url = 'warehouse/rescheduleDc'
+        const body = { customerOrderId, date: selectedDate, existingCustomerId }
+        try {
+            showToast({ ...options, action: 'loading' })
+            await http.PUT(axios, url, body, config)
+            showToast(options)
+            optimisticRemove(customerOrderId)
+        } catch (error) {
+            message.destroy()
+            if (!axios.isCancel(error)) {
+                if (error.response.status === 405) {
+                    setCancelModal(true)
+                }
+            }
+        }
+    }
+
+    const optimisticRemove = (id) => {
+        const data = deliveries.filter(dc => dc.customerOrderId !== id)
+        setDeliveries(data)
     }
 
     const optimisticUpdate = (data, method) => {
@@ -326,6 +408,10 @@ const Delivery = ({ date, source }) => {
         setFormErrors({})
     }
 
+    const onLogModalClose = () => {
+        setLogModal(false)
+    }
+
     const handleSearch = (value) => {
         setPageNumber(1)
         if (value === "") {
@@ -343,6 +429,13 @@ const Delivery = ({ date, source }) => {
 
     const dataSource = useMemo(() => deliveries.map((dc) => {
         const { dcNo, customerOrderId, address, RouteName, driverName, customerName, isDelivered } = dc
+
+        const options = [
+            <Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>,
+            <Menu.Item key="logs" icon={<ListViewIconGrey />}>Acvitity Logs</Menu.Item>,
+            <Menu.Item key="reschedule" className={isDelivered === 'Cancelled' ? 'disabled' : ''} icon={<ScheduleIconGrey />}>Reschedule</Menu.Item>
+        ]
+
         return {
             key: customerOrderId || dcNo,
             dcnumber: dcNo,
@@ -352,15 +445,38 @@ const Delivery = ({ date, source }) => {
             driverName: driverName || 'Not Assigned',
             orderDetails: renderOrderDetails(dc),
             status: renderStatus(isDelivered),
-            action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, dc)} />
+            action: <>
+                <CustomDateInput // Hidden in the DOM
+                    open={currentDC.dcNo === dcNo && rOpen}
+                    value={selectedDate}
+                    style={{ left: 0 }}
+                    onChange={handleRowDateSelect}
+                    onOpenChange={dateRowPickerStatus}
+                    disabledDate={disablePastDates}
+                    className='app-date-panel-picker'
+                    getPopupContainer={node => node.parentNode.parentNode}
+                />
+                <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, dc)} />
+            </>
         }
-    }), [deliveries, distributorList, customerList])
+    }), [deliveries, distributorList, customerList, rOpen, currentDC])
 
     const handleConfirmModalOk = useCallback(() => {
         setConfirmModal(false);
         resetTrackForm()
         onModalClose()
     }, [])
+
+    const handleRescheduleModalOk = () => {
+        setRescheduleModal(false);
+        setSelectedDate()
+        handleReschedule()
+    }
+
+    const handleCancelModalOk = () => {
+        setCancelModal(false);
+        handleCancelDC()
+    }
 
     const onCreateDC = () => {
         isEmpty(distributorList) && getDistributorList()
@@ -373,6 +489,9 @@ const Delivery = ({ date, source }) => {
 
     const handleDCModalCancel = useCallback(() => onModalClose(), [])
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
+    const handleRescheduleModalCancel = useCallback(() => { setRescheduleModal(false); setSelectedDate() }, [])
+    const handleCancelModalCancel = useCallback(() => setCancelModal(false), [])
+    const handleLogModalCancel = useCallback(() => onLogModalClose(), [])
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
@@ -382,13 +501,28 @@ const Delivery = ({ date, source }) => {
             <div className='header'>
                 <div className='left'>
                     <RoutesFilter
-                        data={routes}
+                        data={routeList}
                         keyValue='RouteId'
                         keyLabel='RouteName'
                         title='Select Routes'
                         onChange={onFilterChange}
                     />
                     <CustomButton text='Add New DC' onClick={onCreateDC} className='app-add-new-btn' icon={<PlusIcon />} />
+                    <div className='app-date-picker-wrapper'>
+                        <div className='date-picker' onClick={() => setOpen(true)}>
+                            <ScheduleIcon />
+                            <span>Bulk Reschedule</span>
+                        </div>
+                        <CustomDateInput // Hidden in the DOM
+                            open={open}
+                            style={{ left: 0 }}
+                            value={selectedDate}
+                            className='app-date-panel-picker'
+                            onChange={handleDateSelect}
+                            onOpenChange={datePickerStatus}
+                            disabledDate={disablePastDates}
+                        />
+                    </div>
                 </div>
                 <div className='right'>
                     <SearchInput
@@ -440,6 +574,24 @@ const Delivery = ({ date, source }) => {
                 />
             </CustomModal>
             <QuitModal
+                visible={rescheduleModal}
+                onOk={handleRescheduleModalOk}
+                onCancel={handleRescheduleModalCancel}
+                title='Are you sure you want to reschedule?'
+                okTxt='Yes'
+            >
+                <ConfirmMessage msg={`${currentDC.dcNo} will be rescheduled to ${dayjs(selectedDate).format('DD/MM/YYYY')}`} />
+            </QuitModal>
+            <QuitModal
+                visible={cancelModal}
+                onOk={handleCancelModalOk}
+                onCancel={handleCancelModalCancel}
+                title='DC already exists for the selected date'
+                okTxt='Yes'
+            >
+                <ConfirmMessage msg={`Do you want to cancel ${currentDC.dcNo}`} />
+            </QuitModal>
+            <QuitModal
                 visible={confirmModal}
                 onOk={handleConfirmModalOk}
                 onCancel={handleConfirmModalCancel}
@@ -448,15 +600,27 @@ const Delivery = ({ date, source }) => {
             >
                 <ConfirmMessage msg='Changes you made may not be saved.' />
             </QuitModal>
+            <CustomModal
+                className='app-form-modal'
+                visible={logModal}
+                onOk={handleLogModalCancel}
+                onCancel={handleLogModalCancel}
+                title='Activity Log Details'
+                okTxt='Close'
+                hideCancel
+            >
+                <ActivityLogContent data={logs} />
+            </CustomModal>
         </div>
     )
 }
 
 const renderStatus = (status) => {
-    const color = getStatusColor(status)
-    const text = status === 'Completed' ? 'Delivered' : status === 'Postponed' ? status : 'Pending'
+    const modifiedStatus = status === 'Inprogress' ? 'In Progress' : status
+    const color = getStatusColor(modifiedStatus)
+    const text = modifiedStatus === 'Completed' ? 'Delivered' : modifiedStatus
     return (
-        <div className='status'>
+        <div className='status nowrap'>
             <span className='app-dot' style={{ background: color }}></span>
             <span className='status-text'>{text}</span>
         </div>
@@ -469,5 +633,4 @@ const renderOrderDetails = ({ product20L, product2L, product1L, product500ML, pr
     500 ml - ${Number(product500ML)} boxes, 300 ml - ${Number(product300ML)} boxes
     `
 }
-const options = [<Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>]
 export default Delivery

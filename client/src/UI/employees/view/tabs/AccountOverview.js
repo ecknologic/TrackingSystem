@@ -1,38 +1,32 @@
 import axios from 'axios';
 import { Divider, message } from 'antd';
-import { useHistory, useLocation, useParams } from 'react-router-dom';
-import React, { Fragment, useEffect, useMemo, useState, useCallback } from 'react';
-import Header from './header';
-import AccountView from '../views/Account';
-import { http } from '../../../modules/http'
-import EmployeeForm from '../forms/Employee';
-import DependentForm from '../forms/Dependent';
-import DependentView from '../views/Dependent';
-import Spinner from '../../../components/Spinner';
-import useUser from '../../../utils/hooks/useUser';
-import ScrollUp from '../../../components/ScrollUp';
-import NoContent from '../../../components/NoContent';
-import QuitModal from '../../../components/CustomModal';
-import IDProofInfo from '../../../components/IDProofInfo';
-import CustomButton from '../../../components/CustomButton';
-import ConfirmMessage from '../../../components/ConfirmMessage';
-import { TRACKFORM, WAREHOUSEADMIN } from '../../../utils/constants';
-import { getDepartmentOptions, getRoleOptions } from '../../../assets/fixtures';
-import { isEmpty, showToast, base64String, getMainPathname, getBase64, getValidDate } from '../../../utils/Functions';
+import { useParams } from 'react-router-dom';
+import React, { Fragment, useEffect, useMemo, useState } from 'react';
+import AccountView from '../../views/Account';
+import { http } from '../../../../modules/http'
+import EmployeeForm from '../../forms/Employee';
+import DependentForm from '../../forms/Dependent';
+import DependentView from '../../views/Dependent';
+import Spinner from '../../../../components/Spinner';
+import useUser from '../../../../utils/hooks/useUser';
+import ScrollUp from '../../../../components/ScrollUp';
+import NoContent from '../../../../components/NoContent';
+import IDProofInfo from '../../../../components/IDProofInfo';
+import CustomButton from '../../../../components/CustomButton';
+import { WAREHOUSEADMIN } from '../../../../utils/constants';
+import { getDepartmentOptions, getRoleOptions } from '../../../../assets/fixtures';
+import { isEmpty, showToast, base64String, getBase64, getValidDate, resetTrackForm } from '../../../../utils/Functions';
 import {
     validateIDNumbers, validateNames, validateMobileNumber, validateEmailId, validateIDProofs,
     validateEmployeeValues, validateDependentValues, validateNumber, validateIFSCCode
-} from '../../../utils/validations';
-import '../../../sass/employees.scss'
+} from '../../../../utils/validations';
+import '../../../../sass/employees.scss'
 const DATEFORMAT = 'YYYY-MM-DD'
 
-const ManageEmployee = ({ isDriver }) => {
+const ManageEmployee = ({ isDriver, setHeaderContent, onGoBack }) => {
     const { ROLE } = useUser()
-    const history = useHistory()
     const { employeeId } = useParams()
-    const { pathname } = useLocation()
     const [accountValues, setAccountValues] = useState({ loading: true })
-    const [headerContent, setHeaderContent] = useState({})
     const [depValues, setDepValues] = useState({})
     const [depErrors, setDepErrors] = useState({})
     const [loading, setLoading] = useState(true)
@@ -42,7 +36,6 @@ const ManageEmployee = ({ isDriver }) => {
     const [depAdharProofErrors, setDepAdharProofErrors] = useState({})
     const [adharProofErrors, setAdharProofErrors] = useState({})
     const [licenseProofErrors, setLicenseProofErrors] = useState({})
-    const [confirmModal, setConfirmModal] = useState(false)
     const [accountErrors, setAccountErrors] = useState({})
     const [editMode, setEditMode] = useState(false)
     const [roleList, setRoleList] = useState([])
@@ -54,7 +47,6 @@ const ManageEmployee = ({ isDriver }) => {
 
     const isWHAdmin = useMemo(() => ROLE === WAREHOUSEADMIN, [ROLE])
     const roleOptions = useMemo(() => getRoleOptions(roleList), [roleList])
-    const mainUrl = useMemo(() => getMainPathname(pathname), [pathname])
     const departmentOptions = useMemo(() => getDepartmentOptions(departmentList), [departmentList])
     const childProps = useMemo(() => ({ adharProof, licenseProof, adharProofErrors, licenseProofErrors, roleOptions, departmentOptions }),
         [adharProof, licenseProof, adharProofErrors, licenseProofErrors, roleOptions, departmentOptions])
@@ -336,7 +328,9 @@ const ManageEmployee = ({ isDriver }) => {
             showToast({ ...options, action: 'loading' })
             await http.POST(axios, url, body, config)
             showToast(options)
-            goBack()
+            resetTrackForm()
+            setEditMode(false)
+            setBtnDisabled(false)
         } catch (error) {
             message.destroy()
             if (!axios.isCancel(error)) {
@@ -351,25 +345,10 @@ const ManageEmployee = ({ isDriver }) => {
         setEditMode(true)
     }
 
-    const onAccountCancel = useCallback(() => handleBack(), [])
-    const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
-    const handleConfirmModalOk = useCallback(() => { setConfirmModal(false); goBack() }, [])
-
-    const handleBack = () => {
-        const formHasChanged = sessionStorage.getItem(TRACKFORM)
-        if (formHasChanged) {
-            setConfirmModal(true)
-        }
-        else goBack()
-    }
-
-    const goBack = () => history.push(mainUrl)
-
     return (
         <Fragment>
             <ScrollUp dep={editMode} />
-            <Header data={headerContent} onClick={handleBack} />
-            <div className='app-manage-content employee-manage-content'>
+            <div className='app-manage-content employee-manage-content p-0'>
                 {
                     loading
                         ? <NoContent content={<Spinner />} />
@@ -426,7 +405,7 @@ const ManageEmployee = ({ isDriver }) => {
                                     </>
                             }
                             <div className={`app-footer-buttons-container ${editMode ? 'edit' : 'view'}`}>
-                                <CustomButton onClick={onAccountCancel} className='app-cancel-btn footer-btn' text='Cancel' />
+                                <CustomButton onClick={onGoBack} className='app-cancel-btn footer-btn' text='Cancel' />
                                 {
                                     editMode
                                         ? <CustomButton onClick={handleUpdate} className={`app-create-btn footer-btn ${btnDisabled && 'disabled'} ${shake && 'app-shake'} `} text='Update' />
@@ -440,15 +419,6 @@ const ManageEmployee = ({ isDriver }) => {
                         </>
                 }
             </div>
-            <QuitModal
-                visible={confirmModal}
-                onOk={handleConfirmModalOk}
-                onCancel={handleConfirmModalCancel}
-                title='Are you sure you want to leave?'
-                okTxt='Yes'
-            >
-                <ConfirmMessage msg='Changes you made may not be saved.' />
-            </QuitModal>
         </Fragment>
     )
 }

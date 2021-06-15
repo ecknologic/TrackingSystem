@@ -13,12 +13,16 @@ distributorQueries.getDistributorById = async (distributorId, callback) => {
     let query = `select * from Distributors where distributorId=${distributorId}`;
     return executeGetQuery(query, callback)
 }
+distributorQueries.getDistributorDetailsById = async (distributorId, callback) => {
+    let query = `select agencyName, contactPerson, mobileNumber, alternateNumber, address, mailId, alternateMailId, gstNo, gstProof, operationalArea,  deliveryLocation from Distributors where distributorId=${distributorId}`;
+    return executeGetQuery(query, callback)
+}
 
 //POST Request Methods
 distributorQueries.createDistributor = (input, callback) => {
     const { agencyName, contactPerson, mobileNumber, alternateNumber, address, mailId, alternateMailId, gstNo, gstProof, operationalArea, createdBy, deliveryLocation } = input
     let query = "insert into Distributors (agencyName,contactPerson,mobileNumber,alternateNumber,address,mailId,alternateMailId,gstNo,gstProof,operationalArea,createdBy,deliveryLocation) values(?,?,?,?,?,?,?,?,?,?,?,?)";
-    var gstProofImage = Buffer.from(gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+    var gstProofImage = gstProof && Buffer.from(gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
     let requestBody = [agencyName, contactPerson, mobileNumber, alternateNumber, address, mailId, alternateMailId, gstNo, gstProofImage, operationalArea, createdBy, deliveryLocation]
     executePostOrUpdateQuery(query, requestBody, callback)
 }
@@ -27,7 +31,7 @@ distributorQueries.updateDistributor = (input, callback) => {
     let query, requestBody;
     if (isNewFile) {
         query = "update Distributors set agencyName=?,contactPerson=?,mobileNumber=?,alternateNumber=?,address=?,mailId=?,alternateMailId=?,gstNo=?,gstProof=?,operationalArea=?,deliveryLocation=? where distributorId=?";
-        var gstProofImage = Buffer.from(gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+        var gstProofImage = gstProof && Buffer.from(gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
         requestBody = [agencyName, contactPerson, mobileNumber, alternateNumber, address, mailId, alternateMailId, gstNo, gstProofImage, operationalArea, deliveryLocation, distributorId]
     } else {
         query = "update Distributors set agencyName=?,contactPerson=?,mobileNumber=?,alternateNumber=?,address=?,mailId=?,alternateMailId=?,gstNo=?,operationalArea=?,deliveryLocation=? where distributorId=?";

@@ -9,20 +9,20 @@ import useUser from '../../utils/hooks/useUser';
 import NoContent from '../../components/NoContent';
 import AccountCard from '../../components/AccountCard';
 import DeleteModal from '../../components/CustomModal';
-import { getDefaultOptions } from '../../assets/fixtures';
 import ConfirmMessage from '../../components/ConfirmMessage';
 import CustomPagination from '../../components/CustomPagination';
-import { ACCOUNTSADMIN, SUPERADMIN } from '../../utils/constants';
+import useCustomerFilter from '../../utils/hooks/useCustomerFilter';
+import { ACCOUNTSADMIN, MANAGEACCOUNT, MARKETINGADMIN, MARKETINGMANAGER, SUPERADMIN, VIEWDETAILS } from '../../utils/constants';
 import { complexDateSort, complexSort, tripleKeyComplexSearch, filterAccounts, showToast } from '../../utils/Functions'
 import '../../sass/customers.scss'
 
 const Customers = () => {
-    const { ROLE } = useUser()
+    const { ROLE, USERID } = useUser()
     const history = useHistory()
     const { tab = '1', page = 1 } = useParams()
     const [accountsClone, setAccountsClone] = useState([])
     const [filteredClone, setFilteredClone] = useState([])
-    const [cardBtnTxt, setCardBtnTxt] = useState('Manage Account')
+    const [cardBtnTxt, setCardBtnTxt] = useState(MANAGEACCOUNT)
     const [accounts, setAccounts] = useState([])
     const [loading, setLoading] = useState(true)
     const [pageSize, setPageSize] = useState(12)
@@ -34,50 +34,76 @@ const Customers = () => {
     const [activeTab, setActiveTab] = useState(tab)
     const [modalDelete, setModalDelete] = useState(false)
     const [currentId, setCurrentId] = useState('')
-    const [businessList, setBusinessList] = useState([])
 
-    const businessOptions = useMemo(() => getDefaultOptions(businessList), [businessList])
+    const { account, creator, business, hasFilters } = useCustomerFilter()
     const pageSizeOptions = useMemo(() => generatePageSizeOptions(), [window.innerWidth])
-    const isAdmin = useMemo(() => ROLE === SUPERADMIN || ROLE === ACCOUNTSADMIN, [])
+    const isAdmin = useMemo(() => ROLE === SUPERADMIN || ROLE === ACCOUNTSADMIN, [ROLE])
+    const isSalesAdmin = useMemo(() => ROLE === MARKETINGADMIN, [ROLE])
+    const isMarketingManager = useMemo(() => ROLE === MARKETINGMANAGER, [ROLE])
     const source = useMemo(() => axios.CancelToken.source(), [activeTab]);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
         setLoading(true)
         getAccounts()
-        getBusinessList()
+
+        if (activeTab === '3') {
+            if (isAdmin) setCardBtnTxt(VIEWDETAILS)
+            else setCardBtnTxt(MANAGEACCOUNT)
+        }
 
         return () => {
             http.ABORT(source)
         }
     }, [activeTab])
 
+    useEffect(() => {
+        if (!loading) {
+            const filters = { creator, business, account }
+            if (!hasFilters) handleRemoveFilters()
+            else handleApplyFilters(filters, accountsClone)
+        }
+    }, [account, creator, business])
+
     const getAccounts = async () => {
         const url = `customer/${getUrl(activeTab)}`
 
         try {
             const data = await http.GET(axios, url, config)
+            if (hasFilters) {
+                const filters = { business, account }
+                handleApplyFilters(filters, data)
+            }
+            else {
+                setAccounts(data)
+                setTotalCount(data.length)
+            }
             setAccountsClone(data)
-            setAccounts(data)
-            setTotalCount(data.length)
             setLoading(false)
         } catch (error) { }
     }
 
-    const getBusinessList = async () => {
-        const url = `bibo/getList/natureOfBusiness`
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setBusinessList(data)
-        } catch (error) { }
-    }
-
     const getUrl = (tab) => {
-        if (tab === '1') return `getCustomerDetailsByType/Corporate`
-        else if (tab === '2') return `getCustomerDetailsByType/Individual`
-        else if (tab === '3') return `getCustomerDetailsByStatus/0`
-        else if (tab === '4') return `getInActiveCustomers`
+        if (tab === '1') {
+            if (isAdmin) return 'getCustomerDetailsByType?customerType=Corporate'
+            else if (isSalesAdmin) return `getCustomerDetailsByType?customerType=Corporate&userId=${USERID}`
+            else if (isMarketingManager) return 'getMarketingCustomerDetailsByType/Corporate'
+        }
+        else if (tab === '2') {
+            if (isAdmin) return 'getCustomerDetailsByType?customerType=Individual'
+            else if (isSalesAdmin) return `getCustomerDetailsByType?customerType=Individual&userId=${USERID}`
+            else if (isMarketingManager) return 'getMarketingCustomerDetailsByType/Individual'
+        }
+        else if (tab === '3') {
+            if (isAdmin) return 'getCustomerDetailsByStatus?status=0'
+            else if (isSalesAdmin) return `getCustomerDetailsByStatus?status=0&userId=${USERID}`
+            else if (isMarketingManager) return 'getMarketingCustomerDetailsByStatus?status=0'
+        }
+        else if (tab === '4') {
+            if (isAdmin) return 'getInActiveCustomers'
+            else if (isSalesAdmin) return `getInActiveCustomers?userId=${USERID}`
+            else if (isMarketingManager) return 'getMarketingInActiveCustomers'
+        }
     }
 
     const handleSearch = (value) => {
@@ -138,12 +164,12 @@ const Customers = () => {
         setPageNumber(1)
         setActiveTab(key)
         if (key === '3') {
-            setCardBtnTxt('View Details')
-        } else setCardBtnTxt('Manage Account')
+            setCardBtnTxt(VIEWDETAILS)
+        } else setCardBtnTxt(MANAGEACCOUNT)
     }
 
-    const handleFilter = (filterInfo) => {
-        const filtered = filterAccounts(accountsClone, filterInfo)
+    const handleApplyFilters = (filterInfo, accounts) => {
+        const filtered = filterAccounts(accounts, filterInfo)
         setFilterON(true)
         setPageNumber(1)
         setAccounts(filtered)
@@ -151,7 +177,7 @@ const Customers = () => {
         setTotalCount(filtered.length)
     }
 
-    const handleFilterClear = () => {
+    const handleRemoveFilters = () => {
         setPageNumber(1)
         setAccounts(accountsClone)
         setTotalCount(accountsClone.length)
@@ -160,14 +186,8 @@ const Customers = () => {
         handleSort(sortBy, false)
     }
 
-    const onFilterChange = (data) => {
-        const { business, status, account } = data
-        if (!business.length && !status.length && !account.length) handleFilterClear()
-        else handleFilter(data)
-    }
-
     const handleManageAccount = (id) => {
-        if (activeTab === '3') {
+        if (cardBtnTxt === VIEWDETAILS) {
             return history.push(`/customers/approval/${id}`, { tab: activeTab, page: pageNumber })
         }
         return history.push(`/customers/manage/${id}`, { tab: activeTab, page: pageNumber })
@@ -257,7 +277,7 @@ const Customers = () => {
 
     return (
         <Fragment>
-            <Header activeTab={activeTab} onSearch={handleSearch} onSort={onSort} onFilter={onFilterChange} onChange={handleTabChange} onClick={goToAddAccount} businessOptions={businessOptions} />
+            <Header activeTab={activeTab} onSearch={handleSearch} onSort={onSort} onChange={handleTabChange} onClick={goToAddAccount} />
             <div className='account-manager-content'>
                 <Row gutter={[{ lg: 32, xl: 16 }, { lg: 16, xl: 16 }]}>
                     {

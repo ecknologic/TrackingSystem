@@ -13,10 +13,13 @@ const { customerProductDetails, dbError, getCompareCustomersData, getCompareDist
 const { saveToCustomerOrderDetails } = require('./utilities');
 const { createInvoice } = require('./Invoice/invoice');
 const { UPDATEMESSAGE, DELETEMESSAGE } = require('../utils/constants.js');
+const { saveEnquiryProductDetails, updateEnquiryProductDetails } = require('../utils/functions');
 const usersQueries = require('../dbQueries/users/queries.js');
 const warehouseQueries = require('../dbQueries/warehouse/queries.js');
 const auditQueries = require('../dbQueries/auditlogs/queries.js');
-let departmentId, userId;
+const departmenttransactionQueries = require('../dbQueries/departmenttransactions/queries.js');
+const { compareCustomerData, compareCustomerDeliveryData, compareProductsData, compareOrderData, compareCustomerOrderData, compareCustomerEnquiryData } = require('./utils/customer.js');
+let departmentId, userId, userName, userRole;
 
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -38,6 +41,8 @@ router.use(function timeLog(req, res, next) {
   console.log('Time: ', Date.now());
   departmentId = req.headers['departmentid']
   userId = req.headers['userid']
+  userName = req.headers['username']
+  userRole = req.headers['userrole']
   next();
 });
 // router.post('/uploadphoto', (req, res) => {
@@ -59,11 +64,11 @@ const uploadImage = (req) => {
     var idProof_frontside, idProof_backside, gstProof;
     let { idProofs } = req.body;
     if (req.body.test) {
-      idProof_frontside = Buffer.from(idProofs[0], 'base64')
+      idProof_frontside = idProofs[0] && Buffer.from(idProofs[0], 'base64')
       idProof_backside = idProofs[1] ? Buffer.from(idProofs[1], 'base64') : null
       gstProof = req.body.gstProof ? Buffer.from(req.body.gstProof, 'base64') : null
     } else {
-      idProof_frontside = Buffer.from(idProofs[0].replace(/^data:image\/\w+;base64,/, ""), 'base64')
+      idProof_frontside = idProofs[0] && Buffer.from(idProofs[0].replace(/^data:image\/\w+;base64,/, ""), 'base64')
       idProof_backside = idProofs[1] ? Buffer.from(idProofs[1].replace(/^data:image\/\w+;base64,/, ""), 'base64') : null
       gstProof = req.body.gstProof ? Buffer.from(req.body.gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64') : null
     }
@@ -82,11 +87,11 @@ const updateProofs = (req) => {
     let idproofdetailsquery = "UPDATE customerDocStore SET idProof_frontside=?,idProof_backside=?,gstProof=? WHERE docId=" + customer_id_proof;
     var idProof_frontside, idProof_backside, gstProofData;
     if (req.body.test) {
-      idProof_frontside = Buffer.from(idProofs[0], 'base64')
+      idProof_frontside = idProofs[0] && Buffer.from(idProofs[0], 'base64')
       idProof_backside = idProofs[1] ? Buffer.from(idProofs[1], 'base64') : null
       gstProofData = gstProof ? Buffer.from(gstProof, 'base64') : null
     } else {
-      idProof_frontside = Buffer.from(idProofs[0].replace(/^data:image\/\w+;base64,/, ""), 'base64')
+      idProof_frontside = idProofs[0] && Buffer.from(idProofs[0].replace(/^data:image\/\w+;base64,/, ""), 'base64')
       idProof_backside = idProofs[1] ? Buffer.from(idProofs[1].replace(/^data:image\/\w+;base64,/, ""), 'base64') : null
       gstProofData = gstProof ? Buffer.from(gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64') : null
     }
@@ -138,7 +143,7 @@ router.post('/createCustomer', async (req, res) => {
   let customerDetailsQuery = "insert  into customerdetails (customerName,mobileNumber,alternatePhNo,EmailId,Address1,Address2,gstNo,contactperson,panNo,adharNo,registeredDate,invoicetype,natureOfBussiness,creditPeriodInDays,referredBy,departmentId,deliveryDaysId,depositAmount,isActive,latitude,longitude,shippingAddress,shippingContactPerson,shippingContactNo,customerType,organizationName,createdBy,customer_id_proof,idProofType,pincode,dispenserCount,contractPeriod,rocNo,poNo,salesAgent) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
   // let customerDetailsQuery = "insert  into customerdetails (customerName,mobileNumber,EmailId,Address1,gstNo,registeredDate,invoicetype,natureOfBussiness,creditPeriodInDays,referredBy,isActive,qrcodeId,latitude,longitude,customerType,organizationName,createdBy) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
   let customerdetails = req.body;
-  const { customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactperson, panNo, adharNo, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, createdBy, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, alternateNumber, salesAgent } = customerdetails
+  const { customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactPerson, panNo, adharNo, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, createdBy, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, alternateNumber, salesAgent } = customerdetails
   customerQueries.checkCustomerExistsOrNot({ EmailId, mobileNumber }, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else if (results.length) {
@@ -150,7 +155,7 @@ router.post('/createCustomer', async (req, res) => {
         .then(response => {
           let registeredDate = customerdetails.registeredDate ? customerdetails.registeredDate : new Date()
           let customer_id_proof = response[1] && response[1]
-          let insertQueryValues = [customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactperson, panNo, adharNo, registeredDate, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, response[0].latitude, response[0].longitude, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, createdBy, customer_id_proof, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, salesAgent]
+          let insertQueryValues = [customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactPerson, panNo, adharNo, registeredDate, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, response[0].latitude, response[0].longitude, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, createdBy, customer_id_proof, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, salesAgent]
           db.query(customerDetailsQuery, insertQueryValues, (err, results) => {
             if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
             else {
@@ -179,7 +184,7 @@ const saveDeliveryDetails = (customerId, customerdetails, res) => {
               saveProductDetails(i.products, results.insertId, customerId).then(productDetails => {
                 // console.log(count, customerdetails.deliveryDetails.length)
                 if (count == customerdetails.deliveryDetails.length) {
-                  auditQueries.createLog({ userId, description: "Customer created", customerId, type: "customer" })
+                  auditQueries.createLog({ userId, description: `Customer created by ${userRole} <b>(${userName})</b>`, customerId, type: "customer" })
                   res.json({ status: 200, message: "Customer Created Successfully" })
                 }
               })
@@ -224,15 +229,29 @@ const saveProductDetails = (products, deliveryDetailsId, customerId) => {
     }
   })
 }
-const updateProductDetails = (products) => {
-  return new Promise((resolve, reject) => {
+const updateProductDetails = (products, customerId) => {
+  return new Promise(async (resolve, reject) => {
     if (products.length) {
+      let logs = [], count = 0
       for (let i of products) {
+        let productLog = await compareProductsData(i, { type: "customer", customerId, userId, userRole, userName })
+        logs.push(...productLog)
         let deliveryProductsQuery = "UPDATE customerproductdetails SET noOfJarsTobePlaced=?,productPrice=?,productName=? where id=" + i.productId;
         let updateQueryValues = [i.noOfJarsTobePlaced, i.productPrice, i.productName]
         db.query(deliveryProductsQuery, updateQueryValues, (err, results) => {
           if (err) reject(err);
-          else resolve(results)
+          else {
+            count++
+            if (count == products.length) {
+              if (logs.length) {
+                auditQueries.createLog(logs, (err, data) => {
+                  if (err) console.log('log error', err)
+                  else console.log('log data', data)
+                })
+              }
+            }
+            resolve(results)
+          }
         });
       }
     }
@@ -283,7 +302,7 @@ router.post("/approveCustomer/:customerId", (req, res) => {
       customerQueries.approveDeliveryDetails(req.body.deliveryDetailsIds, (err, updatedDelivery) => {
         if (err) res.json({ status: 500, message: err.sqlMessage });
         else {
-          saveToCustomerOrderDetails(customerId, res, null, userId)
+          saveToCustomerOrderDetails(customerId, res, null, userId, userRole, userName)
         }
       })
     }
@@ -299,17 +318,27 @@ router.post("/approveCustomerDirectly/:customerId", (req, res) => {
       customerQueries.approveOutDeliveryDetails(customerId, (err, updatedDelivery) => {
         if (err) res.json({ status: 500, message: err.sqlMessage });
         else {
-          saveToCustomerOrderDetails(customerId, res, null, userId)
+          saveToCustomerOrderDetails(customerId, res, null, userId, userRole, userName)
         }
       })
     }
   })
 });
 
-router.post("/createOrderDelivery", (req, res) => {
+router.post("/createOrderDelivery", async (req, res) => {
+  const { deliveryDetailsId, routeId, driverId, driverName, routeName, vehicleId, vehicleName } = req.body
+  let logs = await compareCustomerOrderData({ routeId, driverId, driverName, routeName, vehicleId, vehicleName }, { transactionId: deliveryDetailsId, departmentId, userId, userName, userRole })
   customerQueries.updateOrderDelivery(req.body, (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
+      // auditQueries.createLog({ userId, description: `Delivery details Updated by ${userRole} <b>(${userName})</b>`, customerId: results.length && results[0].existingCustomerId, type: "customer" })
+      if (logs.length) {
+        departmenttransactionQueries.createDepartmentTransaction(logs, (err, data) => {
+          if (err) console.log('log error', err)
+          else console.log('log data', data)
+        })
+      }
+      // departmenttransactionQueries.createDepartmentTransaction({ userId, description: "Order Updated", transactionId: deliveryDetailsId, departmentId, type: 'warehouse', subType: 'order' })
       res.json(results)
     }
   })
@@ -319,15 +348,15 @@ router.get("/approveDelivery/:deliveryDetailsId", (req, res) => {
   customerQueries.approveDeliveryDetails([deliveryDetailsId], (err, data) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
-      saveToCustomerOrderDetails(null, res, deliveryDetailsId)
+      saveToCustomerOrderDetails(null, res, deliveryDetailsId, userId, userRole, userName)
       // res.json('Delivery Details Approved Successfully')
     }
   })
 });
 
 router.get("/getCustomerDetails/:creatorId", (req, res) => {
-  let customerDetailsQuery = "SELECT c.organizationName,c.isActive,c.customertype,c.isApproved,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.createdBy=? AND d.deleted='0'  GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.isApproved,c.customerId,c.registeredDate ORDER BY c.registeredDate DESC"
-  db.query(customerDetailsQuery, [req.params.creatorId], (err, results) => {
+  let customerDetailsQuery = "SELECT c.customerNo,c.organizationName,c.isActive,c.customertype,c.isApproved,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE (c.createdBy=? OR c.salesAgent=?) AND d.deleted='0'  GROUP BY c.customerNo,c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.isApproved,c.customerId,c.registeredDate ORDER BY c.registeredDate DESC"
+  db.query(customerDetailsQuery, [req.params.creatorId, req.params.creatorId], (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
       res.json({ status: 200, statusMessage: "Success", data: results })
@@ -335,12 +364,13 @@ router.get("/getCustomerDetails/:creatorId", (req, res) => {
   })
 });
 
-router.get("/getMarketingCustomerDetails", (req, res) => { // maraketing manager and all maraketing admins
-  let customerDetailsQuery = "SELECT c.organizationName,c.createdBy,c.isActive,c.customertype,c.isApproved,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id LEFT JOIN usermaster u ON c.createdBy=u.userId WHERE u.RoleId=5 OR u.RoleId=7 AND d.deleted='0'  GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.isApproved,c.customerId,c.registeredDate,c.createdBy ORDER BY c.registeredDate DESC"
-  db.query(customerDetailsQuery, (err, results) => {
+router.get("/getMarketingCustomerDetailsByType/:customerType", (req, res) => { // maraketing manager and all maraketing admins
+  const { customerType } = req.params
+  let customerDetailsQuery = "SELECT c.customerNo,c.salesAgent,c.organizationName,c.createdBy,c.isActive,c.customertype,c.isApproved,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id LEFT JOIN usermaster u ON c.createdBy=u.userId WHERE (u.RoleId=5 OR u.RoleId=7 OR c.createdBy=?) AND d.deleted='0' AND c.isApproved=1 and c.customertype=?  GROUP BY c.customerNo,c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.isApproved,c.customerId,c.registeredDate,c.createdBy ORDER BY c.registeredDate DESC"
+  db.query(customerDetailsQuery, [userId, customerType], (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
-      res.json({ status: 200, statusMessage: "Success", data: results })
+      res.json(results)
     }
   })
 });
@@ -379,8 +409,9 @@ router.get("/getOrders", (req, res) => {
   })
 });
 
-router.get("/getCustomerDetailsByType/:customertype", (req, res) => {
-  customerQueries.getCustomersByCustomerType(req.params.customertype, (err, customersData) => {
+router.get("/getCustomerDetailsByType", (req, res) => {
+  const { customerType, userId } = req.query
+  customerQueries.getCustomersByCustomerType({ customerType, userId }, (err, customersData) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
       res.json(customersData)
@@ -388,22 +419,40 @@ router.get("/getCustomerDetailsByType/:customertype", (req, res) => {
   })
 });
 router.get("/getInActiveCustomers", (req, res) => {
-  customerQueries.getInActiveCustomers((err, customersData) => {
+  const { userId } = req.query
+  customerQueries.getInActiveCustomers(userId, (err, customersData) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
       res.json(customersData)
     }
   })
 });
-router.get("/getCustomerDetailsByStatus/:approvedStatus", (req, res) => {
-  customerQueries.getCustomerDetailsByStatus(req.params.approvedStatus, (err, customersData) => {
+router.get("/getMarketingInActiveCustomers", (req, res) => {
+  customerQueries.getMarketingInActiveCustomers(userId, (err, customersData) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
       res.json(customersData)
     }
   })
 });
-
+router.get("/getCustomerDetailsByStatus", (req, res) => {
+  const { status, userId } = req.query
+  customerQueries.getCustomerDetailsByStatus({ status, userId }, (err, customersData) => {
+    if (err) res.json({ status: 500, message: err.sqlMessage });
+    else {
+      res.json(customersData)
+    }
+  })
+});
+router.get("/getMarketingCustomerDetailsByStatus", (req, res) => {
+  const { status } = req.query
+  customerQueries.getMarketingCustomerDetailsByStatus({ ...req.query, userId }, (err, customersData) => {
+    if (err) res.json({ status: 500, message: err.sqlMessage });
+    else {
+      res.json(customersData)
+    }
+  })
+});
 router.get("/getCustomerDetailsById/:customerId", (req, res) => {
   customerQueries.getCustomerDetails(req.params.customerId, (err, results) => {
     if (err) res.status(500).json(err);
@@ -416,12 +465,15 @@ router.get("/getCustomerDetailsById/:customerId", (req, res) => {
 router.get("/getCustomerDetailsForDC/:customerId", (req, res) => {
   customerQueries.getCustomerDetailsForDC(req.params.customerId, (err, results) => {
     if (err) res.status(500).json(err);
-    // else if (results.length) {
-    // customerProductDetails(results[0].deliveryDetailsId, "customer").then(products => {
-    //     results[0].products = products
-    //     res.json({ status: 200, statusMessage: "Success", data: results })
-    //   })
-    // }
+    else if (results.length) {
+      getDeliveryDetails({ customerId: req.params.customerId, isSuperAdmin: 'false' }).then(response => {
+        customerProductDetails(response[0].deliveryDetailsId, "customer").then(products => {
+          console.log('products>>', products)
+          results[0].products = products
+          res.json({ status: 200, statusMessage: "Success", data: results })
+        })
+      })
+    }
     else {
       res.json({ status: 200, statusMessage: "Success", data: results })
     }
@@ -503,25 +555,32 @@ const getDeliveryDetails = ({ customerId, deliveryDetailsId, isSuperAdmin }) => 
 
 router.post('/updateCustomer', async (req, res) => {
   let customerdetails = req.body;
-  const { customer_id_proof, customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactperson, panNo, adharNo, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, customerId, salesAgent } = customerdetails
+  const { customer_id_proof, customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactPerson, panNo, adharNo, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, customerId, salesAgent } = customerdetails
   // let customerDetailsQuery = "insert  into customerdetails (customerName,mobileNumber,EmailId,Address1,gstNo,registeredDate,invoicetype,natureOfBussiness,creditPeriodInDays,referredBy,isActive,qrcodeId,latitude,longitude,customerType,organizationName,createdBy) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-  customerQueries.checkCustomerExistsOrNot({ EmailId, mobileNumber }, (err, results) => {
+  customerQueries.checkCustomerExistsOrNot({ EmailId, mobileNumber }, async (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else if (results.length && results[0].customerId != customerId) {
       res.status(400).json({ status: 400, message: "This Customer already created" })
     }
     else {
+      const logs = await compareCustomerData(customerdetails, { userId, userRole, userName })
       let customerDetailsQuery = "UPDATE customerdetails SET customerName=?,mobileNumber=?,alternatePhNo=?,EmailId=?,Address1=?,Address2=?,gstNo=?,contactperson=?,panNo=?,adharNo=?,invoicetype=?,natureOfBussiness=?,creditPeriodInDays=?,referredBy=?,departmentId=?,deliveryDaysId=?,depositAmount=?,isActive=?,latitude=?,longitude=?,shippingAddress=?,shippingContactPerson=?,shippingContactNo=?,customerType=?,organizationName=?,idProofType=?,pincode=?, dispenserCount=?, contractPeriod=?,rocNo=?,poNo=?,customer_id_proof=?,salesAgent=? WHERE customerId=" + customerId;
       let promiseArray = req.body.idProofs[0] != null ? [getLatLongDetails(customerdetails), customer_id_proof ? updateProofs(req) : uploadImage(req)] : [getLatLongDetails(customerdetails)]
       Promise.all(promiseArray)
         .then(response => {
           let customerIdProof = req.body.idProofs[0] != null && customer_id_proof ? customer_id_proof : response[1]
-          let updateQueryValues = [customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactperson, panNo, adharNo, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, response[0].latitude, response[0].longitude, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, customerIdProof, salesAgent]
+          let updateQueryValues = [customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactPerson, panNo, adharNo, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, response[0].latitude, response[0].longitude, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, customerIdProof, salesAgent]
           // let insertQueryValues = [customerdetails.customerName, customerdetails.mobileNumber, customerdetails.EmailId, customerdetails.Address1, customerdetails.gstNo, customerdetails.registeredDate, customerdetails.invoicetype, customerdetails.natureOfBussiness, customerdetails.creditPeriodInDays, customerdetails.referredBy, customerdetails.isActive, response[0], response[1].latitude, response[1].longitude, customerdetails.customerType, customerdetails.organizationName, customerdetails.createdBy]
           db.query(customerDetailsQuery, updateQueryValues, (err, results) => {
             if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
             else {
-              auditQueries.createLog({ userId, description: "Customer Updated", customerId: customerdetails.customerId, type: "customer" })
+
+              if (logs.length) {
+                auditQueries.createLog(logs, (err, data) => {
+                  if (err) console.log('log error', err)
+                  else console.log('log data', data)
+                })
+              }
               res.json({ status: 200, message: 'Customer Updated successfully' })
             }
           });
@@ -535,10 +594,21 @@ router.delete('/deleteDelivery/:deliveryId', (req, res) => {
     else res.json("Deleted successfully")
   })
 })
-router.put('/updateCustomerOrderDetails', (req, res) => {
+router.put('/updateCustomerOrderDetails', async (req, res) => {
+  let { customerOrderId, warehouseId: departmentId, routeId, driverId, driverName, routeName } = req.body
+  let logs = await compareOrderData({ routeId, driverId, driverName, routeName }, { transactionId: customerOrderId, departmentId, userId, userName, userRole })
   customerQueries.updateOrderDetails(req.body, (err, data) => {
     if (err) res.status(500).json(dbError(err))
-    else res.json(data)
+    else {
+      if (logs.length) {
+        departmenttransactionQueries.createDepartmentTransaction(logs, (err, data) => {
+          if (err) console.log('log error', err)
+          else console.log('log data', data)
+        })
+      }
+      // departmenttransactionQueries.createDepartmentTransaction({ userId, description: "DC  Updated", transactionId: customerOrderId, departmentId: warehouseId, type: 'warehouse', subType: 'delivery' })
+      res.json(data)
+    }
   })
 })
 
@@ -551,8 +621,8 @@ router.put('/updateCustomerStatus', (req, res) => {
         if (err) res.status(500).json(dbError(err))
         else {
           saveToCustomerOrderDetails(req.body.customerId, res)
-          auditQueries.createLog({ userId, description: `Customer status changed to ${status == 1 ? 'Active' : 'Draft'}`, customerId, type: "customer" })
-          res.json(UPDATEMESSAGE)
+          auditQueries.createLog({ userId, description: `Customer status changed to ${status == 1 ? 'Active' : 'Draft'}  by ${userRole} <b>(${userName})</b>`, customerId, type: "customer" })
+          // res.json(UPDATEMESSAGE)
         }
       })
     }
@@ -574,7 +644,7 @@ router.delete('/deleteCustomer/:customerId', (req, res) => {
       customerQueries.deleteCustomerDeliveries(customerId, (err, update) => {
         if (err) res.status(500).json(dbError(err))
         else {
-          auditQueries.createLog({ userId, description: `Customer Deleted`, customerId, type: "customer" })
+          auditQueries.createLog({ userId, description: `Customer Deleted by ${userRole} <b>(${userName})</b>`, customerId, type: "customer" })
           res.json(DELETEMESSAGE)
         }
       })
@@ -676,7 +746,7 @@ router.get('/generatePDF', (req, res) => {
     }
   })
 })
-router.post('/updateDeliveryDetails', (req, res) => {
+router.post('/updateDeliveryDetails', async (req, res) => {
   var deliveryDetails = req.body
   if (deliveryDetails.length) {
     let count = 0
@@ -696,6 +766,7 @@ router.post('/updateDeliveryDetails', (req, res) => {
                 if (count == deliveryDetails.length) {
                   let data = await getAddedDeliveryDetails(results.insertId)
                   updateWHDelivery(req)
+                  auditQueries.createLog({ userId, description: `New Delivery details added by ${userRole} <b>(${userName})</b>`, customerId: i.customer_Id, type: "customer" })
                   res.json({ status: 200, message: "Delivery Details Updated Successfully", data });
                 }
               })
@@ -703,6 +774,8 @@ router.post('/updateDeliveryDetails', (req, res) => {
           });
         })
       } else {
+        const { gstNo, deliveryLocation, address, phoneNumber, contactPerson, depositAmount, departmentId, isApproved, gstProof, routeId, deliveryDetailsId, customer_Id } = i
+        const logs = await compareCustomerDeliveryData({ gstNo, deliveryLocation, address, phoneNumber, contactPerson, depositAmount, departmentId, isApproved, gstProof, routeId }, { deliveryDetailsId, customerId: customer_Id, userId, userRole, userName })
         updateDeliveryDays(i.deliveryDays, i.deliverydaysid).then(async (deliveryDays) => {
           let latLong = await getLatLongDetails({ Address1: i.address })
           let deliveryDetailsQuery = "UPDATE DeliveryDetails SET gstNo=?,location=?,address=?,phoneNumber=?,contactPerson=?,depositAmount=?,departmentId=?,isActive=?,gstProof=?,latitude=?,longitude=?,routeId=? WHERE deliveryDetailsId=" + i.deliveryDetailsId;
@@ -712,11 +785,19 @@ router.post('/updateDeliveryDetails', (req, res) => {
             if (err) res.json({ status: 500, message: err.sqlMessage });
             else {
               count++
-              updateProductDetails(i.products).then(async (productDetails) => {
+              updateProductDetails(i.products, i.customer_Id).then(async (productDetails) => {
                 if (count == deliveryDetails.length) {
                   let data = await getAddedDeliveryDetails(i.deliveryDetailsId)
                   updateWHDelivery(req)
                   res.json({ status: 200, message: "Delivery Details Updated Successfully", data });
+                  if (logs.length) {
+                    auditQueries.createLog(logs, (err, data) => {
+                      if (err) console.log('log error', err)
+                      else console.log('log data', data)
+                    })
+                  }
+
+                  // auditQueries.createLog({ userId, description: `Delivery details Updated by ${userRole} <b>(${userName})</b>`, customerId: i.customer_Id, type: "customer" })
                 }
                 // res.json({ status: 200, message: "Delivery Details Updated Successfully", data: getAddedDeliveryDetails(i.deliveryDetailsId) });
               })
@@ -826,6 +907,65 @@ router.post('/createMembership', async (req, res) => {
         }
       });
     })
+});
+
+
+router.get('/getCustomerEnquiries/:createdBy', async (req, res) => {
+  customerQueries.getCustomerEnquiries(req.params.createdBy, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.json(results)
+  })
+});
+
+router.get('/getCustomerEnquiries', async (req, res) => {
+  customerQueries.getAllCustomerEnquiries((err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.json(results)
+  })
+});
+
+router.get('/getCustomerEnquiry/:enquiryId', async (req, res) => {
+  customerQueries.getCustomerEnquiryById(req.params.enquiryId, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else if (!results.length) res.json(results)
+    else {
+      customerQueries.getCustomerEnquiryProducts(req.params.enquiryId, (err, products) => {
+        results[0].products = products
+        res.json(results)
+      })
+    }
+  })
+});
+
+router.post('/createCustomerEnquiry', async (req, res) => {
+  customerQueries.createCustomerEnquiry(req.body, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else {
+      saveEnquiryProductDetails(req.body.products, results.insertId).then(response => {
+        auditQueries.createLog({ userId, description: `Customer Enquiry created by ${userRole} <b>(${userName})</b>`, customerId: results.insertId, type: "customerEnquiry" })
+        res.json({ status: 200, message: "Created successfully" })
+      })
+    }
+  })
+});
+
+router.put('/updateCustomerEnquiry', async (req, res) => {
+  const { enquiryId, customerName, address, mobileNumber, EmailId, createdBy, accountStatus, salesAgent, revisitDate, contactperson, customertype, natureOfBussiness, state, city } = req.body
+  const logs = await compareCustomerEnquiryData({ enquiryId, customerName, address, mobileNumber, EmailId, createdBy, accountStatus, salesAgent, revisitDate, contactperson, customertype, natureOfBussiness, state, city }, { userId, userRole, userName })
+  customerQueries.updateCustomerEnquiry(req.body, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else {
+      updateEnquiryProductDetails(req.body.products).then(response => {
+        if (logs.length) {
+          auditQueries.createLog(logs, (err, data) => {
+            if (err) console.log('log error', err)
+            else console.log('log data', data)
+          })
+        }
+        res.json({ status: 200, message: "Updated successfully" })
+      })
+    }
+  })
 });
 
 const updateWHDelivery = (req) => {

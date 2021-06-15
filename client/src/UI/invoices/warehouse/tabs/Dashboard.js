@@ -2,22 +2,29 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 import { Menu, message, Table } from 'antd';
 import { useHistory } from 'react-router-dom';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http'
 import Actions from '../../../../components/Actions';
 import Spinner from '../../../../components/Spinner';
-import { TODAYDATE } from '../../../../utils/constants';
 import DateValue from '../../../../components/DateValue';
+import PaymentForm from '../../super-admin/forms/Payment';
+import InputLabel from '../../../../components/InputLabel';
+import InputValue from '../../../../components/InputValue';
 import SearchInput from '../../../../components/SearchInput';
-import { getInvoiceColumns } from '../../../../assets/fixtures';
+import CustomModal from '../../../../components/CustomModal';
+import ConfirmModal from '../../../../components/CustomModal';
+import { validateIntFloat, validatePaymentValues } from '../../../../utils/validations';
+import { TODAYDATE, TRACKFORM } from '../../../../utils/constants';
+import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomDateInput from '../../../../components/CustomDateInput';
 import CustomPagination from '../../../../components/CustomPagination';
-import { deepClone, disableFutureDates, doubleKeyComplexSearch, getStatusColor, showToast } from '../../../../utils/Functions';
+import { getDropdownOptions, getInvoiceColumns } from '../../../../assets/fixtures';
+import { computeTotalAmount, deepClone, disableFutureDates, doubleKeyComplexSearch, getStatusColor, showToast, resetTrackForm, isEmpty } from '../../../../utils/Functions';
 import { ListViewIconGrey, ScheduleIcon, SendIconGrey, TickIconGrey } from '../../../../components/SVG_Icons';
 const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
-const Dashboard = ({ reFetch }) => {
+const Dashboard = ({ reFetch, onUpdate }) => {
     const history = useHistory()
     const [invoices, setInvoices] = useState([])
     const [invoicesClone, setInvoicesClone] = useState([])
@@ -27,16 +34,25 @@ const Dashboard = ({ reFetch }) => {
     const [pageNumber, setPageNumber] = useState(1)
     const [totalCount, setTotalCount] = useState(null)
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
+    const [paymentList, setPaymentList] = useState([])
     const [resetSearch, setResetSearch] = useState(false)
+    const [formData, setFormData] = useState({})
+    const [formErrors, setFormErrors] = useState({})
+    const [payModal, setPayModal] = useState(false)
+    const [confirmModal, setConfirmModal] = useState(false)
     const [searchON, setSeachON] = useState(false)
+    const [shake, setShake] = useState(false)
     const [filterON, setFilterON] = useState(false)
     const [open, setOpen] = useState(false)
 
+    const paymentOptions = useMemo(() => getDropdownOptions(paymentList), [paymentList])
+    const totalAmount = useMemo(() => computeTotalAmount(invoices, 'pendingAmount'), [invoices, payModal])
     const invoiceColumns = useMemo(() => getInvoiceColumns('dcNo'), [])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
+        getPaymentList()
 
         return () => {
             http.ABORT(source)
@@ -60,6 +76,35 @@ const Dashboard = ({ reFetch }) => {
         } catch (error) { }
     }
 
+    const getPaymentList = async () => {
+        const url = `bibo/getList/paymentMode`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setPaymentList(data)
+        } catch (error) { }
+    }
+
+    const handleChange = (value, key) => {
+        setFormData(data => ({ ...data, [key]: value }))
+        setFormErrors(errors => ({ ...errors, [key]: '' }))
+
+        // Validations
+        if (key === 'amountPaid') {
+            const error = validateIntFloat(value)
+            setFormErrors(errors => ({ ...errors, amountPaid: error }))
+        }
+    }
+
+    const handleBlur = (value, key) => {
+
+        // Validations
+        if (key === 'amountPaid') {
+            const error = validateIntFloat(value, true)
+            setFormErrors(errors => ({ ...errors, amountPaid: error }))
+        }
+    }
+
     const handlePageChange = (number) => {
         setPageNumber(number)
     }
@@ -70,17 +115,16 @@ const Dashboard = ({ reFetch }) => {
     }
 
     const handleMenuSelect = (key, data) => {
+        const { noOfPayments, pendingAmount: amountPaid } = data
         if (key === 'resend') {
         }
         else if (key === 'dcList') {
-            const startDate = dayjs(data.fromDate).format(APIDATEFORMAT)
-            const endDate = dayjs(data.toDate).format(APIDATEFORMAT)
-            console.log("start date", startDate)
-            console.log("end date", endDate)
-
             history.push(`/manage-invoices/dc-list/${data.invoiceId}`, data)
         }
-        else handleStatusUpdate(data.invoiceId)
+        else if (key === 'paid') {
+            setFormData({ ...data, noOfPayments: noOfPayments + 1, amountPaid })
+            setPayModal(true)
+        }
     }
 
     const handleViewInvoice = (invoice) => history.push('/manage-invoices/manage', { invoice })
@@ -101,23 +145,34 @@ const Dashboard = ({ reFetch }) => {
         searchON && setResetSearch(!resetSearch)
     }
 
-    const optimisticUpdate = (id, status) => {
+    const optimisticUpdate = (data) => {
         let clone = deepClone(invoices);
-        const index = clone.findIndex(item => item.invoiceId === id)
-        clone[index].departmentStatus = status;
+        const index = clone.findIndex(item => item.invoiceId === data.invoiceId)
+        clone[index] = data;
         setInvoices(clone)
     }
 
-    const handleStatusUpdate = async (invoiceId) => {
-        const departmentStatus = 'Paid'
-        const options = { item: 'Invoice status', v1Ing: 'Updating', v2: 'updated' }
-        const url = `invoice/updateDepartmentInvoiceStatus`
-        const body = { departmentStatus, invoiceId, status: 'Inprogress' }
+    const handlePayment = async () => {
+        const formErrors = validatePaymentValues(formData)
+
+        if (!isEmpty(formErrors)) {
+            setShake(true)
+            setTimeout(() => setShake(false), 820)
+            setFormErrors(formErrors)
+            return
+        }
+
+        const { pendingAmount, amountPaid } = formData
+        const options = { item: 'Invoice payment', v1Ing: 'Updating', v2: 'updated' }
+        const url = `invoice/addDepartmentInvoicePayment`
+        const body = { ...formData, pendingAmount: pendingAmount - amountPaid }
         try {
             showToast({ ...options, action: 'loading' })
-            await http.PUT(axios, url, body, config)
-            optimisticUpdate(invoiceId, departmentStatus)
+            const [data] = await http.POST(axios, url, body, config)
+            optimisticUpdate(data)
             showToast(options)
+            onModalClose(true)
+            onUpdate()
         } catch (error) {
             message.destroy()
         }
@@ -138,8 +193,18 @@ const Dashboard = ({ reFetch }) => {
         setSeachON(true)
     }
 
+    const onModalClose = (hasSaved) => {
+        const formHasChanged = sessionStorage.getItem(TRACKFORM)
+        if (formHasChanged && !hasSaved) {
+            return setConfirmModal(true)
+        }
+        setPayModal(false)
+        setFormData({})
+        setFormErrors({})
+    }
+
     const dataSource = useMemo(() => invoices.map((invoice) => {
-        const { invoiceId, invoiceDate, totalAmount, customerName, dueDate, departmentStatus, dcNo } = invoice
+        const { invoiceId, invoiceDate, totalAmount, customerName, dueDate, dcNo, departmentStatus, pendingAmount, billingAddress } = invoice
 
         const options = [
             <Menu.Item key="resend" icon={<SendIconGrey />}>Resend</Menu.Item>,
@@ -152,6 +217,8 @@ const Dashboard = ({ reFetch }) => {
             dcNo,
             customerName,
             totalAmount,
+            billingAddress,
+            pendingAmount,
             status: renderStatus(departmentStatus),
             dueDate: dayjs(dueDate).format(DATEFORMAT),
             date: dayjs(invoiceDate).format(DATEFORMAT),
@@ -159,6 +226,15 @@ const Dashboard = ({ reFetch }) => {
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, invoice)} />
         }
     }), [invoices])
+
+    const handleConfirmModalOk = useCallback(() => {
+        setConfirmModal(false);
+        resetTrackForm()
+        onModalClose()
+    }, [])
+
+    const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
+    const handleModalCancel = useCallback(() => onModalClose(), [])
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
@@ -185,11 +261,15 @@ const Dashboard = ({ reFetch }) => {
                     </div>
                 </div>
                 <div className='right'>
+                    <div className='field'>
+                        <InputLabel name='Total Amount' />
+                        <InputValue size='larger' value={totalAmount} />
+                    </div>
                     <SearchInput
                         placeholder='Search Invoice'
                         className='delivery-search'
                         reset={resetSearch}
-                        width='50%'
+                        width='40%'
                         onChange={handleSearch}
                     />
                 </div>
@@ -214,13 +294,39 @@ const Dashboard = ({ reFetch }) => {
                         onPageSizeChange={handleSizeChange}
                     />)
             }
+            <CustomModal
+                hideCancel
+                okTxt='Add'
+                visible={payModal}
+                title='Payment'
+                onOk={handlePayment}
+                onCancel={handleModalCancel}
+                className={`app-form-modal ${shake && 'app-shake'}`}
+            >
+                <PaymentForm
+                    data={formData}
+                    errors={formErrors}
+                    paymentOptions={paymentOptions}
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                />
+            </CustomModal>
+            <ConfirmModal
+                visible={confirmModal}
+                onOk={handleConfirmModalOk}
+                onCancel={handleConfirmModalCancel}
+                title='Are you sure you want to leave?'
+                okTxt='Yes'
+            >
+                <ConfirmMessage msg='Changes you made may not be saved.' />
+            </ConfirmModal>
         </div>
     )
 }
 const renderStatus = (status) => {
     const color = getStatusColor(status)
     return (
-        <div className='status'>
+        <div className='status nowrap'>
             <span className='app-dot' style={{ background: color }}></span>
             <span className='status-text'>{status}</span>
         </div>

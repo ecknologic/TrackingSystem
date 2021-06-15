@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Col, Empty, message, Row } from 'antd';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory, useLocation, useParams } from 'react-router-dom';
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../modules/http'
 import MenuBar from '../../../components/MenuBar';
@@ -17,13 +17,14 @@ import { deepClone, doubleKeyComplexSearch, getMainPathname, showToast, complexS
 const Dashboard = ({ reFetch, isDriver }) => {
     const { ROLE } = useUser()
     const history = useHistory()
+    const { page = 1 } = useParams()
     const { pathname } = useLocation()
     const [employeesClone, setEmployeesClone] = useState([])
     const [filteredClone, setFilteredClone] = useState([])
     const [employees, setEmployees] = useState([])
     const [loading, setLoading] = useState(true)
     const [pageSize, setPageSize] = useState(12)
-    const [pageNumber, setPageNumber] = useState(1)
+    const [pageNumber, setPageNumber] = useState(Number(page))
     const [totalCount, setTotalCount] = useState(null)
     const [modalDelete, setModalDelete] = useState(false)
     const [currentId, setCurrentId] = useState('')
@@ -212,7 +213,7 @@ const Dashboard = ({ reFetch, isDriver }) => {
         setModalDelete(false)
     }, [])
 
-    const goToManageEmployee = (id) => history.push(`${mainUrl}/manage/${id}`)
+    const goToManageEmployee = (id) => history.push(`${mainUrl}/manage/${id}`, { page: pageNumber })
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize

@@ -15,7 +15,7 @@ import CustomPagination from '../../../../components/CustomPagination';
 import { doubleKeyComplexSearch, getStatusColor, isEmpty, showToast } from '../../../../utils/Functions';
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
-const StockReceived = () => {
+const StockReceived = ({ motherplantList }) => {
     const [loading, setLoading] = useState(true)
     const [stock, setStock] = useState([])
     const [stockClone, setStockClone] = useState([])
@@ -26,7 +26,6 @@ const StockReceived = () => {
     const [viewModal, setViewModal] = useState(false)
     const [filterON, setFilterON] = useState(false)
     const [searchON, setSeachON] = useState(false)
-    const [motherplantList, setMotherplantList] = useState([])
     const [filteredClone, setFilteredClone] = useState([])
     const [resetSearch, setResetSearch] = useState(false)
 
@@ -36,7 +35,6 @@ const StockReceived = () => {
 
     useEffect(() => {
         getReceivedStock()
-        getMotherplantList()
 
         return () => {
             http.ABORT(source)
@@ -64,15 +62,6 @@ const StockReceived = () => {
             message.destroy()
             setViewData(data)
             setViewModal(true)
-        } catch (error) { }
-    }
-
-    const getMotherplantList = async () => {
-        const url = 'bibo/getDepartmentsList?departmentType=MotherPlant'
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setMotherplantList(data)
         } catch (error) { }
     }
 

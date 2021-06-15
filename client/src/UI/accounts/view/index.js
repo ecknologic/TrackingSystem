@@ -15,9 +15,10 @@ import CustomModal from '../../../components/CustomModal';
 import CustomButton from '../../../components/CustomButton';
 import { DocIconWhite } from '../../../components/SVG_Icons';
 import ConfirmMessage from '../../../components/ConfirmMessage';
+import ActivityLogDetails from '../../../components/ActivityLogDetails';
 import { ACCOUNTSADMIN, MARKETINGADMIN, SUPERADMIN, TRACKFORM } from '../../../utils/constants';
 import { getDropdownOptions, getRouteOptions, getStaffOptions, getWarehouseOptions, WEEKDAYS } from '../../../assets/fixtures';
-import { validateDeliveryValues, validateDevDays, validateIntFloat, validateMobileNumber, validateNames, validateNumber } from '../../../utils/validations';
+import { validateDeliveryValues, validateDevDays, validateIntFloat, validateMobileNumber, validateNumber } from '../../../utils/validations';
 import { extractDeliveryDetails, getProductsForDB, extractProductsFromForm, isEmpty, getDevDaysForDB, getBase64, resetTrackForm, showToast, getMainPathname } from '../../../utils/Functions';
 
 const ViewAccount = () => {
@@ -25,6 +26,7 @@ const ViewAccount = () => {
     const history = useHistory()
     const { accountId } = useParams()
     const { pathname, state } = useLocation()
+    const [reFetch, setreFetch] = useState(false)
     const [account, setAccount] = useState({ loading: true })
     const [headerContent, setHeaderContent] = useState({})
     const [formData, setFormData] = useState({})
@@ -169,10 +171,6 @@ const ViewAccount = () => {
             const error = validateMobileNumber(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key === 'contactPerson') {
-            const error = validateNames(value)
-            setFormErrors(errors => ({ ...errors, [key]: error }))
-        }
         else if (key.includes('product')) {
             const error = validateNumber(value)
             setFormErrors(errors => ({ ...errors, productNPrice: error }))
@@ -229,6 +227,7 @@ const ViewAccount = () => {
             setRecentDelivery(data)
             showToast(options)
             onModalClose(true)
+            setreFetch(!reFetch)
         } catch (error) {
             message.destroy()
             if (!axios.isCancel(error)) {
@@ -274,6 +273,7 @@ const ViewAccount = () => {
 
     const handleAccountUpdate = useCallback((title, address) => {
         setHeaderContent({ title, address })
+        setreFetch(!reFetch)
     }, [])
 
     const handleConfirmModalCancel = useCallback(() => {
@@ -288,6 +288,8 @@ const ViewAccount = () => {
         const path = `${mainPathname}/${tab}/${page}`
         history.push(path)
     }
+
+    const onUpdate = () => setreFetch(!reFetch)
 
     return (
         <Fragment>
@@ -317,6 +319,7 @@ const ViewAccount = () => {
                         </TabPane>
                         <TabPane tab="Delivery Details" key="2">
                             <DeliveryDetails
+                                onUpdate={onUpdate}
                                 isAdmin={isAdmin}
                                 recentDelivery={recentDelivery}
                                 locationOptions={locationOptions}
@@ -328,6 +331,9 @@ const ViewAccount = () => {
                         </TabPane>
                         <TabPane tab="Invoice" key="4">
                             <Invoice accountId={accountId} />
+                        </TabPane>
+                        <TabPane tab="Activity Log Details" key="5">
+                            <ActivityLogDetails id={accountId} type='customer' reFetch={reFetch} />
                         </TabPane>
                     </Tabs>
                 </div>

@@ -47,6 +47,7 @@ const EmptyBottlesStock = () => {
                 <Slider className='dashboard-slider empty-bottles-stock-slider' {...props} >
                     <EmptyBottlesStockCard title='20 Ltrs' percent={product20LPercent} total={product20LCount} strokeColor='#F7B500' text='' />
                     <EmptyBottlesStockCard title='20 Ltrs new' percent={product2LPercent} total={product2LCount} strokeColor='#4C9400' text='Total Bottles Added - 18,232' />
+                    <EmptyBottlesStockCard title='2 Ltrs' percent={product2LPercent} total={product2LCount} strokeColor='#4C9400' text='Total Bottles Added - 18,232' />
                     <EmptyBottlesStockCard title='1 Ltrs new' percent={product1LPercent} total={product1LCount} strokeColor='#41B9AD' text='Total Bottles Added - 18,232' />
                     <EmptyBottlesStockCard title='500 ml new' percent={product500MLPercent} total={product500MLCount} strokeColor='#0091FF' text='Total Bottles Added - 18,232' />
                     <EmptyBottlesStockCard title='300 ml new' percent={product300MLPercent} total={product300MLCount} strokeColor='#FA6400' text='Total Bottles Added - 18,232' />

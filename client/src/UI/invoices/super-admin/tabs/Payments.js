@@ -6,19 +6,21 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http'
 import Actions from '../../../../components/Actions';
 import Spinner from '../../../../components/Spinner';
-import { TODAYDATE } from '../../../../utils/constants';
+import useUser from '../../../../utils/hooks/useUser';
 import DateValue from '../../../../components/DateValue';
 import { paymentColumns } from '../../../../assets/fixtures';
 import SearchInput from '../../../../components/SearchInput';
 import CustomDateInput from '../../../../components/CustomDateInput';
 import CustomPagination from '../../../../components/CustomPagination';
+import { TODAYDATE, WAREHOUSEADMIN } from '../../../../utils/constants';
+import { ListViewIconGrey, ScheduleIcon, SendIconGrey } from '../../../../components/SVG_Icons';
 import { deepClone, doubleKeyComplexSearch, getStatusColor, showToast } from '../../../../utils/Functions';
-import { DocIconGrey, ListViewIconGrey, ScheduleIcon, SendIconGrey } from '../../../../components/SVG_Icons';
 const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
 const Payments = ({ reFetch, onUpdate }) => {
     const history = useHistory()
+    const { ROLE } = useUser()
     const [invoices, setInvoices] = useState([])
     const [invoicesClone, setInvoicesClone] = useState([])
     const [loading, setLoading] = useState(true)
@@ -32,6 +34,7 @@ const Payments = ({ reFetch, onUpdate }) => {
     const [searchON, setSeachON] = useState(false)
     const [filterON, setFilterON] = useState(false)
 
+    const isWHAdmin = useMemo(() => ROLE === WAREHOUSEADMIN, [ROLE])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
@@ -47,7 +50,8 @@ const Payments = ({ reFetch, onUpdate }) => {
     }, [reFetch])
 
     const getInvoices = async () => {
-        const url = 'invoice/getInvoices/Paid'
+        let url = 'invoice/getInvoicePayments'
+        if (isWHAdmin) url = 'invoice/getDepartmentInvoicePayments'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -133,21 +137,22 @@ const Payments = ({ reFetch, onUpdate }) => {
     }
 
     const dataSource = useMemo(() => invoices.map((invoice) => {
-        const { invoiceId, invoiceDate, totalAmount, customerName, dueDate, status } = invoice
+        const { invoiceId, invoiceDate, amountPaid, customerName, dueDate, paymentMode, status, billingAddress } = invoice
 
         const options = [
             <Menu.Item key="resend" icon={<SendIconGrey />}>Resend</Menu.Item>,
-            <Menu.Item key="dcList" icon={<ListViewIconGrey />}>DC List</Menu.Item>,
-            <Menu.Item key="due" icon={<DocIconGrey />}>Due</Menu.Item>
+            <Menu.Item key="dcList" icon={<ListViewIconGrey />}>DC List</Menu.Item>
         ]
 
         return {
             key: invoiceId,
             customerName,
-            totalAmount,
+            billingAddress,
+            paymentMode,
+            totalAmount: amountPaid,
             dueDate: dayjs(dueDate).format(DATEFORMAT),
             date: dayjs(invoiceDate).format(DATEFORMAT),
-            status: renderStatus(status),
+            status: renderStatus('Paid'),
             invoiceId: <span className='app-link' onClick={() => handleViewInvoice(invoice)}>{invoiceId}</span>,
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, invoice)} />
         }

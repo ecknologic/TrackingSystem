@@ -24,7 +24,6 @@ const SideMenu = () => {
 
     const showDashboard = ROLE === SUPERADMIN || ROLE === WAREHOUSEADMIN || ROLE === MOTHERPLANTADMIN
     const mainPathname = getMainPathname(pathname)
-
     const menu = useMemo(() => getSideMenuKey(pathname), [mainPathname])
 
     useEffect(() => {
@@ -106,16 +105,39 @@ const SideMenu = () => {
                         : null
                 }
                 {
-                    ROLE === MARKETINGADMIN || ROLE === MARKETINGMANAGER ?
+                    ROLE === MARKETINGADMIN ?
                         <>
-                            <Item key='/customer-accounts' icon={selected === '/customer-accounts' ? <ProjectIcon /> : <ProjectIconLight />}>
-                                Manage Accounts
+                            <Item key='/customers' icon={selected === '/customers' ? <ProjectIcon /> : <ProjectIconLight />}>
+                                Customers
                             </Item>
                             <Item key='/add-customer' icon={selected === '/add-customer' ? <FriendReqIcon /> : <FriendReqIconLight />}>
                                 Add Customer
                             </Item>
-                            {/* Below item should be: uncommented */}
-                            {/* <Item key='/customerDashboard' style={{ pointerEvents: 'none' }} icon={selected === '/customerDashboard' ? <SettingIcon /> : <SettingIconLight />}>
+                            <Item key='/visited-customers' icon={selected === '/visited-customers' ? <FriendIcon /> : <FriendIconLight />}>
+                                Visited Customers
+                            </Item>
+                            <Item key='/customerDashboard' style={{ pointerEvents: 'none' }} icon={selected === '/customerDashboard' ? <SettingIcon /> : <SettingIconLight />}>
+                                Settings
+                            </Item>
+                        </>
+                        : null
+                }
+                {
+                    ROLE === MARKETINGMANAGER ?
+                        <>
+                            <Item key='/customers' icon={selected === '/customers' ? <ProjectIcon /> : <ProjectIconLight />}>
+                                Customers
+                            </Item>
+                            <Item key='/add-customer' icon={selected === '/add-customer' ? <FriendReqIcon /> : <FriendReqIconLight />}>
+                                Add Customer
+                            </Item>
+                            <Item key='/invoices' icon={selected === '/invoices' ? <DocIcon /> : <DocIconLight />}>
+                                Invoices
+                            </Item>
+                            <Item key='/visited-customers' icon={selected === '/visited-customers' ? <FriendIcon /> : <FriendIconLight />}>
+                                Visited Customers
+                            </Item>
+                            <Item key='/customerDashboard' style={{ pointerEvents: 'none' }} icon={selected === '/customerDashboard' ? <SettingIcon /> : <SettingIconLight />}>
                                 Settings
                             </Item> */}
                         </>
@@ -156,10 +178,23 @@ const SideMenu = () => {
                             <Item key='/invoices' icon={selected === '/invoices' ? <DocIcon /> : <DocIconLight />}>
                                 Invoices
                             </Item>
-                            {/* Below item should be: uncommented */}
-                            {/* <Item key='/settings' style={{ pointerEvents: 'none' }} icon={selected === '/settings' ? <SettingIcon /> : <SettingIconLight />}>
+                            <Item key='/visited-customers' icon={selected === '/visited-customers' ? <FriendIcon /> : <FriendIconLight />}>
+                                Visited Customers
+                            </Item>
+                            <SubMenu icon={<ReportIconLight />} title='Reports'>
+                                <Item key='/new-customers-report' icon={selected === '/new-customers-report' ? <FriendIcon /> : <FriendIconLight />}>
+                                    New Customers
+                                </Item>
+                                <Item key='/closed-customers-report' icon={selected === '/closed-customers-report' ? <FriendIcon /> : <FriendIconLight />}>
+                                    Closed Customers
+                                </Item>
+                                <Item key='/dispensers-viability-report' icon={selected === '/dispensers-viability-report' ? <FriendIcon /> : <FriendIconLight />}>
+                                    Dispensers Viability
+                                </Item>
+                            </SubMenu>
+                            <Item key='/settings' style={{ pointerEvents: 'none' }} icon={selected === '/settings' ? <SettingIcon /> : <SettingIconLight />}>
                                 Settings
-                            </Item> */}
+                            </Item>
                         </>
                         : null
                 }

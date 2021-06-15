@@ -7,7 +7,7 @@ warehouseQueries.getWarehouseList = async (callback) => {
 }
 warehouseQueries.getDCList = async (departmentId, callback) => {
     // let query = `select co.dcNo,co.distributorId, co.customerName,co.address,c.Address1 as deliveryAddress,c.gstNo,c.EmailId as customerEmailId,c.panNo,c.customerId,c.createdBy,d.address as deliveryAddress,d.gstNo,d.mailId as EmailId FROM customerorderdetails co LEFT JOIN customerdetails c ON co.existingCustomerId=c.customerId LEFT JOIN Distributors d ON co.distributorId=d.distributorId WHERE warehouseId=? AND co.creationType='manual'`;
-    let query = `SELECT co.dcNo,co.customerType,co.distributorId, co.customerName,co.address,c.panNo,c.customerId,c.createdBy,
+    let query = `SELECT co.customerOrderId,co.dcNo,co.customerType,co.distributorId, co.customerName,co.address,c.panNo,c.customerId,c.createdBy,
     CASE WHEN co.customertype='distributor' THEN d.deliveryLocation ELSE c.Address1 END AS deliveryAddress,
     CASE WHEN co.customertype='distributor' THEN d.gstNo ELSE c.gstNo END AS gstNo,
     CASE WHEN co.customertype='distributor' THEN d.mailId ELSE c.EmailId  END AS EmailId
@@ -18,28 +18,34 @@ warehouseQueries.getDCList = async (departmentId, callback) => {
 }
 warehouseQueries.getDeliveryDetails = (input, callback) => {
     const { date, departmentId } = input
-    let query = "select c.customerOrderId,c.deliveryLocation,c.existingCustomerId,c.distributorId,c.creationType,c.customerType,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS product20L,c.1LBoxes AS product1L,c.500MLBoxes AS product500ML,c.300MLBoxes AS product300ML,c.2LBoxes AS product2L,r.*,d.driverName,d.mobileNumber,cd.EmailId FROM customerorderdetails c LEFT JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid left JOIN customerdetails cd ON c.existingCustomerId=cd.customerId  WHERE DATE(`deliveryDate`) = ? AND warehouseId=? ORDER BY c.dcNo DESC";
+    let query = "select c.customerOrderId,c.deliveryLocation,c.contactPerson,c.EmailId,c.existingCustomerId,c.distributorId,c.creationType,c.customerType,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS product20L,c.1LBoxes AS product1L,c.500MLBoxes AS product500ML,c.300MLBoxes AS product300ML,c.2LBoxes AS product2L,c.price20L, c.price2L, c.price1L, c.price500ML, c.price300ML,r.*,d.driverName,d.mobileNumber,CASE WHEN c.creationType='manual' THEN c.EmailId ELSE cd.EmailId  END AS EmailId FROM customerorderdetails c LEFT JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid left JOIN customerdetails cd ON c.existingCustomerId=cd.customerId  WHERE DATE(`deliveryDate`) = ? AND warehouseId=? ORDER BY c.dcNo DESC";
     return executeGetParamsQuery(query, [date, departmentId], callback)
 }
-warehouseQueries.getTotalReturnCans = (input, callback) => {
+warehouseQueries.getTotalWarehouseReturnCans = (input, callback) => { //Warehouse count
     const { departmentId, date } = input
     let query = 'SELECT SUM(returnEmptyCans) AS emptycans FROM customerorderdetails WHERE DATE(deliveredDate)=? AND warehouseId=?'
     return executeGetParamsQuery(query, [date, departmentId], callback)
 }
 
 warehouseQueries.getAllDcDetails = (input, callback) => {
-    const { fromDate, toDate, departmentId, customerIds } = input
-    let query = "select c.returnEmptyCans,c.customerOrderId,c.deliveredDate,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS product20L,c.1LBoxes AS product1L,c.500MLBoxes AS product500ML,c.300MLBoxes AS product300ML,c.2LBoxes AS product2L,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE warehouseId=? AND isDelivered='Completed' ORDER BY c.dcNo DESC";
+    const { fromDate, toDate, departmentId, customerIds, customerType } = input
+    const customerId = customerType == 'distributor' ? 'distributorId' : 'existingCustomerId'
+    let query = "select c.returnEmptyCans,c.contactPerson,c.customerOrderId,c.deliveredDate,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS product20L,c.1LBoxes AS product1L,c.500MLBoxes AS product500ML,c.300MLBoxes AS product300ML,c.2LBoxes AS product2L,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c LEFT JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE warehouseId=? AND isDelivered='Completed' ORDER BY c.dcNo DESC";
     let options = [departmentId]
     if (customerIds && fromDate && toDate && departmentId) {
-        query = "select c.returnEmptyCans,c.customerOrderId,c.deliveredDate,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS product20L,c.1LBoxes AS product1L,c.500MLBoxes AS product500ML,c.300MLBoxes AS product300ML,c.2LBoxes AS product2L,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE existingCustomerId IN (?) AND (DATE(deliveryDate) BETWEEN ? AND ?) AND warehouseId=? AND isDelivered='Completed' ORDER BY c.dcNo DESC";
+        query = `select c.returnEmptyCans,c.contactPerson,c.customerOrderId,c.deliveredDate,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS product20L,c.1LBoxes AS product1L,c.500MLBoxes AS product500ML,c.300MLBoxes AS product300ML,c.2LBoxes AS product2L,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c LEFT JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE ${customerId} IN (?) AND (DATE(deliveryDate) BETWEEN ? AND ?) AND warehouseId=? AND isDelivered='Completed' ORDER BY c.dcNo DESC`;
         options = [customerIds, fromDate, toDate, departmentId]
-    } else if (customerIds && fromDate && toDate && !departmentId) {
-        query = "select c.returnEmptyCans,c.customerOrderId,c.deliveredDate,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS product20L,c.1LBoxes AS product1L,c.500MLBoxes AS product500ML,c.300MLBoxes AS product300ML,c.2LBoxes AS product2L,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE existingCustomerId IN (?) AND (DATE(deliveryDate) BETWEEN ? AND ?) AND isDelivered='Completed' ORDER BY c.dcNo DESC";
+    }
+    else if (fromDate && toDate && departmentId) {
+        query = `select c.returnEmptyCans,c.contactPerson,c.customerOrderId,c.deliveredDate,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS product20L,c.1LBoxes AS product1L,c.500MLBoxes AS product500ML,c.300MLBoxes AS product300ML,c.2LBoxes AS product2L,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c LEFT JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE (DATE(deliveryDate) BETWEEN ? AND ?) AND warehouseId=? AND isDelivered='Completed' ORDER BY c.dcNo DESC`;
+        options = [fromDate, toDate, departmentId]
+    }
+    else if (customerIds && fromDate && toDate && !departmentId) {
+        query = `select c.returnEmptyCans,c.contactPerson,c.customerOrderId,c.deliveredDate,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS product20L,c.1LBoxes AS product1L,c.500MLBoxes AS product500ML,c.300MLBoxes AS product300ML,c.2LBoxes AS product2L,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c LEFT JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE ${customerId} IN (?) AND (DATE(deliveryDate) BETWEEN ? AND ?) AND isDelivered='Completed' ORDER BY c.dcNo DESC`;
         options = [customerIds, fromDate, toDate]
     }
     else if (customerIds) {
-        query = "select c.returnEmptyCans,c.customerOrderId,c.deliveredDate,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS product20L,c.1LBoxes AS product1L,c.500MLBoxes AS product500ML,c.300MLBoxes AS product300ML,c.2LBoxes AS product2L,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE existingCustomerId IN (?) AND warehouseId=? AND isDelivered='Completed' ORDER BY c.dcNo DESC";
+        query = `select c.returnEmptyCans,c.contactPerson,c.customerOrderId,c.deliveredDate,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS product20L,c.1LBoxes AS product1L,c.500MLBoxes AS product500ML,c.300MLBoxes AS product300ML,c.2LBoxes AS product2L,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c LEFT JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE ${customerId} IN (?) AND warehouseId=? AND isDelivered='Completed' ORDER BY c.dcNo DESC`;
         options = [customerIds, departmentId]
     }
     return executeGetParamsQuery(query, options, callback)
@@ -98,7 +104,7 @@ warehouseQueries.getTotalSalesChange = (input, callback) => {
     return executeGetParamsQuery(query, options, callback)
 }
 warehouseQueries.getDeliverysByCustomerOrderId = (customerOrderId, callback) => {
-    let query = "select c.customerOrderId,c.deliveryLocation,c.creationType,c.existingCustomerId,c.distributorId,c.customerType,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS product20L,c.1LBoxes AS product1L,c.500MLBoxes AS product500ML,c.300MLBoxes AS product300ML,c.2LBoxes AS product2L,r.*,d.driverName,d.mobileNumber,cd.EmailId FROM customerorderdetails c LEFT JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid left JOIN customerdetails cd ON c.existingCustomerId=cd.customerId  WHERE customerOrderId=" + customerOrderId;
+    let query = "select c.customerOrderId,c.contactPerson,c.deliveryLocation,c.creationType,CASE WHEN c.creationType='manual' THEN c.EmailId ELSE cd.EmailId  END AS EmailId,c.existingCustomerId,c.distributorId,c.customerType,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS product20L,c.1LBoxes AS product1L,c.500MLBoxes AS product500ML,c.300MLBoxes AS product300ML,c.2LBoxes AS product2L,c.price20L, c.price2L, c.price1L, c.price500ML, c.price300ML,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c LEFT JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid left JOIN customerdetails cd ON c.existingCustomerId=cd.customerId  WHERE customerOrderId=" + customerOrderId;
     return executeGetQuery(query, callback)
 }
 warehouseQueries.getWarehouseById = async (warehouseId, callback) => {
@@ -109,10 +115,12 @@ warehouseQueries.getOrderDetailsByDepartment = async (departmentId, callback) =>
     let query = `select d.deliveryDetailsId,d.address,r.RouteName from DeliveryDetails d INNER JOIN routes r ON d.routeId=r.routeId WHERE d.departmentId=? AND d.deleted=0 AND d.isActive=1`;
     return executeGetParamsQuery(query, [departmentId], callback)
 }
-warehouseQueries.getReturnedEmptyCans = async (warehouseId, date, callback) => {
+warehouseQueries.getReturnedEmptyCansToMotherPlant = async ({ departmentId, date }, callback) => {
     // let query = "SELECT (SELECT SUM(c.returnemptycans) FROM customerorderdetails c WHERE c.warehouseid=?)-(SELECT SUM(e.emptycans_count)  FROM EmptyCanDetails e  WHERE e.isconfirmed=1 AND e.warehouseId=?) AS emptycans";
-    let query = `SELECT IFNULL(SUM(e.emptycans_count),0) AS emptycans FROM EmptyCanDetails e  WHERE  e.warehouseId=?`
-    return executeGetParamsQuery(query, [warehouseId, warehouseId], callback)
+    // let query = `SELECT ABS(e.emptycans) AS emptycans FROM (SELECT (SELECT IFNULL(SUM(c.returnemptycans),0) FROM customerorderdetails c WHERE c.warehouseid=?)-(SELECT IFNULL(SUM(e.emptycans_count),0)
+    // FROM EmptyCanDetails e  WHERE e.status='Pending' AND e.warehouseId=?) AS emptycans) AS e`
+    let query = `SELECT IFNULL(SUM(e.emptycans_count),0) AS emptycans FROM EmptyCanDetails e  WHERE  e.warehouseId=? AND DATE(createdDateTime)=?`
+    return executeGetParamsQuery(query, [departmentId, date], callback)
 }
 warehouseQueries.getConfirmedEmptyCans = async (warehouseId, date, callback) => {
     // let query = "SELECT (SELECT SUM(c.returnemptycans) FROM customerorderdetails c WHERE c.warehouseid=?)-(SELECT SUM(e.emptycans_count)  FROM EmptyCanDetails e  WHERE e.isconfirmed=1 AND e.warehouseId=?) AS emptycans";
@@ -161,6 +169,11 @@ warehouseQueries.getReceivedStockById = async (input, callback) => {
 warehouseQueries.getDepartmentStaff = async (warehouseId, callback) => {
     let query = "SELECT d.driverId,d.driverName as userName,d.isActive,d.emailid,d.address,d.mobileNumber,dep.departmentName from driverdetails d INNER JOIN departmentmaster dep on d.departmentId=dep.departmentId where d.departmentId=? AND d.deleted='0' ORDER BY d.createdDateTime DESC";
     return executeGetParamsQuery(query, [warehouseId], callback)
+}
+warehouseQueries.checkDcSchedule = async (input, callback) => {
+    const { existingCustomerId = 318, date = '2021-05-13' } = input
+    let query = `select dcNo,customerOrderId from customerorderdetails WHERE existingCustomerId=? AND DATE(deliveryDate)=?`;
+    return executeGetParamsQuery(query, [existingCustomerId, date], callback)
 }
 //POST Request Methods
 warehouseQueries.saveWarehouseStockDetails = (input, callback) => {
@@ -240,5 +253,21 @@ warehouseQueries.deleteRoute = (RouteId, callback) => {
     let query = "update routes set deleted=? where RouteId=?";
     let requestBody = [1, RouteId]
     executePostOrUpdateQuery(query, requestBody, callback)
+}
+warehouseQueries.rescheduleDC = async (input, callback) => {
+    const { customerOrderId, date } = input
+    let query = `Update customerorderdetails SET deliveryDate=?,rescheduled=?  WHERE customerOrderId=?`;
+    return executeGetParamsQuery(query, [new Date(date), 1, customerOrderId], callback)
+}
+warehouseQueries.closeDC = async (input, callback) => {
+    const { customerOrderId } = input
+    let query = `Update customerorderdetails SET isDelivered=?  WHERE customerOrderId=?`;
+    return executeGetParamsQuery(query, ['Cancelled', customerOrderId], (err, data) => {
+        if (err) console.log(err)
+        else {
+            let query = "select c.customerOrderId,c.deliveryLocation,c.contactPerson,c.EmailId,c.existingCustomerId,c.distributorId,c.creationType,c.customerType,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS product20L,c.1LBoxes AS product1L,c.500MLBoxes AS product500ML,c.300MLBoxes AS product300ML,c.2LBoxes AS product2L,c.price20L, c.price2L, c.price1L, c.price500ML, c.price300ML,r.*,d.driverName,d.mobileNumber,CASE WHEN c.creationType='manual' THEN c.EmailId ELSE cd.EmailId  END AS EmailId FROM customerorderdetails c LEFT JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid left JOIN customerdetails cd ON c.existingCustomerId=cd.customerId  WHERE customerOrderId=?";
+            executePostOrUpdateQuery(query, [customerOrderId], callback)
+        }
+    })
 }
 module.exports = warehouseQueries

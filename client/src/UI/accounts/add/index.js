@@ -162,10 +162,6 @@ const AddAccount = () => {
             const error = validateMobileNumber(value)
             setDeliveryErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key === 'contactPerson') {
-            const error = validateNames(value)
-            setDeliveryErrors(errors => ({ ...errors, [key]: error }))
-        }
         else if (key.includes('price')) {
             const error = validateIntFloat(value)
             setDeliveryErrors(errors => ({ ...errors, productNPrice: error }))
@@ -525,8 +521,7 @@ const AddAccount = () => {
     }
 
     const setDDForSameAddress = () => {
-        const { gstNo, customerName: contactPerson,
-            address, mobileNumber: phoneNumber, gstProof } = corporateValues
+        const { gstNo, contactPerson, address, mobileNumber: phoneNumber, gstProof } = corporateValues
         const prefill = { gstNo, address, contactPerson, phoneNumber, gstProof }
 
         setDeliveryValues(data => ({ ...data, ...prefill }))
@@ -539,8 +534,7 @@ const AddAccount = () => {
 
     const preFillDDForm = (value, key) => {
         let newKey = key
-        if (key === 'customerName') newKey = 'contactPerson'
-        else if (key === 'mobileNumber') newKey = 'phoneNumber'
+        if (key === 'mobileNumber') newKey = 'phoneNumber'
         setDeliveryValues(data => ({ ...data, [newKey]: value }))
     }
     const onCorporateBtnClick = () => {
@@ -599,10 +593,7 @@ const AddAccount = () => {
         else goBack()
     }
 
-    const goBack = () => {
-        if (mainUrl === '/add-customer') history.push('/customer-accounts')
-        else history.push(mainUrl)
-    }
+    const goBack = () => history.push('/customers')
 
     return (
         <Fragment>

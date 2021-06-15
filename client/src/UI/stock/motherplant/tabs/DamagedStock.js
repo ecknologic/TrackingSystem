@@ -15,7 +15,7 @@ import CustomPagination from '../../../../components/CustomPagination';
 import { doubleKeyComplexSearch, getStatusColor, isEmpty, showToast } from '../../../../utils/Functions';
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
-const StockReceived = () => {
+const DamagedStock = () => {
     const [loading, setLoading] = useState(true)
     const [stock, setStock] = useState([])
     const [stockClone, setStockClone] = useState([])
@@ -30,12 +30,12 @@ const StockReceived = () => {
     const [filteredClone, setFilteredClone] = useState([])
     const [resetSearch, setResetSearch] = useState(false)
 
-    const damagedStockColumns = useMemo(() => getStockColumns(true), [])
+    const damagedStockColumns = useMemo(() => getStockColumns(true, 'MPAdmin'), [])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
-        getReceivedStock()
+        getDamagedStock()
         getWarehouseList()
 
         return () => {
@@ -43,7 +43,7 @@ const StockReceived = () => {
         }
     }, [])
 
-    const getReceivedStock = async () => {
+    const getDamagedStock = async () => {
         const url = 'warehouse/getDamagedStock'
 
         try {
@@ -218,4 +218,4 @@ const renderStockDetails = ({ product20L, product1L, product2L, product500ML, pr
     `
 }
 const options = [<Menu.Item key="view" icon={<EyeIconGrey />}>View</Menu.Item>]
-export default StockReceived
+export default DamagedStock

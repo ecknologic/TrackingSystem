@@ -61,7 +61,7 @@ const DeliveryView = ({ data }) => {
                         </div>
                         <div className='column'>
                             <div className='input-container'>
-                                <InputLabel name='1 Ltrs' />
+                                <InputLabel name='1 Ltrs (Box-1&times;12)' />
                                 <InputValue value={product2L} />
                             </div>
                             <div className='input-container'>
@@ -71,7 +71,7 @@ const DeliveryView = ({ data }) => {
                         </div>
                         <div className='column'>
                             <div className='input-container'>
-                                <InputLabel name='1 Ltrs' />
+                                <InputLabel name='1 Ltrs (Box-1&times;12)' />
                                 <InputValue value={product1L} />
                             </div>
                             <div className='input-container'>
@@ -81,7 +81,7 @@ const DeliveryView = ({ data }) => {
                         </div>
                         <div className='column'>
                             <div className='input-container'>
-                                <InputLabel name='500 Ml' />
+                                <InputLabel name='500 Ml (Box-1&times;24)' />
                                 <InputValue value={product500ML} />
                             </div>
                             <div className='input-container'>
@@ -91,7 +91,7 @@ const DeliveryView = ({ data }) => {
                         </div>
                         <div className='column'>
                             <div className='input-container'>
-                                <InputLabel name='300 Ml' />
+                                <InputLabel name='300 Ml (Box-1&times;30)' />
                                 <InputValue value={product300ML} />
                             </div>
                             <div className='input-container'>

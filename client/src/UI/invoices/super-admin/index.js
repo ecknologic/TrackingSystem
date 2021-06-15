@@ -1,21 +1,26 @@
 import { Tabs } from 'antd';
 import { useParams } from 'react-router-dom';
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useMemo, useState } from 'react';
 import Payments from './tabs/Payments';
 import Dashboard from './tabs/Dashboard';
 import CreateInvoice from './tabs/CreateInvoice';
+import useUser from '../../../utils/hooks/useUser';
 import Header from '../../../components/SimpleHeader';
 import WarehouseInvoices from './tabs/WarehouseInvoices';
+import { MARKETINGMANAGER } from '../../../utils/constants';
 import '../../../sass/invoices.scss';
 
 const Invoices = () => {
+    const { ROLE } = useUser()
     const { tab = '1' } = useParams()
     const [activeTab, setActiveTab] = useState(tab)
-    const [reFetch, setreFetch] = useState(false)
+    const [reFetch1, setreFetch1] = useState(false)
+    const [reFetch2, setreFetch2] = useState(false)
+    const isSMManager = useMemo(() => ROLE === MARKETINGMANAGER, [ROLE])
 
-    const handleGoToTab = (key) => {
+    const handleGoToTab1 = (key) => {
         setActiveTab(key)
-        setreFetch(!reFetch)
+        setreFetch1(!reFetch1)
     }
 
     const handleTabClick = (key) => {
@@ -32,17 +37,24 @@ const Invoices = () => {
                         activeKey={activeTab}
                     >
                         <TabPane tab="Invoices" key="1">
-                            <Dashboard reFetch={reFetch} onUpdate={() => setreFetch(!reFetch)} />
+                            <Dashboard reFetch={reFetch1} onUpdate={() => setreFetch2(!reFetch2)} />
                         </TabPane>
-                        <TabPane tab="Create New Invoice" key="2">
-                            <CreateInvoice goToTab={handleGoToTab} />
-                        </TabPane>
-                        <TabPane tab="Received Payments" key="3">
-                            <Payments reFetch={reFetch} onUpdate={() => setreFetch(!reFetch)} />
-                        </TabPane>
-                        <TabPane tab="Warehouse Invoices" key="4">
-                            <WarehouseInvoices reFetch={reFetch} />
-                        </TabPane>
+                        {
+                            !isSMManager &&
+                            (
+                                <>
+                                    <TabPane tab="Create New Invoice" key="2">
+                                        <CreateInvoice goToTab={handleGoToTab1} />
+                                    </TabPane>
+                                    <TabPane tab="Received Payments" key="3">
+                                        <Payments reFetch={reFetch2} />
+                                    </TabPane>
+                                    <TabPane tab="Warehouse Invoices" key="4">
+                                        <WarehouseInvoices />
+                                    </TabPane>
+                                </>
+                            )
+                        }
                     </Tabs>
                 </div>
             </div >

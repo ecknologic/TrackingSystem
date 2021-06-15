@@ -455,6 +455,17 @@ textarea.ant-input {
     }
 }
 
+.ant-input-affix-wrapper {
+    border-radius: .6em;
+    padding: 0 11px;
+}
+
+.ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover,
+.ant-input-affix-wrapper-focused {
+    border-color: $primaryColor;
+    box-shadow: none;
+}
+
 .ant-input-number-focused {
     border-color: $primaryColor;
     box-shadow: none !important;
@@ -846,7 +857,7 @@ textarea.ant-input {
     .ant-dropdown-menu-item {
         color: #333333;
         font-family: 'PoppinsRegular400';
-        font-size: 1.8ch;
+        // font-size: 1.8ch;
         display: flex;
         align-items: center;
 
@@ -1348,6 +1359,10 @@ textarea.ant-input {
 
 // -------------- Various Date Picker styles ------------------- //
 
+.ant-picker-panel-container {
+    font-family: 'PoppinsRegular400';
+}
+
 .app-date-slide-item {
     border: 0.94px solid #EEEEEE;
     background-color: #FFFFFF;
@@ -1807,4 +1822,26 @@ textarea.ant-input {
     .no-content {
         min-height: calc(100vh - 13.8em);
     }
+}
+
+// -------------- Various Helper styles ------------------- //
+
+.p-0 {
+    padding: 0 !important;
+}
+
+.pb-0 {
+    padding-bottom: 0 !important;
+}
+
+.mr-0 {
+    margin-right: 0 !important;
+}
+
+.mr-1 {
+    margin-right: 1em !important;
+}
+
+.nowrap {
+    white-space: nowrap;
 }

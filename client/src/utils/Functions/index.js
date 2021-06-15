@@ -1,6 +1,7 @@
 import dayjs from 'dayjs'
-import { message } from 'antd'
+import { v4 as uuidv4 } from 'uuid';
 import { TRACKFORM } from "../constants"
+import { message } from 'antd'
 
 export const editData = (updatedItem, data, idField) => {
     return new Promise(resolve => {
@@ -40,6 +41,18 @@ export const getSessionItems = (matcher) => {
 export const resetSessionItems = (matcher) => {
     Object.keys(sessionStorage)
         .map((key) => key.includes(matcher) && sessionStorage.removeItem(key))
+}
+
+export const computeTotalAmount = (data, key = 'totalAmount') => {
+    let totalAmount = 0
+    if (!isEmpty(data)) {
+        totalAmount = data.filter(({ status }) => status !== 'Paid')
+            .map(item => item[key])
+            .reduce((a, c) => a + c).toLocaleString('en-IN')
+    }
+
+    return `₹ ${totalAmount}`
+
 }
 
 export const showToast = (props) => {
@@ -154,6 +167,12 @@ export const getSideMenuKey = (path) => {
         return '/manage-invoices'
     if (path.includes('/customers'))
         return '/customers'
+    if (path.includes('/staff'))
+        return '/staff'
+    if (path.includes('/drivers'))
+        return '/drivers'
+    if (path.includes('/distributors'))
+        return '/distributors'
     return path
 }
 
@@ -188,23 +207,27 @@ export const tripleKeyComplexSearch = (data, matcher, key1, key2, key3) => {
     })
 }
 export const filterAccounts = (accountsClone, filterInfo) => {
-    const { business, status, account, creator } = filterInfo
+    let { business = [], status = [], account = [], creator = [] } = filterInfo
+    business = business.filter(item => item.checked).map(item => item.value)
+    status = status.filter(item => item.checked).map(item => item.value)
+    account = account.filter(item => item.checked).map(item => item.value)
+    creator = creator.filter(item => item.checked).map(item => item.value)
     let singleFiltered = [], allFiltered = []
 
     if (!isEmpty(business) && !isEmpty(status) && !isEmpty(account) && !isEmpty(creator)) {
-        allFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && status.includes(item.isApproved) && account.includes(item.customertype) && creator.includes(item.createdBy))
+        allFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && status.includes(item.isApproved) && account.includes(item.customertype) && (creator.includes(item.createdBy) || creator.includes(item.salesAgent)))
     }
     else if (!isEmpty(business) && !isEmpty(status) && !isEmpty(account)) {
         allFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && status.includes(item.isApproved) && account.includes(item.customertype))
     }
     else if (!isEmpty(business) && !isEmpty(status) && !isEmpty(creator)) {
-        allFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && status.includes(item.isApproved) && creator.includes(item.createdBy))
+        allFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && status.includes(item.isApproved) && (creator.includes(item.createdBy) || creator.includes(item.salesAgent)))
     }
     else if (!isEmpty(business) && !isEmpty(account) && !isEmpty(creator)) {
-        allFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && account.includes(item.customertype) && creator.includes(item.createdBy))
+        allFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && account.includes(item.customertype) && (creator.includes(item.createdBy) || creator.includes(item.salesAgent)))
     }
     else if (!isEmpty(account) && !isEmpty(status) && !isEmpty(creator)) {
-        allFiltered = accountsClone.filter((item) => account.includes(item.customertype) && status.includes(item.isApproved) && creator.includes(item.createdBy))
+        allFiltered = accountsClone.filter((item) => account.includes(item.customertype) && status.includes(item.isApproved) && (creator.includes(item.createdBy) || creator.includes(item.salesAgent)))
     }
     else if (!isEmpty(business) && !isEmpty(status)) {
         allFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && status.includes(item.isApproved))
@@ -216,13 +239,13 @@ export const filterAccounts = (accountsClone, filterInfo) => {
         allFiltered = accountsClone.filter((item) => status.includes(item.isApproved) && account.includes(item.customertype))
     }
     else if (!isEmpty(business) && !isEmpty(creator)) {
-        allFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && creator.includes(item.createdBy))
+        allFiltered = accountsClone.filter((item) => business.includes(item.natureOfBussiness) && (creator.includes(item.createdBy) || creator.includes(item.salesAgent)))
     }
     else if (!isEmpty(status) && !isEmpty(creator)) {
-        allFiltered = accountsClone.filter((item) => status.includes(item.isApproved) && creator.includes(item.createdBy))
+        allFiltered = accountsClone.filter((item) => status.includes(item.isApproved) && (creator.includes(item.createdBy) || creator.includes(item.salesAgent)))
     }
     else if (!isEmpty(account) && !isEmpty(creator)) {
-        allFiltered = accountsClone.filter((item) => account.includes(item.customertype) && creator.includes(item.createdBy))
+        allFiltered = accountsClone.filter((item) => account.includes(item.customertype) && (creator.includes(item.createdBy) || creator.includes(item.salesAgent)))
     }
     else {
         singleFiltered = accountsClone.filter((item) => {
@@ -233,7 +256,7 @@ export const filterAccounts = (accountsClone, filterInfo) => {
                 return business.includes(item.natureOfBussiness)
             }
             else if (!isEmpty(creator)) {
-                return creator.includes(item.createdBy)
+                return creator.includes(item.createdBy) || creator.includes(item.salesAgent)
             }
             return status.includes(item.isApproved)
         })
@@ -331,6 +354,59 @@ export const getProductsForDB = ({ product20L, price20L, product2L, price2L, pro
 
     return products
 }
+export const getProductsForTable = (productList, data, isLocal) => {
+    const { product20L, price20L, product2L, price2L, product1L,
+        price1L, product500ML, price500ML, product300ML, price300ML } = data
+
+    const products = productList.map(item => {
+        const { productName } = item
+        let newItem = {
+            ...item,
+            discount: 0,
+            key: uuidv4().slice(0, 7)
+        }
+
+        if (productName.startsWith('20')) {
+            newItem.quantity = product20L
+            newItem.productPrice = price20L
+        }
+        else if (productName.startsWith('2')) {
+            newItem.quantity = product2L
+            newItem.productPrice = price2L
+        }
+        else if (productName.startsWith('1')) {
+            newItem.quantity = product1L
+            newItem.productPrice = price1L
+        }
+        else if (productName.startsWith('500')) {
+            newItem.quantity = product500ML
+            newItem.productPrice = price500ML
+        }
+        else if (productName.startsWith('300')) {
+            newItem.quantity = product300ML
+            newItem.productPrice = price300ML
+        }
+
+        newItem = {
+            ...newItem,
+            ...getProductTableResults(newItem, isLocal),
+        }
+        return newItem
+
+    }).filter(item => item.quantity)
+
+    return products
+}
+export const getProductTableResults = (row, isLocal) => {
+    let { quantity, productPrice, discount, tax, cgst, sgst, igst } = row
+    const priceAfterDiscount = productPrice - (productPrice / 100 * discount)
+    const amount = Number((priceAfterDiscount * quantity).toFixed(2))
+    const totalTax = (amount / 100 * tax)
+    cgst = isLocal ? Number((totalTax / 2).toFixed(2)) : 0.00
+    sgst = isLocal ? Number((totalTax / 2).toFixed(2)) : 0.00
+    igst = isLocal ? 0.00 : Number((totalTax).toFixed(2))
+    return { amount, cgst, sgst, igst }
+};
 export const getProductsWithIdForDB = ({ product20L, price20L, product2L, price2L, product1L, price1L, product500ML, price500ML, product300ML, price300ML, product20LId, product2LId, product1LId, product500MLId, product300MLId }) => {
     const products = []
     const item1 = { productName: '20L', productPrice: price20L || 0, noOfJarsTobePlaced: product20L || 0, productId: product20LId }
@@ -475,7 +551,7 @@ export const extractGADetails = (data) => {
     delete clone.product500ML
     delete clone.product300ML
     delete clone.loading
-    return { ...clone, Address1, organizationName, alternatePhNo: alternatePhNo || null, poNo: poNo || null }
+    return { ...clone, Address1, organizationName, contactPerson: organizationName, alternatePhNo: alternatePhNo || null, poNo: poNo || null }
 }
 
 export const getAddressesForDB = (data, isUpdate) => {
@@ -491,16 +567,18 @@ export const getAddressesForDB = (data, isUpdate) => {
 
 export const getDCValuesForDB = (data) => {
 
-    const { customerName, phoneNumber, address, routeId, driverId, EmailId,
-        product20L, product2L, product1L, product500ML, product300ML,
-        customerType, existingCustomerId, distributorId, creationType, deliveryLocation } = data
+    const { customerName, phoneNumber, address, routeId, driverId, EmailId, contactPerson,
+        product20L, product2L, product1L, product500ML, product300ML, price20L, price2L, price1L,
+        price500ML, price300ML, customerType, existingCustomerId, distributorId, creationType, deliveryLocation } = data
 
     return {
         customerName, phoneNumber, address, routeId, driverId, EmailId,
         product20L: product20L || 0, product2L: product2L || 0, product1L: product1L || 0,
         product500ML: product500ML || 0, product300ML: product300ML || 0,
+        price20L: price20L || 0, price2L: price2L || 0, price1L: price1L || 0,
+        price500ML: price500ML || 0, price300ML: price300ML || 0,
         customerType, existingCustomerId, distributorId, creationType,
-        deliveryLocation
+        deliveryLocation, contactPerson
     }
 }
 
@@ -632,6 +710,11 @@ export const disableFutureDates = (current) => {
     return current.valueOf() > Date.now();
 }
 
+export const disablePastDates = (current) => {
+    if (!current) return false
+    return current.valueOf() < Date.now();
+}
+
 export const getStatusColor = (status) => {
     switch (status) {
         case 'Confirmed':
@@ -665,4 +748,42 @@ export const getStatusColor = (status) => {
 
 export const renderRoute = () => {
 
+}
+
+export const getAccountStatusUI = (accountStatus) => {
+    if (accountStatus == 'notintrested') return 'Not Interested'
+    else return 'Revisit'
+}
+
+export const checkNullOrNot = (value) => {
+    return value == 'null' ? '-' : value
+}
+
+export const getFormatedNumber = (number) => {
+    number = number || 0
+    if (number >= 10000000) {
+        number = getCrores(number)
+    }
+    else if (number >= 100000) {
+        number = getLakhs(number)
+    }
+    else number = number.toLocaleString('en-IN')
+
+    return number
+}
+
+const getLakhs = (amount) => {
+    let minified = (amount / 100000)
+    if (minified % 1 !== 0) {
+        minified = minified.toFixed(1);
+    }
+    return `${minified.toLocaleString('en-IN')} L`;
+}
+
+const getCrores = (amount) => {
+    let minified = (amount / 10000000)
+    if (minified % 1 !== 0) {
+        minified = minified.toFixed(2);
+    }
+    return `${minified.toLocaleString('en-IN')} Cr`;
 }

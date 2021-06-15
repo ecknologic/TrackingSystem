@@ -4,16 +4,20 @@ var router = express.Router();
 const db = require('../config/db.js');
 const auditQueries = require('../dbQueries/auditlogs/queries.js');
 const customerQueries = require('../dbQueries/Customer/queries.js');
+const departmenttransactionQueries = require('../dbQueries/departmenttransactions/queries.js');
 const motherPlantDbQueries = require('../dbQueries/motherplant/queries.js');
 const usersQueries = require('../dbQueries/users/queries.js');
 const warehouseQueries = require('../dbQueries/warehouse/queries.js');
 const { DATEFORMAT, INSERTMESSAGE, UPDATEMESSAGE, WEEKDAYS } = require('../utils/constants.js');
 const { customerProductDetails, dbError, getCompareData, getFormatedNumber, getGraphData, getCompareCustomersData } = require('../utils/functions.js');
-var departmentId, userId;
+const { compareDepartmentData } = require('./utils/department.js');
+var departmentId, adminUserId, userName, userRole;
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
   departmentId = req.headers['departmentid']
-  userId = req.headers['userid']
+  adminUserId = req.headers['userid']
+  userName = req.headers['username']
+  userRole = req.headers['userrole']
   console.log('Time: ', Date.now());
   next();
 });
@@ -56,7 +60,7 @@ router.get('/getdriverDetails/:warehouseId', (req, res) => {
 
 router.get('/getNewStockDetails/:id', (req, res) => {
   let input = {
-    date: dayjs().format('YYYY-MM-DD'),
+    date: dayjs(req.query.date).format('YYYY-MM-DD'),
     departmentId: req.params.id
   }
   motherPlantDbQueries.getCurrentDispatchDetailsByDate(input, (err, results) => {
@@ -101,22 +105,31 @@ router.post('/createWarehouse', (req, res) => {
       usersQueries.updateUserDepartment({ departmentId: results.insertId, userId: req.body.adminId }, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
-          auditQueries.createLog({ userId, description: "Warehouse Created", departmentId: results.insertId, type: 'warehouse' })
+          auditQueries.createLog({ userId: adminUserId, description: `Warehouse Created by ${userRole} <b>(${userName})</b>`, departmentId: results.insertId, type: 'warehouse' })
           res.json(results);
         }
       })
     }
   });
 });
-router.post('/updateWarehouse', (req, res) => {
-  const { departmentId, adminId: userId, removedAdminId } = req.body
+router.post('/updateWarehouse', async (req, res) => {
+  const { departmentId, adminId: userId, removedAdminId, address, departmentName, city, state, pinCode, adminId, phoneNumber, gstNo } = req.body
+  let data = {
+    address, departmentName, city, state, pinCode, adminId, phoneNumber, gstNo
+  }
+  const logs = await compareDepartmentData(data, { type: 'warehouse', departmentId, adminUserId, userRole, userName })
   warehouseQueries.updateWarehouse(req.body, (err, results) => {
     if (err) res.status(500).json(dbError(err));
     else {
       usersQueries.updateUserDepartment({ departmentId, userId, removedAdminId }, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
-          auditQueries.createLog({ userId, description: "Warehouse Updated", departmentId, type: 'warehouse' })
+          if (logs.length) {
+            auditQueries.createLog(logs, (err, data) => {
+              if (err) console.log('log error', err)
+              else console.log('log data', data)
+            })
+          }
           res.json(results);
         }
       })
@@ -130,14 +143,17 @@ router.post('/createDC', (req, res) => {
     customerQueries.checkCustomerExistsOrNot({ EmailId, mobileNumber: phoneNumber }, (err, results) => {
       if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
       else if (results.length) {
-        req.body.existingCustomerId = results[0].customerId
-        req.body.customerType = 'internal'
-        saveDC(req, res)
+        // req.body.existingCustomerId = results[0].customerId
+        // req.body.customerType = 'internal'
+        // saveDC(req, res)
+        res.status(405).json('User already exists.')
       } else {
         customerQueries.createAdhocUser({ ...req.body, customertype: 'Individual' }, (err, data) => {
           if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
           else {
+            console.log("data", data)
             req.body.existingCustomerId = data.insertId
+            auditQueries.createLog({ userId: adminUserId, description: `Customer created by ${userRole} <b>(${userName})</b>`, customerId: data.insertId, type: "customer" })
             saveDC(req, res)
           }
         })
@@ -210,7 +226,7 @@ router.get('/getAllDcDetails', (req, res) => {
 
 
 router.get('/getTotalReturnCans/:date', (req, res) => {
-  warehouseQueries.getTotalReturnCans({ departmentId, date: req.params.date }, (err, results) => {
+  warehouseQueries.getTotalWarehouseReturnCans({ departmentId, date: req.params.date }, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else res.json(results[0]);
   });
@@ -309,7 +325,7 @@ router.get('/getConfirmedEmptyCans/:date', (req, res) => {
   });
 });
 router.get('/getReturnedEmptyCans/:date', (req, res) => {
-  warehouseQueries.getReturnedEmptyCans(departmentId, req.params.date, (err, results) => {
+  warehouseQueries.getReturnedEmptyCansToMotherPlant({ departmentId, date: req.params.date }, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else res.json(results[0]);
   });
@@ -331,7 +347,7 @@ router.put('/updateDepartmentStatus', (req, res) => {
   warehouseQueries.updateDepartmentStatus(req.body, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else {
-      auditQueries.createLog({ userId, description: `${departmentType} status changed to ${status == 1 ? "Active" : "Inactive"}`, departmentId, type: departmentType })
+      auditQueries.createLog({ userId: adminUserId, description: `${departmentType} status changed to ${status == 1 ? "Active" : "Inactive"} by ${userRole} <b>(${userName})</b>`, departmentId, type: departmentType })
       res.json(results);
     }
   });
@@ -342,7 +358,7 @@ router.delete('/deleteDepartment/:departmentId', (req, res) => {
   warehouseQueries.deleteDepartment(departmentId, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else {
-      auditQueries.createLog({ userId, description: `${departmentType} deleted`, departmentId, type: departmentType })
+      auditQueries.createLog({ userId: adminUserId, description: `${departmentType} deleted by ${userRole} <b>(${userName})</b>`, departmentId, type: departmentType })
       res.json(results);
     }
   });
@@ -491,14 +507,43 @@ router.get('/getCustomersCount', (req, res) => {
   })
 })
 
+
+router.get('/getDCDetailsByCOId/:COId', (req, res) => {
+  warehouseQueries.getDeliverysByCustomerOrderId(req.params.COId, (deliveryErr, deliveryDetails) => {
+    if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
+    else res.json(deliveryDetails)
+  })
+})
+
+router.put('/rescheduleDc', (req, res) => {
+  warehouseQueries.checkDcSchedule(req.body, (deliveryErr, deliveryDetails) => {
+    if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
+    else if (!deliveryDetails.length) {
+      warehouseQueries.rescheduleDC(req.body, (deliveryErr, rescheduled) => {
+        if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
+        else res.json('Rescheduled successfully')
+      })
+    } else {
+      res.status(405).send('DC Already exists')
+    }
+  })
+})
+router.put('/closeDC', (req, res) => {
+  warehouseQueries.closeDC(req.body, (deliveryErr, closedDetails) => {
+    if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
+    else res.json(closedDetails)
+  })
+})
+
 const saveDC = (req, res) => {
-  let { customerName, phoneNumber, address, routeId, driverId, product20L, product1L, product500ML, product300ML, product2L, warehouseId, customerType, existingCustomerId, distributorId, creationType, isDelivered = 'InProgress', deliveryLocation } = req.body;
-  let dcCreateQuery = "insert into customerorderdetails (customerName,phoneNumber,address,routeId,driverId,20LCans,1LBoxes,500MLBoxes,300MLBoxes,2LBoxes,warehouseId,customerType,existingCustomerId,distributorId,creationType,isDelivered,deliveryLocation) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-  let insertQueryValues = [customerName, phoneNumber, address, routeId, driverId, product20L, product1L, product500ML, product300ML, product2L, warehouseId, customerType, existingCustomerId, distributorId, creationType, isDelivered, deliveryLocation]
+  let { customerName, contactPerson, phoneNumber, address, routeId, driverId, product20L, product1L, product500ML, product300ML, product2L, warehouseId, customerType, existingCustomerId, distributorId, creationType, isDelivered = 'InProgress', deliveryLocation, price20L, price2L, price1L, price500ML, price300ML, EmailId, deliveredDate } = req.body;
+  let dcCreateQuery = "insert into customerorderdetails (customerName,contactPerson,phoneNumber,address,routeId,driverId,20LCans,1LBoxes,500MLBoxes,300MLBoxes,2LBoxes,warehouseId,customerType,existingCustomerId,distributorId,creationType,isDelivered,deliveryLocation,price20L,price2L,price1L,price500ML,price300ML,EmailId,deliveredDate) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+  let insertQueryValues = [customerName, contactPerson, phoneNumber, address, routeId, driverId, product20L, product1L, product500ML, product300ML, product2L, warehouseId, customerType, existingCustomerId, distributorId, creationType, isDelivered, deliveryLocation, price20L, price2L, price1L, price500ML, price300ML, EmailId, deliveredDate && new Date()]
   db.query(dcCreateQuery, insertQueryValues, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else {
       let inserted_id = results.insertId;
+      departmenttransactionQueries.createDepartmentTransaction({ userId: adminUserId, description: `DC  Created by ${userRole} <b>(${userName})</b>`, transactionId: results.insertId, departmentId, type: 'warehouse', subType: 'delivery' })
       let updateQuery = "update customerorderdetails set dcNo=? where customerOrderId=?"
       let updateQueryValues = ["DC-" + inserted_id, inserted_id];
       db.query(updateQuery, updateQueryValues, (err1, results1) => {

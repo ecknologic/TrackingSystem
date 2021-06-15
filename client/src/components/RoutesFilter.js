@@ -2,13 +2,13 @@ import { Dropdown, Menu } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
 import SearchInput from './SearchInput';
 import { LinesIconGrey } from './SVG_Icons';
-import CheckboxOption from './CheckboxOptionFunc';
+import CheckboxOption from './CheckboxOption';
 import { doubleKeyComplexSearch } from '../utils/Functions';
 import '../sass/routesDropdown.scss'
 
-const RoutesDropdown = ({ data, onChange, title, keyValue, keyLabel }) => {
+const RoutesDropdown = ({ data, onChange, title, keyValue, keyLabel, isCleared }) => {
 
-    const dataRef = useRef([])
+    let dataRef = useRef([])
     const [visible, setVisible] = useState(false)
     const [initial, setInitial] = useState([])
     const [display, setDisplay] = useState([])
@@ -17,6 +17,16 @@ const RoutesDropdown = ({ data, onChange, title, keyValue, keyLabel }) => {
         setInitial(data)
         setDisplay(data)
     }, [data.length])
+
+    useEffect(() => {
+        if (isCleared) {
+            const data = initial.map(item => {
+                item.checked = false
+                return item
+            })
+            setInitial(data)
+        }
+    }, [isCleared])
 
     const handleSelect = (option) => {
         dataRef.current = [...dataRef.current, option]

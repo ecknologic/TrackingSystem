@@ -6,12 +6,14 @@ import Header from './header';
 import ListPanel from './panels/ListPanel';
 import ContentPanel from './panels/ContentPanel';
 import Spinner from '../../../../components/Spinner'
+import useUser from '../../../../utils/hooks/useUser';
 import NoContent from '../../../../components/NoContent'
-import { SUPERADMIN } from '../../../../utils/constants';
 import { getMainPathname } from '../../../../utils/Functions';
+import { ACCOUNTSADMIN, MARKETINGMANAGER, SUPERADMIN } from '../../../../utils/constants';
 import '../../../../sass/invoices.scss';
 
 const Invoices = () => {
+    const { ROLE } = useUser()
     const history = useHistory()
     const { state, pathname } = useLocation()
     const [loading, setLoading] = useState(true)
@@ -20,6 +22,7 @@ const Invoices = () => {
     const [activeMsg, setActiveMsg] = useState(state ? state.invoice : {})
 
     const mainUrl = useMemo(() => getMainPathname(pathname), [pathname])
+    const isSMManager = useMemo(() => ROLE === MARKETINGMANAGER, [ROLE])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
@@ -31,7 +34,9 @@ const Invoices = () => {
     const getInvoice = async (id) => {
         const { FOR } = state || {}
         let url = `invoice/getDepartmentInvoiceById/${id}`
-        if (FOR === SUPERADMIN || FOR === 'CUSTOMER') {
+
+        if (FOR === SUPERADMIN || FOR === ACCOUNTSADMIN ||
+            FOR === MARKETINGMANAGER || FOR === 'CUSTOMER') {
             url = `invoice/getInvoiceById/${id}`
         }
 
@@ -47,11 +52,14 @@ const Invoices = () => {
         const { FOR, id } = state || {}
 
         let url = 'invoice/getDepartmentInvoices'
-        if (FOR === SUPERADMIN) {
+        if (FOR === SUPERADMIN || FOR === ACCOUNTSADMIN) {
             url = 'invoice/getInvoices'
         }
-        else if (FOR === SUPERADMIN || FOR === 'CUSTOMER') {
+        else if (FOR === 'CUSTOMER') {
             url = `invoice/getCustomerInvoices/${id}`
+        }
+        else if (FOR === MARKETINGMANAGER) {
+            url = 'invoice/getInvoicesByRole/5' // 5 is Sales and Marketing Admin Role
         }
 
         try {
@@ -70,14 +78,14 @@ const Invoices = () => {
     const onAdd = () => history.push(`${mainUrl}/2`)
     const handleBack = () => history.goBack()
 
-    const handlePrint = (event, pdf) => {
+    const handlePrint = (event) => {
         event.preventDefault();
         window.print()
     }
 
     return (
         <div className='manage-invoice'>
-            <Header onAdd={onAdd} onClick={handleBack} />
+            <Header onAdd={onAdd} onClick={handleBack} hideAdd={isSMManager} />
             {
                 loading ? <NoContent content={<Spinner />} />
                     : (
