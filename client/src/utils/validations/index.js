@@ -900,14 +900,14 @@ export const validateDCValues = (data) => {
 
     const isDistributor = customerType === 'distributor'
     const isExistingCustomer = customerType === 'internal'
-    if (!EmailId) errors.EmailId = text
-    else {
-        const error = validateEmailId(EmailId)
-        error && (errors.EmailId = error)
-    }
 
     if (isDistributor || isExistingCustomer) {
         if (!contactPerson) errors.contactPerson = text
+        if (!EmailId) errors.EmailId = text
+        else {
+            const error = validateEmailId(EmailId)
+            error && (errors.EmailId = error)
+        }
     }
 
     if (isDistributor) {
