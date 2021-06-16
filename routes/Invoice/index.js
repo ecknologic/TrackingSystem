@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const invoiceQueries = require('../../dbQueries/invoice/queries.js');
-const { dbError, base64String, formatDate } = require('../../utils/functions.js');
+const { dbError, base64String, formatDate, utils } = require('../../utils/functions.js');
 const { UPDATEMESSAGE, DATEFORMAT } = require('../../utils/constants');
 const customerQueries = require('../../dbQueries/Customer/queries.js');
 const { createSingleDeliveryInvoice } = require('./createInvoice.js');
@@ -442,6 +442,21 @@ router.get('/getUnclearedInvoices/count', (req, res) => {
                 }
             });
         }
+    });
+});
+
+router.get('/getTotalPendingAmount', (req, res) => {
+    invoiceQueries.getTotalInvoicePendingAmount((err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.json(results[0]?.totalPendingAmount);
+    });
+});
+
+router.get('/getPreviousInvoiceAmount', (req, res) => {
+    const { startDate, endDate } = utils.getLastMonthStartAndEndDates()
+    invoiceQueries.getLastMonthInvoiceAmount({ startDate, endDate }, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.json(results[0]?.totalAmount);
     });
 });
 

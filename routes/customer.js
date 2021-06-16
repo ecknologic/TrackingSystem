@@ -9,7 +9,7 @@ const opencage = require("../config/opencage.config.js");
 const { Buffer } = require('buffer');
 const multer = require('multer');
 const customerQueries = require('../dbQueries/Customer/queries.js');
-const { customerProductDetails, dbError, getCompareCustomersData, getCompareDistributorsData } = require('../utils/functions.js');
+const { customerProductDetails, dbError, getCompareCustomersData, getCompareDistributorsData, utils } = require('../utils/functions.js');
 const { saveToCustomerOrderDetails } = require('./utilities');
 const { createInvoice } = require('./Invoice/invoice');
 const { UPDATEMESSAGE, DELETEMESSAGE } = require('../utils/constants.js');
@@ -922,6 +922,14 @@ router.get('/getCustomerEnquiries', async (req, res) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else res.json(results)
   })
+});
+
+router.get('/getTotalDepositAmount', (req, res) => {
+  const { startDate, endDate } = utils.getCurrentMonthStartAndEndDates()
+  customerQueries.getCurrentMonthTotalDepositAmount({ startDate, endDate }, (err, results) => {
+    if (err) res.status(500).json(dbError(err));
+    else res.json(results[0]?.totalDepositAmount);
+  });
 });
 
 router.get('/getCustomerEnquiry/:enquiryId', async (req, res) => {

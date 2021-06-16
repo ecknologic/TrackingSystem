@@ -2,8 +2,9 @@ const db = require('../config/db.js');
 var dayjs = require('dayjs');
 var bcrypt = require("bcryptjs");
 const { DATEFORMAT, DISTRIBUTOR } = require('./constants.js');
-
 const format = 'DDMM-YY'
+let utils = {}
+
 const getBatchId = (shiftType) => {
     let shift = shiftType == 'Morning' ? 'A' : shiftType == 'Evening' ? 'B' : shiftType == 'Night' ? 'C' : 'A';
     let currentDate = dayjs().format(format)
@@ -364,7 +365,23 @@ const prepareOrderResponseObj = (i) => {
     }
     return responseObj
 }
+
+utils.getCurrentMonthStartAndEndDates = () => {
+    var date = new Date();
+    var startDate = new Date(date.getFullYear(), date.getMonth(), 1);
+    var endDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    return { startDate, endDate }
+}
+
+utils.getLastMonthStartAndEndDates = () => {
+    var date = new Date();
+    var startDate = new Date(date.getFullYear(), date.getMonth() - 1, 1);
+    var endDate = new Date(date.getFullYear(), date.getMonth(), 0);
+    return { startDate, endDate }
+}
+
 module.exports = {
+    utils,
     executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, checkDepartmentExists, productionCount,
     getCompareData, dateComparisions, checkUserExists, dbError, getBatchId, customerProductDetails, createHash, convertToWords,
     saveProductDetails, saveEnquiryProductDetails, updateEnquiryProductDetails, updateProductDetails, getFormatedNumber, getCompareCustomersData, getCompareDistributorsData, getGraphData, formatDate, prepareOrderResponseObj

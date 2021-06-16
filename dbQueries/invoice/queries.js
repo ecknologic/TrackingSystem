@@ -75,6 +75,18 @@ invoiceQueries.getInvoicesCount = async (input, callback) => {
     return executeGetParamsQuery(query, options, callback)
 }
 
+invoiceQueries.getTotalInvoicePendingAmount = async (callback) => {
+    let query = "SELECT (SELECT COALESCE(SUM(pendingAmount), 0) FROM Invoice) + (SELECT COALESCE(SUM(pendingAmount), 0) FROM departmentInvoices) AS totalPendingAmount";
+    return executeGetQuery(query, callback)
+}
+
+invoiceQueries.getLastMonthInvoiceAmount = async (input, callback) => {
+    const { startDate, endDate } = input
+    let query = `SELECT (SELECT COALESCE(CAST(SUM(totalAmount)AS DECIMAL(10,2)), 0) FROM Invoice WHERE DATE(invoiceDate) BETWEEN ? AND ?)
+    + (SELECT COALESCE(CAST(SUM(totalAmount)AS DECIMAL(10,2)), 0) FROM departmentInvoices WHERE DATE(invoiceDate) BETWEEN ? AND ?) AS totalAmount`;
+    return executeGetParamsQuery(query, [startDate, endDate,startDate, endDate], callback)
+}
+
 invoiceQueries.getInvoicePayments = async (callback) => {
     // const { startDate, endDate, fromStart } = input
     let query = "SELECT i.*,IFNULL(c.organizationName, c.customerName) as customerName,c.Address1 as billingAddress FROM invoicepaymentlogs i INNER JOIN customerdetails c ON i.customerId=c.customerId ORDER BY createdDateTime DESC";

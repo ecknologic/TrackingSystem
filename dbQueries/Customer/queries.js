@@ -363,6 +363,14 @@ customerQueries.getCustomerEnquiryProducts = (enquiryId, callback) => {
     return executeGetParamsQuery(query, options, callback)
 }
 
+customerQueries.getCurrentMonthTotalDepositAmount = (input, callback) => {
+    const { startDate, endDate } = input;
+    let query = `SELECT SUM(depositAmount) AS totalDepositAmount FROM customerdetails WHERE isApproved=1 AND DATE(approvedDate) BETWEEN ? AND ?`;
+    let options = [startDate, endDate]
+
+    return executeGetParamsQuery(query, options, callback)
+}
+
 //POST Request Methods
 customerQueries.saveCustomerOrderDetails = (input, callback) => {
     // let { contactPerson, phoneNumber, address, routeId, driverId, customer_Id, latitude, longitude, dcNo, departmentId, customerType, product20L, price20L, product1L, price1L, product500ML, price500ML,
