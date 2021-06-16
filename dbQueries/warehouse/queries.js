@@ -13,7 +13,7 @@ warehouseQueries.getDCList = async (departmentId, callback) => {
     CASE WHEN co.customertype='distributor' THEN d.mailId ELSE c.EmailId  END AS EmailId
      FROM customerorderdetails co LEFT JOIN customerdetails c 
     ON co.existingCustomerId=c.customerId LEFT JOIN Distributors d ON
-     co.distributorId=d.distributorId WHERE warehouseId=? AND co.customerType!='internal' AND co.creationType='manual'`;
+     co.distributorId=d.distributorId WHERE warehouseId=? AND co.creationType='manual'`;
     return executeGetParamsQuery(query, [departmentId], callback)
 }
 warehouseQueries.getDeliveryDetails = (input, callback) => {

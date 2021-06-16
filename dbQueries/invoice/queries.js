@@ -84,7 +84,7 @@ invoiceQueries.getLastMonthInvoiceAmount = async (input, callback) => {
     const { startDate, endDate } = input
     let query = `SELECT (SELECT COALESCE(CAST(SUM(totalAmount)AS DECIMAL(10,2)), 0) FROM Invoice WHERE DATE(invoiceDate) BETWEEN ? AND ?)
     + (SELECT COALESCE(CAST(SUM(totalAmount)AS DECIMAL(10,2)), 0) FROM departmentInvoices WHERE DATE(invoiceDate) BETWEEN ? AND ?) AS totalAmount`;
-    return executeGetParamsQuery(query, [startDate, endDate,startDate, endDate], callback)
+    return executeGetParamsQuery(query, [startDate, endDate, startDate, endDate], callback)
 }
 
 invoiceQueries.getInvoicePayments = async (callback) => {
@@ -230,6 +230,11 @@ invoiceQueries.saveInvoicePdf = (input, callback) => {
     fs.readFile("invoice.pdf", (err, result) => {
         executePostOrUpdateQuery(query, [result], callback)
     })
+}
+
+invoiceQueries.updateDCInvoiceFlag = (dcNo, callback) => {
+    let query = "update customerorderdetails set isInvoiceGenerated=? where dcNo='" + dcNo + "'"
+    executePostOrUpdateQuery(query, [1], callback)
 }
 
 invoiceQueries.updateInvoice = (input, callback) => {

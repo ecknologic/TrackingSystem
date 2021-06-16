@@ -487,12 +487,13 @@ const saveDepartmentInvoice = async (requestObj, res, response) => {
     invoiceQueries.createDepartmentInvoice(requestObj, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
-            let { products, invoiceId } = requestObj;
+            let { products, invoiceId, customerType, dcNo } = requestObj;
             if (products.length) {
                 invoiceQueries.saveDepartmentInvoiceProducts({ products, invoiceId }, (err, data) => {
                     if (err) res.status(500).json(dbError(err));
                     else {
                         getInvoiceByInvoiceId({ invoiceId, departmentId })
+                        if (customerType == 'customer') invoiceQueries.updateDCInvoiceFlag(dcNo)
                         if (requestObj.departmentStatus != "Pending") addDepartmentPayment(invoiceId, requestObj)
                         response && res.json({ message: 'Invoice created successfully' })
                     }
