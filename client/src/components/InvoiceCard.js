@@ -1,22 +1,27 @@
 import React from 'react';
 import CustomButton from './CustomButton';
+import ChangeBadge from './ChangeBadge';
 import { RightChevronIconLight } from './SVG_Icons';
 import { getFormatedNumber } from '../utils/Functions';
 import '../sass/orderCard.scss'
 import '../sass/invoiceCard.scss'
 
-const InvoiceCard = ({ data, onClick }) => {
-    const { invoiceId, customerName, billingAddress, pendingAmount } = data
+const InvoiceCard = ({ title, percent = '+20%', text = 'Compared to 434344 last month', amount = 12345, onClick }) => {
 
     return (
         <div className='order-card-container invoice-card-container'>
-            <span className='title clamp-2'>Invoice Number - {invoiceId} - {customerName}</span>
-            <span className='address clamp-2'>{billingAddress}</span>
-            <span className='stat-head'>₹ {getFormatedNumber(pendingAmount)}</span>
+            <div className='title-amount'>
+                <span className='title clamp-2'>{title}</span>
+                <span className='stat-head'>₹ {getFormatedNumber(amount)}</span>
+            </div>
+            <div className='percent-text'>
+                <ChangeBadge percent={percent} />
+                <span className='address clamp-2'>{text}</span>
+            </div>
             <CustomButton
                 text='View Details'
                 className='app-btn app-view-btn'
-                onClick={() => onClick(invoiceId)}
+                onClick={() => onClick(title)}
                 suffix={<RightChevronIconLight className='chev' />}
             />
         </div>

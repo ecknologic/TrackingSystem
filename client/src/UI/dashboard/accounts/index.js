@@ -4,11 +4,11 @@ import { http } from '../../../modules/http';
 import SalesResults from './panels/SalesResults';
 import TotalBusiness from './panels/TotalBusiness';
 import Header from '../../../components/ContentHeader';
+import InvoiceOverview from './panels/InvoiceOverview';
 import CustomersOverview from './panels/CustomersOverview';
 import GeneratedInvoiceOverview from './panels/GeneratedInvoices';
 import UnclearedInvoiceOverview from './panels/UnclearedInvoices';
 import { getDepartmentOptions, getWarehouseOptions, getDepartmentMenu } from '../../../assets/fixtures';
-import ProductionResults from '../super-admin/panels/ProductionResults';
 
 const AccountsAdminDashboard = () => {
     const [warehouseList, setWarehouseList] = useState([])
@@ -49,11 +49,11 @@ const AccountsAdminDashboard = () => {
             <Header />
             <div className='dashboard-content'>
                 <div className='equal-panels-container'>
-                    <SalesResults depOptions={warehouseOptions} />
-                    <div className='dashboard-results-card'></div>
+                    <TotalBusiness warehouseList={warehouseList} depMenu={warehouseMenu} />
                 </div>
                 <div className='equal-panels-container'>
-                    <TotalBusiness warehouseList={warehouseList} depMenu={warehouseMenu} />
+                    <SalesResults depOptions={warehouseOptions} />
+                    <InvoiceOverview />
                 </div>
                 <div className='equal-panels-container'>
                     <GeneratedInvoiceOverview />

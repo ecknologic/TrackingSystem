@@ -1,8 +1,34 @@
 .invoice-card-container {
+    background-color: #fff;
+    padding: 1em 1.5em 1em;
+
+    .title-amount {
+        display: flex;
+        justify-content: space-between;
+        line-height: 1.2;
+    }
+
+    .percent-text {
+        display: flex;
+
+        .address {
+            padding-left: 1em;
+        }
+    }
+
+    .title {
+        color: #2E384D;
+        font-size: 1.2em;
+        font-family: 'PoppinsBold700';
+    }
     
     .stat-head {
         font-family: 'PoppinsSemiBold600';
-        color: #2E384D;
-        font-size: 1.4em;
+        color: #FA6400;
+        font-size: 1.25em;
+    }
+
+    .app-view-btn {
+        margin-top: .5em;
     }
 }

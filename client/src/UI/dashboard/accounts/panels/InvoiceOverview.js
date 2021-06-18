@@ -1,126 +1,78 @@
 import axios from 'axios';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Empty } from 'antd';
+import { useHistory } from 'react-router-dom';
+import Scrollbars from 'react-custom-scrollbars-2';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
+import Spinner from '../../../../components/Spinner';
+import useUser from '../../../../utils/hooks/useUser';
+import { isEmpty } from '../../../../utils/Functions';
+import NoContent from '../../../../components/NoContent';
 import PanelHeader from '../../../../components/PanelHeader';
 import { TODAYDATE as d } from '../../../../utils/constants';
-import { defaultPie } from '../../../../assets/fixtures';
-import InvoiceOverviewCard from '../../../../components/InvoiceOverviewCard';
-import EmptyBottlesStockCard from '../../../../components/EmptyBottlesStockCard';
-// import CustomButton from '../../../../components/CustomButton';
-// import { RightChevronIconLight } from '../../../../components/SVG_Icons';
+import CustomButton from '../../../../components/CustomButton';
+import InvoiceCard from '../../../../components/InvoiceCard';
+import { RightChevronIconLight } from '../../../../components/SVG_Icons';
 const options = { startDate: d, endDate: d, fromStart: true }
 
 const InvoiceOverview = () => {
-    const [results, setResults] = useState([])
+    const { ROLE } = useUser()
+    const history = useHistory()
+    const [count, setCount] = useState(0)
+    const [loading, setLoading] = useState(true)
+    const [TPA, setTPA] = useState({})
     const [opData, setOpData] = useState(() => options)
-    const [graph, setGraph] = useState(defaultPie)
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
-    const { product20LCount, product2LCount, product1LCount, product500MLCount, product300MLCount, product2LPercent,
-        product2LCompareText, product20LPercent, product20LCompareText, product1LPercent, product1LCompareText, product500MLPercent,
-        product500MLCompareText, product300MLPercent, product300MLCompareText, prevTotal, total,
-        product20LPartPercent, product1LPartPercent, product2LPartPercent, product500MLPartPercent, product300MLPartPercent } = {}
+    const { TPACompareText, IACompareText, CACompareText, DACompareText, TPAPercent, IAPercent,
+        CAPercent, DAPercent, TPAAmount, IAAmount, CAAmount, DAAmount } = TPA
 
     useEffect(() => {
-        getTestResults(opData)
+        getTPA(opData)
 
         return () => {
             http.ABORT(source)
         }
     }, [])
 
-    const getTestResults = async ({ startDate, endDate, fromStart }) => {
-        const url = `invoice/getTotalInvoicesCount?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}`
+
+    const getTPA = async ({ startDate, endDate, fromStart }) => {
+        const url = `invoice/getTotalPendingAmount?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}`
 
         try {
             const data = await http.GET(axios, url, config)
-            setResults(data)
-            const graph = getPieData(data)
-            setGraph(graph)
+            console.log('data>>>', data)
+            setTPA(data)
+            setLoading(false)
         } catch (error) { }
     }
 
     const handleOperation = useCallback((data) => {
         const newData = { ...opData, ...data }
-        getTestResults(newData)
+        setLoading(true)
+        getTPA(newData)
         setOpData(newData)
     }, [opData])
 
+    const goToInvoices = useCallback(() => history.push('/invoices'), [])
+
     return (
-        <div className='total-business-panel mr-0'>
+        <div className='invoice-overview-panel'>
             <div className='header'>
                 <PanelHeader title='Invoice Overview' onSelect={handleOperation} showShow />
             </div>
-            <div className='total-revenue-card'>
-                <div className='sub-panel'>
-                    <EmptyBottlesStockCard isRs
-                        title='20 Ltrs'
-                        percent={product20LPercent}
-                        partPercent={product20LPartPercent}
-                        total={product20LCount}
-                        strokeColor='#F7B500'
-                        text={product20LCompareText}
-                    />
-                    <EmptyBottlesStockCard isRs
-                        title='2 Ltrs'
-                        percent={product2LPercent}
-                        partPercent={product2LPartPercent}
-                        total={product2LCount}
-                        text={product2LCompareText}
-                        strokeColor='#FA6400'
-                    />
-                </div>
-                <div className='sub-panel'>
-                    <EmptyBottlesStockCard isRs
-                        title='1 Ltrs'
-                        percent={product1LPercent}
-                        partPercent={product1LPartPercent}
-                        total={product1LCount}
-                        strokeColor='#0091FF'
-                        text={product1LCompareText}
-                    />
-                    <EmptyBottlesStockCard isRs
-                        title='500 ml'
-                        percent={product500MLPercent}
-                        partPercent={product500MLPartPercent}
-                        total={product500MLCount}
-                        strokeColor='#41B9AD'
-                        text={product500MLCompareText}
-                    />
-                </div>
-                <div className='sub-panel'>
-                    <EmptyBottlesStockCard isRs
-                        title='300 ml'
-                        percent={product300MLPercent}
-                        partPercent={product300MLPartPercent}
-                        total={product300MLCount}
-                        strokeColor='#0091FF'
-                        text={product300MLCompareText}
-                    />
+            <div className='panel-body pb-0'>
+                <div className='panel-details'>
+                    <InvoiceCard title='Total Pending Amount' text={TPACompareText} amount={TPAAmount} percent={TPAPercent} onClick={goToInvoices} />
+                    <InvoiceCard title='Invoice Amount' text={IACompareText} amount={IAAmount} percent={IAPercent} onClick={goToInvoices} />
+                    <InvoiceCard title='Collected Amount' text={CACompareText} amount={CAAmount} percent={CAPercent} onClick={goToInvoices} />
+                    <InvoiceCard title='Deposit Amount' text={DACompareText} amount={DAAmount} percent={DAPercent} onClick={goToInvoices} />
                 </div>
             </div>
         </div>
-
     )
 }
 
-const getPieData = ({ paidCount, totalCount }) => {
-    const cleared = Math.round(paidCount / (totalCount || 1) * 100)
-    let pending = 100 - cleared
-
-    if (!totalCount) pending = 0
-
-    return [
-        {
-            type: 'Cleared',
-            value: cleared,
-        },
-        {
-            type: 'Pending',
-            value: pending,
-        }
-    ]
-}
-
+const Thumb = (props) => <div {...props} className="thumb-vertical" />
 export default InvoiceOverview
