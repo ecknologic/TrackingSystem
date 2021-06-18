@@ -460,6 +460,13 @@ router.get('/getPreviousInvoiceAmount', (req, res) => {
     });
 });
 
+router.get('/getReceivedInvoiceAmount', (req, res) => {
+    invoiceQueries.getReceivedInvoiceAmount((err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.json(results[0]?.totalAmount);
+    });
+});
+
 const saveInvoice = async (requestObj, res, response) => {
     // req.body.invoicePdf = pdfData.toString('base64')
     invoiceQueries.createInvoice(requestObj, (err, results) => {

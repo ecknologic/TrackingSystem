@@ -504,6 +504,24 @@ router.get("/getDeliveryDetails/:deliveryDetailsId", async (req, res) => {
   let data = await getDeliveryDetails({ deliveryDetailsId, isSuperAdmin: 'true' })
   res.json({ status: 200, statusMessage: "Success", data })
 });
+
+router.get("/getCustomersCountByStaff", async (req, res) => {
+  customerQueries.getTotalActiveCustomers(req.query, (err, activeCustomers) => {
+    if (err) res.status(500).json(err);
+    else {
+      customerQueries.getTotalApprovalPendingCustomers(req.query, (err, pendingCustomers) => {
+        if (err) res.status(500).json(err);
+        else {
+          let onBoardedCount = activeCustomers[0]?.totalCount
+          let pendingCount = pendingCustomers[0]?.totalCount
+          res.json({ status: 200, statusMessage: "Success", data: { onBoardedCount, pendingCount } })
+        }
+      })
+    }
+  })
+});
+
+
 // router.get("/getLongitudeandLatitude/:address", (req, response) => {
 //   geocoder.geocode(req.params.address, function (err, res) {
 //     response.send("lattitue:::" + res[0].latitude + "longitude:::" + res[0].longitude);
@@ -916,6 +934,31 @@ router.get('/getCustomerEnquiries/:createdBy', async (req, res) => {
     else res.json(results)
   })
 });
+
+router.get('/getCustomerEnquiriesCount', async (req, res) => {
+  customerQueries.getCustomerEnquiriesCountByAgent(req.query.staffId, (err, totalCustomers) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else {
+      customerQueries.getRevisitCustomersCountByAgent(req.query.staffId, (err, totalRevisitCustomers) => {
+        if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+        else {
+          let totalVisited = totalCustomers[0]?.totalCount
+          let totalPendingRequests = totalRevisitCustomers[0]?.totalCount
+          res.json({ status: 200, statusMessage: "Success", data: { totalVisited, totalPendingRequests } })
+        }
+      })
+    }
+  })
+});
+
+router.get('/getRevisitCustomers', async (req, res) => {
+  customerQueries.getRevisitCustomersByAgent(req.query.staffId, (err, totalRevisitCustomers) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else {
+      res.json({ status: 200, statusMessage: "Success", data: totalRevisitCustomers })
+    }
+  })
+})
 
 router.get('/getCustomerEnquiries', async (req, res) => {
   customerQueries.getAllCustomerEnquiries((err, results) => {
