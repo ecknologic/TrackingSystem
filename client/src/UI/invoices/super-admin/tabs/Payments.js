@@ -75,7 +75,11 @@ const Payments = ({ reFetch, onUpdate }) => {
         !status && setOpen(false)
     }
 
-    const handleViewInvoice = (invoice) => history.push('/invoices/manage', { invoice })
+    const handleViewInvoice = (invoice) => {
+        let url = '/invoices/manage'
+        if (isWHAdmin) url = '/manage-invoices/manage'
+        history.push(url, { invoice })
+    }
 
     const handleDateSelect = (value) => {
         setOpen(false)

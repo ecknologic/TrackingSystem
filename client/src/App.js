@@ -40,6 +40,7 @@ import SuperAdminDashboard from './UI/dashboard/super-admin';
 import AccountsAdminDashboard from './UI/dashboard/accounts';
 import ManageInvoices from './UI/invoices/super-admin/manage';
 import MotherplantDashboard from './UI/dashboard/motherplant';
+import SalesAdminDashboard from './UI/dashboard/sales-admin';
 import MotherplantMaterials from './UI/materials/motherplant';
 import ManageVisitedCustomer from './UI/visited-customers/view';
 import DeliveredDC from './UI/invoices/super-admin/delivered-dc';
@@ -69,7 +70,7 @@ const App = () => {
    const dashboardAuth = () => {
       if (!isUser) return <Redirect to='/' />
       else {
-         if (ROLE === MARKETINGADMIN) return <Redirect to='/customers' />
+         if (ROLE === MARKETINGADMIN) return <SalesAdminDashboard />
          else if (ROLE === MARKETINGMANAGER) return <MarketingDashboard />
          else if (ROLE === WAREHOUSEADMIN) return <WarehouseDashboard />
          else if (ROLE === MOTHERPLANTADMIN) return <MotherplantDashboard />
