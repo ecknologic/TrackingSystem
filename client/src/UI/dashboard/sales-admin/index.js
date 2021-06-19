@@ -1,15 +1,53 @@
 import Slider from "react-slick";
-import React, { Fragment } from 'react';
+import { useHistory } from "react-router-dom";
+import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
+import { appApi, http } from "../../../modules/http";
 import Header from '../../../components/ContentHeader';
-import VisitedCustomers from './panels/VisitedCustomers';
 import NormalCard from "../../../components/NormalCard";
-import UpcomingCustomers from './panels/UpcomingCustomers';
+import VisitedCustomers from './panels/VisitedCustomers';
+import RevisitCustomers from './panels/RevisitCustomers';
+import { TODAYDATE as d } from '../../../utils/constants';
 import PendingApprovals from '../marketing/panels/PendingApprovals';
 import { LeftChevronIconGrey, RightChevronIconGrey } from '../../../components/SVG_Icons';
 
 const SalesAdminDashboard = () => {
+    const history = useHistory()
+    const [customerCount, setCustomerCount] = useState({})
+    const [enquiriesCount, setEnquiriesCount] = useState({})
+    const source = useMemo(() => appApi.CancelToken.source(), []);
+    const config = { cancelToken: source.token }
 
-    const { totalCorporateCustomers, totalIndividualCustomers, totalInactiveCustomers, totalDistributors } = {}
+    const { onBoardedCount, pendingCount } = customerCount
+    const { totalVisited, totalPendingRequests } = enquiriesCount
+
+    useEffect(() => {
+        getCustomersCount()
+        getEnquiriesCount()
+
+        return () => {
+            http.ABORT(source)
+        }
+    }, [])
+
+    const getCustomersCount = async () => {
+        const url = `customer/getCustomersCountByStaff?startDate=${d}&endDate=${d}&fromStart=true`
+
+        try {
+            const { data } = await http.GET(appApi, url, config)
+            setCustomerCount(data)
+        } catch (error) { }
+    }
+
+    const getEnquiriesCount = async () => {
+        const url = 'customer/getCustomerEnquiriesCount'
+
+        try {
+            const { data } = await http.GET(appApi, url, config)
+            setEnquiriesCount(data)
+        } catch (error) { }
+    }
+
+    const goToVisitedCustomers = useCallback(() => history.push('/visited-customers'))
 
     return (
         <Fragment>
@@ -17,16 +55,16 @@ const SalesAdminDashboard = () => {
             <div className='dashboard-content'>
                 <div className='panel-body quality-testing-panel pt-0'>
                     <Slider className='dashboard-slider' {...props} >
-                        <NormalCard total={totalCorporateCustomers} title='Onboarded Customers' onClick={() => { }} />
-                        <NormalCard total={totalIndividualCustomers} title='Approvals Pending' onClick={() => { }} />
-                        <NormalCard total={totalInactiveCustomers} title='Request Pending' onClick={() => { }} />
-                        <NormalCard total={totalDistributors} title='Total Visited Customers' onClick={() => { }} />
+                        <NormalCard total={onBoardedCount} title='Onboarded Customers' onClick={() => goToVisitedCustomers} />
+                        <NormalCard total={pendingCount} title='Approvals Pending' onClick={() => goToVisitedCustomers} />
+                        <NormalCard total={totalPendingRequests} title='Request Pending' onClick={() => goToVisitedCustomers} />
+                        <NormalCard total={totalVisited} title='Total Visited Customers' onClick={() => goToVisitedCustomers} />
                     </Slider>
                 </div>
                 <div className='dashboard-content-other'>
                     <div className='left-content'>
                         <VisitedCustomers />
-                        <UpcomingCustomers />
+                        <RevisitCustomers />
                     </div>
                     <div className='right-content'>
                         <PendingApprovals />

@@ -6,7 +6,7 @@ const StatusCard = memo(({ count, title, showViewDetails = true }) => {
     return (
         <div className='status-card'>
             <div className='sc__count_name'>
-                <span className='count'>{count}</span>
+                <span className='count'>{count || 0}</span>
                 <span className='name'>{title}</span>
             </div>
             {showViewDetails ? <div className='sc__footer'>

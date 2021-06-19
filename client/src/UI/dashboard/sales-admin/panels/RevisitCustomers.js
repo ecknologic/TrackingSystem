@@ -1,24 +1,22 @@
 import { Empty } from 'antd';
 import Slider from "react-slick";
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import Spinner from '../../../../components/Spinner';
 import { isEmpty } from "../../../../utils/Functions";
 import { http, appApi } from '../../../../modules/http';
 import NoContent from '../../../../components/NoContent';
 import PanelHeader from '../../../../components/PanelHeader';
 import { TODAYDATE as d } from '../../../../utils/constants';
-import { LeftChevronIconGrey, RightChevronIconGrey } from '../../../../components/SVG_Icons';
 import RevisitCard from '../../../../components/RevisitCard';
+import { LeftChevronIconGrey, RightChevronIconGrey } from '../../../../components/SVG_Icons';
 const options = { startDate: d, endDate: d, fromStart: true }
 
-const UpcomingCustomers = () => {
-    const [salesAgentDetails, setsalesAgentDetails] = useState([])
+const RevisitCustomers = () => {
+    const [customers, setCustomers] = useState([])
     const [opData, setOpData] = useState(() => options)
     const [loading, setLoading] = useState(true)
     const source = useMemo(() => appApi.CancelToken.source(), []);
     const config = { cancelToken: source.token }
-
-    const { totalCorporateCustomers } = {}
-
 
     useEffect(() => {
         getEnquiriesCount(opData)
@@ -28,13 +26,13 @@ const UpcomingCustomers = () => {
         }
     }, [])
 
-    const getEnquiriesCount = async ({ startDate, endDate, fromStart }) => {
-        const url = `reports/getEnquiriesCount?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}`
+    const getEnquiriesCount = async () => {
+        const url = 'customer/getRevisitCustomers'
 
         try {
-            const data = await http.GET(appApi, url, config)
+            const { data } = await http.GET(appApi, url, config)
             setLoading(false)
-            setsalesAgentDetails(data)
+            setCustomers(data)
         } catch (error) { }
     }
 
@@ -47,15 +45,16 @@ const UpcomingCustomers = () => {
 
     return (
         <div className='executive-overview-panel'>
-            <PanelHeader title='Upcoming Customers' onSelect={handleInvoiceOp} />
+            <PanelHeader title='Revisit Customers' onSelect={handleInvoiceOp} />
             <div className='panel-body'>
                 {
-                    isEmpty(salesAgentDetails) ? <NoContent content={<Empty />} />
-                        : <Slider className='dashboard-slider' {...props} >
-                            {
-                                salesAgentDetails.map((item) => <RevisitCard total={totalCorporateCustomers} title='Onboarded Customers' onClick={() => { }} />)
-                            }
-                        </Slider>
+                    loading ? <NoContent content={<Spinner />} />
+                        : isEmpty(customers) ? <NoContent content={<Empty />} />
+                            : <Slider className='dashboard-slider' {...props} >
+                                {
+                                    customers.map((item) => <RevisitCard data={item} />)
+                                }
+                            </Slider>
                 }
             </div>
         </div>
@@ -68,4 +67,4 @@ const props = {
     prevArrow: <LeftChevronIconGrey />,
     nextArrow: <RightChevronIconGrey />
 }
-export default UpcomingCustomers
+export default RevisitCustomers

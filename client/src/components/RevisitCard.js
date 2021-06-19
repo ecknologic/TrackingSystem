@@ -1,27 +1,29 @@
+import dayjs from 'dayjs';
 import React from 'react';
 import NameCard from './NameCard';
 import '../sass/revisitCard.scss';
+const format = 'DD/MM/YYYY'
 
-const RevisitCard = ({ title, total, onClick }) => {
-
+const RevisitCard = ({ data }) => {
+    const { customerName, mobileNumber, address, revisitDate, contactperson, customertype } = data
     return (
         <div className='revisit-card-container'>
             <div className='revisit-title'>
-                <span>{'Revisit Date: 23/03/2020'}</span>
+                <span>Revisit Date: {dayjs(revisitDate).format(format)}</span>
             </div>
             <div className='business'>
-                <span className='type1'>{'Exile Infotech'}</span>
-                <span className='value clamp-1'>{'Sriram Nagar, Madhapur'}</span>
+                <span className='type1'>{customerName}</span>
+                <span className='value clamp-1'>{address}</span>
             </div>
             <div className='business'>
                 <span className='type1'>Account Type</span>
-                <span className='value'>{'Business'}</span>
+                <span className='value'>{customertype}</span>
             </div>
             <div className='contact-container'>
                 <span className='type1'>Contact Details</span>
                 <div className='contacts'>
-                    <NameCard name={'Dilip'} />
-                    <span className='mobile'>{'9393839383'}</span>
+                    <NameCard name={contactperson} />
+                    <span className='mobile'>{mobileNumber}</span>
                 </div>
             </div>
         </div>

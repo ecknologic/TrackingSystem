@@ -14,7 +14,6 @@ const VisitedCustomers = () => {
     const source = useMemo(() => appApi.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
-
     useEffect(() => {
         getVisitedCustomersReport(opData)
 
@@ -23,8 +22,8 @@ const VisitedCustomers = () => {
         }
     }, [])
 
-    const getVisitedCustomersReport = async ({ startDate, endDate, fromStart, departmentId = 'All' }) => {
-        const url = `reports/getVisitedCustomersReport?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}&departmentId=${departmentId}`
+    const getVisitedCustomersReport = async ({ startDate, endDate, fromStart }) => {
+        const url = `reports/getVisitedCustomersReport?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}`
 
         try {
             const data = await http.GET(appApi, url, config)
@@ -40,7 +39,7 @@ const VisitedCustomers = () => {
         setOpData(newData)
     }, [opData])
 
-    const { onboardedCustomers = 0, pendingApprovals = 0, revisitCustomers = 0, visitedCustomers = 0 } = visitedReport
+    const { onboardedCustomers, pendingApprovals, revisitCustomers, visitedCustomers } = visitedReport
     return (
         <div className='visited-customers-panel'>
             <PanelHeader title='Visited Customers' onSelect={handleInvoiceOp} showShow />

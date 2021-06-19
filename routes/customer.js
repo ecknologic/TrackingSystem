@@ -506,6 +506,7 @@ router.get("/getDeliveryDetails/:deliveryDetailsId", async (req, res) => {
 });
 
 router.get("/getCustomersCountByStaff", async (req, res) => {
+  req.query.staffId = userId
   customerQueries.getTotalActiveCustomers(req.query, (err, activeCustomers) => {
     if (err) res.status(500).json(err);
     else {
@@ -936,7 +937,7 @@ router.get('/getCustomerEnquiries/:createdBy', async (req, res) => {
 });
 
 router.get('/getCustomerEnquiriesCount', async (req, res) => {
-  customerQueries.getCustomerEnquiriesCountByAgent(req.query.staffId, (err, totalCustomers) => {
+  customerQueries.getCustomerEnquiriesCountByAgent(userId, (err, totalCustomers) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else {
       customerQueries.getRevisitCustomersCountByAgent(req.query.staffId, (err, totalRevisitCustomers) => {
@@ -952,7 +953,7 @@ router.get('/getCustomerEnquiriesCount', async (req, res) => {
 });
 
 router.get('/getRevisitCustomers', async (req, res) => {
-  customerQueries.getRevisitCustomersByAgent(req.query.staffId, (err, totalRevisitCustomers) => {
+  customerQueries.getRevisitCustomersByAgent(userId, (err, totalRevisitCustomers) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else {
       res.json({ status: 200, statusMessage: "Success", data: totalRevisitCustomers })
