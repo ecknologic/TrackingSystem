@@ -373,11 +373,37 @@ utils.getCurrentMonthStartAndEndDates = () => {
     return { startDate, endDate }
 }
 
-utils.getLastMonthStartAndEndDates = () => {
+utils.getPrevMonthStartAndEndDates = (prevMonthLength) => {
     var date = new Date();
-    var startDate = new Date(date.getFullYear(), date.getMonth() - 1, 1);
-    var endDate = new Date(date.getFullYear(), date.getMonth(), 0);
+    var startDate = new Date(date.getFullYear(), date.getMonth() - prevMonthLength, 1);
+    var endDate = new Date(date.getFullYear(), date.getMonth() - (prevMonthLength - 1), 0);
     return { startDate, endDate }
+}
+
+utils.getCompareInvoiceData = (data, type) => {
+    const { currentInvoiceAmount, prevInvoiceAmount } = data
+
+    const invoicePercent = getPercent(currentInvoiceAmount, prevInvoiceAmount)
+    const invoiceCompareText = getCompareText(type, prevInvoiceAmount)
+
+    let obj = {
+        invoicePercent, invoiceCompareText
+    }
+
+    return obj
+}
+
+utils.getCompareDepositData = (data, type) => {
+    const { currentMonthAmount, previousMonthAmount } = data
+
+    const depositPercent = getPercent(currentMonthAmount, previousMonthAmount)
+    const depositCompareText = getCompareText(type, previousMonthAmount)
+
+    let obj = {
+        depositPercent, depositCompareText
+    }
+
+    return obj
 }
 
 module.exports = {

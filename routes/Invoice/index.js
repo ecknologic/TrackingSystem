@@ -453,10 +453,23 @@ router.get('/getTotalPendingAmount', (req, res) => {
 });
 
 router.get('/getPreviousInvoiceAmount', (req, res) => {
-    const { startDate, endDate } = utils.getLastMonthStartAndEndDates()
-    invoiceQueries.getLastMonthInvoiceAmount({ startDate, endDate }, (err, results) => {
+    const { startDate, endDate } = utils.getPrevMonthStartAndEndDates(1)
+    console.log(startDate, endDate)
+    invoiceQueries.getPreviousMonthInvoiceAmount({ startDate, endDate }, (err, results) => {
         if (err) res.status(500).json(dbError(err));
-        else res.json(results[0]?.totalAmount);
+        else {
+            let { startDate, endDate } = utils.getPrevMonthStartAndEndDates(2);
+            console.log("startDate, endDate", startDate, endDate)
+            let currentInvoiceAmount = results[0]?.totalAmount || 0
+            invoiceQueries.getPreviousMonthInvoiceAmount({ startDate, endDate }, (err, results) => {
+                if (err) res.status(500).json(dbError(err));
+                else {
+                    let prevInvoiceAmount = results[0]?.totalAmount || 0;
+                    let data = utils.getCompareInvoiceData({ currentInvoiceAmount, prevInvoiceAmount, type: req.query.type })
+                    res.json(data);
+                }
+            });
+        }
     });
 });
 

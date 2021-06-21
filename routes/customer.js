@@ -972,7 +972,18 @@ router.get('/getTotalDepositAmount', (req, res) => {
   const { startDate, endDate } = utils.getCurrentMonthStartAndEndDates()
   customerQueries.getCurrentMonthTotalDepositAmount({ startDate, endDate }, (err, results) => {
     if (err) res.status(500).json(dbError(err));
-    else res.json(results[0]?.totalDepositAmount);
+    else {
+      let currentMonthAmount = results[0]?.totalDepositAmount || 0
+      let { startDate, endDate } = utils.getPrevMonthStartAndEndDates(1)
+      customerQueries.getCurrentMonthTotalDepositAmount({ startDate, endDate }, (err, prevresults) => {
+        if (err) res.status(500).json(dbError(err));
+        else {
+          let previousMonthAmount = prevresults[0]?.totalDepositAmount || 0
+          let data = utils.getCompareDepositData({ currentMonthAmount, previousMonthAmount, type: req.query.type })
+          res.json(data)
+        }
+      });
+    };
   });
 });
 

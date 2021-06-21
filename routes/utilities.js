@@ -108,7 +108,7 @@ function saveToCustomerOrderDetails(customerId, res, deliveryDetailsId, userId, 
           else console.log('data>>>', data)
         })
       }
-      res.json('Customer approved successfully')
+      res && res.json('Customer approved successfully')
     }
   });
 }

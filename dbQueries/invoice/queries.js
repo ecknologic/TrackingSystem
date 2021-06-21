@@ -86,7 +86,7 @@ invoiceQueries.getReceivedInvoiceAmount = async (callback) => {
     return executeGetQuery(query, callback)
 }
 
-invoiceQueries.getLastMonthInvoiceAmount = async (input, callback) => {
+invoiceQueries.getPreviousMonthInvoiceAmount = async (input, callback) => {
     const { startDate, endDate } = input
     let query = `SELECT (SELECT COALESCE(CAST(SUM(totalAmount)AS DECIMAL(10,2)), 0) FROM Invoice WHERE fromdate >=? and toDate<=?)
     + (SELECT COALESCE(CAST(SUM(totalAmount)AS DECIMAL(10,2)), 0) FROM departmentInvoices WHERE fromdate >=? and toDate<=?) AS totalAmount`;
