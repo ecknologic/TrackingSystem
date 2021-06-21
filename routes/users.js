@@ -37,6 +37,7 @@ router.post('/createWebUser', (req, res) => {
       usersQueries.saveDependentDetails(obj, "staffDependentDetails", (err, success) => {
         if (err) console.log("Staff Dependent Err", err)
       })
+      auditQueries.createLog({ userId, description: `Staff created by ${userRole} <b>(${adminUserName})</b>`, staffId, type: "staff" })
       if (privilegeDetails.length) {
         for (let i of privilegeDetails) {
           let privilegeQuery = "insert into userPrivilegesMaster (privilegeId,privilegeActions,userId) values(?,?,?)";
@@ -44,7 +45,6 @@ router.post('/createWebUser', (req, res) => {
           db.query(privilegeQuery, queryValues, (privilegeErr, results) => {
             if (privilegeErr) res.status(500).json(dbError(privilegeErr));
             else {
-              auditQueries.createLog({ userId, description: `Staff created by ${userRole} <b>(${adminUserName})</b>`, staffId, type: "staff" })
               res.json({ status: 200, message: "User Added Successfully" });
             }
           })

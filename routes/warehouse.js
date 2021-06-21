@@ -102,7 +102,7 @@ router.post('/createWarehouse', (req, res) => {
   warehouseQueries.createWarehouse(req.body, (err, results) => {
     if (err) res.status(500).json(dbError(err));
     else {
-      usersQueries.updateUserDepartment({ departmentId: results.insertId, userId: req.body.adminId }, (err, results) => {
+      usersQueries.updateUserDepartment({ departmentId: results.insertId, userId: req.body.adminId }, (err, userresults) => {
         if (err) res.status(500).json(dbError(err));
         else {
           auditQueries.createLog({ userId: adminUserId, description: `Warehouse Created by ${userRole} <b>(${userName})</b>`, departmentId: results.insertId, type: 'warehouse' })

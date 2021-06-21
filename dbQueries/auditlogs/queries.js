@@ -9,15 +9,15 @@ auditQueries.getAudits = (input, callback) => {
     let query;
     if (type == 'staff' || type == 'driver') {
         query = `SELECT a.auditId,a.description,a.createdDateTime,a.oldValue,a.updatedValue from auditlogs a
-        WHERE a.staffId=${id} ORDER BY a.createdDateTime DESC`
+        WHERE a.staffId=? AND type=? ORDER BY a.createdDateTime DESC`
     }
-    else if (type == 'customer'||type == 'customerEnquiry' || type == 'distributor') {
-        query = `SELECT a.auditId,a.description,a.createdDateTime,a.oldValue,a.updatedValue from auditlogs a WHERE a.customerId=${id} ORDER BY a.createdDateTime DESC`
+    else if (type == 'customer' || type == 'customerEnquiry' || type == 'distributor') {
+        query = `SELECT a.auditId,a.description,a.createdDateTime,a.oldValue,a.updatedValue from auditlogs a WHERE a.customerId=? AND type=? ORDER BY a.createdDateTime DESC`
     }
     else if (type == 'motherplant' || type == 'warehouse') {
-        query = `SELECT a.auditId,a.description,a.createdDateTime,a.oldValue,a.updatedValue from auditlogs a WHERE a.departmentId=${id} ORDER BY a.createdDateTime DESC`
+        query = `SELECT a.auditId,a.description,a.createdDateTime,a.oldValue,a.updatedValue from auditlogs a WHERE a.departmentId=? AND type=? ORDER BY a.createdDateTime DESC`
     }
-    executeGetQuery(query, callback)
+    executeGetParamsQuery(query, [id, type], callback)
 }
 
 //POST Request Methods
