@@ -384,7 +384,7 @@ utils.getCompareInvoiceData = (data, type) => {
     const { currentInvoiceAmount, prevInvoiceAmount } = data
 
     const invoicePercent = getPercent(currentInvoiceAmount, prevInvoiceAmount)
-    const invoiceCompareText = getCompareText(type, prevInvoiceAmount)
+    const invoiceCompareText = getCompareText(type, prevInvoiceAmount, true)
 
     let obj = {
         invoicePercent, invoiceCompareText
@@ -395,9 +395,8 @@ utils.getCompareInvoiceData = (data, type) => {
 
 utils.getCompareDepositData = (data, type) => {
     const { currentMonthAmount, previousMonthAmount } = data
-
     const depositPercent = getPercent(currentMonthAmount, previousMonthAmount)
-    const depositCompareText = getCompareText(type, previousMonthAmount)
+    const depositCompareText = getCompareText(type, previousMonthAmount, true)
 
     let obj = {
         depositPercent, depositCompareText

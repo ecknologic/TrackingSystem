@@ -6,7 +6,7 @@ import { getFormatedNumber } from '../utils/Functions';
 import '../sass/orderCard.scss'
 import '../sass/invoiceCard.scss'
 
-const InvoiceCard = ({ title, percent, text = '', amount, onClick }) => {
+const InvoiceCard = ({ title, percent, text = '', amount, onClick, showPercent }) => {
 
     return (
         <div className='order-card-container invoice-card-container'>
@@ -15,7 +15,7 @@ const InvoiceCard = ({ title, percent, text = '', amount, onClick }) => {
                 <span className='stat-head'>₹ {getFormatedNumber(amount)}</span>
             </div>
             {
-                text && (
+                showPercent && (
                     <div className='percent-text'>
                         <ChangeBadge percent={percent} />
                         <span className='address clamp-2'>{text}</span>

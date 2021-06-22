@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import useUser from '../../../../utils/hooks/useUser';
 import { http, appApi } from '../../../../modules/http';
 import PanelHeader from '../../../../components/PanelHeader';
 import { TODAYDATE as d } from '../../../../utils/constants';
@@ -7,6 +8,7 @@ import InvoiceOverviewCardSmall from '../../../../components/InvoiceOverviewCard
 const options = { startDate: d, endDate: d, fromStart: true }
 
 const InvoiceOverview = () => {
+    const { WAREHOUSEID } = useUser()
     const [invoices, setInvoices] = useState([])
     const [opData, setOpData] = useState(() => options)
     const [graph, setGraph] = useState(defaultPie)
@@ -22,8 +24,8 @@ const InvoiceOverview = () => {
         }
     }, [])
 
-    const getInvoices = async ({ startDate, endDate, fromStart, departmentId = 'All' }) => {
-        const url = `invoice/getDepartmentInvoicesCount?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}&departmentId=${departmentId}`
+    const getInvoices = async ({ startDate, endDate, fromStart }) => {
+        const url = `invoice/getDepartmentInvoicesCount?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}&departmentId=${WAREHOUSEID}`
 
         try {
             const data = await http.GET(appApi, url, config)

@@ -979,8 +979,8 @@ router.get('/getTotalDepositAmount', (req, res) => {
         if (err) res.status(500).json(dbError(err));
         else {
           let previousMonthAmount = prevresults[0]?.totalDepositAmount || 0
-          let data = utils.getCompareDepositData({ currentMonthAmount, previousMonthAmount, type: req.query.type })
-          res.json({ ...data, previousMonthAmount })
+          let data = utils.getCompareDepositData({ currentMonthAmount, previousMonthAmount }, req.query.type)
+          res.json({ ...data, previousMonthAmount, currentMonthAmount })
         }
       });
     };

@@ -75,9 +75,15 @@ invoiceQueries.getInvoicesCount = async (input, callback) => {
     return executeGetParamsQuery(query, options, callback)
 }
 
-invoiceQueries.getTotalInvoicePendingAmount = async (callback) => {
-    let query = "SELECT (SELECT COALESCE(SUM(pendingAmount), 0) FROM Invoice) + (SELECT COALESCE(SUM(pendingAmount), 0) FROM departmentInvoices) AS totalPendingAmount";
-    return executeGetQuery(query, callback)
+invoiceQueries.getTotalInvoicePendingAmount = async (input, callback) => {
+    const { startDate, endDate, fromStart } = input
+    let query = "SELECT (SELECT COALESCE(SUM(pendingAmount), 0) FROM Invoice WHERE DATE(`invoiceDate`) <= ?) + (SELECT COALESCE(SUM(pendingAmount), 0) FROM departmentInvoices  WHERE DATE(`invoiceDate`) <= ?) AS totalPendingAmount";
+    let options = [endDate, endDate]
+    if (fromStart !== 'true') {
+        query = "SELECT (SELECT COALESCE(SUM(pendingAmount), 0) FROM Invoice WHERE DATE(`invoiceDate`) BETWEEN ? AND ?) + (SELECT COALESCE(SUM(pendingAmount), 0) FROM departmentInvoices WHERE DATE(`invoiceDate`) BETWEEN ? AND ?) AS totalPendingAmount";
+        options = [startDate, endDate, startDate, endDate]
+    }
+    return executeGetParamsQuery(query, options, callback)
 }
 
 invoiceQueries.getReceivedInvoiceAmount = async (callback) => {

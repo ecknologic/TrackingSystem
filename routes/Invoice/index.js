@@ -446,7 +446,7 @@ router.get('/getUnclearedInvoices/count', (req, res) => {
 });
 
 router.get('/getTotalPendingAmount', (req, res) => {
-    invoiceQueries.getTotalInvoicePendingAmount((err, results) => {
+    invoiceQueries.getTotalInvoicePendingAmount(req.query, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else res.json(results[0]?.totalPendingAmount);
     });
@@ -465,8 +465,8 @@ router.get('/getPreviousInvoiceAmount', (req, res) => {
                 if (err) res.status(500).json(dbError(err));
                 else {
                     let prevInvoiceAmount = results[0]?.totalAmount || 0;
-                    let data = utils.getCompareInvoiceData({ currentInvoiceAmount, prevInvoiceAmount, type: req.query.type })
-                    res.json({ ...data, previousMonthAmount })
+                    let data = utils.getCompareInvoiceData({ currentInvoiceAmount, prevInvoiceAmount }, req.query.type)
+                    res.json({ ...data, prevInvoiceAmount })
                 }
             });
         }

@@ -5,7 +5,7 @@ import { http } from '../../../../modules/http';
 import PanelHeader from '../../../../components/PanelHeader';
 import { TODAYDATE as d } from '../../../../utils/constants';
 import InvoiceCard from '../../../../components/InvoiceCard';
-const options = { startDate: d, endDate: d, fromStart: true }
+const options = { startDate: d, endDate: d, fromStart: true, type: 'Till Now' }
 
 const InvoiceOverview = () => {
     const history = useHistory()
@@ -18,7 +18,7 @@ const InvoiceOverview = () => {
     const config = { cancelToken: source.token }
 
     const { prevInvoiceAmount, invoicePercent, invoiceCompareText } = IA
-    const { previousMonthAmount, depositPercent, depositCompareText } = DA
+    const { previousMonthAmount, currentMonthAmount, depositPercent, depositCompareText } = DA
 
     useEffect(() => {
         getTPA(opData)
@@ -41,8 +41,8 @@ const InvoiceOverview = () => {
         } catch (error) { }
     }
 
-    const getIA = async ({ startDate, endDate, fromStart }) => {
-        const url = `invoice/getPreviousInvoiceAmount?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}`
+    const getIA = async ({ startDate, endDate, fromStart, type }) => {
+        const url = `invoice/getPreviousInvoiceAmount?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}&type=${type}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -59,8 +59,8 @@ const InvoiceOverview = () => {
         } catch (error) { }
     }
 
-    const getDA = async ({ startDate, endDate, fromStart }) => {
-        const url = `customer/getTotalDepositAmount?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}`
+    const getDA = async ({ startDate, endDate, fromStart, type }) => {
+        const url = `customer/getTotalDepositAmount?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}&type=${type}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -71,9 +71,9 @@ const InvoiceOverview = () => {
     const handleOperation = useCallback((data) => {
         const newData = { ...opData, ...data }
         getTPA(newData)
-        getIA(opData)
-        getCA(opData)
-        getDA(opData)
+        getIA(newData)
+        getCA(newData)
+        getDA(newData)
         setOpData(newData)
     }, [opData])
 
@@ -87,9 +87,9 @@ const InvoiceOverview = () => {
             <div className='panel-body pb-0'>
                 <div className='panel-details'>
                     <InvoiceCard title='Total Pending Amount' amount={TPA} onClick={goToInvoices} />
-                    <InvoiceCard title='Invoice Amount' text={invoiceCompareText} amount={prevInvoiceAmount} percent={invoicePercent} onClick={goToInvoices} />
+                    <InvoiceCard title='Invoice Amount' showPercent text={invoiceCompareText} amount={prevInvoiceAmount} percent={invoicePercent} onClick={goToInvoices} />
                     <InvoiceCard title='Collected Amount' amount={CA} onClick={goToInvoices} />
-                    <InvoiceCard title='Deposit Amount' text={depositCompareText} amount={previousMonthAmount} percent={depositPercent} onClick={goToInvoices} />
+                    <InvoiceCard title='Deposit Amount' showPercent text={depositCompareText} amount={currentMonthAmount} percent={depositPercent} onClick={goToInvoices} />
                 </div>
             </div>
         </div>
