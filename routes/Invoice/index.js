@@ -466,7 +466,7 @@ router.get('/getPreviousInvoiceAmount', (req, res) => {
                 else {
                     let prevInvoiceAmount = results[0]?.totalAmount || 0;
                     let data = utils.getCompareInvoiceData({ currentInvoiceAmount, prevInvoiceAmount, type: req.query.type })
-                    res.json(data);
+                    res.json({ ...data, previousMonthAmount })
                 }
             });
         }
