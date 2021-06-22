@@ -47,7 +47,7 @@ const SalesAdminDashboard = () => {
         } catch (error) { }
     }
 
-    const goToVisitedCustomers = useCallback(() => history.push('/visited-customers'))
+    const goToVisitedCustomers = useCallback(() => history.push('/visited-customers'), [])
 
     return (
         <Fragment>
@@ -55,10 +55,10 @@ const SalesAdminDashboard = () => {
             <div className='dashboard-content'>
                 <div className='panel-body quality-testing-panel pt-0'>
                     <Slider className='dashboard-slider' {...props} >
-                        <NormalCard total={onBoardedCount} title='Onboarded Customers' onClick={() => goToVisitedCustomers} />
-                        <NormalCard total={pendingCount} title='Approvals Pending' onClick={() => goToVisitedCustomers} />
-                        <NormalCard total={totalPendingRequests} title='Request Pending' onClick={() => goToVisitedCustomers} />
-                        <NormalCard total={totalVisited} title='Total Visited Customers' onClick={() => goToVisitedCustomers} />
+                        <NormalCard total={onBoardedCount} title='Onboarded Customers' onClick={goToVisitedCustomers} />
+                        <NormalCard total={pendingCount} title='Approvals Pending' onClick={goToVisitedCustomers} />
+                        <NormalCard total={totalPendingRequests} title='Request Pending' onClick={goToVisitedCustomers} />
+                        <NormalCard total={totalVisited} title='Total Visited Customers' onClick={goToVisitedCustomers} />
                     </Slider>
                 </div>
                 <div className='dashboard-content-other'>

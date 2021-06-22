@@ -8,7 +8,7 @@ import { disableFutureDates, resetTrackForm, trackAccountFormOnce } from '../../
 
 const PaymentForm = ({ data, paymentOptions = [], errors, onChange, onBlur }) => {
 
-    const { customerName, amountPaid, noOfPayments, invoiceId, paymentDate, paymentMode } = data
+    const { customerName, amountPaid, noOfPayments, invoiceId, paymentDate, paymentMode, createdDateTime } = data
 
     useEffect(() => {
         resetTrackForm()
@@ -18,6 +18,11 @@ const PaymentForm = ({ data, paymentOptions = [], errors, onChange, onBlur }) =>
             resetTrackForm()
         }
     }, [])
+
+    const disableDates = (current) => {
+        if (!current) return false
+        return current.valueOf() > Date.now() || current.valueOf() <= dayjs(createdDateTime).subtract(1, 'day')
+    }
 
     return (
         <div className='app-form-container invoice-form-container'>
@@ -54,7 +59,7 @@ const PaymentForm = ({ data, paymentOptions = [], errors, onChange, onBlur }) =>
                     <InputLabel name='Payment Date' error={errors.paymentDate} mandatory />
                     <CustomDateInput
                         track error={errors.paymentDate}
-                        value={paymentDate} disabledDate={disableFutureDates}
+                        value={paymentDate} disabledDate={disableDates}
                         onChange={(value) => onChange(value, 'paymentDate')}
                     />
                 </div>
