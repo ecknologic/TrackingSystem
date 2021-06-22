@@ -157,13 +157,13 @@ router.post("/generateMultipleInvoices", (req, res) => {
                                 customerName: organizationName || customerName,
                                 gstNo,
                                 invoiceDate: formatDate(new Date()),
-                                customerId: customerId,
+                                customerId,
                                 salesPerson: createdBy,
                                 dueDate: creditPeriodInDays ? dayjs().add(creditPeriodInDays, 'day').format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'),
                                 hsnCode: 22011010,
                                 poNo: 0,
-                                mailSubject: "Hello",
-                                TAndC: "hi",
+                                mailSubject: "",
+                                TAndC: "",
                                 fromDate,
                                 toDate,
                                 invoiceId: getInvoiceNumber(results[0].invoiceId + (index + 1)),
@@ -265,9 +265,9 @@ router.post("/generateMultipleInvoices", (req, res) => {
 
 router.post("/createDepartmentInvoice", (req, res) => {
     req.body.departmentId = departmentId
-    invoiceQueries.getDepartmentInvoiceByDCNO(req.body.dcNo, (err, results) => {
+    invoiceQueries.checkInvoiceStatusByDCNO(req.body.dcNo, (err, results) => {
         if (err) res.status(500).json(dbError(err));
-        else if (results.length) res.status(400).json({ message: "Invoice already created with this DC number" })
+        else if (!results.length) res.status(400).json({ message: "Invoice already created with this DC number" })
         else saveDepartmentInvoice(req.body, res, true)
     })
 });
@@ -417,7 +417,7 @@ router.get('/getInvoicePayments', (req, res) => {
 });
 
 router.get('/getDepartmentInvoicePayments', (req, res) => {
-    invoiceQueries.getDepartmentInvoicePayments((err, results) => {
+    invoiceQueries.getDepartmentInvoicePayments(departmentId, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else res.json(results);
     });
@@ -492,6 +492,9 @@ const saveInvoice = async (requestObj, res, response) => {
                     else {
                         response && res.json({ message: 'Invoice created successfully' })
                         getInvoiceByInvoiceId({ invoiceId })
+                        invoiceQueries.updateMultipleDcsInvoiceFlag(requestObj, (updateerr, success) => {
+                            if (updateerr) console.log("updateerr", updateerr)
+                        })
                         // invoiceQueries.saveInvoicePdf({ invoiceId }, (err, data) => {
                         //     if (err) res.status(500).json(dbError(err));
                         //     else res.json({ message: 'Invoice created successfully' })

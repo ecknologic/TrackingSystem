@@ -36,8 +36,8 @@ invoiceQueries.getInvoiceByDepartment = async (departmentId, callback) => {
 
     return executeGetParamsQuery(query, [departmentId], callback)
 }
-invoiceQueries.getDepartmentInvoiceByDCNO = (dcNo, callback) => {
-    let query = `select * from departmentInvoices where dcNo=?`;
+invoiceQueries.checkInvoiceStatusByDCNO = (dcNo, callback) => {
+    let query = `select * from customerorderdetails where dcNo=? AND isInvoiceGenerated=0`;
     return executeGetParamsQuery(query, [dcNo], callback)
 }
 
@@ -104,9 +104,9 @@ invoiceQueries.getInvoicePayments = async (callback) => {
     return executeGetQuery(query, callback)
 }
 
-invoiceQueries.getDepartmentInvoicePayments = async (callback) => {
-    let query = "SELECT i.*,IFNULL(c.organizationName, c.customerName) as customerName,c.Address1 as billingAddress FROM departmentInvoicepaymentlogs i INNER JOIN customerdetails c ON i.customerId=c.customerId ORDER BY createdDateTime DESC";
-    return executeGetQuery(query, callback)
+invoiceQueries.getDepartmentInvoicePayments = async (departmentId, callback) => {
+    let query = "SELECT i.*,IFNULL(c.organizationName, c.customerName) as customerName,c.Address1 as billingAddress FROM departmentInvoicepaymentlogs i INNER JOIN customerdetails c ON i.customerId=c.customerId WHERE i.departmentId=? ORDER BY createdDateTime DESC";
+    return executeGetParamsQuery(query, [departmentId], callback)
 }
 
 invoiceQueries.getUnclearedInvoices = async (input, callback) => {
@@ -241,6 +241,12 @@ invoiceQueries.saveInvoicePdf = (input, callback) => {
 invoiceQueries.updateDCInvoiceFlag = (dcNo, callback) => {
     let query = "update customerorderdetails set isInvoiceGenerated=? where dcNo='" + dcNo + "'"
     executePostOrUpdateQuery(query, [1], callback)
+}
+
+invoiceQueries.updateMultipleDcsInvoiceFlag = (input, callback) => {
+    const { fromDate, toDate, customerId } = input
+    let query = "update customerorderdetails set isInvoiceGenerated=? where existingCustomerId=? AND DATE(deliveryDate) BETWEEN ? AND ?"
+    executePostOrUpdateQuery(query, [1, customerId, fromDate, toDate], callback)
 }
 
 invoiceQueries.updateInvoice = (input, callback) => {
