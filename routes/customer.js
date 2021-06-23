@@ -144,12 +144,12 @@ router.post('/createCustomer', async (req, res) => {
   // let customerDetailsQuery = "insert  into customerdetails (customerName,mobileNumber,EmailId,Address1,gstNo,registeredDate,invoicetype,natureOfBussiness,creditPeriodInDays,referredBy,isActive,qrcodeId,latitude,longitude,customerType,organizationName,createdBy) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
   let customerdetails = req.body;
   const { customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactPerson, panNo, adharNo, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, createdBy, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, alternateNumber, salesAgent } = customerdetails
-  customerQueries.checkCustomerExistsOrNot({ EmailId, mobileNumber }, (err, results) => {
-    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
-    else if (results.length) {
-      res.status(400).json({ status: 400, message: "This Customer already created" })
-    }
-    else {
+  // customerQueries.checkCustomerExistsOrNot({ EmailId, mobileNumber }, (err, results) => {
+  //   if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+  //   else if (results.length) {
+  //     res.status(400).json({ status: 400, message: "This Customer already created" })
+  //   }
+  //   else {
       let promiseArray = req.body.idProofs[0] != null ? [getLatLongDetails(customerdetails), uploadImage(req)] : [getLatLongDetails(customerdetails)]
       Promise.all(promiseArray)
         .then(response => {
@@ -163,8 +163,8 @@ router.post('/createCustomer', async (req, res) => {
             }
           });
         })
-    }
-  })
+  //   }
+  // })
 });
 const saveDeliveryDetails = (customerId, customerdetails, res) => {
   return new Promise(async (resolve, reject) => {
