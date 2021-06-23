@@ -519,7 +519,7 @@ customerQueries.generatePDF = (input, callback) => {
     FROM customerdetails c INNER JOIN  customerorderdetails co ON c.customerId=co.existingCustomerId
     WHERE c.invoicetype!='complimentary'
      AND co.isDelivered='Completed' AND co.isInvoiceGenerated=0 AND customerId NOT IN (SELECT customerId FROM Invoice WHERE fromdate >=DATE(?) and toDate<=DATE(?))
-    AND( DATE(co.deliveryDate) BETWEEN ? AND ?) GROUP BY c.customerId`
+    AND( DATE(co.deliveredDate) BETWEEN ? AND ?) GROUP BY c.customerId`
     let options = [fromDate, toDate, fromDate, toDate]
     if (customerIds.length) {
         query = `SELECT c.gstNo,c.customerId,c.createdBy,c.EmailId,c.customerName,c.organizationName,
@@ -529,7 +529,7 @@ customerQueries.generatePDF = (input, callback) => {
         FROM customerdetails c INNER JOIN  customerorderdetails co ON c.customerId=co.existingCustomerId
         WHERE c.invoicetype!='complimentary' 
         AND co.isDelivered='Completed' AND co.isInvoiceGenerated=0 AND customerId NOT IN (SELECT customerId FROM Invoice WHERE fromdate >=DATE(?) and toDate<=DATE(?))
-        AND( DATE(co.deliveryDate) BETWEEN ? AND ?) AND c.customerId IN (?) GROUP BY c.customerId`
+        AND( DATE(co.deliveredDate) BETWEEN ? AND ?) AND c.customerId IN (?) GROUP BY c.customerId`
         options = [fromDate, toDate, fromDate, toDate, customerIds]
     }
     // "SELECT c.gstNo,c.customerId,c.creditPeriodInDays,c.createdBy,c.EmailId,c.customerName,c.organizationName,c.address1,d.address,c.gstNo,c.panNo,c.mobileNumber,co.20LCans,co.price20L,co.1LBoxes,co.price1L, co.500MLBoxes,co.price500ML,co.300MLBoxes,co.price300ML,co.2LBoxes,co.price2L FROM customerdetails c INNER JOIN  customerorderdetails co ON c.customerId=co.existingCustomerId INNER JOIN DeliveryDetails d ON d.customer_Id=c.customerId  WHERE co.isDelivered='Completed' AND( DATE(co.deliveryDate) BETWEEN ? AND ?)"

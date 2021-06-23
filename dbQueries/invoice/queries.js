@@ -77,11 +77,11 @@ invoiceQueries.getInvoicesCount = async (input, callback) => {
 
 invoiceQueries.getTotalInvoicePendingAmount = async (input, callback) => {
     const { startDate, endDate, fromStart } = input
-    let query = "SELECT (SELECT COALESCE(SUM(pendingAmount), 0) FROM Invoice WHERE DATE(`invoiceDate`) <= ?) + (SELECT COALESCE(SUM(pendingAmount), 0) FROM departmentInvoices  WHERE DATE(`invoiceDate`) <= ?) AS totalPendingAmount";
-    let options = [endDate, endDate]
+    let query = "SELECT (SELECT COALESCE(SUM(pendingAmount), 0) FROM Invoice WHERE DATE(`invoiceDate`) <= ?) + (SELECT COALESCE(SUM(pendingAmount), 0) FROM departmentInvoices  WHERE DATE(`invoiceDate`) <= ? AND departmentStatus='Pending') + (SELECT COALESCE(SUM(totalAmount), 0) FROM departmentInvoices  WHERE DATE(`invoiceDate`) <= ? AND departmentStatus='Paid' AND status='Pending' ) AS totalPendingAmount";
+    let options = [endDate, endDate, endDate]
     if (fromStart !== 'true') {
-        query = "SELECT (SELECT COALESCE(SUM(pendingAmount), 0) FROM Invoice WHERE DATE(`invoiceDate`) BETWEEN ? AND ?) + (SELECT COALESCE(SUM(pendingAmount), 0) FROM departmentInvoices WHERE DATE(`invoiceDate`) BETWEEN ? AND ?) AS totalPendingAmount";
-        options = [startDate, endDate, startDate, endDate]
+        query = "SELECT (SELECT COALESCE(SUM(pendingAmount), 0) FROM Invoice WHERE DATE(`invoiceDate`) BETWEEN ? AND ?) + (SELECT COALESCE(SUM(pendingAmount), 0) FROM departmentInvoices WHERE departmentStatus='Pending' AND DATE(`invoiceDate`) BETWEEN ? AND ?) + (SELECT COALESCE(SUM(totalAmount), 0) FROM departmentInvoices  WHERE  departmentStatus='Paid' AND status='Pending' AND DATE(`invoiceDate`) BETWEEN ? AND ? ) AS totalPendingAmount";
+        options = [startDate, endDate, startDate, endDate, startDate, endDate]
     }
     return executeGetParamsQuery(query, options, callback)
 }
@@ -112,6 +112,10 @@ invoiceQueries.getInvoicePayments = async (callback) => {
 
 invoiceQueries.getDepartmentInvoicePayments = async (departmentId, callback) => {
     let query = "SELECT i.*,IFNULL(c.organizationName, c.customerName) as customerName,c.Address1 as billingAddress FROM departmentInvoicepaymentlogs i INNER JOIN customerdetails c ON i.customerId=c.customerId WHERE i.departmentId=? ORDER BY createdDateTime DESC";
+    if (departmentId == 'All') {
+        query = "SELECT i.*,IFNULL(c.organizationName, c.customerName) as customerName,c.Address1 as billingAddress FROM departmentInvoicepaymentlogs i INNER JOIN customerdetails c ON i.customerId=c.customerId ORDER BY createdDateTime DESC";
+        return executeGetQuery(query, callback)
+    }
     return executeGetParamsQuery(query, [departmentId], callback)
 }
 
@@ -251,7 +255,7 @@ invoiceQueries.updateDCInvoiceFlag = (dcNo, callback) => {
 
 invoiceQueries.updateMultipleDcsInvoiceFlag = (input, callback) => {
     const { fromDate, toDate, customerId } = input
-    let query = "update customerorderdetails set isInvoiceGenerated=? where existingCustomerId=? AND DATE(deliveryDate) BETWEEN ? AND ?"
+    let query = "update customerorderdetails set isInvoiceGenerated=? where existingCustomerId=? AND DATE(deliveredDate) BETWEEN ? AND ?"
     executePostOrUpdateQuery(query, [1, customerId, fromDate, toDate], callback)
 }
 

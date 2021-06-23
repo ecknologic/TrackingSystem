@@ -10,12 +10,13 @@ const fs = require('fs');
 const { generatePDF, generateCustomerPDF } = require('../../dbQueries/Customer/queries.js');
 const dayjs = require('dayjs');
 const { sendMail } = require('../mailTemplate.js');
-var departmentId;
+var departmentId, isSuperAdmin;
 
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
     console.log('Time: ', Date.now());
     departmentId = req.headers['departmentid']
+    isSuperAdmin = req.headers['issuperadmin']
     next();
 });
 
@@ -412,7 +413,14 @@ router.post('/addDepartmentInvoicePayment', (req, res) => {
 router.get('/getInvoicePayments', (req, res) => {
     invoiceQueries.getInvoicePayments((err, results) => {
         if (err) res.status(500).json(dbError(err));
-        else res.json(results);
+        else {
+            if (isSuperAdmin) {
+                invoiceQueries.getDepartmentInvoicePayments('All', (err, depresults) => {
+                    if (err) res.status(500).json(dbError(err));
+                    else res.json(results.concat(depresults));
+                });
+            } else res.json(results)
+        }
     });
 });
 
