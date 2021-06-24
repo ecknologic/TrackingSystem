@@ -60,8 +60,9 @@ invoiceQueries.getInvoiceById = async (input, callback) => {
 }
 
 invoiceQueries.getInvoiceId = async (departmentId, callback) => {
-    let query = "SELECT COUNT(invoiceId) AS invoiceId FROM  Invoice";
-    if (departmentId) query = "SELECT COUNT(invoiceId) AS invoiceId FROM  departmentInvoices"
+    let query = `SELECT (SELECT COALESCE(COUNT(*), 0) FROM Invoice)
+    + (SELECT COALESCE(COUNT(*), 0) FROM departmentInvoices) AS invoiceId`
+    // if (departmentId) query = "SELECT COUNT(invoiceId) AS invoiceId FROM  departmentInvoices"
     return executeGetQuery(query, callback)
 }
 invoiceQueries.getInvoicesCount = async (input, callback) => {
@@ -94,9 +95,11 @@ invoiceQueries.getReceivedInvoiceAmount = async (callback) => {
 
 invoiceQueries.getPreviousMonthInvoiceAmount = async (input, callback) => {
     const { startDate, endDate } = input
-    let query = `SELECT (SELECT COALESCE(CAST(SUM(totalAmount)AS DECIMAL(10,2)), 0) FROM Invoice WHERE fromdate >=? and toDate<=?)
-    + (SELECT COALESCE(CAST(SUM(totalAmount)AS DECIMAL(10,2)), 0) FROM departmentInvoices WHERE fromdate >=? and toDate<=?) AS totalAmount`;
-    return executeGetParamsQuery(query, [startDate, endDate, startDate, endDate], callback)
+    let query = `SELECT (SELECT COALESCE(CAST(SUM(totalAmount)AS DECIMAL(10,2)), 0) FROM Invoice WHERE fromdate >=? and toDate<=? AND
+     invoiceDate NOT BETWEEN ? AND ?)
+    + (SELECT COALESCE(CAST(SUM(totalAmount)AS DECIMAL(10,2)), 0) FROM departmentInvoices WHERE fromdate >=? and toDate<=?)
+    +(SELECT COALESCE(CAST(SUM(totalAmount)AS DECIMAL(10,2)), 0) FROM Invoice WHERE invoiceDate Between ? and ?) AS totalAmount`;
+    return executeGetParamsQuery(query, [startDate, endDate, startDate, endDate, startDate, endDate, endDate, new Date()], callback)
 }
 
 invoiceQueries.getInvoicePayments = async (callback) => {
