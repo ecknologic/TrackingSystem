@@ -625,7 +625,7 @@ export const getIDInputValidationProps = (IDType) => {
 //     return String(string).match(/^(\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3})*$/)
 // }
 export const isEmail = (string) => {
-    return String(string).match(/^([a-zA-Z0-9._-]+@[a-zA-Z_]+?\.[a-zA-Z]{2,3})*$/)
+    return String(string).match(/^([a-zA-Z0-9._-]+@[a-zA-Z_-]+?\.[a-zA-Z]{2,3})*$/)
 }
 export const isIndMobileNum = (number) => {
     return String(number).match(/^[6-9]\d{9}$/)
