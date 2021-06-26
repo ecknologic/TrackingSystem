@@ -53,7 +53,7 @@ const AccountsAdminDashboard = () => {
                 </div>
                 <div className='equal-panels-container'>
                     <SalesResults depOptions={warehouseOptions} />
-                    <InvoiceOverview />
+                    <InvoiceOverview showHeader />
                 </div>
                 <div className='equal-panels-container'>
                     <GeneratedInvoiceOverview />

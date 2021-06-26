@@ -5,6 +5,7 @@ import PanelHeader from '../../../../components/PanelHeader';
 import { TODAYDATE as d } from '../../../../utils/constants';
 import { defaultPie } from '../../../../assets/fixtures';
 import InvoiceOverviewCard from '../../../../components/InvoiceOverviewCard';
+import InvoiceOverview2 from '../../accounts/panels/InvoiceOverview';
 // import CustomButton from '../../../../components/CustomButton';
 // import { RightChevronIconLight } from '../../../../components/SVG_Icons';
 const options = { startDate: d, endDate: d, fromStart: true }
@@ -56,6 +57,7 @@ const InvoiceOverview = () => {
                 <PanelHeader title='Invoice Overview' onSelect={handleInvoiceOp} showShow />
             </div>
             <InvoiceOverviewCard data={results} graph={graph} />
+            <InvoiceOverview2 />
             {/* <div className='second-header'>
                 <PanelHeader title='Memberships' onSelect={handleMembershipOp} showShow />
             </div>
