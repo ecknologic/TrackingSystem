@@ -86,7 +86,7 @@ router.post('/createMotherPlant', (req, res) => {
             usersQueries.updateUserDepartment({ departmentId: results.insertId, userId: req.body.adminId }, (err, userResults) => {
                 if (err) res.status(500).json(dbError(err));
                 else {
-                    auditQueries.createLog({ userId:adminUserId, description: `Motherplant Created by ${userRole} <b>(${userName})</b>`, departmentId: results.insertId, type: "motherplant" })
+                    auditQueries.createLog({ userId: adminUserId, description: `Motherplant Created by ${userRole} <b>(${userName})</b>`, departmentId: results.insertId, type: "motherplant" })
                     res.json(userResults);
                 }
             })
@@ -98,7 +98,7 @@ router.post('/updateMotherPlant', async (req, res) => {
     let data = {
         address, departmentName, city, state, pinCode, adminId, phoneNumber, gstNo
     }
-    const logs = await compareDepartmentData(data, { departmentId, type:'motherplant',adminUserId, userRole, userName })
+    const logs = await compareDepartmentData(data, { departmentId, type: 'motherplant', adminUserId, userRole, userName })
     motherPlantDbQueries.updateMotherPlant(req.body, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
@@ -245,7 +245,17 @@ router.post('/createRM', (req, res) => {
             input.rawmaterialid = results.insertId
             motherPlantDbQueries.updateRMDetails(input, (updateErr, updatedData) => {
                 if (updateErr) res.status(500).json(dbError(err));
-                else res.json(INSERTMESSAGE)
+                else {
+                    res.json(INSERTMESSAGE)
+                    motherPlantDbQueries.getRMDetailsByItemCode(input.itemCode, (getErr, data) => {
+                        if (getErr) console.log("ERR", getErr);
+                        else if (!data.length) {
+                            motherPlantDbQueries.insertRMDetails(input, (insertErr, data) => {
+                                if (insertErr) console.log("ERR", err);
+                            })
+                        }
+                    })
+                }
             })
         }
     });
@@ -308,8 +318,12 @@ router.post('/createRMReceipt', (req, res) => {
     input.departmentId = departmentId
     motherPlantDbQueries.createRMReceipt(input, (err, results) => {
         if (err) res.status(500).json(err.sqlMessage);
-        else
+        else {
             res.json(INSERTMESSAGE);
+            motherPlantDbQueries.updateRMDetailsQuantity(input, (updateErr, success) => {
+                if (updateErr) console.log("ERR", updateErr);
+            })
+        }
     });
 })
 
@@ -323,7 +337,14 @@ router.get('/getDispatchDetails', (req, res) => {
 router.get('/getDispatchDetails/:date', (req, res) => {
     motherPlantDbQueries.getDispatchDetailsByDate({ departmentId, date: req.params.date }, (err, results) => {
         if (err) res.status(500).json(dbError(err));
-        res.json((results));
+       else res.json((results));
+    });
+});
+
+router.get('/updateRMDamageCount', (req, res) => {
+    motherPlantDbQueries.updateRMDetailsDamageCount(req.query, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.json(UPDATEMESSAGE);
     });
 });
 
