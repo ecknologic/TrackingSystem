@@ -45,6 +45,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
     const { departmentStatus, customerType } = formData
+    const isDistributor = customerType === 'distributor'
 
     useEffect(() => {
         if (editMode) getInvoice()
@@ -64,6 +65,13 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
         const updatedData = dataSource.map((row) => ({ ...row, ...getProductTableResults(row, isLocal) }))
         setDataSource(updatedData)
     }, [isLocal])
+
+    useEffect(() => {
+        const isDistributor = customerType === 'distributor'
+        if (isDistributor)
+            handleCheckboxChange(false)
+        else handleCheckboxChange(true)
+    }, [customerType])
 
     const getInvoice = async () => {
         const url = `invoice/getInvoiceById/${invoiceId}`
@@ -141,16 +149,15 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
             let isLocal = true
             showToast({ v1Ing: 'Fetching', action: 'loading' })
             const [dc] = await http.GET(axios, url, config)
-            const { existingCustomerId, distributorId } = dc
+            const { existingCustomerId, distributorId, customerType } = dc
             const customerId = existingCustomerId || distributorId
 
             if (!dc.gstNo) setIsLocal(true)
             else if ((dc.gstNo || "").startsWith('36')) setIsLocal(true)
             else { setIsLocal(false); isLocal = false }
 
-            setFormData(data => ({ ...data, ...dc, customerId, paymentMode: null }))
+            setFormData(data => ({ ...data, ...dc, customerId, paymentMode: null, departmentStatus }))
             const data = getProductsForTable(productList, dc, isLocal)
-            handleCheckboxChange(false)
             setDataSource(data)
             showToast({ v2: 'fetched' })
         } catch (error) {
@@ -315,11 +322,12 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
                 onDelete={handleProductsDelete}
             />
             {
-                customerType !== 'distributor' &&
+                !isDistributor &&
                 <div className='checkbox-container'>
                     <div>
                         <Checkbox
                             checked={departmentStatus === 'Pending' ? false : true}
+                            disabled={!isDistributor}
                             onChange={({ target: { checked } }) => handleCheckboxChange(checked)}
                         />
                         <span className='app-checkbox-text'>Customer has paid the amount?</span>

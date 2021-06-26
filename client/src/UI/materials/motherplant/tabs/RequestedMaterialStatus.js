@@ -85,6 +85,7 @@ const MaterialStatus = ({ reFetch, isSuperAdmin = false }) => {
     }
 
     const handleMenuSelect = (key, data) => {
+        const { rawmaterialid, itemCode } = data
         if (key === 'view') {
             setFormTitle(`Requested Material Details - ${data.orderId}`)
             setViewData(data)
@@ -92,17 +93,17 @@ const MaterialStatus = ({ reFetch, isSuperAdmin = false }) => {
             setViewModal(true)
         }
         else if (key === 'approve') {
-            updateRMStatus(data.rawmaterialid, 'Approved')
+            updateRMStatus(rawmaterialid, itemCode, 'Approved')
         }
         else if (key === 'reject') {
-            updateRMStatus(data.rawmaterialid, 'Rejected')
+            updateRMStatus(rawmaterialid, itemCode, 'Rejected')
         }
     }
 
     const handleApprove = () => {
-        const { rawmaterialid: id } = viewData
+        const { rawmaterialid: id, itemCode } = viewData
         const { reason } = formData
-        updateRMStatus(id, 'Approved', reason)
+        updateRMStatus(id, itemCode, 'Approved', reason)
     }
 
     const handleReject = () => {
@@ -126,9 +127,9 @@ const MaterialStatus = ({ reFetch, isSuperAdmin = false }) => {
         setPageNumber(number)
     }
 
-    const updateRMStatus = async (rawmaterialid, status, reason) => {
+    const updateRMStatus = async (rawmaterialid, itemCode, status, reason) => {
         const url = 'motherPlant/updateRMStatus'
-        const body = { rawmaterialid, status, reason }
+        const body = { rawmaterialid, status, reason, itemCode }
         const options = { item: 'Order', v1Ing: status === 'Approved' ? 'Approving' : 'Rejecting', v2: status }
 
         try {

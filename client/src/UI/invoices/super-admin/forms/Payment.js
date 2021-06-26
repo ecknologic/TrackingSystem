@@ -8,7 +8,7 @@ import { disableFutureDates, resetTrackForm, trackAccountFormOnce } from '../../
 
 const PaymentForm = ({ data, paymentOptions = [], errors, onChange, onBlur }) => {
 
-    const { customerName, amountPaid, noOfPayments, invoiceId, paymentDate, paymentMode, createdDateTime } = data
+    const { customerName, amountPaid, noOfPayments, invoiceId, paymentDate, paymentMode, createdDateTime, disableAmountPaid } = data
 
     useEffect(() => {
         resetTrackForm()
@@ -39,7 +39,7 @@ const PaymentForm = ({ data, paymentOptions = [], errors, onChange, onBlur }) =>
             <div className='row'>
                 <div className='input-container'>
                     <InputLabel name="Amount Received" mandatory error={errors.amountPaid} />
-                    <CustomInput value={amountPaid} error={errors.amountPaid} onBlur={(value) => onBlur(value, 'amountPaid')}
+                    <CustomInput value={amountPaid} disabled={disableAmountPaid} error={errors.amountPaid} onBlur={(value) => onBlur(value, 'amountPaid')}
                         placeholder="Amount Received" onChange={(value) => onChange(value, 'amountPaid')} />
                 </div>
                 <div className='input-container'>

@@ -231,18 +231,24 @@ const WarehouseInvoices = () => {
     }
 
     const dataSource = useMemo(() => invoices.map((invoice) => {
-        const { invoiceId, invoiceDate, totalAmount, customerName, departmentName, dueDate, status, departmentStatus, billingAddress, pendingAmount } = invoice
+        const { invoiceId, invoiceDate, totalAmount, customerType, customerName, departmentName, dueDate, status, departmentStatus, billingAddress, pendingAmount } = invoice
 
         let actualStatus = ''
         if ((departmentStatus === 'Paid' || departmentStatus === 'Pending') && status === 'Paid') actualStatus = 'Paid'
         else if (departmentStatus === 'Paid' && (status === '' || status === 'Pending')) actualStatus = 'In Progress'
         else if (departmentStatus == 'Pending' && status === 'Pending') actualStatus = 'Pending'
 
+        const allowPay = (customerType === 'distributor' && actualStatus !== 'Paid') || actualStatus === 'In Progress'
         const options = [
             <Menu.Item key="resend" icon={<SendIconGrey />}>Resend</Menu.Item>,
             <Menu.Item key="dcList" icon={<ListViewIconGrey />}>DC List</Menu.Item>,
-            <Menu.Item key="paid" className={actualStatus === 'In Progress' ? '' : 'disabled'} icon={<TickIconGrey />}>Paid</Menu.Item>,
+            <Menu.Item key="paid" className={allowPay ? '' : 'disabled'} icon={<TickIconGrey />}>Paid</Menu.Item>,
         ]
+
+        if (!pendingAmount) invoice.disableAmountPaid = true
+        const modifiedAmount = pendingAmount || totalAmount
+        invoice.pendingAmount = modifiedAmount
+
 
         return {
             key: invoiceId,
@@ -250,7 +256,7 @@ const WarehouseInvoices = () => {
             totalAmount,
             departmentName,
             billingAddress,
-            pendingAmount,
+            pendingAmount: modifiedAmount,
             status: renderStatus(actualStatus),
             dueDate: dayjs(dueDate).format(DATEFORMAT),
             date: dayjs(invoiceDate).format(DATEFORMAT),

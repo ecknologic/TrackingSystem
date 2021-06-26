@@ -7,7 +7,7 @@ import { TODAYDATE as d } from '../../../../utils/constants';
 import InvoiceCard from '../../../../components/InvoiceCard';
 const options = { startDate: d, endDate: d, fromStart: true, type: 'Till Now' }
 
-const InvoiceOverview = () => {
+const InvoiceOverview = ({ showHeader }) => {
     const history = useHistory()
     const [TPA, setTPA] = useState(0)
     const [IA, setIA] = useState({})
@@ -81,9 +81,14 @@ const InvoiceOverview = () => {
 
     return (
         <div className='invoice-overview-panel'>
-            <div className='header'>
-                <PanelHeader title='Invoice Overview' onSelect={handleOperation} showShow />
-            </div>
+            {
+                showHeader &&
+                (
+                    <div className='header'>
+                        <PanelHeader title='Invoice Overview' onSelect={handleOperation} showShow />
+                    </div>
+                )
+            }
             <div className='panel-body pb-0'>
                 <div className='panel-details'>
                     <InvoiceCard title='Total Pending Amount' amount={TPA} onClick={goToInvoices} />

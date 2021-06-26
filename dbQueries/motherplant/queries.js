@@ -413,6 +413,40 @@ motherPlantDbQueries.createRM = async (input, callback) => {
     let requestBody = [input.requestedDate, input.itemName, input.itemQty, input.description, input.reorderLevel, input.minOrderLevel, input.itemCode, input.vendorName, input.departmentId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
+
+motherPlantDbQueries.getRMDetailsByItemCode = async (itemCode, callback) => {
+    let query = `Select * from rawmaterialdetails WHERE itemCode=${itemCode}`;
+    return executeGetQuery(query, callback)
+}
+
+motherPlantDbQueries.insertRMDetails = async (input, callback) => {
+    const { itemName, itemCode, reorderLevel, departmentId } = input
+    let query = "insert into rawmaterialdetails (itemName,itemCode,reorderLevel,departmentId) values(?,?,?,?)";
+    let requestBody = [itemName, itemCode, reorderLevel, itemCode, departmentId]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+
+motherPlantDbQueries.updateRMDetailsStatus = async (input, callback) => {
+    const { itemCode } = input
+    let query = "UPDATE rawmaterialdetails SET isApproved=1 WHERE itemCode=?";
+    let requestBody = [itemCode]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+
+motherPlantDbQueries.updateRMDetailsDamageCount = async (input, callback) => {
+    const { id, damagedCount } = input
+    let query = "UPDATE rawmaterialdetails SET damagedCount=damagedCount+? WHERE id=?";
+    let requestBody = [damagedCount, id]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+
+motherPlantDbQueries.updateRMDetailsQuantity = async (input, callback) => {
+    const { itemQty, itemCode } = input
+    let query = "UPDATE rawmaterialdetails SET totalQuantity=totalQuantity + ? WHERE itemCode=?";
+    let requestBody = [itemQty, itemCode]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+
 motherPlantDbQueries.createRMReceipt = async (input, callback) => {
     let query = "insert into rawmaterialreceipt (receiptNo,invoiceNo,taxAmount,invoiceAmount,rawmaterialId,invoiceDate,departmentId,managerName,receiptImage) values(?,?,?,?,?,?,?,?,?)";
     const { receiptNo, invoiceNo, taxAmount, invoiceAmount, rawmaterialid, invoiceDate: date, departmentId, managerName } = input
@@ -447,6 +481,11 @@ motherPlantDbQueries.updateRMStatus = async (input, callback) => {
     if (status == "Approved" || status == "Rejected") {
         query = `update requiredrawmaterial set status=?,approvedDate=?,reason=? where rawmaterialid=${rawmaterialid}`
         requestBody = [status, new Date(), reason]
+        if (status == "Approved") {
+            motherPlantDbQueries.updateRMDetailsStatus(input, (updateErr, success) => {
+                if (updateErr) console.log("ERR", updateErr);
+            })
+        }
     }
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
