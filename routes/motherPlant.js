@@ -234,9 +234,8 @@ router.get('/getRMDetails', (req, res) => {
     });
 });
 router.get('/getCurrentRMDetails', (req, res) => {
-    const { status, isSuperAdmin = false } = req.query
+    const { isSuperAdmin = false } = req.query
     let input = {
-        status,
         departmentId,
         isSuperAdmin
     }
@@ -639,6 +638,7 @@ router.post('/addProductionDetails', (req, res) => {
                 if (updateErr) res.status(500).json(dbError(updateErr));
                 else res.json(INSERTMESSAGE);
             })
+            updateCurrentRMDetailsQuantity(input)
         }
     });
 })
@@ -662,6 +662,22 @@ router.delete('/deleteVehicle/:vehicleId', (req, res) => {
         else res.json(results);
     });
 });
+
+const updateCurrentRMDetailsQuantity = (input) => {
+    const { product20L = 0, product1L = 0, product500ML = 0, product300ML = 0, product2L = 0 } = input
+
+    let retailQuantity = product1L + product500ML + product300ML + product2L
+
+    motherPlantDbQueries.updateRetailQuantityRM(retailQuantity, (updateRetailErr, data) => {
+        if (updateRetailErr) console.log(updateRetailErr);
+    })
+    motherPlantDbQueries.updateRMHandlesQuantity(product2L, (update2lErr, data) => {
+        if (update2lErr) console.log(update2lErr);
+    })
+    motherPlantDbQueries.update20LQuantityRM(product20L, (update20LErr, data) => {
+        if (update20LErr) console.log(update20LErr);
+    })
+}
 
 module.exports = router;
 
