@@ -684,24 +684,19 @@ export const currentStockColumns = [
         key: 'itemCode',
     },
     {
-        title: 'Vendor Name',
-        dataIndex: 'vendorName',
-        key: 'vendorName',
-    },
-    {
         title: 'Reorder Level',
         dataIndex: 'reorderLevel',
         key: 'reorderLevel',
     },
     {
         title: 'Current Quantity',
-        dataIndex: 'itemQty',
-        key: 'itemQty',
+        dataIndex: 'totalQuantity',
+        key: 'totalQuantity',
     },
     {
         title: 'Damaged',
-        dataIndex: 'damagedQty',
-        key: 'damagedQty',
+        dataIndex: 'damagedCount',
+        key: 'damagedCount',
     },
     {
         title: 'Actions',

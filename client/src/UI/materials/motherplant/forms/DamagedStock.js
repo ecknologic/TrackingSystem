@@ -7,8 +7,8 @@ import CustomDateInput from '../../../../components/CustomDateInput';
 
 const DamagedStock = (props) => {
 
-    const { data, errors, disabled, onChange, onBlur } = props
-    const { itemName, TDS, itemCode, itemQty, managerName } = data
+    const { data, errors, onChange, onBlur } = props
+    const { itemName, itemCode, damagedCount } = data
 
     useEffect(() => {
         resetTrackForm()
@@ -34,10 +34,11 @@ const DamagedStock = (props) => {
                 </div>
                 <div className='row'>
                     <div className='input-container stretch'>
-                        <InputLabel name='Quantity' error={errors.itemName} mandatory />
-                        <CustomInput
-                            error={errors.itemQty} placeholder='Add Quantity'
-                            onChange={(value) => onChange(value, 'itemQty')}
+                        <InputLabel name='Quantity' error={errors.damagedCount} mandatory />
+                        <CustomInput value={damagedCount}
+                            error={errors.damagedCount} placeholder='Add Quantity'
+                            onBlur={(value) => onBlur(value, 'damagedCount')} maxLength={10}
+                            onChange={(value) => onChange(value, 'damagedCount')}
                         />
                     </div>
                 </div>
@@ -45,10 +46,6 @@ const DamagedStock = (props) => {
                     <div className='input-container'>
                         <InputLabel name='Date' />
                         <CustomDateInput value={TODAYDATE} disabled />
-                    </div>
-                    <div className='input-container'>
-                        <InputLabel name='Manager Name' />
-                        <CustomInput value={managerName} placeholder='Add Manager Name' disabled />
                     </div>
                 </div>
             </div>

@@ -124,6 +124,16 @@ motherPlantDbQueries.getRMDetails = async (input, callback) => {
         return executeGetParamsQuery(query, [input.departmentId], callback)
     }
 }
+motherPlantDbQueries.getCurrentRMDetails = async (input, callback) => {
+    let query = `select * from rawmaterialdetails WHERE departmentId=? ORDER BY createdDateTime DESC`;
+    if (input.isSuperAdmin == 'true') {
+        query = `select r.*,d.departmentName from rawmaterialdetails r INNER JOIN departmentmaster d ON r.departmentId=d.departmentId ORDER BY r.createdDateTime DESC`
+        return executeGetQuery(query, callback)
+    } else {
+        if (input.status) query = `select * from rawmaterialdetails WHERE departmentId=? AND (status="Approved" or status="Confirmed") ORDER BY createdDateTime DESC`
+        return executeGetParamsQuery(query, [input.departmentId], callback)
+    }
+}
 motherPlantDbQueries.getRMReceiptDetails = async (input, callback) => {
     const { isSuperAdmin, departmentId } = input
     let query = `select rmr.receiptDate,rmr.receiptNo,rmr.invoiceNo,rmr.taxAmount,rmr.invoiceAmount,rmr.rawmaterialId,rmr.invoiceDate,rmr.managerName,rm.itemName,rm.itemCode,rm.itemQty,rm.vendorName,rm.requestedDate,rm.approvedDate,rm.description,rm.orderId from rawmaterialreceipt rmr INNER JOIN requiredrawmaterial rm on rmr.rawmaterialId=rm.rawmaterialid WHERE rmr.departmentId=${departmentId} ORDER BY receiptDate DESC`;

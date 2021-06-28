@@ -233,6 +233,18 @@ router.get('/getRMDetails', (req, res) => {
         else res.json(results);
     });
 });
+router.get('/getCurrentRMDetails', (req, res) => {
+    const { status, isSuperAdmin = false } = req.query
+    let input = {
+        status,
+        departmentId,
+        isSuperAdmin
+    }
+    motherPlantDbQueries.getCurrentRMDetails(input, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.json(results);
+    });
+});
 
 router.post('/createRM', (req, res) => {
     let input = req.body;
@@ -337,12 +349,12 @@ router.get('/getDispatchDetails', (req, res) => {
 router.get('/getDispatchDetails/:date', (req, res) => {
     motherPlantDbQueries.getDispatchDetailsByDate({ departmentId, date: req.params.date }, (err, results) => {
         if (err) res.status(500).json(dbError(err));
-       else res.json((results));
+        else res.json((results));
     });
 });
 
-router.get('/updateRMDamageCount', (req, res) => {
-    motherPlantDbQueries.updateRMDetailsDamageCount(req.query, (err, results) => {
+router.put('/updateRMDamageCount', (req, res) => {
+    motherPlantDbQueries.updateRMDetailsDamageCount(req.body, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else res.json(UPDATEMESSAGE);
     });
