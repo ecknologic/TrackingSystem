@@ -23,9 +23,8 @@ const checkUserExists = (req, res, next) => {
     }
 }
 const checkDepartmentExists = (req, res, next) => {
-    let isSuperAdmin = req.headers['issuperadmin']
-    let isAccountsAdmin = req.headers['isaccountsadmin']
-    let isSalesAdmin = req.headers['issalesadmin']
+    let isSuperAdmin = req.headers['issuperadmin'], isAccountsAdmin = req.headers['isaccountsadmin']
+    let isSalesAdmin = req.headers['issalesadmin'], userId = req.headers['userid']
     if (isSuperAdmin == 'true' || isAccountsAdmin == 'true' || isSalesAdmin == 'true') {
         next()
     } else {
@@ -34,7 +33,11 @@ const checkDepartmentExists = (req, res, next) => {
         executeGetQuery(query, (err, results) => {
             if (err) console.log("Error", err)
             else if (!results.length) res.status(406).json("Something went wrong")
-            else next()
+            else {
+                const { adminId, departmentType } = results[0]
+                if (userId != adminId) res.status(406).json(`You are not a ${departmentType} admin`)
+                else next()
+            }
         })
     }
 }
