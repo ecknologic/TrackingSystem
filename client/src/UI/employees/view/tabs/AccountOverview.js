@@ -290,9 +290,9 @@ const ManageEmployee = ({ isDriver, setHeaderContent, onGoBack }) => {
     }
 
     const handleUpdate = async () => {
-        const adharProofErrors = validateIDProofs(adharProof)
-        const depAdharProofErrors = validateIDProofs(depAdharProof)
-        const licenseProofErrors = isDriver ? validateIDProofs(licenseProof) : {}
+        const adharProofErrors = validateIDProofs(adharProof, adharProof.idProofType)
+        const depAdharProofErrors = validateIDProofs(depAdharProof, depAdharProof.idProofType)
+        const licenseProofErrors = isDriver ? validateIDProofs(licenseProof, licenseProof.idProofType) : {}
         const accountErrors = validateEmployeeValues(accountValues, employeeType)
         const depErrors = validateDependentValues(depValues)
 

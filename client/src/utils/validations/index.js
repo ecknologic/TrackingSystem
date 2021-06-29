@@ -32,12 +32,12 @@ export const validateRequired = (data) => {
 }
 
 export const validateIDProofs = (proofs, proofType) => {
+    const { Front, Back } = proofs;
     let errors = {};
     const text = 'Required'
-    const valid = getValidObject(proofs)
+    const valid = getValidObject({ Front, Back })
 
     if (!isEmpty(valid)) {
-        const { Front, Back } = proofs;
         if (!Front) errors.Front = text
         if (proofType !== 'panNo' && !Back) errors.Back = text
     }

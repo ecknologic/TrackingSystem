@@ -171,8 +171,7 @@ const AccountOverview = ({ data, onUpdate, isAdmin, locationOptions, businessOpt
 
     const handleAccountUpdate = async () => {
         const { idProofType } = accountValues
-        const { Front, Back } = IDProofs
-        const IDProofError = validateIDProofs({ Front, Back }, idProofType)
+        const IDProofError = validateIDProofs(IDProofs, idProofType)
         const accountErrors = validateAccountValues(accountValues, customertype, true)
 
         if (!isEmpty(accountErrors) || !isEmpty(IDProofError)) {

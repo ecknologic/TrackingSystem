@@ -384,7 +384,8 @@ customerQueries.getRevisitCustomersCountByAgent = (salesAgent, callback) => {
 customerQueries.getRevisitCustomersByAgent = (salesAgent, callback) => {
     let query = `SELECT c.* FROM customerenquirydetails c
     LEFT JOIN customerdetails cd ON c.EmailId=cd.EmailId
-    WHERE c.salesAgent=? AND revisitDate IS NOT NULL AND c.EmailId  NOT IN (SELECT EmailId FROM customerdetails) `
+    WHERE c.salesAgent=? AND revisitDate IS NOT NULL AND  NOT EXISTS 
+    (SELECT * FROM customerdetails cp WHERE cp.EmailId = c.EmailId) `
     return executeGetParamsQuery(query, [salesAgent], callback)
 }
 
