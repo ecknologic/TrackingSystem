@@ -19,6 +19,7 @@ const warehouseQueries = require('../dbQueries/warehouse/queries.js');
 const auditQueries = require('../dbQueries/auditlogs/queries.js');
 const departmenttransactionQueries = require('../dbQueries/departmenttransactions/queries.js');
 const { compareCustomerData, compareCustomerDeliveryData, compareProductsData, compareOrderData, compareCustomerOrderData, compareCustomerEnquiryData } = require('./utils/customer.js');
+const { getReceiptId, getCustomerIdsForReceiptsDropdown, getCustomerDepositDetails, createCustomerReceipt, getCustomerReceipts } = require('./Customers/receipt.js');
 let departmentId, userId, userName, userRole;
 
 var storage = multer.diskStorage({
@@ -150,19 +151,19 @@ router.post('/createCustomer', async (req, res) => {
   //     res.status(400).json({ status: 400, message: "This Customer already created" })
   //   }
   //   else {
-      let promiseArray = req.body.idProofs[0] != null ? [getLatLongDetails(customerdetails), uploadImage(req)] : [getLatLongDetails(customerdetails)]
-      Promise.all(promiseArray)
-        .then(response => {
-          let registeredDate = customerdetails.registeredDate ? customerdetails.registeredDate : new Date()
-          let customer_id_proof = response[1] && response[1]
-          let insertQueryValues = [customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactPerson, panNo, adharNo, registeredDate, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, response[0].latitude, response[0].longitude, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, createdBy, customer_id_proof, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, salesAgent]
-          db.query(customerDetailsQuery, insertQueryValues, (err, results) => {
-            if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
-            else {
-              saveDeliveryDetails(results.insertId, customerdetails, res)
-            }
-          });
-        })
+  let promiseArray = req.body.idProofs[0] != null ? [getLatLongDetails(customerdetails), uploadImage(req)] : [getLatLongDetails(customerdetails)]
+  Promise.all(promiseArray)
+    .then(response => {
+      let registeredDate = customerdetails.registeredDate ? customerdetails.registeredDate : new Date()
+      let customer_id_proof = response[1] && response[1]
+      let insertQueryValues = [customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactPerson, panNo, adharNo, registeredDate, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, response[0].latitude, response[0].longitude, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, createdBy, customer_id_proof, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, salesAgent]
+      db.query(customerDetailsQuery, insertQueryValues, (err, results) => {
+        if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+        else {
+          saveDeliveryDetails(results.insertId, customerdetails, res)
+        }
+      });
+    })
   //   }
   // })
 });
@@ -1049,4 +1050,28 @@ const updateWHDelivery = (req) => {
     }
   })
 }
+
+
+
+//Receipt APIS
+router.get('/getReceiptNumber', async (req, res) => {
+  getReceiptId(req, res)
+});
+
+router.get('/getCustomerIds', async (req, res) => {
+  getCustomerIdsForReceiptsDropdown(req, res)
+});
+
+router.get('/getCustomerDepositDetails', async (req, res) => {
+  getCustomerDepositDetails(req, res)
+});
+
+router.get('/getCustomerReceipts', async (req, res) => {
+  getCustomerReceipts(req, res)
+});
+
+router.post('/createCustomerReceipt', async (req, res) => {
+  createCustomerReceipt(req, res)
+});
+
 module.exports = router;
