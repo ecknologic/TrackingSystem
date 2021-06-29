@@ -260,9 +260,8 @@ const ApproveAccount = () => {
 
     const handleAccountSave = async () => {
         const { idProofType } = accountValues
-        const { Front, Back } = IDProofs
         const sessionAddresses = getSessionItems('address')
-        const IDProofError = validateIDProofs({ Front, Back }, idProofType)
+        const IDProofError = validateIDProofs(IDProofs, idProofType)
 
         const accountErrors = validateAccountValues(accountValues, customertype, true)
         const addressErrors = validateAddresses(sessionAddresses)
@@ -427,7 +426,7 @@ const ApproveAccount = () => {
                 <Checkbox checked={isDrafted} onChange={({ target: { checked } }) => handleAddressDraft(checked, id)}
                     className='cb-tiny cb-secondary'>
                     Draft
-                    </Checkbox>
+                </Checkbox>
                 {
                     showTrashIcon && (
                         <Popconfirm onConfirm={() => onAddressDelete(id, index)}

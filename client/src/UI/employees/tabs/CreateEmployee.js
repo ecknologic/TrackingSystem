@@ -249,9 +249,9 @@ const CreateEmployee = ({ goToTab }) => {
     }
 
     const handleSubmit = async () => {
-        const adharProofErrors = validateIDProofs(adharProof)
-        const depAdharProofErrors = validateIDProofs(depAdharProof)
-        const licenseProofErrors = employeeType === 'Driver' ? validateIDProofs(licenseProof) : {}
+        const adharProofErrors = validateIDProofs(adharProof, adharProof.idProofType)
+        const depAdharProofErrors = validateIDProofs(depAdharProof, depAdharProof.idProofType)
+        const licenseProofErrors = employeeType === 'Driver' ? validateIDProofs(licenseProof, licenseProof.idProofType) : {}
         const formErrors = validateEmployeeValues(formData, employeeType)
         const depErrors = validateDependentValues(depValues)
 
