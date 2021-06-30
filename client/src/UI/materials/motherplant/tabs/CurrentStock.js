@@ -205,19 +205,8 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
 
     return (
         <div className='stock-delivery-container current-stock-container'>
-            <FormHeader title='Total New Bottle Status Today' />
-            <div className='panel-body'>
-                <Slider className='dashboard-slider' {...props} >
-                    <StockCard title='20 Ltrs' icon={can20L} total={product20LCount} />
-                    <StockCard title='2 Ltrs' icon={can2L} total={product2LCount} />
-                    <StockCard title='1 Ltrs' icon={can1L} total={product1LCount} />
-                    <StockCard title='500 ml' icon={can500ML} total={product500MLCount} />
-                    <StockCard title='300 ml' icon={can300ML} total={product300MLCount} />
-                </Slider>
-            </div>
             <div className='header'>
                 <div className='left'>
-                    <FormHeader title='Raw Material Stock Details' />
                 </div>
                 <div className='right'>
                     <SearchInput

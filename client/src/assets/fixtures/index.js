@@ -136,6 +136,9 @@ export const getDCOptions = (options = []) => {
 export const getCustomerOptions = (customers = []) => {
     return customers.map((item) => <Option key={item.customerId} value={item.customerId}>{item.customerName}</Option>)
 }
+export const getCustomerIdOptions = (customers = []) => {
+    return customers.map((item) => <Option key={item.customerId} value={item.customerId}>{item.customerId}</Option>)
+}
 export const getWarehouseOptions = (warehouses = []) => {
     return warehouses.map((item) => <Option key={item.departmentId} value={item.departmentId}>{item.departmentName}</Option>)
 }
@@ -292,6 +295,49 @@ export const productColumns = [
         title: 'Total Amount',
         dataIndex: 'totalAmount',
         key: 'totalAmount',
+    },
+    {
+        title: 'Actions',
+        dataIndex: 'action',
+        key: 'action'
+    },
+]
+
+export const receiptColumns = [
+    {
+        title: 'Date',
+        dataIndex: 'receiptDate',
+        key: 'receiptDate',
+    },
+    {
+        title: 'Receipt Number',
+        dataIndex: 'receiptNumber',
+        key: 'receiptNumber',
+    },
+    {
+        title: 'Customer ID',
+        dataIndex: 'customerId',
+        key: 'customerId',
+    },
+    {
+        title: 'Customer Name',
+        dataIndex: 'customerName',
+        key: 'customerName',
+    },
+    {
+        title: 'Deposit Amount',
+        dataIndex: 'depositAmount',
+        key: 'depositAmount',
+    },
+    {
+        title: 'No of Cans',
+        dataIndex: 'noOfCans',
+        key: 'noOfCans',
+    },
+    {
+        title: 'Payment Mode',
+        dataIndex: 'paymentMode',
+        key: 'paymentMode',
     },
     {
         title: 'Actions',

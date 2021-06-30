@@ -21,7 +21,7 @@ import { validateIDProofs, validateAccountValues, validateIDNumbers, validateMob
 const AccountOverview = ({ data, onUpdate, isAdmin, locationOptions, businessOptions, agentOptions }) => {
     const { gstProof, idProof_backside, idProof_frontside, isApproved, registeredDate,
         customertype, Address1, loading, adharNo, idProofType, panNo, gstNo,
-        rocNo, licenseNo, voterId, passportNo } = data
+        rocNo, licenseNo, voterId, passportNo, depositAmount, isReceiptCreated } = data
 
     const { pathname } = useLocation()
     const history = useHistory()
@@ -34,6 +34,7 @@ const AccountOverview = ({ data, onUpdate, isAdmin, locationOptions, businessOpt
     const [IDProofs, setIDProofs] = useState({})
     const [gstProofs, setGstProofs] = useState({})
     const [shake, setShake] = useState(false)
+    const [_depositAmount, _setDepositAmount] = useState(depositAmount)
 
     const isCorporate = customertype === 'Corporate'
     const source = useMemo(() => axios.CancelToken.source(), []);
@@ -170,9 +171,10 @@ const AccountOverview = ({ data, onUpdate, isAdmin, locationOptions, businessOpt
     }
 
     const handleAccountUpdate = async () => {
-        const { idProofType } = accountValues
+        const { idProofType, depositAmount } = accountValues
         const IDProofError = validateIDProofs(IDProofs, idProofType)
         const accountErrors = validateAccountValues(accountValues, customertype, true)
+        const _isReceiptCreated = _depositAmount != depositAmount ? 0 : isReceiptCreated
 
         if (!isEmpty(accountErrors) || !isEmpty(IDProofError)) {
             setShake(true)
@@ -185,7 +187,7 @@ const AccountOverview = ({ data, onUpdate, isAdmin, locationOptions, businessOpt
         const account = isCorporate ? extractCADetails(accountValues) : extractGADetails(accountValues)
 
         const url = 'customer/updateCustomer'
-        const body = { ...account, idProofs }
+        const body = { ...account, idProofs, isReceiptCreated: _isReceiptCreated }
         const options = { item: 'Customer', v1Ing: 'Updating', v2: 'updated' }
 
         const { Address1, organizationName } = account
@@ -197,6 +199,7 @@ const AccountOverview = ({ data, onUpdate, isAdmin, locationOptions, businessOpt
             setBtnDisabled(false)
             resetTrackForm()
             onUpdate(organizationName, Address1)
+            _setDepositAmount(depositAmount)
             showToast(options)
             setEditMode(false)
         } catch (error) {

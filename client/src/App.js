@@ -4,6 +4,7 @@ import { getRoutesByRole, MARKETINGADMIN, MOTHERPLANTADMIN, SUPERADMIN, WAREHOUS
 import { getMainPathname, resetTrackForm } from './utils/Functions';
 import Login from './UI/auth/Login';
 import Products from './UI/products';
+import Receipts from './UI/receipts';
 import Transport from './UI/transport';
 import Customers from './UI/customers';
 import Dispatches from './UI/dispatches';
@@ -132,6 +133,7 @@ const App = () => {
                      <Route path='/invoices/dc-list/:invoiceId' render={byRole(<DeliveredDC />)} />
                      <Route path='/invoices/edit/:invoiceId' render={byRole(<EditInvoice />)} />
                      <Route path='/invoices/:tab?' render={byRole(<Invoices />)} />
+                     <Route path='/receipts' render={byRole(<Receipts />)} />
                      <Route path='/products' render={byRole(<Products />)} />
                      <Route path='/distributors/:tab?/:page?' render={byRole(<Distributors />)} />
                      <Route path='/motherplants' render={byRole(<Motherplants />)} />

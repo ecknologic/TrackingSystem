@@ -19,6 +19,7 @@ const warehouseQueries = require('../dbQueries/warehouse/queries.js');
 const auditQueries = require('../dbQueries/auditlogs/queries.js');
 const departmenttransactionQueries = require('../dbQueries/departmenttransactions/queries.js');
 const { compareCustomerData, compareCustomerDeliveryData, compareProductsData, compareOrderData, compareCustomerOrderData, compareCustomerEnquiryData } = require('./utils/customer.js');
+const { getReceiptId, getCustomerIdsForReceiptsDropdown, getCustomerDepositDetails, createCustomerReceipt, getCustomerReceipts, getCustomerReceiptsPaginationCount } = require('./Customers/receipt.js');
 let departmentId, userId, userName, userRole;
 
 var storage = multer.diskStorage({
@@ -150,19 +151,19 @@ router.post('/createCustomer', async (req, res) => {
   //     res.status(400).json({ status: 400, message: "This Customer already created" })
   //   }
   //   else {
-      let promiseArray = req.body.idProofs[0] != null ? [getLatLongDetails(customerdetails), uploadImage(req)] : [getLatLongDetails(customerdetails)]
-      Promise.all(promiseArray)
-        .then(response => {
-          let registeredDate = customerdetails.registeredDate ? customerdetails.registeredDate : new Date()
-          let customer_id_proof = response[1] && response[1]
-          let insertQueryValues = [customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactPerson, panNo, adharNo, registeredDate, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, response[0].latitude, response[0].longitude, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, createdBy, customer_id_proof, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, salesAgent]
-          db.query(customerDetailsQuery, insertQueryValues, (err, results) => {
-            if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
-            else {
-              saveDeliveryDetails(results.insertId, customerdetails, res)
-            }
-          });
-        })
+  let promiseArray = req.body.idProofs[0] != null ? [getLatLongDetails(customerdetails), uploadImage(req)] : [getLatLongDetails(customerdetails)]
+  Promise.all(promiseArray)
+    .then(response => {
+      let registeredDate = customerdetails.registeredDate ? customerdetails.registeredDate : new Date()
+      let customer_id_proof = response[1] && response[1]
+      let insertQueryValues = [customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactPerson, panNo, adharNo, registeredDate, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, response[0].latitude, response[0].longitude, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, createdBy, customer_id_proof, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, salesAgent]
+      db.query(customerDetailsQuery, insertQueryValues, (err, results) => {
+        if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+        else {
+          saveDeliveryDetails(results.insertId, customerdetails, res)
+        }
+      });
+    })
   //   }
   // })
 });
@@ -574,7 +575,7 @@ const getDeliveryDetails = ({ customerId, deliveryDetailsId, isSuperAdmin }) => 
 
 router.post('/updateCustomer', async (req, res) => {
   let customerdetails = req.body;
-  const { customer_id_proof, customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactPerson, panNo, adharNo, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, customerId, salesAgent } = customerdetails
+  const { customer_id_proof, customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactPerson, panNo, adharNo, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, customerId, salesAgent, isReceiptCreated } = customerdetails
   // let customerDetailsQuery = "insert  into customerdetails (customerName,mobileNumber,EmailId,Address1,gstNo,registeredDate,invoicetype,natureOfBussiness,creditPeriodInDays,referredBy,isActive,qrcodeId,latitude,longitude,customerType,organizationName,createdBy) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
   customerQueries.checkCustomerExistsOrNot({ EmailId, mobileNumber }, async (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
@@ -583,12 +584,12 @@ router.post('/updateCustomer', async (req, res) => {
     }
     else {
       const logs = await compareCustomerData(customerdetails, { userId, userRole, userName })
-      let customerDetailsQuery = "UPDATE customerdetails SET customerName=?,mobileNumber=?,alternatePhNo=?,EmailId=?,Address1=?,Address2=?,gstNo=?,contactperson=?,panNo=?,adharNo=?,invoicetype=?,natureOfBussiness=?,creditPeriodInDays=?,referredBy=?,departmentId=?,deliveryDaysId=?,depositAmount=?,isActive=?,latitude=?,longitude=?,shippingAddress=?,shippingContactPerson=?,shippingContactNo=?,customerType=?,organizationName=?,idProofType=?,pincode=?, dispenserCount=?, contractPeriod=?,rocNo=?,poNo=?,customer_id_proof=?,salesAgent=? WHERE customerId=" + customerId;
+      let customerDetailsQuery = "UPDATE customerdetails SET customerName=?,mobileNumber=?,alternatePhNo=?,EmailId=?,Address1=?,Address2=?,gstNo=?,contactperson=?,panNo=?,adharNo=?,invoicetype=?,natureOfBussiness=?,creditPeriodInDays=?,referredBy=?,departmentId=?,deliveryDaysId=?,depositAmount=?,isActive=?,latitude=?,longitude=?,shippingAddress=?,shippingContactPerson=?,shippingContactNo=?,customerType=?,organizationName=?,idProofType=?,pincode=?, dispenserCount=?, contractPeriod=?,rocNo=?,poNo=?,customer_id_proof=?,salesAgent=?,isReceiptCreated=? WHERE customerId=" + customerId;
       let promiseArray = req.body.idProofs[0] != null ? [getLatLongDetails(customerdetails), customer_id_proof ? updateProofs(req) : uploadImage(req)] : [getLatLongDetails(customerdetails)]
       Promise.all(promiseArray)
         .then(response => {
           let customerIdProof = req.body.idProofs[0] != null && customer_id_proof ? customer_id_proof : response[1]
-          let updateQueryValues = [customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactPerson, panNo, adharNo, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, response[0].latitude, response[0].longitude, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, customerIdProof, salesAgent]
+          let updateQueryValues = [customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactPerson, panNo, adharNo, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, response[0].latitude, response[0].longitude, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, customerIdProof, salesAgent, isReceiptCreated]
           // let insertQueryValues = [customerdetails.customerName, customerdetails.mobileNumber, customerdetails.EmailId, customerdetails.Address1, customerdetails.gstNo, customerdetails.registeredDate, customerdetails.invoicetype, customerdetails.natureOfBussiness, customerdetails.creditPeriodInDays, customerdetails.referredBy, customerdetails.isActive, response[0], response[1].latitude, response[1].longitude, customerdetails.customerType, customerdetails.organizationName, customerdetails.createdBy]
           db.query(customerDetailsQuery, updateQueryValues, (err, results) => {
             if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
@@ -1049,4 +1050,32 @@ const updateWHDelivery = (req) => {
     }
   })
 }
+
+
+
+//Receipt APIS
+router.get('/getCustomerReceiptsPaginationCount', async (req, res) => {
+  getCustomerReceiptsPaginationCount(req, res)
+});
+
+router.get('/getReceiptNumber', async (req, res) => {
+  getReceiptId(req, res)
+});
+
+router.get('/getCustomerIds', async (req, res) => {
+  getCustomerIdsForReceiptsDropdown(req, res)
+});
+
+router.get('/getCustomerDepositDetails', async (req, res) => {
+  getCustomerDepositDetails(req, res)
+});
+
+router.get('/getCustomerReceipts', async (req, res) => {
+  getCustomerReceipts(req, res)
+});
+
+router.post('/createCustomerReceipt', async (req, res) => {
+  createCustomerReceipt(req, res)
+});
+
 module.exports = router;

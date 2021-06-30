@@ -477,6 +477,23 @@ export const validateProductValues = (data) => {
     return errors
 }
 
+export const validateReceiptValues = (data) => {
+    let errors = {};
+    const text = 'Required'
+    const { customerId, paymentMode, transactionId, noOfCans, depositAmount, customerName } = data
+    if (noOfCans == null || !String(noOfCans)) errors.noOfCans = text;
+    if (depositAmount == null || !String(depositAmount)) errors.depositAmount = text;
+    if (!customerName) errors.customerName = text;
+    if (!customerId) errors.customerId = text;
+    if (!paymentMode) errors.paymentMode = text;
+
+    if (paymentMode !== 'Cash') {
+        if (!transactionId) errors.transactionId = text;
+    }
+
+    return errors
+}
+
 export const validateInvoiceValues = (data, isWHAdmin) => {
     let errors = {};
     const text = 'Required'

@@ -61,6 +61,7 @@ const ApproveAccount = () => {
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [isReviewed, setIsReviewed] = useState(false)
     const [activeKey, setActiveKey] = useState()
+    const [_depositAmount, _setDepositAmount] = useState()
     const warehouseOptions = useMemo(() => getWarehouseOptions(warehouseList), [warehouseList])
     const locationOptions = useMemo(() => getDropdownOptions(locationList), [locationList])
     const businessOptions = useMemo(() => getDropdownOptions(businessList), [businessList])
@@ -93,7 +94,7 @@ const ApproveAccount = () => {
         try {
             const { data: [data = {}] } = await http.GET(axios, url, config)
             const { gstProof, idProof_frontside, idProof_backside, Address1, registeredDate, ...rest } = data
-            const { customerName, organizationName, customertype, gstNo, adharNo, panNo, idProofType } = rest
+            const { customerName, organizationName, customertype, gstNo, adharNo, panNo, idProofType, depositAmount } = rest
 
             setHeaderContent({
                 title: organizationName || customerName,
@@ -110,6 +111,7 @@ const ApproveAccount = () => {
             setIDProofs({ Front, Back, idProofType, adharNo, panNo })
             setGstProof({ Front: gst, idProofType: 'gstNo', gstNo })
             setAccountValues(newData)
+            _setDepositAmount(depositAmount)
             return Promise.resolve()
         } catch (error) { }
     }
@@ -259,12 +261,13 @@ const ApproveAccount = () => {
     }
 
     const handleAccountSave = async () => {
-        const { idProofType } = accountValues
+        const { idProofType, isReceiptCreated } = accountValues
         const sessionAddresses = getSessionItems('address')
         const IDProofError = validateIDProofs(IDProofs, idProofType)
 
         const accountErrors = validateAccountValues(accountValues, customertype, true)
         const addressErrors = validateAddresses(sessionAddresses)
+        const _isReceiptCreated = _depositAmount != depositAmount ? 0 : isReceiptCreated
 
         if (!isEmpty(accountErrors) || !isEmpty(addressErrors) || !isEmpty(IDProofError)) {
             setShake(true)
@@ -280,7 +283,7 @@ const ApproveAccount = () => {
         }
         const idProofs = getIdProofsForDB(IDProofs, idProofType)
         const delivery = getAddressesForDB(sessionAddresses, true)
-        const account = { ...extractCADetails(accountValues), idProofs }
+        const account = { ...extractCADetails(accountValues), idProofs, isReceiptCreated: _isReceiptCreated }
         const options = { item: 'Customer', v1Ing: 'Saving', v2: 'saved' }
 
         try {
@@ -291,6 +294,7 @@ const ApproveAccount = () => {
             const p3 = deleteAddresses()
             await Promise.all([p1, p2, p3])
             setAddresses(sessionAddresses)
+            _setDepositAmount(depositAmount)
             showToast(options)
             postAccountSave()
         } catch (error) {
