@@ -198,6 +198,9 @@ const SideMenu = () => {
                             <Item key='/customers' icon={selected === '/customers' ? <FriendIcon /> : <FriendIconLight />}>
                                 Customers
                             </Item>
+                            <Item key='/receipts' icon={selected === '/receipts' ? <DocIcon /> : <DocIconLight />}>
+                                Receipts
+                            </Item>
                             <Item key='/invoices' icon={selected === '/invoices' ? <DocIcon /> : <DocIconLight />}>
                                 Invoices
                             </Item>

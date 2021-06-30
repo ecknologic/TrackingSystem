@@ -53,7 +53,7 @@ const SelectInput = ({ options, mode, onSelect, onDeselect, value, disabled, sho
             onSelect={handleSelect}
             placeholder={placeholder}
             onDeselect={handleDeselect}
-            filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+            filterOption={(input, option) => String(option.props.children).toLowerCase().indexOf(input.toLowerCase()) >= 0}
             dropdownClassName={showScroll && 'select-dropdown-overflow'}
             className={`${className} ${error && 'app-select-error'}`}
             getPopupContainer={node => node.parentNode}
