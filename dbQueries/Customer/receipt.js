@@ -7,8 +7,8 @@ receiptQueries.getReceiptId = async (callback) => {
 }
 
 receiptQueries.getCustomerReceipts = async (input, callback) => {
-    const { offset=0 } = input
-    let query = `SELECT * FROM customerreceipts ORDER BY createdDateTime DESC LIMIT 10 OFFSET ${offset}`
+    const { offset = 0, limit = 10 } = input
+    let query = `SELECT * FROM customerreceipts ORDER BY createdDateTime DESC LIMIT ${limit} OFFSET ${offset}`
     return executeGetQuery(query, callback)
 }
 
@@ -26,9 +26,9 @@ receiptQueries.getCustomerDepositDetails = async (customerId, callback) => {
 }
 
 receiptQueries.createCustomerReceipt = async (input, callback) => {
-    const { receiptNumber, customerId, depositAmount, noOfCans, paymentMode, transactionId } = input
-    let query = "insert into customerreceipts (receiptNumber,customerId,depositAmount,noOfCans,paymentMode,transactionId,createdDateTime) values(?,?,?,?,?,?,?)";
-    let requestBody = [receiptNumber, customerId, depositAmount, noOfCans, paymentMode, transactionId, new Date()]
+    const { receiptNumber, customerId, customerName, depositAmount, noOfCans, paymentMode, transactionId } = input
+    let query = "insert into customerreceipts (receiptNumber,customerId,customerName,depositAmount,noOfCans,paymentMode,transactionId,createdDateTime) values(?,?,?,?,?,?,?,?)";
+    let requestBody = [receiptNumber, customerId, customerName, depositAmount, noOfCans, paymentMode, transactionId, new Date()]
     return executePostOrUpdateQuery(query, requestBody, callback)
 
 }
