@@ -46,6 +46,15 @@ const getCustomerReceipts = (req, res) => {
     });
 }
 
+const getCustomerReceiptsPaginationCount = (req, res) => {
+    receiptQueries.getCustomerReceiptsPaginationCount((err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else {
+            res.json(results)
+        };
+    });
+}
+
 
 const getReceiptNumber = (number) => {
     if (number < 10) return `RD00${number}`
@@ -53,4 +62,4 @@ const getReceiptNumber = (number) => {
     else return `RD${number}`
 }
 
-module.exports = { getReceiptId, getCustomerIdsForReceiptsDropdown, getCustomerDepositDetails, createCustomerReceipt, getCustomerReceipts }
+module.exports = { getReceiptId, getCustomerIdsForReceiptsDropdown, getCustomerDepositDetails, createCustomerReceipt, getCustomerReceipts, getCustomerReceiptsPaginationCount }

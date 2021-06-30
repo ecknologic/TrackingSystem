@@ -12,8 +12,13 @@ receiptQueries.getCustomerReceipts = async (input, callback) => {
     return executeGetQuery(query, callback)
 }
 
+receiptQueries.getCustomerReceiptsPaginationCount = async (callback) => {
+    let query = `SELECT count(*) as totalCount FROM customerreceipts`
+    return executeGetQuery(query, callback)
+}
+
 receiptQueries.getCustomerIdsForReceiptsDropdown = async (callback) => {
-    let query = `SELECT customerNo as customerId FROM customerdetails`
+    let query = `SELECT customerNo as customerId FROM customerdetails WHERE isReceiptCreated=0`
     return executeGetQuery(query, callback)
 }
 
@@ -29,7 +34,13 @@ receiptQueries.createCustomerReceipt = async (input, callback) => {
     const { receiptNumber, customerId, customerName, depositAmount, noOfCans, paymentMode, transactionId } = input
     let query = "insert into customerreceipts (receiptNumber,customerId,customerName,depositAmount,noOfCans,paymentMode,transactionId,createdDateTime) values(?,?,?,?,?,?,?,?)";
     let requestBody = [receiptNumber, customerId, customerName, depositAmount, noOfCans, paymentMode, transactionId, new Date()]
-    return executePostOrUpdateQuery(query, requestBody, callback)
+    return executePostOrUpdateQuery(query, requestBody, (err, data) => {
+        if (err) callback()
+        else {
+            let updateQuery = `update customerdetails set isReceiptCreated=? WHERE customerNo=?`
+            executePostOrUpdateQuery(updateQuery, [1, customerId], callback)
+        }
+    })
 
 }
 

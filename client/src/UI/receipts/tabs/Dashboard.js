@@ -32,6 +32,7 @@ const Dashboard = ({ reFetch }) => {
     }, [])
 
     useEffect(() => {
+        getReceiptsCount()
         getReceipts()
     }, [reFetch])
 
@@ -44,7 +45,15 @@ const Dashboard = ({ reFetch }) => {
             const data = await http.GET(axios, url, config)
             setReceipts(data)
             setLoading(false)
-            setTotalCount(12) // static
+        } catch (error) { }
+    }
+
+    const getReceiptsCount = async () => {
+        const url = `customer/getCustomerReceiptsPaginationCount`
+
+        try {
+            const [{ totalCount }] = await http.GET(axios, url, config)
+            setTotalCount(totalCount)
         } catch (error) { }
     }
 

@@ -82,7 +82,7 @@ const CreateReceipt = ({ goToTab }) => {
 
     const handleSubmit = async () => {
         const formErrors = validateReceiptValues(formData);
-
+        const { customerId } = formData
         if (!isEmpty(formErrors)) {
             setShake(true)
             setTimeout(() => setShake(false), 820)
@@ -102,6 +102,7 @@ const CreateReceipt = ({ goToTab }) => {
             goToTab('1')
             resetForm()
             getReceiptNo()
+            setCustomerList(customerList.filter(({ customerId: id }) => id !== customerId))
         } catch (error) {
             message.destroy()
             if (!axios.isCancel(error)) {
