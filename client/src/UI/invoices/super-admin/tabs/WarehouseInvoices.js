@@ -17,6 +17,7 @@ import RoutesFilter from '../../../../components/RoutesFilter';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomDateInput from '../../../../components/CustomDateInput';
 import CustomPagination from '../../../../components/CustomPagination';
+import ActivityLogContent from '../../../../components/ActivityLogContent';
 import { TODAYDATE, TRACKFORM, WAREHOUSEADMIN } from '../../../../utils/constants';
 import { getDropdownOptions, getInvoiceColumns } from '../../../../assets/fixtures';
 import { compareMaxIntFloat, validatePaymentValues } from '../../../../utils/validations';
@@ -27,10 +28,12 @@ const APIDATEFORMAT = 'YYYY-MM-DD'
 
 const WarehouseInvoices = () => {
     const history = useHistory()
+    const [logs, setLogs] = useState([])
     const [invoices, setInvoices] = useState([])
     const [invoicesClone, setInvoicesClone] = useState([])
     const [loading, setLoading] = useState(true)
     const [pageSize, setPageSize] = useState(12)
+    const [logModal, setLogModal] = useState(false)
     const [pageNumber, setPageNumber] = useState(1)
     const [totalCount, setTotalCount] = useState(null)
     const [warehouseList, setWarehouseList] = useState([])
@@ -93,6 +96,17 @@ const WarehouseInvoices = () => {
         } catch (error) { }
     }
 
+    const getLogs = async (id) => {
+        const url = `logs/getDepartmentLogs?type=order&id=${id}` // TODO : update API Url
+
+        try {
+            showToast({ v1Ing: 'Fetching', action: 'loading' })
+            const data = await http.GET(axios, url, config)
+            showToast({ v2: 'fetched' })
+            setLogs(data)
+        } catch (error) { }
+    }
+
     const handleChange = (value, key) => {
         const { pendingAmount } = formData
         setFormData(data => ({ ...data, [key]: value }))
@@ -142,7 +156,7 @@ const WarehouseInvoices = () => {
         searchON && setResetSearch(!resetSearch)
     }
 
-    const handleMenuSelect = (key, data) => {
+    const handleMenuSelect = async (key, data) => {
         const { noOfPayments, pendingAmount: amountPaid } = data
         if (key === 'resend') {
         }
@@ -152,6 +166,10 @@ const WarehouseInvoices = () => {
         else if (key === 'paid') {
             setFormData({ ...data, noOfPayments: noOfPayments + 1, amountPaid })
             setPayModal(true)
+        }
+        else if (key === 'logs') {
+            await getLogs(data.invoiceId)
+            setLogModal(true)
         }
     }
 
@@ -243,6 +261,7 @@ const WarehouseInvoices = () => {
             <Menu.Item key="resend" icon={<SendIconGrey />}>Resend</Menu.Item>,
             <Menu.Item key="dcList" icon={<ListViewIconGrey />}>DC List</Menu.Item>,
             <Menu.Item key="paid" className={allowPay ? '' : 'disabled'} icon={<TickIconGrey />}>Paid</Menu.Item>,
+            <Menu.Item key="logs" icon={<ListViewIconGrey />}>Acvitity Logs</Menu.Item>,
         ]
 
         if (!pendingAmount) invoice.disableAmountPaid = true
@@ -272,6 +291,7 @@ const WarehouseInvoices = () => {
     }, [])
 
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
+    const handleLogModalCancel = useCallback(() => setLogModal(false), [])
     const handleModalCancel = useCallback(() => onModalClose(), [])
 
     const sliceFrom = (pageNumber - 1) * pageSize
@@ -355,6 +375,17 @@ const WarehouseInvoices = () => {
                     onBlur={handleBlur}
                     onChange={handleChange}
                 />
+            </CustomModal>
+            <CustomModal
+                className='app-form-modal'
+                visible={logModal}
+                onOk={handleLogModalCancel}
+                onCancel={handleLogModalCancel}
+                title='Activity Log Details'
+                okTxt='Close'
+                hideCancel
+            >
+                <ActivityLogContent data={logs} />
             </CustomModal>
             <ConfirmModal
                 visible={confirmModal}
