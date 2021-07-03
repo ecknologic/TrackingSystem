@@ -69,7 +69,7 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
     }
 
     const getLogs = async (id) => {
-        const url = `logs/getDepartmentLogs?type=order&id=${id}` // TODO : update API Url
+        const url = `logs/getDepartmentLogs?type=currentstock&id=${id}`
 
         try {
             showToast({ v1Ing: 'Fetching', action: 'loading' })
@@ -104,7 +104,7 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
     }
 
     const handleAdd = async () => {
-        const { id, damagedCount = 0 } = formData
+        const { id, damagedCount = 0, itemCode } = formData
         let errors = {}
         let error = ''
         error = validateNumber(damagedCount, true)
@@ -118,7 +118,7 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
             return
         }
 
-        const body = { id, damagedCount }
+        const body = { id, damagedCount, itemCode }
         const url = 'motherPlant/updateRMDamageCount'
         const options = { item: 'Damaged Stock', v1Ing: 'Adding', v2: 'added' }
 
