@@ -13,12 +13,13 @@ import InputValue from '../../../../components/InputValue';
 import SearchInput from '../../../../components/SearchInput';
 import CustomModal from '../../../../components/CustomModal';
 import ConfirmModal from '../../../../components/CustomModal';
-import { validateIntFloat, validatePaymentValues } from '../../../../utils/validations';
 import { TODAYDATE, TRACKFORM } from '../../../../utils/constants';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomDateInput from '../../../../components/CustomDateInput';
 import CustomPagination from '../../../../components/CustomPagination';
+import ActivityLogContent from '../../../../components/ActivityLogContent';
 import { getDropdownOptions, getInvoiceColumns } from '../../../../assets/fixtures';
+import { validateIntFloat, validatePaymentValues } from '../../../../utils/validations';
 import { computeTotalAmount, deepClone, disableFutureDates, doubleKeyComplexSearch, getStatusColor, showToast, resetTrackForm, isEmpty } from '../../../../utils/Functions';
 import { ListViewIconGrey, ScheduleIcon, SendIconGrey, TickIconGrey } from '../../../../components/SVG_Icons';
 const DATEFORMAT = 'DD/MM/YYYY'
@@ -30,6 +31,8 @@ const Dashboard = ({ reFetch, onUpdate }) => {
     const [invoicesClone, setInvoicesClone] = useState([])
     const [filteredClone, setFilteredClone] = useState([])
     const [loading, setLoading] = useState(true)
+    const [logs, setLogs] = useState([])
+    const [logModal, setLogModal] = useState(false)
     const [pageSize, setPageSize] = useState(12)
     const [pageNumber, setPageNumber] = useState(1)
     const [totalCount, setTotalCount] = useState(null)
@@ -85,6 +88,17 @@ const Dashboard = ({ reFetch, onUpdate }) => {
         } catch (error) { }
     }
 
+    const getLogs = async (id) => {
+        const url = `logs/getDepartmentLogs?type=order&id=${id}` // TODO : update API Url
+
+        try {
+            showToast({ v1Ing: 'Fetching', action: 'loading' })
+            const data = await http.GET(axios, url, config)
+            showToast({ v2: 'fetched' })
+            setLogs(data)
+        } catch (error) { }
+    }
+
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
@@ -114,7 +128,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
         setPageNumber(number)
     }
 
-    const handleMenuSelect = (key, data) => {
+    const handleMenuSelect = async (key, data) => {
         const { noOfPayments, pendingAmount: amountPaid } = data
         if (key === 'resend') {
         }
@@ -124,6 +138,10 @@ const Dashboard = ({ reFetch, onUpdate }) => {
         else if (key === 'paid') {
             setFormData({ ...data, noOfPayments: noOfPayments + 1, amountPaid })
             setPayModal(true)
+        }
+        else if (key === 'logs') {
+            await getLogs(data.invoiceId)
+            setLogModal(true)
         }
     }
 
@@ -210,6 +228,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
             <Menu.Item key="resend" icon={<SendIconGrey />}>Resend</Menu.Item>,
             <Menu.Item key="dcList" icon={<ListViewIconGrey />}>DC List</Menu.Item>,
             <Menu.Item key="paid" className={departmentStatus === 'Paid' ? 'disabled' : ''} icon={<TickIconGrey />}>Paid</Menu.Item>,
+            <Menu.Item key="logs" icon={<ListViewIconGrey />}>Acvitity Logs</Menu.Item>,
         ]
 
         return {
@@ -235,6 +254,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
 
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
     const handleModalCancel = useCallback(() => onModalClose(), [])
+    const handleLogModalCancel = useCallback(() => setLogModal(false), [])
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
@@ -310,6 +330,17 @@ const Dashboard = ({ reFetch, onUpdate }) => {
                     onBlur={handleBlur}
                     onChange={handleChange}
                 />
+            </CustomModal>
+            <CustomModal
+                className='app-form-modal'
+                visible={logModal}
+                onOk={handleLogModalCancel}
+                onCancel={handleLogModalCancel}
+                title='Activity Log Details'
+                okTxt='Close'
+                hideCancel
+            >
+                <ActivityLogContent data={logs} />
             </CustomModal>
             <ConfirmModal
                 visible={confirmModal}

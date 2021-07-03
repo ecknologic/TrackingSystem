@@ -48,7 +48,7 @@ export const computeTotalAmount = (data, key = 'totalAmount') => {
     if (!isEmpty(data)) {
         totalAmount = data.filter(({ status }) => status !== 'Paid')
             .map(item => item[key])
-            .reduce((a, c) => a + c).toLocaleString('en-IN')
+            .reduce((a, c) => a + c, 0).toLocaleString('en-IN')
     }
 
     return `₹ ${totalAmount}`
