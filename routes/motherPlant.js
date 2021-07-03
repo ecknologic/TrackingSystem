@@ -6,7 +6,8 @@ const { INSERTMESSAGE, UPDATEMESSAGE, WEEKDAYS } = require('../utils/constants')
 const dayjs = require('dayjs');
 const usersQueries = require('../dbQueries/users/queries');
 const auditQueries = require('../dbQueries/auditlogs/queries');
-const { compareDepartmentData } = require('./utils/department');
+const { compareDepartmentData, compareCurrentStockLog } = require('./utils/department');
+const departmenttransactionQueries = require('../dbQueries/departmenttransactions/queries');
 let departmentId, adminUserId, userName, userRole;
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -327,15 +328,28 @@ router.get('/getRMTotalCount', (req, res) => {
 router.post('/createRMReceipt', (req, res) => {
     let input = req.body;
     input.departmentId = departmentId
-    motherPlantDbQueries.createRMReceipt(input, (err, results) => {
-        if (err) res.status(500).json(err.sqlMessage);
-        else {
-            res.json(INSERTMESSAGE);
-            motherPlantDbQueries.updateRMDetailsQuantity(input, (updateErr, success) => {
-                if (updateErr) console.log("ERR", updateErr);
-            })
-        }
-    });
+    motherPlantDbQueries.getRMQtyByRMId(input, async (err, data) => {
+        if (err) console.log('Err', err)
+        else if (data.length) {
+            const { itemQty, itemCode } = data[0]
+            let logs = await compareCurrentStockLog({ totalQuantity: itemQty }, { departmentId, itemCode, userId: adminUserId, userRole, userName })
+            motherPlantDbQueries.createRMReceipt(input, (err, results) => {
+                if (err) res.status(500).json(err.sqlMessage);
+                else {
+                    res.json(INSERTMESSAGE);
+                    if (logs.length) {
+                        departmenttransactionQueries.createDepartmentTransaction(logs, (err, data) => {
+                            if (err) console.log('log error', err)
+                            else console.log('log data', data)
+                        })
+                    }
+                    motherPlantDbQueries.updateRMDetailsQuantity(input, (updateErr, success) => {
+                        if (updateErr) console.log("ERR", updateErr);
+                    })
+                }
+            });
+        } else res.json('No data found with this material Id')
+    })
 })
 
 router.get('/getDispatchDetails', (req, res) => {
@@ -352,10 +366,18 @@ router.get('/getDispatchDetails/:date', (req, res) => {
     });
 });
 
-router.put('/updateRMDamageCount', (req, res) => {
+router.put('/updateRMDamageCount', async (req, res) => {
+    const { itemCode, damagedCount } = req.body; // Need itemcode from frontend
+    let logs = await compareCurrentStockLog({ damagedCount }, { departmentId, itemCode, userId: adminUserId, userRole, userName })
     motherPlantDbQueries.updateRMDetailsDamageCount(req.body, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else res.json(UPDATEMESSAGE);
+        if (logs.length) {
+            departmenttransactionQueries.createDepartmentTransaction(logs, (err, data) => {
+                if (err) console.log('log error', err)
+                else console.log('log data', data)
+            })
+        }
     });
 });
 
@@ -664,7 +686,7 @@ router.delete('/deleteVehicle/:vehicleId', (req, res) => {
 });
 
 const updateCurrentRMDetailsQuantity = (input) => {
-    const { product20L = 0, product1L = 0, product500ML = 0, product300ML = 0, product2L = 0 } = input
+    const { product20L = 0, product1L = 0, product500ML = 0, product300ML = 0, product2L = 0, managerName } = input
 
     let retailQuantity = product1L + product500ML + product300ML + product2L
 
@@ -677,6 +699,37 @@ const updateCurrentRMDetailsQuantity = (input) => {
     motherPlantDbQueries.update20LQuantityRM(product20L, (update20LErr, data) => {
         if (update20LErr) console.log(update20LErr);
     })
+    let logs = [];
+    motherPlantDbQueries.getCurrentRMDetails({ departmentId }, (err, data) => {
+        if (err) console.log(err);
+        else if (data.length) {
+            for (let i of data) {
+                const { totalQuantity, itemName, id } = i
+                logs.push({
+                    oldValue: totalQuantity,
+                    updatedValue: getUpdatedValue({ totalQuantity, itemName, product2L, product20L, retailQuantity }),
+                    createdDateTime: new Date(),
+                    userId: adminUserId,
+                    description: `Stock utilized by manager <b>(${managerName})</b>`,
+                    transactionId: id,
+                    departmentId,
+                    type: 'motherplant', subType: 'currentstock'
+                })
+                if (logs.length == data.length) {
+                    departmenttransactionQueries.createDepartmentTransaction(logs, (err, data) => {
+                        if (err) console.log('log error', err)
+                        else console.log('log data', data)
+                    })
+                }
+            }
+        }
+    })
+}
+
+const getUpdatedValue = ({ totalQuantity, itemName, product2L, product20L, retailQuantity }) => {
+    if (itemName == 'retailClosures' || itemName == 'sleeves') return totalQuantity - retailQuantity;
+    if (itemName == 'handles') return totalQuantity - product2L
+    if (itemName == '20LClosures' || itemName == 'strikers' || itemName == '20Lcans') return totalQuantity - product20L
 }
 
 module.exports = router;

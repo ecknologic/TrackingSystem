@@ -12,6 +12,16 @@ invoiceQueries.getInvoicesByRole = async (roleId, callback) => {
     return executeGetParamsQuery(query, [roleId], callback)
 }
 
+invoiceQueries.getInvoicesLogsById = async (invoiceId, callback) => {
+    let query = `select l.*,i.createdDateTime as invoiceDate,u.userName,r.RoleName,u1.userName as createdUserName,r1.RoleName as creatorRole from invoicepaymentlogs l INNER JOIN Invoice i ON i.invoiceId=l.invoiceId INNER JOIN usermaster u ON l.userId=u.userId INNER JOIN usermaster u1 ON i.createdBy=u1.userId INNER JOIN rolemaster r ON r.RoleId=u.roleId INNER JOIN rolemaster r1 ON r1.RoleId=u1.roleId WHERE l.invoiceId=?  ORDER BY createdDateTime DESC`;
+    return executeGetParamsQuery(query, [invoiceId], callback)
+}
+
+invoiceQueries.getDepartmentInvoicesLogsById = async (invoiceId, callback) => {
+    let query = `select l.*,i.createdDateTime as invoiceDate,u.userName,r.RoleName,u1.userName as createdUserName,r1.RoleName as creatorRole from departmentInvoicepaymentlogs l INNER JOIN departmentInvoices i ON i.invoiceId=l.invoiceId INNER JOIN usermaster u ON l.userId=u.userId INNER JOIN usermaster u1 ON i.createdBy=u1.userId INNER JOIN rolemaster r ON r.RoleId=u.roleId INNER JOIN rolemaster r1 ON r1.RoleId=u1.roleId WHERE l.invoiceId=?  ORDER BY createdDateTime DESC`;
+    return executeGetParamsQuery(query, [invoiceId], callback)
+}
+
 invoiceQueries.getCustomerInvoices = async (customerId, callback) => {
     let query = `select i.*,c.Address1 AS billingAddress from Invoice i INNER JOIN customerdetails c ON i.customerId=c.customerId where i.customerId=? ORDER BY invoiceId DESC`;
     return executeGetParamsQuery(query, [customerId], callback)
@@ -187,9 +197,9 @@ invoiceQueries.getDepartmentInvoicesCount = async (input, callback) => {
 
 //POST Request Methods
 invoiceQueries.addInvoicePayment = (input, callback) => {
-    const { invoiceId, amountPaid, customerId, paymentDate, paymentMode } = input
-    let query = "insert into invoicepaymentlogs (invoiceId,amountPaid, customerId, paymentDate, paymentMode) values(?,?,?,?,?)";
-    let requestBody = [invoiceId, amountPaid, customerId, paymentDate, paymentMode]
+    const { invoiceId, amountPaid, customerId, paymentDate, paymentMode, userId } = input
+    let query = "insert into invoicepaymentlogs (invoiceId,amountPaid, customerId, paymentDate, paymentMode,userId) values(?,?,?,?,?,?)";
+    let requestBody = [invoiceId, amountPaid, customerId, paymentDate, paymentMode, userId]
     executePostOrUpdateQuery(query, requestBody, () => {
         let getQuery = 'select i.*,c.Address1 AS billingAddress from Invoice i INNER JOIN customerdetails c ON i.customerId=c.customerId WHERE invoiceId=?'
         return executeGetParamsQuery(getQuery, [invoiceId], callback)
@@ -197,9 +207,9 @@ invoiceQueries.addInvoicePayment = (input, callback) => {
 }
 
 invoiceQueries.addDepartmentInvoicePayment = (input, callback) => {
-    const { invoiceId, amountPaid, customerId, customerType, paymentDate, paymentMode, departmentId } = input
-    let query = "insert into departmentInvoicepaymentlogs (invoiceId,amountPaid,customerId, customerType, paymentDate, paymentMode,departmentId) values(?,?,?,?,?,?,?)";
-    let requestBody = [invoiceId, amountPaid, customerId, customerType, paymentDate, paymentMode, departmentId]
+    const { invoiceId, amountPaid, customerId, customerType, paymentDate, paymentMode, departmentId, userId } = input
+    let query = "insert into departmentInvoicepaymentlogs (invoiceId,amountPaid,customerId, customerType, paymentDate, paymentMode,departmentId,userId) values(?,?,?,?,?,?,?,?)";
+    let requestBody = [invoiceId, amountPaid, customerId, customerType, paymentDate, paymentMode, departmentId, userId]
     executePostOrUpdateQuery(query, requestBody, () => {
         let getQuery = `select d.*, dep.departmentName,CASE WHEN d.customerType='distributor' THEN dis.deliveryLocation ELSE c.Address1 END AS billingAddress from departmentInvoices d LEFT JOIN customerdetails c 
         ON d.customerId=c.customerId LEFT JOIN Distributors dis ON
@@ -209,21 +219,21 @@ invoiceQueries.addDepartmentInvoicePayment = (input, callback) => {
 }
 
 invoiceQueries.createInvoice = (input, callback) => {
-    const { customerId, invoiceDate, dueDate, fromDate, toDate, salesPerson, invoiceId, hsnCode, poNo, totalAmount, customerName, mailIds } = input
-    let query = "insert into Invoice (customerId,invoiceDate,dueDate,salesPerson,invoiceId,hsnCode,poNo,totalAmount,pendingAmount,customerName,fromDate,toDate,mailIds) values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    const { customerId, invoiceDate, dueDate, fromDate, toDate, salesPerson, invoiceId, hsnCode, poNo, totalAmount, customerName, mailIds, createdBy } = input
+    let query = "insert into Invoice (customerId,invoiceDate,dueDate,salesPerson,invoiceId,hsnCode,poNo,totalAmount,pendingAmount,customerName,fromDate,toDate,mailIds,createdBy) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     // var gstProofImage = Buffer.from(gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-    let requestBody = [customerId, invoiceDate, dueDate, salesPerson, invoiceId, hsnCode, poNo, totalAmount, totalAmount, customerName, fromDate, toDate, mailIds]
+    let requestBody = [customerId, invoiceDate, dueDate, salesPerson, invoiceId, hsnCode, poNo, totalAmount, totalAmount, customerName, fromDate, toDate, mailIds, createdBy]
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 
 invoiceQueries.createDepartmentInvoice = (input, callback) => {
-    const { dcNo, customerId, invoiceDate, dueDate, fromDate, toDate, salesPerson, invoiceId, hsnCode, poNo, totalAmount, customerName, departmentId, mailIds, departmentStatus = 'Pending', customerType = 'customer', paymentMode } = input
+    const { dcNo, customerId, invoiceDate, dueDate, fromDate, toDate, salesPerson, invoiceId, hsnCode, poNo, totalAmount, customerName, departmentId, mailIds, departmentStatus = 'Pending', customerType = 'customer', paymentMode, createdBy } = input
     const pendingAmount = departmentStatus == "Pending" ? totalAmount : 0
     const noOfPayments = departmentStatus != "Pending" ? 1 : 0
     const status = "Pending"
-    let query = "insert into departmentInvoices (dcNo,customerId,invoiceDate,dueDate,salesPerson,invoiceId,hsnCode,poNo,totalAmount,customerName,fromDate,toDate,departmentId,status,mailIds,departmentStatus,pendingAmount,customerType,paymentMode,noOfPayments) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    let query = "insert into departmentInvoices (dcNo,customerId,invoiceDate,dueDate,salesPerson,invoiceId,hsnCode,poNo,totalAmount,customerName,fromDate,toDate,departmentId,status,mailIds,departmentStatus,pendingAmount,customerType,paymentMode,noOfPayments,createdBy) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     // var gstProofImage = Buffer.from(gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-    let requestBody = [dcNo, customerId, invoiceDate, dueDate, salesPerson, invoiceId, hsnCode, poNo, totalAmount, customerName, fromDate, toDate, departmentId, status, mailIds, departmentStatus, pendingAmount, customerType, paymentMode, noOfPayments]
+    let requestBody = [dcNo, customerId, invoiceDate, dueDate, salesPerson, invoiceId, hsnCode, poNo, totalAmount, customerName, fromDate, toDate, departmentId, status, mailIds, departmentStatus, pendingAmount, customerType, paymentMode, noOfPayments, createdBy]
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 

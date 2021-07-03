@@ -10,13 +10,14 @@ const fs = require('fs');
 const { generatePDF, generateCustomerPDF } = require('../../dbQueries/Customer/queries.js');
 const dayjs = require('dayjs');
 const { sendMail } = require('../mailTemplate.js');
-var departmentId, isSuperAdmin;
+var departmentId, isSuperAdmin, userId;
 
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
     console.log('Time: ', Date.now());
     departmentId = req.headers['departmentid']
     isSuperAdmin = req.headers['issuperadmin']
+    userId = req.headers['userid']
     next();
 });
 
@@ -152,14 +153,14 @@ router.post("/generateMultipleInvoices", (req, res) => {
                         let arr = []
                         const { fromDate, toDate } = req.body
                         for (let [index, i] of customersArr.entries()) {
-                            let { gstNo, products, customerId, creditPeriodInDays, organizationName, customerName, EmailId, createdBy } = i
+                            let { gstNo, products, customerId, creditPeriodInDays, organizationName, customerName, EmailId, salesAgent } = i
                             let finalProducts = [];
                             let obj = {
                                 customerName: organizationName || customerName,
                                 gstNo,
                                 invoiceDate: formatDate(new Date()),
                                 customerId,
-                                salesPerson: createdBy,
+                                salesPerson: salesAgent,
                                 dueDate: creditPeriodInDays ? dayjs().add(creditPeriodInDays, 'day').format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'),
                                 hsnCode: 22011010,
                                 poNo: 0,
@@ -168,7 +169,8 @@ router.post("/generateMultipleInvoices", (req, res) => {
                                 fromDate,
                                 toDate,
                                 invoiceId: getInvoiceNumber(results[0].invoiceId + (index + 1)),
-                                mailIds: EmailId
+                                mailIds: EmailId,
+                                createdBy: userId
                             }
                             products.map(product => {
                                 const { location: address, deliveryAddress, price20L, price2L, price1L, price500ML, price300ML } = product
@@ -265,7 +267,7 @@ router.post("/generateMultipleInvoices", (req, res) => {
 });
 
 router.post("/createDepartmentInvoice", (req, res) => {
-    req.body.departmentId = departmentId
+    req.body = { ...req.body, departmentId, createdBy: userId }
     invoiceQueries.checkInvoiceStatusByDCNO(req.body.dcNo, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else if (!results.length) res.status(400).json({ message: "Invoice already created with this DC number" })
@@ -315,7 +317,7 @@ router.post("/createInvoice", (req, res) => {
             } else {
                 let products = addProducts(JSON.parse(data[0].products))
                 let product = products[0]
-                const { EmailId } = data[0]
+                const { EmailId, salesAgent } = data[0]
                 const {
                     location: address,
                     deliveryAddress,
@@ -342,9 +344,7 @@ router.post("/createInvoice", (req, res) => {
                     arr.push(prepareProductObj({ deliveryAddress, invoiceId, productName: "300 ML Bibo Water Cases - 30 Bottles", quantity: product['300MLBoxes'], productPrice: price300ML, tax: 18, gstNo, address }))
                 }
                 const { totalAmount } = computeFinalAmounts(arr)
-                req.body.products = arr
-                req.body.mailIds = EmailId
-                req.body.totalAmount = totalAmount
+                req.body = { ...req.body, createdBy: userId, products: arr, mailIds: EmailId, totalAmount: totalAmount, salesPerson: salesAgent }
                 saveInvoice(req.body, res, true)
             }
         }
@@ -390,7 +390,7 @@ router.post('/addInvoicePayment', (req, res) => {
     invoiceQueries.updateInvoicePaymentDetails(req.body, (err, data) => {
         if (err) res.status(500).json(dbError(err));
         else {
-            invoiceQueries.addInvoicePayment(req.body, (err, results) => {
+            invoiceQueries.addInvoicePayment({ ...req.body, userId }, (err, results) => {
                 if (err) res.status(500).json(dbError(err));
                 else res.json(results);
             });
@@ -402,7 +402,7 @@ router.post('/addDepartmentInvoicePayment', (req, res) => {
     invoiceQueries.updateDepartmentInvoicePaymentDetails(req.body, (err, data) => {
         if (err) res.status(500).json(dbError(err));
         else {
-            invoiceQueries.addDepartmentInvoicePayment(req.body, (err, results) => {
+            invoiceQueries.addDepartmentInvoicePayment({ ...req.body, userId }, (err, results) => {
                 if (err) res.status(500).json(dbError(err));
                 else res.json(results);
             });
@@ -537,7 +537,7 @@ const saveDepartmentInvoice = async (requestObj, res, response) => {
 const addDepartmentPayment = (invoiceId, requestObj) => {
     const { totalAmount: amountPaid, departmentId, customerId, customerType, paymentDate = new Date(), paymentMode } = requestObj
     let obj = {
-        invoiceId, amountPaid, customerId, customerType, paymentDate, paymentMode, departmentId
+        invoiceId, amountPaid, customerId, customerType, paymentDate, paymentMode, departmentId, userId
     }
     invoiceQueries.addDepartmentInvoicePayment(obj, (err, results) => {
         if (err) console.log('err', err);

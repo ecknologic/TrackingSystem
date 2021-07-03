@@ -556,7 +556,7 @@ customerQueries.getOrderDetailsById = (deliveryDetailsId, callback) => {
 
 customerQueries.generateCustomerPDF = (input, callback) => {
     const { fromDate, toDate, customerId } = input
-    let query = `SELECT c.gstNo,c.customerId,c.createdBy,c.EmailId,c.customerName,c.organizationName,
+    let query = `SELECT c.gstNo,c.customerId,c.createdBy,c.EmailId,c.customerName,c.organizationName,c.salesAgent,
     c.address1,c.gstNo,c.panNo,c.mobileNumber,
     JSON_ARRAYAGG(JSON_OBJECT('deliveryAddress',d.address,'location',d.location,'20LCans',co.20LCans,'price20L',co.price20L,'1LBoxes',co.1LBoxes,
     'price1L',co.price1L, '500MLBoxes',co.500MLBoxes,'price500ML',co.price500ML,'300MLBoxes',co.300MLBoxes,'price300ML',co.price300ML,'2LBoxes',co.2LBoxes,'price2L',co.price2L)) as products

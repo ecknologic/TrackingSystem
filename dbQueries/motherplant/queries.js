@@ -124,14 +124,26 @@ motherPlantDbQueries.getRMDetails = async (input, callback) => {
         return executeGetParamsQuery(query, [input.departmentId], callback)
     }
 }
+
 motherPlantDbQueries.getCurrentRMDetails = async (input, callback) => {
     let query = `select * from rawmaterialdetails WHERE departmentId=? AND isApproved=1 ORDER BY createdDateTime DESC`;
-    if (input.isSuperAdmin == 'true') {
+    if (input.isSuperAdmin && input.isSuperAdmin == 'true') {
         query = `select r.*,d.departmentName from rawmaterialdetails r INNER JOIN departmentmaster d ON r.departmentId=d.departmentId ORDER BY r.createdDateTime DESC`
         return executeGetQuery(query, callback)
     }
     return executeGetParamsQuery(query, [input.departmentId], callback)
 }
+
+motherPlantDbQueries.getCurrentRMDetailsByItemCode = async (itemCode, callback) => {
+    let query = `select * from rawmaterialdetails WHERE itemCode=?`;
+    return executeGetParamsQuery(query, [itemCode], callback)
+}
+
+motherPlantDbQueries.getRMQtyByRMId = async (input, callback) => {
+    let query = `select rm.itemQty,rm.itemCode from requiredrawmaterial rm WHERE rm.rawmaterialId=?`;
+    return executeGetParamsQuery(query, [input.rawmaterialid], callback)
+}
+
 motherPlantDbQueries.getRMReceiptDetails = async (input, callback) => {
     const { isSuperAdmin, departmentId } = input
     let query = `select rmr.receiptDate,rmr.receiptNo,rmr.invoiceNo,rmr.taxAmount,rmr.invoiceAmount,rmr.rawmaterialId,rmr.invoiceDate,rmr.managerName,rm.itemName,rm.itemCode,rm.itemQty,rm.vendorName,rm.requestedDate,rm.approvedDate,rm.description,rm.orderId from rawmaterialreceipt rmr INNER JOIN requiredrawmaterial rm on rmr.rawmaterialId=rm.rawmaterialid WHERE rmr.departmentId=${departmentId} ORDER BY receiptDate DESC`;
@@ -443,8 +455,8 @@ motherPlantDbQueries.updateRMDetailsStatus = async (input, callback) => {
 
 motherPlantDbQueries.updateRMDetailsDamageCount = async (input, callback) => {
     const { id, damagedCount } = input
-    let query = "UPDATE rawmaterialdetails SET damagedCount=damagedCount+? WHERE id=?";
-    let requestBody = [damagedCount, id]
+    let query = "UPDATE rawmaterialdetails SET damagedCount=damagedCount+?,totalQuantity=totalQuantity-? WHERE id=?";
+    let requestBody = [damagedCount, damagedCount, id]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
@@ -477,20 +489,20 @@ motherPlantDbQueries.updateProductionDetails = async (input, callback) => {
 }
 
 motherPlantDbQueries.updateRetailQuantityRM = async (totalQuantity, callback) => {
-    let query = `update rawmaterialdetails set totalQuantity=totalQuantity-? where itemName='retailClosures' OR itemName='sleeves`;
-    let requestBody = [totalQuantity]
+    let query = `update rawmaterialdetails set totalQuantity=totalQuantity-? where itemName='retailClosures' OR itemName='sleeves'`;
+    let requestBody = [parseInt(totalQuantity)]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
 motherPlantDbQueries.update20LQuantityRM = async (totalQuantity, callback) => {
-    let query = `update rawmaterialdetails set totalQuantity=totalQuantity-? where itemName='20LClosures' OR itemName='strikers`;
-    let requestBody = [totalQuantity]
+    let query = `update rawmaterialdetails set totalQuantity=totalQuantity-? where itemName='20LClosures' OR itemName='strikers' OR itemName='20Lcans'`;
+    let requestBody = [parseInt(totalQuantity)]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
 motherPlantDbQueries.updateRMHandlesQuantity = async (totalQuantity, callback) => {
     let query = `update rawmaterialdetails set totalQuantity=totalQuantity-? where itemName='handles'`;
-    let requestBody = [totalQuantity]
+    let requestBody = [parseInt(totalQuantity)]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
