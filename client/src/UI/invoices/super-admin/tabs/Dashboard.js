@@ -126,7 +126,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
     }
 
     const getLogs = async (id) => {
-        const url = `logs/getDepartmentLogs?type=order&id=${id}` // TODO : update API Url
+        const url = `logs/getInvoiceLogs?type=customer&id=${id}`
 
         try {
             showToast({ v1Ing: 'Fetching', action: 'loading' })

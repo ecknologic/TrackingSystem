@@ -66,8 +66,9 @@ const Payments = ({ reFetch, onUpdate }) => {
         } catch (error) { }
     }
 
-    const getLogs = async (id) => {
-        const url = `logs/getDepartmentLogs?type=order&id=${id}` // TODO : update API Url
+    const getLogs = async (id, depId) => {
+        let url = `logs/getInvoiceLogs?type=customer&id=${id}`
+        if (depId) url = `logs/getInvoiceLogs?type=warehouse&id=${id}`
 
         try {
             showToast({ v1Ing: 'Fetching', action: 'loading' })
@@ -115,7 +116,7 @@ const Payments = ({ reFetch, onUpdate }) => {
             history.push(`/invoices/dc-list/${data.invoiceId}`, data)
         }
         else if (key === 'logs') {
-            await getLogs(data.invoiceId)
+            await getLogs(data.invoiceId, data.departmentId)
             setLogModal(true)
         }
         else handleStatusUpdate(data.invoiceId)
