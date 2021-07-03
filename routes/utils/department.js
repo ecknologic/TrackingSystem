@@ -1,3 +1,4 @@
+const motherPlantDbQueries = require("../../dbQueries/motherplant/queries");
 var motherplantQueries = require("../../dbQueries/motherplant/queries");
 
 const compareDepartmentData = (data, { departmentId, type, adminUserId: userId, userRole, userName }) => {
@@ -31,6 +32,42 @@ const compareDepartmentData = (data, { departmentId, type, adminUserId: userId, 
     })
 }
 
+//Motherplant Current Stock
+const compareCurrentStockLog = (data, { departmentId, itemCode, userId, userRole, userName }) => {
+    return new Promise((resolve) => {
+        motherPlantDbQueries.getCurrentRMDetailsByItemCode(itemCode, (err, results) => {
+            if (err) resolve([])
+            else if (results.length) {
+                const oldData = results[0]
+                const records = []
+                const createdDateTime = new Date()
+                Object.entries(data).map(([key, updatedValue]) => {
+                    let oldValue = oldData[key]
+                    if (oldValue != updatedValue) {
+                        records.push({
+                            oldValue,
+                            updatedValue: oldValue + updatedValue,
+                            createdDateTime,
+                            userId,
+                            description: `Updated current stock ${getCurrentStockKeyName(key)} by ${userRole} <b>(${userName})</b>`,
+                            transactionId: oldData.id,
+                            departmentId,
+                            type: 'motherplant', subType: 'currentstock'
+                        })
+                    }
+                })
+                resolve(records)
+            }
+            else {
+                resolve([])
+            }
+        })
+    })
+}
 
+const getCurrentStockKeyName=(key)=>{
+    if(key=='totalQuantity') return 'Total Quantity'
+    if(key=='damagedCount') return 'Damaged Count'
+}
 
-module.exports = { compareDepartmentData }
+module.exports = { compareDepartmentData, compareCurrentStockLog }

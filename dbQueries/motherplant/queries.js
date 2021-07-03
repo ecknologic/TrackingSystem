@@ -124,6 +124,7 @@ motherPlantDbQueries.getRMDetails = async (input, callback) => {
         return executeGetParamsQuery(query, [input.departmentId], callback)
     }
 }
+
 motherPlantDbQueries.getCurrentRMDetails = async (input, callback) => {
     let query = `select * from rawmaterialdetails WHERE departmentId=? AND isApproved=1 ORDER BY createdDateTime DESC`;
     if (input.isSuperAdmin == 'true') {
@@ -132,6 +133,17 @@ motherPlantDbQueries.getCurrentRMDetails = async (input, callback) => {
     }
     return executeGetParamsQuery(query, [input.departmentId], callback)
 }
+
+motherPlantDbQueries.getCurrentRMDetailsByItemCode = async (itemCode, callback) => {
+    let query = `select * from rawmaterialdetails WHERE itemCode=?`;
+    return executeGetParamsQuery(query, [itemCode], callback)
+}
+
+motherPlantDbQueries.getRMQtyByRMId = async (input, callback) => {
+    let query = `select rm.itemQty,rm.itemCode from requiredrawmaterial rm WHERE rm.rawmaterialId=?`;
+    return executeGetParamsQuery(query, [input.rawmaterialid], callback)
+}
+
 motherPlantDbQueries.getRMReceiptDetails = async (input, callback) => {
     const { isSuperAdmin, departmentId } = input
     let query = `select rmr.receiptDate,rmr.receiptNo,rmr.invoiceNo,rmr.taxAmount,rmr.invoiceAmount,rmr.rawmaterialId,rmr.invoiceDate,rmr.managerName,rm.itemName,rm.itemCode,rm.itemQty,rm.vendorName,rm.requestedDate,rm.approvedDate,rm.description,rm.orderId from rawmaterialreceipt rmr INNER JOIN requiredrawmaterial rm on rmr.rawmaterialId=rm.rawmaterialid WHERE rmr.departmentId=${departmentId} ORDER BY receiptDate DESC`;
@@ -443,8 +455,8 @@ motherPlantDbQueries.updateRMDetailsStatus = async (input, callback) => {
 
 motherPlantDbQueries.updateRMDetailsDamageCount = async (input, callback) => {
     const { id, damagedCount } = input
-    let query = "UPDATE rawmaterialdetails SET damagedCount=damagedCount+? WHERE id=?";
-    let requestBody = [damagedCount, id]
+    let query = "UPDATE rawmaterialdetails SET damagedCount=damagedCount+?,totalQuantity=totalQuantity-? WHERE id=?";
+    let requestBody = [damagedCount, damagedCount, id]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
