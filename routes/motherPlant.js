@@ -686,7 +686,7 @@ router.delete('/deleteVehicle/:vehicleId', (req, res) => {
 });
 
 const updateCurrentRMDetailsQuantity = (input) => {
-    const { product20L = 0, product1L = 0, product500ML = 0, product300ML = 0, product2L = 0 } = input
+    const { product20L = 0, product1L = 0, product500ML = 0, product300ML = 0, product2L = 0, managerName } = input
 
     let retailQuantity = product1L + product500ML + product300ML + product2L
 
@@ -699,6 +699,37 @@ const updateCurrentRMDetailsQuantity = (input) => {
     motherPlantDbQueries.update20LQuantityRM(product20L, (update20LErr, data) => {
         if (update20LErr) console.log(update20LErr);
     })
+    let logs = [];
+    motherPlantDbQueries.getCurrentRMDetails({ departmentId }, (err, data) => {
+        if (err) console.log(err);
+        else if (data.length) {
+            for (let i of data) {
+                const { totalQuantity, itemName, id } = i
+                logs.push({
+                    oldValue: totalQuantity,
+                    updatedValue: getUpdatedValue({ totalQuantity, itemName, product2L, product20L, retailQuantity }),
+                    createdDateTime: new Date(),
+                    userId: adminUserId,
+                    description: `Stock utilized by manager <b>(${managerName})</b>`,
+                    transactionId: id,
+                    departmentId,
+                    type: 'motherplant', subType: 'currentstock'
+                })
+                if (logs.length == data.length) {
+                    departmenttransactionQueries.createDepartmentTransaction(logs, (err, data) => {
+                        if (err) console.log('log error', err)
+                        else console.log('log data', data)
+                    })
+                }
+            }
+        }
+    })
+}
+
+const getUpdatedValue = ({ totalQuantity, itemName, product2L, product20L, retailQuantity }) => {
+    if (itemName == 'retailClosures' || itemName == 'sleeves') return totalQuantity - retailQuantity;
+    if (itemName == 'handles') return totalQuantity - product2L
+    if (itemName == '20LClosures' || itemName == 'strikers' || itemName == '20Lcans') return totalQuantity - product20L
 }
 
 module.exports = router;

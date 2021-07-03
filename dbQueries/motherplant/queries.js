@@ -127,7 +127,7 @@ motherPlantDbQueries.getRMDetails = async (input, callback) => {
 
 motherPlantDbQueries.getCurrentRMDetails = async (input, callback) => {
     let query = `select * from rawmaterialdetails WHERE departmentId=? AND isApproved=1 ORDER BY createdDateTime DESC`;
-    if (input.isSuperAdmin == 'true') {
+    if (input.isSuperAdmin && input.isSuperAdmin == 'true') {
         query = `select r.*,d.departmentName from rawmaterialdetails r INNER JOIN departmentmaster d ON r.departmentId=d.departmentId ORDER BY r.createdDateTime DESC`
         return executeGetQuery(query, callback)
     }
@@ -489,20 +489,20 @@ motherPlantDbQueries.updateProductionDetails = async (input, callback) => {
 }
 
 motherPlantDbQueries.updateRetailQuantityRM = async (totalQuantity, callback) => {
-    let query = `update rawmaterialdetails set totalQuantity=totalQuantity-? where itemName='retailClosures' OR itemName='sleeves`;
-    let requestBody = [totalQuantity]
+    let query = `update rawmaterialdetails set totalQuantity=totalQuantity-? where itemName='retailClosures' OR itemName='sleeves'`;
+    let requestBody = [parseInt(totalQuantity)]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
 motherPlantDbQueries.update20LQuantityRM = async (totalQuantity, callback) => {
-    let query = `update rawmaterialdetails set totalQuantity=totalQuantity-? where itemName='20LClosures' OR itemName='strikers`;
-    let requestBody = [totalQuantity]
+    let query = `update rawmaterialdetails set totalQuantity=totalQuantity-? where itemName='20LClosures' OR itemName='strikers' OR itemName='20Lcans'`;
+    let requestBody = [parseInt(totalQuantity)]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
 motherPlantDbQueries.updateRMHandlesQuantity = async (totalQuantity, callback) => {
     let query = `update rawmaterialdetails set totalQuantity=totalQuantity-? where itemName='handles'`;
-    let requestBody = [totalQuantity]
+    let requestBody = [parseInt(totalQuantity)]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
