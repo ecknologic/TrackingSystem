@@ -1,37 +1,31 @@
 import axios from 'axios';
-import Slider from "react-slick";
 import { Menu, message, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
 import DamagedStock from '../forms/DamagedStock';
 import Spinner from '../../../../components/Spinner';
 import Actions from '../../../../components/Actions';
-import can1L from '../../../../assets/icons/ic_Can1L.svg'
-import can2L from '../../../../assets/icons/ic_Can2L.svg'
-import StockCard from '../../../../components/StockCard';
-import FormHeader from '../../../../components/FormHeader';
-import can20L from '../../../../assets/icons/ic_Can20L.svg'
 import SearchInput from '../../../../components/SearchInput';
 import CustomModal from '../../../../components/CustomModal';
 import ConfirmModal from '../../../../components/CustomModal';
 import { validateNumber } from '../../../../utils/validations';
-import can300ML from '../../../../assets/icons/ic_Can300ML.svg'
-import can500ML from '../../../../assets/icons/ic_Can500ML.svg'
-import ConfirmMessage from '../../../../components/ConfirmMessage';
 import { currentStockColumns } from '../../../../assets/fixtures';
-import { TODAYDATE as d, TRACKFORM } from '../../../../utils/constants';
-import { deepClone, doubleKeyComplexSearch, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
+import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomPagination from '../../../../components/CustomPagination';
-import { EditIconGrey, PlusIconGrey, TrashIconGrey } from '../../../../components/SVG_Icons';
-import { LeftChevronIconGrey, RightChevronIconGrey } from '../../../../components/SVG_Icons';
+import { TODAYDATE as d, TRACKFORM } from '../../../../utils/constants';
+import ActivityLogContent from '../../../../components/ActivityLogContent';
+import { PlusIconGrey, TrashIconGrey, ListViewIconGrey } from '../../../../components/SVG_Icons';
+import { deepClone, doubleKeyComplexSearch, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 
 const CurrentStock = ({ isSuperAdmin = false }) => {
     const [RM, setRM] = useState([])
     const [shake, setShake] = useState(false)
     const [stock, setStock] = useState({})
+    const [logs, setLogs] = useState([])
     const [loading, setLoading] = useState(true)
     const [pageSize, setPageSize] = useState(10)
     const [totalCount, setTotalCount] = useState(null)
+    const [logModal, setLogModal] = useState(false)
     const [pageNumber, setPageNumber] = useState(1)
     const [addModal, setAddModal] = useState(false)
     const [formErrors, setFormErrors] = useState({})
@@ -73,6 +67,18 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
             setLoading(false)
         } catch (error) { }
     }
+
+    const getLogs = async (id) => {
+        const url = `logs/getDepartmentLogs?type=order&id=${id}` // TODO : update API Url
+
+        try {
+            showToast({ v1Ing: 'Fetching', action: 'loading' })
+            const data = await http.GET(axios, url, config)
+            showToast({ v2: 'fetched' })
+            setLogs(data)
+        } catch (error) { }
+    }
+
 
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
@@ -150,10 +156,14 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
         setBtnDisabled(false)
     }
 
-    const handleMenuSelect = (key, data) => {
+    const handleMenuSelect = async (key, data) => {
         if (key === 'Add') {
             setFormData(data)
             setAddModal(true)
+        }
+        else if (key === 'logs') {
+            await getLogs(data.id)
+            setLogModal(true)
         }
     }
 
@@ -199,6 +209,7 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
     }, [])
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
     const handleModalCancel = useCallback(() => setAddModal(false), [])
+    const handleLogModalCancel = useCallback(() => setLogModal(false), [])
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
@@ -254,6 +265,17 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
                     onChange={handleChange}
                 />
             </CustomModal>
+            <CustomModal
+                className='app-form-modal'
+                visible={logModal}
+                onOk={handleLogModalCancel}
+                onCancel={handleLogModalCancel}
+                title='Activity Log Details'
+                okTxt='Close'
+                hideCancel
+            >
+                <ActivityLogContent data={logs} />
+            </CustomModal>
             <ConfirmModal
                 visible={confirmModal}
                 onOk={handleConfirmModalOk}
@@ -267,17 +289,11 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
     )
 }
 
-const props = {
-    infinite: false,
-    slidesToShow: 5,
-    slidesToScroll: 1,
-    prevArrow: <LeftChevronIconGrey />,
-    nextArrow: <RightChevronIconGrey />,
-}
 const opData = { startDate: d, endDate: d, shift: 'All', fromStart: true }
 const options = [
-    <Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>,
+    // <Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>,
     <Menu.Item key="Delete" icon={<TrashIconGrey />} >Delete</Menu.Item>,
+    <Menu.Item key="logs" icon={<ListViewIconGrey />}>Acvitity Logs</Menu.Item>,
     <Menu.Item key="Add" icon={<PlusIconGrey />} >Add Damaged Stock</Menu.Item>
 ]
 export default CurrentStock
