@@ -1,20 +1,21 @@
 import dayjs from 'dayjs';
 import axios from 'axios';
-import { Menu, Table } from 'antd';
+import { Menu, message, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import DamagedStockView from '../view/Damaged';
 import { http } from '../../../../modules/http';
 import Spinner from '../../../../components/Spinner';
 import Actions from '../../../../components/Actions';
 import CustomModal from '../../../../components/CustomModal';
 import SearchInput from '../../../../components/SearchInput';
+import { getStockColumns } from '../../../../assets/fixtures';
 import { EyeIconGrey } from '../../../../components/SVG_Icons';
-import { damagedStockColumns } from '../../../../assets/fixtures';
-import { doubleKeyComplexSearch } from '../../../../utils/Functions';
+import RoutesFilter from '../../../../components/RoutesFilter';
+import ArrivedStockView from '../../warehouse/forms/ArrivedStock';
 import CustomPagination from '../../../../components/CustomPagination';
+import { doubleKeyComplexSearch, getStatusColor, isEmpty, showToast } from '../../../../utils/Functions';
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
-const DamagedStock = () => {
+const DamagedStockWH = () => {
     const [loading, setLoading] = useState(true)
     const [stock, setStock] = useState([])
     const [stockClone, setStockClone] = useState([])
@@ -25,14 +26,17 @@ const DamagedStock = () => {
     const [viewModal, setViewModal] = useState(false)
     const [filterON, setFilterON] = useState(false)
     const [searchON, setSeachON] = useState(false)
+    const [warehouseList, setWarehouseList] = useState([])
     const [filteredClone, setFilteredClone] = useState([])
     const [resetSearch, setResetSearch] = useState(false)
 
+    const damagedStockColumns = useMemo(() => getStockColumns(true, 'MPAdmin'), [])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
         getDamagedStock()
+        getWarehouseList()
 
         return () => {
             http.ABORT(source)
@@ -40,7 +44,7 @@ const DamagedStock = () => {
     }, [])
 
     const getDamagedStock = async () => {
-        const url = 'motherPlant/getMPdamagedStock'
+        const url = 'warehouse/getDamagedStock'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -51,10 +55,30 @@ const DamagedStock = () => {
         } catch (error) { }
     }
 
-    const handleMenuSelect = (key, data) => {
-        if (key === 'view') {
+    const getStockById = async (id) => {
+        const url = `warehouse/getReceivedStockById/${id}`
+
+        try {
+            showToast({ v1Ing: 'Fetching', action: 'loading' })
+            const [data] = await http.GET(axios, url, config)
+            message.destroy()
             setViewData(data)
             setViewModal(true)
+        } catch (error) { }
+    }
+
+    const getWarehouseList = async () => {
+        const url = 'bibo/getDepartmentsList?departmentType=warehouse'
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setWarehouseList(data)
+        } catch (error) { }
+    }
+
+    const handleMenuSelect = (key, id) => {
+        if (key === 'view') {
+            getStockById(id)
         }
     }
 
@@ -67,6 +91,25 @@ const DamagedStock = () => {
         setPageNumber(number)
     }
 
+    const onFilterChange = (data) => {
+        setPageNumber(1)
+        if (isEmpty(data)) {
+            setStock(stockClone)
+            setTotalCount(stockClone.length)
+            setFilterON(false)
+        }
+        else generateFiltered(stockClone, data)
+    }
+
+    const generateFiltered = (original, filterInfo) => {
+        const filtered = original.filter((item) => filterInfo.includes(item.departmentId))
+        setStock(filtered)
+        setFilteredClone(filtered)
+        setTotalCount(filtered.length)
+        setFilterON(true)
+        searchON && setResetSearch(!resetSearch)
+    }
+
     const handleSearch = (value) => {
         setPageNumber(1)
         if (value === "") {
@@ -76,22 +119,25 @@ const DamagedStock = () => {
             return
         }
         const data = filterON ? filteredClone : stockClone
-        const result = doubleKeyComplexSearch(stockClone, value, 'batchId', 'managerName')
+        const result = doubleKeyComplexSearch(stockClone, value, 'dcNo', 'departmentName')
         setTotalCount(result.length)
         setStock(result)
         setSeachON(true)
     }
 
     const dataSource = useMemo(() => stock.map((order) => {
-        const { damageid, batchId, managerName, product20L, product1L,
-            product2L, product300ML, product500ML, createdDateTime } = order
+        const { id, dcNo, departmentName, driverName, mobileNumber, product20L, product1L,
+            product2L, product300ML, product500ML, isConfirmed, deliveryDate } = order
         return {
-            key: damageid,
-            batchId,
-            managerName,
-            dateAndTime: dayjs(createdDateTime).format(DATEANDTIMEFORMAT),
+            key: id,
+            dcNo,
+            departmentName,
+            driverName,
+            mobileNumber,
+            status: renderStatus(isConfirmed),
+            dateAndTime: dayjs(deliveryDate).format(DATEANDTIMEFORMAT),
             stockDetails: renderStockDetails({ product20L, product1L, product2L, product300ML, product500ML }),
-            action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, order)} />
+            action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, id)} />
         }
     }), [stock])
 
@@ -104,6 +150,13 @@ const DamagedStock = () => {
         <div className='stock-delivery-container'>
             <div className='header'>
                 <div className='left'>
+                    <RoutesFilter
+                        data={warehouseList}
+                        keyValue='departmentId'
+                        keyLabel='departmentName'
+                        title='Select Warehouse'
+                        onChange={onFilterChange}
+                    />
                 </div>
                 <div className='right'>
                     <SearchInput
@@ -139,12 +192,22 @@ const DamagedStock = () => {
                 visible={viewModal}
                 onOk={handleModalCancel}
                 onCancel={handleModalCancel}
-                title='Damaged Stock Details'
+                title='Received Stock Details'
                 okTxt='Close'
                 hideCancel
             >
-                <DamagedStockView viewOnly data={viewData} />
+                <ArrivedStockView viewOnly data={viewData} />
             </CustomModal>
+        </div>
+    )
+}
+const renderStatus = (status) => {
+    const text = status ? 'Confirmed' : 'Pending'
+    const color = getStatusColor(text)
+    return (
+        <div className='status'>
+            <span className='app-dot' style={{ background: color }}></span>
+            <span className='status-text'>{text}</span>
         </div>
     )
 }
@@ -155,4 +218,4 @@ const renderStockDetails = ({ product20L, product1L, product2L, product500ML, pr
     `
 }
 const options = [<Menu.Item key="view" icon={<EyeIconGrey />}>View</Menu.Item>]
-export default DamagedStock
+export default DamagedStockWH
