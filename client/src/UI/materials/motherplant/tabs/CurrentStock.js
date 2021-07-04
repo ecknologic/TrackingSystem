@@ -8,7 +8,7 @@ import Actions from '../../../../components/Actions';
 import SearchInput from '../../../../components/SearchInput';
 import CustomModal from '../../../../components/CustomModal';
 import ConfirmModal from '../../../../components/CustomModal';
-import { validateNumber } from '../../../../utils/validations';
+import { compareMaxNumber } from '../../../../utils/validations';
 import { currentStockColumns } from '../../../../assets/fixtures';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomPagination from '../../../../components/CustomPagination';
@@ -86,9 +86,8 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
 
         // Validations
         if (key === 'damagedCount') {
-            let error = ''
-            error = validateNumber(value)
-            if (value === null || !String(value)) error = 'Required'
+            const { totalQuantity } = formData
+            const error = compareMaxNumber(value, totalQuantity, 'cans')
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
     }
@@ -96,19 +95,16 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
     const handleBlur = (value, key) => {
         // Validations
         if (key === 'damagedCount') {
-            let error = ''
-            error = validateNumber(value, true)
-            if (value === null || !Number(value)) error = 'Required'
+            const { totalQuantity } = formData
+            const error = compareMaxNumber(value, totalQuantity, 'cans')
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
     }
 
     const handleAdd = async () => {
-        const { id, damagedCount = 0, itemCode } = formData
+        const { id, damagedCount = 0, itemCode, totalQuantity } = formData
         let errors = {}
-        let error = ''
-        error = validateNumber(damagedCount, true)
-        if (damagedCount === null || !Number(damagedCount)) error = 'Required'
+        const error = compareMaxNumber(damagedCount, totalQuantity, 'cans')
         error && (errors.damagedCount = error)
 
         if (!isEmpty(errors)) {

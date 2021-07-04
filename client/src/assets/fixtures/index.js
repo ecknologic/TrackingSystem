@@ -642,6 +642,34 @@ export const getStockColumns = (isDamaged, adminType) => {
     return columns;
 }
 
+export const damagedStockColumns = [
+    {
+        title: 'Batch No',
+        dataIndex: 'batchId',
+        key: 'batchId',
+    },
+    {
+        title: 'Date & time',
+        dataIndex: 'dateAndTime',
+        key: 'dateAndTime',
+    },
+    {
+        title: 'Stock Details',
+        dataIndex: 'stockDetails',
+        key: 'stockDetails',
+    },
+    {
+        title: 'Manager',
+        dataIndex: 'managerName',
+        key: 'managerName',
+    },
+    {
+        title: 'Actions',
+        dataIndex: 'action',
+        key: 'action'
+    }
+]
+
 export const todayDeliveryColumns = [
     {
         title: 'DC Number',

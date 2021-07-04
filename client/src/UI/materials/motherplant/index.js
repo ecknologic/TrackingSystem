@@ -57,6 +57,11 @@ const Materials = () => {
         setreFetch(!reFetch)
     }, [reFetch])
 
+    const handleTabChange = (key) => {
+        setActiveTab(key)
+        key === '2' && toggleRefetch()
+    }
+
     return (
         <Fragment>
             <ScrollUp dep={reFetch} />
@@ -66,7 +71,7 @@ const Materials = () => {
                     <Tabs
                         tabBarExtraContent={<ReportsDropdown />}
                         activeKey={activeTab}
-                        onChange={(key) => setActiveTab(key)}
+                        onChange={handleTabChange}
                     >
                         <TabPane tab="Materials Request" key="1">
                             <RequestMaterial goToTab={handleGoToTab} {...childProps} />

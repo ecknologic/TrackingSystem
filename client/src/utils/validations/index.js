@@ -196,6 +196,22 @@ export const validateBatchValues = (data) => {
     return { ...errors, ...productErrors }
 }
 
+export const validateDamagedValues = (data) => {
+    let errors = {};
+    const text = 'Required'
+    const { batchId, managerName, ...rest } = data
+
+    if (!batchId) errors.batchId = text
+    if (!managerName) errors.managerName = text
+    else {
+        const error = validateNames(managerName)
+        error && (errors.managerName = error)
+    }
+
+    const productErrors = validateProducts(rest)
+    return { ...errors, ...productErrors }
+}
+
 export const validatePlantValues = (data) => {
     let errors = {};
     const text = 'Required'

@@ -4,12 +4,11 @@ import CustomInput from '../../../../components/CustomInput';
 import SelectInput from '../../../../components/SelectInput';
 import { resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 
-const BatchForm = (props) => {
+const DamagedForm = (props) => {
 
-    const { data, errors, disabled, onChange, shiftOptions, batchOptions = [], onBlur } = props
+    const { data, errors, disabled, onChange, batchOptions } = props
 
-    const { phLevel, TDS, ozoneLevel, batchId, product20L, product2L, product1L,
-        product500ML, product300ML, managerName, shiftType } = data
+    const { batchId, product20L, product2L, product1L, product500ML, product300ML, managerName } = data
 
     useEffect(() => {
         resetTrackForm()
@@ -24,16 +23,6 @@ const BatchForm = (props) => {
         <>
             <div className='app-form-container batch-form-container'>
                 <div className='row'>
-                    <div className='input-container'>
-                        <InputLabel name='Shift Time' error={errors.shiftType} mandatory />
-                        <SelectInput
-                            value={shiftType}
-                            options={shiftOptions}
-                            track disabled={disabled}
-                            error={errors.shiftType}
-                            onSelect={(value) => onChange(value, 'shiftType')}
-                        />
-                    </div>
                     <div className='input-container'>
                         <InputLabel name='Batch No' error={errors.batchId} mandatory />
                         <SelectInput
@@ -85,34 +74,8 @@ const BatchForm = (props) => {
                         </div>
                     </div>
                 </div>
+
                 <div className='row'>
-                    <div className='input-container'>
-                        <InputLabel name='PH' error={errors.phLevel} mandatory />
-                        <CustomInput value={phLevel} placeholder='Add PH'
-                            disabled={disabled} error={errors.phLevel}
-                            onBlur={(value) => onBlur(value, 'phLevel')}
-                            onChange={(value) => onChange(value, 'phLevel')}
-                        />
-                    </div>
-                    <div className='input-container'>
-                        <InputLabel name='Ozone Level (mg/Litre)' error={errors.ozoneLevel} mandatory />
-                        <CustomInput value={ozoneLevel} placeholder='Add Ozone Level'
-                            disabled={disabled} error={errors.ozoneLevel}
-                            onBlur={(value) => onBlur(value, 'ozoneLevel')}
-                            onChange={(value) => onChange(value, 'ozoneLevel')}
-                        />
-                    </div>
-                </div>
-                <div className='row'>
-                    <div className='input-container'>
-                        <InputLabel name='Total Dissolved Solids (TDS - mg/litre)' mandatory />
-                        <CustomInput value={TDS} placeholder='Add Total Dissolved Solids'
-                            disabled={disabled} error={errors.TDS}
-                            onBlur={(value) => onBlur(value, 'TDS')}
-                            onChange={(value) => onChange(value, 'TDS')}
-                        />
-                        <InputLabel error={errors.TDS} />
-                    </div>
                     <div className='input-container'>
                         <InputLabel name='Manager Name' error={errors.managerName} mandatory />
                         <CustomInput value={managerName} placeholder='Add Manager Name'
@@ -125,4 +88,4 @@ const BatchForm = (props) => {
         </>
     )
 }
-export default BatchForm
+export default DamagedForm
