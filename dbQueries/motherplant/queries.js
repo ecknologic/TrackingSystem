@@ -435,8 +435,8 @@ motherPlantDbQueries.createRM = async (input, callback) => {
 }
 
 motherPlantDbQueries.getRMDetailsByItemCode = async (itemCode, callback) => {
-    let query = `Select * from rawmaterialdetails WHERE itemCode=${itemCode}`;
-    return executeGetQuery(query, callback)
+    let query = `Select * from rawmaterialdetails WHERE itemCode=?`;
+    return executeGetParamsQuery(query, [itemCode], callback)
 }
 
 motherPlantDbQueries.insertRMDetails = async (input, callback) => {
@@ -519,11 +519,6 @@ motherPlantDbQueries.updateRMStatus = async (input, callback) => {
     if (status == "Approved" || status == "Rejected") {
         query = `update requiredrawmaterial set status=?,approvedDate=?,reason=? where rawmaterialid=${rawmaterialid}`
         requestBody = [status, new Date(), reason]
-        if (status == "Approved") {
-            motherPlantDbQueries.updateRMDetailsStatus(input, (updateErr, success) => {
-                if (updateErr) console.log("ERR", updateErr);
-            })
-        }
     }
     return executePostOrUpdateQuery(query, requestBody, callback)
 }

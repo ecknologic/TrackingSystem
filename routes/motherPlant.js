@@ -343,6 +343,9 @@ router.post('/createRMReceipt', (req, res) => {
                             else console.log('log data', data)
                         })
                     }
+                    motherPlantDbQueries.updateRMDetailsStatus(input, (updateErr, success) => {
+                        if (updateErr) console.log("ERR", updateErr);
+                    })
                     motherPlantDbQueries.updateRMDetailsQuantity(input, (updateErr, success) => {
                         if (updateErr) console.log("ERR", updateErr);
                     })
