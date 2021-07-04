@@ -389,8 +389,13 @@ customerQueries.getRevisitCustomersByAgent = (salesAgent, callback) => {
     return executeGetParamsQuery(query, [salesAgent], callback)
 }
 
-customerQueries.getAllCustomerEnquiries = (callback) => {
+customerQueries.getAllCustomerEnquiries = (input, callback) => {
+    const { staffId } = input
     let query = `Select enquiryId,customerName,accountStatus,contactperson,address,mobileNumber,revisitDate,registeredDate from customerenquirydetails ORDER BY registeredDate DESC`
+    if (staffId && staffId != undefined) {
+        query = `Select enquiryId,customerName,accountStatus,contactperson,address,mobileNumber,revisitDate,registeredDate from customerenquirydetails WHERE salesAgent=? OR createdBy=? ORDER BY registeredDate DESC`
+        return executeGetParamsQuery(query, [staffId, staffId], callback)
+    }
     return executeGetQuery(query, callback)
 }
 
@@ -519,7 +524,7 @@ customerQueries.generatePDF = (input, callback) => {
     co.300MLBoxes,'price300ML',co.price300ML,'2LBoxes',co.2LBoxes,'price2L',co.price2L)) as products
     FROM customerdetails c INNER JOIN  customerorderdetails co ON c.customerId=co.existingCustomerId
     WHERE c.invoicetype!='complimentary'
-     AND co.isDelivered='Completed' AND co.isInvoiceGenerated=0 AND customerId NOT IN (SELECT customerId FROM Invoice WHERE fromdate >=DATE(?) and toDate<=DATE(?))
+     AND co.isDelivered='Completed' AND co.isInvoiceGenerated=0 AND co.customerType='internal' AND customerId NOT IN (SELECT customerId FROM Invoice WHERE fromdate >=DATE(?) and toDate<=DATE(?))
     AND( DATE(co.deliveredDate) BETWEEN ? AND ?) GROUP BY c.customerId`
     let options = [fromDate, toDate, fromDate, toDate]
     if (customerIds.length) {
@@ -529,7 +534,7 @@ customerQueries.generatePDF = (input, callback) => {
         'price1L',co.price1L, '500MLBoxes',co.500MLBoxes,'price500ML',co.price500ML,'300MLBoxes',co.300MLBoxes,'price300ML',co.price300ML,'2LBoxes',co.2LBoxes,'price2L',co.price2L)) as products
         FROM customerdetails c INNER JOIN  customerorderdetails co ON c.customerId=co.existingCustomerId
         WHERE c.invoicetype!='complimentary' 
-        AND co.isDelivered='Completed' AND co.isInvoiceGenerated=0 AND customerId NOT IN (SELECT customerId FROM Invoice WHERE fromdate >=DATE(?) and toDate<=DATE(?))
+        AND co.isDelivered='Completed' AND co.isInvoiceGenerated=0 AND co.customerType='internal' AND customerId NOT IN (SELECT customerId FROM Invoice WHERE fromdate >=DATE(?) and toDate<=DATE(?))
         AND( DATE(co.deliveredDate) BETWEEN ? AND ?) AND c.customerId IN (?) GROUP BY c.customerId`
         options = [fromDate, toDate, fromDate, toDate, customerIds]
     }
