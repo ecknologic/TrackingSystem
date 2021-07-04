@@ -688,6 +688,22 @@ router.delete('/deleteVehicle/:vehicleId', (req, res) => {
     });
 });
 
+router.post('/createMPDamagedStock', (req, res) => {
+    let input = { ...req.body, departmentId };
+    motherPlantDbQueries.createDamagedStock(input, (err, data) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.json(data);
+    })
+})
+
+router.post('/getMPdamagedStock', (req, res) => {
+    motherPlantDbQueries.getMPdamagedStock(departmentId, (err, data) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.json(data);
+    })
+})
+
+
 const updateCurrentRMDetailsQuantity = (input) => {
     const { product20L = 0, product1L = 0, product500ML = 0, product300ML = 0, product2L = 0, managerName } = input
 

@@ -318,11 +318,18 @@ motherPlantDbQueries.getDispatchDetailsByDC = async (dcNo, callback) => {
     FROM dispatches d INNER JOIN VehicleDetails v on d.vehicleNo=v.vehicleId INNER JOIN driverdetails driver on d.driverId=driver.driverId INNER JOIN departmentmaster dep on d.departmentId=dep.departmentId WHERE DCNO=?`;
     return executeGetParamsQuery(query, [dcNo], callback)
 }
+
 motherPlantDbQueries.getQCLevelsDetails = async (input, callback) => {
     const { productionQcId, departmentId } = input
     let query = "SELECT JSON_ARRAYAGG(JSON_OBJECT('testedDate',DATE_FORMAT(q.testedDate, '%Y-%m-%dT%H:%i:%s.000Z'),'phLevel',ROUND(q.phLevel,1),'tds',ROUND(q.TDS,1),'ozoneLevel',ROUND(q.ozoneLevel,1),'testResult',q.testResult,'managerName',q.managerName,'description',q.description,'testType',q.testType,'qcLevel',q.qcLevel)) AS QCDetails FROM qualitycheck q  WHERE productionQcId=? AND departmentId=?";
     return executeGetParamsQuery(query, [productionQcId, departmentId], callback)
 }
+
+motherPlantDbQueries.getMPdamagedStock = async (departmentId, callback) => {
+    let query = "SELECT * from damagedstockdetails WHERE departmentId=? ORDER BY createdDateTime DESC";
+    return executeGetParamsQuery(query, [departmentId], callback)
+}
+
 motherPlantDbQueries.getTotalRevenue = async (input, callback) => {
     let { startDate, endDate, fromStart, departmentId } = input;
     let options = [endDate]
@@ -473,6 +480,13 @@ motherPlantDbQueries.createRMReceipt = async (input, callback) => {
     let invoiceDate = new Date(date)
     let receiptImage = input.receiptImage && Buffer.from(input.receiptImage.replace(/^data:image\/\w+;base64,/, ""), 'base64')
     let requestBody = [receiptNo, invoiceNo, taxAmount, invoiceAmount, rawmaterialid, invoiceDate, departmentId, managerName, receiptImage]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+
+motherPlantDbQueries.createDamagedStock = async (input, callback) => {
+    let query = "insert into damagedstockdetails (product20L,product2L,product1L,product500ML,product300ML,batchId,departmentId,managerName) values(?,?,?,?,?,?,?,?)";
+    const { product20L, product2L, product1L, product500ML, product300ML, batchId, departmentId, managerName } = input
+    let requestBody = [product20L, product2L, product1L, product500ML, product300ML, batchId, departmentId, managerName]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
