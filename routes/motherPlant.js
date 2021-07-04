@@ -696,7 +696,7 @@ router.post('/createMPDamagedStock', (req, res) => {
     })
 })
 
-router.post('/getMPdamagedStock', (req, res) => {
+router.get('/getMPdamagedStock', (req, res) => {
     motherPlantDbQueries.getMPdamagedStock(departmentId, (err, data) => {
         if (err) res.status(500).json(dbError(err));
         else res.json(data);
