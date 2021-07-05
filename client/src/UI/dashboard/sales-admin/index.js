@@ -59,7 +59,7 @@ const SalesAdminDashboard = () => {
                     <Slider className='dashboard-slider' {...props} >
                         <NormalCard total={onBoardedCount} title='Onboarded Customers' onClick={goToCustomers} />
                         <NormalCard total={pendingCount} title='Approvals Pending' onClick={goToPendingCustomers} />
-                        <NormalCard total={totalPendingRequests} title='Request Pending' onClick={goToVisitedCustomers} />
+                        <NormalCard total={totalPendingRequests} title='Revisits Pending' onClick={goToVisitedCustomers} />
                         <NormalCard total={totalVisited} title='Total Visited Customers' onClick={goToVisitedCustomers} />
                     </Slider>
                 </div>
