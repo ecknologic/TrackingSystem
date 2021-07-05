@@ -524,7 +524,7 @@ const saveDepartmentInvoice = async (requestObj, res, response) => {
                     if (err) res.status(500).json(dbError(err));
                     else {
                         getInvoiceByInvoiceId({ invoiceId, departmentId })
-                        if (customerType == 'internal') invoiceQueries.updateDCInvoiceFlag(dcNo)
+                        invoiceQueries.updateDCInvoiceFlag(dcNo)
                         if (requestObj.departmentStatus != "Pending") addDepartmentPayment(invoiceId, requestObj)
                         response && res.json({ message: 'Invoice created successfully' })
                     }
