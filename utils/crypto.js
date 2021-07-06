@@ -1,9 +1,13 @@
 const crypto = require('crypto');
+const cryptoConfig= require('../config/crypto.config.js')
 
 const algorithm = 'aes-256-ctr';
-const secretKey = crypto.randomBytes(32);
 const iv = crypto.randomBytes(16);
 
+const pass_key = cryptoConfig.privateKey;
+const salt = 'salt';
+const keylen = 32;
+const secretKey = crypto.scryptSync(pass_key,salt,keylen);
 
 const encrypt = (text) => {
 
