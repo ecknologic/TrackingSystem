@@ -18,15 +18,15 @@ receiptQueries.getCustomerReceiptsPaginationCount = async (callback) => {
 }
 
 receiptQueries.getCustomerIdsForReceiptsDropdown = async (callback) => {
-    let query = `SELECT customerNo as customerId FROM customerdetails WHERE isReceiptCreated=0`
+    let query = `SELECT customerNo,customerId FROM customerdetails WHERE isReceiptCreated=0 and depositAmount!=0`
     return executeGetQuery(query, callback)
 }
 
 receiptQueries.getCustomerDepositDetails = async (customerId, callback) => {
     let query = `SELECT IFNULL(c.organizationName,c.customerName) customerName,c.depositAmount,
-    SUM(cp.noOfJarsToBePlaced) AS noOfCans FROM DeliveryDetails d INNER JOIN customerdetails c ON 
+    SUM(CASE WHEN cp.productName LIKE '20L' THEN cp.noOfJarsToBePlaced ELSE 0 END) AS noOfCans FROM DeliveryDetails d INNER JOIN customerdetails c ON 
     c.customerId=d.customer_Id INNER JOIN customerproductdetails cp 
-    ON d.deliveryDetailsId=cp.deliveryDetailsId WHERE cp.productName LIKE '20L' AND d.customer_Id=? GROUP BY d.customer_Id`
+    ON d.deliveryDetailsId=cp.deliveryDetailsId WHERE d.customer_Id=? GROUP BY d.customer_Id`
     return executeGetParamsQuery(query, [customerId], callback)
 }
 
