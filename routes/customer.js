@@ -941,7 +941,7 @@ router.get('/getCustomerEnquiriesCount', async (req, res) => {
   customerQueries.getCustomerEnquiriesCountByAgent(userId, (err, totalCustomers) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else {
-      customerQueries.getRevisitCustomersCountByAgent(req.query.staffId, (err, totalRevisitCustomers) => {
+      customerQueries.getRevisitCustomersCountByAgent(userId, (err, totalRevisitCustomers) => {
         if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
         else {
           let totalVisited = totalCustomers[0]?.totalCount
@@ -963,7 +963,8 @@ router.get('/getRevisitCustomers', async (req, res) => {
 })
 
 router.get('/getCustomerEnquiries', async (req, res) => {
-  customerQueries.getAllCustomerEnquiries((err, results) => {
+  if (userRole != 'MarketingManager') req.query.staffId = userId
+  customerQueries.getAllCustomerEnquiries(req.query, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else res.json(results)
   })
