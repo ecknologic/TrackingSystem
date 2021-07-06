@@ -56,8 +56,7 @@ const CustomersOverview = () => {
         setOpData(newData)
     }, [opData])
 
-    const goToCustomers = (tab) => history.push(`/customers/${tab}`)
-    const goToDistributors = () => history.push('/distributors')
+    const goToApprovals = () => history.push(`/customers/3`)
 
     return (
         <>
@@ -72,10 +71,10 @@ const CustomersOverview = () => {
             <PanelHeader title='Customers Overview' onSelect={handleOperation} showShow />
             <div className='panel-body quality-testing-panel'>
                 <Slider className='dashboard-slider' {...props} >
-                    <CustomerOverviewCard compareText={corporateCustomersCompareText} percent={corporateCustomersPercent} total={totalCorporateCustomers} pending={pendingCorporateCustomers} title='Corporate Customers' onClick={() => goToCustomers('1')} />
-                    <CustomerOverviewCard compareText={individualCustomersCompareText} total={totalIndividualCustomers} pending={pendingIndividualCustomers} percent={individualCustomersPercent} title='Individual Customers' onClick={() => goToCustomers('2')} />
-                    <CustomerOverviewCard title='Memberships' onClick={() => { }} />
-                    <CustomerOverviewCard compareText={distributorsCompareText} percent={distributorsPercent} total={totalDistributors} title='Distributors' onClick={goToDistributors} />
+                    <CustomerOverviewCard compareText={corporateCustomersCompareText} percent={corporateCustomersPercent} total={totalCorporateCustomers} pending={pendingCorporateCustomers} title='Corporate Customers' onClick={goToApprovals} />
+                    <CustomerOverviewCard compareText={individualCustomersCompareText} total={totalIndividualCustomers} pending={pendingIndividualCustomers} percent={individualCustomersPercent} title='Individual Customers' onClick={goToApprovals} />
+                    <CustomerOverviewCard title='Memberships' onClick={goToApprovals} />
+                    <CustomerOverviewCard compareText={distributorsCompareText} percent={distributorsPercent} total={totalDistributors} title='Distributors' onClick={goToApprovals} />
                 </Slider>
             </div>
         </>
