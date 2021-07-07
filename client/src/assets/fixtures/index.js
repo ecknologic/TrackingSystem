@@ -137,7 +137,7 @@ export const getCustomerOptions = (customers = []) => {
     return customers.map((item) => <Option key={item.customerId} value={item.customerId}>{item.customerName}</Option>)
 }
 export const getCustomerIdOptions = (customers = []) => {
-    return customers.map((item) => <Option key={item.customerId} value={item.customerId}>{item.customerId}</Option>)
+    return customers.map((item) => <Option key={item.customerId} value={item.customerId}>{item.customerNo}</Option>)
 }
 export const getWarehouseOptions = (warehouses = []) => {
     return warehouses.map((item) => <Option key={item.departmentId} value={item.departmentId}>{item.departmentName}</Option>)
