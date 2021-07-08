@@ -52,7 +52,7 @@ const WarehouseInvoices = () => {
 
     const paymentOptions = useMemo(() => getDropdownOptions(paymentList), [paymentList])
     const invoiceColumns = useMemo(() => getInvoiceColumns('warehouse'), [])
-    const totalAmount = useMemo(() => computeTotalAmount(invoices, 'pendingAmount'), [invoices, payModal])
+    const totalAmount = useMemo(() => computeTotalAmount(invoices, 'pendingAmount', 'departmentStatus'), [invoices, payModal])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 

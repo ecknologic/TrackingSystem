@@ -126,7 +126,11 @@ invoiceQueries.getInvoicePayments = async (callback) => {
 invoiceQueries.getDepartmentInvoicePayments = async (departmentId, callback) => {
     let query = "SELECT i.*,IFNULL(c.organizationName, c.customerName) as customerName,c.Address1 as billingAddress FROM departmentInvoicepaymentlogs i INNER JOIN customerdetails c ON i.customerId=c.customerId WHERE i.departmentId=? ORDER BY createdDateTime DESC";
     if (departmentId == 'All') {
-        query = "SELECT i.*,IFNULL(c.organizationName, c.customerName) as customerName,c.Address1 as billingAddress FROM departmentInvoicepaymentlogs i INNER JOIN customerdetails c ON i.customerId=c.customerId ORDER BY createdDateTime DESC";
+        query = `SELECT i.*,
+        CASE WHEN i.customerType='distributor' THEN d.agencyName ELSE IFNULL(c.organizationName, c.customerName) END AS customerName,
+        CASE WHEN i.customerType='distributor' THEN d.deliveryLocation ELSE c.Address1 END AS billingAddress
+         FROM departmentInvoicepaymentlogs i LEFT JOIN customerdetails c ON i.customerId=c.customerId
+         LEFT JOIN Distributors d ON i.customerId=d.distributorId ORDER BY createdDateTime DESC`;
         return executeGetQuery(query, callback)
     }
     return executeGetParamsQuery(query, [departmentId], callback)

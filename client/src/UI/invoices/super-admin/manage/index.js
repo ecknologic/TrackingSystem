@@ -32,12 +32,12 @@ const Invoices = () => {
     }, [])
 
     const getInvoice = async (id) => {
-        const { FOR } = state || {}
-        let url = `invoice/getDepartmentInvoiceById/${id}`
+        const { invoice = {} } = state || {}
+        const { departmentId } = invoice
 
-        if (FOR === SUPERADMIN || FOR === ACCOUNTSADMIN ||
-            FOR === MARKETINGMANAGER || FOR === 'CUSTOMER') {
-            url = `invoice/getInvoiceById/${id}`
+        let url = `invoice/getInvoiceById/${id}`
+        if (departmentId) {
+            url = `invoice/getDepartmentInvoiceById/${id}`
         }
 
         try {
