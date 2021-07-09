@@ -177,9 +177,9 @@ customerQueries.getTotalActiveOtherCustomersChange = (input, callback) => {
 }
 customerQueries.getTotalPendingOtherCustomers = (input, callback) => {
     let { startDate, endDate, fromStart } = input;
-    let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND approvedDate IS NULL AND deleted=0 AND customertype='Individual'"
+    let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND approvedDate IS NULL AND deleted=0 AND customertype='Individual' AND createdBy IS NOT NULL"
     if (fromStart !== 'true') {
-        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND approvedDate IS NULL AND deleted=0 AND customertype='Individual' AND DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
+        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND approvedDate IS NULL AND deleted=0 AND customertype='Individual' AND createdBy IS NOT NULL AND DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
         executeGetParamsQuery(query, [startDate, endDate], callback)
     }
     else executeGetParamsQuery(query, callback)
@@ -187,9 +187,9 @@ customerQueries.getTotalPendingOtherCustomers = (input, callback) => {
 customerQueries.getTotalPendingOtherCustomersChange = (input, callback) => {
     let { startDate, endDate, fromStart, type } = input;
     const { startDate: newStartDate, endDate: newEndDate } = dateComparisions(startDate, endDate, type)
-    let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND approvedDate IS NULL AND deleted=0 AND customertype='Individual'"
+    let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND approvedDate IS NULL AND deleted=0 AND customertype='Individual' AND createdBy IS NOT NULL"
     if (fromStart !== 'true') {
-        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND approvedDate IS NULL AND deleted=0 AND customertype='Individual' AND DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
+        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND approvedDate IS NULL AND deleted=0 AND customertype='Individual' AND createdBy IS NOT NULL AND DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
         executeGetParamsQuery(query, [newStartDate, newEndDate], callback)
     }
     else executeGetParamsQuery(query, callback)
