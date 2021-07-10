@@ -18,7 +18,12 @@ const checkUserExists = (req, res, next) => {
         executeGetQuery(query, (err, results) => {
             if (err) console.log("Error", err)
             else if (!results.length) res.status(406).json("Something went wrong")
-            else next()
+            else {
+                req.userId = req.headers['userid']
+                req.userName = req.headers['username']
+                req.userRole = req.headers['userrole']
+                next()
+            }
         })
     }
 }

@@ -21,6 +21,7 @@ const departmenttransactionQueries = require('../dbQueries/departmenttransaction
 const { compareCustomerData, compareCustomerDeliveryData, compareProductsData, compareOrderData, compareCustomerOrderData, compareCustomerEnquiryData } = require('./utils/customer.js');
 const { getReceiptId, getCustomerIdsForReceiptsDropdown, getCustomerDepositDetails, createCustomerReceipt, getCustomerReceipts, getCustomerReceiptsPaginationCount } = require('./Customers/receipt.js');
 const { encrypt, decrypt } = require('../utils/crypto.js');
+const customerClosingControllers = require('./Customers/closing.js');
 let departmentId, userId, userName, userRole;
 
 var storage = multer.diskStorage({
@@ -1096,6 +1097,31 @@ router.get('/getCustomerReceipts', async (req, res) => {
 
 router.post('/createCustomerReceipt', async (req, res) => {
   createCustomerReceipt(req, res)
+});
+
+//Customer Closing APIS
+router.get('/getCustomerIdsByAgent', async (req, res) => {
+  customerClosingControllers.getCustomerIdsByAgent(req, res)
+});
+
+router.get('/getCustomerDeliveryIds', async (req, res) => {
+  customerClosingControllers.getCustomerDeliveryIds(req, res)
+});
+
+router.get('/getDepositDetailsByDeliveryId', async (req, res) => {
+  customerClosingControllers.getDepositDetailsByDeliveryId(req, res)
+});
+
+router.get('/getCustomerClosingDetails', async (req, res) => {
+  customerClosingControllers.getCustomerClosingDetails(req, res)
+});
+
+router.get('/getClosingDetailsPaginationCount', async (req, res) => {
+  customerClosingControllers.getCustomerClosingDetailsPaginationCount(req, res)
+});
+
+router.post('/addCustomerClosingDetails', async (req, res) => {
+  customerClosingControllers.addCustomerClosingDetails(req, res)
 });
 
 module.exports = router;
