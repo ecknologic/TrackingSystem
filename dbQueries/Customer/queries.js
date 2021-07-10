@@ -1,5 +1,5 @@
 var dayjs = require('dayjs')
-const { FULLTIMEFORMAT } = require('../../utils/constants.js');
+const { FULLTIMEFORMAT, constants } = require('../../utils/constants.js');
 const { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, dateComparisions, customerProductDetails } = require('../../utils/functions.js');
 const { getDeliverysByCustomerOrderId } = require('../warehouse/queries.js');
 let customerQueries = {}
@@ -16,8 +16,14 @@ customerQueries.getOrdersByDepartmentId = (departmentId, callback) => {
     let query = "SELECT d.registeredDate,d.address,d.contactPerson,d.deliveryDetailsId,d.isActive as isApproved,d.vehicleId,r.routeName,r.routeId,dri.driverName,dri.driverId,dri.mobileNumber FROM DeliveryDetails d INNER JOIN routes r ON d.routeId=r.routeId left JOIN driverdetails dri ON d.driverId=dri.driverid WHERE d.deleted=0 AND d.isActive=1 AND d.departmentId=? ORDER BY d.registeredDate DESC";
     executeGetParamsQuery(query, [departmentId], callback)
 }
-customerQueries.getRoutesByDepartmentId = (departmentId, callback) => {
+customerQueries.getRoutesByDepartmentId = (req, callback) => {
+    const { userRole, params } = req
+    const { departmentId } = params
     let query = `SELECT r.RouteId,r.RouteName,r.RouteDescription,d.departmentName from routes r INNER JOIN departmentmaster d ON d.departmentId=r.departmentId WHERE r.departmentId=${departmentId} AND r.deleted='0' ORDER BY r.createdDateTime DESC`
+    if (userRole == constants.SUPERADMIN || userRole == constants.ACCOUNTSADMIN || userRole == constants.MARKETINGMANAGER) {
+        query = `SELECT r.RouteId,r.RouteName,r.RouteDescription,d.departmentName from routes r INNER JOIN departmentmaster d ON d.departmentId=r.departmentId WHERE r.deleted='0' ORDER BY r.createdDateTime DESC`
+        return executeGetQuery(query, callback)
+    }
     executeGetQuery(query, callback)
 }
 customerQueries.getCustomersByCustomerType = (input, callback) => {

@@ -24,6 +24,7 @@ import WarehouseStock from './UI/stock/warehouse';
 import ManageEmployee from './UI/employees/view';
 import ApproveAccount from './UI/accounts/approve';
 import Materials from './UI/materials/super-admin';
+import ClosedCustomers from './UI/closed-customers';
 import Motherplants from './UI/plants/Motherplants';
 import MotherplantStock from './UI/stock/motherplant';
 import ManageDistributor from './UI/distributors/view';
@@ -145,6 +146,8 @@ const App = () => {
                      <Route path='/new-customers-report' render={byRole(<NewCustomersReport />)} />
                      <Route path='/closed-customers-report' render={byRole(<ClosedCustomersReport />)} />
                      <Route path='/dispensers-viability-report' render={byRole(<DispensersViabilityReport />)} />
+                     <Route path='/closed-customers/manage/:enquiryId' render={byRole(<ManageVisitedCustomer />)} />
+                     <Route path='/closed-customers/:tab?/:page?' render={byRole(<ClosedCustomers />)} />
                      <Route path='/visited-customers/manage/:enquiryId' render={byRole(<ManageVisitedCustomer />)} />
                      <Route path='/visited-customers/:tab?/:page?' render={byRole(<VisitedCustomers />)} />
                      <Route path='/unauthorized' render={Unauthorized} />

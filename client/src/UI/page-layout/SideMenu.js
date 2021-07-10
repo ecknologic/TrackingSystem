@@ -175,6 +175,9 @@ const SideMenu = () => {
                             <Item key='/visited-customers' icon={selected === '/visited-customers' ? <FriendIcon /> : <FriendIconLight />}>
                                 Visited Customers
                             </Item>
+                            <Item key='/closed-customers' icon={selected === '/closed-customers' ? <DocIcon /> : <DocIconLight />}>
+                                Closed Customers
+                            </Item>
                             <SubMenu icon={<ReportIconLight />} title='Reports'>
                                 <Item key='/new-customers-report' icon={selected === '/new-customers-report' ? <FriendIcon /> : <FriendIconLight />}>
                                     New Customers

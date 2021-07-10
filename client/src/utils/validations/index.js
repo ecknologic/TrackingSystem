@@ -465,6 +465,51 @@ export const validateEnquiryValues = (data) => {
     return errors
 }
 
+export const validateClosureValues = (data) => {
+    let errors = {};
+    const text = 'Required'
+    const { customerId, customerName, routeId, noOfCans, collectedCans, collectedDate,
+        pendingAmount, depositAmount, totalAmount, missingCansAmount, balanceAmount, reason,
+        deliveryDetailsId, accountNo, bankName, branchName, ifscCode, accountName } = data
+
+    if (!customerName) errors.customerName = text
+    if (!accountName) errors.accountName = text
+    if (!customerId) errors.customerId = text
+    if (!routeId) errors.routeId = text
+    if (!collectedDate) errors.collectedDate = text
+    if (!reason) errors.reason = text
+    if (!deliveryDetailsId) errors.deliveryDetailsId = text
+    if (noOfCans == null || !String(noOfCans)) errors.noOfCans = text;
+    if (totalAmount == null || !String(totalAmount)) errors.totalAmount = text;
+    if (depositAmount == null || !String(depositAmount)) errors.depositAmount = text;
+    if (collectedCans == null || !String(collectedCans)) errors.collectedCans = text;
+    if (pendingAmount == null || !String(pendingAmount)) errors.pendingAmount = text;
+    if (balanceAmount == null || !String(balanceAmount)) errors.balanceAmount = text;
+    if (missingCansAmount == null || !String(missingCansAmount)) errors.missingCansAmount = text;
+    if (!accountNo) errors.accountNo = text
+    else {
+        const error = validateNumber(accountNo)
+        error && (errors.accountNo = error)
+    }
+    if (!bankName) errors.bankName = text
+    else {
+        const error = validateNames(bankName)
+        error && (errors.bankName = error)
+    }
+    if (!branchName) errors.branchName = text
+    else {
+        const error = validateNames(branchName)
+        error && (errors.branchName = error)
+    }
+    if (!ifscCode) errors.ifscCode = text
+    else {
+        const error = validateIFSCCode(ifscCode, true)
+        error && (errors.ifscCode = error)
+    }
+
+    return errors
+}
+
 export const validateProductValues = (data) => {
     let errors = {};
     const text = 'Required'

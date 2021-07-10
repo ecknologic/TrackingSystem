@@ -383,7 +383,7 @@ router.get("/getMarketingCustomerDetailsByType/:customerType", (req, res) => { /
 });
 
 router.get("/getRoutes/:departmentId", (req, res) => {
-  customerQueries.getRoutesByDepartmentId(req.params.departmentId, (err, results) => {
+  customerQueries.getRoutesByDepartmentId(req, (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
       res.json(results)
