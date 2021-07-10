@@ -52,9 +52,9 @@ customerQueries.getCustomerNames = (callback) => {
 }
 customerQueries.getTotalCustomers = (input, callback) => {
     let { startDate, endDate, fromStart } = input;
-    let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE deleted=0"
+    let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE deleted=0 AND createdBy IS NOT NULL"
     if (fromStart !== 'true') {
-        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE deleted=0 AND  DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
+        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE deleted=0 AND createdBy IS NOT NULL AND  DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
         executeGetParamsQuery(query, [startDate, endDate], callback)
     } else executeGetParamsQuery(query, callback)
 }
