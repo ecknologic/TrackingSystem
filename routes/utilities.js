@@ -79,7 +79,7 @@ const insertToCustomerOrderDetails = (result, res, sendResponse, userId, userRol
 
 }
 //Scheduling the 
-cron.schedule('0 23 30 * * *', function () {
+cron.schedule('0 0 0 * * *', function () {
   saveToCustomerOrderDetails()
 });
 
