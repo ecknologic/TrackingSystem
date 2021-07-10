@@ -16,13 +16,14 @@ import CustomModal from '../../../../components/CustomModal';
 import ConfirmModal from '../../../../components/CustomModal';
 import CustomButton from '../../../../components/CustomButton';
 import RoutesFilter from '../../../../components/RoutesFilter';
-import { validateIntFloat, validatePaymentValues } from '../../../../utils/validations';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomDateInput from '../../../../components/CustomDateInput';
 import CustomPagination from '../../../../components/CustomPagination';
 import CustomRangeInput from '../../../../components/CustomRangeInput';
+import ActivityLogContent from '../../../../components/ActivityLogContent';
 import { getDropdownOptions, getInvoiceColumns } from '../../../../assets/fixtures';
 import { MARKETINGMANAGER, TODAYDATE, TRACKFORM } from '../../../../utils/constants';
+import { validateIntFloat, validatePaymentValues } from '../../../../utils/validations';
 import { ListViewIconGrey, ScheduleIcon, SendIconGrey, TickIconGrey } from '../../../../components/SVG_Icons';
 import { computeTotalAmount, deepClone, disableFutureDates, doubleKeyComplexSearch, getStatusColor, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 const DATEFORMAT = 'DD/MM/YYYY'
@@ -32,6 +33,8 @@ const Dashboard = ({ reFetch, onUpdate }) => {
     const { ROLE } = useUser()
     const history = useHistory()
     const [invoices, setInvoices] = useState([])
+    const [logs, setLogs] = useState([])
+    const [logModal, setLogModal] = useState(false)
     const [invoicesClone, setInvoicesClone] = useState([])
     const [filteredClone, setFilteredClone] = useState([])
     const [loading, setLoading] = useState(true)
@@ -122,6 +125,17 @@ const Dashboard = ({ reFetch, onUpdate }) => {
         } catch (error) { }
     }
 
+    const getLogs = async (id) => {
+        const url = `logs/getInvoiceLogs?type=customer&id=${id}`
+
+        try {
+            showToast({ v1Ing: 'Fetching', action: 'loading' })
+            const data = await http.GET(axios, url, config)
+            showToast({ v2: 'fetched' })
+            setLogs(data)
+        } catch (error) { }
+    }
+
     const generateInvoices = async () => {
         const url = 'invoice/generateMultipleInvoices'
         const body = { fromDate: startDate, toDate: endDate, customerIds }
@@ -203,7 +217,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
         generateInvoices()
     }
 
-    const handleMenuSelect = (key, data) => {
+    const handleMenuSelect = async (key, data) => {
         const { noOfPayments, pendingAmount: amountPaid } = data
         if (key === 'resend') {
         }
@@ -213,6 +227,10 @@ const Dashboard = ({ reFetch, onUpdate }) => {
         else if (key === 'paid') {
             setFormData({ ...data, noOfPayments: noOfPayments + 1, amountPaid })
             setPayModal(true)
+        }
+        else if (key === 'logs') {
+            await getLogs(data.invoiceId)
+            setLogModal(true)
         }
     }
 
@@ -248,6 +266,14 @@ const Dashboard = ({ reFetch, onUpdate }) => {
     }
 
     const optimisticUpdate = (data) => {
+        const { pendingAmount } = data
+
+        if (pendingAmount === 0) {
+            const filtered = invoices.filter(item => item.invoiceId !== data.invoiceId)
+            setInvoices(filtered)
+            return
+        }
+
         let clone = deepClone(invoices);
         const index = clone.findIndex(item => item.invoiceId === data.invoiceId)
         clone[index] = data;
@@ -312,6 +338,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
             <Menu.Item key="resend" icon={<SendIconGrey />}>Resend</Menu.Item>,
             <Menu.Item key="dcList" icon={<ListViewIconGrey />}>DC List</Menu.Item>,
             <Menu.Item key="paid" className={status === 'Paid' ? 'disabled' : ''} icon={<TickIconGrey />}>Paid</Menu.Item>,
+            <Menu.Item key="logs" icon={<ListViewIconGrey />}>Acvitity Logs</Menu.Item>
         ]
 
         return {
@@ -336,6 +363,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
 
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
     const handleModalCancel = useCallback(() => onModalClose(), [])
+    const handleLogModalCancel = useCallback(() => setLogModal(false), [])
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
@@ -455,6 +483,17 @@ const Dashboard = ({ reFetch, onUpdate }) => {
                     onBlur={handleBlur}
                     onChange={handleChange}
                 />
+            </CustomModal>
+            <CustomModal
+                className='app-form-modal'
+                visible={logModal}
+                onOk={handleLogModalCancel}
+                onCancel={handleLogModalCancel}
+                title='Activity Log Details'
+                okTxt='Close'
+                hideCancel
+            >
+                <ActivityLogContent data={logs} />
             </CustomModal>
             <ConfirmModal
                 visible={confirmModal}

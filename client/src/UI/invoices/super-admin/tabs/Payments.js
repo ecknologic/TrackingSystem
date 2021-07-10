@@ -2,7 +2,7 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 import { Menu, message, Table } from 'antd';
 import { useHistory } from 'react-router-dom';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { http } from '../../../../modules/http'
 import Actions from '../../../../components/Actions';
 import Spinner from '../../../../components/Spinner';
@@ -10,9 +10,11 @@ import useUser from '../../../../utils/hooks/useUser';
 import DateValue from '../../../../components/DateValue';
 import { paymentColumns } from '../../../../assets/fixtures';
 import SearchInput from '../../../../components/SearchInput';
+import CustomModal from '../../../../components/CustomModal';
 import CustomDateInput from '../../../../components/CustomDateInput';
 import CustomPagination from '../../../../components/CustomPagination';
 import { TODAYDATE, WAREHOUSEADMIN } from '../../../../utils/constants';
+import ActivityLogContent from '../../../../components/ActivityLogContent';
 import { ListViewIconGrey, ScheduleIcon, SendIconGrey } from '../../../../components/SVG_Icons';
 import { deepClone, doubleKeyComplexSearch, getStatusColor, showToast } from '../../../../utils/Functions';
 const DATEFORMAT = 'DD/MM/YYYY'
@@ -25,6 +27,8 @@ const Payments = ({ reFetch, onUpdate }) => {
     const [invoicesClone, setInvoicesClone] = useState([])
     const [loading, setLoading] = useState(true)
     const [pageSize, setPageSize] = useState(12)
+    const [logs, setLogs] = useState([])
+    const [logModal, setLogModal] = useState(false)
     const [pageNumber, setPageNumber] = useState(1)
     const [filteredClone, setFilteredClone] = useState([])
     const [totalCount, setTotalCount] = useState(null)
@@ -62,6 +66,18 @@ const Payments = ({ reFetch, onUpdate }) => {
         } catch (error) { }
     }
 
+    const getLogs = async (id, depId) => {
+        let url = `logs/getInvoiceLogs?type=customer&id=${id}`
+        if (depId) url = `logs/getInvoiceLogs?type=warehouse&id=${id}`
+
+        try {
+            showToast({ v1Ing: 'Fetching', action: 'loading' })
+            const data = await http.GET(axios, url, config)
+            showToast({ v2: 'fetched' })
+            setLogs(data)
+        } catch (error) { }
+    }
+
     const handlePageChange = (number) => {
         setPageNumber(number)
     }
@@ -75,7 +91,11 @@ const Payments = ({ reFetch, onUpdate }) => {
         !status && setOpen(false)
     }
 
-    const handleViewInvoice = (invoice) => history.push('/invoices/manage', { invoice })
+    const handleViewInvoice = (invoice) => {
+        let url = '/invoices/manage'
+        if (isWHAdmin) url = '/manage-invoices/manage'
+        history.push(url, { invoice, FOR: ROLE })
+    }
 
     const handleDateSelect = (value) => {
         setOpen(false)
@@ -89,11 +109,15 @@ const Payments = ({ reFetch, onUpdate }) => {
         searchON && setResetSearch(!resetSearch)
     }
 
-    const handleMenuSelect = (key, data) => {
+    const handleMenuSelect = async (key, data) => {
         if (key === 'resend') {
         }
         else if (key === 'dcList') {
             history.push(`/invoices/dc-list/${data.invoiceId}`, data)
+        }
+        else if (key === 'logs') {
+            await getLogs(data.invoiceId, data.departmentId)
+            setLogModal(true)
         }
         else handleStatusUpdate(data.invoiceId)
     }
@@ -137,15 +161,16 @@ const Payments = ({ reFetch, onUpdate }) => {
     }
 
     const dataSource = useMemo(() => invoices.map((invoice) => {
-        const { invoiceId, invoiceDate, amountPaid, customerName, dueDate, paymentMode, status, billingAddress } = invoice
+        const { invoiceId, paymentId, invoiceDate, amountPaid, customerName, dueDate, paymentMode, billingAddress } = invoice
 
         const options = [
             <Menu.Item key="resend" icon={<SendIconGrey />}>Resend</Menu.Item>,
-            <Menu.Item key="dcList" icon={<ListViewIconGrey />}>DC List</Menu.Item>
+            <Menu.Item key="dcList" icon={<ListViewIconGrey />}>DC List</Menu.Item>,
+            <Menu.Item key="logs" icon={<ListViewIconGrey />}>Acvitity Logs</Menu.Item>,
         ]
 
         return {
-            key: invoiceId,
+            key: paymentId,
             customerName,
             billingAddress,
             paymentMode,
@@ -157,6 +182,8 @@ const Payments = ({ reFetch, onUpdate }) => {
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, invoice)} />
         }
     }), [invoices])
+
+    const handleLogModalCancel = useCallback(() => setLogModal(false), [])
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
@@ -211,6 +238,17 @@ const Payments = ({ reFetch, onUpdate }) => {
                         onPageSizeChange={handleSizeChange}
                     />)
             }
+            <CustomModal
+                className='app-form-modal'
+                visible={logModal}
+                onOk={handleLogModalCancel}
+                onCancel={handleLogModalCancel}
+                title='Activity Log Details'
+                okTxt='Close'
+                hideCancel
+            >
+                <ActivityLogContent data={logs} />
+            </CustomModal>
         </div>
     )
 }

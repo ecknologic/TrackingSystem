@@ -38,7 +38,7 @@ reportsQueries.getEnquiriesCountBySalesAgent = async (input, callback) => {
 }
 
 reportsQueries.getVisitedCustomersReport = async (input, callback) => {
-    const { startDate, endDate, fromStart } = input
+    const { startDate, endDate, fromStart, staffId } = input
     let query = `SELECT COUNT(*) AS visitedCustomers,  SUM(revisitDate IS NOT NULL AND EmailId NOT IN (SELECT EmailId FROM customerdetails )) AS revisitCustomers
     FROM customerenquirydetails WHERE DATE(registeredDate)<=?`;
     let options = [endDate]
@@ -48,22 +48,28 @@ reportsQueries.getVisitedCustomersReport = async (input, callback) => {
         FROM customerenquirydetails WHERE  DATE(registeredDate) BETWEEN ? AND ?`;
         options = [startDate, endDate]
     }
+
+    if (staffId && staffId != undefined) query = query + ` AND salesAgent=${staffId}`
     return executeGetParamsQuery(query, options, callback)
 }
 
 reportsQueries.getVisitedCustomersReportByStatus = async (input, callback) => {
-    const { startDate, endDate, fromStart } = input
+    const { startDate, endDate, fromStart, staffId } = input
     let query = ` SELECT COUNT(*) AS customersCount,cd.isApproved FROM customerenquirydetails c
     LEFT JOIN customerdetails cd ON c.EmailId=cd.EmailId
-    WHERE c.EmailId  IN (SELECT EmailId FROM customerdetails ) GROUP BY cd.isApproved`;
+    WHERE c.EmailId  IN (SELECT EmailId FROM customerdetails )`;
     let options = [endDate]
 
     if (fromStart != 'true') {
         query = `SELECT COUNT(*) AS customersCount,cd.isApproved FROM customerenquirydetails c
         LEFT JOIN customerdetails cd ON c.EmailId=cd.EmailId
-        WHERE c.EmailId  IN (SELECT EmailId FROM customerdetails ) AND  DATE(c.registeredDate) BETWEEN ? AND ? GROUP BY cd.isApproved`;
+        WHERE c.EmailId  IN (SELECT EmailId FROM customerdetails ) AND  DATE(c.registeredDate) BETWEEN ? AND ?`;
         options = [startDate, endDate]
     }
+
+    if (staffId && staffId != undefined) query = query + ` AND c.salesAgent=${staffId} GROUP BY cd.isApproved`
+    else query = query + ` GROUP BY cd.isApproved`
+
     return executeGetParamsQuery(query, options, callback)
 }
 

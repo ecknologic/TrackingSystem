@@ -5,11 +5,11 @@ const { getDeliverysByCustomerOrderId } = require('../warehouse/queries.js');
 let customerQueries = {}
 
 customerQueries.getCustomerDetails = (customerId, callback) => {
-    let query = "SELECT isSuperAdminApproved,contactPerson,salesAgent,rocNo,poNo,depositAmount,customerId,customerName,c.mobileNumber,c.EmailId,c.Address1,c.gstNo,c.panNo,c.adharNo,c.registeredDate,c.invoicetype,c.natureOfBussiness,c.creditPeriodInDays,referredBy,isApproved,customertype,organizationName,idProofType,pincode as pinCode, dispenserCount, contractPeriod,customer_id_proof,d.idProof_backside,d.idProof_frontside,d.gstProof,u.userName as createdUserName,s.userName as salesAgentName from customerdetails c LEFT JOIN customerDocStore d ON c.customer_id_proof=d.docId INNER JOIN usermaster u ON u.userId=c.createdBy LEFT JOIN usermaster s ON c.salesAgent=s.userId WHERE c.customerId=" + customerId
+    let query = "SELECT isSuperAdminApproved,isReceiptCreated,contactPerson,salesAgent,rocNo,poNo,depositAmount,customerId,customerName,c.mobileNumber,c.EmailId,c.Address1,c.gstNo,c.panNo,c.adharNo,c.registeredDate,c.invoicetype,c.natureOfBussiness,c.creditPeriodInDays,referredBy,isApproved,customertype,organizationName,idProofType,pincode as pinCode, dispenserCount, contractPeriod,customer_id_proof,d.idProof_backside,d.idProof_frontside,d.gstProof,u.userName as createdUserName,s.userName as salesAgentName from customerdetails c LEFT JOIN customerDocStore d ON c.customer_id_proof=d.docId INNER JOIN usermaster u ON u.userId=c.createdBy LEFT JOIN usermaster s ON c.salesAgent=s.userId WHERE c.customerId=" + customerId
     executeGetQuery(query, callback)
 }
 customerQueries.getCustomerDetailsForDC = (customerId, callback) => {
-    let query = "SELECT mobileNumber as phoneNumber,Address1 as address,EmailId,contactPerson,customerName from customerdetails WHERE customerId=" + customerId
+    let query = "SELECT mobileNumber as phoneNumber,Address1 as address,EmailId,contactPerson,IFNULL(customerName,organizationName) as customerName from customerdetails WHERE customerId=" + customerId
     executeGetQuery(query, callback)
 }
 customerQueries.getOrdersByDepartmentId = (departmentId, callback) => {
@@ -52,19 +52,25 @@ customerQueries.getCustomerNames = (callback) => {
 }
 customerQueries.getTotalCustomers = (input, callback) => {
     let { startDate, endDate, fromStart } = input;
-    let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE deleted=0"
+    let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE deleted=0 AND createdBy IS NOT NULL"
     if (fromStart !== 'true') {
-        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE deleted=0 AND  DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
+        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE deleted=0 AND createdBy IS NOT NULL AND  DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
         executeGetParamsQuery(query, [startDate, endDate], callback)
     } else executeGetParamsQuery(query, callback)
 }
+
 customerQueries.getTotalActiveCustomers = (input, callback) => {
-    let { startDate, endDate, fromStart } = input;
+    let { startDate, endDate, fromStart, staffId } = input;
     let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0"
-    if (fromStart !== 'true') {
+    if (fromStart && fromStart !== 'true') {
         query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND  DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
+        if (staffId && staffId != undefined) query = query + ` AND salesAgent=${staffId}`
         executeGetParamsQuery(query, [startDate, endDate], callback)
-    } else executeGetParamsQuery(query, callback)
+    }
+    else {
+        if (staffId && staffId != undefined) query = query + ` AND salesAgent=${staffId}`
+        executeGetParamsQuery(query, callback)
+    }
 }
 customerQueries.getTotalActiveCustomersChange = (input, callback) => {
     let { startDate, endDate, fromStart, type } = input;
@@ -92,24 +98,35 @@ customerQueries.getTotalActiveCorporateCustomersChange = (input, callback) => {
         executeGetParamsQuery(query, [newStartDate, newEndDate], callback)
     } else executeGetParamsQuery(query, callback)
 }
-customerQueries.getTotalActiveCustomers = (input, callback) => {
-    let { startDate, endDate, fromStart } = input;
-    let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0"
-    if (fromStart !== 'true') {
-        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND deleted=0 AND  DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
-        executeGetParamsQuery(query, [startDate, endDate], callback)
-    }
-    else executeGetParamsQuery(query, callback)
-}
+
 customerQueries.getTotalInActiveCustomers = (input, callback) => {
-    let { startDate, endDate, fromStart } = input;
+    let { startDate, endDate, fromStart, staffId } = input;
     let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND deleted=0 AND approvedDate IS NOT NULL"
-    if (fromStart !== 'true') {
+    if (fromStart && fromStart !== 'true') {
         query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND deleted=0 AND approvedDate IS NOT NULL AND DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
+        if (staffId && staffId != undefined) query = query + ` AND salesAgent=${staffId}`
         executeGetParamsQuery(query, [startDate, endDate], callback)
     }
-    else executeGetParamsQuery(query, callback)
+    else {
+        if (staffId && staffId != undefined) query = query + ` AND salesAgent=${staffId}`
+        executeGetParamsQuery(query, callback)
+    }
 }
+
+customerQueries.getTotalApprovalPendingCustomers = (input, callback) => {
+    let { startDate, endDate, fromStart, staffId } = input;
+    let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND deleted=0 AND approvedDate IS NULL"
+    if (fromStart && fromStart !== 'true') {
+        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND deleted=0 AND approvedDate IS NULL AND DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
+        if (staffId && staffId != undefined) query = query + ` AND salesAgent=${staffId}`
+        executeGetParamsQuery(query, [startDate, endDate], callback)
+    }
+    else {
+        if (staffId && staffId != undefined) query = query + ` AND salesAgent=${staffId}`
+        executeGetParamsQuery(query, callback)
+    }
+}
+
 customerQueries.getTotalInActiveCustomersChange = (input, callback) => {
     let { startDate, endDate, fromStart, type } = input;
     const { startDate: newStartDate, endDate: newEndDate } = dateComparisions(startDate, endDate, type)
@@ -160,9 +177,9 @@ customerQueries.getTotalActiveOtherCustomersChange = (input, callback) => {
 }
 customerQueries.getTotalPendingOtherCustomers = (input, callback) => {
     let { startDate, endDate, fromStart } = input;
-    let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND approvedDate IS NULL AND deleted=0 AND customertype='Individual'"
+    let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND approvedDate IS NULL AND deleted=0 AND customertype='Individual' AND createdBy IS NOT NULL"
     if (fromStart !== 'true') {
-        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND approvedDate IS NULL AND deleted=0 AND customertype='Individual' AND DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
+        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND approvedDate IS NULL AND deleted=0 AND customertype='Individual' AND createdBy IS NOT NULL AND DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
         executeGetParamsQuery(query, [startDate, endDate], callback)
     }
     else executeGetParamsQuery(query, callback)
@@ -170,9 +187,9 @@ customerQueries.getTotalPendingOtherCustomers = (input, callback) => {
 customerQueries.getTotalPendingOtherCustomersChange = (input, callback) => {
     let { startDate, endDate, fromStart, type } = input;
     const { startDate: newStartDate, endDate: newEndDate } = dateComparisions(startDate, endDate, type)
-    let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND approvedDate IS NULL AND deleted=0 AND customertype='Individual'"
+    let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND approvedDate IS NULL AND deleted=0 AND customertype='Individual' AND createdBy IS NOT NULL"
     if (fromStart !== 'true') {
-        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND approvedDate IS NULL AND deleted=0 AND customertype='Individual' AND DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
+        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=0 AND approvedDate IS NULL AND deleted=0 AND customertype='Individual' AND createdBy IS NOT NULL AND DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
         executeGetParamsQuery(query, [newStartDate, newEndDate], callback)
     }
     else executeGetParamsQuery(query, callback)
@@ -352,14 +369,47 @@ customerQueries.getCustomerEnquiries = (createdBy, callback) => {
     return executeGetQuery(query, callback)
 }
 
-customerQueries.getAllCustomerEnquiries = (callback) => {
+customerQueries.getCustomerEnquiriesCountByAgent = (salesAgent, callback) => {
+    let query = `Select count(*) as totalCount from customerenquirydetails WHERE salesAgent=${salesAgent}`
+    return executeGetQuery(query, callback)
+}
+
+customerQueries.getRevisitCustomersCountByAgent = (salesAgent, callback) => {
+    let query = `SELECT COUNT(*)AS totalCount FROM customerenquirydetails c
+    LEFT JOIN customerdetails cd ON c.EmailId=cd.EmailId
+    WHERE c.salesAgent=? AND revisitDate IS NOT NULL AND c.EmailId  NOT IN (SELECT EmailId FROM customerdetails ) `
+    return executeGetParamsQuery(query, [salesAgent], callback)
+}
+
+customerQueries.getRevisitCustomersByAgent = (salesAgent, callback) => {
+    let query = `SELECT c.* FROM customerenquirydetails c
+    LEFT JOIN customerdetails cd ON c.EmailId=cd.EmailId
+    WHERE c.salesAgent=? AND revisitDate IS NOT NULL AND  NOT EXISTS 
+    (SELECT * FROM customerdetails cp WHERE cp.EmailId = c.EmailId) `
+    return executeGetParamsQuery(query, [salesAgent], callback)
+}
+
+customerQueries.getAllCustomerEnquiries = (input, callback) => {
+    const { staffId } = input
     let query = `Select enquiryId,customerName,accountStatus,contactperson,address,mobileNumber,revisitDate,registeredDate from customerenquirydetails ORDER BY registeredDate DESC`
+    if (staffId && staffId != undefined) {
+        query = `Select enquiryId,customerName,accountStatus,contactperson,address,mobileNumber,revisitDate,registeredDate from customerenquirydetails WHERE salesAgent=? OR createdBy=? ORDER BY registeredDate DESC`
+        return executeGetParamsQuery(query, [staffId, staffId], callback)
+    }
     return executeGetQuery(query, callback)
 }
 
 customerQueries.getCustomerEnquiryProducts = (enquiryId, callback) => {
     let query = "SELECT cp.productName,cp.productPrice,cp.noOfJarsTobePlaced,cp.id AS productId FROM customerenquiryproducts cp WHERE enquiryId=?";
     let options = [enquiryId]
+    return executeGetParamsQuery(query, options, callback)
+}
+
+customerQueries.getCurrentMonthTotalDepositAmount = (input, callback) => {
+    const { startDate, endDate } = input;
+    let query = `SELECT SUM(depositAmount) AS totalDepositAmount FROM customerdetails WHERE isApproved=1 AND DATE(approvedDate) BETWEEN ? AND ?`;
+    let options = [startDate, endDate]
+
     return executeGetParamsQuery(query, options, callback)
 }
 
@@ -474,8 +524,8 @@ customerQueries.generatePDF = (input, callback) => {
     co.300MLBoxes,'price300ML',co.price300ML,'2LBoxes',co.2LBoxes,'price2L',co.price2L)) as products
     FROM customerdetails c INNER JOIN  customerorderdetails co ON c.customerId=co.existingCustomerId
     WHERE c.invoicetype!='complimentary'
-     AND co.isDelivered='Completed' AND co.customerType='internal' AND customerId NOT IN (SELECT customerId FROM Invoice WHERE fromdate >=DATE(?) and toDate<=DATE(?))
-    AND( DATE(co.deliveryDate) BETWEEN ? AND ?) GROUP BY c.customerId`
+     AND co.isDelivered='Completed' AND co.isInvoiceGenerated=0 AND co.customerType='internal' AND customerId NOT IN (SELECT customerId FROM Invoice WHERE fromdate >=DATE(?) and toDate<=DATE(?))
+    AND( DATE(co.deliveredDate) BETWEEN ? AND ?) GROUP BY c.customerId`
     let options = [fromDate, toDate, fromDate, toDate]
     if (customerIds.length) {
         query = `SELECT c.gstNo,c.customerId,c.createdBy,c.EmailId,c.customerName,c.organizationName,
@@ -484,8 +534,8 @@ customerQueries.generatePDF = (input, callback) => {
         'price1L',co.price1L, '500MLBoxes',co.500MLBoxes,'price500ML',co.price500ML,'300MLBoxes',co.300MLBoxes,'price300ML',co.price300ML,'2LBoxes',co.2LBoxes,'price2L',co.price2L)) as products
         FROM customerdetails c INNER JOIN  customerorderdetails co ON c.customerId=co.existingCustomerId
         WHERE c.invoicetype!='complimentary' 
-        AND co.isDelivered='Completed' AND co.customerType='internal' AND customerId NOT IN (SELECT customerId FROM Invoice WHERE fromdate >=DATE(?) and toDate<=DATE(?))
-        AND( DATE(co.deliveryDate) BETWEEN ? AND ?) AND c.customerId IN (?) GROUP BY c.customerId`
+        AND co.isDelivered='Completed' AND co.isInvoiceGenerated=0 AND co.customerType='internal' AND customerId NOT IN (SELECT customerId FROM Invoice WHERE fromdate >=DATE(?) and toDate<=DATE(?))
+        AND( DATE(co.deliveredDate) BETWEEN ? AND ?) AND c.customerId IN (?) GROUP BY c.customerId`
         options = [fromDate, toDate, fromDate, toDate, customerIds]
     }
     // "SELECT c.gstNo,c.customerId,c.creditPeriodInDays,c.createdBy,c.EmailId,c.customerName,c.organizationName,c.address1,d.address,c.gstNo,c.panNo,c.mobileNumber,co.20LCans,co.price20L,co.1LBoxes,co.price1L, co.500MLBoxes,co.price500ML,co.300MLBoxes,co.price300ML,co.2LBoxes,co.price2L FROM customerdetails c INNER JOIN  customerorderdetails co ON c.customerId=co.existingCustomerId INNER JOIN DeliveryDetails d ON d.customer_Id=c.customerId  WHERE co.isDelivered='Completed' AND( DATE(co.deliveryDate) BETWEEN ? AND ?)"
@@ -511,7 +561,7 @@ customerQueries.getOrderDetailsById = (deliveryDetailsId, callback) => {
 
 customerQueries.generateCustomerPDF = (input, callback) => {
     const { fromDate, toDate, customerId } = input
-    let query = `SELECT c.gstNo,c.customerId,c.createdBy,c.EmailId,c.customerName,c.organizationName,
+    let query = `SELECT c.gstNo,c.customerId,c.createdBy,c.EmailId,c.customerName,c.organizationName,c.salesAgent,
     c.address1,c.gstNo,c.panNo,c.mobileNumber,
     JSON_ARRAYAGG(JSON_OBJECT('deliveryAddress',d.address,'location',d.location,'20LCans',co.20LCans,'price20L',co.price20L,'1LBoxes',co.1LBoxes,
     'price1L',co.price1L, '500MLBoxes',co.500MLBoxes,'price500ML',co.price500ML,'300MLBoxes',co.300MLBoxes,'price300ML',co.price300ML,'2LBoxes',co.2LBoxes,'price2L',co.price2L)) as products

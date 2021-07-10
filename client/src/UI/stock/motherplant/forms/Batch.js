@@ -46,7 +46,7 @@ const BatchForm = (props) => {
                     </div>
                 </div>
                 <div className='columns'>
-                    <InputLabel name='Products and Price' error={errors.products} />
+                    <InputLabel name='Product Details' error={errors.products} mandatory />
                     <div className='columns-container'>
                         <div className='column'>
                             <div className='input-container'>

@@ -17,6 +17,7 @@ import RoutesFilter from '../../../../components/RoutesFilter';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomDateInput from '../../../../components/CustomDateInput';
 import CustomPagination from '../../../../components/CustomPagination';
+import ActivityLogContent from '../../../../components/ActivityLogContent';
 import { TODAYDATE, TRACKFORM, WAREHOUSEADMIN } from '../../../../utils/constants';
 import { getDropdownOptions, getInvoiceColumns } from '../../../../assets/fixtures';
 import { compareMaxIntFloat, validatePaymentValues } from '../../../../utils/validations';
@@ -27,10 +28,12 @@ const APIDATEFORMAT = 'YYYY-MM-DD'
 
 const WarehouseInvoices = () => {
     const history = useHistory()
+    const [logs, setLogs] = useState([])
     const [invoices, setInvoices] = useState([])
     const [invoicesClone, setInvoicesClone] = useState([])
     const [loading, setLoading] = useState(true)
     const [pageSize, setPageSize] = useState(12)
+    const [logModal, setLogModal] = useState(false)
     const [pageNumber, setPageNumber] = useState(1)
     const [totalCount, setTotalCount] = useState(null)
     const [warehouseList, setWarehouseList] = useState([])
@@ -49,7 +52,7 @@ const WarehouseInvoices = () => {
 
     const paymentOptions = useMemo(() => getDropdownOptions(paymentList), [paymentList])
     const invoiceColumns = useMemo(() => getInvoiceColumns('warehouse'), [])
-    const totalAmount = useMemo(() => computeTotalAmount(invoices, 'pendingAmount'), [invoices, payModal])
+    const totalAmount = useMemo(() => computeTotalAmount(invoices, 'pendingAmount', 'departmentStatus'), [invoices, payModal])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
@@ -90,6 +93,17 @@ const WarehouseInvoices = () => {
         try {
             const data = await http.GET(axios, url, config)
             setPaymentList(data)
+        } catch (error) { }
+    }
+
+    const getLogs = async (id) => {
+        const url = `logs/getInvoiceLogs?type=warehouse&id=${id}`
+
+        try {
+            showToast({ v1Ing: 'Fetching', action: 'loading' })
+            const data = await http.GET(axios, url, config)
+            showToast({ v2: 'fetched' })
+            setLogs(data)
         } catch (error) { }
     }
 
@@ -142,7 +156,7 @@ const WarehouseInvoices = () => {
         searchON && setResetSearch(!resetSearch)
     }
 
-    const handleMenuSelect = (key, data) => {
+    const handleMenuSelect = async (key, data) => {
         const { noOfPayments, pendingAmount: amountPaid } = data
         if (key === 'resend') {
         }
@@ -152,6 +166,10 @@ const WarehouseInvoices = () => {
         else if (key === 'paid') {
             setFormData({ ...data, noOfPayments: noOfPayments + 1, amountPaid })
             setPayModal(true)
+        }
+        else if (key === 'logs') {
+            await getLogs(data.invoiceId)
+            setLogModal(true)
         }
     }
 
@@ -231,18 +249,25 @@ const WarehouseInvoices = () => {
     }
 
     const dataSource = useMemo(() => invoices.map((invoice) => {
-        const { invoiceId, invoiceDate, totalAmount, customerName, departmentName, dueDate, status, departmentStatus, billingAddress, pendingAmount } = invoice
+        const { invoiceId, invoiceDate, totalAmount, customerType, customerName, departmentName, dueDate, status, departmentStatus, billingAddress, pendingAmount } = invoice
 
         let actualStatus = ''
         if ((departmentStatus === 'Paid' || departmentStatus === 'Pending') && status === 'Paid') actualStatus = 'Paid'
         else if (departmentStatus === 'Paid' && (status === '' || status === 'Pending')) actualStatus = 'In Progress'
         else if (departmentStatus == 'Pending' && status === 'Pending') actualStatus = 'Pending'
 
+        const allowPay = (customerType === 'distributor' && actualStatus !== 'Paid') || actualStatus === 'In Progress'
         const options = [
             <Menu.Item key="resend" icon={<SendIconGrey />}>Resend</Menu.Item>,
             <Menu.Item key="dcList" icon={<ListViewIconGrey />}>DC List</Menu.Item>,
-            <Menu.Item key="paid" className={actualStatus === 'In Progress' ? '' : 'disabled'} icon={<TickIconGrey />}>Paid</Menu.Item>,
+            <Menu.Item key="paid" className={allowPay ? '' : 'disabled'} icon={<TickIconGrey />}>Paid</Menu.Item>,
+            <Menu.Item key="logs" icon={<ListViewIconGrey />}>Acvitity Logs</Menu.Item>,
         ]
+
+        if (!pendingAmount) invoice.disableAmountPaid = true
+        const modifiedAmount = pendingAmount || totalAmount
+        invoice.pendingAmount = modifiedAmount
+
 
         return {
             key: invoiceId,
@@ -250,7 +275,7 @@ const WarehouseInvoices = () => {
             totalAmount,
             departmentName,
             billingAddress,
-            pendingAmount,
+            pendingAmount: modifiedAmount,
             status: renderStatus(actualStatus),
             dueDate: dayjs(dueDate).format(DATEFORMAT),
             date: dayjs(invoiceDate).format(DATEFORMAT),
@@ -266,6 +291,7 @@ const WarehouseInvoices = () => {
     }, [])
 
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
+    const handleLogModalCancel = useCallback(() => setLogModal(false), [])
     const handleModalCancel = useCallback(() => onModalClose(), [])
 
     const sliceFrom = (pageNumber - 1) * pageSize
@@ -349,6 +375,17 @@ const WarehouseInvoices = () => {
                     onBlur={handleBlur}
                     onChange={handleChange}
                 />
+            </CustomModal>
+            <CustomModal
+                className='app-form-modal'
+                visible={logModal}
+                onOk={handleLogModalCancel}
+                onCancel={handleLogModalCancel}
+                title='Activity Log Details'
+                okTxt='Close'
+                hideCancel
+            >
+                <ActivityLogContent data={logs} />
             </CustomModal>
             <ConfirmModal
                 visible={confirmModal}

@@ -9,7 +9,7 @@ const opencage = require("../config/opencage.config.js");
 const { Buffer } = require('buffer');
 const multer = require('multer');
 const customerQueries = require('../dbQueries/Customer/queries.js');
-const { customerProductDetails, dbError, getCompareCustomersData, getCompareDistributorsData } = require('../utils/functions.js');
+const { customerProductDetails, dbError, getCompareCustomersData, getCompareDistributorsData, utils } = require('../utils/functions.js');
 const { saveToCustomerOrderDetails } = require('./utilities');
 const { createInvoice } = require('./Invoice/invoice');
 const { UPDATEMESSAGE, DELETEMESSAGE } = require('../utils/constants.js');
@@ -19,6 +19,8 @@ const warehouseQueries = require('../dbQueries/warehouse/queries.js');
 const auditQueries = require('../dbQueries/auditlogs/queries.js');
 const departmenttransactionQueries = require('../dbQueries/departmenttransactions/queries.js');
 const { compareCustomerData, compareCustomerDeliveryData, compareProductsData, compareOrderData, compareCustomerOrderData, compareCustomerEnquiryData } = require('./utils/customer.js');
+const { getReceiptId, getCustomerIdsForReceiptsDropdown, getCustomerDepositDetails, createCustomerReceipt, getCustomerReceipts, getCustomerReceiptsPaginationCount } = require('./Customers/receipt.js');
+const { encrypt, decrypt } = require('../utils/crypto.js');
 let departmentId, userId, userName, userRole;
 
 var storage = multer.diskStorage({
@@ -176,7 +178,8 @@ const saveDeliveryDetails = (customerId, customerdetails, res) => {
           let deliveryDetailsQuery = "insert  into DeliveryDetails (gstNo,location,address,phoneNumber,contactPerson,deliverydaysid,depositAmount,customer_Id,departmentId,isActive,gstProof,registeredDate,latitude,longitude,routeId) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
           var gstProof = i.gstProof && Buffer.from(i.gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
           let registeredDate = new Date()
-          let insertQueryValues = [i.gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, deliveryDays.insertId, i.depositAmount, customerId, i.departmentId, i.isApproved, gstProof, registeredDate, latLong.latitude, latLong.longitude, i.routeId]
+          // let gstNo = encrypt(i.gstNo)
+          let insertQueryValues = [gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, deliveryDays.insertId, i.depositAmount, customerId, i.departmentId, i.isApproved, gstProof, registeredDate, latLong.latitude, latLong.longitude, i.routeId]
           db.query(deliveryDetailsQuery, insertQueryValues, (err, results) => {
             if (err) res.json({ status: 500, message: err.sqlMessage });
             else {
@@ -457,7 +460,13 @@ router.get("/getCustomerDetailsById/:customerId", (req, res) => {
   customerQueries.getCustomerDetails(req.params.customerId, (err, results) => {
     if (err) res.status(500).json(err);
     else {
-      res.json({ status: 200, statusMessage: "Success", data: results })
+      if (results.length) {
+        let result = results[0];
+        // if (result.gstNo) result.gstNo = decrypt(result.gstNo)
+        // if (result.panNo) result.panNo = decrypt(result.panNo)
+        // if (result.adharNo) result.adharNo = decrypt(result.adharNo)
+        res.json({ status: 200, statusMessage: "Success", data: [result] })
+      } else res.json({ status: 200, statusMessage: "Success", data: results })
     }
   })
 });
@@ -504,6 +513,25 @@ router.get("/getDeliveryDetails/:deliveryDetailsId", async (req, res) => {
   let data = await getDeliveryDetails({ deliveryDetailsId, isSuperAdmin: 'true' })
   res.json({ status: 200, statusMessage: "Success", data })
 });
+
+router.get("/getCustomersCountByStaff", async (req, res) => {
+  req.query.staffId = userId
+  customerQueries.getTotalActiveCustomers(req.query, (err, activeCustomers) => {
+    if (err) res.status(500).json(err);
+    else {
+      customerQueries.getTotalApprovalPendingCustomers(req.query, (err, pendingCustomers) => {
+        if (err) res.status(500).json(err);
+        else {
+          let onBoardedCount = activeCustomers[0]?.totalCount
+          let pendingCount = pendingCustomers[0]?.totalCount
+          res.json({ status: 200, statusMessage: "Success", data: { onBoardedCount, pendingCount } })
+        }
+      })
+    }
+  })
+});
+
+
 // router.get("/getLongitudeandLatitude/:address", (req, response) => {
 //   geocoder.geocode(req.params.address, function (err, res) {
 //     response.send("lattitue:::" + res[0].latitude + "longitude:::" + res[0].longitude);
@@ -539,8 +567,10 @@ const getDeliveryDetails = ({ customerId, deliveryDetailsId, isSuperAdmin }) => 
                 count++
                 if (err) reject(err);
                 else {
+                  let { gstNo } = result
                   result['deliveryDays'] = JSON.parse(result.deliveryDays)
                   result["products"] = response;
+                  // if (gstNo) gstNo = decrypt(gstNo)
                   arr.push(result)
                 }
                 if (count == results.length) resolve(arr);
@@ -555,7 +585,7 @@ const getDeliveryDetails = ({ customerId, deliveryDetailsId, isSuperAdmin }) => 
 
 router.post('/updateCustomer', async (req, res) => {
   let customerdetails = req.body;
-  const { customer_id_proof, customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactPerson, panNo, adharNo, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, customerId, salesAgent } = customerdetails
+  let { customer_id_proof, customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactPerson, panNo, adharNo, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, customerId, salesAgent, isReceiptCreated } = customerdetails
   // let customerDetailsQuery = "insert  into customerdetails (customerName,mobileNumber,EmailId,Address1,gstNo,registeredDate,invoicetype,natureOfBussiness,creditPeriodInDays,referredBy,isActive,qrcodeId,latitude,longitude,customerType,organizationName,createdBy) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
   customerQueries.checkCustomerExistsOrNot({ EmailId, mobileNumber }, async (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
@@ -564,12 +594,15 @@ router.post('/updateCustomer', async (req, res) => {
     }
     else {
       const logs = await compareCustomerData(customerdetails, { userId, userRole, userName })
-      let customerDetailsQuery = "UPDATE customerdetails SET customerName=?,mobileNumber=?,alternatePhNo=?,EmailId=?,Address1=?,Address2=?,gstNo=?,contactperson=?,panNo=?,adharNo=?,invoicetype=?,natureOfBussiness=?,creditPeriodInDays=?,referredBy=?,departmentId=?,deliveryDaysId=?,depositAmount=?,isActive=?,latitude=?,longitude=?,shippingAddress=?,shippingContactPerson=?,shippingContactNo=?,customerType=?,organizationName=?,idProofType=?,pincode=?, dispenserCount=?, contractPeriod=?,rocNo=?,poNo=?,customer_id_proof=?,salesAgent=? WHERE customerId=" + customerId;
+      let customerDetailsQuery = "UPDATE customerdetails SET customerName=?,mobileNumber=?,alternatePhNo=?,EmailId=?,Address1=?,Address2=?,gstNo=?,contactperson=?,panNo=?,adharNo=?,invoicetype=?,natureOfBussiness=?,creditPeriodInDays=?,referredBy=?,departmentId=?,deliveryDaysId=?,depositAmount=?,isActive=?,latitude=?,longitude=?,shippingAddress=?,shippingContactPerson=?,shippingContactNo=?,customerType=?,organizationName=?,idProofType=?,pincode=?, dispenserCount=?, contractPeriod=?,rocNo=?,poNo=?,customer_id_proof=?,salesAgent=?,isReceiptCreated=? WHERE customerId=" + customerId;
       let promiseArray = req.body.idProofs[0] != null ? [getLatLongDetails(customerdetails), customer_id_proof ? updateProofs(req) : uploadImage(req)] : [getLatLongDetails(customerdetails)]
       Promise.all(promiseArray)
         .then(response => {
           let customerIdProof = req.body.idProofs[0] != null && customer_id_proof ? customer_id_proof : response[1]
-          let updateQueryValues = [customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactPerson, panNo, adharNo, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, response[0].latitude, response[0].longitude, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, customerIdProof, salesAgent]
+          // if (gstNo) gstNo = encrypt(gstNo)
+          // if (panNo) panNo = encrypt(panNo)
+          // if (adharNo) adharNo = encrypt(adharNo)
+          let updateQueryValues = [customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactPerson, panNo, adharNo, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, response[0].latitude, response[0].longitude, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, customerIdProof, salesAgent, isReceiptCreated]
           // let insertQueryValues = [customerdetails.customerName, customerdetails.mobileNumber, customerdetails.EmailId, customerdetails.Address1, customerdetails.gstNo, customerdetails.registeredDate, customerdetails.invoicetype, customerdetails.natureOfBussiness, customerdetails.creditPeriodInDays, customerdetails.referredBy, customerdetails.isActive, response[0], response[1].latitude, response[1].longitude, customerdetails.customerType, customerdetails.organizationName, customerdetails.createdBy]
           db.query(customerDetailsQuery, updateQueryValues, (err, results) => {
             if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
@@ -757,7 +790,8 @@ router.post('/updateDeliveryDetails', async (req, res) => {
           let deliveryDetailsQuery = "insert  into DeliveryDetails (gstNo,location,address,phoneNumber,contactPerson,deliverydaysid,depositAmount,customer_Id,departmentId,isActive,gstProof,registeredDate,latitude,longitude,routeId) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
           var gstProof = i.gstProof ? i.test ? Buffer.from(i.gstProof, 'base64') : Buffer.from(i.gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64') : null
           let registeredDate = new Date()
-          let insertQueryValues = [i.gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, deliveryDays.insertId, i.depositAmount, i.customer_Id, i.departmentId, i.isApproved, gstProof, registeredDate, latLong.latitude, latLong.longitude, i.routeId]
+          // let gstNo = encrypt(i.gstNo)
+          let insertQueryValues = [gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, deliveryDays.insertId, i.depositAmount, i.customer_Id, i.departmentId, i.isApproved, gstProof, registeredDate, latLong.latitude, latLong.longitude, i.routeId]
           db.query(deliveryDetailsQuery, insertQueryValues, (err, results) => {
             if (err) res.json({ status: 500, message: err.sqlMessage });
             else {
@@ -780,7 +814,8 @@ router.post('/updateDeliveryDetails', async (req, res) => {
           let latLong = await getLatLongDetails({ Address1: i.address })
           let deliveryDetailsQuery = "UPDATE DeliveryDetails SET gstNo=?,location=?,address=?,phoneNumber=?,contactPerson=?,depositAmount=?,departmentId=?,isActive=?,gstProof=?,latitude=?,longitude=?,routeId=? WHERE deliveryDetailsId=" + i.deliveryDetailsId;
           var gstProof = i.gstProof ? i.test ? Buffer.from(i.gstProof, 'base64') : Buffer.from(i.gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64') : null
-          let updateQueryValues = [i.gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, i.depositAmount, i.departmentId, i.isApproved, gstProof, latLong.latitude, latLong.longitude, i.routeId]
+          // let gstNo = encrypt(i.gstNo)
+          let updateQueryValues = [gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, i.depositAmount, i.departmentId, i.isApproved, gstProof, latLong.latitude, latLong.longitude, i.routeId]
           db.query(deliveryDetailsQuery, updateQueryValues, (err, results) => {
             if (err) res.json({ status: 500, message: err.sqlMessage });
             else {
@@ -823,7 +858,8 @@ router.get("/getCustomerBillingAddress/:customerId", (req, res) => {
     else {
       if (data.length) {
         let result = data[0]
-        result.isLocal = result.gstNo ? result.gstNo.startsWith('36') : false
+        // let gstNo = result.gstNo && decrypt(result.gstNo)
+        result.isLocal = result.gstNo ? gstNo.startsWith('36') : false
         result.emailLabel = `${result.customerName} <${result.EmailId}>`
         res.json(result)
       }
@@ -917,11 +953,56 @@ router.get('/getCustomerEnquiries/:createdBy', async (req, res) => {
   })
 });
 
+router.get('/getCustomerEnquiriesCount', async (req, res) => {
+  customerQueries.getCustomerEnquiriesCountByAgent(userId, (err, totalCustomers) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else {
+      customerQueries.getRevisitCustomersCountByAgent(userId, (err, totalRevisitCustomers) => {
+        if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+        else {
+          let totalVisited = totalCustomers[0]?.totalCount
+          let totalPendingRequests = totalRevisitCustomers[0]?.totalCount
+          res.json({ status: 200, statusMessage: "Success", data: { totalVisited, totalPendingRequests } })
+        }
+      })
+    }
+  })
+});
+
+router.get('/getRevisitCustomers', async (req, res) => {
+  customerQueries.getRevisitCustomersByAgent(userId, (err, totalRevisitCustomers) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else {
+      res.json({ status: 200, statusMessage: "Success", data: totalRevisitCustomers })
+    }
+  })
+})
+
 router.get('/getCustomerEnquiries', async (req, res) => {
-  customerQueries.getAllCustomerEnquiries((err, results) => {
+  if (userRole != 'MarketingManager') req.query.staffId = userId
+  customerQueries.getAllCustomerEnquiries(req.query, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else res.json(results)
   })
+});
+
+router.get('/getTotalDepositAmount', (req, res) => {
+  const { startDate, endDate } = utils.getCurrentMonthStartAndEndDates()
+  customerQueries.getCurrentMonthTotalDepositAmount({ startDate, endDate }, (err, results) => {
+    if (err) res.status(500).json(dbError(err));
+    else {
+      let currentMonthAmount = results[0]?.totalDepositAmount || 0
+      let { startDate, endDate } = utils.getPrevMonthStartAndEndDates(1)
+      customerQueries.getCurrentMonthTotalDepositAmount({ startDate, endDate }, (err, prevresults) => {
+        if (err) res.status(500).json(dbError(err));
+        else {
+          let previousMonthAmount = prevresults[0]?.totalDepositAmount || 0
+          let data = utils.getCompareDepositData({ currentMonthAmount, previousMonthAmount }, req.query.type)
+          res.json({ ...data, previousMonthAmount, currentMonthAmount })
+        }
+      });
+    };
+  });
 });
 
 router.get('/getCustomerEnquiry/:enquiryId', async (req, res) => {
@@ -986,4 +1067,32 @@ const updateWHDelivery = (req) => {
     }
   })
 }
+
+
+
+//Receipt APIS
+router.get('/getCustomerReceiptsPaginationCount', async (req, res) => {
+  getCustomerReceiptsPaginationCount(req, res)
+});
+
+router.get('/getReceiptNumber', async (req, res) => {
+  getReceiptId(req, res)
+});
+
+router.get('/getCustomerIds', async (req, res) => {
+  getCustomerIdsForReceiptsDropdown(req, res)
+});
+
+router.get('/getCustomerDepositDetails', async (req, res) => {
+  getCustomerDepositDetails(req, res)
+});
+
+router.get('/getCustomerReceipts', async (req, res) => {
+  getCustomerReceipts(req, res)
+});
+
+router.post('/createCustomerReceipt', async (req, res) => {
+  createCustomerReceipt(req, res)
+});
+
 module.exports = router;

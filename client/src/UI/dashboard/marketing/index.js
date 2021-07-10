@@ -1,13 +1,11 @@
 import React, { Fragment } from 'react';
-import useUser from '../../../utils/hooks/useUser';
 import Header from '../../../components/ContentHeader';
 import VisitedCustomers from './panels/VisitedCustomers';
 import PendingApprovals from './panels/PendingApprovals';
-import CustomersOverview from '../super-admin/panels/CustomersOverview';
 import ExecutiveOverview from './panels/ExecutiveOverview';
+import CustomersOverview from '../super-admin/panels/CustomersOverview';
 
 const MarketingDashboard = () => {
-    const { WAREHOUSEID } = useUser()
 
     return (
         <Fragment>

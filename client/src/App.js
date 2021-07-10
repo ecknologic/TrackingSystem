@@ -4,6 +4,7 @@ import { getRoutesByRole, MARKETINGADMIN, MOTHERPLANTADMIN, SUPERADMIN, WAREHOUS
 import { getMainPathname, resetTrackForm } from './utils/Functions';
 import Login from './UI/auth/Login';
 import Products from './UI/products';
+import Receipts from './UI/receipts';
 import Transport from './UI/transport';
 import Customers from './UI/customers';
 import Dispatches from './UI/dispatches';
@@ -40,6 +41,7 @@ import SuperAdminDashboard from './UI/dashboard/super-admin';
 import AccountsAdminDashboard from './UI/dashboard/accounts';
 import ManageInvoices from './UI/invoices/super-admin/manage';
 import MotherplantDashboard from './UI/dashboard/motherplant';
+import SalesAdminDashboard from './UI/dashboard/sales-admin';
 import MotherplantMaterials from './UI/materials/motherplant';
 import ManageVisitedCustomer from './UI/visited-customers/view';
 import DeliveredDC from './UI/invoices/super-admin/delivered-dc';
@@ -69,7 +71,7 @@ const App = () => {
    const dashboardAuth = () => {
       if (!isUser) return <Redirect to='/' />
       else {
-         if (ROLE === MARKETINGADMIN) return <Redirect to='/customers' />
+         if (ROLE === MARKETINGADMIN) return <SalesAdminDashboard />
          else if (ROLE === MARKETINGMANAGER) return <MarketingDashboard />
          else if (ROLE === WAREHOUSEADMIN) return <WarehouseDashboard />
          else if (ROLE === MOTHERPLANTADMIN) return <MotherplantDashboard />
@@ -131,6 +133,7 @@ const App = () => {
                      <Route path='/invoices/dc-list/:invoiceId' render={byRole(<DeliveredDC />)} />
                      <Route path='/invoices/edit/:invoiceId' render={byRole(<EditInvoice />)} />
                      <Route path='/invoices/:tab?' render={byRole(<Invoices />)} />
+                     <Route path='/receipts' render={byRole(<Receipts />)} />
                      <Route path='/products' render={byRole(<Products />)} />
                      <Route path='/distributors/:tab?/:page?' render={byRole(<Distributors />)} />
                      <Route path='/motherplants' render={byRole(<Motherplants />)} />

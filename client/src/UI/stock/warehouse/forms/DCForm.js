@@ -100,7 +100,7 @@ const DCForm = (props) => {
                 </div>
                 <div className='row'>
                     <div className='input-container'>
-                        <InputLabel name='Email' error={errors.EmailId} mandatory />
+                        <InputLabel name='Email' error={errors.EmailId} mandatory={isExistingCustomer || isDistributor} />
                         <CustomInput
                             value={EmailId} type='email' disabled={disableAll || disableFew}
                             placeholder='Email' error={errors.EmailId}

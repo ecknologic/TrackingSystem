@@ -11,7 +11,7 @@ import NoContent from '../../../../components/NoContent';
 import PanelHeader from '../../../../components/PanelHeader';
 import { TODAYDATE as d } from '../../../../utils/constants';
 import CustomButton from '../../../../components/CustomButton';
-import InvoiceCard from '../../../../components/InvoiceCard';
+import InvoiceCard from '../../../../components/UnclearedInvoiceCard';
 import { RightChevronIconLight } from '../../../../components/SVG_Icons';
 const options = { startDate: d, endDate: d, fromStart: true }
 
@@ -45,7 +45,7 @@ const UnclearedInvoiceOverview = () => {
     }
 
     const getUnclearedInvoices = async ({ startDate, endDate, fromStart }) => {
-        const url = `invoice/getUnclearedInvoices?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}`
+        const url = `invoice/getUnclearedInvoices?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}&limit=5`
 
         try {
             const data = await http.GET(axios, url, config)

@@ -124,6 +124,26 @@ motherPlantDbQueries.getRMDetails = async (input, callback) => {
         return executeGetParamsQuery(query, [input.departmentId], callback)
     }
 }
+
+motherPlantDbQueries.getCurrentRMDetails = async (input, callback) => {
+    let query = `select * from rawmaterialdetails WHERE departmentId=? AND isApproved=1 ORDER BY createdDateTime DESC`;
+    if (input.isSuperAdmin && input.isSuperAdmin == 'true') {
+        query = `select r.*,d.departmentName from rawmaterialdetails r INNER JOIN departmentmaster d ON r.departmentId=d.departmentId ORDER BY r.createdDateTime DESC`
+        return executeGetQuery(query, callback)
+    }
+    return executeGetParamsQuery(query, [input.departmentId], callback)
+}
+
+motherPlantDbQueries.getCurrentRMDetailsByItemCode = async (itemCode, callback) => {
+    let query = `select * from rawmaterialdetails WHERE itemCode=?`;
+    return executeGetParamsQuery(query, [itemCode], callback)
+}
+
+motherPlantDbQueries.getRMQtyByRMId = async (input, callback) => {
+    let query = `select rm.itemQty,rm.itemCode from requiredrawmaterial rm WHERE rm.rawmaterialId=?`;
+    return executeGetParamsQuery(query, [input.rawmaterialid], callback)
+}
+
 motherPlantDbQueries.getRMReceiptDetails = async (input, callback) => {
     const { isSuperAdmin, departmentId } = input
     let query = `select rmr.receiptDate,rmr.receiptNo,rmr.invoiceNo,rmr.taxAmount,rmr.invoiceAmount,rmr.rawmaterialId,rmr.invoiceDate,rmr.managerName,rm.itemName,rm.itemCode,rm.itemQty,rm.vendorName,rm.requestedDate,rm.approvedDate,rm.description,rm.orderId from rawmaterialreceipt rmr INNER JOIN requiredrawmaterial rm on rmr.rawmaterialId=rm.rawmaterialid WHERE rmr.departmentId=${departmentId} ORDER BY receiptDate DESC`;
@@ -298,11 +318,18 @@ motherPlantDbQueries.getDispatchDetailsByDC = async (dcNo, callback) => {
     FROM dispatches d INNER JOIN VehicleDetails v on d.vehicleNo=v.vehicleId INNER JOIN driverdetails driver on d.driverId=driver.driverId INNER JOIN departmentmaster dep on d.departmentId=dep.departmentId WHERE DCNO=?`;
     return executeGetParamsQuery(query, [dcNo], callback)
 }
+
 motherPlantDbQueries.getQCLevelsDetails = async (input, callback) => {
     const { productionQcId, departmentId } = input
     let query = "SELECT JSON_ARRAYAGG(JSON_OBJECT('testedDate',DATE_FORMAT(q.testedDate, '%Y-%m-%dT%H:%i:%s.000Z'),'phLevel',ROUND(q.phLevel,1),'tds',ROUND(q.TDS,1),'ozoneLevel',ROUND(q.ozoneLevel,1),'testResult',q.testResult,'managerName',q.managerName,'description',q.description,'testType',q.testType,'qcLevel',q.qcLevel)) AS QCDetails FROM qualitycheck q  WHERE productionQcId=? AND departmentId=?";
     return executeGetParamsQuery(query, [productionQcId, departmentId], callback)
 }
+
+motherPlantDbQueries.getMPdamagedStock = async (departmentId, callback) => {
+    let query = "SELECT * from damagedstockdetails WHERE departmentId=? ORDER BY createdDateTime DESC";
+    return executeGetParamsQuery(query, [departmentId], callback)
+}
+
 motherPlantDbQueries.getTotalRevenue = async (input, callback) => {
     let { startDate, endDate, fromStart, departmentId } = input;
     let options = [endDate]
@@ -413,12 +440,53 @@ motherPlantDbQueries.createRM = async (input, callback) => {
     let requestBody = [input.requestedDate, input.itemName, input.itemQty, input.description, input.reorderLevel, input.minOrderLevel, input.itemCode, input.vendorName, input.departmentId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
+
+motherPlantDbQueries.getRMDetailsByItemCode = async (itemCode, callback) => {
+    let query = `Select * from rawmaterialdetails WHERE itemCode=?`;
+    return executeGetParamsQuery(query, [itemCode], callback)
+}
+
+motherPlantDbQueries.insertRMDetails = async (input, callback) => {
+    const { itemName, itemCode, reorderLevel, departmentId } = input
+    let query = "insert into rawmaterialdetails (itemName,itemCode,reorderLevel,departmentId) values(?,?,?,?)";
+    let requestBody = [itemName, itemCode, reorderLevel, departmentId]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+
+motherPlantDbQueries.updateRMDetailsStatus = async (input, callback) => {
+    const { itemCode } = input
+    let query = "UPDATE rawmaterialdetails SET isApproved=1 WHERE itemCode=?";
+    let requestBody = [itemCode]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+
+motherPlantDbQueries.updateRMDetailsDamageCount = async (input, callback) => {
+    const { id, damagedCount } = input
+    let query = "UPDATE rawmaterialdetails SET damagedCount=damagedCount+?,totalQuantity=totalQuantity-? WHERE id=?";
+    let requestBody = [damagedCount, damagedCount, id]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+
+motherPlantDbQueries.updateRMDetailsQuantity = async (input, callback) => {
+    const { itemQty, itemCode } = input
+    let query = "UPDATE rawmaterialdetails SET totalQuantity=totalQuantity + ? WHERE itemCode=?";
+    let requestBody = [itemQty, itemCode]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+
 motherPlantDbQueries.createRMReceipt = async (input, callback) => {
     let query = "insert into rawmaterialreceipt (receiptNo,invoiceNo,taxAmount,invoiceAmount,rawmaterialId,invoiceDate,departmentId,managerName,receiptImage) values(?,?,?,?,?,?,?,?,?)";
     const { receiptNo, invoiceNo, taxAmount, invoiceAmount, rawmaterialid, invoiceDate: date, departmentId, managerName } = input
     let invoiceDate = new Date(date)
     let receiptImage = input.receiptImage && Buffer.from(input.receiptImage.replace(/^data:image\/\w+;base64,/, ""), 'base64')
     let requestBody = [receiptNo, invoiceNo, taxAmount, invoiceAmount, rawmaterialid, invoiceDate, departmentId, managerName, receiptImage]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+
+motherPlantDbQueries.createDamagedStock = async (input, callback) => {
+    let query = "insert into damagedstockdetails (product20L,product2L,product1L,product500ML,product300ML,batchId,departmentId,managerName) values(?,?,?,?,?,?,?,?)";
+    const { product20L, product2L, product1L, product500ML, product300ML, batchId, departmentId, managerName } = input
+    let requestBody = [product20L, product2L, product1L, product500ML, product300ML, batchId, departmentId, managerName]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
@@ -432,6 +500,24 @@ motherPlantDbQueries.updateProductionDetails = async (input, callback) => {
             executeGetQuery(getQuery, callback)
         }
     })
+}
+
+motherPlantDbQueries.updateRetailQuantityRM = async (totalQuantity, callback) => {
+    let query = `update rawmaterialdetails set totalQuantity=totalQuantity-? where itemName='retailClosures' OR itemName='sleeves'`;
+    let requestBody = [parseInt(totalQuantity)]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+
+motherPlantDbQueries.update20LQuantityRM = async (totalQuantity, callback) => {
+    let query = `update rawmaterialdetails set totalQuantity=totalQuantity-? where itemName='20LClosures' OR itemName='strikers' OR itemName='20Lcans'`;
+    let requestBody = [parseInt(totalQuantity)]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+
+motherPlantDbQueries.updateRMHandlesQuantity = async (totalQuantity, callback) => {
+    let query = `update rawmaterialdetails set totalQuantity=totalQuantity-? where itemName='handles'`;
+    let requestBody = [parseInt(totalQuantity)]
+    return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
 motherPlantDbQueries.updateRMDetails = async (input, callback) => {

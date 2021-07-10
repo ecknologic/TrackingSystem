@@ -4,11 +4,11 @@ import InputLabel from '../../../../components/InputLabel';
 import CustomInput from '../../../../components/CustomInput';
 import SelectInput from '../../../../components/SelectInput';
 import CustomDateInput from '../../../../components/CustomDateInput';
-import { disableFutureDates, resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
+import { resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
 
 const PaymentForm = ({ data, paymentOptions = [], errors, onChange, onBlur }) => {
 
-    const { customerName, amountPaid, noOfPayments, invoiceId, paymentDate, paymentMode } = data
+    const { customerName, amountPaid, noOfPayments, invoiceId, paymentDate, paymentMode, createdDateTime, disableAmountPaid } = data
 
     useEffect(() => {
         resetTrackForm()
@@ -18,6 +18,11 @@ const PaymentForm = ({ data, paymentOptions = [], errors, onChange, onBlur }) =>
             resetTrackForm()
         }
     }, [])
+
+    const disableDates = (current) => {
+        if (!current) return false
+        return current.valueOf() > Date.now() || current.valueOf() <= dayjs(createdDateTime).subtract(1, 'day')
+    }
 
     return (
         <div className='app-form-container invoice-form-container'>
@@ -34,7 +39,7 @@ const PaymentForm = ({ data, paymentOptions = [], errors, onChange, onBlur }) =>
             <div className='row'>
                 <div className='input-container'>
                     <InputLabel name="Amount Received" mandatory error={errors.amountPaid} />
-                    <CustomInput value={amountPaid} error={errors.amountPaid} onBlur={(value) => onBlur(value, 'amountPaid')}
+                    <CustomInput value={amountPaid} disabled={disableAmountPaid} error={errors.amountPaid} onBlur={(value) => onBlur(value, 'amountPaid')}
                         placeholder="Amount Received" onChange={(value) => onChange(value, 'amountPaid')} />
                 </div>
                 <div className='input-container'>
@@ -54,7 +59,7 @@ const PaymentForm = ({ data, paymentOptions = [], errors, onChange, onBlur }) =>
                     <InputLabel name='Payment Date' error={errors.paymentDate} mandatory />
                     <CustomDateInput
                         track error={errors.paymentDate}
-                        value={paymentDate} disabledDate={disableFutureDates}
+                        value={paymentDate} disabledDate={disableDates}
                         onChange={(value) => onChange(value, 'paymentDate')}
                     />
                 </div>

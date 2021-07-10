@@ -32,12 +32,12 @@ export const validateRequired = (data) => {
 }
 
 export const validateIDProofs = (proofs, proofType) => {
+    const { Front, Back } = proofs;
     let errors = {};
     const text = 'Required'
-    const valid = getValidObject(proofs)
+    const valid = getValidObject({ Front, Back })
 
     if (!isEmpty(valid)) {
-        const { Front, Back } = proofs;
         if (!Front) errors.Front = text
         if (proofType !== 'panNo' && !Back) errors.Back = text
     }
@@ -186,6 +186,22 @@ export const validateBatchValues = (data) => {
         const error = validateIntFloat(TDS)
         error && (errors.TDS = error)
     }
+    if (!managerName) errors.managerName = text
+    else {
+        const error = validateNames(managerName)
+        error && (errors.managerName = error)
+    }
+
+    const productErrors = validateProducts(rest)
+    return { ...errors, ...productErrors }
+}
+
+export const validateDamagedValues = (data) => {
+    let errors = {};
+    const text = 'Required'
+    const { batchId, managerName, ...rest } = data
+
+    if (!batchId) errors.batchId = text
     if (!managerName) errors.managerName = text
     else {
         const error = validateNames(managerName)
@@ -474,6 +490,23 @@ export const validateProductValues = (data) => {
         const error = validateNumber(hsnCode);
         error && (errors.hsnCode = error)
     }
+    return errors
+}
+
+export const validateReceiptValues = (data) => {
+    let errors = {};
+    const text = 'Required'
+    const { customerId, paymentMode, transactionId, noOfCans, depositAmount, customerName } = data
+    if (noOfCans == null || !String(noOfCans)) errors.noOfCans = text;
+    if (depositAmount == null || !String(depositAmount)) errors.depositAmount = text;
+    if (!customerName) errors.customerName = text;
+    if (!customerId) errors.customerId = text;
+    if (!paymentMode) errors.paymentMode = text;
+
+    if (paymentMode !== 'Cash') {
+        if (!transactionId) errors.transactionId = text;
+    }
+
     return errors
 }
 
@@ -900,14 +933,14 @@ export const validateDCValues = (data) => {
 
     const isDistributor = customerType === 'distributor'
     const isExistingCustomer = customerType === 'internal'
-    if (!EmailId) errors.EmailId = text
-    else {
-        const error = validateEmailId(EmailId)
-        error && (errors.EmailId = error)
-    }
 
     if (isDistributor || isExistingCustomer) {
         if (!contactPerson) errors.contactPerson = text
+        if (!EmailId) errors.EmailId = text
+        else {
+            const error = validateEmailId(EmailId)
+            error && (errors.EmailId = error)
+        }
     }
 
     if (isDistributor) {

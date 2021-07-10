@@ -39,6 +39,7 @@ router.get('/getEnquiriesCount', (req, res) => {
 })
 
 router.get('/getVisitedCustomersReport', (req, res) => {
+  if (userRole != 'MarketingManager') req.query.staffId = userId
   reportsQueries.getVisitedCustomersReport(req.query, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else {

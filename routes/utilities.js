@@ -5,6 +5,7 @@ var cron = require('node-cron');
 const customerQueries = require('../dbQueries/Customer/queries.js');
 const { customerProductDetails } = require('../utils/functions.js');
 const auditQueries = require('../dbQueries/auditlogs/queries.js');
+const dayjs = require('dayjs');
 
 router.use(function timeLog(req, res, next) {
   console.log('Time: ', Date.now());
@@ -78,14 +79,14 @@ const insertToCustomerOrderDetails = (result, res, sendResponse, userId, userRol
 
 }
 //Scheduling the 
-cron.schedule('0 0 2 * * *', function () {
+cron.schedule('0 0 0 * * *', function () {
   saveToCustomerOrderDetails()
 });
 
 function saveToCustomerOrderDetails(customerId, res, deliveryDetailsId, userId, userRole, userName) {
   var day = days[new Date().getDay()];
 
-  let customerDeliveryDaysQuery = "SELECT c.deliveryDetailsId,c.customer_Id,c.phoneNumber,c.address,c.contactPerson,c.departmentId,c.routeId,c.driverId,c.latitude,c.longitude,c.location as deliveryLocation,IFNULL(cust.organizationName,cust.customerName) AS customerName  FROM DeliveryDetails c INNER JOIN customerdetails cust ON c.customer_Id=cust.customerId INNER JOIN  customerdeliverydays cd ON cd.deliveryDaysId=c.deliverydaysid  WHERE c.deleted=0 AND c.isActive=1 AND " + day + "=1";
+  let customerDeliveryDaysQuery = "SELECT c.deliveryDetailsId,c.customer_Id,c.phoneNumber,c.address,c.contactPerson,c.departmentId,c.routeId,c.driverId,c.latitude,c.longitude,c.location as deliveryLocation,IFNULL(cust.organizationName,cust.customerName) AS customerName  FROM DeliveryDetails c INNER JOIN customerdetails cust ON c.customer_Id=cust.customerId INNER JOIN  customerdeliverydays cd ON cd.deliveryDaysId=c.deliverydaysid  WHERE c.deleted=0 AND c.isActive=1 AND " + day + "=1 AND DATE(cust.approvedDate)!=" + dayjs().format('YYYY-MM-DD');
 
   if (deliveryDetailsId) {
     customerDeliveryDaysQuery = "SELECT c.deliveryDetailsId,c.customer_Id,c.phoneNumber,c.address,c.contactPerson,c.departmentId,c.routeId,c.driverId,c.latitude,c.longitude,c.location as deliveryLocation,IFNULL(cust.organizationName,cust.customerName) AS customerName  FROM DeliveryDetails c INNER JOIN customerdetails cust ON c.customer_Id=cust.customerId INNER JOIN  customerdeliverydays cd ON cd.deliveryDaysId=c.deliverydaysid  WHERE c.deleted=0 AND c.isActive=1 AND c.deliveryDetailsId=" + deliveryDetailsId + " AND " + day + "=1";
@@ -108,7 +109,7 @@ function saveToCustomerOrderDetails(customerId, res, deliveryDetailsId, userId, 
           else console.log('data>>>', data)
         })
       }
-      res.json('Customer approved successfully')
+      res && res.json('Customer approved successfully')
     }
   });
 }

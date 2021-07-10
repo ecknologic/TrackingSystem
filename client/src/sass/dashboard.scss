@@ -280,6 +280,17 @@ $textColor:rgba(0,0,0,0.85);
         flex-direction: column;
         margin-right: 1em;
     }
+
+    .invoice-overview-panel {
+        .panel-details {
+            width: 100%;
+        }
+
+        .invoice-card-container {
+            margin-top: 1em;
+            border-radius: .6em;
+        }
+    }
     
 }
 

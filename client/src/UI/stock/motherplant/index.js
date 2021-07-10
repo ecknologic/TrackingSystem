@@ -6,6 +6,8 @@ import InternalQC from './tabs/InternalQC';
 import { http } from '../../../modules/http';
 import StockDetails from './tabs/StockDetails';
 import DamagedStock from './tabs/DamagedStock';
+import DamagedStockWH from './tabs/DamagedStockWH';
+import AddDamagedStock from './tabs/AddDamaged';
 import NoContent from '../../../components/NoContent';
 import Header from '../../../components/ContentHeader';
 import { resetTrackForm } from '../../../utils/Functions';
@@ -68,8 +70,9 @@ const MotherplantStock = () => {
                         <TabPane tab="Stock Details" key="1" />
                         <TabPane tab="Production" key="2" />
                         <TabPane tab="Quality Control (Internal)" key="3" />
-                        {/* Below item should be: uncommented  */}
-                        {/* <TabPane tab="Damaged Stock" key="4" disabled /> */}
+                        <TabPane tab="Add Damaged Stock" key="4" />
+                        <TabPane tab="Damaged Stock" key="5" />
+                        <TabPane tab="Damaged Stock (WH)" key="6" />
                     </Tabs>
                 </div>
                 {
@@ -83,8 +86,10 @@ const MotherplantStock = () => {
                     activeTab === '1' ? <StockDetails goToTab={handleGoToTab} date={selectedDate} source={source} />
                         : activeTab === '2' ? <Production />
                             : activeTab === '3' ? <InternalQC />
-                                : activeTab === '4' ? <DamagedStock />
-                                    : <NoContent content='Design is in progress' />
+                                : activeTab === '4' ? <AddDamagedStock goToTab={handleGoToTab} />
+                                    : activeTab === '5' ? <DamagedStock />
+                                        : activeTab === '6' ? <DamagedStockWH />
+                                            : <NoContent content='Design is in progress' />
                 }
             </div>
             <ConfirmModal

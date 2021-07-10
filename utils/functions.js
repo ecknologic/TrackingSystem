@@ -2,8 +2,9 @@ const db = require('../config/db.js');
 var dayjs = require('dayjs');
 var bcrypt = require("bcryptjs");
 const { DATEFORMAT, DISTRIBUTOR } = require('./constants.js');
-
 const format = 'DDMM-YY'
+let utils = {}
+
 const getBatchId = (shiftType) => {
     let shift = shiftType == 'Morning' ? 'A' : shiftType == 'Evening' ? 'B' : shiftType == 'Night' ? 'C' : 'A';
     let currentDate = dayjs().format(format)
@@ -22,18 +23,21 @@ const checkUserExists = (req, res, next) => {
     }
 }
 const checkDepartmentExists = (req, res, next) => {
-    let isSuperAdmin = req.headers['issuperadmin']
-    let isAccountsAdmin = req.headers['isaccountsadmin']
-    let isSalesAdmin = req.headers['issalesadmin']
+    let isSuperAdmin = req.headers['issuperadmin'], isAccountsAdmin = req.headers['isaccountsadmin']
+    let isSalesAdmin = req.headers['issalesadmin'], userId = req.headers['userid']
     if (isSuperAdmin == 'true' || isAccountsAdmin == 'true' || isSalesAdmin == 'true') {
         next()
     } else {
         let departmentid = req.headers['departmentid']
-        let query = `Select departmentName from departmentmaster where departmentId=${departmentid} AND isApproved=1 AND deleted=0`
+        let query = `Select departmentName, adminId, departmentType from departmentmaster where departmentId=${departmentid} AND isApproved=1 AND deleted=0`
         executeGetQuery(query, (err, results) => {
             if (err) console.log("Error", err)
             else if (!results.length) res.status(406).json("Something went wrong")
-            else next()
+            else {
+                const { adminId, departmentType } = results[0]
+                if (userId != adminId) res.status(406).json(`You are not a ${departmentType} admin`)
+                else next()
+            }
         })
     }
 }
@@ -364,7 +368,48 @@ const prepareOrderResponseObj = (i) => {
     }
     return responseObj
 }
+
+utils.getCurrentMonthStartAndEndDates = () => {
+    var date = new Date();
+    var startDate = new Date(date.getFullYear(), date.getMonth(), 1);
+    var endDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    return { startDate, endDate }
+}
+
+utils.getPrevMonthStartAndEndDates = (prevMonthLength) => {
+    var date = new Date();
+    var startDate = new Date(date.getFullYear(), date.getMonth() - prevMonthLength, 1);
+    var endDate = new Date(date.getFullYear(), date.getMonth() - (prevMonthLength - 1), 0);
+    return { startDate, endDate }
+}
+
+utils.getCompareInvoiceData = (data, type) => {
+    const { currentInvoiceAmount, prevInvoiceAmount } = data
+
+    const invoicePercent = getPercent(currentInvoiceAmount, prevInvoiceAmount)
+    const invoiceCompareText = getCompareText(type, prevInvoiceAmount, true)
+
+    let obj = {
+        invoicePercent, invoiceCompareText
+    }
+
+    return obj
+}
+
+utils.getCompareDepositData = (data, type) => {
+    const { currentMonthAmount, previousMonthAmount } = data
+    const depositPercent = getPercent(currentMonthAmount, previousMonthAmount)
+    const depositCompareText = getCompareText(type, previousMonthAmount, true)
+
+    let obj = {
+        depositPercent, depositCompareText
+    }
+
+    return obj
+}
+
 module.exports = {
+    utils,
     executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, checkDepartmentExists, productionCount,
     getCompareData, dateComparisions, checkUserExists, dbError, getBatchId, customerProductDetails, createHash, convertToWords,
     saveProductDetails, saveEnquiryProductDetails, updateEnquiryProductDetails, updateProductDetails, getFormatedNumber, getCompareCustomersData, getCompareDistributorsData, getGraphData, formatDate, prepareOrderResponseObj

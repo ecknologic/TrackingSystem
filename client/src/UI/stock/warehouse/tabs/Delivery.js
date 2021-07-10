@@ -616,9 +616,8 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
 }
 
 const renderStatus = (status) => {
-    const modifiedStatus = status === 'Inprogress' ? 'In Progress' : status
-    const color = getStatusColor(modifiedStatus)
-    const text = modifiedStatus === 'Completed' ? 'Delivered' : modifiedStatus
+    const color = getStatusColor(status)
+    const text = status === 'Inprogress' ? 'Pending' : status === 'Completed' ? 'Delivered' : status
     return (
         <div className='status nowrap'>
             <span className='app-dot' style={{ background: color }}></span>
