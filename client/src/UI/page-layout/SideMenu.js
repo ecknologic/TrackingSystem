@@ -9,8 +9,7 @@ import { MARKETINGADMIN, TRACKFORM, WAREHOUSEADMIN, MOTHERPLANTADMIN, SUPERADMIN
 import {
     DashboardIcon, SettingIcon, FriendReqIcon, FriendReqIconLight, DocIconLight, FriendIcon,
     DashboardIconLight, SettingIconLight, ProjectIcon, ProjectIconLight, DocIcon, FriendsIconLight, FriendsIcon,
-    FriendIconLight, LocationIcon, LocationIconLight, BlocksIcon, BlocksIconLight, StockIcon, StockIconLight, ReportIcon,
-    ReportIconLight, BadgeIcon, BadgeIconLight, RibbonIcon, RibbonIconLight, CheckIcon, CheckIconLight, StackIcon, StackIconLight,
+    FriendIconLight, LocationIcon, LocationIconLight, BlocksIcon, BlocksIconLight, StockIcon, StockIconLight, BadgeIcon, BadgeIconLight, RibbonIcon, RibbonIconLight, CheckIcon, CheckIconLight, StackIcon, StackIconLight,
     HomeIcon, HomeIconLight
 } from '../../components/SVG_Icons'
 
@@ -22,7 +21,6 @@ const SideMenu = () => {
     const [confirm, setConfirm] = useState(false)
     const clickRef = useRef('')
 
-    const showDashboard = ROLE === SUPERADMIN || ROLE === ACCOUNTSADMIN || ROLE === WAREHOUSEADMIN || ROLE === MOTHERPLANTADMIN
     const mainPathname = getMainPathname(pathname)
     const menu = useMemo(() => getSideMenuKey(pathname), [mainPathname])
 
@@ -54,13 +52,9 @@ const SideMenu = () => {
                 selectedKeys={selected}
                 onSelect={handleMenuSelect}
             >
-                {
-                    showDashboard && (
-                        <Item key='/dashboard' icon={selected === '/dashboard' ? <DashboardIcon /> : <DashboardIconLight />}>
-                            <span>Dashboard</span>
-                        </Item>
-                    )
-                }
+                <Item key='/dashboard' icon={selected === '/dashboard' ? <DashboardIcon /> : <DashboardIconLight />}>
+                    <span>Dashboard</span>
+                </Item>
                 {
                     ROLE === MOTHERPLANTADMIN ?
                         <>
