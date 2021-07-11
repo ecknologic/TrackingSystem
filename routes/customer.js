@@ -1116,12 +1116,20 @@ router.get('/getCustomerClosingDetails', async (req, res) => {
   customerClosingControllers.getCustomerClosingDetails(req, res)
 });
 
+router.get('/getCustomerClosingDetails/:closingId', async (req, res) => {
+  customerClosingControllers.getCustomerClosingDetailsById(req, res)
+});
+
 router.get('/getClosingDetailsPaginationCount', async (req, res) => {
   customerClosingControllers.getCustomerClosingDetailsPaginationCount(req, res)
 });
 
 router.post('/addCustomerClosingDetails', async (req, res) => {
   customerClosingControllers.addCustomerClosingDetails(req, res)
+});
+
+router.post('/updateCustomerClosingDetails', async (req, res) => {
+  customerClosingControllers.updateCustomerClosingDetails(req, res)
 });
 
 module.exports = router;

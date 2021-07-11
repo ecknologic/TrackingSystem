@@ -1,4 +1,5 @@
 const customerClosingQueries = require("../../dbQueries/Customer/closing");
+const { decrypt } = require("../../utils/crypto");
 const { dbError } = require("../../utils/functions");
 let customerClosingControllers = {}
 
@@ -50,11 +51,44 @@ customerClosingControllers.getCustomerClosingDetails = (req, res) => {
     });
 }
 
+customerClosingControllers.getCustomerClosingDetailsById = (req, res) => {
+    customerClosingQueries.getCustomerClosingDetailsById(req.params.closingId, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else if (!results.length) res.json(results)
+        else {
+            let result = results[0]
+            let accountDetails = JSON.parse(result.accountDetails)
+            let { ifscCode, accountNumber, bankName, branchName } = accountDetails
+            accountDetails.accountNumber = decrypt(accountNumber)
+            accountDetails.ifscCode = decrypt(ifscCode)
+            accountDetails.bankName = decrypt(bankName)
+            accountDetails.branchName = decrypt(branchName)
+            result.accountDetails = accountDetails
+            res.json([result])
+        };
+    });
+}
+
 customerClosingControllers.addCustomerClosingDetails = (req, res) => {
     customerClosingQueries.addCustomerClosingDetails({ ...req.body, createdBy: req.userId }, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
-            res.json(results)
+            customerClosingQueries.addCustomerAccountDetails({ ...req.body.accountDetails, closingId: result.insertId }, (err1, data) => {
+                if (err1) res.status(500).json(dbError(err1));
+                else res.json('Details added successfully')
+            })
+        };
+    });
+}
+
+customerClosingControllers.updateCustomerClosingDetails = (req, res) => {
+    customerClosingQueries.updateCustomerClosingDetails({ ...req.body, createdBy: req.userId }, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else {
+            customerClosingQueries.updateCustomerAccountDetails(req.body.accountDetails, (err1, data) => {
+                if (err1) res.status(500).json(dbError(err1));
+                else res.json('Details updated successfully')
+            })
         };
     });
 }
