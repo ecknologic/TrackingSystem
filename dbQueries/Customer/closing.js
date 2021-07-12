@@ -5,13 +5,13 @@ const customerClosingQueries = {}
 
 customerClosingQueries.getCustomerClosingDetails = async (input, callback) => {
     const { offset = 0, limit = 10, createdBy, userRole, departmentId } = input
-    let query = `SELECT * FROM customerclosingdetails WHERE createdBy=? ORDER BY createdDateTime DESC LIMIT ? OFFSET ?`
+    let query = `SELECT c.*,cust.customerNo,cust.natureOfBussiness,JSON_ARRAYAGG(d.contactPerson) as contactpersons FROM customerclosingdetails c INNER JOIN customerdetails cust ON c.customerId=cust.customerId INNER JOIN DeliveryDetails d ON c.deliveryDetailsId=d.deliveryDetailsId WHERE createdBy=? ORDER BY createdDateTime DESC LIMIT ? OFFSET ?`
     if (userRole == constants.SUPERADMIN || userRole == constants.ACCOUNTSADMIN || userRole == constants.MARKETINGMANAGER) {
-        query = `SELECT * FROM customerclosingdetails ORDER BY createdDateTime DESC LIMIT ${limit} OFFSET ${offset}`
+        query = `SELECT c.*,cust.customerNo,cust.natureOfBussiness,JSON_ARRAYAGG(d.contactPerson) as contactpersons FROM customerclosingdetails c INNER JOIN customerdetails cust ON c.customerId=cust.customerId INNER JOIN DeliveryDetails d ON c.deliveryDetailsId=d.deliveryDetailsId ORDER BY createdDateTime DESC LIMIT ${limit} OFFSET ${offset}`
         return executeGetQuery(query, callback)
     }
     if (departmentId && departmentId != 'undefined') {
-        query = `SELECT * FROM customerclosingdetails WHERE departmentId=? ORDER BY createdDateTime DESC LIMIT ? OFFSET ?`
+        query = `SELECT c.*,cust.customerNo,cust.natureOfBussiness,JSON_ARRAYAGG(d.contactPerson) as contactpersons FROM customerclosingdetails c INNER JOIN customerdetails cust ON c.customerId=cust.customerId INNER JOIN DeliveryDetails d ON c.deliveryDetailsId=d.deliveryDetailsId WHERE departmentId=? ORDER BY createdDateTime DESC LIMIT ? OFFSET ?`
         return executeGetParamsQuery(query, [departmentId, limit, offset], callback)
     }
     return executeGetParamsQuery(query, [createdBy, limit, offset], callback)
@@ -64,17 +64,17 @@ customerClosingQueries.getCustomerPendingAmount = async (customerId, callback) =
 }
 
 customerClosingQueries.addCustomerClosingDetails = async (input, callback) => {
-    const { routeId, closingDate, customerId, customerName, noOfCans, collectedDate, collectedCans, pendingAmount, depositAmount, balanceAmount, missingCansAmount, totalAmount, reason, missingCansCount, createdBy, departmentId } = input
-    let query = "insert into customerclosingdetails (routeId, closingDate, customerId,customerName,noOfCans,collectedDate,collectedCans,pendingAmount,depositAmount,balanceAmount,missingCansAmount,totalAmount,reason,missingCansCount,createdBy,departmentId,createdDateTime) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-    let requestBody = [routeId, closingDate, customerId, customerName, noOfCans, collectedDate, collectedCans, pendingAmount, depositAmount, balanceAmount, missingCansAmount, totalAmount, reason, missingCansCount, createdBy, departmentId, new Date()]
+    const { routeId, closingDate, customerId, customerName, noOfCans, collectedDate, collectedCans, pendingAmount, depositAmount, balanceAmount, missingCansAmount, totalAmount, reason, missingCansCount, createdBy, departmentId, deliveryDetailsId } = input
+    let query = "insert into customerclosingdetails (routeId, closingDate, customerId,customerName,noOfCans,collectedDate,collectedCans,pendingAmount,depositAmount,balanceAmount,missingCansAmount,totalAmount,reason,missingCansCount,createdBy,departmentId,deliveryDetailsId,createdDateTime) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    let requestBody = [routeId, closingDate, customerId, customerName, noOfCans, collectedDate, collectedCans, pendingAmount, depositAmount, balanceAmount, missingCansAmount, totalAmount, reason, missingCansCount, createdBy, departmentId, deliveryDetailsId, new Date()]
     return executePostOrUpdateQuery(query, requestBody, callback)
 
 }
 
 customerClosingQueries.updateCustomerClosingDetails = async (input, callback) => {
-    const { routeId, closingDate, customerId, customerName, noOfCans, collectedDate, collectedCans, pendingAmount, depositAmount, balanceAmount, missingCansAmount, totalAmount, reason, missingCansCount, createdBy, departmentId, closingId } = input
-    let query = "UPDATE customerclosingdetails SET routeId=?, closingDate=?, customerId=?,customerName=?,noOfCans=?,collectedDate=?,collectedCans=?,pendingAmount=?,depositAmount=?,balanceAmount=?,missingCansAmount=?,totalAmount=?,reason=?,missingCansCount=?,createdBy=?,departmentId=? WHERE closingId=?";
-    let requestBody = [routeId, closingDate, customerId, customerName, noOfCans, collectedDate, collectedCans, pendingAmount, depositAmount, balanceAmount, missingCansAmount, totalAmount, reason, missingCansCount, createdBy, departmentId, closingId]
+    const { routeId, closingDate, customerId, customerName, noOfCans, collectedDate, collectedCans, pendingAmount, depositAmount, balanceAmount, missingCansAmount, totalAmount, reason, missingCansCount, createdBy, departmentId, closingId, deliveryDetailsId } = input
+    let query = "UPDATE customerclosingdetails SET routeId=?, closingDate=?, customerId=?,customerName=?,noOfCans=?,collectedDate=?,collectedCans=?,pendingAmount=?,depositAmount=?,balanceAmount=?,missingCansAmount=?,totalAmount=?,reason=?,missingCansCount=?,createdBy=?,deliveryDetailsId=?,departmentId=? WHERE closingId=?";
+    let requestBody = [routeId, closingDate, customerId, customerName, noOfCans, collectedDate, collectedCans, pendingAmount, depositAmount, balanceAmount, missingCansAmount, totalAmount, reason, missingCansCount, createdBy, departmentId, deliveryDetailsId, closingId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 
 }
