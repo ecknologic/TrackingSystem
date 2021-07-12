@@ -43,7 +43,7 @@ customerClosingControllers.getDepositDetailsByDeliveryId = (req, res) => {
 }
 
 customerClosingControllers.getCustomerClosingDetails = (req, res) => {
-    customerClosingQueries.getCustomerClosingDetails({ ...req.query, createdBy: req.userId, userRole: req.userRole }, (err, results) => {
+    customerClosingQueries.getCustomerClosingDetails({ ...req.query, departmentId: req.departmentId, createdBy: req.userId, userRole: req.userRole }, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
             res.json(results)

@@ -4,11 +4,15 @@ const { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery } = req
 const customerClosingQueries = {}
 
 customerClosingQueries.getCustomerClosingDetails = async (input, callback) => {
-    const { offset = 0, limit = 10, createdBy, userRole } = input
+    const { offset = 0, limit = 10, createdBy, userRole, departmentId } = input
     let query = `SELECT * FROM customerclosingdetails WHERE createdBy=? ORDER BY createdDateTime DESC LIMIT ? OFFSET ?`
     if (userRole == constants.SUPERADMIN || userRole == constants.ACCOUNTSADMIN || userRole == constants.MARKETINGMANAGER) {
         query = `SELECT * FROM customerclosingdetails ORDER BY createdDateTime DESC LIMIT ${limit} OFFSET ${offset}`
         return executeGetQuery(query, callback)
+    }
+    if (departmentId && departmentId != 'undefined') {
+        query = `SELECT * FROM customerclosingdetails WHERE departmentId=? ORDER BY createdDateTime DESC LIMIT ? OFFSET ?`
+        return executeGetParamsQuery(query, [departmentId, limit, offset], callback)
     }
     return executeGetParamsQuery(query, [createdBy, limit, offset], callback)
 }

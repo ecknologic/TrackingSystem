@@ -1073,6 +1073,20 @@ const updateWHDelivery = (req) => {
 }
 
 
+router.get('/closeCustomer/:customerid', async (req, res) => {
+  customerQueries.closeCustomer({ cusomerId: req.params.customerid },(err,data)=>{
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.send(UPDATEMESSAGE)
+  })
+});
+
+router.get('/closeCustomerdelivery/:deliveryId', async (req, res) => {
+  customerQueries.closeCustomerDelivery({ deliveryId: req.params.deliveryId },(err,data)=>{
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.send(UPDATEMESSAGE)
+  })
+});
+
 
 //Receipt APIS
 router.get('/getCustomerReceiptsPaginationCount', async (req, res) => {

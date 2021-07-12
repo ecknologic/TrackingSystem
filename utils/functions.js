@@ -22,6 +22,7 @@ const checkUserExists = (req, res, next) => {
                 req.userId = req.headers['userid']
                 req.userName = req.headers['username']
                 req.userRole = req.headers['userrole']
+                req.departmentId = req.headers['departmentid']
                 next()
             }
         })
