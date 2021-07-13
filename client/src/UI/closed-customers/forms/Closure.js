@@ -1,3 +1,4 @@
+import { Divider } from 'antd';
 import React, { useEffect } from 'react';
 import InputLabel from '../../../components/InputLabel';
 import CustomInput from '../../../components/CustomInput';
@@ -5,17 +6,16 @@ import SelectInput from '../../../components/SelectInput';
 import CustomTextArea from '../../../components/CustomTextArea';
 import CustomDateInput from '../../../components/CustomDateInput';
 import { disableFutureDates, resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
-import { Divider } from 'antd';
 
-const EnquiryForm = (props) => {
+const ClosureForm = (props) => {
 
-    const { data, errors, onChange, disabled, onBlur, customerOptions, routeOptions, locationOptions } = props
-    const { customerId, customerName, routeId, closingDate, noOfCans, collectedCans, collectedDate,
-        pendingAmount, depositAmount, totalAmount, missingCansAmount, balanceAmount, reason, deliveryDetailsId,
-        accountNo, bankName, branchName, ifscCode, accountName } = data
+    const { data, accData, errors, accErrors, onChange, disabled, onAccBlur, customerOptions,
+        onAccChange, routeOptions, locationOptions, warehouseOptions } = props
+    const { customerId, customerName, routeId, departmentId, closingDate, noOfCans, collectedCans, collectedDate,
+        pendingAmount, depositAmount, missingCansCount, missingCansAmount, balanceAmount, totalAmount,
+        reason, deliveryDetailsId } = data
+    const { accountNumber, bankName, branchName, ifscCode, customerName: accountName } = accData
 
-    // routeId, 
-    // createdBy,createdDateTime
 
     useEffect(() => {
         resetTrackForm()
@@ -51,6 +51,13 @@ const EnquiryForm = (props) => {
                         error={errors.deliveryDetailsId} onSelect={(value) => onChange(value, 'deliveryDetailsId')}
                     />
                 </div>
+                <div className='input-container'>
+                    <InputLabel name='Warehouse' error={errors.departmentId} mandatory />
+                    <SelectInput track
+                        options={warehouseOptions} value={departmentId}
+                        error={errors.departmentId} onSelect={(value) => onChange(value, 'departmentId')}
+                    />
+                </div>
             </div>
             <div className='row'>
                 <div className='input-container'>
@@ -78,7 +85,7 @@ const EnquiryForm = (props) => {
                     />
                 </div>
                 <div className='input-container'>
-                    <InputLabel name='Collected Date' error={errors.collectedDate} mandatory />
+                    <InputLabel name='Collected Date' error={errors.collectedDate} />
                     <CustomDateInput
                         track disabled={disabled} error={errors.collectedDate}
                         value={collectedDate} disabledDate={disableFutureDates}
@@ -88,7 +95,7 @@ const EnquiryForm = (props) => {
             </div>
             <div className='row'>
                 <div className='input-container'>
-                    <InputLabel name="Bottles Collected" error={errors.collectedCans} mandatory />
+                    <InputLabel name="Bottles Collected" error={errors.collectedCans} />
                     <CustomInput value={collectedCans} disabled={disabled}
                         error={errors.collectedCans} placeholder="Bottles Collected"
                         onChange={(value) => onChange(value, 'collectedCans')}
@@ -120,10 +127,25 @@ const EnquiryForm = (props) => {
             </div>
             <div className='row'>
                 <div className='input-container'>
-                    <InputLabel name="Missing Bottles Amount" error={errors.missingCansAmount} mandatory />
+                    <InputLabel name="Missing Bottles Count" error={errors.missingCansCount} />
+                    <CustomInput value={missingCansCount} disabled={disabled}
+                        error={errors.missingCansCount} placeholder="Missing Bottles Count"
+                        onChange={(value) => onChange(value, 'missingCansCount')}
+                    />
+                </div>
+                <div className='input-container'>
+                    <InputLabel name="Missing Bottles Amount" error={errors.missingCansAmount} />
                     <CustomInput value={missingCansAmount} disabled={disabled}
                         error={errors.missingCansAmount} placeholder="Missing Bottles Amount"
                         onChange={(value) => onChange(value, 'missingCansAmount')}
+                    />
+                </div>
+            </div>
+            <div className='row'>
+                <div className='input-container'>
+                    <InputLabel name="Reason To Close" error={errors.reason} />
+                    <CustomTextArea maxLength={256} error={errors.reason} placeholder='Add Reason'
+                        value={reason} minRows={2} maxRows={3} onChange={(value) => onChange(value, 'reason')}
                     />
                 </div>
                 <div className='input-container'>
@@ -134,60 +156,52 @@ const EnquiryForm = (props) => {
                     />
                 </div>
             </div>
-            <div className='row'>
-                <div className='input-container'>
-                    <InputLabel name="Reason To Close" error={errors.reason} mandatory />
-                    <CustomTextArea maxLength={256} error={errors.reason} placeholder='Add Reason'
-                        value={reason} minRows={2} maxRows={3} onChange={(value) => onChange(value, 'reason')}
-                    />
-                </div>
-            </div>
             <Divider className='form-divider' />
             <div className='employee-title-container inner'>
                 <span className='title'>Bank Account Details</span>
             </div>
             <div className='row'>
                 <div className='input-container'>
-                    <InputLabel name='Customer/Related Name' error={errors.accountName} mandatory />
+                    <InputLabel name='Customer Name' error={accErrors.customerName} mandatory />
                     <CustomInput value={accountName}
-                        error={errors.accountName} placeholder="Add Customer/Related Name"
-                        onChange={(value) => onChange(value, 'accountName')}
+                        error={accErrors.customerName} placeholder="Add Customer Name"
+                        onChange={(value) => onAccChange(value, 'customerName')}
                     />
                 </div>
             </div>
             <div className='row'>
                 <div className='input-container'>
-                    <InputLabel name='Account Number' error={errors.accountNo} mandatory />
-                    <CustomInput value={accountNo} placeholder='Account Number' maxLength={18}
-                        error={errors.accountNo} onBlur={(value) => onBlur(value, 'accountNo')}
-                        onChange={(value) => onChange(value, 'accountNo')}
+                    <InputLabel name='Account Number' error={accErrors.accountNumber} mandatory />
+                    <CustomInput value={accountNumber} placeholder='Account Number' maxLength={18}
+                        error={accErrors.accountNumber}
+                        onChange={(value) => onAccChange(value, 'accountNumber')}
                     />
                 </div>
                 <div className='input-container'>
-                    <InputLabel name='Bank Name' error={errors.bankName} mandatory />
+                    <InputLabel name='Bank Name' error={accErrors.bankName} mandatory />
                     <CustomInput value={bankName}
-                        error={errors.bankName} placeholder='Bank Name'
-                        onChange={(value) => onChange(value, 'bankName')}
+                        error={accErrors.bankName} placeholder='Bank Name'
+                        onChange={(value) => onAccChange(value, 'bankName')}
                     />
                 </div>
             </div>
             <div className='row'>
                 <div className='input-container'>
-                    <InputLabel name='Branch Name' error={errors.branchName} mandatory />
+                    <InputLabel name='Branch Name' error={accErrors.branchName} mandatory />
                     <CustomInput value={branchName}
-                        error={errors.branchName} placeholder='Branch Name'
-                        onChange={(value) => onChange(value, 'branchName')}
+                        error={accErrors.branchName} placeholder='Branch Name'
+                        onChange={(value) => onAccChange(value, 'branchName')}
                     />
                 </div>
                 <div className='input-container'>
-                    <InputLabel name='IFSC Code' error={errors.ifscCode} mandatory />
+                    <InputLabel name='IFSC Code' error={accErrors.ifscCode} mandatory />
                     <CustomInput value={ifscCode} placeholder='IFSC Code' maxLength={11} uppercase
-                        error={errors.ifscCode} onBlur={(value) => onBlur(value, 'ifscCode')}
-                        onChange={(value) => onChange(value, 'ifscCode')}
+                        error={accErrors.ifscCode} onBlur={(value) => onAccBlur(value, 'ifscCode')}
+                        onChange={(value) => onAccChange(value, 'ifscCode')}
                     />
                 </div>
             </div>
         </div>
     )
 }
-export default EnquiryForm
+export default ClosureForm

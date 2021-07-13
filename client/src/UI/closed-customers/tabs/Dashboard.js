@@ -7,10 +7,11 @@ import Spinner from '../../../components/Spinner';
 import MenuBar from '../../../components/MenuBar';
 import useUser from '../../../utils/hooks/useUser';
 import NoContent from '../../../components/NoContent';
-import ClosureCard from '../../../components/ClosureCard';
+import AccountCard from '../../../components/AccountCard';
+import { closedFilterList } from '../../../assets/fixtures';
 import CustomPagination from '../../../components/CustomPagination';
-import { doubleKeyComplexSearch, complexSort, complexDateSort, isEmpty } from '../../../utils/Functions';
 import { ACCOUNTSADMIN, SUPERADMIN } from '../../../utils/constants';
+import { doubleKeyComplexSearch, complexSort, complexDateSort, isEmpty } from '../../../utils/Functions';
 
 const Dashboard = ({ reFetch }) => {
     const history = useHistory()
@@ -136,16 +137,17 @@ const Dashboard = ({ reFetch }) => {
 
     return (
         <Fragment>
-            <MenuBar searchText='Search Accounts' onSearch={handleSearch} onSort={onSort} onFilter={onFilterChange} />
+            <MenuBar filterList={closedFilterList} searchText='Search Accounts' onSearch={handleSearch} onSort={onSort} onFilter={onFilterChange} />
             <div className='employee-manager-content'>
                 <Row gutter={[{ lg: 32, xl: 16 }, { lg: 16, xl: 16 }]}>
                     {
                         loading ? <NoContent content={<Spinner />} />
                             : customers.length ? customers.slice(sliceFrom, sliceTo).map((customer) => (
                                 <Col lg={{ span: 12 }} xl={{ span: 8 }} xxl={{ span: 6 }} key={customer.closingId}>
-                                    <ClosureCard
+                                    <AccountCard
                                         data={customer}
-                                        onClick={goToViewCustomer}
+                                        statuses={['IN PROGRESS', 'CLOSED']}
+                                        onClick={() => goToViewCustomer(customer.closingId)}
                                     />
                                 </Col>
                             )) : <NoContent content={<Empty />} />

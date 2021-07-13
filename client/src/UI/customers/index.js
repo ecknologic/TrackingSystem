@@ -13,7 +13,7 @@ import ConfirmMessage from '../../components/ConfirmMessage';
 import CustomPagination from '../../components/CustomPagination';
 import useCustomerFilter from '../../utils/hooks/useCustomerFilter';
 import { ACCOUNTSADMIN, MANAGEACCOUNT, MARKETINGADMIN, MARKETINGMANAGER, SUPERADMIN, VIEWDETAILS } from '../../utils/constants';
-import { complexDateSort, complexSort, tripleKeyComplexSearch, filterAccounts, showToast } from '../../utils/Functions'
+import { complexDateSort, complexSort, tripleKeyComplexSearch, filterAccounts, showToast, deepClone } from '../../utils/Functions'
 import '../../sass/customers.scss'
 
 const Customers = () => {
@@ -207,6 +207,9 @@ const Customers = () => {
             setCurrentId(id)
             setModalDelete(true)
         }
+        else if (key === 'Close') {
+            handleAccountClose(id)
+        }
     }
 
     const handleStatusUpdate = async (customerId, status) => {
@@ -216,7 +219,20 @@ const Customers = () => {
         try {
             showToast({ ...options, action: 'loading' })
             await http.PUT(axios, url, body, config)
-            optimisticUpdate(customerId)
+            optimisticDelete(customerId)
+            showToast(options)
+        } catch (error) {
+            message.destroy()
+        }
+    }
+
+    const handleAccountClose = async (customerId) => {
+        const options = { item: 'Customer', v1Ing: 'Closing', v2: 'closed' }
+        const url = `customer/closeCustomer/${customerId}`
+        try {
+            showToast({ ...options, action: 'loading' })
+            await http.GET(axios, url, config)
+            optimisticUpdate(customerId, 1)
             showToast(options)
         } catch (error) {
             message.destroy()
@@ -230,7 +246,7 @@ const Customers = () => {
         try {
             showToast({ ...options, action: 'loading' })
             await http.POST(axios, url, body, config)
-            optimisticUpdate(customerId)
+            optimisticDelete(customerId)
             showToast(options)
         } catch (error) {
             message.destroy()
@@ -244,14 +260,14 @@ const Customers = () => {
         try {
             showToast({ ...options, action: 'loading' })
             await http.DELETE(axios, url, config)
-            optimisticUpdate(id)
+            optimisticDelete(id)
             showToast(options)
         } catch (error) {
             message.destroy()
         }
     }
 
-    const optimisticUpdate = (id) => {
+    const optimisticDelete = (id) => {
         if (filterON || searchON) {
             const filtered = accountsClone.filter(item => item.customerId !== id)
             setAccountsClone(filtered)
@@ -259,6 +275,13 @@ const Customers = () => {
         const filtered = accounts.filter(item => item.customerId !== id)
         setAccounts(filtered)
         setTotalCount(filtered.length)
+    }
+
+    const optimisticUpdate = (id, status) => {
+        let clone = deepClone(accounts);
+        const index = clone.findIndex(item => item.customerId === id)
+        clone[index].isClosed = status;
+        setAccounts(clone)
     }
 
     const handleDeleteModalOk = useCallback(() => {

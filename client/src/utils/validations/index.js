@@ -468,24 +468,28 @@ export const validateEnquiryValues = (data) => {
 export const validateClosureValues = (data) => {
     let errors = {};
     const text = 'Required'
-    const { customerId, customerName, routeId, noOfCans, collectedCans, collectedDate,
-        pendingAmount, depositAmount, totalAmount, missingCansAmount, balanceAmount, reason,
-        deliveryDetailsId, accountNo, bankName, branchName, ifscCode, accountName } = data
+    const { customerId, customerName, routeId, noOfCans, pendingAmount, depositAmount, totalAmount,
+        balanceAmount, deliveryDetailsId } = data
 
     if (!customerName) errors.customerName = text
-    if (!accountName) errors.accountName = text
     if (!customerId) errors.customerId = text
     if (!routeId) errors.routeId = text
-    if (!collectedDate) errors.collectedDate = text
-    if (!reason) errors.reason = text
     if (!deliveryDetailsId) errors.deliveryDetailsId = text
     if (noOfCans == null || !String(noOfCans)) errors.noOfCans = text;
     if (totalAmount == null || !String(totalAmount)) errors.totalAmount = text;
     if (depositAmount == null || !String(depositAmount)) errors.depositAmount = text;
-    if (collectedCans == null || !String(collectedCans)) errors.collectedCans = text;
     if (pendingAmount == null || !String(pendingAmount)) errors.pendingAmount = text;
     if (balanceAmount == null || !String(balanceAmount)) errors.balanceAmount = text;
-    if (missingCansAmount == null || !String(missingCansAmount)) errors.missingCansAmount = text;
+
+    return errors
+}
+
+export const validateClosureAccValues = (data) => {
+    let errors = {};
+    const text = 'Required'
+    const { accountNo, bankName, branchName, ifscCode, customerName } = data
+
+    if (!customerName) errors.customerName = text
     if (!accountNo) errors.accountNo = text
     else {
         const error = validateNumber(accountNo)

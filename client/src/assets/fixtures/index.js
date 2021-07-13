@@ -43,6 +43,10 @@ export const statusFilterList = [
     { value: 0, name: 'Draft' },
     { value: 1, name: 'Active' }
 ]
+export const closedFilterList = [
+    { value: 0, name: 'In Progress' },
+    { value: 1, name: 'Closed' }
+]
 export const accountFilterList = [
     { value: 'Corporate', name: 'Corporate' },
     { value: 'Individual', name: 'Individual' }

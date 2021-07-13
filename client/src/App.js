@@ -44,6 +44,7 @@ import ManageInvoices from './UI/invoices/super-admin/manage';
 import MotherplantDashboard from './UI/dashboard/motherplant';
 import SalesAdminDashboard from './UI/dashboard/sales-admin';
 import MotherplantMaterials from './UI/materials/motherplant';
+import ManageClosedCustomer from './UI/closed-customers/view';
 import ManageVisitedCustomer from './UI/visited-customers/view';
 import DeliveredDC from './UI/invoices/super-admin/delivered-dc';
 import ClosedCustomersReport from './UI/reports/closed-customers';
@@ -146,7 +147,7 @@ const App = () => {
                      <Route path='/new-customers-report' render={byRole(<NewCustomersReport />)} />
                      <Route path='/closed-customers-report' render={byRole(<ClosedCustomersReport />)} />
                      <Route path='/dispensers-viability-report' render={byRole(<DispensersViabilityReport />)} />
-                     <Route path='/closed-customers/manage/:enquiryId' render={byRole(<ManageVisitedCustomer />)} />
+                     <Route path='/closed-customers/manage/:closingId' render={byRole(<ManageClosedCustomer />)} />
                      <Route path='/closed-customers/:tab?/:page?' render={byRole(<ClosedCustomers />)} />
                      <Route path='/visited-customers/manage/:enquiryId' render={byRole(<ManageVisitedCustomer />)} />
                      <Route path='/visited-customers/:tab?/:page?' render={byRole(<VisitedCustomers />)} />

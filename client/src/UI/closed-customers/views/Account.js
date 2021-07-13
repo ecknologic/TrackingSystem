@@ -4,11 +4,16 @@ import InputValue from '../../../components/InputValue';
 import { getAccountStatusUI } from '../../../utils/Functions';
 const DATEFORMAT = 'DD/MM/YYYY'
 
-const AccountView = ({ data }) => {
+const AccountView = ({ data, accData }) => {
 
-    const { customerName, natureOfBussiness, registeredDate, salesAgentName,contactperson, customertype, city, state, mobileNumber, address, EmailId, accountStatus, salesAgent, revisitDate,
+    const { customerName, natureOfBussiness, registeredDate, salesAgentName, contactperson, customertype, city, state, mobileNumber, address, EmailId, accountStatus, salesAgent, revisitDate,
         product20L, price20L, product2L, product1L, price2L, price1L, product500ML,
         price500ML, product300ML, price300ML } = data
+
+    // const { customerId, customerName, routeId, departmentId, closingDate, noOfCans, collectedCans, collectedDate,
+    //     pendingAmount, depositAmount, missingCansCount, missingCansAmount, balanceAmount, totalAmount,
+    //     reason, deliveryDetailsId } = data
+    // const { accountNumber, bankName, branchName, ifscCode, customerName: accountName } = accData
 
     return (
         <div className='app-view-info'>

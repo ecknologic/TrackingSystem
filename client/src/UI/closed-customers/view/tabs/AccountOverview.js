@@ -5,36 +5,41 @@ import { useParams } from 'react-router-dom';
 import React, { Fragment, useEffect, useState, useMemo } from 'react';
 import AccountView from '../../views/Account';
 import { http } from '../../../../modules/http'
-import EnquiryForm from '../../forms/Enquiry';
+import ClosureForm from '../../forms/Closure';
 import Spinner from '../../../../components/Spinner';
 import ScrollUp from '../../../../components/ScrollUp';
 import NoContent from '../../../../components/NoContent';
-import IDProofInfo from '../../../../components/IDProofInfo';
+import { DATEFORMAT } from '../../../../utils/constants';
 import CustomButton from '../../../../components/CustomButton';
-import { getDropdownOptions, getStaffOptions } from '../../../../assets/fixtures';
-import { isEmpty, showToast, base64String, getBase64, getProductsForUI, getProductsWithIdForDB, extractDistributorDetails, extractProductsFromForm, resetTrackForm } from '../../../../utils/Functions';
-import { validateNames, validateMobileNumber, validateEmailId, validateDistributorValues, validateEnquiryValues } from '../../../../utils/validations';
+import { validateEnquiryValues, validateNumber, validateIFSCCode } from '../../../../utils/validations';
+import { getCustomerIdOptions, getDepartmentOptions, getLocationOptions, getRouteOptions } from '../../../../assets/fixtures';
+import { isEmpty, showToast, getProductsWithIdForDB, extractProductsFromForm, resetTrackForm } from '../../../../utils/Functions';
 import '../../../../sass/employees.scss'
-import { MARKETINGADMIN, DATEFORMAT } from '../../../../utils/constants';
 
-const ManageDistributor = ({ setHeaderContent, onGoBack }) => {
-    const { enquiryId } = useParams()
+const ManageClosedCustomer = ({ setHeaderContent, onGoBack }) => {
+    const { closingId } = useParams()
     const [formData, setFormData] = useState({})
+    const [accData, setAccData] = useState({})
     const [formErrors, setFormErrors] = useState({})
+    const [accErrors, setAccErrors] = useState({})
     const [loading, setLoading] = useState(true)
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [editMode, setEditMode] = useState('')
     const [shake, setShake] = useState(false)
-    const [agentList, setAgentList] = useState([])
-    const [businessList, setBusinessList] = useState([])
+    const [customerList, setCustomerList] = useState([])
+    const [warehouseList, setWarehouseList] = useState([])
+    const [locationList, setLocationList] = useState([])
+    const [routeList, setRouteList] = useState([])
 
-    const agentOptions = useMemo(() => getStaffOptions(agentList), [agentList])
-    const businessOptions = useMemo(() => getDropdownOptions(businessList), [businessList])
+    const routeOptions = useMemo(() => getRouteOptions(routeList), [routeList])
+    const warehouseOptions = useMemo(() => getDepartmentOptions(warehouseList), [warehouseList])
+    const customerOptions = useMemo(() => getCustomerIdOptions(customerList), [customerList])
+    const locationOptions = useMemo(() => getLocationOptions(locationList), [locationList])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
-        getDistributor()
+        getClosedCustomer()
 
         return () => {
             http.ABORT(source)
@@ -43,39 +48,68 @@ const ManageDistributor = ({ setHeaderContent, onGoBack }) => {
 
     useEffect(() => {
         if (editMode) {
-            getAgentList()
-            getBusinessList()
+            getRouteList()
+            getCustomerList()
+            getWarehouseList()
         }
     }, [editMode])
 
-    const getAgentList = async () => {
-        const url = `users/getUsersByRole/${MARKETINGADMIN}`
+    const getCustomerList = async () => {
+        const url = 'customer/getCustomerIdsByAgent'
 
         try {
             const data = await http.GET(axios, url, config)
-            setAgentList(data)
+            setCustomerList(data)
         } catch (error) { }
     }
-    const getBusinessList = async () => {
-        const url = `bibo/getList/natureOfBusiness`
+
+    const getRouteList = async () => {
+        const url = `customer/getRoutes/0`
 
         try {
             const data = await http.GET(axios, url, config)
-            setBusinessList(data)
+            setRouteList(data)
         } catch (error) { }
     }
 
-    const getDistributor = async () => {
-        const url = `customer/getCustomerEnquiry/${enquiryId}`
+    const getDeliveryLocations = async (id) => {
+        const url = `customer/getCustomerDeliveryIds?customerId=${id}`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setLocationList(data)
+        } catch (error) { }
+    }
+
+    const getDeliveryDetails = async (id) => {
+        const url = `customer/getDepositDetailsByDeliveryId?deliveryId=${id}`
 
         try {
             const [data] = await http.GET(axios, url, config)
-            const { products, ...rest } = data
+            setFormData(prev => ({ ...prev, ...data, totalAmount: data.balanceAmount }))
+        } catch (error) { }
+    }
+
+    const getWarehouseList = async () => {
+        const url = 'bibo/getDepartmentsList?departmentType=Warehouse'
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setWarehouseList(data)
+        } catch (error) { }
+    }
+
+    const getClosedCustomer = async () => {
+        const url = `customer/getCustomerClosingDetails/${closingId}`
+
+        try {
+            const [data] = await http.GET(axios, url, config)
+            const { accountDetails, ...rest } = data
             const { customerName } = rest
-            const productsUI = getProductsForUI(products)
 
             setHeaderContent({ title: customerName })
-            setFormData({ ...rest, ...productsUI })
+            setFormData(rest)
+            setAccData(accountDetails)
             setLoading(false)
         } catch (error) { }
     }
@@ -84,30 +118,56 @@ const ManageDistributor = ({ setHeaderContent, onGoBack }) => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
-        if (value === 'notintrested') {
-            setFormData(data => ({ ...data, revisitDate: '' }))
-        }
-
         // Validations
-        if (key === 'mobileNumber') {
-            const error = validateMobileNumber(value)
+        if (key === 'customerId') {
+            const [{ customerName }] = customerList.filter(item => item.customerId === value)
+            setFormData(prev => ({ ...prev, customerName }))
+            resetDeliveryDetails()
+            getDeliveryLocations(value)
+        }
+        else if (key === 'deliveryDetailsId') {
+            getDeliveryDetails(value)
+        }
+        else if (numerics.includes(key)) {
+            const error = validateNumber(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
+
+            if (!error) {
+                if (key === 'pendingAmount') {
+                    const balanceAmount = Number(value) + Number(formData.depositAmount || 0)
+                    const totalAmount = balanceAmount + Number(formData.missingCansAmount || 0)
+                    setFormData(prev => ({ ...prev, balanceAmount, totalAmount }))
+                }
+                else if (key === 'depositAmount') {
+                    const balanceAmount = Number(value) + Number(formData.pendingAmount || 0)
+                    const totalAmount = balanceAmount + Number(formData.missingCansAmount || 0)
+                    setFormData(prev => ({ ...prev, balanceAmount, totalAmount }))
+                }
+                else if (key === 'balanceAmount') {
+                    const totalAmount = Number(value) + Number(formData.missingCansAmount || 0)
+                    setFormData(prev => ({ ...prev, totalAmount }))
+                }
+                else if (key === 'missingCansAmount') {
+                    const totalAmount = Number(value) + Number(formData.balanceAmount || 0)
+                    setFormData(prev => ({ ...prev, totalAmount }))
+                }
+            }
         }
     }
 
-    const handleBlur = (value, key) => {
-
-        // Validations
-        if (key === 'EmailId') {
-            const error = validateEmailId(value)
-            setFormErrors(errors => ({ ...errors, [key]: error }))
-        }
-        else if (key === 'mobileNumber') {
-            const error = validateMobileNumber(value, true)
-            setFormErrors(errors => ({ ...errors, [key]: error }))
-        }
+    const handleAccChange = (value, key) => {
+        setAccData(data => ({ ...data, [key]: value }))
+        setAccErrors(errors => ({ ...errors, [key]: '' }))
     }
 
+    const handleAccBlur = (value, key) => {
+
+        // Validations
+        if (key === 'ifscCode') {
+            const error = validateIFSCCode(value, true)
+            setAccErrors(errors => ({ ...errors, [key]: error }))
+        }
+    }
 
     const handleUpdate = async () => {
         const formErrors = validateEnquiryValues(formData)
@@ -124,8 +184,8 @@ const ManageDistributor = ({ setHeaderContent, onGoBack }) => {
         const revisitDate = formData.revisitDate ? dayjs(formData.revisitDate).format(DATEFORMAT) : null
 
         let body = { ...formData, revisitDate, products }
-        const url = 'customer/updateCustomerEnquiry'
-        const options = { item: 'Enquiry', v1Ing: 'Updating', v2: 'updated' }
+        const url = 'customer/updateCustomerClosingDetails'
+        const options = { item: 'Customer Closure', v1Ing: 'Updating', v2: 'updated' }
 
         try {
             setBtnDisabled(true)
@@ -141,6 +201,15 @@ const ManageDistributor = ({ setHeaderContent, onGoBack }) => {
                 setBtnDisabled(false)
             }
         }
+    }
+
+    const resetDeliveryDetails = () => {
+        const data = {
+            deliveryDetailsId: null,
+            depositAmount: null, noOfCans: null,
+            pendingAmount: null, totalAmount: null
+        }
+        setFormData(prev => ({ ...prev, ...data }))
     }
 
     const handleEdit = () => {
@@ -161,19 +230,23 @@ const ManageDistributor = ({ setHeaderContent, onGoBack }) => {
                             {
                                 editMode ? (
                                     <>
-                                        <EnquiryForm
+                                        <ClosureForm
                                             data={formData}
+                                            accData={accData}
                                             errors={formErrors}
-                                            onBlur={handleBlur}
+                                            accErrors={accErrors}
+                                            onAccBlur={handleAccBlur}
                                             onChange={handleChange}
-                                            agentOptions={agentOptions}
-                                            businessOptions={businessOptions}
+                                            onAccChange={handleAccChange}
+                                            routeOptions={routeOptions}
+                                            customerOptions={customerOptions}
+                                            locationOptions={locationOptions}
+                                            warehouseOptions={warehouseOptions}
                                         />
                                     </>
                                 ) :
                                     <>
-                                        {/* <IDProofInfo data={gstProof} /> */}
-                                        <AccountView data={formData} />
+                                        <AccountView data={formData} accData={accData} />
                                     </>
                             }
                             <div className={`app-footer-buttons-container ${editMode ? 'edit' : 'view'}`}>
@@ -194,5 +267,9 @@ const ManageDistributor = ({ setHeaderContent, onGoBack }) => {
         </Fragment>
     )
 }
-
-export default ManageDistributor
+const numerics = [
+    'pendingAmount', 'depositAmount', 'balanceAmount',
+    'missingCansAmount', 'noOfCans', 'collectedCans',
+    'missingCansCount', 'missingCansAmount', 'totalAmount'
+]
+export default ManageClosedCustomer

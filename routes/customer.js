@@ -1074,14 +1074,14 @@ const updateWHDelivery = (req) => {
 
 
 router.get('/closeCustomer/:customerid', async (req, res) => {
-  customerQueries.closeCustomer({ cusomerId: req.params.customerid },(err,data)=>{
+  customerQueries.closeCustomer({ cusomerId: req.params.customerid }, (err, data) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else res.send(UPDATEMESSAGE)
   })
 });
 
 router.get('/closeCustomerdelivery/:deliveryId', async (req, res) => {
-  customerQueries.closeCustomerDelivery({ deliveryId: req.params.deliveryId },(err,data)=>{
+  customerQueries.closeCustomerDelivery({ deliveryId: req.params.deliveryId }, (err, data) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else res.send(UPDATEMESSAGE)
   })
@@ -1142,7 +1142,7 @@ router.post('/addCustomerClosingDetails', async (req, res) => {
   customerClosingControllers.addCustomerClosingDetails(req, res)
 });
 
-router.post('/updateCustomerClosingDetails', async (req, res) => {
+router.put('/updateCustomerClosingDetails', async (req, res) => {
   customerClosingControllers.updateCustomerClosingDetails(req, res)
 });
 
