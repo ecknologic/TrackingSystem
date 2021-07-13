@@ -426,8 +426,7 @@ router.get("/getCustomerDetailsByType", (req, res) => {
   })
 });
 router.get("/getInActiveCustomers", (req, res) => {
-  const { userId } = req.query
-  customerQueries.getInActiveCustomers(userId, (err, customersData) => {
+  customerQueries.getInActiveCustomers(req.userId, (err, customersData) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
       res.json(customersData)
@@ -1074,7 +1073,7 @@ const updateWHDelivery = (req) => {
 
 
 router.get('/closeCustomer/:customerid', async (req, res) => {
-  customerQueries.closeCustomer({ cusomerId: req.params.customerid }, (err, data) => {
+  customerQueries.closeCustomer({ customerId: req.params.customerid }, (err, data) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else res.send(UPDATEMESSAGE)
   })
