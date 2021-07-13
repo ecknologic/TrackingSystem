@@ -31,7 +31,7 @@ customerClosingControllers.getDepositDetailsByDeliveryId = (req, res) => {
                 else if (!data.length) res.json(results)
                 else {
                     result.pendingAmount = data[0].pendingAmount
-                    result.totalAmount = Math.abs(result.depositAmount - data[0].pendingAmount)
+                    result.balanceAmount = Math.abs(result.depositAmount - data[0].pendingAmount)
                     res.json([result])
                 }
             })
@@ -73,7 +73,7 @@ customerClosingControllers.addCustomerClosingDetails = (req, res) => {
     customerClosingQueries.addCustomerClosingDetails({ ...req.body, createdBy: req.userId }, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
-            customerClosingQueries.addCustomerAccountDetails({ ...req.body.accountDetails, closingId: result.insertId }, (err1, data) => {
+            customerClosingQueries.addCustomerAccountDetails({ ...req.body.accountDetails, closingId: results.insertId }, (err1, data) => {
                 if (err1) res.status(500).json(dbError(err1));
                 else res.json('Details added successfully')
             })
