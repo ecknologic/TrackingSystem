@@ -1,20 +1,20 @@
 const { constants } = require('../../utils/constants.js');
-const { encrypt } = require('../../utils/crypto.js');
+const { encrypt, encryptObj } = require('../../utils/crypto.js');
 const { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery } = require('../../utils/functions.js');
 const customerClosingQueries = {}
 
 customerClosingQueries.getCustomerClosingDetails = async (input, callback) => {
     const { offset = 0, limit = 10, createdBy, userRole, departmentId } = input
-    let query = `SELECT c.*,cust.customerNo,cust.natureOfBussiness,d.location as address,JSON_ARRAYAGG(d.contactPerson) as contactpersons FROM customerclosingdetails c INNER JOIN customerdetails cust ON c.customerId=cust.customerId INNER JOIN DeliveryDetails d ON c.deliveryDetailsId=d.deliveryDetailsId WHERE c.createdBy=? ORDER BY createdDateTime DESC LIMIT ? OFFSET ?`
+    let query = `SELECT c.*,cust.customerNo,cust.natureOfBussiness,d.location as address,JSON_ARRAYAGG(d.contactPerson) as contactpersons FROM customerclosingdetails c INNER JOIN customerdetails cust ON c.customerId=cust.customerId INNER JOIN DeliveryDetails d ON c.deliveryDetailsId=d.deliveryDetailsId WHERE c.createdBy=? GROUP BY c.closingId ORDER BY createdDateTime DESC LIMIT ? OFFSET ?`
     if (userRole == constants.SUPERADMIN || userRole == constants.ACCOUNTSADMIN || userRole == constants.MARKETINGMANAGER) {
-        query = `SELECT c.*,cust.customerNo,cust.natureOfBussiness,d.location as address,JSON_ARRAYAGG(d.contactPerson) as contactpersons FROM customerclosingdetails c INNER JOIN customerdetails cust ON c.customerId=cust.customerId INNER JOIN DeliveryDetails d ON c.deliveryDetailsId=d.deliveryDetailsId ORDER BY createdDateTime DESC LIMIT ${limit} OFFSET ${offset}`
+        query = `SELECT c.*,cust.customerNo,cust.natureOfBussiness,d.location as address,JSON_ARRAYAGG(d.contactPerson) as contactpersons FROM customerclosingdetails c INNER JOIN customerdetails cust ON c.customerId=cust.customerId INNER JOIN DeliveryDetails d ON c.deliveryDetailsId=d.deliveryDetailsId GROUP BY c.closingId ORDER BY createdDateTime DESC LIMIT ${limit} OFFSET ${offset}`
         return executeGetQuery(query, callback)
     }
-    if (departmentId && departmentId != 'undefined'&& departmentId != 'null') {
-        query = `SELECT c.*,cust.customerNo,cust.natureOfBussiness,d.location as address,JSON_ARRAYAGG(d.contactPerson) as contactpersons FROM customerclosingdetails c INNER JOIN customerdetails cust ON c.customerId=cust.customerId INNER JOIN DeliveryDetails d ON c.deliveryDetailsId=d.deliveryDetailsId WHERE c.departmentId=? ORDER BY createdDateTime DESC LIMIT ? OFFSET ?`
+    else if (departmentId && departmentId != 'undefined' && departmentId != 'null') {
+        query = `SELECT c.*,cust.customerNo,cust.natureOfBussiness,d.location as address,JSON_ARRAYAGG(d.contactPerson) as contactpersons FROM customerclosingdetails c INNER JOIN customerdetails cust ON c.customerId=cust.customerId INNER JOIN DeliveryDetails d ON c.deliveryDetailsId=d.deliveryDetailsId WHERE c.departmentId=? GROUP BY c.closingId ORDER BY createdDateTime DESC LIMIT ? OFFSET ?`
         return executeGetParamsQuery(query, [departmentId, limit, offset], callback)
     }
-    return executeGetParamsQuery(query, [createdBy, limit, offset], callback)
+    else return executeGetParamsQuery(query, [createdBy, limit, offset], callback)
 }
 
 customerClosingQueries.getCustomerClosingDetailsById = async (id, callback) => {
@@ -77,7 +77,7 @@ customerClosingQueries.addCustomerClosingDetails = async (input, callback) => {
 customerClosingQueries.updateCustomerClosingDetails = async (input, callback) => {
     const { routeId, closingDate, customerId, customerName, noOfCans, collectedDate, collectedCans, pendingAmount, depositAmount, balanceAmount, missingCansAmount, totalAmount, reason, missingCansCount, createdBy, departmentId, closingId, deliveryDetailsId } = input
     let query = "UPDATE customerclosingdetails SET routeId=?, closingDate=?, customerId=?,customerName=?,noOfCans=?,collectedDate=?,collectedCans=?,pendingAmount=?,depositAmount=?,balanceAmount=?,missingCansAmount=?,totalAmount=?,reason=?,missingCansCount=?,createdBy=?,deliveryDetailsId=?,departmentId=? WHERE closingId=?";
-    let requestBody = [routeId, closingDate, customerId, customerName, noOfCans, collectedDate, collectedCans, pendingAmount, depositAmount, balanceAmount, missingCansAmount, totalAmount, reason, missingCansCount, createdBy, departmentId, deliveryDetailsId, closingId]
+    let requestBody = [routeId, closingDate, customerId, customerName, noOfCans, collectedDate, collectedCans, pendingAmount, depositAmount, balanceAmount, missingCansAmount, totalAmount, reason, missingCansCount, createdBy, deliveryDetailsId, departmentId, closingId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 
 }
@@ -85,22 +85,16 @@ customerClosingQueries.updateCustomerClosingDetails = async (input, callback) =>
 customerClosingQueries.addCustomerAccountDetails = async (input, callback) => {
     let { customerName, accountNumber, ifscCode, bankName, branchName, customerId, closingId } = input
     let query = "insert into customeraccountdetails (customerName, accountNumber, ifscCode, bankName, branchName, customerId, closingId,createdDateTime) values(?,?,?,?,?,?,?,?)";
-    accountNumber = encrypt(accountNumber)
-    ifscCode = encrypt(ifscCode)
-    bankName = encrypt(bankName)
-    branchName = encrypt(branchName)
-    let requestBody = [customerName, accountNumber, ifscCode, bankName, branchName, customerId, closingId, new Date()]
+    let encryptedData = await encryptObj({ accountNumber, ifscCode, bankName, branchName })
+    let requestBody = [customerName, encryptedData.accountNumber, encryptedData.ifscCode, encryptedData.bankName, encryptedData.branchName, customerId, closingId, new Date()]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
 customerClosingQueries.updateCustomerAccountDetails = async (input, callback) => {
     let { customerName, accountNumber, ifscCode, bankName, branchName, customerId, closingId, accountId } = input
     let query = "UPDATE customeraccountdetails SET customerName=?, accountNumber=?, ifscCode=?, bankName=?, branchName=?, customerId=?, closingId=? WHERE accountId=?";
-    accountNumber = encrypt(accountNumber)
-    ifscCode = encrypt(ifscCode)
-    bankName = encrypt(bankName)
-    branchName = encrypt(branchName)
-    let requestBody = [customerName, accountNumber, ifscCode, bankName, branchName, customerId, closingId, accountId]
+    let encryptedData = await encryptObj({ accountNumber, ifscCode, bankName, branchName })
+    let requestBody = [customerName, encryptedData.accountNumber, encryptedData.ifscCode, encryptedData.bankName, encryptedData.branchName, customerId, closingId, accountId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 
 }

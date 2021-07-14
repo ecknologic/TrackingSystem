@@ -2,6 +2,7 @@ var express = require('express');
 const auditQueries = require('../dbQueries/auditlogs/queries');
 const departmenttransactionQueries = require('../dbQueries/departmenttransactions/queries');
 const invoiceQueries = require('../dbQueries/invoice/queries');
+const { decrypt } = require('../utils/crypto');
 var router = express.Router();
 const { dbError } = require('../utils/functions');
 let departmentId, userId;
@@ -15,9 +16,23 @@ router.use(function timeLog(req, res, next) {
 
 
 router.get('/getAuditLogs', (req, res) => {
-    auditQueries.getAudits(req.query, (err, results) => {
+    auditQueries.getAudits(req.query, async (err, results) => {
         if (err) res.status(500).json(dbError(err));
-        else res.json(results);
+        else if (!results.length) res.send(results)
+        else {
+            if (req.query.type == 'customerClosing') {
+                let arr = []
+                for (let i of results) {
+                    if (i.description.includes('account details') && !i.description.includes('customerName')) {
+                        i.oldValue = await decrypt(i.oldValue)
+                        i.updatedValue = await decrypt(i.updatedValue)
+                        arr.push(i)
+                    } else arr.push(i)
+                    if (arr.length == results.length) res.json(arr)
+                }
+            }
+            else res.json(results)
+        };
     });
 });
 

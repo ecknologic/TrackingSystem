@@ -155,12 +155,12 @@ router.post('/createCustomer', async (req, res) => {
   //   else {
   let promiseArray = req.body.idProofs[0] != null ? [getLatLongDetails(customerdetails), uploadImage(req)] : [getLatLongDetails(customerdetails)]
   Promise.all(promiseArray)
-    .then(response => {
+    .then(async response => {
       let registeredDate = customerdetails.registeredDate ? customerdetails.registeredDate : new Date()
       let customer_id_proof = response[1] && response[1]
-      gstNo = encrypt(gstNo)
-      panNo = encrypt(panNo)
-      adharNo = encrypt(adharNo)
+      gstNo = await encrypt(gstNo)
+      panNo = await encrypt(panNo)
+      adharNo = await encrypt(adharNo)
       let insertQueryValues = [customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactPerson, panNo, adharNo, registeredDate, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, response[0].latitude, response[0].longitude, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, createdBy, customer_id_proof, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, salesAgent]
       db.query(customerDetailsQuery, insertQueryValues, (err, results) => {
         if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
@@ -178,11 +178,11 @@ const saveDeliveryDetails = (customerId, customerdetails, res) => {
       let count = 0
       for (let i of customerdetails.deliveryDetails) {
         let latLong = await getLatLongDetails({ Address1: i.address })
-        saveDeliveryDays(i.deliveryDays).then(deliveryDays => {
+        saveDeliveryDays(i.deliveryDays).then(async deliveryDays => {
           let deliveryDetailsQuery = "insert  into DeliveryDetails (gstNo,location,address,phoneNumber,contactPerson,deliverydaysid,depositAmount,customer_Id,departmentId,isActive,gstProof,registeredDate,latitude,longitude,routeId) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
           var gstProof = i.gstProof && Buffer.from(i.gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
           let registeredDate = new Date()
-          let gstNo = encrypt(i.gstNo)
+          let gstNo = await encrypt(i.gstNo)
           let insertQueryValues = [gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, deliveryDays.insertId, i.depositAmount, customerId, i.departmentId, i.isApproved, gstProof, registeredDate, latLong.latitude, latLong.longitude, i.routeId]
           db.query(deliveryDetailsQuery, insertQueryValues, (err, results) => {
             if (err) res.json({ status: 500, message: err.sqlMessage });
@@ -600,11 +600,11 @@ router.post('/updateCustomer', async (req, res) => {
       let customerDetailsQuery = "UPDATE customerdetails SET customerName=?,mobileNumber=?,alternatePhNo=?,EmailId=?,Address1=?,Address2=?,gstNo=?,contactperson=?,panNo=?,adharNo=?,invoicetype=?,natureOfBussiness=?,creditPeriodInDays=?,referredBy=?,departmentId=?,deliveryDaysId=?,depositAmount=?,isActive=?,latitude=?,longitude=?,shippingAddress=?,shippingContactPerson=?,shippingContactNo=?,customerType=?,organizationName=?,idProofType=?,pincode=?, dispenserCount=?, contractPeriod=?,rocNo=?,poNo=?,customer_id_proof=?,salesAgent=?,isReceiptCreated=? WHERE customerId=" + customerId;
       let promiseArray = req.body.idProofs[0] != null ? [getLatLongDetails(customerdetails), customer_id_proof ? updateProofs(req) : uploadImage(req)] : [getLatLongDetails(customerdetails)]
       Promise.all(promiseArray)
-        .then(response => {
+        .then(async response => {
           let customerIdProof = req.body.idProofs[0] != null && customer_id_proof ? customer_id_proof : response[1]
-          if (gstNo) gstNo = encrypt(gstNo)
-          if (panNo) panNo = encrypt(panNo)
-          if (adharNo) adharNo = encrypt(adharNo)
+          if (gstNo) gstNo = await encrypt(gstNo)
+          if (panNo) panNo = await encrypt(panNo)
+          if (adharNo) adharNo = await encrypt(adharNo)
           let updateQueryValues = [customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactPerson, panNo, adharNo, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, response[0].latitude, response[0].longitude, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, customerIdProof, salesAgent, isReceiptCreated]
           // let insertQueryValues = [customerdetails.customerName, customerdetails.mobileNumber, customerdetails.EmailId, customerdetails.Address1, customerdetails.gstNo, customerdetails.registeredDate, customerdetails.invoicetype, customerdetails.natureOfBussiness, customerdetails.creditPeriodInDays, customerdetails.referredBy, customerdetails.isActive, response[0], response[1].latitude, response[1].longitude, customerdetails.customerType, customerdetails.organizationName, customerdetails.createdBy]
           db.query(customerDetailsQuery, updateQueryValues, (err, results) => {
@@ -793,7 +793,7 @@ router.post('/updateDeliveryDetails', async (req, res) => {
           let deliveryDetailsQuery = "insert  into DeliveryDetails (gstNo,location,address,phoneNumber,contactPerson,deliverydaysid,depositAmount,customer_Id,departmentId,isActive,gstProof,registeredDate,latitude,longitude,routeId) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
           var gstProof = i.gstProof ? i.test ? Buffer.from(i.gstProof, 'base64') : Buffer.from(i.gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64') : null
           let registeredDate = new Date()
-          let gstNo = encrypt(i.gstNo)
+          let gstNo = await encrypt(i.gstNo)
           let insertQueryValues = [gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, deliveryDays.insertId, i.depositAmount, i.customer_Id, i.departmentId, i.isApproved, gstProof, registeredDate, latLong.latitude, latLong.longitude, i.routeId]
           db.query(deliveryDetailsQuery, insertQueryValues, (err, results) => {
             if (err) res.json({ status: 500, message: err.sqlMessage });
@@ -817,7 +817,7 @@ router.post('/updateDeliveryDetails', async (req, res) => {
           let latLong = await getLatLongDetails({ Address1: i.address })
           let deliveryDetailsQuery = "UPDATE DeliveryDetails SET gstNo=?,location=?,address=?,phoneNumber=?,contactPerson=?,depositAmount=?,departmentId=?,isActive=?,gstProof=?,latitude=?,longitude=?,routeId=? WHERE deliveryDetailsId=" + i.deliveryDetailsId;
           var gstProof = i.gstProof ? i.test ? Buffer.from(i.gstProof, 'base64') : Buffer.from(i.gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64') : null
-          let gstNo = encrypt(i.gstNo)
+          let gstNo = await encrypt(i.gstNo)
           let updateQueryValues = [gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, i.depositAmount, i.departmentId, i.isApproved, gstProof, latLong.latitude, latLong.longitude, i.routeId]
           db.query(deliveryDetailsQuery, updateQueryValues, (err, results) => {
             if (err) res.json({ status: 500, message: err.sqlMessage });

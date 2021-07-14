@@ -1,6 +1,6 @@
 const auditQueries = require("../../dbQueries/auditlogs/queries");
 const customerClosingQueries = require("../../dbQueries/Customer/closing");
-const { decrypt } = require("../../utils/crypto");
+const { decrypt, decryptObj } = require("../../utils/crypto");
 const { dbError } = require("../../utils/functions");
 const { compareCustomerClosingData } = require("../utils/customer");
 let customerClosingControllers = {}
@@ -58,17 +58,18 @@ customerClosingControllers.getCustomerClosingDetails = (req, res) => {
 }
 
 customerClosingControllers.getCustomerClosingDetailsById = (req, res) => {
-    customerClosingQueries.getCustomerClosingDetailsById(req.params.closingId, (err, results) => {
+    customerClosingQueries.getCustomerClosingDetailsById(req.params.closingId, async (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else if (!results.length) res.json(results)
         else {
             let result = results[0]
             let accountDetails = JSON.parse(result.accountDetails)
             let { ifscCode, accountNumber, bankName, branchName } = accountDetails
-            accountDetails.accountNumber = decrypt(accountNumber)
-            accountDetails.ifscCode = decrypt(ifscCode)
-            accountDetails.bankName = decrypt(bankName)
-            accountDetails.branchName = decrypt(branchName)
+            let decryptedObj = await decryptObj({ ifscCode, accountNumber, bankName, branchName })
+            accountDetails.accountNumber = decryptedObj.accountNumber
+            accountDetails.ifscCode = decryptedObj.ifscCode
+            accountDetails.bankName = decryptedObj.bankName
+            accountDetails.branchName = decryptedObj.branchName
             result.accountDetails = accountDetails
             res.json([result])
         };
