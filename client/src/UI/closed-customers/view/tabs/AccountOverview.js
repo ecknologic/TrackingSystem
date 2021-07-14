@@ -197,15 +197,6 @@ const ManageClosedCustomer = ({ setHeaderContent, onGoBack }) => {
         }
     }
 
-    const resetDeliveryDetails = () => {
-        const data = {
-            deliveryDetailsId: null,
-            depositAmount: null, noOfCans: null,
-            pendingAmount: null, totalAmount: null
-        }
-        setFormData(prev => ({ ...prev, ...data }))
-    }
-
     const handleEdit = () => {
         setEditMode(true)
     }
