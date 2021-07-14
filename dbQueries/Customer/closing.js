@@ -5,13 +5,13 @@ const customerClosingQueries = {}
 
 customerClosingQueries.getCustomerClosingDetails = async (input, callback) => {
     const { offset = 0, limit = 10, createdBy, userRole, departmentId } = input
-    let query = `SELECT c.*,cust.customerNo,cust.natureOfBussiness,JSON_ARRAYAGG(d.contactPerson) as contactpersons FROM customerclosingdetails c INNER JOIN customerdetails cust ON c.customerId=cust.customerId INNER JOIN DeliveryDetails d ON c.deliveryDetailsId=d.deliveryDetailsId WHERE createdBy=? ORDER BY createdDateTime DESC LIMIT ? OFFSET ?`
+    let query = `SELECT c.*,cust.customerNo,cust.natureOfBussiness,d.location as address,JSON_ARRAYAGG(d.contactPerson) as contactpersons FROM customerclosingdetails c INNER JOIN customerdetails cust ON c.customerId=cust.customerId INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id INNER JOIN DeliveryDetails d ON c.deliveryDetailsId=d.deliveryDetailsId WHERE createdBy=? ORDER BY createdDateTime DESC LIMIT ? OFFSET ?`
     if (userRole == constants.SUPERADMIN || userRole == constants.ACCOUNTSADMIN || userRole == constants.MARKETINGMANAGER) {
-        query = `SELECT c.*,cust.customerNo,cust.natureOfBussiness,JSON_ARRAYAGG(d.contactPerson) as contactpersons FROM customerclosingdetails c INNER JOIN customerdetails cust ON c.customerId=cust.customerId INNER JOIN DeliveryDetails d ON c.deliveryDetailsId=d.deliveryDetailsId ORDER BY createdDateTime DESC LIMIT ${limit} OFFSET ${offset}`
+        query = `SELECT c.*,cust.customerNo,cust.natureOfBussiness,d.location as address,JSON_ARRAYAGG(d.contactPerson) as contactpersons FROM customerclosingdetails c INNER JOIN customerdetails cust ON c.customerId=cust.customerId INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id INNER JOIN DeliveryDetails d ON c.deliveryDetailsId=d.deliveryDetailsId ORDER BY createdDateTime DESC LIMIT ${limit} OFFSET ${offset}`
         return executeGetQuery(query, callback)
     }
     if (departmentId && departmentId != 'undefined') {
-        query = `SELECT c.*,cust.customerNo,cust.natureOfBussiness,JSON_ARRAYAGG(d.contactPerson) as contactpersons FROM customerclosingdetails c INNER JOIN customerdetails cust ON c.customerId=cust.customerId INNER JOIN DeliveryDetails d ON c.deliveryDetailsId=d.deliveryDetailsId WHERE c.departmentId=? ORDER BY createdDateTime DESC LIMIT ? OFFSET ?`
+        query = `SELECT c.*,cust.customerNo,cust.natureOfBussiness,d.location as address,JSON_ARRAYAGG(d.contactPerson) as contactpersons FROM customerclosingdetails c INNER JOIN customerdetails cust ON c.customerId=cust.customerId INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id INNER JOIN DeliveryDetails d ON c.deliveryDetailsId=d.deliveryDetailsId WHERE c.departmentId=? ORDER BY createdDateTime DESC LIMIT ? OFFSET ?`
         return executeGetParamsQuery(query, [departmentId, limit, offset], callback)
     }
     return executeGetParamsQuery(query, [createdBy, limit, offset], callback)
