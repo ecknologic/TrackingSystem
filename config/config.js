@@ -1,10 +1,10 @@
 const config = {
 
   db: {
-    host: 'tracking-system.cnz4ify3r0by.ap-south-1.rds.amazonaws.com',
+    host: '100.25.207.145',
     dbName: 'trackingsystem',
-    user: 'admin',
-    password: 'gptmFGgWdyEbymqSw2PX'
+    user: 'root',
+    password: 'Google@19'
   }
 };
 
