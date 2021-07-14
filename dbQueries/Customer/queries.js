@@ -36,9 +36,10 @@ customerQueries.getCustomersByCustomerType = (input, callback) => {
     }
     executeGetParamsQuery(query, options, callback)
 }
-customerQueries.getInActiveCustomers = (userId, callback) => {
+customerQueries.getInActiveCustomers = (input, callback) => {
+    const { userId, userRole } = input
     let query = "SELECT c.organizationName,c.customerNo,c.customertype,c.isActive,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE (c.isApproved=0 OR c.isClosed=1) AND c.approvedDate IS NOT NULL and d.deleted=0  GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.customerId,c.registeredDate ORDER BY c.lastDraftedDate DESC"
-    if (userId) {
+    if (userId && userRole != constants.SUPERADMIN) {
         query = "SELECT c.organizationName,c.customerNo,c.customertype,c.isActive,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE (c.isApproved=0 OR c.isClosed=1) AND c.approvedDate IS NOT NULL and d.deleted=0 and (createdBy=? OR salesAgent=?)  GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.customerId,c.registeredDate ORDER BY c.lastDraftedDate DESC"
         return executeGetParamsQuery(query, [userId, userId], callback)
     }

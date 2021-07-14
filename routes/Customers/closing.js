@@ -1,6 +1,8 @@
+const auditQueries = require("../../dbQueries/auditlogs/queries");
 const customerClosingQueries = require("../../dbQueries/Customer/closing");
 const { decrypt } = require("../../utils/crypto");
 const { dbError } = require("../../utils/functions");
+const { compareCustomerClosingData } = require("../utils/customer");
 let customerClosingControllers = {}
 
 customerClosingControllers.getCustomerIdsByAgent = (req, res) => {
@@ -75,19 +77,33 @@ customerClosingControllers.addCustomerClosingDetails = (req, res) => {
         else {
             customerClosingQueries.addCustomerAccountDetails({ ...req.body.accountDetails, customerId: req.body.customerId, closingId: result.insertId }, (err1, data) => {
                 if (err1) res.status(500).json(dbError(err1));
-                else res.json('Details added successfully')
+                else {
+                    const { userId, userRole, userName } = req
+                    auditQueries.createLog({ userId, description: `Customer Closing created by ${userRole} <b>(${userName})</b>`, customerId: req.body.customerId, type: "customerClosing" })
+                    res.json('Details added successfully')
+                }
             })
         };
     });
 }
 
-customerClosingControllers.updateCustomerClosingDetails = (req, res) => {
+customerClosingControllers.updateCustomerClosingDetails = async (req, res) => {
+    const { userId, userRole, userName } = req
+    let logs = await compareCustomerClosingData(req.body, { userId, userRole, userName })
     customerClosingQueries.updateCustomerClosingDetails({ ...req.body, createdBy: req.userId }, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
             customerClosingQueries.updateCustomerAccountDetails(req.body.accountDetails, (err1, data) => {
                 if (err1) res.status(500).json(dbError(err1));
-                else res.json('Details updated successfully')
+                else {
+                    if (logs.length) {
+                        auditQueries.createLog(logs, (err, data) => {
+                            if (err) console.log('log error', err)
+                            else console.log('log data', data)
+                        })
+                    }
+                    res.json('Details updated successfully')
+                }
             })
         };
     });

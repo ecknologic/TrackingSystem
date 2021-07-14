@@ -18,9 +18,12 @@ customerClosingQueries.getCustomerClosingDetails = async (input, callback) => {
 }
 
 customerClosingQueries.getCustomerClosingDetailsById = async (id, callback) => {
-    let query = `SELECT c.*,JSON_OBJECT('accountId',a.accountId,'closingId',a.closingId,'accountNumber',a.accountNumber,'customerName',a.customerName,
+    let query = `SELECT c.*,cust.customerNo,dep.departmentName,d.location,r.RouteName,JSON_OBJECT('accountId',a.accountId,'closingId',a.closingId,'accountNumber',a.accountNumber,'customerName',a.customerName,
     'ifscCode',a.ifscCode,'bankName',a.bankName,'branchName',a.branchName) AS accountDetails FROM customerclosingdetails c
-    INNER JOIN  customeraccountdetails a ON c.closingId=a.closingId WHERE c.closingId=${id}`
+    INNER JOIN  customeraccountdetails a ON c.closingId=a.closingId INNER JOIN  DeliveryDetails d ON c.customerId=d.customer_Id
+    INNER JOIN  departmentmaster dep ON d.departmentId=dep.departmentId
+    INNER JOIN  routes r ON d.routeId=r.RouteId
+    INNER JOIN customerdetails cust ON c.customerId=cust.customerId  WHERE c.closingId=${id}`
     return executeGetQuery(query, callback)
 }
 

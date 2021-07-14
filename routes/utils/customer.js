@@ -1,3 +1,4 @@
+const customerClosingQueries = require("../../dbQueries/Customer/closing");
 var customerQueries = require("../../dbQueries/Customer/queries");
 
 const compareCustomerData = (data, { userId, userRole, userName }) => {
@@ -199,6 +200,39 @@ const compareCustomerEnquiryData = (data, { userId, userRole, userName }) => {
     })
 }
 
+const compareCustomerClosingData = (data, { userId, userRole, userName }) => {
+    const { closingId } = data
+    return new Promise((resolve) => {
+        customerClosingQueries.getCustomerClosingDetailsById(closingId, (err, results) => {
+            if (err) resolve([])
+            else if (results.length) {
+                // console.log("data", JSON.stringify(data))
+                const oldData = results[0]
+                const records = []
+                const createdDateTime = new Date()
+                Object.entries(data).map(([key, updatedValue]) => {
+                    const oldValue = oldData[key]
+                    if (oldValue != updatedValue) {
+                        records.push({
+                            oldValue,
+                            updatedValue,
+                            createdDateTime,
+                            userId,
+                            description: `Updated ${key} by ${userRole} <b>(${userName})</b>`,
+                            customerId: closingId,
+                            type: "customerClosing"
+                        })
+                    }
+                })
+                resolve(records)
+            }
+            else {
+                resolve([])
+            }
+        })
+    })
+}
+
 const getProductKeyName = (productName, key) => {
     if (key == 'noOfJarsTobePlaced') return `${productName} quantity`
     else if (key == 'productPrice') return `${productName} price`
@@ -209,4 +243,4 @@ const getDCKeyName = (key) => {
     else if (key == 'driverId') return `driver`
     else if (key == 'vehicleId') return `vehicle`
 }
-module.exports = { compareCustomerData, compareCustomerEnquiryData, compareCustomerOrderData, compareProductsData, compareCustomerDeliveryData, compareOrderData }
+module.exports = { compareCustomerData, compareCustomerClosingData, compareCustomerEnquiryData, compareCustomerOrderData, compareProductsData, compareCustomerDeliveryData, compareOrderData }
