@@ -4,6 +4,7 @@ import { message } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import ClosureForm from '../forms/Closure';
 import { http } from '../../../modules/http';
+import useUser from '../../../utils/hooks/useUser';
 import CustomButton from '../../../components/CustomButton';
 import { validateClosureAccValues, validateClosureValues, validateIFSCCode, validateNumber } from '../../../utils/validations';
 import { isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
@@ -11,6 +12,7 @@ import { getCustomerIdOptions, getDepartmentOptions, getLocationOptions, getRout
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
 const CreateEnquiry = ({ goToTab }) => {
+    const { WAREHOUSEID } = useUser()
     const [formData, setFormData] = useState({})
     const [accData, setAccData] = useState({})
     const [formErrors, setFormErrors] = useState({})
@@ -49,7 +51,7 @@ const CreateEnquiry = ({ goToTab }) => {
     }
 
     const getRouteList = async () => {
-        const url = `customer/getRoutes/0`
+        const url = `customer/getRoutes/${WAREHOUSEID || 0}`
 
         try {
             const data = await http.GET(axios, url, config)
