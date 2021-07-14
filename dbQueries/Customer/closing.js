@@ -11,7 +11,7 @@ customerClosingQueries.getCustomerClosingDetails = async (input, callback) => {
         return executeGetQuery(query, callback)
     }
     if (departmentId && departmentId != 'undefined') {
-        query = `SELECT c.*,cust.customerNo,cust.natureOfBussiness,JSON_ARRAYAGG(d.contactPerson) as contactpersons FROM customerclosingdetails c INNER JOIN customerdetails cust ON c.customerId=cust.customerId INNER JOIN DeliveryDetails d ON c.deliveryDetailsId=d.deliveryDetailsId WHERE departmentId=? ORDER BY createdDateTime DESC LIMIT ? OFFSET ?`
+        query = `SELECT c.*,cust.customerNo,cust.natureOfBussiness,JSON_ARRAYAGG(d.contactPerson) as contactpersons FROM customerclosingdetails c INNER JOIN customerdetails cust ON c.customerId=cust.customerId INNER JOIN DeliveryDetails d ON c.deliveryDetailsId=d.deliveryDetailsId WHERE c.departmentId=? ORDER BY createdDateTime DESC LIMIT ? OFFSET ?`
         return executeGetParamsQuery(query, [departmentId, limit, offset], callback)
     }
     return executeGetParamsQuery(query, [createdBy, limit, offset], callback)
