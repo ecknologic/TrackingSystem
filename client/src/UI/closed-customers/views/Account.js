@@ -1,94 +1,118 @@
 import React from 'react';
 import dayjs from 'dayjs';
 import InputValue from '../../../components/InputValue';
-import { getAccountStatusUI } from '../../../utils/Functions';
 const DATEFORMAT = 'DD/MM/YYYY'
 
-const AccountView = ({ data, accData }) => {
+const AccountView = ({ data }) => {
 
-    const { customerName, natureOfBussiness, registeredDate, salesAgentName, contactperson, customertype, city, state, mobileNumber, address, EmailId, accountStatus, salesAgent, revisitDate,
-        product20L, price20L, product2L, product1L, price2L, price1L, product500ML,
-        price500ML, product300ML, price300ML } = data
-
-    // const { customerId, customerName, routeId, departmentId, closingDate, noOfCans, collectedCans, collectedDate,
-    //     pendingAmount, depositAmount, missingCansCount, missingCansAmount, balanceAmount, totalAmount,
-    //     reason, deliveryDetailsId } = data
-    // const { accountNumber, bankName, branchName, ifscCode, customerName: accountName } = accData
+    const { customerNo, location, departmentName, RouteName, closingDate, noOfCans, collectedCans, collectedDate,
+        pendingAmount, depositAmount, missingCansCount, missingCansAmount, balanceAmount, totalAmount,
+        reason } = data
 
     return (
         <div className='app-view-info'>
             <div className='row half-stretch'>
                 <div className='input-container'>
-                    <InputValue size='smaller' value='Customer Name' />
-                    <InputValue size='large' value={customerName} />
+                    <InputValue size='smaller' value='Customer ID' />
+                    <InputValue size='large' value={customerNo} />
                 </div>
-                {/* <div className='input-container'>
-                    <InputValue size='smaller' value="Operational Area" />
-                    <InputValue size='large' value={operationalArea} />
-                </div> */}
-            </div>
-            <div className='row half-stretch'>
-                <div className='input-container stretch'>
-                    <InputValue size='smaller' value='Address' />
-                    <InputValue size='large' value={address} />
+                <div className='input-container'>
+                    <InputValue size='smaller' value='Delivery Location' />
+                    <InputValue size='large' value={location} />
                 </div>
             </div>
             <div className='row half-stretch'>
                 <div className='input-container'>
-                    <InputValue size='smaller' value='Contact Name' />
-                    <InputValue size='large' value={contactperson} />
+                    <InputValue size='smaller' value='Warehouse' />
+                    <InputValue size='large' value={departmentName} />
                 </div>
                 <div className='input-container'>
-                    <InputValue size='smaller' value='Account Type' />
-                    <InputValue size='large' value={customertype} />
+                    <InputValue size='smaller' value='Route' />
+                    <InputValue size='large' value={RouteName} />
                 </div>
             </div>
             <div className='row half-stretch'>
+                {
+                    closingDate &&
+                    (
+                        <div className='input-container'>
+                            <InputValue size='smaller' value='Closing Date' />
+                            <InputValue size='large' value={dayjs(closingDate).format(DATEFORMAT)} />
+                        </div>
+                    )
+                }
                 <div className='input-container'>
-                    <InputValue size='smaller' value='Mobile Number' />
-                    <InputValue size='large' value={mobileNumber} />
-                </div>
-                <div className='input-container'>
-                    <InputValue size='smaller' value='Email' />
-                    <InputValue size='large' value={EmailId} />
-                </div>
-            </div>
-            <div className='row half-stretch'>
-                <div className='input-container'>
-                    <InputValue size='smaller' value='State' />
-                    <InputValue size='large' value={state} />
-                </div>
-                <div className='input-container'>
-                    <InputValue size='smaller' value='District/Mandal/Area' />
-                    <InputValue size='large' value={city} />
+                    <InputValue size='smaller' value='Bottles To Be Collected' />
+                    <InputValue size='large' value={noOfCans} />
                 </div>
             </div>
             <div className='row half-stretch'>
-                <div className='input-container'>
-                    <InputValue size='smaller' value='Registered Date' />
-                    <InputValue size='large' value={dayjs(registeredDate).format(DATEFORMAT)} />
-                </div>
-                <div className='input-container'>
-                    <InputValue size='smaller' value='Nature of Business' />
-                    <InputValue size='large' value={natureOfBussiness} />
-                </div>
+                {
+                    collectedDate &&
+                    (
+                        <div className='input-container'>
+                            <InputValue size='smaller' value='Collected Date' />
+                            <InputValue size='large' value={dayjs(collectedDate).format(DATEFORMAT)} />
+                        </div>
+                    )
+                }
+                {
+                    !(collectedCans == null || !String(collectedCans)) &&
+                    (
+                        <div className='input-container'>
+                            <InputValue size='smaller' value='Bottles Collected' />
+                            <InputValue size='large' value={collectedCans} />
+                        </div>
+                    )
+                }
             </div>
             <div className='row half-stretch'>
                 <div className='input-container'>
-                    <InputValue size='smaller' value='Account Status' />
-                    <InputValue size='large' value={getAccountStatusUI(accountStatus)} />
+                    <InputValue size='smaller' value='Pending Receivables' />
+                    <InputValue size='large' value={pendingAmount} />
                 </div>
                 <div className='input-container'>
-                    <InputValue size='smaller' value='Sales Manager' />
-                    <InputValue size='large' value={salesAgentName} />
+                    <InputValue size='smaller' value='Deposit To Be Refunded' />
+                    <InputValue size='large' value={depositAmount} />
                 </div>
             </div>
             <div className='row half-stretch'>
-                {revisitDate ? <div className='input-container'>
-                    <InputValue size='smaller' value='Revisit Date' />
-                    <InputValue size='large' value={dayjs(revisitDate).format(DATEFORMAT)} />
-                </div> : null}
+                {
+                    !(missingCansCount == null || !String(missingCansCount)) && (
+                        <div className='input-container'>
+                            <InputValue size='smaller' value='Missing Bottles Count' />
+                            <InputValue size='large' value={missingCansCount} />
+                        </div>)}
+                <div className='input-container'>
+                    <InputValue size='smaller' value='Balance Amount' />
+                    <InputValue size='large' value={balanceAmount} />
+                </div>
             </div>
+            <div className='row half-stretch'>
+                {
+                    !(missingCansAmount == null || !String(missingCansAmount)) && (
+                        <div className='input-container'>
+                            <InputValue size='smaller' value='Missing Bottles Amount' />
+                            <InputValue size='large' value={missingCansAmount} />
+                        </div>
+                    )
+                }
+                <div className='input-container'>
+                    <InputValue size='smaller' value='Total Balance Amount' />
+                    <InputValue size='large' value={totalAmount} />
+                </div>
+            </div>
+            {
+                reason &&
+                (
+                    <div className='row half-stretch'>
+                        <div className='input-container stretch'>
+                            <InputValue size='smaller' value='Reason To Close' />
+                            <InputValue size='large' value={reason} />
+                        </div>
+                    </div>
+                )
+            }
         </div>
     )
 }

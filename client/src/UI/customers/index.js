@@ -13,7 +13,7 @@ import ConfirmMessage from '../../components/ConfirmMessage';
 import CustomPagination from '../../components/CustomPagination';
 import useCustomerFilter from '../../utils/hooks/useCustomerFilter';
 import { ACCOUNTSADMIN, MANAGEACCOUNT, MARKETINGADMIN, MARKETINGMANAGER, SUPERADMIN, VIEWDETAILS } from '../../utils/constants';
-import { complexDateSort, complexSort, tripleKeyComplexSearch, filterAccounts, showToast, deepClone } from '../../utils/Functions'
+import { complexDateSort, complexSort, tripleKeyComplexSearch, filterAccounts, showToast } from '../../utils/Functions'
 import '../../sass/customers.scss'
 
 const Customers = () => {
@@ -232,7 +232,7 @@ const Customers = () => {
         try {
             showToast({ ...options, action: 'loading' })
             await http.GET(axios, url, config)
-            optimisticUpdate(customerId, 1)
+            optimisticDelete(customerId)
             showToast(options)
         } catch (error) {
             message.destroy()
@@ -275,13 +275,6 @@ const Customers = () => {
         const filtered = accounts.filter(item => item.customerId !== id)
         setAccounts(filtered)
         setTotalCount(filtered.length)
-    }
-
-    const optimisticUpdate = (id, status) => {
-        let clone = deepClone(accounts);
-        const index = clone.findIndex(item => item.customerId === id)
-        clone[index].isClosed = status;
-        setAccounts(clone)
     }
 
     const handleDeleteModalOk = useCallback(() => {

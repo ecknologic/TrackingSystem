@@ -40,10 +40,10 @@ export const getUsername = () => {
 export const getRoutesByRole = (role) => {
     switch (role) {
         case MARKETINGADMIN:
-            return ['/add-customer', '/customers', '/invoices', '/visited-customers']
+            return ['/add-customer', '/customers', '/invoices', '/visited-customers', '/closed-customers']
 
         case MARKETINGMANAGER:
-            return ['/add-customer', '/customers', '/invoices', '/visited-customers']
+            return ['/add-customer', '/customers', '/invoices', '/visited-customers', '/closed-customers']
 
         case SUPERADMIN:
             return ['/customers', '/materials', '/motherplants', '/warehouses', '/staff', '/drivers',
@@ -52,10 +52,10 @@ export const getRoutesByRole = (role) => {
                 '/closed-customers']
 
         case ACCOUNTSADMIN:
-            return ['/customers', '/invoices', '/receipts']
+            return ['/customers', '/invoices', '/receipts', '/closed-customers']
 
         case WAREHOUSEADMIN:
-            return ['/manage-stock', '/manage-routes', '/manage-empty-cans', '/drivers', '/manage-invoices']
+            return ['/manage-stock', '/manage-routes', '/manage-empty-cans', '/drivers', '/manage-invoices', '/closed-customers']
 
         case MOTHERPLANTADMIN:
             return ['/manage-production', '/manage-dispatches', '/manage-materials', '/manage-qc', '/manage-return-cans']

@@ -7,7 +7,7 @@ import Spinner from '../../../components/Spinner';
 import MenuBar from '../../../components/MenuBar';
 import useUser from '../../../utils/hooks/useUser';
 import NoContent from '../../../components/NoContent';
-import AccountCard from '../../../components/AccountCard';
+import ClosureCard from '../../../components/ClosureCard';
 import { closedFilterList } from '../../../assets/fixtures';
 import CustomPagination from '../../../components/CustomPagination';
 import { ACCOUNTSADMIN, SUPERADMIN } from '../../../utils/constants';
@@ -104,7 +104,7 @@ const Dashboard = ({ reFetch }) => {
 
     const handleFilter = (filterInfo) => {
         const { status } = filterInfo
-        const filtered = customersClone.filter((item) => status.includes(item.isActive))
+        const filtered = customersClone.filter((item) => status.includes(item.status))
         setFilterON(true)
         setPageNumber(1)
         setCustomers(filtered)
@@ -130,7 +130,7 @@ const Dashboard = ({ reFetch }) => {
         setPageNumber(number)
     }
 
-    const goToViewCustomer = (id) => history.push(`/closed-customers/manage/${id}`, { page: pageNumber })
+    const goToViewCustomer = (closingId, customerId) => history.push(`/closed-customers/manage/${closingId}?customerId=${customerId}`, { page: pageNumber })
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
@@ -144,10 +144,10 @@ const Dashboard = ({ reFetch }) => {
                         loading ? <NoContent content={<Spinner />} />
                             : customers.length ? customers.slice(sliceFrom, sliceTo).map((customer) => (
                                 <Col lg={{ span: 12 }} xl={{ span: 8 }} xxl={{ span: 6 }} key={customer.closingId}>
-                                    <AccountCard
+                                    <ClosureCard
                                         data={customer}
                                         statuses={['IN PROGRESS', 'CLOSED']}
-                                        onClick={() => goToViewCustomer(customer.closingId)}
+                                        onClick={goToViewCustomer}
                                     />
                                 </Col>
                             )) : <NoContent content={<Empty />} />

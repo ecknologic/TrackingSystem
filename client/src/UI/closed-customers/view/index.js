@@ -9,12 +9,15 @@ import { getMainPathname } from '../../../utils/Functions';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import ActivityLogDetails from '../../../components/ActivityLogDetails';
 
-const ManageDistributor = () => {
+const ManageClosedCustomer = () => {
     const history = useHistory()
     const { closingId } = useParams()
+    const { search } = useLocation()
     const { pathname, state } = useLocation()
     const [headerContent, setHeaderContent] = useState({})
     const [confirmModal, setConfirmModal] = useState(false)
+
+    const customerId = new URLSearchParams(search).get('customerId');
     const mainUrl = useMemo(() => getMainPathname(pathname), [pathname])
 
     const handleBack = () => {
@@ -46,7 +49,7 @@ const ManageDistributor = () => {
                             />
                         </TabPane>
                         <TabPane tab="Activity Log Details" key="2">
-                            <ActivityLogDetails type='closedCustomers' id={closingId} />
+                            <ActivityLogDetails type='customerClosing' id={customerId} />
                         </TabPane>
                     </Tabs>
                 </div>
@@ -64,4 +67,4 @@ const ManageDistributor = () => {
     )
 }
 const { TabPane } = Tabs;
-export default ManageDistributor
+export default ManageClosedCustomer

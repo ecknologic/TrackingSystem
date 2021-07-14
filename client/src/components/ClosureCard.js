@@ -1,34 +1,25 @@
 import React from 'react';
-import { Menu } from 'antd';
-import Actions from './Actions';
 import NameCard from './NameCard';
 import PrimaryButton from './PrimaryButton';
 import { getBusinessTypes } from '../utils/Functions';
-import { FriendsIconGrey, FriendIconGrey, TrashIconGrey } from './SVG_Icons';
+import { FriendsIconGrey, FriendIconGrey } from './SVG_Icons';
 import '../sass/accountCard.scss'
 
-const ClosureCard = ({ data, onClick, btnTxt = 'View Account', onSelect, isAdmin, }) => {
-    const { customerId, contactpersons = "[]", customerName, organizationName, address,
-        natureOfBussiness, customerNo } = data
+const ClosureCard = ({ data, onClick, btnTxt = 'Manage Account' }) => {
+    const { closingId, customerId, isApproved, contactpersons, customerName, organizationName,
+        status, address, natureOfBussiness, customerNo } = data
 
-    const names = JSON.parse(contactpersons)
+    const names = JSON.parse(contactpersons || "[]")
     const contacts = names.length
 
     const extra = contacts > 3 ? <span className='extra'>{`+${contacts - 3}`}</span> : null
     const NOB = getBusinessTypes(natureOfBussiness)
 
-    const handleSelect = ({ key }) => {
-        onSelect(key, customerId)
-    }
-
-    const options = [
-        <Menu.Item key="Delete" icon={<TrashIconGrey />} >Delete</Menu.Item>
-    ]
-
     return (
         <div className='account-card-container'>
+            {renderStatus(status)}
             <div className='header'>
-                <div className='inner'>
+                <div className={isApproved ? 'inner green' : 'inner'}>
                     {contacts > 1 ? <FriendsIconGrey className='friends icon' /> : <FriendIconGrey className='friend icon' />}
                     <div className='address-container'>
                         <span className='title clamp-1'>{organizationName || customerName}</span>
@@ -58,15 +49,20 @@ const ClosureCard = ({ data, onClick, btnTxt = 'View Account', onSelect, isAdmin
                 </div>
             </div>
             <div className='footer'>
-                <PrimaryButton text={btnTxt} onClick={() => onClick(customerId)} />
-                {
-                    isAdmin &&
-                    <Actions options={options} onSelect={handleSelect} />
-                }
+                <PrimaryButton text={btnTxt} onClick={() => onClick(closingId, customerId)} />
             </div>
         </div>
     )
 
+}
+
+const renderStatus = (status) => {
+    const isActive = status === 'InProgress' || status === 'Confirmed'
+    const text = status === 'InProgress' ? 'In Progress' : status
+
+    return (
+        <div className={isActive ? 'badge active' : 'badge'}>{text}</div>
+    )
 }
 
 export default ClosureCard

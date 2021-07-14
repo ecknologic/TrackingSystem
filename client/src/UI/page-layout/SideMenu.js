@@ -95,6 +95,9 @@ const SideMenu = () => {
                             <Item key='/reports' style={{ pointerEvents: 'none' }} icon={selected === '/reports' ? <ReportIcon /> : <ReportIconLight />}>
                                 Reports
                             </Item>
+                            <Item key='/closed-customers' icon={selected === '/closed-customers' ? <FriendIcon /> : <FriendIconLight />}>
+                                Closed Customers
+                            </Item>
                         </>
                         : null
                 }
@@ -109,6 +112,9 @@ const SideMenu = () => {
                             </Item>
                             <Item key='/visited-customers' icon={selected === '/visited-customers' ? <FriendIcon /> : <FriendIconLight />}>
                                 Visited Customers
+                            </Item>
+                            <Item key='/closed-customers' icon={selected === '/closed-customers' ? <FriendIcon /> : <FriendIconLight />}>
+                                Closed Customers
                             </Item>
                             <Item key='/customerDashboard' style={{ pointerEvents: 'none' }} icon={selected === '/customerDashboard' ? <SettingIcon /> : <SettingIconLight />}>
                                 Settings
@@ -130,6 +136,9 @@ const SideMenu = () => {
                             </Item>
                             <Item key='/visited-customers' icon={selected === '/visited-customers' ? <FriendIcon /> : <FriendIconLight />}>
                                 Visited Customers
+                            </Item>
+                            <Item key='/closed-customers' icon={selected === '/closed-customers' ? <FriendIcon /> : <FriendIconLight />}>
+                                Closed Customers
                             </Item>
                             <Item key='/customerDashboard' style={{ pointerEvents: 'none' }} icon={selected === '/customerDashboard' ? <SettingIcon /> : <SettingIconLight />}>
                                 Settings
@@ -206,6 +215,9 @@ const SideMenu = () => {
                             </Item>
                             <Item key='/invoices' icon={selected === '/invoices' ? <DocIcon /> : <DocIconLight />}>
                                 Invoices
+                            </Item>
+                            <Item key='/closed-customers' icon={selected === '/closed-customers' ? <FriendIcon /> : <FriendIconLight />}>
+                                Closed Customers
                             </Item>
                             <Item key='/settings' style={{ pointerEvents: 'none' }} icon={selected === '/settings' ? <SettingIcon /> : <SettingIconLight />}>
                                 Settings

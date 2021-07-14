@@ -44,8 +44,9 @@ export const statusFilterList = [
     { value: 1, name: 'Active' }
 ]
 export const closedFilterList = [
-    { value: 0, name: 'In Progress' },
-    { value: 1, name: 'Closed' }
+    { value: 'InProgress', name: 'In Progress' },
+    { value: 'Confirmed', name: 'Confirmed' },
+    { value: 'Closed', name: 'Closed' }
 ]
 export const accountFilterList = [
     { value: 'Corporate', name: 'Corporate' },

@@ -1,22 +1,26 @@
 import axios from 'axios';
 import dayjs from 'dayjs';
-import { message } from 'antd';
+import { message, Divider } from 'antd';
 import { useParams } from 'react-router-dom';
 import React, { Fragment, useEffect, useState, useMemo } from 'react';
+import BankView from '../../views/Bank';
+import ClosureForm from '../../forms/Closure';
 import AccountView from '../../views/Account';
 import { http } from '../../../../modules/http'
-import ClosureForm from '../../forms/Closure';
 import Spinner from '../../../../components/Spinner';
+import useUser from '../../../../utils/hooks/useUser';
 import ScrollUp from '../../../../components/ScrollUp';
 import NoContent from '../../../../components/NoContent';
-import { DATEFORMAT } from '../../../../utils/constants';
 import CustomButton from '../../../../components/CustomButton';
-import { validateEnquiryValues, validateNumber, validateIFSCCode } from '../../../../utils/validations';
-import { getCustomerIdOptions, getDepartmentOptions, getLocationOptions, getRouteOptions } from '../../../../assets/fixtures';
-import { isEmpty, showToast, getProductsWithIdForDB, extractProductsFromForm, resetTrackForm } from '../../../../utils/Functions';
+import { isEmpty, showToast, resetTrackForm } from '../../../../utils/Functions';
+import { getDepartmentOptions, getLocationOptions, getRouteOptions } from '../../../../assets/fixtures';
+import { MARKETINGADMIN, MARKETINGMANAGER, SUPERADMIN, WAREHOUSEADMIN } from '../../../../utils/constants';
+import { validateNumber, validateIFSCCode, validateClosureValues, validateClosureAccValues } from '../../../../utils/validations';
 import '../../../../sass/employees.scss'
+const APIDATEFORMAT = 'YYYY-MM-DD'
 
 const ManageClosedCustomer = ({ setHeaderContent, onGoBack }) => {
+    const { ROLE, WAREHOUSEID } = useUser()
     const { closingId } = useParams()
     const [formData, setFormData] = useState({})
     const [accData, setAccData] = useState({})
@@ -26,15 +30,16 @@ const ManageClosedCustomer = ({ setHeaderContent, onGoBack }) => {
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [editMode, setEditMode] = useState('')
     const [shake, setShake] = useState(false)
-    const [customerList, setCustomerList] = useState([])
     const [warehouseList, setWarehouseList] = useState([])
     const [locationList, setLocationList] = useState([])
     const [routeList, setRouteList] = useState([])
 
+    const isWHAdmin = useMemo(() => ROLE === WAREHOUSEADMIN, [ROLE])
     const routeOptions = useMemo(() => getRouteOptions(routeList), [routeList])
     const warehouseOptions = useMemo(() => getDepartmentOptions(warehouseList), [warehouseList])
-    const customerOptions = useMemo(() => getCustomerIdOptions(customerList), [customerList])
     const locationOptions = useMemo(() => getLocationOptions(locationList), [locationList])
+    const canEdit = useMemo(() => ROLE === SUPERADMIN || ROLE === MARKETINGADMIN
+        || ROLE === MARKETINGMANAGER || ROLE === WAREHOUSEADMIN, [ROLE])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
@@ -48,23 +53,15 @@ const ManageClosedCustomer = ({ setHeaderContent, onGoBack }) => {
 
     useEffect(() => {
         if (editMode) {
+            const { customerId } = formData
             getRouteList()
-            getCustomerList()
             getWarehouseList()
+            getDeliveryLocations(customerId)
         }
     }, [editMode])
 
-    const getCustomerList = async () => {
-        const url = 'customer/getCustomerIdsByAgent'
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setCustomerList(data)
-        } catch (error) { }
-    }
-
     const getRouteList = async () => {
-        const url = `customer/getRoutes/0`
+        const url = `customer/getRoutes/${WAREHOUSEID || 0}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -105,10 +102,10 @@ const ManageClosedCustomer = ({ setHeaderContent, onGoBack }) => {
         try {
             const [data] = await http.GET(axios, url, config)
             const { accountDetails, ...rest } = data
-            const { customerName } = rest
+            const { customerName, location, balanceAmount, missingCansAmount } = rest
 
-            setHeaderContent({ title: customerName })
-            setFormData(rest)
+            setHeaderContent({ title: customerName, address: location })
+            setFormData({ ...rest, totalAmount: Number(balanceAmount || 0) + Number(missingCansAmount || 0) })
             setAccData(accountDetails)
             setLoading(false)
         } catch (error) { }
@@ -119,13 +116,7 @@ const ManageClosedCustomer = ({ setHeaderContent, onGoBack }) => {
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
         // Validations
-        if (key === 'customerId') {
-            const [{ customerName }] = customerList.filter(item => item.customerId === value)
-            setFormData(prev => ({ ...prev, customerName }))
-            resetDeliveryDetails()
-            getDeliveryLocations(value)
-        }
-        else if (key === 'deliveryDetailsId') {
+        if (key === 'deliveryDetailsId') {
             getDeliveryDetails(value)
         }
         else if (numerics.includes(key)) {
@@ -170,20 +161,23 @@ const ManageClosedCustomer = ({ setHeaderContent, onGoBack }) => {
     }
 
     const handleUpdate = async () => {
-        const formErrors = validateEnquiryValues(formData)
+        const { closingDate, collectedDate } = formData
+        const formErrors = validateClosureValues(formData)
+        const accErrors = validateClosureAccValues(accData)
 
         if (!isEmpty(formErrors)) {
             setShake(true)
             setTimeout(() => setShake(false), 820)
             setFormErrors(formErrors)
+            setAccErrors(accErrors)
             return
         }
 
-        const productsUI = extractProductsFromForm(formData)
-        const products = getProductsWithIdForDB(productsUI)
-        const revisitDate = formData.revisitDate ? dayjs(formData.revisitDate).format(DATEFORMAT) : null
-
-        let body = { ...formData, revisitDate, products }
+        const body = {
+            ...formData, accountDetails: accData,
+            closingDate: dayjs(closingDate).format(APIDATEFORMAT),
+            collectedDate: dayjs(collectedDate).format(APIDATEFORMAT),
+        }
         const url = 'customer/updateCustomerClosingDetails'
         const options = { item: 'Customer Closure', v1Ing: 'Updating', v2: 'updated' }
 
@@ -225,7 +219,7 @@ const ManageClosedCustomer = ({ setHeaderContent, onGoBack }) => {
                         ? <NoContent content={<Spinner />} />
                         : <>
                             <div className='employee-title-container'>
-                                <span className='title'>Enquiry Details</span>
+                                <span className='title'>Closure Details</span>
                             </div>
                             {
                                 editMode ? (
@@ -239,28 +233,45 @@ const ManageClosedCustomer = ({ setHeaderContent, onGoBack }) => {
                                             onChange={handleChange}
                                             onAccChange={handleAccChange}
                                             routeOptions={routeOptions}
-                                            customerOptions={customerOptions}
                                             locationOptions={locationOptions}
                                             warehouseOptions={warehouseOptions}
+                                            hideBank={isWHAdmin}
+                                            disableFew={isWHAdmin}
+                                            editMode={editMode}
                                         />
                                     </>
                                 ) :
                                     <>
                                         <AccountView data={formData} accData={accData} />
+                                        {
+                                            isWHAdmin ? null
+                                                : <>
+                                                    <Divider className='form-divider half-line' />
+                                                    <div className='employee-title-container inner'>
+                                                        <span className='title'>Bank Account Details</span>
+                                                    </div>
+                                                    <BankView data={accData} />
+                                                </>
+                                        }
                                     </>
                             }
-                            <div className={`app-footer-buttons-container ${editMode ? 'edit' : 'view'}`}>
-                                <CustomButton onClick={onGoBack} className='app-cancel-btn footer-btn' text='Cancel' />
-                                {
-                                    editMode
-                                        ? <CustomButton onClick={handleUpdate} className={`app-create-btn footer-btn ${btnDisabled && 'disabled'} ${shake && 'app-shake'} `} text='Update' />
-                                        : (
-                                            <div className='multi-buttons-container'>
-                                                <CustomButton onClick={handleEdit} className='footer-btn' text='Edit' />
-                                            </div>
-                                        )
-                                }
-                            </div>
+                            {
+                                canEdit &&
+                                (
+                                    <div className={`app-footer-buttons-container ${editMode ? 'edit' : 'view'}`}>
+                                        <CustomButton onClick={onGoBack} className='app-cancel-btn footer-btn' text='Cancel' />
+                                        {
+                                            editMode
+                                                ? <CustomButton onClick={handleUpdate} className={`app-create-btn footer-btn ${btnDisabled && 'disabled'} ${shake && 'app-shake'} `} text='Update' />
+                                                : (
+                                                    <div className='multi-buttons-container'>
+                                                        <CustomButton onClick={handleEdit} className='footer-btn' text='Edit' />
+                                                    </div>
+                                                )
+                                        }
+                                    </div>
+                                )
+                            }
                         </>
                 }
             </div>

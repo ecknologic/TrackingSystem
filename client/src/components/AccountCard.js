@@ -7,7 +7,7 @@ import { getBusinessTypes } from '../utils/Functions';
 import { FriendsIconGrey, FriendIconGrey, TrashIconGrey, TickIconGrey, BlockIconGrey, CrossIconDark } from './SVG_Icons';
 import '../sass/accountCard.scss'
 
-const AccountCard = ({ data, onClick, btnTxt = 'Manage Account', onSelect, isAdmin, optionOneLabel = 'Active', statuses = ['ACTIVE', 'DRAFT'] }) => {
+const AccountCard = ({ data, onClick, btnTxt = 'Manage Account', onSelect, isAdmin, optionOneLabel = 'Active' }) => {
     const { customerId, isApproved, contactpersons, customerName, organizationName, address, natureOfBussiness,
         isSuperAdminApproved, depositAmount, customerNo, isClosed } = data
 
@@ -31,11 +31,7 @@ const AccountCard = ({ data, onClick, btnTxt = 'Manage Account', onSelect, isAdm
         ]
 
         if (isApproved) {
-            options = [
-                <Menu.Item key={optionOne} icon={iconOne}>{optionOne}</Menu.Item>,
-                <Menu.Item key="Delete" icon={<TrashIconGrey />} >Delete</Menu.Item>,
-                <Menu.Item key="Close" icon={<CrossIconDark />}>Close</Menu.Item>
-            ]
+            options.push(<Menu.Item key="Close" icon={<CrossIconDark />}>Close</Menu.Item>)
         }
 
         if (isClosed) {
@@ -47,7 +43,9 @@ const AccountCard = ({ data, onClick, btnTxt = 'Manage Account', onSelect, isAdm
 
     return (
         <div className='account-card-container'>
-            <div className={isApproved ? 'badge active' : 'badge'}>{isApproved ? statuses[0] : statuses[1]}</div>
+            <div className={isClosed ? 'badge' : isApproved ? 'badge active' : 'badge'}>
+                {isClosed ? 'CLOSED' : isApproved ? 'ACTIVE' : 'DRAFT'}
+            </div>
             <div className='header'>
                 <div className={isApproved ? 'inner green' : 'inner'}>
                     {contacts > 1 ? <FriendsIconGrey className='friends icon' /> : <FriendIconGrey className='friend icon' />}
