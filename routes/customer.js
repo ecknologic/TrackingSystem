@@ -21,6 +21,7 @@ const departmenttransactionQueries = require('../dbQueries/departmenttransaction
 const { compareCustomerData, compareCustomerDeliveryData, compareProductsData, compareOrderData, compareCustomerOrderData, compareCustomerEnquiryData } = require('./utils/customer.js');
 const { getReceiptId, getCustomerIdsForReceiptsDropdown, getCustomerDepositDetails, createCustomerReceipt, getCustomerReceipts, getCustomerReceiptsPaginationCount } = require('./Customers/receipt.js');
 const { encrypt, decrypt } = require('../utils/crypto.js');
+const customerClosingControllers = require('./Customers/closing.js');
 let departmentId, userId, userName, userRole;
 
 var storage = multer.diskStorage({
@@ -382,7 +383,7 @@ router.get("/getMarketingCustomerDetailsByType/:customerType", (req, res) => { /
 });
 
 router.get("/getRoutes/:departmentId", (req, res) => {
-  customerQueries.getRoutesByDepartmentId(req.params.departmentId, (err, results) => {
+  customerQueries.getRoutesByDepartmentId(req, (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
       res.json(results)
@@ -425,8 +426,7 @@ router.get("/getCustomerDetailsByType", (req, res) => {
   })
 });
 router.get("/getInActiveCustomers", (req, res) => {
-  const { userId } = req.query
-  customerQueries.getInActiveCustomers(userId, (err, customersData) => {
+  customerQueries.getInActiveCustomers(req.userId, (err, customersData) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
       res.json(customersData)
@@ -1072,6 +1072,20 @@ const updateWHDelivery = (req) => {
 }
 
 
+router.get('/closeCustomer/:customerid', async (req, res) => {
+  customerQueries.closeCustomer({ customerId: req.params.customerid }, (err, data) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.send(UPDATEMESSAGE)
+  })
+});
+
+router.get('/closeCustomerdelivery/:deliveryId', async (req, res) => {
+  customerQueries.closeCustomerDelivery({ deliveryId: req.params.deliveryId }, (err, data) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.send(UPDATEMESSAGE)
+  })
+});
+
 
 //Receipt APIS
 router.get('/getCustomerReceiptsPaginationCount', async (req, res) => {
@@ -1096,6 +1110,39 @@ router.get('/getCustomerReceipts', async (req, res) => {
 
 router.post('/createCustomerReceipt', async (req, res) => {
   createCustomerReceipt(req, res)
+});
+
+//Customer Closing APIS
+router.get('/getCustomerIdsByAgent', async (req, res) => {
+  customerClosingControllers.getCustomerIdsByAgent(req, res)
+});
+
+router.get('/getCustomerDeliveryIds', async (req, res) => {
+  customerClosingControllers.getCustomerDeliveryIds(req, res)
+});
+
+router.get('/getDepositDetailsByDeliveryId', async (req, res) => {
+  customerClosingControllers.getDepositDetailsByDeliveryId(req, res)
+});
+
+router.get('/getCustomerClosingDetails', async (req, res) => {
+  customerClosingControllers.getCustomerClosingDetails(req, res)
+});
+
+router.get('/getCustomerClosingDetails/:closingId', async (req, res) => {
+  customerClosingControllers.getCustomerClosingDetailsById(req, res)
+});
+
+router.get('/getClosingDetailsPaginationCount', async (req, res) => {
+  customerClosingControllers.getCustomerClosingDetailsPaginationCount(req, res)
+});
+
+router.post('/addCustomerClosingDetails', async (req, res) => {
+  customerClosingControllers.addCustomerClosingDetails(req, res)
+});
+
+router.put('/updateCustomerClosingDetails', async (req, res) => {
+  customerClosingControllers.updateCustomerClosingDetails(req, res)
 });
 
 module.exports = router;

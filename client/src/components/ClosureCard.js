@@ -1,51 +1,23 @@
 import React from 'react';
-import { Menu } from 'antd';
-import Actions from './Actions';
 import NameCard from './NameCard';
 import PrimaryButton from './PrimaryButton';
 import { getBusinessTypes } from '../utils/Functions';
-import { FriendsIconGrey, FriendIconGrey, TrashIconGrey, TickIconGrey, BlockIconGrey, CrossIconDark } from './SVG_Icons';
+import { FriendsIconGrey, FriendIconGrey } from './SVG_Icons';
 import '../sass/accountCard.scss'
 
-const AccountCard = ({ data, onClick, btnTxt = 'Manage Account', onSelect, isAdmin, optionOneLabel = 'Active' }) => {
-    const { customerId, isApproved, contactpersons, customerName, organizationName, address, natureOfBussiness,
-        isSuperAdminApproved, depositAmount, customerNo, isClosed } = data
+const ClosureCard = ({ data, onClick, btnTxt = 'Manage Account' }) => {
+    const { closingId, customerId, isApproved, contactpersons, customerName, organizationName,
+        status, address, natureOfBussiness, customerNo } = data
 
-    const optionOne = isApproved ? 'Draft' : optionOneLabel
-    const iconOne = isApproved ? <BlockIconGrey /> : <TickIconGrey />
-    const names = JSON.parse(contactpersons)
+    const names = JSON.parse(contactpersons || "[]")
     const contacts = names.length
 
     const extra = contacts > 3 ? <span className='extra'>{`+${contacts - 3}`}</span> : null
     const NOB = getBusinessTypes(natureOfBussiness)
 
-    const handleSelect = ({ key }) => {
-        const isSAApproved = isSuperAdminApproved || (Number(depositAmount) === 0 ? Number(isAdmin) : 0)
-        onSelect(key, customerId, isSAApproved)
-    }
-
-    const getOptions = () => {
-        let options = [
-            <Menu.Item key={optionOne} icon={iconOne}>{optionOne}</Menu.Item>,
-            <Menu.Item key="Delete" icon={<TrashIconGrey />} >Delete</Menu.Item>,
-        ]
-
-        if (isApproved) {
-            options.push(<Menu.Item key="Close" icon={<CrossIconDark />}>Close</Menu.Item>)
-        }
-
-        if (isClosed) {
-            options = [<Menu.Item key="Delete" icon={<TrashIconGrey />} >Delete</Menu.Item>]
-        }
-
-        return options
-    }
-
     return (
         <div className='account-card-container'>
-            <div className={isClosed ? 'badge' : isApproved ? 'badge active' : 'badge'}>
-                {isClosed ? 'CLOSED' : isApproved ? 'ACTIVE' : 'DRAFT'}
-            </div>
+            {renderStatus(status)}
             <div className='header'>
                 <div className={isApproved ? 'inner green' : 'inner'}>
                     {contacts > 1 ? <FriendsIconGrey className='friends icon' /> : <FriendIconGrey className='friend icon' />}
@@ -77,15 +49,20 @@ const AccountCard = ({ data, onClick, btnTxt = 'Manage Account', onSelect, isAdm
                 </div>
             </div>
             <div className='footer'>
-                <PrimaryButton text={btnTxt} onClick={() => onClick(customerId)} />
-                {
-                    isAdmin &&
-                    <Actions options={getOptions()} onSelect={handleSelect} />
-                }
+                <PrimaryButton text={btnTxt} onClick={() => onClick(closingId, customerId)} />
             </div>
         </div>
     )
 
 }
 
-export default AccountCard
+const renderStatus = (status) => {
+    const isActive = status === 'InProgress' || status === 'Confirmed'
+    const text = status === 'InProgress' ? 'In Progress' : status
+
+    return (
+        <div className={isActive ? 'badge active' : 'badge'}>{text}</div>
+    )
+}
+
+export default ClosureCard

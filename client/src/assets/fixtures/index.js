@@ -43,6 +43,11 @@ export const statusFilterList = [
     { value: 0, name: 'Draft' },
     { value: 1, name: 'Active' }
 ]
+export const closedFilterList = [
+    { value: 'InProgress', name: 'In Progress' },
+    { value: 'Confirmed', name: 'Confirmed' },
+    { value: 'Closed', name: 'Closed' }
+]
 export const accountFilterList = [
     { value: 'Corporate', name: 'Corporate' },
     { value: 'Individual', name: 'Individual' }
@@ -147,6 +152,9 @@ export const getDistributorOptions = (distributors = []) => {
 }
 export const getRouteOptions = (routes = []) => {
     return routes.map((item) => <Option key={item.RouteId} value={item.RouteId}>{item.RouteName}</Option>)
+}
+export const getLocationOptions = (locations = []) => {
+    return locations.map((item) => <Option key={item.deliveryDetailsId} value={item.deliveryDetailsId}>{item.location}</Option>)
 }
 export const getBatchIdOptions = (batches = []) => {
     return batches.map((item) => <Option key={item.batchId} value={item.batchId}>{item.batchId}</Option>)

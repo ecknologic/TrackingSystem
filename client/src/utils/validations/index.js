@@ -465,6 +465,55 @@ export const validateEnquiryValues = (data) => {
     return errors
 }
 
+export const validateClosureValues = (data) => {
+    let errors = {};
+    const text = 'Required'
+    const { customerId, customerName, routeId, noOfCans, pendingAmount, depositAmount, totalAmount,
+        balanceAmount, deliveryDetailsId } = data
+
+    if (!customerName) errors.customerName = text
+    if (!customerId) errors.customerId = text
+    if (!routeId) errors.routeId = text
+    if (!deliveryDetailsId) errors.deliveryDetailsId = text
+    if (noOfCans == null || !String(noOfCans)) errors.noOfCans = text;
+    if (totalAmount == null || !String(totalAmount)) errors.totalAmount = text;
+    if (depositAmount == null || !String(depositAmount)) errors.depositAmount = text;
+    if (pendingAmount == null || !String(pendingAmount)) errors.pendingAmount = text;
+    if (balanceAmount == null || !String(balanceAmount)) errors.balanceAmount = text;
+
+    return errors
+}
+
+export const validateClosureAccValues = (data) => {
+    let errors = {};
+    const text = 'Required'
+    const { accountNo, bankName, branchName, ifscCode, customerName } = data
+
+    if (!customerName) errors.customerName = text
+    if (!accountNo) errors.accountNo = text
+    else {
+        const error = validateNumber(accountNo)
+        error && (errors.accountNo = error)
+    }
+    if (!bankName) errors.bankName = text
+    else {
+        const error = validateNames(bankName)
+        error && (errors.bankName = error)
+    }
+    if (!branchName) errors.branchName = text
+    else {
+        const error = validateNames(branchName)
+        error && (errors.branchName = error)
+    }
+    if (!ifscCode) errors.ifscCode = text
+    else {
+        const error = validateIFSCCode(ifscCode, true)
+        error && (errors.ifscCode = error)
+    }
+
+    return errors
+}
+
 export const validateProductValues = (data) => {
     let errors = {};
     const text = 'Required'
