@@ -49,7 +49,7 @@ const ManageClosedCustomer = () => {
                             />
                         </TabPane>
                         <TabPane tab="Activity Log Details" key="2">
-                            <ActivityLogDetails type='customerClosing' id={customerId} />
+                            <ActivityLogDetails type='customerClosing' id={closingId} />
                         </TabPane>
                     </Tabs>
                 </div>

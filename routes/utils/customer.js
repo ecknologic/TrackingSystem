@@ -1,5 +1,6 @@
 const customerClosingQueries = require("../../dbQueries/Customer/closing");
 var customerQueries = require("../../dbQueries/Customer/queries");
+const { encryptObj } = require("../../utils/crypto");
 
 const compareCustomerData = (data, { userId, userRole, userName }) => {
     const { customerId } = data
@@ -210,9 +211,27 @@ const compareCustomerClosingData = (data, { userId, userRole, userName }) => {
                 const oldData = results[0]
                 const records = []
                 const createdDateTime = new Date()
-                Object.entries(data).map(([key, updatedValue]) => {
-                    const oldValue = oldData[key]
-                    if (oldValue != updatedValue) {
+                Object.entries(data).map(async ([key, updatedValue]) => {
+                    const oldValue = key == 'accountDetails' ? JSON.parse(oldData[key]) : oldData[key]
+                    if (key == 'accountDetails') {
+                        let encryptedValue = await encryptObj(updatedValue)
+                        Object.entries(encryptedValue).map(([accountKey, updatedAccountValue]) => {
+                            const oldAccountValue = oldValue[accountKey]
+                            if (accountKey == 'customerName') updatedAccountValue = updatedValue[accountKey]
+                            if (oldAccountValue != updatedAccountValue && accountKey != 'accountId') {
+                                records.push({
+                                    oldValue: oldAccountValue,
+                                    updatedValue: updatedAccountValue,
+                                    createdDateTime,
+                                    userId,
+                                    description: `Updated account details (${accountKey}) by ${userRole} <b>(${userName})</b>`,
+                                    customerId: closingId,
+                                    type: "customerClosing"
+                                })
+                            }
+                        })
+                    }
+                    else if (oldValue != updatedValue && key != 'RouteName' && key != 'createdBy' && key != 'departmentName' && key != 'createdDateTime' && key != 'location') {
                         records.push({
                             oldValue,
                             updatedValue,
