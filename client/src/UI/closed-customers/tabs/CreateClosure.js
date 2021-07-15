@@ -165,8 +165,8 @@ const CreateEnquiry = ({ goToTab }) => {
 
         const body = {
             ...formData, accountDetails: accData,
-            closingDate: dayjs(closingDate).format(APIDATEFORMAT),
-            collectedDate: dayjs(collectedDate).format(APIDATEFORMAT),
+            closingDate: closingDate ? dayjs(closingDate).format(APIDATEFORMAT) : null,
+            collectedDate: collectedDate ? dayjs(collectedDate).format(APIDATEFORMAT) : null,
         }
         const url = 'customer/addCustomerClosingDetails'
         const options = { item: 'Customer Closure', v1Ing: 'Adding', v2: 'added' }
