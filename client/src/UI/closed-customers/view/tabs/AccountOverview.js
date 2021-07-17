@@ -14,7 +14,7 @@ import NoContent from '../../../../components/NoContent';
 import CustomButton from '../../../../components/CustomButton';
 import { isEmpty, showToast, resetTrackForm } from '../../../../utils/Functions';
 import { getDepartmentOptions, getLocationOptions, getRouteOptions } from '../../../../assets/fixtures';
-import { MARKETINGADMIN, MARKETINGMANAGER, SUPERADMIN, WAREHOUSEADMIN } from '../../../../utils/constants';
+import { ACCOUNTSADMIN, MARKETINGADMIN, MARKETINGMANAGER, SUPERADMIN, WAREHOUSEADMIN } from '../../../../utils/constants';
 import { validateNumber, validateIFSCCode, validateClosureValues, validateClosureAccValues } from '../../../../utils/validations';
 import '../../../../sass/employees.scss'
 const APIDATEFORMAT = 'YYYY-MM-DD'
@@ -38,10 +38,12 @@ const ManageClosedCustomer = ({ setHeaderContent, onGoBack, onUpdate }) => {
     const routeOptions = useMemo(() => getRouteOptions(routeList), [routeList])
     const warehouseOptions = useMemo(() => getDepartmentOptions(warehouseList), [warehouseList])
     const locationOptions = useMemo(() => getLocationOptions(locationList), [locationList])
-    const canEdit = useMemo(() => ROLE === SUPERADMIN || ROLE === MARKETINGADMIN
-        || ROLE === MARKETINGMANAGER || ROLE === WAREHOUSEADMIN, [ROLE])
+    let canEdit = useMemo(() => ROLE === SUPERADMIN || ROLE === MARKETINGMANAGER
+        || ROLE === WAREHOUSEADMIN || ROLE === ACCOUNTSADMIN, [ROLE])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
+    const { status } = formData
+    canEdit = isWHAdmin ? status === 'InProgress' : (canEdit && status !== 'Closed')
 
     useEffect(() => {
         getClosedCustomer()
