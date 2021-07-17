@@ -621,9 +621,6 @@ export const getIDInputValidationProps = (IDType) => {
     return props
 }
 
-// export const isEmail = (string) => {
-//     return String(string).match(/^(\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3})*$/)
-// }
 export const isEmail = (string) => {
     return String(string).match(/^([a-zA-Z0-9._-]+@[a-zA-Z_-]+?\.[a-zA-Z]{2,3})*$/)
 }
@@ -735,6 +732,9 @@ export const getStatusColor = (status) => {
         case 'Rejected':
             return '#E02020'
 
+        case 'Cancelled':
+            return '#E02020'
+
         case 'Postponed':
             return '#FA6400'
 
@@ -744,10 +744,6 @@ export const getStatusColor = (status) => {
         default:
             return '#A10101'
     }
-}
-
-export const renderRoute = () => {
-
 }
 
 export const getAccountStatusUI = (accountStatus) => {

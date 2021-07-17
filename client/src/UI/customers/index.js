@@ -32,7 +32,9 @@ const Customers = () => {
     const [searchON, setSeachON] = useState(false)
     const [sortBy, setSortBy] = useState('NEW - OLD')
     const [activeTab, setActiveTab] = useState(tab)
+    const [exitMsg, setExitMsg] = useState('')
     const [modalDelete, setModalDelete] = useState(false)
+    const [currentAction, setCurrentAction] = useState('')
     const [currentId, setCurrentId] = useState('')
 
     const { account, creator, business, hasFilters } = useCustomerFilter()
@@ -194,6 +196,9 @@ const Customers = () => {
     }
 
     const handleMenuSelect = (key, id, isSAApproved) => {
+        setCurrentId(id)
+        setCurrentAction(key)
+
         if (key === 'Approve') {
             onAccountApprove(id, isSAApproved)
         }
@@ -204,11 +209,12 @@ const Customers = () => {
             handleStatusUpdate(id, 0)
         }
         else if (key === 'Delete') {
-            setCurrentId(id)
+            setExitMsg('Are you sure you want to delete?')
             setModalDelete(true)
         }
         else if (key === 'Close') {
-            handleAccountClose(id)
+            setExitMsg('Are you sure you want to close?')
+            setModalDelete(true)
         }
     }
 
@@ -279,7 +285,10 @@ const Customers = () => {
 
     const handleDeleteModalOk = useCallback(() => {
         setModalDelete(false);
-        handleDelete(currentId)
+        if (currentAction === 'Close')
+            handleAccountClose(currentId)
+        else
+            handleDelete(currentId)
     }, [currentId])
 
     const handleDeleteModalCancel = useCallback(() => {
@@ -328,7 +337,7 @@ const Customers = () => {
                 visible={modalDelete}
                 onOk={handleDeleteModalOk}
                 onCancel={handleDeleteModalCancel}
-                title='Are you sure you want to delete?'
+                title={exitMsg}
                 okTxt='Yes'
             >
                 <ConfirmMessage msg='This action cannot be undone.' />
