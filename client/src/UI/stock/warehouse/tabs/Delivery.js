@@ -17,9 +17,9 @@ import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomDateInput from '../../../../components/CustomDateInput';
 import CustomPagination from '../../../../components/CustomPagination';
 import ActivityLogContent from '../../../../components/ActivityLogContent';
-import { EditIconGrey, ListViewIconGrey, PlusIcon, ScheduleIcon, ScheduleIconGrey } from '../../../../components/SVG_Icons';
-import { getRouteOptions, getDriverOptions, getDeliveryColumns, getDistributorOptions, getCustomerOptions, getDropdownOptions } from '../../../../assets/fixtures';
+import { BlockIconGrey, EditIconGrey, EyeIconGrey, ListViewIconGrey, PlusIcon, ScheduleIcon, ScheduleIconGrey } from '../../../../components/SVG_Icons';
 import { validateMobileNumber, validateNames, validateNumber, validateDCValues, validateEmailId, validateIntFloat } from '../../../../utils/validations';
+import { getRouteOptions, getDriverOptions, getDeliveryColumns, getDistributorOptions, getCustomerOptions, getDropdownOptions } from '../../../../assets/fixtures';
 import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone, getStatusColor, doubleKeyComplexSearch, getProductsForUI, disablePastDates } from '../../../../utils/Functions';
 const format = 'YYYY-MM-DD'
 
@@ -52,6 +52,8 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
     const [filterON, setFilterON] = useState(false)
     const [searchON, setSeachON] = useState(false)
     const [DCModal, setDCModal] = useState(false)
+    const [cancelMsg, setCancelMsg] = useState('')
+    const [cancelTitle, setCancelTitle] = useState('')
     const [shake, setShake] = useState(false)
     const [okTxt, setOkTxt] = useState('')
     const [title, setTitle] = useState('')
@@ -262,7 +264,7 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
                 message.destroy()
             } catch (error) { }
 
-            const isDisabled = isDelivered === 'Completed'
+            const isDisabled = isDelivered === 'Completed' || isDelivered === 'Cancelled'
             setOkTxt(isDisabled ? 'Close' : 'Update')
             setMode(isDisabled ? 'view' : 'edit')
             setFormData(data)
@@ -274,6 +276,12 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
         }
         else if (key === 'reschedule') {
             setROpen(true)
+            setCurrentDC(data)
+        }
+        else if (key === 'cancel') {
+            setCancelMsg('This action cannot be undone.')
+            setCancelTitle('Are you sure you want to cancel?')
+            setCancelModal(true)
             setCurrentDC(data)
         }
     }
@@ -347,8 +355,7 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
         }
     }
 
-    const handleCancelDC = async () => {
-        const { customerOrderId } = currentDC
+    const handleCancelDC = async ({ customerOrderId }) => {
         const options = { item: 'DC', v1Ing: 'Cancelling', v2: 'cancelled' }
 
         const url = 'warehouse/closeDc'
@@ -376,6 +383,8 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
             message.destroy()
             if (!axios.isCancel(error)) {
                 if (error.response.status === 405) {
+                    setCancelMsg(`Do you want to cancel ${currentDC.dcNo}`)
+                    setCancelTitle('DC already exists for the selected date')
                     setCancelModal(true)
                 }
             }
@@ -430,10 +439,12 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
     const dataSource = useMemo(() => deliveries.map((dc) => {
         const { dcNo, customerOrderId, address, RouteName, driverName, customerName, isDelivered } = dc
 
+        const isCancelled = isDelivered === 'Cancelled'
         const options = [
-            <Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>,
+            <Menu.Item key="view" icon={isCancelled ? <EyeIconGrey /> : <EditIconGrey />}>View{isCancelled ? '' : '/Edit'}</Menu.Item>,
+            <Menu.Item key="cancel" className={isCancelled ? 'disabled' : ''} icon={<BlockIconGrey />}>Cancel</Menu.Item>,
             <Menu.Item key="logs" icon={<ListViewIconGrey />}>Acvitity Logs</Menu.Item>,
-            <Menu.Item key="reschedule" className={isDelivered === 'Cancelled' ? 'disabled' : ''} icon={<ScheduleIconGrey />}>Reschedule</Menu.Item>
+            <Menu.Item key="reschedule" className={isCancelled ? 'disabled' : ''} icon={<ScheduleIconGrey />}>Reschedule</Menu.Item>
         ]
 
         return {
@@ -475,7 +486,7 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
 
     const handleCancelModalOk = () => {
         setCancelModal(false);
-        handleCancelDC()
+        handleCancelDC(currentDC)
     }
 
     const onCreateDC = () => {
@@ -586,10 +597,10 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
                 visible={cancelModal}
                 onOk={handleCancelModalOk}
                 onCancel={handleCancelModalCancel}
-                title='DC already exists for the selected date'
+                title={cancelTitle}
                 okTxt='Yes'
             >
-                <ConfirmMessage msg={`Do you want to cancel ${currentDC.dcNo}`} />
+                <ConfirmMessage msg={cancelMsg} />
             </QuitModal>
             <QuitModal
                 visible={confirmModal}

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import dayjs from 'dayjs';
-import { message, Divider } from 'antd';
 import { useParams } from 'react-router-dom';
+import { message, Divider, Checkbox } from 'antd';
 import React, { Fragment, useEffect, useState, useMemo } from 'react';
 import BankView from '../../views/Bank';
 import ClosureForm from '../../forms/Closure';
@@ -19,7 +19,7 @@ import { validateNumber, validateIFSCCode, validateClosureValues, validateClosur
 import '../../../../sass/employees.scss'
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
-const ManageClosedCustomer = ({ setHeaderContent, onGoBack }) => {
+const ManageClosedCustomer = ({ setHeaderContent, onGoBack, onUpdate }) => {
     const { ROLE, WAREHOUSEID } = useUser()
     const { closingId } = useParams()
     const [formData, setFormData] = useState({})
@@ -175,8 +175,8 @@ const ManageClosedCustomer = ({ setHeaderContent, onGoBack }) => {
 
         const body = {
             ...formData, accountDetails: accData,
-            closingDate: dayjs(closingDate).format(APIDATEFORMAT),
-            collectedDate: dayjs(collectedDate).format(APIDATEFORMAT),
+            closingDate: closingDate ? dayjs(closingDate).format(APIDATEFORMAT) : null,
+            collectedDate: collectedDate ? dayjs(collectedDate).format(APIDATEFORMAT) : null,
         }
         const url = 'customer/updateCustomerClosingDetails'
         const options = { item: 'Customer Closure', v1Ing: 'Updating', v2: 'updated' }
@@ -189,12 +189,17 @@ const ManageClosedCustomer = ({ setHeaderContent, onGoBack }) => {
             resetTrackForm()
             setEditMode(false)
             setBtnDisabled(false)
+            onUpdate()
         } catch (error) {
             message.destroy()
             if (!axios.isCancel(error)) {
                 setBtnDisabled(false)
             }
         }
+    }
+
+    const handleCheckConfirm = (isConfirmed) => {
+        setFormData(prev => ({ ...prev, isConfirmed }))
     }
 
     const handleEdit = () => {
@@ -253,7 +258,24 @@ const ManageClosedCustomer = ({ setHeaderContent, onGoBack }) => {
                                         <CustomButton onClick={onGoBack} className='app-cancel-btn footer-btn' text='Cancel' />
                                         {
                                             editMode
-                                                ? <CustomButton onClick={handleUpdate} className={`app-create-btn footer-btn ${btnDisabled && 'disabled'} ${shake && 'app-shake'} `} text='Update' />
+                                                ?
+                                                <div className='multi-buttons-container' style={{ maxWidth: '70%' }}>
+                                                    {
+                                                        isWHAdmin &&
+                                                        (
+                                                            <div className='check-confirm'>
+                                                                <Checkbox onChange={({ target: { checked } }) => handleCheckConfirm(checked)} checked={formData.isConfirmed} />
+                                                                <span className='text'>I confirm the above details for customer closing.</span>
+                                                            </div>
+                                                        )
+                                                    }
+                                                    <CustomButton
+                                                        onClick={handleUpdate}
+                                                        className={`app-create-btn ${(btnDisabled || isWHAdmin && !formData.isConfirmed) && 'disabled'} ${shake && 'app-shake'} `}
+                                                        text='Update'
+                                                        style={{ marginLeft: '1em' }}
+                                                    />
+                                                </div>
                                                 : (
                                                     <div className='multi-buttons-container'>
                                                         <CustomButton onClick={handleEdit} className='footer-btn' text='Edit' />

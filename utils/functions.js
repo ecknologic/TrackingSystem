@@ -2,6 +2,7 @@ const db = require('../config/db.js');
 var dayjs = require('dayjs');
 var bcrypt = require("bcryptjs");
 const { DATEFORMAT, DISTRIBUTOR } = require('./constants.js');
+const { encrypt, decrypt } = require('./crypto.js');
 const format = 'DDMM-YY'
 let utils = {}
 
@@ -412,6 +413,22 @@ utils.getCompareDepositData = (data, type) => {
     }
 
     return obj
+}
+
+utils.getEncryptedProofs = async (input) => {
+    let { gstNo, panNo, adharNo } = input
+    gstNo = gstNo && await encrypt(gstNo)
+    panNo = panNo && await encrypt(panNo)
+    adharNo = adharNo && await encrypt(adharNo)
+    return { gstNo, panNo, adharNo }
+}
+
+utils.getDecryptedProofs = async (input) => {
+    let { gstNo, panNo, adharNo } = input
+    gstNo = gstNo && await decrypt(gstNo)
+    panNo = panNo && await decrypt(panNo)
+    adharNo = adharNo && await decrypt(adharNo)
+    return { gstNo, panNo, adharNo }
 }
 
 module.exports = {

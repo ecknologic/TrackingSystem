@@ -22,6 +22,7 @@ const { compareCustomerData, compareCustomerDeliveryData, compareProductsData, c
 const { getReceiptId, getCustomerIdsForReceiptsDropdown, getCustomerDepositDetails, createCustomerReceipt, getCustomerReceipts, getCustomerReceiptsPaginationCount } = require('./Customers/receipt.js');
 const { encrypt, decrypt } = require('../utils/crypto.js');
 const customerClosingControllers = require('./Customers/closing.js');
+const customerClosingQueries = require('../dbQueries/Customer/closing.js');
 let departmentId, userId, userName, userRole;
 
 var storage = multer.diskStorage({
@@ -140,8 +141,6 @@ router.get('/getCustomers', (req, res) => {
   });
 });
 
-
-
 router.post('/createCustomer', async (req, res) => {
   let customerDetailsQuery = "insert  into customerdetails (customerName,mobileNumber,alternatePhNo,EmailId,Address1,Address2,gstNo,contactperson,panNo,adharNo,registeredDate,invoicetype,natureOfBussiness,creditPeriodInDays,referredBy,departmentId,deliveryDaysId,depositAmount,isActive,latitude,longitude,shippingAddress,shippingContactPerson,shippingContactNo,customerType,organizationName,createdBy,customer_id_proof,idProofType,pincode,dispenserCount,contractPeriod,rocNo,poNo,salesAgent) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
   // let customerDetailsQuery = "insert  into customerdetails (customerName,mobileNumber,EmailId,Address1,gstNo,registeredDate,invoicetype,natureOfBussiness,creditPeriodInDays,referredBy,isActive,qrcodeId,latitude,longitude,customerType,organizationName,createdBy) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
@@ -158,10 +157,8 @@ router.post('/createCustomer', async (req, res) => {
     .then(async response => {
       let registeredDate = customerdetails.registeredDate ? customerdetails.registeredDate : new Date()
       let customer_id_proof = response[1] && response[1]
-      gstNo = await encrypt(gstNo)
-      panNo = await encrypt(panNo)
-      adharNo = await encrypt(adharNo)
-      let insertQueryValues = [customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactPerson, panNo, adharNo, registeredDate, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, response[0].latitude, response[0].longitude, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, createdBy, customer_id_proof, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, salesAgent]
+      let encryptedData = await utils.getEncryptedProofs({ gstNo, panNo, adharNo })
+      let insertQueryValues = [customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, encryptedData.gstNo, contactPerson, encryptedData.panNo, encryptedData.adharNo, registeredDate, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, response[0].latitude, response[0].longitude, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, createdBy, customer_id_proof, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, salesAgent]
       db.query(customerDetailsQuery, insertQueryValues, (err, results) => {
         if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
         else {
@@ -182,7 +179,7 @@ const saveDeliveryDetails = (customerId, customerdetails, res) => {
           let deliveryDetailsQuery = "insert  into DeliveryDetails (gstNo,location,address,phoneNumber,contactPerson,deliverydaysid,depositAmount,customer_Id,departmentId,isActive,gstProof,registeredDate,latitude,longitude,routeId) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
           var gstProof = i.gstProof && Buffer.from(i.gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
           let registeredDate = new Date()
-          let gstNo = await encrypt(i.gstNo)
+          let gstNo = i.gstNo && await encrypt(i.gstNo)
           let insertQueryValues = [gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, deliveryDays.insertId, i.depositAmount, customerId, i.departmentId, i.isApproved, gstProof, registeredDate, latLong.latitude, latLong.longitude, i.routeId]
           db.query(deliveryDetailsQuery, insertQueryValues, (err, results) => {
             if (err) res.json({ status: 500, message: err.sqlMessage });
@@ -460,14 +457,16 @@ router.get("/getMarketingCustomerDetailsByStatus", (req, res) => {
   })
 });
 router.get("/getCustomerDetailsById/:customerId", (req, res) => {
-  customerQueries.getCustomerDetails(req.params.customerId, (err, results) => {
+  customerQueries.getCustomerDetails(req.params.customerId, async (err, results) => {
     if (err) res.status(500).json(err);
     else {
       if (results.length) {
         let result = results[0];
-        if (result.gstNo) result.gstNo = decrypt(result.gstNo)
-        if (result.panNo) result.panNo = decrypt(result.panNo)
-        if (result.adharNo) result.adharNo = decrypt(result.adharNo)
+        let { gstNo, panNo, adharNo } = result;
+        let decryptedData = await utils.getDecryptedProofs({ gstNo, panNo, adharNo })
+        if (result.gstNo) result.gstNo = decryptedData.gstNo
+        if (result.panNo) result.panNo = decryptedData.panNo
+        if (result.adharNo) result.adharNo = decryptedData.adharNo
         res.json({ status: 200, statusMessage: "Success", data: [result] })
       } else res.json({ status: 200, statusMessage: "Success", data: results })
     }
@@ -602,10 +601,8 @@ router.post('/updateCustomer', async (req, res) => {
       Promise.all(promiseArray)
         .then(async response => {
           let customerIdProof = req.body.idProofs[0] != null && customer_id_proof ? customer_id_proof : response[1]
-          if (gstNo) gstNo = await encrypt(gstNo)
-          if (panNo) panNo = await encrypt(panNo)
-          if (adharNo) adharNo = await encrypt(adharNo)
-          let updateQueryValues = [customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactPerson, panNo, adharNo, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, response[0].latitude, response[0].longitude, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, customerIdProof, salesAgent, isReceiptCreated]
+          let encryptedData = await utils.getEncryptedProofs({ gstNo, panNo, adharNo })
+          let updateQueryValues = [customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, encryptedData.gstNo, contactPerson, encryptedData.panNo, encryptedData.adharNo, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, response[0].latitude, response[0].longitude, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, customerIdProof, salesAgent, isReceiptCreated]
           // let insertQueryValues = [customerdetails.customerName, customerdetails.mobileNumber, customerdetails.EmailId, customerdetails.Address1, customerdetails.gstNo, customerdetails.registeredDate, customerdetails.invoicetype, customerdetails.natureOfBussiness, customerdetails.creditPeriodInDays, customerdetails.referredBy, customerdetails.isActive, response[0], response[1].latitude, response[1].longitude, customerdetails.customerType, customerdetails.organizationName, customerdetails.createdBy]
           db.query(customerDetailsQuery, updateQueryValues, (err, results) => {
             if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
@@ -793,7 +790,7 @@ router.post('/updateDeliveryDetails', async (req, res) => {
           let deliveryDetailsQuery = "insert  into DeliveryDetails (gstNo,location,address,phoneNumber,contactPerson,deliverydaysid,depositAmount,customer_Id,departmentId,isActive,gstProof,registeredDate,latitude,longitude,routeId) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
           var gstProof = i.gstProof ? i.test ? Buffer.from(i.gstProof, 'base64') : Buffer.from(i.gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64') : null
           let registeredDate = new Date()
-          let gstNo = await encrypt(i.gstNo)
+          let gstNo = i.gstNo && await encrypt(i.gstNo)
           let insertQueryValues = [gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, deliveryDays.insertId, i.depositAmount, i.customer_Id, i.departmentId, i.isApproved, gstProof, registeredDate, latLong.latitude, latLong.longitude, i.routeId]
           db.query(deliveryDetailsQuery, insertQueryValues, (err, results) => {
             if (err) res.json({ status: 500, message: err.sqlMessage });
@@ -817,7 +814,7 @@ router.post('/updateDeliveryDetails', async (req, res) => {
           let latLong = await getLatLongDetails({ Address1: i.address })
           let deliveryDetailsQuery = "UPDATE DeliveryDetails SET gstNo=?,location=?,address=?,phoneNumber=?,contactPerson=?,depositAmount=?,departmentId=?,isActive=?,gstProof=?,latitude=?,longitude=?,routeId=? WHERE deliveryDetailsId=" + i.deliveryDetailsId;
           var gstProof = i.gstProof ? i.test ? Buffer.from(i.gstProof, 'base64') : Buffer.from(i.gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64') : null
-          let gstNo = await encrypt(i.gstNo)
+          let gstNo = i.gstNo && await encrypt(i.gstNo)
           let updateQueryValues = [gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, i.depositAmount, i.departmentId, i.isApproved, gstProof, latLong.latitude, latLong.longitude, i.routeId]
           db.query(deliveryDetailsQuery, updateQueryValues, (err, results) => {
             if (err) res.json({ status: 500, message: err.sqlMessage });
@@ -1075,14 +1072,24 @@ const updateWHDelivery = (req) => {
 router.get('/closeCustomer/:customerid', async (req, res) => {
   customerQueries.closeCustomer({ customerId: req.params.customerid }, (err, data) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
-    else res.send(UPDATEMESSAGE)
+    else {
+      customerClosingQueries.updateCustomerClosingStatus({ customerId: req.params.customerid }, (updateerr, updated) => {
+        if (updateerr) console.log(updateerr.sqlMessage);
+      })
+      res.send(UPDATEMESSAGE)
+    }
   })
 });
 
 router.get('/closeCustomerdelivery/:deliveryId', async (req, res) => {
   customerQueries.closeCustomerDelivery({ deliveryId: req.params.deliveryId }, (err, data) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
-    else res.send(UPDATEMESSAGE)
+    else {
+      customerClosingQueries.updateCustomerClosingStatus({ deliveryDetailsId: req.params.deliveryId }, (updateerr, updated) => {
+        if (updateerr) console.log(updateerr.sqlMessage);
+      })
+      res.send(UPDATEMESSAGE)
+    }
   })
 });
 
