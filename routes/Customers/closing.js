@@ -84,7 +84,7 @@ customerClosingControllers.addCustomerClosingDetails = (req, res) => {
                 if (err1) res.status(500).json(dbError(err1));
                 else {
                     const { userId, userRole, userName } = req
-                    auditQueries.createLog({ userId, description: `Customer Closing created by ${userRole} <b>(${userName})</b>`, customerId: req.body.customerId, type: "customerClosing" })
+                    auditQueries.createLog({ userId, description: `Customer Closing created by ${userRole} <b>(${userName})</b>`, customerId: result.insertId, type: "customerClosing" })
                     res.json('Details added successfully')
                 }
             })
