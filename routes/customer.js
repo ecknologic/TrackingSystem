@@ -546,9 +546,9 @@ const getAddedDeliveryDetails = (deliveryDetailsId) => {
 // })
 const getDeliveryDetails = ({ customerId, deliveryDetailsId, isSuperAdmin }) => {
   return new Promise((resolve, reject) => {
-    let deliveryDetailsQuery = "SELECT d.location,d.contactPerson,d.customer_Id,d.deliveryDetailsId,d.phoneNumber,d.isActive as isApproved,d.location AS deliveryLocation,r.departmentName,ro.routeName FROM DeliveryDetails d INNER JOIN routes ro ON d.routeId=ro.RouteId INNER JOIN departmentmaster r ON r.departmentId=d.departmentId WHERE d.deleted=0 AND (d.customer_Id=? OR d.deliveryDetailsId=?) ORDER BY d.registeredDate DESC";
+    let deliveryDetailsQuery = "SELECT d.isClosed,d.location,d.contactPerson,d.customer_Id,d.deliveryDetailsId,d.phoneNumber,d.isActive as isApproved,d.location AS deliveryLocation,r.departmentName,ro.routeName FROM DeliveryDetails d INNER JOIN routes ro ON d.routeId=ro.RouteId INNER JOIN departmentmaster r ON r.departmentId=d.departmentId WHERE d.deleted=0 AND (d.customer_Id=? OR d.deliveryDetailsId=?) ORDER BY d.registeredDate DESC";
     if (isSuperAdmin == 'true') {
-      deliveryDetailsQuery = "SELECT d.*,d.isActive as isApproved,d.location AS deliveryLocation,r.departmentName,ro.routeName,json_object('SUN',cd.SUN,'MON',cd.MON,'TUE',cd.TUE,'WED',cd.WED,'THU',cd.THU,'FRI',cd.FRI,'SAT',cd.SAT) as 'deliveryDays' " +
+      deliveryDetailsQuery = "SELECT d.*,d.isClosed,d.isActive as isApproved,d.location AS deliveryLocation,r.departmentName,ro.routeName,json_object('SUN',cd.SUN,'MON',cd.MON,'TUE',cd.TUE,'WED',cd.WED,'THU',cd.THU,'FRI',cd.FRI,'SAT',cd.SAT) as 'deliveryDays' " +
         /*  "concat(CASE WHEN cd.sun=1 THEN 'Sunday,' ELSE '' END,"+
          "CASE WHEN cd.mon=1 THEN 'Monday,' ELSE '' END,"+
          "CASE WHEN cd.tue=1 THEN 'Tuesday,' ELSE '' END,"+
@@ -1087,6 +1087,13 @@ router.get('/closeCustomerdelivery/:deliveryId', async (req, res) => {
     else {
       customerClosingQueries.updateCustomerClosingStatus({ deliveryDetailsId: req.params.deliveryId }, (updateerr, updated) => {
         if (updateerr) console.log(updateerr.sqlMessage);
+        else {
+          if (req.query.hasMultipleDeliveries && req.query.hasMultipleDeliveries != true) {
+            customerClosingQueries.updateCustomerClosingStatus({ customerId: req.query.customerId }, (updateerr, updated) => {
+              if (updateerr) console.log(updateerr.sqlMessage);
+            })
+          }
+        }
       })
       res.send(UPDATEMESSAGE)
     }

@@ -43,7 +43,7 @@ const AccountCard = ({ data, onClick, btnTxt = 'Manage Account', onSelect, isAdm
 
     return (
         <div className='account-card-container'>
-            <div className={isClosed ? 'badge' : isApproved ? 'badge active' : 'badge'}>
+            <div className={isClosed ? 'badge closed' : isApproved ? 'badge active' : 'badge'}>
                 {isClosed ? 'CLOSED' : isApproved ? 'ACTIVE' : 'DRAFT'}
             </div>
             <div className='header'>

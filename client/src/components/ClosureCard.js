@@ -61,7 +61,7 @@ const renderStatus = (status) => {
     const text = status === 'InProgress' ? 'In Progress' : status
 
     return (
-        <div className={isActive ? 'badge active' : 'badge'}>{text}</div>
+        <div className={isActive ? 'badge active' : 'badge closed'}>{text}</div>
     )
 }
 

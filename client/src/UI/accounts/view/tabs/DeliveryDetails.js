@@ -99,7 +99,8 @@ const DeliveryDetails = ({ isAdmin, recentDelivery, onUpdate, ...rest }) => {
 
     const handleAccountClose = async (id) => {
         const options = { item: 'Delivery', v1Ing: 'Closing', v2: 'closed' }
-        const url = `customer/closeCustomerdelivery/${id}`
+        const hasMD = delivery.filter(item => item.isClosed == 0).length > 1
+        const url = `customer/closeCustomerdelivery/${id}?hasMultipleDeliveries=${hasMD}&customerId=${accountId}`
         try {
             showToast({ ...options, action: 'loading' })
             await http.GET(axios, url, config)

@@ -91,7 +91,7 @@ const ClosureForm = (props) => {
                 <div className='input-container'>
                     <InputLabel name='Collected Date' error={errors.collectedDate} />
                     <CustomDateInput
-                        track disabled={disableFew || disabled} error={errors.collectedDate}
+                        track disabled={disabled} error={errors.collectedDate}
                         value={collectedDate} disabledDate={disableFutureDates}
                         onChange={(value) => onChange(value, 'collectedDate')}
                     />
@@ -139,7 +139,7 @@ const ClosureForm = (props) => {
                 </div>
                 <div className='input-container'>
                     <InputLabel name="Missing Bottles Amount" error={errors.missingCansAmount} />
-                    <CustomInput value={missingCansAmount} disabled={disableFew || disabled}
+                    <CustomInput value={missingCansAmount} disabled={disabled}
                         error={errors.missingCansAmount} placeholder="Missing Bottles Amount"
                         onChange={(value) => onChange(value, 'missingCansAmount')}
                     />
