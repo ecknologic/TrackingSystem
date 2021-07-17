@@ -75,9 +75,10 @@ customerClosingQueries.addCustomerClosingDetails = async (input, callback) => {
 }
 
 customerClosingQueries.updateCustomerClosingDetails = async (input, callback) => {
-    const { routeId, closingDate, customerId, customerName, noOfCans, collectedDate, collectedCans, pendingAmount, depositAmount, balanceAmount, missingCansAmount, totalAmount, reason, missingCansCount, createdBy, departmentId, closingId, deliveryDetailsId } = input
-    let query = "UPDATE customerclosingdetails SET routeId=?, closingDate=?, customerId=?,customerName=?,noOfCans=?,collectedDate=?,collectedCans=?,pendingAmount=?,depositAmount=?,balanceAmount=?,missingCansAmount=?,totalAmount=?,reason=?,missingCansCount=?,createdBy=?,deliveryDetailsId=?,departmentId=? WHERE closingId=?";
-    let requestBody = [routeId, closingDate, customerId, customerName, noOfCans, collectedDate, collectedCans, pendingAmount, depositAmount, balanceAmount, missingCansAmount, totalAmount, reason, missingCansCount, createdBy, deliveryDetailsId, departmentId, closingId]
+    let { routeId, closingDate, customerId, customerName, noOfCans, collectedDate, collectedCans, pendingAmount, depositAmount, balanceAmount, missingCansAmount, totalAmount, reason, missingCansCount, createdBy, departmentId, status, isConfirmed, closingId, deliveryDetailsId } = input
+    let query = "UPDATE customerclosingdetails SET routeId=?, closingDate=?, customerId=?,customerName=?,noOfCans=?,collectedDate=?,collectedCans=?,pendingAmount=?,depositAmount=?,balanceAmount=?,missingCansAmount=?,totalAmount=?,reason=?,missingCansCount=?,createdBy=?,deliveryDetailsId=?,status=?,departmentId=? WHERE closingId=?";
+    if (isConfirmed && isConfirmed == true) status = 'Confirmed'
+    let requestBody = [routeId, closingDate, customerId, customerName, noOfCans, collectedDate, collectedCans, pendingAmount, depositAmount, balanceAmount, missingCansAmount, totalAmount, reason, missingCansCount, createdBy, deliveryDetailsId, status, departmentId, closingId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 
 }
