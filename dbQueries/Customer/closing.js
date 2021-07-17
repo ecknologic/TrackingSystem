@@ -80,7 +80,6 @@ customerClosingQueries.updateCustomerClosingDetails = async (input, callback) =>
     if (isConfirmed && isConfirmed == true) status = 'Confirmed'
     let requestBody = [routeId, closingDate, customerId, customerName, noOfCans, collectedDate, collectedCans, pendingAmount, depositAmount, balanceAmount, missingCansAmount, totalAmount, reason, missingCansCount, createdBy, deliveryDetailsId, status, departmentId, closingId]
     return executePostOrUpdateQuery(query, requestBody, callback)
-
 }
 
 customerClosingQueries.addCustomerAccountDetails = async (input, callback) => {
@@ -98,6 +97,16 @@ customerClosingQueries.updateCustomerAccountDetails = async (input, callback) =>
     let requestBody = [customerName, encryptedData.accountNumber, encryptedData.ifscCode, encryptedData.bankName, encryptedData.branchName, customerId, closingId, accountId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 
+}
+
+customerClosingQueries.updateCustomerClosingStatus = async (input, callback) => {
+    let { deliveryDetailsId, customerId } = input
+    let query = "UPDATE customerclosingdetails SET status=? ";
+    if (customerId) query = query + 'WHERE customerId=?'
+    else query = query + 'WHERE deliveryDetailsId=?'
+    let id = customerId ? customerId : deliveryDetailsId
+    let requestBody = ['Closed', id]
+    return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
 module.exports = customerClosingQueries

@@ -22,6 +22,7 @@ const { compareCustomerData, compareCustomerDeliveryData, compareProductsData, c
 const { getReceiptId, getCustomerIdsForReceiptsDropdown, getCustomerDepositDetails, createCustomerReceipt, getCustomerReceipts, getCustomerReceiptsPaginationCount } = require('./Customers/receipt.js');
 const { encrypt, decrypt } = require('../utils/crypto.js');
 const customerClosingControllers = require('./Customers/closing.js');
+const customerClosingQueries = require('../dbQueries/Customer/closing.js');
 let departmentId, userId, userName, userRole;
 
 var storage = multer.diskStorage({
@@ -1071,14 +1072,24 @@ const updateWHDelivery = (req) => {
 router.get('/closeCustomer/:customerid', async (req, res) => {
   customerQueries.closeCustomer({ customerId: req.params.customerid }, (err, data) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
-    else res.send(UPDATEMESSAGE)
+    else {
+      customerClosingQueries.updateCustomerClosingStatus({ customerId: req.params.customerid }, (updateerr, updated) => {
+        if (updateerr) console.log(updateerr.sqlMessage);
+      })
+      res.send(UPDATEMESSAGE)
+    }
   })
 });
 
 router.get('/closeCustomerdelivery/:deliveryId', async (req, res) => {
   customerQueries.closeCustomerDelivery({ deliveryId: req.params.deliveryId }, (err, data) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
-    else res.send(UPDATEMESSAGE)
+    else {
+      customerClosingQueries.updateCustomerClosingStatus({ deliveryDetailsId: req.params.deliveryId }, (updateerr, updated) => {
+        if (updateerr) console.log(updateerr.sqlMessage);
+      })
+      res.send(UPDATEMESSAGE)
+    }
   })
 });
 
