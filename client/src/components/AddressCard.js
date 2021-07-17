@@ -3,12 +3,12 @@ import { Menu } from 'antd';
 import NameCard from './NameCard';
 import PrimaryButton from './PrimaryButton';
 import Actions from '../components/Actions'
-import { FriendIconGrey, TrashIconGrey, TickIconGrey, BlockIconGrey } from './SVG_Icons';
+import { FriendIconGrey, TrashIconGrey, TickIconGrey, BlockIconGrey, CrossIconDark } from './SVG_Icons';
 import '../sass/accountCard.scss'
 import '../sass/addressCard.scss'
 
 const AddressCard = ({ data, isAdmin, onClick, onSelect }) => {
-    const { isApproved, departmentName, phoneNumber, location, contactPerson, deliveryDetailsId } = data
+    const { isApproved, departmentName, phoneNumber, location, contactPerson, deliveryDetailsId, isClosed } = data
     const optionOne = isApproved ? 'Draft' : 'Active'
     const iconOne = isApproved ? <BlockIconGrey /> : <TickIconGrey />
 
@@ -21,9 +21,28 @@ const AddressCard = ({ data, isAdmin, onClick, onSelect }) => {
         <Menu.Item key="Delete" icon={<TrashIconGrey />} >Delete</Menu.Item>
     ]
 
+    const getOptions = () => {
+        let options = [
+            <Menu.Item key={optionOne} icon={iconOne}>{optionOne}</Menu.Item>,
+            <Menu.Item key="Delete" icon={<TrashIconGrey />} >Delete</Menu.Item>
+        ]
+
+        if (isApproved) {
+            options.push(<Menu.Item key="Close" icon={<CrossIconDark />}>Close</Menu.Item>)
+        }
+
+        if (isClosed) {
+            options = [<Menu.Item key="Delete" icon={<TrashIconGrey />} >Delete</Menu.Item>]
+        }
+
+        return options
+    }
+
     return (
         <div className='account-card-container address-card-container'>
-            <div className={isApproved ? 'badge active' : 'badge'}>{isApproved ? "ACTIVE" : "DRAFT"}</div>
+            <div className={isClosed ? 'badge' : isApproved ? 'badge active' : 'badge'}>
+                {isClosed ? 'CLOSED' : isApproved ? 'ACTIVE' : 'DRAFT'}
+            </div>
             <div className='header'>
                 <div className={isApproved ? 'inner green' : 'inner'}>
                     <FriendIconGrey className='friend icon' />
@@ -48,7 +67,7 @@ const AddressCard = ({ data, isAdmin, onClick, onSelect }) => {
             <div className='footer'>
                 <PrimaryButton text='View Details' onClick={() => onClick(deliveryDetailsId)} />
                 {
-                    isAdmin && <Actions options={options} onSelect={handleSelect} />
+                    isAdmin && <Actions options={getOptions()} onSelect={handleSelect} />
                 }
             </div>
         </div>

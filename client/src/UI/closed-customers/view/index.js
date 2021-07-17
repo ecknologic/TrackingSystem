@@ -14,6 +14,7 @@ const ManageClosedCustomer = () => {
     const { closingId } = useParams()
     const { search } = useLocation()
     const { pathname, state } = useLocation()
+    const [reFetch, setreFetch] = useState(false)
     const [headerContent, setHeaderContent] = useState({})
     const [confirmModal, setConfirmModal] = useState(false)
 
@@ -28,6 +29,7 @@ const ManageClosedCustomer = () => {
         else goBack()
     }
 
+    const onUpdate = () => setreFetch(!reFetch)
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
     const handleConfirmModalOk = useCallback(() => { setConfirmModal(false); goBack() }, [])
     const goBack = () => {
@@ -46,10 +48,11 @@ const ManageClosedCustomer = () => {
                             <AccountOverview
                                 setHeaderContent={setHeaderContent}
                                 onGoBack={handleBack}
+                                onUpdate={onUpdate}
                             />
                         </TabPane>
                         <TabPane tab="Activity Log Details" key="2">
-                            <ActivityLogDetails type='customerClosing' id={closingId} />
+                            <ActivityLogDetails type='customerClosing' id={closingId} reFetch={reFetch} />
                         </TabPane>
                     </Tabs>
                 </div>
