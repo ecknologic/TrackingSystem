@@ -1089,7 +1089,7 @@ router.get('/closeCustomerdelivery/:deliveryId', async (req, res) => {
         if (updateerr) console.log(updateerr.sqlMessage);
         else {
           if (req.query.hasMultipleDeliveries && req.query.hasMultipleDeliveries != true) {
-            customerClosingQueries.updateCustomerClosingStatus({ customerId: req.query.customerId }, (updateerr, updated) => {
+            customerQueries.closeCustomer({ customerId: req.query.customerId }, (updateerr, updated) => {
               if (updateerr) console.log(updateerr.sqlMessage);
             })
           }
