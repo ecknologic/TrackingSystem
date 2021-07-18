@@ -1,5 +1,7 @@
+const dayjs = require("dayjs");
 const customerClosingQueries = require("../../dbQueries/Customer/closing");
 var customerQueries = require("../../dbQueries/Customer/queries");
+const { DATEFORMAT } = require("../../utils/constants");
 const { encryptObj } = require("../../utils/crypto");
 
 const compareCustomerData = (data, { userId, userRole, userName }) => {
@@ -213,7 +215,18 @@ const compareCustomerClosingData = (data, { userId, userRole, userName }) => {
                 const createdDateTime = new Date()
                 Object.entries(data).map(async ([key, updatedValue]) => {
                     const oldValue = key == 'accountDetails' ? JSON.parse(oldData[key]) : oldData[key]
-                    if (key == 'accountDetails') {
+                    if ((key == 'closingDate' || key == 'collectedDate') && dayjs(oldValue).format(DATEFORMAT) != dayjs(updatedValue).format(DATEFORMAT)) {
+                        records.push({
+                            oldValue: dayjs(oldValue).format(DATEFORMAT),
+                            updatedValue: dayjs(updatedValue).format(DATEFORMAT),
+                            createdDateTime,
+                            userId,
+                            description: `Updated ${key} by ${userRole} <b>(${userName})</b>`,
+                            customerId: closingId,
+                            type: "customerClosing"
+                        })
+                    }
+                    else if (key == 'accountDetails') {
                         let encryptedValue = await encryptObj(updatedValue)
                         Object.entries(encryptedValue).map(([accountKey, updatedAccountValue]) => {
                             const oldAccountValue = oldValue[accountKey]
@@ -232,15 +245,26 @@ const compareCustomerClosingData = (data, { userId, userRole, userName }) => {
                         })
                     }
                     else if (oldValue != updatedValue && key != 'RouteName' && key != 'createdBy' && key != 'departmentName' && key != 'createdDateTime' && key != 'location') {
-                        records.push({
-                            oldValue,
-                            updatedValue,
-                            createdDateTime,
-                            userId,
-                            description: `Updated ${key} by ${userRole} <b>(${userName})</b>`,
-                            customerId: closingId,
-                            type: "customerClosing"
-                        })
+                        if (key == 'isConfirmed') {
+                            records.push({
+                                createdDateTime,
+                                userId,
+                                description: `Closing Details Confirmed by ${userRole} <b>(${userName})</b>`,
+                                customerId: closingId,
+                                type: "customerClosing"
+                            })
+                        }
+                        else {
+                            records.push({
+                                oldValue,
+                                updatedValue,
+                                createdDateTime,
+                                userId,
+                                description: `Updated ${key} by ${userRole} <b>(${userName})</b>`,
+                                customerId: closingId,
+                                type: "customerClosing"
+                            })
+                        }
                     }
                 })
                 resolve(records)
