@@ -516,12 +516,16 @@ router.get('/getDCDetailsByCOId/:COId', (req, res) => {
 })
 
 router.put('/rescheduleDc', (req, res) => {
+  const { customerOrderId } = req.body
   warehouseQueries.checkDcSchedule(req.body, (deliveryErr, deliveryDetails) => {
     if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
     else if (!deliveryDetails.length) {
       warehouseQueries.rescheduleDC(req.body, (deliveryErr, rescheduled) => {
         if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
-        else res.json('Rescheduled successfully')
+        else {
+          departmenttransactionQueries.createDepartmentTransaction({ userId: adminUserId, description: `DC  Rescheduled by ${userRole} <b>(${userName})</b>`, transactionId: customerOrderId, departmentId, type: 'warehouse', subType: 'delivery' })
+          res.json('Rescheduled successfully')
+        }
       })
     } else {
       res.status(405).send('DC Already exists')
@@ -529,9 +533,13 @@ router.put('/rescheduleDc', (req, res) => {
   })
 })
 router.put('/closeDC', (req, res) => {
+  const { customerOrderId } = req.body
   warehouseQueries.closeDC(req.body, (deliveryErr, closedDetails) => {
     if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
-    else res.json(closedDetails)
+    else {
+      departmenttransactionQueries.createDepartmentTransaction({ userId: adminUserId, description: `DC  Cancelled by ${userRole} <b>(${userName})</b>`, transactionId: customerOrderId, departmentId, type: 'warehouse', subType: 'delivery' })
+      res.json(closedDetails)
+    }
   })
 })
 
