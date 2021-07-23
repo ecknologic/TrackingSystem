@@ -27,6 +27,12 @@ customerClosingQueries.getCustomerClosingDetailsById = async (id, callback) => {
     return executeGetQuery(query, callback)
 }
 
+customerClosingQueries.getCustomerAccountDetailsById = async (id, callback) => {
+    let query = `SELECT JSON_OBJECT('accountId',a.accountId,'closingId',a.closingId,'accountNumber',a.accountNumber,'customerName',a.customerName,
+    'ifscCode',a.ifscCode,'bankName',a.bankName,'branchName',a.branchName) AS accountDetails FROM customeraccountdetails a WHERE customerId=${id}`
+    return executeGetQuery(query, callback)
+}
+
 customerClosingQueries.getCustomerClosingDetailsPaginationCount = async (input, callback) => {
     const { createdBy, userRole } = input
     let query = `SELECT count(*) as totalCount FROM customerclosingdetails WHERE createdBy=${createdBy}`
@@ -49,7 +55,7 @@ customerClosingQueries.getCustomerIdsByAgent = async (input, callback) => {
 
 customerClosingQueries.getCustomerDeliveryIds = async (input, callback) => {
     const { customerId } = input
-    let query = `SELECT deliveryDetailsId,location FROM DeliveryDetails WHERE customer_Id=? ORDER BY customer_Id DESC`
+    let query = `SELECT deliveryDetailsId,location FROM DeliveryDetails WHERE customer_Id=? AND isClosed=0 ORDER BY customer_Id DESC`
     return executeGetParamsQuery(query, [customerId], callback)
 }
 
