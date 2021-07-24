@@ -76,9 +76,8 @@ customerClosingControllers.getCustomerAccountDetailsById = (req, res) => {
         else if (!results.length) res.json(results)
         else {
             let result = results[0]
-            let accountDetails =await getAccountsDetails(JSON.parse(result.accountDetails))
-            result.accountDetails = accountDetails
-            res.json([result])
+            let accountDetails = await getAccountsDetails(JSON.parse(result.accountDetails))
+            res.json([accountDetails])
         };
     });
 }
@@ -130,7 +129,7 @@ customerClosingControllers.getCustomerClosingDetailsPaginationCount = (req, res)
     });
 }
 
-const getAccountsDetails =async (accountDetails) => {
+const getAccountsDetails = async (accountDetails) => {
     let { ifscCode, accountNumber, bankName, branchName } = accountDetails
     let decryptedObj = await decryptObj({ ifscCode, accountNumber, bankName, branchName })
     accountDetails.accountNumber = decryptedObj.accountNumber
