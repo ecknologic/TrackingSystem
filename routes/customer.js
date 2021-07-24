@@ -1151,6 +1151,10 @@ router.get('/getClosingDetailsPaginationCount', async (req, res) => {
   customerClosingControllers.getCustomerClosingDetailsPaginationCount(req, res)
 });
 
+router.get('/getCustomerAccountDetailsById/:customerId', async (req, res) => {
+  customerClosingControllers.getCustomerAccountDetailsById(req, res)
+});
+
 router.post('/addCustomerClosingDetails', async (req, res) => {
   customerClosingControllers.addCustomerClosingDetails(req, res)
 });

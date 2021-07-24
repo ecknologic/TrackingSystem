@@ -86,6 +86,15 @@ const CreateEnquiry = ({ goToTab }) => {
         } catch (error) { }
     }
 
+    const getAccountDetails = async (id) => {
+        const url = `customer/getCustomerAccountDetailsById/${id}`
+
+        try {
+            const [data = {}] = await http.GET(axios, url, config)
+            setAccData(data)
+        } catch (error) { }
+    }
+
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
@@ -96,6 +105,7 @@ const CreateEnquiry = ({ goToTab }) => {
             setFormData(prev => ({ ...prev, customerName }))
             resetDeliveryDetails()
             getDeliveryLocations(value)
+            getAccountDetails(value)
         }
         else if (key === 'deliveryDetailsId') {
             getDeliveryDetails(value)
@@ -178,7 +188,6 @@ const CreateEnquiry = ({ goToTab }) => {
             showToast(options)
             goToTab('1')
             resetForm()
-            setCustomerList(customerList.filter(({ customerId: id }) => id !== customerId))
         } catch (error) {
             message.destroy()
             if (!axios.isCancel(error)) {

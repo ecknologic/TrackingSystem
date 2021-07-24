@@ -63,15 +63,21 @@ customerClosingControllers.getCustomerClosingDetailsById = (req, res) => {
         else if (!results.length) res.json(results)
         else {
             let result = results[0]
-            let accountDetails = JSON.parse(result.accountDetails)
-            let { ifscCode, accountNumber, bankName, branchName } = accountDetails
-            let decryptedObj = await decryptObj({ ifscCode, accountNumber, bankName, branchName })
-            accountDetails.accountNumber = decryptedObj.accountNumber
-            accountDetails.ifscCode = decryptedObj.ifscCode
-            accountDetails.bankName = decryptedObj.bankName
-            accountDetails.branchName = decryptedObj.branchName
+            let accountDetails = await getAccountsDetails(JSON.parse(result.accountDetails))
             result.accountDetails = accountDetails
             res.json([result])
+        };
+    });
+}
+
+customerClosingControllers.getCustomerAccountDetailsById = (req, res) => {
+    customerClosingQueries.getCustomerAccountDetailsById(req.params.customerId, async (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else if (!results.length) res.json(results)
+        else {
+            let result = results[0]
+            let accountDetails = await getAccountsDetails(JSON.parse(result.accountDetails))
+            res.json([accountDetails])
         };
     });
 }
@@ -123,5 +129,14 @@ customerClosingControllers.getCustomerClosingDetailsPaginationCount = (req, res)
     });
 }
 
+const getAccountsDetails = async (accountDetails) => {
+    let { ifscCode, accountNumber, bankName, branchName } = accountDetails
+    let decryptedObj = await decryptObj({ ifscCode, accountNumber, bankName, branchName })
+    accountDetails.accountNumber = decryptedObj.accountNumber
+    accountDetails.ifscCode = decryptedObj.ifscCode
+    accountDetails.bankName = decryptedObj.bankName
+    accountDetails.branchName = decryptedObj.branchName
+    return accountDetails
+}
 
 module.exports = customerClosingControllers
