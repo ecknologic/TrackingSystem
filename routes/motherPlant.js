@@ -246,6 +246,27 @@ router.get('/getCurrentRMDetails', (req, res) => {
     });
 });
 
+router.get('/getCurrentStockDetails', (req, res) => {
+    const { isSuperAdmin = false } = req.query
+    let input = {
+        departmentId,
+        isSuperAdmin
+    }
+    motherPlantDbQueries.getCurrentRMDetails(input, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else {
+            const data = { emptyCansCount: 0 }
+            results.map(item => {
+                const { itemName, totalQuantity } = item;
+                if (itemName === '20Lcans') data['20Lcans'] = totalQuantity;
+                else if (itemName === '20LClosures') data['20LClosures'] = totalQuantity;
+            })
+
+            res.json(data)
+        }
+    });
+});
+
 router.post('/createRM', (req, res) => {
     let input = req.body;
     input.departmentId = departmentId

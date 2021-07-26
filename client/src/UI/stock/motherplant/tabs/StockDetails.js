@@ -16,6 +16,7 @@ import { validateBatchValues, validateIntFloat, validateNames, validateNumber } 
 const StockDetails = ({ date, source, goToTab }) => {
     const { USERID } = useUser()
     const [stock, setStock] = useState({})
+    const [currentStock, setCurrentStock] = useState({})
     const [formData, setFormData] = useState({})
     const [batchList, setBatchList] = useState([])
     const [formErrors, setFormErrors] = useState({})
@@ -29,6 +30,7 @@ const StockDetails = ({ date, source, goToTab }) => {
 
     useEffect(() => {
         resetForm()
+        getCurrentStock()
         getActiveStockByDate(date)
 
         return () => {
@@ -51,6 +53,15 @@ const StockDetails = ({ date, source, goToTab }) => {
         try {
             const data = await http.GET(axios, url, config)
             setStock(data)
+        } catch (error) { }
+    }
+
+    const getCurrentStock = async () => {
+        const url = 'motherPlant/getCurrentStockDetails'
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setCurrentStock(data)
         } catch (error) { }
     }
 
@@ -87,7 +98,7 @@ const StockDetails = ({ date, source, goToTab }) => {
     }
 
     const handleSubmit = async () => {
-        const formErrors = validateBatchValues(formData)
+        const formErrors = validateBatchValues(formData, currentStock)
 
         if (!isEmpty(formErrors)) {
             setShake(true)
@@ -100,7 +111,7 @@ const StockDetails = ({ date, source, goToTab }) => {
 
         const url = 'motherPlant/addProductionDetails'
         const body = {
-            ...formData, createdBy: USERID,
+            ...formData, createdBy: USERID, ...currentStock,
             product20L, product2L, product1L, product500ML, product300ML
         }
         const options = { item: 'Production Batch', v1Ing: 'Adding', v2: 'added' }
