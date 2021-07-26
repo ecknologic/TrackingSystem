@@ -1,5 +1,6 @@
 const { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, dateComparisions } = require('../../utils/functions.js');
 const dayjs = require('dayjs');
+const { constants } = require('../../utils/constants.js');
 
 var motherPlantDbQueries = {}
 motherPlantDbQueries.getMotherPlantsList = async (callback) => {
@@ -126,7 +127,7 @@ motherPlantDbQueries.getRMDetails = async (input, callback) => {
 }
 
 motherPlantDbQueries.getCurrentRMDetails = async (input, callback) => {
-    let query = `select * from rawmaterialdetails WHERE departmentId=? AND isApproved=1 ORDER BY createdDateTime DESC`;
+    let query = `select * from rawmaterialdetails WHERE departmentId=? AND (isApproved=1 OR itemName='20Lcans-Old') ORDER BY createdDateTime DESC`;
     if (input.isSuperAdmin && input.isSuperAdmin == 'true') {
         query = `select r.*,d.departmentName from rawmaterialdetails r INNER JOIN departmentmaster d ON r.departmentId=d.departmentId ORDER BY r.createdDateTime DESC`
         return executeGetQuery(query, callback)
@@ -467,6 +468,13 @@ motherPlantDbQueries.updateRMDetailsDamageCount = async (input, callback) => {
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
+motherPlantDbQueries.updateRMDetailsEmptyCansCount = async (input, callback) => {
+    const { emptycans_count, motherplantId } = input
+    let query = "UPDATE rawmaterialdetails SET totalQuantity=totalQuantity+? WHERE itemName=? AND departmentId=?";
+    let requestBody = [emptycans_count, constants.Old20LCans, motherplantId]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+
 motherPlantDbQueries.updateRMDetailsQuantity = async (input, callback) => {
     const { itemQty, itemCode } = input
     let query = "UPDATE rawmaterialdetails SET totalQuantity=totalQuantity + ? WHERE itemCode=?";
@@ -511,6 +519,12 @@ motherPlantDbQueries.updateRetailQuantityRM = async (totalQuantity, callback) =>
 motherPlantDbQueries.update20LQuantityRM = async (totalQuantity, callback) => {
     let query = `update rawmaterialdetails set totalQuantity=totalQuantity-? where itemName='20LClosures' OR itemName='strikers' OR itemName='20Lcans'`;
     let requestBody = [parseInt(totalQuantity)]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+
+motherPlantDbQueries.update20LOldQuantityRM = async (totalQuantity, callback) => {
+    let query = `update rawmaterialdetails set totalQuantity=totalQuantity-? where itemName='20LClosures' OR itemName='strikers' OR itemName=?`;
+    let requestBody = [parseInt(totalQuantity), constants.Old20LCans]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
