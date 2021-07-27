@@ -4,7 +4,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import React, { useState, useEffect, useMemo } from 'react';
 import { http } from '../../../modules/http';
 import EmployeeForm from '../forms/Employee';
-import DependentForm from '../forms/Dependent';
+// import DependentForm from '../forms/Dependent';
 import CustomButton from '../../../components/CustomButton';
 import { getDepartmentOptions, getRoleOptions } from '../../../assets/fixtures';
 import { getBase64, getMainPathname, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
@@ -17,13 +17,13 @@ const CreateEmployee = ({ goToTab }) => {
     const { pathname } = useLocation()
     const history = useHistory()
     const [formData, setFormData] = useState({})
-    const [depValues, setDepValues] = useState({})
-    const [depErrors, setDepErrors] = useState({})
+    // const [depValues, setDepValues] = useState({})
+    // const [depErrors, setDepErrors] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [adharProof, setAdharProof] = useState({})
     const [licenseProof, setLicenseProof] = useState({})
     const [adharProofErrors, setAdharProofErrors] = useState({})
-    const [depAdharProof, setDepAdharProof] = useState({})
+    // const [depAdharProof, setDepAdharProof] = useState({})
     const [depAdharProofErrors, setDepAdharProofErrors] = useState({})
     const [licenseProofErrors, setLicenseProofErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
@@ -81,7 +81,7 @@ const CreateEmployee = ({ goToTab }) => {
         }
 
         // Validations
-        if (key === 'adharNo' || key === 'licenseNo') {
+        if (key === 'adharNo') {
             const error = validateIDNumbers(key, value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -104,24 +104,24 @@ const CreateEmployee = ({ goToTab }) => {
         }
     }
 
-    const handleDepChange = (value, key) => {
-        setDepValues(data => ({ ...data, [key]: value }))
-        setDepErrors(errors => ({ ...errors, [key]: '' }))
+    // const handleDepChange = (value, key) => {
+    //     setDepValues(data => ({ ...data, [key]: value }))
+    //     setDepErrors(errors => ({ ...errors, [key]: '' }))
 
-        // Validations
-        if (key === 'adharNo') {
-            const error = validateIDNumbers(key, value)
-            setDepErrors(errors => ({ ...errors, [key]: error }))
-        }
-        else if (key === 'name' || key === 'relation') {
-            const error = validateNames(value)
-            setDepErrors(errors => ({ ...errors, [key]: error }))
-        }
-        else if (key === 'mobileNumber') {
-            const error = validateMobileNumber(value)
-            setDepErrors(errors => ({ ...errors, [key]: error }))
-        }
-    }
+    //     // Validations
+    //     if (key === 'adharNo') {
+    //         const error = validateIDNumbers(key, value)
+    //         setDepErrors(errors => ({ ...errors, [key]: error }))
+    //     }
+    //     else if (key === 'name' || key === 'relation') {
+    //         const error = validateNames(value)
+    //         setDepErrors(errors => ({ ...errors, [key]: error }))
+    //     }
+    //     else if (key === 'mobileNumber') {
+    //         const error = validateMobileNumber(value)
+    //         setDepErrors(errors => ({ ...errors, [key]: error }))
+    //     }
+    // }
 
     const handleBlur = (value, key) => {
 
@@ -144,18 +144,18 @@ const CreateEmployee = ({ goToTab }) => {
         }
     }
 
-    const handleDepBlur = (value, key) => {
+    // const handleDepBlur = (value, key) => {
 
-        // Validations
-        if (key === 'adharNo') {
-            const error = validateIDNumbers(key, value, true)
-            setDepErrors(errors => ({ ...errors, [key]: error }))
-        }
-        else if (key === 'mobileNumber') {
-            const error = validateMobileNumber(value, true)
-            setDepErrors(errors => ({ ...errors, [key]: error }))
-        }
-    }
+    //     // Validations
+    //     if (key === 'adharNo') {
+    //         const error = validateIDNumbers(key, value, true)
+    //         setDepErrors(errors => ({ ...errors, [key]: error }))
+    //     }
+    //     else if (key === 'mobileNumber') {
+    //         const error = validateMobileNumber(value, true)
+    //         setDepErrors(errors => ({ ...errors, [key]: error }))
+    //     }
+    // }
 
     const handleUpload = (file, name, proofType) => {
         getBase64(file, async (buffer) => {
@@ -203,29 +203,29 @@ const CreateEmployee = ({ goToTab }) => {
             }
         })
     }
-    const handleDepUpload = (file, name) => {
-        getBase64(file, async (buffer) => {
-            if (name === 'any') {
-                const clone = { ...depAdharProof }
-                const { Front } = clone
-                if (Front) {
-                    clone.Back = buffer
-                    setDepAdharProofErrors(errors => ({ ...errors, Back: '' }))
-                }
-                else {
-                    clone.Front = buffer
-                    setDepAdharProofErrors(errors => ({ ...errors, Front: '' }))
-                }
-                setDepAdharProof(clone)
-            }
-            else {
-                setDepAdharProofErrors(errors => ({ ...errors, [name]: '' }))
-                const clone = { ...depAdharProof }
-                clone[name] = buffer
-                setDepAdharProof(clone)
-            }
-        })
-    }
+    // const handleDepUpload = (file, name) => {
+    //     getBase64(file, async (buffer) => {
+    //         if (name === 'any') {
+    //             const clone = { ...depAdharProof }
+    //             const { Front } = clone
+    //             if (Front) {
+    //                 clone.Back = buffer
+    //                 setDepAdharProofErrors(errors => ({ ...errors, Back: '' }))
+    //             }
+    //             else {
+    //                 clone.Front = buffer
+    //                 setDepAdharProofErrors(errors => ({ ...errors, Front: '' }))
+    //             }
+    //             setDepAdharProof(clone)
+    //         }
+    //         else {
+    //             setDepAdharProofErrors(errors => ({ ...errors, [name]: '' }))
+    //             const clone = { ...depAdharProof }
+    //             clone[name] = buffer
+    //             setDepAdharProof(clone)
+    //         }
+    //     })
+    // }
 
     const handleRemove = (name, proofType) => {
         if (proofType === 'adharProof') {
@@ -238,10 +238,10 @@ const CreateEmployee = ({ goToTab }) => {
         }
     }
 
-    const handleDepRemove = (name) => {
-        if (name === 'Front') setDepAdharProof(data => ({ ...data, Front: '' }))
-        else if (name === 'Back') setDepAdharProof(data => ({ ...data, Back: '' }))
-    }
+    // const handleDepRemove = (name) => {
+    //     if (name === 'Front') setDepAdharProof(data => ({ ...data, Front: '' }))
+    //     else if (name === 'Back') setDepAdharProof(data => ({ ...data, Back: '' }))
+    // }
 
     const getEmployeeType = (url) => {
         const type = url === '/staff' ? 'Staff' : 'Driver'
@@ -250,26 +250,28 @@ const CreateEmployee = ({ goToTab }) => {
 
     const handleSubmit = async () => {
         const adharProofErrors = validateIDProofs(adharProof, adharProof.idProofType)
-        const depAdharProofErrors = validateIDProofs(depAdharProof, depAdharProof.idProofType)
+        // const depAdharProofErrors = validateIDProofs(depAdharProof, depAdharProof.idProofType)
         const licenseProofErrors = employeeType === 'Driver' ? validateIDProofs(licenseProof, licenseProof.idProofType) : {}
         const formErrors = validateEmployeeValues(formData, employeeType)
-        const depErrors = validateDependentValues(depValues)
+        // const depErrors = validateDependentValues(depValues)
 
         if (!isEmpty(formErrors) || !isEmpty(adharProofErrors) || !isEmpty(licenseProofErrors)
-            || !isEmpty(depErrors) || !isEmpty(depAdharProofErrors)) {
+            // || !isEmpty(depErrors) || !isEmpty(depAdharProofErrors)
+        ) {
             setShake(true)
             setTimeout(() => setShake(false), 820)
             setFormErrors(formErrors)
-            setDepErrors(depErrors)
+            // setDepErrors(depErrors)
             setAdharProofErrors(adharProofErrors)
             setLicenseProofErrors(licenseProofErrors)
-            setDepAdharProofErrors(depAdharProofErrors)
+            // setDepAdharProofErrors(depAdharProofErrors)
             return
         }
 
-        const dependentDetails = { ...depValues, adharProof: depAdharProof }
+        // const dependentDetails = { ...depValues, adharProof: depAdharProof }
         let body = {
-            ...formData, adharProof, licenseProof, dependentDetails
+            ...formData, adharProof, licenseProof,
+            // dependentDetails
         }
         const url = getUrl(employeeType)
         const options = { item: employeeType, v1Ing: 'Adding', v2: 'added' }
@@ -298,9 +300,9 @@ const CreateEmployee = ({ goToTab }) => {
         setBtnDisabled(false)
         resetTrackForm()
         setFormData({})
-        setDepValues({})
+        // setDepValues({})
         setAdharProof({})
-        setDepAdharProof({})
+        // setDepAdharProof({})
         setLicenseProof({})
         setFormErrors({})
     }
@@ -324,7 +326,7 @@ const CreateEmployee = ({ goToTab }) => {
                 editMode={false}
                 {...childProps}
             />
-            <DependentForm
+            {/* <DependentForm
                 data={depValues}
                 errors={depErrors}
                 adharProof={depAdharProof}
@@ -333,7 +335,7 @@ const CreateEmployee = ({ goToTab }) => {
                 onChange={handleDepChange}
                 onUpload={handleDepUpload}
                 onRemove={handleDepRemove}
-            />
+            /> */}
             <div className='app-footer-buttons-container'>
                 <CustomButton
                     onClick={handleSubmit}
