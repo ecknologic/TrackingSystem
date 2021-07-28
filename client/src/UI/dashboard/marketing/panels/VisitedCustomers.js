@@ -59,27 +59,30 @@ const VisitedCustomers = () => {
     )
 }
 
-const getPieData = ({ paidCount, totalCount }) => {
-    // const cleared = Math.round(paidCount / (totalCount || 1) * 100)
-    // let pending = 100 - cleared
-
-    // if (!totalCount) pending = 0
-    const corporate = 60
-    const other = 15
-    const membership = 25
+const getPieData = (data) => {
+    const { onboardedCustomers, pendingApprovals, revisitCustomers, visitedCustomers } = data
+    const totalCount = onboardedCustomers + pendingApprovals + revisitCustomers + visitedCustomers;
+    const onboarded = Math.round(onboardedCustomers / (totalCount || 1) * 100)
+    const visited = Math.round(visitedCustomers / (totalCount || 1) * 100)
+    const pending = Math.round(pendingApprovals / (totalCount || 1) * 100)
+    const revisit = Math.round(revisitCustomers / (totalCount || 1) * 100)
 
     return [
         {
-            type: 'Corporate',
-            value: corporate,
+            type: 'Onboarded',
+            value: onboarded,
         },
         {
-            type: 'Other',
-            value: other,
+            type: 'Visited',
+            value: visited,
         },
         {
-            type: 'Membership',
-            value: membership,
+            type: 'Pending',
+            value: pending,
+        },
+        {
+            type: 'Revisit',
+            value: revisit,
         }
     ]
 }

@@ -18,7 +18,8 @@ usersQueries.getSalesPersons = async (callback) => {
     return executeGetParamsQuery(query, callback)
 }
 usersQueries.getUsersById = async (userId, callback) => {
-    let query = "SELECT u.*,s.adharNo as dependentAdharNo,s.adhar_frontside as dependentFrontProof,s.adhar_backside as dependentBackProof,JSON_OBJECT('name',s.name,'userId',s.userId,'dob',s.dob,'gender',s.gender,'mobileNumber',s.mobileNumber,'relation',s.relation,'dependentId',s.dependentId) dependentDetails from usermaster u INNER JOIN staffDependentDetails s on u.userId=s.userId where u.userId=" + userId;
+    let query = "SELECT u.*,s.adharNo as dependentAdharNo,s.adhar_frontside as dependentFrontProof,s.adhar_backside as dependentBackProof,JSON_OBJECT('name',s.name,'userId',s.userId,'dob',s.dob,'gender',s.gender,'mobileNumber',s.mobileNumber,'relation',s.relation,'dependentId',s.dependentId) dependentDetails from usermaster u LEFT JOIN staffDependentDetails s on u.userId=s.userId where u.userId=" + userId;
+    // let query = "SELECT u.*,s.adharNo as dependentAdharNo,s.adhar_frontside as dependentFrontProof,s.adhar_backside as dependentBackProof,JSON_OBJECT('name',s.name,'userId',s.userId,'dob',s.dob,'gender',s.gender,'mobileNumber',s.mobileNumber,'relation',s.relation,'dependentId',s.dependentId) dependentDetails from usermaster u INNER JOIN staffDependentDetails s on u.userId=s.userId where u.userId=" + userId;
     return executeGetQuery(query, callback)
 }
 usersQueries.getUserDetailsById = async (userId, callback) => {

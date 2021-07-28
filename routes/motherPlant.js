@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 const motherPlantDbQueries = require('../dbQueries/motherplant/queries');
 const { dbError, getBatchId, productionCount, getCompareData, getFormatedNumber, getGraphData } = require('../utils/functions');
-const { INSERTMESSAGE, UPDATEMESSAGE, WEEKDAYS } = require('../utils/constants');
+const { INSERTMESSAGE, UPDATEMESSAGE, WEEKDAYS, constants } = require('../utils/constants');
 const dayjs = require('dayjs');
 const usersQueries = require('../dbQueries/users/queries');
 const auditQueries = require('../dbQueries/auditlogs/queries');
@@ -246,6 +246,28 @@ router.get('/getCurrentRMDetails', (req, res) => {
     });
 });
 
+router.get('/getCurrentStockDetails', (req, res) => {
+    const { isSuperAdmin = false } = req.query
+    let input = {
+        departmentId,
+        isSuperAdmin
+    }
+    motherPlantDbQueries.getCurrentRMDetails(input, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else {
+            const data = { emptyCansCount: 0 }
+            results.map(item => {
+                const { itemName, totalQuantity } = item;
+                if (itemName === '20Lcans') data['20Lcans'] = totalQuantity;
+                else if (itemName === '20LClosures') data['20LClosures'] = totalQuantity;
+                else if (itemName === constants.Old20LCans) data['emptyCansCount'] = totalQuantity;
+            })
+
+            res.json(data)
+        }
+    });
+});
+
 router.post('/createRM', (req, res) => {
     let input = req.body;
     input.departmentId = departmentId
@@ -265,6 +287,11 @@ router.post('/createRM', (req, res) => {
                             motherPlantDbQueries.insertRMDetails(input, (insertErr, data) => {
                                 if (insertErr) console.log("ERR", err);
                             })
+                            if (input.itemName == '20Lcans') {
+                                motherPlantDbQueries.insertRMDetails({ itemName: constants.Old20LCans, departmentId }, (insertErr, data) => {
+                                    if (insertErr) console.log("ERR", err);
+                                })
+                            }
                         }
                     })
                 }
@@ -705,7 +732,7 @@ router.get('/getMPdamagedStock', (req, res) => {
 
 
 const updateCurrentRMDetailsQuantity = (input) => {
-    const { product20L = 0, product1L = 0, product500ML = 0, product300ML = 0, product2L = 0, managerName } = input
+    const { product20L = 0, emptyCansCount = 0, product1L = 0, product500ML = 0, product300ML = 0, product2L = 0, managerName } = input
 
     let retailQuantity = product1L + product500ML + product300ML + product2L
 
@@ -715,7 +742,10 @@ const updateCurrentRMDetailsQuantity = (input) => {
     motherPlantDbQueries.updateRMHandlesQuantity(product2L, (update2lErr, data) => {
         if (update2lErr) console.log(update2lErr);
     })
-    motherPlantDbQueries.update20LQuantityRM(product20L, (update20LErr, data) => {
+    motherPlantDbQueries.update20LQuantityRM(parseInt(product20L) - parseInt(emptyCansCount), (update20LErr, data) => {
+        if (update20LErr) console.log(update20LErr);
+    })
+    motherPlantDbQueries.update20LOldQuantityRM(emptyCansCount, (update20LErr, data) => {
         if (update20LErr) console.log(update20LErr);
     })
     let logs = [];

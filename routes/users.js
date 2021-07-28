@@ -32,11 +32,13 @@ router.post('/createWebUser', (req, res) => {
       db.query(updateQuery, updateValues, (updateErr, updateResults) => {
         if (updateErr) console.log(updateErr);
       })
-      let obj = { ...dependentDetails, userId: results.insertId }
       const staffId = results.insertId
-      usersQueries.saveDependentDetails(obj, "staffDependentDetails", (err, success) => {
-        if (err) console.log("Staff Dependent Err", err)
-      })
+      if (dependentDetails) {
+        let obj = { ...dependentDetails, userId: results.insertId }
+        usersQueries.saveDependentDetails(obj, "staffDependentDetails", (err, success) => {
+          if (err) console.log("Staff Dependent Err", err)
+        })
+      }
       auditQueries.createLog({ userId, description: `Staff created by ${userRole} <b>(${adminUserName})</b>`, staffId, type: "staff" })
       if (privilegeDetails.length) {
         for (let i of privilegeDetails) {
@@ -117,19 +119,21 @@ router.post('/updateWebUser', async (req, res) => {
       }
       // auditQueries.createLog({ userId, description: `Staff Updated`, staffId: webUserId, type: "staff" })
       usersQueries.addDepartmentAdmin({ userId: webUserId, departmentId })
-      const { name, dob, gender, adharProof, mobileNumber, relation, dependentId, adharNo } = dependentDetails
-      const dependentlogs = await compareWebUserDependentDetails({ name, dob, gender, adharProof, mobileNumber, relation, adharNo }, { staffId: webUserId,dependentId, userId, userRole, adminUserName })
-      usersQueries.updateDependentDetails(dependentDetails, "staffDependentDetails", (err, success) => {
-        if (err) console.log("Update Staff Dependent Err", err)
-        else{
-          if (dependentlogs.length) {
-            auditQueries.createLog(dependentlogs, (err, data) => {
-              if (err) console.log('log error', err)
-              else console.log('log data', data)
-            })
+      if (dependentDetails) {
+        const { name, dob, gender, adharProof, mobileNumber, relation, dependentId, adharNo } = dependentDetails
+        const dependentlogs = await compareWebUserDependentDetails({ name, dob, gender, adharProof, mobileNumber, relation, adharNo }, { staffId: webUserId, dependentId, userId, userRole, adminUserName })
+        usersQueries.updateDependentDetails(dependentDetails, "staffDependentDetails", (err, success) => {
+          if (err) console.log("Update Staff Dependent Err", err)
+          else {
+            if (dependentlogs.length) {
+              auditQueries.createLog(dependentlogs, (err, data) => {
+                if (err) console.log('log error', err)
+                else console.log('log data', data)
+              })
+            }
           }
-        }
-      })
+        })
+      }
       // for (let i of userDetails.privilegeDetails) {
       //   let privilegeQuery = "UPDATE userPrivilegesMaster SET privilegeActions=? where privilegeId=? AND userId=?";
       //   let queryValues = [i.privilegeActions.join(), i.privilegeId, userDetails.userId]

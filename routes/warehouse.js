@@ -331,9 +331,15 @@ router.get('/getReturnedEmptyCans/:date', (req, res) => {
   });
 });
 router.post('/returnEmptyCans', (req, res) => {
+  const { emptycans_count = 0, motherplantId } = req.body
   warehouseQueries.returnEmptyCansToMotherplant(req.body, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
-    else res.json(results);
+    else {
+      res.json(results);
+      motherPlantDbQueries.updateRMDetailsEmptyCansCount({ emptycans_count, motherplantId }, (updateerr, results) => {
+        if (updateerr) res.status(500).json({ status: 500, message: updateerr.sqlMessage });
+      })
+    }
   });
 });
 router.put('/updateReturnEmptyCans', (req, res) => {

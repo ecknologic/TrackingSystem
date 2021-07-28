@@ -164,7 +164,7 @@ export const validateDeliveryValues = (data) => {
     return { ...errors, ...productErrors }
 }
 
-export const validateBatchValues = (data) => {
+export const validateBatchValues = (data, currentStock) => {
     let errors = {};
     const text = 'Required'
     const { shiftType, batchId, phLevel, TDS, ozoneLevel, managerName, ...rest } = data
@@ -192,7 +192,17 @@ export const validateBatchValues = (data) => {
         error && (errors.managerName = error)
     }
 
-    const productErrors = validateProducts(rest)
+    let productErrors = validateProducts(rest)
+    if (isEmpty(productErrors)) {
+        const textArray = []
+        if (Number(rest.product20L) > currentStock['20Lcans']) {
+            textArray.push('20 Ltrs')
+        }
+        if (Number(rest.product20L) > currentStock['20LClosures']) {
+            textArray.push('20L Closures')
+        }
+        productErrors.products = `${textArray.join(',')} qty exceeds current stock`
+    }
     return { ...errors, ...productErrors }
 }
 

@@ -5,8 +5,8 @@ import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import AccountView from '../../views/Account';
 import { http } from '../../../../modules/http'
 import EmployeeForm from '../../forms/Employee';
-import DependentForm from '../../forms/Dependent';
-import DependentView from '../../views/Dependent';
+// import DependentForm from '../../forms/Dependent';
+// import DependentView from '../../views/Dependent';
 import Spinner from '../../../../components/Spinner';
 import useUser from '../../../../utils/hooks/useUser';
 import ScrollUp from '../../../../components/ScrollUp';
@@ -27,13 +27,13 @@ const ManageEmployee = ({ isDriver, setHeaderContent, onGoBack }) => {
     const { ROLE } = useUser()
     const { employeeId } = useParams()
     const [accountValues, setAccountValues] = useState({ loading: true })
-    const [depValues, setDepValues] = useState({})
-    const [depErrors, setDepErrors] = useState({})
+    // const [depValues, setDepValues] = useState({})
+    // const [depErrors, setDepErrors] = useState({})
     const [loading, setLoading] = useState(true)
     const [adharProof, setAdharProof] = useState({})
     const [licenseProof, setLicenseProof] = useState({})
-    const [depAdharProof, setDepAdharProof] = useState({})
-    const [depAdharProofErrors, setDepAdharProofErrors] = useState({})
+    // const [depAdharProof, setDepAdharProof] = useState({})
+    // const [depAdharProofErrors, setDepAdharProofErrors] = useState({})
     const [adharProofErrors, setAdharProofErrors] = useState({})
     const [licenseProofErrors, setLicenseProofErrors] = useState({})
     const [accountErrors, setAccountErrors] = useState({})
@@ -43,7 +43,7 @@ const ManageEmployee = ({ isDriver, setHeaderContent, onGoBack }) => {
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [employeeType, setEmployeeType] = useState('')
     const [departmentList, setDepartmentList] = useState([])
-    const [prevDepartmentId, setPrevDepartmentId] = useState('')
+    // const [prevDepartmentId, setPrevDepartmentId] = useState('')
 
     const isWHAdmin = useMemo(() => ROLE === WAREHOUSEADMIN, [ROLE])
     const roleOptions = useMemo(() => getRoleOptions(roleList), [roleList])
@@ -72,20 +72,20 @@ const ManageEmployee = ({ isDriver, setHeaderContent, onGoBack }) => {
             const { userName, adharNo, licenseNo, departmentId } = rest
             const adharFront = base64String(adhar_frontside?.data)
             const adharBack = base64String(adhar_backside?.data)
-            const depAdharFront = base64String(dependentFrontProof?.data)
-            const depAdharBack = base64String(dependentBackProof?.data)
+            // const depAdharFront = base64String(dependentFrontProof?.data)
+            // const depAdharBack = base64String(dependentBackProof?.data)
             const licenseFront = base64String(license_frontside?.data)
             const licenseBack = base64String(license_backside?.data)
             const dob = getValidDate(rest.dob, DATEFORMAT)
             const joinedDate = getValidDate(rest.joinedDate, DATEFORMAT)
 
             setAdharProof({ Front: adharFront, Back: adharBack, idProofType: 'adharNo', adharNo })
-            setDepAdharProof({ Front: depAdharFront, Back: depAdharBack, idProofType: 'adharNo', adharNo: dependentAdharNo })
+            // setDepAdharProof({ Front: depAdharFront, Back: depAdharBack, idProofType: 'adharNo', adharNo: dependentAdharNo })
             setLicenseProof({ Front: licenseFront, Back: licenseBack, idProofType: 'licenseNo', licenseNo })
             setHeaderContent({ title: userName })
             setAccountValues({ ...rest, dob, joinedDate })
-            setPrevDepartmentId(departmentId)
-            setDepValues({ ...JSON.parse(dep), adharNo: dependentAdharNo })
+            // setPrevDepartmentId(departmentId)
+            // setDepValues({ ...JSON.parse(dep), adharNo: dependentAdharNo })
             setLoading(false)
         } catch (error) { }
     }
@@ -125,7 +125,7 @@ const ManageEmployee = ({ isDriver, setHeaderContent, onGoBack }) => {
         }
 
         // Validations
-        if (key === 'adharNo' || key === 'licenseNo') {
+        if (key === 'adharNo') {
             const error = validateIDNumbers(key, value)
             setAccountErrors(errors => ({ ...errors, [key]: error }))
         }
@@ -148,24 +148,24 @@ const ManageEmployee = ({ isDriver, setHeaderContent, onGoBack }) => {
         }
     }
 
-    const handleDepChange = (value, key) => {
-        setDepValues(data => ({ ...data, [key]: value }))
-        setDepErrors(errors => ({ ...errors, [key]: '' }))
+    // const handleDepChange = (value, key) => {
+    //     setDepValues(data => ({ ...data, [key]: value }))
+    //     setDepErrors(errors => ({ ...errors, [key]: '' }))
 
-        // Validations
-        if (key === 'adharNo') {
-            const error = validateIDNumbers(key, value)
-            setDepErrors(errors => ({ ...errors, [key]: error }))
-        }
-        else if (key === 'name' || key === 'relation') {
-            const error = validateNames(value)
-            setDepErrors(errors => ({ ...errors, [key]: error }))
-        }
-        else if (key === 'mobileNumber') {
-            const error = validateMobileNumber(value)
-            setDepErrors(errors => ({ ...errors, [key]: error }))
-        }
-    }
+    //     // Validations
+    //     if (key === 'adharNo') {
+    //         const error = validateIDNumbers(key, value)
+    //         setDepErrors(errors => ({ ...errors, [key]: error }))
+    //     }
+    //     else if (key === 'name' || key === 'relation') {
+    //         const error = validateNames(value)
+    //         setDepErrors(errors => ({ ...errors, [key]: error }))
+    //     }
+    //     else if (key === 'mobileNumber') {
+    //         const error = validateMobileNumber(value)
+    //         setDepErrors(errors => ({ ...errors, [key]: error }))
+    //     }
+    // }
 
     const handleBlur = (value, key) => {
 
@@ -188,18 +188,18 @@ const ManageEmployee = ({ isDriver, setHeaderContent, onGoBack }) => {
         }
     }
 
-    const handleDepBlur = (value, key) => {
+    // const handleDepBlur = (value, key) => {
 
-        // Validations
-        if (key === 'adharNo') {
-            const error = validateIDNumbers(key, value, true)
-            setDepErrors(errors => ({ ...errors, [key]: error }))
-        }
-        else if (key === 'mobileNumber') {
-            const error = validateMobileNumber(value, true)
-            setDepErrors(errors => ({ ...errors, [key]: error }))
-        }
-    }
+    //     // Validations
+    //     if (key === 'adharNo') {
+    //         const error = validateIDNumbers(key, value, true)
+    //         setDepErrors(errors => ({ ...errors, [key]: error }))
+    //     }
+    //     else if (key === 'mobileNumber') {
+    //         const error = validateMobileNumber(value, true)
+    //         setDepErrors(errors => ({ ...errors, [key]: error }))
+    //     }
+    // }
 
     const handleUpload = (file, name, proofType) => {
         getBase64(file, async (buffer) => {
@@ -248,29 +248,29 @@ const ManageEmployee = ({ isDriver, setHeaderContent, onGoBack }) => {
         })
     }
 
-    const handleDepUpload = (file, name) => {
-        getBase64(file, async (buffer) => {
-            if (name === 'any') {
-                const clone = { ...depAdharProof }
-                const { Front } = clone
-                if (Front) {
-                    clone.Back = buffer
-                    setDepAdharProofErrors(errors => ({ ...errors, Back: '' }))
-                }
-                else {
-                    clone.Front = buffer
-                    setDepAdharProofErrors(errors => ({ ...errors, Front: '' }))
-                }
-                setDepAdharProof(clone)
-            }
-            else {
-                setDepAdharProofErrors(errors => ({ ...errors, [name]: '' }))
-                const clone = { ...depAdharProof }
-                clone[name] = buffer
-                setDepAdharProof(clone)
-            }
-        })
-    }
+    // const handleDepUpload = (file, name) => {
+    //     getBase64(file, async (buffer) => {
+    //         if (name === 'any') {
+    //             const clone = { ...depAdharProof }
+    //             const { Front } = clone
+    //             if (Front) {
+    //                 clone.Back = buffer
+    //                 setDepAdharProofErrors(errors => ({ ...errors, Back: '' }))
+    //             }
+    //             else {
+    //                 clone.Front = buffer
+    //                 setDepAdharProofErrors(errors => ({ ...errors, Front: '' }))
+    //             }
+    //             setDepAdharProof(clone)
+    //         }
+    //         else {
+    //             setDepAdharProofErrors(errors => ({ ...errors, [name]: '' }))
+    //             const clone = { ...depAdharProof }
+    //             clone[name] = buffer
+    //             setDepAdharProof(clone)
+    //         }
+    //     })
+    // }
 
     const handleRemove = (name, proofType) => {
         if (proofType === 'adharProof') {
@@ -284,40 +284,42 @@ const ManageEmployee = ({ isDriver, setHeaderContent, onGoBack }) => {
 
     }
 
-    const handleDepRemove = (name) => {
-        if (name === 'Front') setDepAdharProof(data => ({ ...data, Front: '' }))
-        else if (name === 'Back') setDepAdharProof(data => ({ ...data, Back: '' }))
-    }
+    // const handleDepRemove = (name) => {
+    //     if (name === 'Front') setDepAdharProof(data => ({ ...data, Front: '' }))
+    //     else if (name === 'Back') setDepAdharProof(data => ({ ...data, Back: '' }))
+    // }
 
     const handleUpdate = async () => {
         const adharProofErrors = validateIDProofs(adharProof, adharProof.idProofType)
-        const depAdharProofErrors = validateIDProofs(depAdharProof, depAdharProof.idProofType)
+        // const depAdharProofErrors = validateIDProofs(depAdharProof, depAdharProof.idProofType)
         const licenseProofErrors = isDriver ? validateIDProofs(licenseProof, licenseProof.idProofType) : {}
         const accountErrors = validateEmployeeValues(accountValues, employeeType)
-        const depErrors = validateDependentValues(depValues)
+        // const depErrors = validateDependentValues(depValues)
 
         if (!isEmpty(accountErrors) || !isEmpty(adharProofErrors) || !isEmpty(licenseProofErrors)
-            || !isEmpty(depErrors) || !isEmpty(depAdharProofErrors)) {
+            // || !isEmpty(depErrors) || !isEmpty(depAdharProofErrors)
+        ) {
             setShake(true)
             setTimeout(() => setShake(false), 820)
-            setDepErrors(depErrors)
+            // setDepErrors(depErrors)
             setAccountErrors(accountErrors)
             setAdharProofErrors(adharProofErrors)
             setLicenseProofErrors(licenseProofErrors)
-            setDepAdharProofErrors(depAdharProofErrors)
+            // setDepAdharProofErrors(depAdharProofErrors)
             return
         }
 
-        const dependentDetails = { ...depValues, adharProof: depAdharProof }
-        let removedDepartmentId;
+        // const dependentDetails = { ...depValues, adharProof: depAdharProof }
+        // let removedDepartmentId;
 
-        if (dependentDetails.departmentId !== prevDepartmentId) {
-            removedDepartmentId = prevDepartmentId
-        }
+        // if (dependentDetails.departmentId !== prevDepartmentId) {
+        //     removedDepartmentId = prevDepartmentId
+        // }
 
         let body = {
-            ...accountValues, adharProof, licenseProof, dependentDetails,
-            removedDepartmentId
+            ...accountValues, adharProof, licenseProof,
+            // dependentDetails,
+            // removedDepartmentId
         }
         const url = updateUrl(isDriver)
         const options = { item: employeeType, v1Ing: 'Updating', v2: 'updated' }
@@ -372,7 +374,7 @@ const ManageEmployee = ({ isDriver, setHeaderContent, onGoBack }) => {
                                             onRemove={handleRemove}
                                             {...childProps}
                                         />
-                                        {
+                                        {/* {
                                             isWHAdmin ? null
                                                 : <DependentForm
                                                     data={depValues}
@@ -384,14 +386,14 @@ const ManageEmployee = ({ isDriver, setHeaderContent, onGoBack }) => {
                                                     onUpload={handleDepUpload}
                                                     onRemove={handleDepRemove}
                                                 />
-                                        }
+                                        } */}
                                     </>
                                 ) :
                                     <>
                                         <IDProofInfo data={adharProof} />
                                         {isDriver && <IDProofInfo data={licenseProof} />}
                                         <AccountView isDriver={isDriver} isWHAdmin={isWHAdmin} data={accountValues} />
-                                        {
+                                        {/* {
                                             isWHAdmin ? null
                                                 : <>
                                                     <Divider className='form-divider half-line' />
@@ -401,7 +403,7 @@ const ManageEmployee = ({ isDriver, setHeaderContent, onGoBack }) => {
                                                     <IDProofInfo data={depAdharProof} />
                                                     <DependentView data={depValues} />
                                                 </>
-                                        }
+                                        } */}
                                     </>
                             }
                             <div className={`app-footer-buttons-container ${editMode ? 'edit' : 'view'}`}>

@@ -20,7 +20,6 @@ import { deepClone, doubleKeyComplexSearch, isEmpty, resetTrackForm, showToast }
 const CurrentStock = ({ isSuperAdmin = false }) => {
     const [RM, setRM] = useState([])
     const [shake, setShake] = useState(false)
-    const [stock, setStock] = useState({})
     const [logs, setLogs] = useState([])
     const [loading, setLoading] = useState(true)
     const [formData, setFormData] = useState({})
@@ -34,27 +33,16 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
     const [confirmModal, setConfirmModal] = useState(false)
     const [btnDisabled, setBtnDisabled] = useState(false)
 
-    const { product20LCount, product2LCount, product1LCount, product500MLCount, product300MLCount } = stock
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
         getRM()
-        getTotalStock(opData)
 
         return () => {
             http.ABORT(source)
         }
     }, [])
-
-    const getTotalStock = async ({ startDate, endDate, shift, fromStart }) => {
-        const url = `motherPlant/getTotalProductionDetails?startDate=${startDate}&endDate=${endDate}&shiftType=${shift}&fromStart=${fromStart}`
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setStock(data)
-        } catch (error) { }
-    }
 
     const getRM = async () => {
         const url = `motherPlant/getCurrentRMDetails?isSuperAdmin=${isSuperAdmin}`

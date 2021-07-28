@@ -10,5 +10,7 @@ constants.SUPERADMIN = 'SuperAdmin'
 constants.ACCOUNTSADMIN = 'Accounts'
 constants.SALESADMIN = 'SalesAndMarketing'
 constants.MARKETINGMANAGER = 'MarketingManager'
+constants.Old20LCans = '20Lcans-Old';
+
 
 module.exports = { DATEFORMAT, DISTRIBUTOR, INSERTMESSAGE, UPDATEMESSAGE, DELETEMESSAGE, WEEKDAYS, FULLTIMEFORMAT, constants }
