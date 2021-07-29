@@ -127,7 +127,7 @@ motherPlantDbQueries.getRMDetails = async (input, callback) => {
 }
 
 motherPlantDbQueries.getCurrentRMDetails = async (input, callback) => {
-    let query = `select * from rawmaterialdetails WHERE departmentId=? AND (isApproved=1 OR itemName=${constants.Old20LCans}) ORDER BY createdDateTime DESC`;
+    let query = `select * from rawmaterialdetails WHERE departmentId=? AND (isApproved=1 OR itemName='${constants.Old20LCans}') ORDER BY createdDateTime DESC`;
     if (input.isSuperAdmin && input.isSuperAdmin == 'true') {
         query = `select r.*,d.departmentName from rawmaterialdetails r INNER JOIN departmentmaster d ON r.departmentId=d.departmentId ORDER BY r.createdDateTime DESC`
         return executeGetQuery(query, callback)

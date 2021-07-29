@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { Menu, message, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import Stock from '../forms/Stock';
 import { http } from '../../../../modules/http';
 import DamagedStock from '../forms/DamagedStock';
 import Spinner from '../../../../components/Spinner';
@@ -8,12 +9,13 @@ import Actions from '../../../../components/Actions';
 import SearchInput from '../../../../components/SearchInput';
 import CustomModal from '../../../../components/CustomModal';
 import ConfirmModal from '../../../../components/CustomModal';
-import { compareMaxNumber } from '../../../../utils/validations';
+import CustomButton from '../../../../components/CustomButton';
 import { currentStockColumns } from '../../../../assets/fixtures';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomPagination from '../../../../components/CustomPagination';
 import { TODAYDATE as d, TRACKFORM } from '../../../../utils/constants';
 import ActivityLogContent from '../../../../components/ActivityLogContent';
+import { compareMaxNumber, validateNumber } from '../../../../utils/validations';
 import { PlusIconGrey, TrashIconGrey, ListViewIconGrey } from '../../../../components/SVG_Icons';
 import { deepClone, doubleKeyComplexSearch, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 
@@ -28,7 +30,8 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
     const [formErrors, setFormErrors] = useState({})
     const [logModal, setLogModal] = useState(false)
     const [pageNumber, setPageNumber] = useState(1)
-    const [addModal, setAddModal] = useState(false)
+    const [addDamagedModal, setAddDamagedModal] = useState(false)
+    const [addStockModal, setAddStockModal] = useState(false)
     const [totalCount, setTotalCount] = useState(null)
     const [confirmModal, setConfirmModal] = useState(false)
     const [btnDisabled, setBtnDisabled] = useState(false)
@@ -78,6 +81,14 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
             const error = compareMaxNumber(value, totalQuantity, 'cans')
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
+        else if (key === 'totalQuantity') {
+            const error = validateNumber(value)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'reorderLevel') {
+            const error = validateNumber(value)
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
     }
 
     const handleBlur = (value, key) => {
@@ -89,10 +100,10 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
         }
     }
 
-    const handleAdd = async () => {
+    const handleAddDamaged = async () => {
         const { id, damagedCount = 0, itemCode, totalQuantity } = formData
         let errors = {}
-        const error = compareMaxNumber(damagedCount, totalQuantity, 'cans')
+        const error = validateNumber(damagedCount, totalQuantity, 'cans')
         error && (errors.damagedCount = error)
 
         if (!isEmpty(errors)) {
@@ -121,6 +132,47 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
         }
     }
 
+    const handleAddStock = async () => {
+        const { totalQuantity, itemCode } = formData
+        let errors = {}
+        if (!itemCode) errors.itemCode = 'Required'
+        if (!Number(totalQuantity)) errors.totalQuantity = 'Required'
+        else {
+            const error = validateNumber(totalQuantity, true)
+            error && (errors.totalQuantity = error)
+        }
+
+        if (!isEmpty(errors)) {
+            setShake(true)
+            setTimeout(() => setShake(false), 820)
+            setFormErrors(errors)
+            return
+        }
+
+        const body = { itemCode, totalQuantity }
+        const url = 'motherPlant/addOldEmptyCans'
+        const options = { item: 'Stock', v1Ing: 'Adding', v2: 'added' }
+
+        try {
+            setBtnDisabled(true)
+            showToast({ ...options, action: 'loading' })
+            const [data] = await http.POST(axios, url, body, config)
+            showToast(options)
+            optimisticAdd(data)
+            onModalClose(true)
+        } catch (error) {
+            message.destroy()
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+            }
+        }
+    }
+
+    const optimisticAdd = (data) => {
+        let clone = deepClone(RM);
+        clone.unshift(data)
+        setRM(clone)
+    }
     const optimisticUpdate = (id, damagedCount) => {
         let clone = deepClone(RM);
         const index = clone.findIndex(item => item.id === id)
@@ -133,17 +185,22 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
         if (formHasChanged && !hasUpdated) {
             return setConfirmModal(true)
         }
-        setAddModal(false)
+        setAddStockModal(false)
+        setAddDamagedModal(false)
         setFormData({})
         setFormErrors({})
         resetTrackForm()
         setBtnDisabled(false)
     }
 
+    const onAddStock = () => {
+        setAddStockModal(true)
+    }
+
     const handleMenuSelect = async (key, data) => {
         if (key === 'Add') {
             setFormData(data)
-            setAddModal(true)
+            setAddDamagedModal(true)
         }
         else if (key === 'logs') {
             await getLogs(data.id)
@@ -180,7 +237,7 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
             itemName,
             itemCode,
             totalQuantity,
-            reorderLevel,
+            reorderLevel: reorderLevel || '-',
             damagedCount,
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, item)} />
         }
@@ -192,7 +249,7 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
         onModalClose()
     }, [])
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
-    const handleModalCancel = useCallback(() => setAddModal(false), [])
+    const handleModalCancel = useCallback(() => onModalClose(), [])
     const handleLogModalCancel = useCallback(() => setLogModal(false), [])
 
     const sliceFrom = (pageNumber - 1) * pageSize
@@ -204,11 +261,16 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
                 <div className='left'>
                 </div>
                 <div className='right'>
+                    <CustomButton
+                        style={{ marginRight: '1em' }}
+                        text='Add Stock'
+                        onClick={onAddStock}
+                    />
                     <SearchInput
                         placeholder='Search Material'
                         className='delivery-search'
                         onChange={handleSearch}
-                        width='50%'
+                        width='40%'
                     />
                 </div>
             </div>
@@ -235,16 +297,32 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
             <CustomModal
                 hideCancel
                 okTxt='Add'
-                visible={addModal}
+                visible={addDamagedModal}
                 btnDisabled={btnDisabled}
                 title='Add Damaged Stock'
-                onOk={handleAdd}
+                onOk={handleAddDamaged}
                 onCancel={handleModalCancel}
                 className={`app-form-modal ${shake ? 'app-shake' : ''}`}
             >
                 <DamagedStock
                     data={formData}
                     onBlur={handleBlur}
+                    errors={formErrors}
+                    onChange={handleChange}
+                />
+            </CustomModal>
+            <CustomModal
+                hideCancel
+                okTxt='Add'
+                visible={addStockModal}
+                btnDisabled={btnDisabled}
+                title='Add Stock'
+                onOk={handleAddStock}
+                onCancel={handleModalCancel}
+                className={`app-form-modal ${shake ? 'app-shake' : ''}`}
+            >
+                <Stock
+                    data={formData}
                     errors={formErrors}
                     onChange={handleChange}
                 />
