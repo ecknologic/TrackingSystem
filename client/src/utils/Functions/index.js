@@ -55,6 +55,18 @@ export const computeTotalAmount = (data, key = 'totalAmount', statusKey = 'statu
 
 }
 
+export const computeTotal = (data, key) => {
+    let total = 0
+    if (!isEmpty(data)) {
+        total = data
+            .map(item => item[key])
+            .reduce((a, c) => a + c, 0).toLocaleString('en-IN')
+    }
+
+    return total
+
+}
+
 export const showToast = (props) => {
     let { item = 'Data', action = 'success',
         v1Ing = 'Saving', v2 = 'saved', duration } = props

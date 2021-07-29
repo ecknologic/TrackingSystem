@@ -6,14 +6,16 @@ import EmptyCansView from '../views/EmptyCans';
 import { http } from '../../../../modules/http'
 import Actions from '../../../../components/Actions';
 import Spinner from '../../../../components/Spinner';
+import { TRACKFORM } from '../../../../utils/constants';
+import InputLabel from '../../../../components/InputLabel';
+import InputValue from '../../../../components/InputValue';
 import CustomModal from '../../../../components/CustomModal';
 import ConfirmModal from '../../../../components/CustomModal';
 import { getEmptyCanColumns } from '../../../../assets/fixtures';
 import { EditIconGrey } from '../../../../components/SVG_Icons';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomPagination from '../../../../components/CustomPagination';
-import { TRACKFORM } from '../../../../utils/constants';
-import { deepClone, getStatusColor, resetTrackForm, showToast } from '../../../../utils/Functions';
+import { computeTotal, deepClone, getStatusColor, resetTrackForm, showToast } from '../../../../utils/Functions';
 const DATEFORMAT = 'DD/MM/YYYY'
 
 const Dashboard = () => {
@@ -29,6 +31,7 @@ const Dashboard = () => {
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
 
+    const totalAmount = useMemo(() => computeTotal(emptyCans, 'totalQuantity'), [emptyCans])
     const emptyCanColumns = useMemo(() => getEmptyCanColumns('motherplant'), [])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
@@ -159,7 +162,16 @@ const Dashboard = () => {
     const editMode = status !== 'Confirmed'
 
     return (
-        <div className='product-container employee-manager-content'>
+        <div className='stock-delivery-container'>
+            <div className='header'>
+                <div className='left'></div>
+                <div className='right'>
+                    <div className='field'>
+                        <InputLabel name='Total Empty Cans' />
+                        <InputValue size='larger' value={totalAmount} />
+                    </div>
+                </div>
+            </div>
             <div className='app-table dispatch-table'>
                 <Table
                     loading={{ spinning: loading, indicator: <Spinner /> }}

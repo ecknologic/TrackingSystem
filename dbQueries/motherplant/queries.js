@@ -127,7 +127,7 @@ motherPlantDbQueries.getRMDetails = async (input, callback) => {
 }
 
 motherPlantDbQueries.getCurrentRMDetails = async (input, callback) => {
-    let query = `select * from rawmaterialdetails WHERE departmentId=? AND (isApproved=1 OR itemName='20Lcans-Old') ORDER BY createdDateTime DESC`;
+    let query = `select * from rawmaterialdetails WHERE departmentId=? AND (isApproved=1 OR itemName='${constants.Old20LCans}') ORDER BY createdDateTime DESC`;
     if (input.isSuperAdmin && input.isSuperAdmin == 'true') {
         query = `select r.*,d.departmentName from rawmaterialdetails r INNER JOIN departmentmaster d ON r.departmentId=d.departmentId ORDER BY r.createdDateTime DESC`
         return executeGetQuery(query, callback)
@@ -452,6 +452,17 @@ motherPlantDbQueries.insertRMDetails = async (input, callback) => {
     let query = "insert into rawmaterialdetails (itemName,itemCode,reorderLevel,departmentId) values(?,?,?,?)";
     let requestBody = [itemName, itemCode, reorderLevel, departmentId]
     return executePostOrUpdateQuery(query, requestBody, callback)
+}
+
+motherPlantDbQueries.insertOldEmptyCans = async (input, callback) => {
+    const { itemCode, totalQuantity, departmentId } = input
+    let query = "insert into rawmaterialdetails (itemName,itemCode,isApproved,totalQuantity,departmentId) values(?,?,?,?,?)";
+    let requestBody = [constants.Old20LCans, itemCode, 1, totalQuantity, departmentId]
+    return executePostOrUpdateQuery(query, requestBody, (err, data) => {
+        if (err) return callback(err)
+        let getQuery = `select * from rawmaterialdetails WHERE id=${data.insertId}`
+        return executeGetQuery(getQuery, callback)
+    })
 }
 
 motherPlantDbQueries.updateRMDetailsStatus = async (input, callback) => {

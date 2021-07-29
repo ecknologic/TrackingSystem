@@ -158,7 +158,7 @@ warehouseQueries.getReceivedStock = async (warehouseId, callback) => {
     return executeGetParamsQuery(query, [warehouseId], callback)
 }
 warehouseQueries.getDamagedStock = async (motherPlantId, callback) => {
-    let query = "SELECT w.id,w.DCNO as dcNo,w.warehouseId,w.isConfirmed,w.deliveryDate,w.damaged20LCans as product20L,w.damaged1LBoxes as product1L,w.damaged500MLBoxes as product500ML,w.damaged300MLBoxes as product300ML,w.damaged2LBoxes as product2L,d.driverName,dri.mobileNumber,dep.address,dep.departmentName,dep.departmentId from warehousestockdetails w INNER JOIN dispatches d ON w.DCNO=d.DCNO INNER JOIN departmentmaster dep ON w.warehouseId=dep.departmentId INNER JOIN driverdetails dri ON d.driverId=dri.driverId where w.hasDamaged=1 AND d.departmentId=? ORDER BY w.deliveryDate DESC";
+    let query = "SELECT w.id,w.DCNO as dcNo,w.warehouseId,w.isConfirmed,w.deliveryDate,w.damaged20LCans as product20L,w.damaged1LBoxes as product1L,w.damaged500MLBoxes as product500ML,w.damaged300MLBoxes as product300ML,w.damaged2LBoxes as product2L,d.driverName,dri.mobileNumber,dep.address,dep.departmentName,dep.departmentId from warehousestockdetails w INNER JOIN dispatches d ON w.DCNO=d.DCNO INNER JOIN departmentmaster dep ON w.warehouseId=dep.departmentId INNER JOIN driverdetails dri ON d.driverId=dri.driverId where w.hasDamaged=1 AND dep.departmentId=? ORDER BY w.deliveryDate DESC";
     return executeGetParamsQuery(query, [motherPlantId], callback)
 }
 warehouseQueries.getReceivedStockById = async (input, callback) => {
