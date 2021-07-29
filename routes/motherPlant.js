@@ -285,11 +285,11 @@ router.post('/createRM', (req, res) => {
                         if (getErr) console.log("ERR", getErr);
                         else if (!data.length) {
                             motherPlantDbQueries.insertRMDetails(input, (insertErr, data) => {
-                                if (insertErr) console.log("ERR", err);
+                                if (insertErr) console.log("ERR", insertErr);
                             })
                             if (input.itemName == '20Lcans') {
                                 motherPlantDbQueries.insertRMDetails({ itemName: constants.Old20LCans, departmentId }, (insertErr, data) => {
-                                    if (insertErr) console.log("ERR", err);
+                                    if (insertErr) console.log("ERR", insertErr);
                                 })
                             }
                         }
@@ -298,6 +298,13 @@ router.post('/createRM', (req, res) => {
             })
         }
     });
+})
+
+router.post('/addOldEmptyCans', (req, res) => {
+    motherPlantDbQueries.insertOldEmptyCans({ ...req.body, departmentId }, (insertErr, data) => {
+        if (insertErr) res.status(500).json(dbError(insertErr));
+        else res.json(data)
+    })
 })
 
 router.put('/updateRM', (req, res) => {
@@ -730,16 +737,19 @@ router.get('/getMPdamagedStock', (req, res) => {
     })
 })
 
+const getRetailQuantity = async ({ product1L, product500ML, product300ML, product2L }) => {
+    return (product1L * 12) + (product500ML * 24) + (product300ML * 30) + (product2L * 9)
+}
 
-const updateCurrentRMDetailsQuantity = (input) => {
+const updateCurrentRMDetailsQuantity = async (input) => {
     const { product20L = 0, emptyCansCount = 0, product1L = 0, product500ML = 0, product300ML = 0, product2L = 0, managerName } = input
 
-    let retailQuantity = product1L + product500ML + product300ML + product2L
+    let retailQuantity = await getRetailQuantity({ product1L, product500ML, product300ML, product2L })
 
     motherPlantDbQueries.updateRetailQuantityRM(retailQuantity, (updateRetailErr, data) => {
         if (updateRetailErr) console.log(updateRetailErr);
     })
-    motherPlantDbQueries.updateRMHandlesQuantity(product2L, (update2lErr, data) => {
+    motherPlantDbQueries.updateRMHandlesQuantity(product2L * 9, (update2lErr, data) => {
         if (update2lErr) console.log(update2lErr);
     })
     motherPlantDbQueries.update20LQuantityRM(parseInt(product20L) - parseInt(emptyCansCount), (update20LErr, data) => {
@@ -756,7 +766,7 @@ const updateCurrentRMDetailsQuantity = (input) => {
                 const { totalQuantity, itemName, id } = i
                 logs.push({
                     oldValue: totalQuantity,
-                    updatedValue: getUpdatedValue({ totalQuantity, itemName, product2L, product20L, retailQuantity }),
+                    updatedValue: getUpdatedValue({ totalQuantity, itemName, product2L: product2L * 9, product20L, retailQuantity }),
                     createdDateTime: new Date(),
                     userId: adminUserId,
                     description: `Stock utilized by manager <b>(${managerName})</b>`,
