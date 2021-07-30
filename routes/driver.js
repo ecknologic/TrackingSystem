@@ -180,19 +180,21 @@ router.post('/updateDriver', async (req, res) => {
                     else console.log('log data', data)
                 })
             }
-            const { name, dob, gender, adharProof, mobileNumber, relation, dependentId, adharNo } = dependentDetails
-            const dependentlogs = await compareDriverDependentDetails({ name, dob, gender, adharProof, mobileNumber, relation, adharNo }, { userId, dependentId, userRole, adminUserName, staffId: driverId })
-            usersQueries.updateDependentDetails(dependentDetails, "driverDependentDetails", (err, success) => {
-                if (err) console.log("Driver Dependent Err", err)
-                else {
-                    if (dependentlogs.length) {
-                        auditQueries.createLog(dependentlogs, (err, data) => {
-                            if (err) console.log('log error', err)
-                            else console.log('log data', data)
-                        })
+            if (dependentDetails) {
+                const { name, dob, gender, adharProof, mobileNumber, relation, dependentId, adharNo } = dependentDetails
+                const dependentlogs = await compareDriverDependentDetails({ name, dob, gender, adharProof, mobileNumber, relation, adharNo }, { userId, dependentId, userRole, adminUserName, staffId: driverId })
+                usersQueries.updateDependentDetails(dependentDetails, "driverDependentDetails", (err, success) => {
+                    if (err) console.log("Driver Dependent Err", err)
+                    else {
+                        if (dependentlogs.length) {
+                            auditQueries.createLog(dependentlogs, (err, data) => {
+                                if (err) console.log('log error', err)
+                                else console.log('log data', data)
+                            })
+                        }
                     }
-                }
-            })
+                })
+            }
             res.json(results)
         }
     })
