@@ -1,4 +1,3 @@
-import { Radio } from 'antd';
 import React, { useEffect } from 'react';
 import InputLabel from '../../../components/InputLabel';
 import CustomInput from '../../../components/CustomInput';
@@ -36,7 +35,7 @@ const DispatchForm = (props) => {
                         />
                     </div>
                 </div>
-                <div className='columns'>
+                <div className='columns' style={{ width: '100%' }}>
                     <InputLabel name='Item Dispatched' error={errors.products} />
                     <div className='columns-container'>
                         <div className='column'>

@@ -7,12 +7,12 @@ import { http } from '../../../../modules/http';
 import Spinner from '../../../../components/Spinner';
 import Actions from '../../../../components/Actions';
 import useUser from '../../../../utils/hooks/useUser';
-import { TRACKFORM } from '../../../../utils/constants';
 import QuitModal from '../../../../components/CustomModal';
 import SearchInput from '../../../../components/SearchInput';
 import CustomModal from '../../../../components/CustomModal';
 import CustomButton from '../../../../components/CustomButton';
 import RoutesFilter from '../../../../components/RoutesFilter';
+import { TODAYDATE, TRACKFORM } from '../../../../utils/constants';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomDateInput from '../../../../components/CustomDateInput';
 import CustomPagination from '../../../../components/CustomPagination';
@@ -48,6 +48,7 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
     const [resetSearch, setResetSearch] = useState(false)
     const [customerList, setCustomerList] = useState([])
     const [distributorList, setDistributorList] = useState([])
+    const [currentStock, setCurrentStock] = useState({})
     const [filterInfo, setFilterInfo] = useState([])
     const [filterON, setFilterON] = useState(false)
     const [searchON, setSeachON] = useState(false)
@@ -77,6 +78,8 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
     }, [date])
 
     useEffect(() => {
+        getCurrentStock()
+
         return () => {
             http.ABORT(source)
         }
@@ -155,6 +158,15 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
             const data = await http.GET(axios, url, config)
             showToast({ v2: 'fetched' })
             setLogs(data)
+        } catch (error) { }
+    }
+
+    const getCurrentStock = async () => {
+        const url = `warehouse/currentActiveStockDetails/${TODAYDATE}?warehouseId=${warehouseId}`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setCurrentStock(data)
         } catch (error) { }
     }
 
@@ -296,7 +308,7 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
     }
 
     const handleSubmit = async () => {
-        const formErrors = validateDCValues(formData)
+        const formErrors = validateDCValues(formData, currentStock)
 
         if (!isEmpty(formErrors)) {
             setShake(true)
