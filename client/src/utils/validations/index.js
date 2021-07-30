@@ -194,12 +194,20 @@ export const validateBatchValues = (data, currentStock) => {
 
     let productErrors = validateProducts(rest)
     if (isEmpty(productErrors)) {
+        const { emptyCansCount, retailClosures, handles } = currentStock
         const textArray = []
-        if (Number(rest.product20L) > currentStock['20Lcans']) {
+        if (Number(rest.product20L) > (currentStock['20Lcans'] + emptyCansCount)) {
             textArray.push('20 Ltrs')
         }
         if (Number(rest.product20L) > currentStock['20LClosures']) {
             textArray.push('20L Closures')
+        }
+        if (Number(rest.product2L * 9) > handles) {
+            textArray.push('Handles')
+        }
+        if ((Number(rest.product2L * 9) + Number(rest.product1L * 12) +
+            Number(rest.product500ML * 24) + Number(rest.product300ML * 30)) > retailClosures) {
+            textArray.push('Retail Closures')
         }
         if (textArray.length) {
             productErrors.products = `${textArray.join(',')} qty exceeds current stock`
@@ -985,7 +993,7 @@ export const validateDamagedWithArrived = (data, key) => {
     return errors
 }
 
-export const validateDCValues = (data) => {
+export const validateDCValues = (data, currentStock) => {
     let errors = {};
     const text = 'Required'
 
@@ -1034,7 +1042,17 @@ export const validateDCValues = (data) => {
         const error = validateMobileNumber(phoneNumber, true)
         error && (errors.phoneNumber = error)
     }
-    const productErrors = validateProductNPrice(rest)
+    let productErrors = validateProductNPrice(rest)
+    if (isEmpty(productErrors)) {
+        const _currentStock = {
+            product20LCount: currentStock.total1LBoxes,
+            product2LCount: currentStock.total2LBoxes,
+            product1LCount: currentStock.total20LCans,
+            product500MLCount: currentStock.total300MLBoxes,
+            product300MLCount: currentStock.total500MLBoxes
+        }
+        productErrors = validateProductsInStock(_currentStock, rest, 'productNPrice')
+    }
     return { ...errors, ...productErrors }
 }
 
