@@ -258,9 +258,8 @@ router.get('/getCurrentStockDetails', (req, res) => {
             const data = { emptyCansCount: 0 }
             results.map(item => {
                 const { itemName, totalQuantity } = item;
-                if (itemName === '20Lcans') data['20Lcans'] = totalQuantity;
-                else if (itemName === '20LClosures') data['20LClosures'] = totalQuantity;
-                else if (itemName === constants.Old20LCans) data['emptyCansCount'] = totalQuantity;
+                if (itemName === constants.Old20LCans) data['emptyCansCount'] = totalQuantity;
+                else data[itemName] = totalQuantity
             })
 
             res.json(data)
