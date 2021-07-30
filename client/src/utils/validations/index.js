@@ -201,7 +201,9 @@ export const validateBatchValues = (data, currentStock) => {
         if (Number(rest.product20L) > currentStock['20LClosures']) {
             textArray.push('20L Closures')
         }
-        productErrors.products = `${textArray.join(',')} qty exceeds current stock`
+        if (textArray.length) {
+            productErrors.products = `${textArray.join(',')} qty exceeds current stock`
+        }
     }
     return { ...errors, ...productErrors }
 }

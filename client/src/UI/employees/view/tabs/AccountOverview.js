@@ -240,7 +240,7 @@ const ManageEmployee = ({ isDriver, setHeaderContent, onGoBack }) => {
                 }
                 else if (name === 'Front' || name === 'Back') {
                     setLicenseProofErrors(errors => ({ ...errors, [name]: '' }))
-                    const clone = { ...adharProof }
+                    const clone = { ...licenseProof }
                     clone[name] = buffer
                     setLicenseProof(clone)
                 }
