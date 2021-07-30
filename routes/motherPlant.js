@@ -281,17 +281,17 @@ router.post('/createRM', (req, res) => {
                 if (updateErr) res.status(500).json(dbError(err));
                 else {
                     res.json(INSERTMESSAGE)
-                    motherPlantDbQueries.getRMDetailsByItemCode(input.itemCode, (getErr, data) => {
+                    motherPlantDbQueries.getRMDetailsByItemCode({ departmentId, itemCode: input.itemCode }, (getErr, data) => {
                         if (getErr) console.log("ERR", getErr);
                         else if (!data.length) {
                             motherPlantDbQueries.insertRMDetails(input, (insertErr, data) => {
                                 if (insertErr) console.log("ERR", insertErr);
                             })
-                            if (input.itemName == '20Lcans') {
-                                motherPlantDbQueries.insertRMDetails({ itemName: constants.Old20LCans, departmentId }, (insertErr, data) => {
-                                    if (insertErr) console.log("ERR", insertErr);
-                                })
-                            }
+                            // if (input.itemName == '20Lcans') {
+                            //     motherPlantDbQueries.insertRMDetails({ itemName: constants.Old20LCans, departmentId }, (insertErr, data) => {
+                            //         if (insertErr) console.log("ERR", insertErr);
+                            //     })
+                            // }
                         }
                     })
                 }
@@ -301,9 +301,20 @@ router.post('/createRM', (req, res) => {
 })
 
 router.post('/addOldEmptyCans', (req, res) => {
-    motherPlantDbQueries.insertOldEmptyCans({ ...req.body, departmentId }, (insertErr, data) => {
-        if (insertErr) res.status(500).json(dbError(insertErr));
-        else res.json(data)
+    motherPlantDbQueries.getRMDetailsByItemCode({ itemName: constants.Old20LCans, departmentId }, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else if (results.length) {
+            motherPlantDbQueries.updateRMDetailsQuantity({ itemQty: req.body.totalQuantity, itemName: constants.Old20LCans, departmentId }, (insertErr, data) => {
+                if (insertErr) res.status(500).json(dbError(insertErr));
+                else res.json(data)
+            })
+        }
+        else {
+            motherPlantDbQueries.insertOldEmptyCans({ ...req.body, departmentId }, (insertErr, data) => {
+                if (insertErr) res.status(500).json(dbError(insertErr));
+                else res.json(data)
+            })
+        }
     })
 })
 
@@ -745,17 +756,18 @@ const updateCurrentRMDetailsQuantity = async (input) => {
     const { product20L = 0, emptyCansCount = 0, product1L = 0, product500ML = 0, product300ML = 0, product2L = 0, managerName } = input
 
     let retailQuantity = await getRetailQuantity({ product1L, product500ML, product300ML, product2L })
+    let quantity20L = parseInt(product20L) - parseInt(emptyCansCount)
 
-    motherPlantDbQueries.updateRetailQuantityRM(retailQuantity, (updateRetailErr, data) => {
+    motherPlantDbQueries.updateRetailQuantityRM({ retailQuantity, departmentId }, (updateRetailErr, data) => {
         if (updateRetailErr) console.log(updateRetailErr);
     })
-    motherPlantDbQueries.updateRMHandlesQuantity(product2L * 9, (update2lErr, data) => {
+    motherPlantDbQueries.updateRMHandlesQuantity({ quantity2L: product2L * 9, departmentId }, (update2lErr, data) => {
         if (update2lErr) console.log(update2lErr);
     })
-    motherPlantDbQueries.update20LQuantityRM(parseInt(product20L) - parseInt(emptyCansCount), (update20LErr, data) => {
+    motherPlantDbQueries.update20LQuantityRM({ quantity20L, departmentId }, (update20LErr, data) => {
         if (update20LErr) console.log(update20LErr);
     })
-    motherPlantDbQueries.update20LOldQuantityRM(emptyCansCount, (update20LErr, data) => {
+    motherPlantDbQueries.update20LOldQuantityRM({ emptyCansCount, departmentId }, (update20LErr, data) => {
         if (update20LErr) console.log(update20LErr);
     })
     let logs = [];

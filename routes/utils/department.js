@@ -35,7 +35,7 @@ const compareDepartmentData = (data, { departmentId, type, adminUserId: userId, 
 //Motherplant Current Stock
 const compareCurrentStockLog = (data, { departmentId, itemCode, userId, userRole, userName }) => {
     return new Promise((resolve) => {
-        motherPlantDbQueries.getCurrentRMDetailsByItemCode(itemCode, (err, results) => {
+        motherPlantDbQueries.getCurrentRMDetailsByItemCode({itemCode,departmentId}, (err, results) => {
             if (err) resolve([])
             else if (results.length) {
                 const oldData = results[0]
