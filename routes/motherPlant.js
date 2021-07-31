@@ -197,6 +197,15 @@ router.post('/updateProductionQCStatus', (req, res) => {
     });
 })
 
+router.put('/updateRMDetailsQuantityById', (req, res) => {
+    let input = req.body;
+    motherPlantDbQueries.updateRMDetailsQuantityById({ ...input, departmentId }, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else
+            res.json(UPDATEMESSAGE);
+    });
+})
+
 router.post('/createQualityCheck', (req, res) => {
     let input = req.body;
     input.departmentId = departmentId

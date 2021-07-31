@@ -49,11 +49,11 @@ router.get('/getVisitedCustomersReport', (req, res) => {
           let onboardedCustomers = 0, pendingApprovals = 0
           if (results1.length) {
             if (results1[0].isApproved == 1) {
-              onboardedCustomers = results1[0].customersCount
-              pendingApprovals = results1[1].customersCount
+              onboardedCustomers = results1[0]?.customersCount
+              pendingApprovals = results1[1]?.customersCount
             } else {
-              pendingApprovals = results1[0].customersCount
-              onboardedCustomers = results1[1].customersCount
+              pendingApprovals = results1[0]?.customersCount
+              onboardedCustomers = results1[1]?.customersCount
             }
           }
           res.json({ ...results[0], onboardedCustomers, pendingApprovals })
