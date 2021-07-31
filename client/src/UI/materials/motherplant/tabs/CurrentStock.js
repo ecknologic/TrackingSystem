@@ -117,7 +117,7 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
         }
 
         const body = { id, totalQuantity }
-        const url = 'motherPlant/TODO'
+        const url = 'motherPlant/updateRMDetailsQuantityById'
         const options = { item: 'Current Stock', v1Ing: 'Updating', v2: 'updated' }
 
         try {

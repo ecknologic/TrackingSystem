@@ -480,7 +480,7 @@ motherPlantDbQueries.updateRMDetailsStatus = async (input, callback) => {
 motherPlantDbQueries.updateRMDetailsDamageCount = async (input, callback) => {
     const { id, damagedCount } = input
     let query = "UPDATE rawmaterialdetails SET damagedCount=damagedCount+?,totalQuantity=totalQuantity-? WHERE id=?";
-    let requestBody = [damagedCount, damagedCount, id]
+    let requestBody = [parseInt(damagedCount), parseInt(damagedCount), id]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
