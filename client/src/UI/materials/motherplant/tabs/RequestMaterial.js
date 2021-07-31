@@ -66,7 +66,7 @@ const RequestMaterial = ({ goToTab, ...rest }) => {
             showToast({ ...options, action: 'loading' })
             await http.POST(axios, url, body, config)
             showToast(options)
-            goToTab('2')
+            goToTab('3')
             resetForm()
         } catch (error) {
             message.destroy()

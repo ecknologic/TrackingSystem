@@ -5,7 +5,7 @@ let departmenttransactionQueries = {}
 
 departmenttransactionQueries.getDepartmentTransactions = (input, callback) => {
     const { id, type } = input
-    let query = "SELECT a.transactionId as auditId,a.description,a.createdDateTime,a.oldValue,a.updatedValue from departmenttransactions a WHERE a.transactionId=? AND subType=?"
+    let query = "SELECT a.transactionId as auditId,a.description,a.createdDateTime,a.oldValue,a.updatedValue from departmenttransactions a WHERE a.transactionId=? AND subType=? ORDER BY createdDateTime DESC"
     executeGetParamsQuery(query, [id, type], callback)
 }
 
