@@ -3,6 +3,7 @@ import { Menu, message, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Stock from '../forms/Stock';
 import { http } from '../../../../modules/http';
+import CurrentStockForm from '../forms/CurrentStock';
 import DamagedStock from '../forms/DamagedStock';
 import Spinner from '../../../../components/Spinner';
 import Actions from '../../../../components/Actions';
@@ -16,7 +17,7 @@ import CustomPagination from '../../../../components/CustomPagination';
 import { TODAYDATE as d, TRACKFORM } from '../../../../utils/constants';
 import ActivityLogContent from '../../../../components/ActivityLogContent';
 import { compareMaxNumber, validateNumber } from '../../../../utils/validations';
-import { PlusIconGrey, TrashIconGrey, ListViewIconGrey } from '../../../../components/SVG_Icons';
+import { PlusIconGrey, ListViewIconGrey, EditIconGrey } from '../../../../components/SVG_Icons';
 import { deepClone, doubleKeyComplexSearch, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 
 const CurrentStock = ({ isSuperAdmin = false }) => {
@@ -30,6 +31,8 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
     const [formErrors, setFormErrors] = useState({})
     const [logModal, setLogModal] = useState(false)
     const [pageNumber, setPageNumber] = useState(1)
+    const [viewModal, setViewModal] = useState(false)
+    const [viewTitle, setViewTitle] = useState(false)
     const [addDamagedModal, setAddDamagedModal] = useState(false)
     const [addStockModal, setAddStockModal] = useState(false)
     const [totalCount, setTotalCount] = useState(null)
@@ -100,10 +103,42 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
         }
     }
 
+    const handleSubmit = async () => {
+        const { id, totalQuantity } = formData
+        let errors = {}
+        const error = validateNumber(totalQuantity, true)
+        error && (errors.totalQuantity = error)
+
+        if (!isEmpty(errors)) {
+            setShake(true)
+            setTimeout(() => setShake(false), 820)
+            setFormErrors(errors)
+            return
+        }
+
+        const body = { id, totalQuantity }
+        const url = 'motherPlant/TODO'
+        const options = { item: 'Current Stock', v1Ing: 'Updating', v2: 'updated' }
+
+        try {
+            setBtnDisabled(true)
+            showToast({ ...options, action: 'loading' })
+            await http.PUT(axios, url, body, config)
+            showToast(options)
+            optimisticUpdate(id, totalQuantity, 'totalQuantity')
+            onModalClose(true)
+        } catch (error) {
+            message.destroy()
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+            }
+        }
+    }
+
     const handleAddDamaged = async () => {
         const { id, damagedCount = 0, itemCode, totalQuantity } = formData
         let errors = {}
-        const error = validateNumber(damagedCount, totalQuantity, 'cans')
+        const error = compareMaxNumber(damagedCount, totalQuantity, 'cans')
         error && (errors.damagedCount = error)
 
         if (!isEmpty(errors)) {
@@ -122,7 +157,7 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
             showToast({ ...options, action: 'loading' })
             await http.PUT(axios, url, body, config)
             showToast(options)
-            optimisticUpdate(id, damagedCount)
+            optimisticUpdate(id, damagedCount, 'damagedCount')
             onModalClose(true)
         } catch (error) {
             message.destroy()
@@ -173,10 +208,10 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
         clone.unshift(data)
         setRM(clone)
     }
-    const optimisticUpdate = (id, damagedCount) => {
+    const optimisticUpdate = (id, value, key) => {
         let clone = deepClone(RM);
         const index = clone.findIndex(item => item.id === id)
-        clone[index].damagedCount = damagedCount;
+        clone[index][key] = value;
         setRM(clone)
     }
 
@@ -186,6 +221,7 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
             return setConfirmModal(true)
         }
         setAddStockModal(false)
+        setViewModal(false)
         setAddDamagedModal(false)
         setFormData({})
         setFormErrors({})
@@ -198,7 +234,12 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
     }
 
     const handleMenuSelect = async (key, data) => {
-        if (key === 'Add') {
+        if (key === 'view') {
+            setFormData(data)
+            setViewTitle(`Material Details - ${data.itemName}`)
+            setViewModal(true)
+        }
+        else if (key === 'Add') {
             setFormData(data)
             setAddDamagedModal(true)
         }
@@ -296,6 +337,23 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
             }
             <CustomModal
                 hideCancel
+                okTxt='Update'
+                visible={viewModal}
+                btnDisabled={btnDisabled}
+                title={viewTitle}
+                onOk={handleSubmit}
+                onCancel={handleModalCancel}
+                className={`app-form-modal ${shake ? 'app-shake' : ''}`}
+            >
+                <CurrentStockForm
+                    data={formData}
+                    onBlur={handleBlur}
+                    errors={formErrors}
+                    onChange={handleChange}
+                />
+            </CustomModal>
+            <CustomModal
+                hideCancel
                 okTxt='Add'
                 visible={addDamagedModal}
                 btnDisabled={btnDisabled}
@@ -353,8 +411,7 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
 
 const opData = { startDate: d, endDate: d, shift: 'All', fromStart: true }
 const options = [
-    // <Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>,
-    <Menu.Item key="Delete" icon={<TrashIconGrey />} >Delete</Menu.Item>,
+    <Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>,
     <Menu.Item key="logs" icon={<ListViewIconGrey />}>Acvitity Logs</Menu.Item>,
     <Menu.Item key="Add" icon={<PlusIconGrey />} >Add Damaged Stock</Menu.Item>
 ]

@@ -1,14 +1,12 @@
 import React, { useEffect } from 'react';
-import { TODAYDATE } from '../../../../utils/constants';
 import InputLabel from '../../../../components/InputLabel';
 import CustomInput from '../../../../components/CustomInput';
 import { resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
-import CustomDateInput from '../../../../components/CustomDateInput';
 
-const DamagedStock = (props) => {
+const CurrentStock = (props) => {
 
     const { data, errors, onChange, onBlur } = props
-    const { itemName, itemCode, damagedCount } = data
+    const { itemName, itemCode, totalQuantity, reorderLevel, damagedCount } = data
 
     useEffect(() => {
         resetTrackForm()
@@ -34,22 +32,26 @@ const DamagedStock = (props) => {
                 </div>
                 <div className='row'>
                     <div className='input-container stretch'>
-                        <InputLabel name='Damaged Quantity' error={errors.damagedCount} mandatory />
-                        <CustomInput value={damagedCount}
-                            error={errors.damagedCount} placeholder='Add Quantity'
-                            onBlur={(value) => onBlur(value, 'damagedCount')} maxLength={10}
-                            onChange={(value) => onChange(value, 'damagedCount')}
+                        <InputLabel name='Current Quantity' error={errors.totalQuantity} mandatory />
+                        <CustomInput value={totalQuantity}
+                            error={errors.totalQuantity} placeholder='Add Current Quantity'
+                            onBlur={(value) => onBlur(value, 'totalQuantity')} maxLength={10}
+                            onChange={(value) => onChange(value, 'totalQuantity')}
                         />
                     </div>
                 </div>
                 <div className='row'>
                     <div className='input-container'>
-                        <InputLabel name='Date' />
-                        <CustomDateInput value={TODAYDATE} disabled />
+                        <InputLabel name='Reorder Level' error={errors.reorderLevel} />
+                        <CustomInput value={reorderLevel} placeholder='Reorder Level' disabled />
+                    </div>
+                    <div className='input-container'>
+                        <InputLabel name='Damaged' error={errors.damagedCount} />
+                        <CustomInput value={damagedCount} placeholder='Damaged' disabled />
                     </div>
                 </div>
             </div>
         </>
     )
 }
-export default DamagedStock
+export default CurrentStock

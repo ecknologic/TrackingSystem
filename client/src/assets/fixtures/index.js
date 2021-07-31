@@ -748,6 +748,11 @@ export const productionColumns = [
         key: 'managerName'
     },
     {
+        title: 'Status',
+        dataIndex: 'status',
+        key: 'status'
+    },
+    {
         title: 'Actions',
         dataIndex: 'action',
         key: 'action'
