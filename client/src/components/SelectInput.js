@@ -41,6 +41,7 @@ const SelectInput = ({ options, mode, onSelect, onDeselect, value, disabled, sho
     return (
         <Select
             ref={ref}
+            allowClear
             showArrow
             mode={mode}
             size='large'
@@ -50,6 +51,7 @@ const SelectInput = ({ options, mode, onSelect, onDeselect, value, disabled, sho
             disabled={disabled}
             tagRender={tagRender}
             suffixIcon={suffixIcon}
+            onClear={handleSelect}
             onSelect={handleSelect}
             placeholder={placeholder}
             onDeselect={handleDeselect}
