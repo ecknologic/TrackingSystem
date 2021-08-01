@@ -75,17 +75,17 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
 
 
     const handleChange = (value, key) => {
+        const { totalQuantity } = formData
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
         // Validations
         if (key === 'damagedCount') {
-            const { totalQuantity } = formData
             const error = compareMaxNumber(value, totalQuantity, 'cans')
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
-        else if (key === 'totalQuantity') {
-            const error = validateNumber(value)
+        else if (key === 'utilizedQuantity') {
+            const error = compareMaxNumber(value, totalQuantity, 'cans')
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
         else if (key === 'reorderLevel') {
@@ -104,10 +104,10 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
     }
 
     const handleSubmit = async () => {
-        const { id, totalQuantity } = formData
+        let { id, utilizedQuantity = 0, totalQuantity } = formData
         let errors = {}
-        const error = validateNumber(totalQuantity, true)
-        error && (errors.totalQuantity = error)
+        const error = compareMaxNumber(utilizedQuantity, totalQuantity, 'cans')
+        error && (errors.utilizedQuantity = error)
 
         if (!isEmpty(errors)) {
             setShake(true)
@@ -115,7 +115,7 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
             setFormErrors(errors)
             return
         }
-
+        totalQuantity = totalQuantity - Number(utilizedQuantity)
         const body = { id, totalQuantity }
         const url = 'motherPlant/updateRMDetailsQuantityById'
         const options = { item: 'Current Stock', v1Ing: 'Updating', v2: 'updated' }
