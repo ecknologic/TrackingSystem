@@ -49,11 +49,18 @@ const Invoices = () => {
     }
 
     const getInvoices = async () => {
-        const { FOR, id } = state || {}
+        const { FOR, id, TYPE } = state || {}
 
         let url = 'invoice/getDepartmentInvoices'
+        if (TYPE === 'PAYMENTS') {
+            url = 'invoice/getDepartmentInvoicePayments'
+        }
+        
         if (FOR === SUPERADMIN || FOR === ACCOUNTSADMIN) {
             url = 'invoice/getInvoices'
+            if (TYPE === 'PAYMENTS') {
+                url = 'invoice/getInvoicePayments'
+            }
         }
         else if (FOR === 'CUSTOMER') {
             url = `invoice/getCustomerInvoices/${id}`

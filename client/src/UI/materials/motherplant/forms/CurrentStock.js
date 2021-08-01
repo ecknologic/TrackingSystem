@@ -6,7 +6,7 @@ import { resetTrackForm, trackAccountFormOnce } from '../../../../utils/Function
 const CurrentStock = (props) => {
 
     const { data, errors, onChange, onBlur } = props
-    const { itemName, itemCode, totalQuantity, reorderLevel, damagedCount } = data
+    const { itemName, itemCode, totalQuantity, reorderLevel, damagedCount, utilizedQuantity = 0 } = data
 
     useEffect(() => {
         resetTrackForm()
@@ -31,12 +31,16 @@ const CurrentStock = (props) => {
                     </div>
                 </div>
                 <div className='row'>
-                    <div className='input-container stretch'>
-                        <InputLabel name='Current Quantity' error={errors.totalQuantity} mandatory />
-                        <CustomInput value={totalQuantity}
-                            error={errors.totalQuantity} placeholder='Add Current Quantity'
-                            onBlur={(value) => onBlur(value, 'totalQuantity')} maxLength={10}
-                            onChange={(value) => onChange(value, 'totalQuantity')}
+                    <div className='input-container'>
+                        <InputLabel name='Current Qty' error={errors.totalQuantity} />
+                        <CustomInput value={totalQuantity} placeholder='Add Current Qty' disabled/>
+                    </div>
+                    <div className='input-container'>
+                        <InputLabel name='Utilized Qty' error={errors.utilizedQuantity} mandatory />
+                        <CustomInput value={utilizedQuantity}
+                            error={errors.utilizedQuantity} placeholder='Add Utilized Qty'
+                            onBlur={(value) => onBlur(value, 'utilizedQuantity')} maxLength={10}
+                            onChange={(value) => onChange(value, 'utilizedQuantity')}
                         />
                     </div>
                 </div>
