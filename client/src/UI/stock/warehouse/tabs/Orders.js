@@ -213,7 +213,7 @@ const Orders = ({ driverList, vehicleList, locationList, warehouseList }) => {
 
         const { driverName } = driverList.find(item => item.driverId === driverId)
         const { RouteName: routeName } = routeList.find(item => item.RouteId === routeId)
-        const { vehicleName } = vehicleList.find(item => item.vehicleId === driverId)
+        const { vehicleName } = vehicleList.find(item => item.vehicleId === vehicleId)
 
         let url = 'customer/createOrderDelivery'
         const body = { ...formData, driverName, routeName, vehicleName }
