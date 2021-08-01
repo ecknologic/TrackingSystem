@@ -31,7 +31,7 @@ const Dashboard = () => {
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
 
-    const totalAmount = useMemo(() => computeTotal(emptyCans, 'totalQuantity'), [emptyCans])
+    const totalAmount = useMemo(() => computeTotal(emptyCans, 'emptycans_count'), [emptyCans])
     const emptyCanColumns = useMemo(() => getEmptyCanColumns('motherplant'), [])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
