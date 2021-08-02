@@ -96,6 +96,14 @@ customerQueries.getTotalActiveCorporateCustomers = (input, callback) => {
         executeGetParamsQuery(query, [startDate, endDate], callback)
     } else executeGetParamsQuery(query, callback)
 }
+customerQueries.getTotalActiveCustomersCount = (input, callback) => {
+    let { startDate, endDate, fromStart } = input;
+    let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND isClosed=0 AND deleted=0"
+    if (fromStart !== 'true') {
+        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND isClosed=0 AND deleted=0 AND DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
+        executeGetParamsQuery(query, [startDate, endDate], callback)
+    } else executeGetParamsQuery(query, callback)
+}
 customerQueries.getTotalActiveCorporateCustomersChange = (input, callback) => {
     let { startDate, endDate, fromStart, type } = input;
     const { startDate: newStartDate, endDate: newEndDate } = dateComparisions(startDate, endDate, type)

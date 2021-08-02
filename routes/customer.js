@@ -704,6 +704,10 @@ router.get('/getActiveCustomersCount', (req, res) => {
             if (err) res.status(500).json(dbError(err))
             else result.prevActiveCorporateCustomers = previousCorporate.length ? previousCorporate[0].totalCount : 0
           })
+          customerQueries.getTotalActiveCustomersCount(input, (err, activeCustomers) => {
+            if (err) res.status(500).json(dbError(err))
+            else result.totalActiveCustomers = activeCustomers.length ? activeCustomers[0].totalCount : 0
+          })
           customerQueries.getTotalActiveOtherCustomers(input, (err, other) => {
             if (err) res.status(500).json(dbError(err))
             else {
