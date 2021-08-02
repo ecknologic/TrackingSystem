@@ -1,5 +1,6 @@
 const { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, dateComparisions } = require('../../utils/functions.js');
 const dayjs = require('dayjs');
+const { constants } = require('../../utils/constants.js');
 
 var motherPlantDbQueries = {}
 motherPlantDbQueries.getMotherPlantsList = async (callback) => {
@@ -126,7 +127,7 @@ motherPlantDbQueries.getRMDetails = async (input, callback) => {
 }
 
 motherPlantDbQueries.getCurrentRMDetails = async (input, callback) => {
-    let query = `select * from rawmaterialdetails WHERE departmentId=? AND isApproved=1 ORDER BY createdDateTime DESC`;
+    let query = `select * from rawmaterialdetails WHERE departmentId=? AND (isApproved=1 OR itemName='${constants.Old20LCans}') ORDER BY createdDateTime DESC`;
     if (input.isSuperAdmin && input.isSuperAdmin == 'true') {
         query = `select r.*,d.departmentName from rawmaterialdetails r INNER JOIN departmentmaster d ON r.departmentId=d.departmentId ORDER BY r.createdDateTime DESC`
         return executeGetQuery(query, callback)
@@ -134,9 +135,10 @@ motherPlantDbQueries.getCurrentRMDetails = async (input, callback) => {
     return executeGetParamsQuery(query, [input.departmentId], callback)
 }
 
-motherPlantDbQueries.getCurrentRMDetailsByItemCode = async (itemCode, callback) => {
-    let query = `select * from rawmaterialdetails WHERE itemCode=?`;
-    return executeGetParamsQuery(query, [itemCode], callback)
+motherPlantDbQueries.getCurrentRMDetailsByItemCode = async (input, callback) => {
+    const { itemCode, departmentId } = input
+    let query = `select * from rawmaterialdetails WHERE itemCode=? AND departmentId=?`;
+    return executeGetParamsQuery(query, [itemCode, departmentId], callback)
 }
 
 motherPlantDbQueries.getRMQtyByRMId = async (input, callback) => {
@@ -403,7 +405,10 @@ motherPlantDbQueries.createQualityCheck = async (input, callback) => {
         if (approveProd == 1) {
             motherPlantDbQueries.updateProductionQcCreatedStatus({ productionQcId })
             motherPlantDbQueries.updateProductionApprovedStatus({ batchId })
+            motherPlantDbQueries.updateProductionStatus({ batchId, testResult })
         }
+    } else if (qcLevel != 1 && testResult == 'Rejected') {
+        motherPlantDbQueries.updateProductionStatus({ batchId, testResult })
     }
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
@@ -441,9 +446,10 @@ motherPlantDbQueries.createRM = async (input, callback) => {
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
-motherPlantDbQueries.getRMDetailsByItemCode = async (itemCode, callback) => {
-    let query = `Select * from rawmaterialdetails WHERE itemCode=?`;
-    return executeGetParamsQuery(query, [itemCode], callback)
+motherPlantDbQueries.getRMDetailsByItemCode = async (input, callback) => {
+    const { itemCode, itemName, departmentId } = input
+    let query = `Select * from rawmaterialdetails WHERE (itemCode=? OR itemName=?) AND departmentId=?`;
+    return executeGetParamsQuery(query, [itemCode, itemName, departmentId], callback)
 }
 
 motherPlantDbQueries.insertRMDetails = async (input, callback) => {
@@ -453,24 +459,49 @@ motherPlantDbQueries.insertRMDetails = async (input, callback) => {
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
+motherPlantDbQueries.insertOldEmptyCans = async (input, callback) => {
+    const { itemCode, totalQuantity, departmentId } = input
+    let query = "insert into rawmaterialdetails (itemName,itemCode,isApproved,totalQuantity,departmentId) values(?,?,?,?,?)";
+    let requestBody = [constants.Old20LCans, itemCode, 1, totalQuantity, departmentId]
+    return executePostOrUpdateQuery(query, requestBody, (err, data) => {
+        if (err) return callback(err)
+        let getQuery = `select * from rawmaterialdetails WHERE id=${data.insertId}`
+        return executeGetQuery(getQuery, callback)
+    })
+}
+
 motherPlantDbQueries.updateRMDetailsStatus = async (input, callback) => {
-    const { itemCode } = input
-    let query = "UPDATE rawmaterialdetails SET isApproved=1 WHERE itemCode=?";
-    let requestBody = [itemCode]
+    const { itemCode, departmentId } = input
+    let query = "UPDATE rawmaterialdetails SET isApproved=1 WHERE itemCode=? AND departmentId=?";
+    let requestBody = [itemCode, departmentId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
 motherPlantDbQueries.updateRMDetailsDamageCount = async (input, callback) => {
     const { id, damagedCount } = input
     let query = "UPDATE rawmaterialdetails SET damagedCount=damagedCount+?,totalQuantity=totalQuantity-? WHERE id=?";
-    let requestBody = [damagedCount, damagedCount, id]
+    let requestBody = [parseInt(damagedCount), parseInt(damagedCount), id]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+
+motherPlantDbQueries.updateRMDetailsEmptyCansCount = async (input, callback) => {
+    const { emptycans_count, motherplantId } = input
+    let query = "UPDATE rawmaterialdetails SET totalQuantity=totalQuantity+? WHERE itemName=? AND departmentId=?";
+    let requestBody = [emptycans_count, constants.Old20LCans, motherplantId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
 motherPlantDbQueries.updateRMDetailsQuantity = async (input, callback) => {
-    const { itemQty, itemCode } = input
-    let query = "UPDATE rawmaterialdetails SET totalQuantity=totalQuantity + ? WHERE itemCode=?";
-    let requestBody = [itemQty, itemCode]
+    const { itemQty, itemCode, itemName, departmentId } = input
+    let query = "UPDATE rawmaterialdetails SET totalQuantity=totalQuantity + ? WHERE (itemCode=? OR itemName=?) AND departmentId=?";
+    let requestBody = [itemQty, itemCode, itemName, departmentId]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+
+motherPlantDbQueries.updateRMDetailsQuantityById = async (input, callback) => {
+    const { totalQuantity, id, departmentId } = input
+    let query = "UPDATE rawmaterialdetails SET totalQuantity=? WHERE id=? AND departmentId=?";
+    let requestBody = [totalQuantity, id, departmentId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
@@ -502,21 +533,31 @@ motherPlantDbQueries.updateProductionDetails = async (input, callback) => {
     })
 }
 
-motherPlantDbQueries.updateRetailQuantityRM = async (totalQuantity, callback) => {
-    let query = `update rawmaterialdetails set totalQuantity=totalQuantity-? where itemName='retailClosures' OR itemName='sleeves'`;
-    let requestBody = [parseInt(totalQuantity)]
+motherPlantDbQueries.updateRetailQuantityRM = async (input, callback) => {
+    const { retailQuantity, departmentId } = input
+    let query = `update rawmaterialdetails set totalQuantity=totalQuantity-? where (itemName='retailClosures' OR itemName='sleeves') AND departmentId=?`;
+    let requestBody = [parseInt(retailQuantity), departmentId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
-motherPlantDbQueries.update20LQuantityRM = async (totalQuantity, callback) => {
-    let query = `update rawmaterialdetails set totalQuantity=totalQuantity-? where itemName='20LClosures' OR itemName='strikers' OR itemName='20Lcans'`;
-    let requestBody = [parseInt(totalQuantity)]
+motherPlantDbQueries.update20LQuantityRM = async (input, callback) => {
+    const { quantity20L, departmentId } = input
+    let query = `update rawmaterialdetails set totalQuantity=totalQuantity-? where (itemName='20LClosures' OR itemName='stickers' OR itemName='20Lcans') AND departmentId=?`;
+    let requestBody = [parseInt(quantity20L), departmentId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
-motherPlantDbQueries.updateRMHandlesQuantity = async (totalQuantity, callback) => {
-    let query = `update rawmaterialdetails set totalQuantity=totalQuantity-? where itemName='handles'`;
-    let requestBody = [parseInt(totalQuantity)]
+motherPlantDbQueries.update20LOldQuantityRM = async (input, callback) => {
+    const { emptyCansCount, departmentId } = input
+    let query = `update rawmaterialdetails set totalQuantity=totalQuantity-? where (itemName='20LClosures' OR itemName=?) AND departmentId=?`;
+    let requestBody = [parseInt(emptyCansCount), constants.Old20LCans, departmentId]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+
+motherPlantDbQueries.updateRMHandlesQuantity = async (input, callback) => {
+    const { quantity2L, departmentId } = input
+    let query = `update rawmaterialdetails set totalQuantity=totalQuantity-? where itemName='handles' AND departmentId=?`;
+    let requestBody = [parseInt(quantity2L), departmentId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
@@ -568,6 +609,12 @@ motherPlantDbQueries.updateProductionQcCreatedStatus = (input, callback) => {
 motherPlantDbQueries.updateProductionApprovedStatus = (input, callback) => {
     let query = `update production set isApproved=? where batchId=?`;
     let requestBody = [1, input.batchId]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+motherPlantDbQueries.updateProductionStatus = (input, callback) => {
+    const { batchId, testResult } = input
+    let query = `update production set status=? where batchId=?`;
+    let requestBody = [testResult, batchId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 motherPlantDbQueries.deleteVehicle = (vehicleId, callback) => {

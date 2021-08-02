@@ -21,6 +21,8 @@ const departmenttransactionQueries = require('../dbQueries/departmenttransaction
 const { compareCustomerData, compareCustomerDeliveryData, compareProductsData, compareOrderData, compareCustomerOrderData, compareCustomerEnquiryData } = require('./utils/customer.js');
 const { getReceiptId, getCustomerIdsForReceiptsDropdown, getCustomerDepositDetails, createCustomerReceipt, getCustomerReceipts, getCustomerReceiptsPaginationCount } = require('./Customers/receipt.js');
 const { encrypt, decrypt } = require('../utils/crypto.js');
+const customerClosingControllers = require('./Customers/closing.js');
+const customerClosingQueries = require('../dbQueries/Customer/closing.js');
 let departmentId, userId, userName, userRole;
 
 var storage = multer.diskStorage({
@@ -139,8 +141,6 @@ router.get('/getCustomers', (req, res) => {
   });
 });
 
-
-
 router.post('/createCustomer', async (req, res) => {
   let customerDetailsQuery = "insert  into customerdetails (customerName,mobileNumber,alternatePhNo,EmailId,Address1,Address2,gstNo,contactperson,panNo,adharNo,registeredDate,invoicetype,natureOfBussiness,creditPeriodInDays,referredBy,departmentId,deliveryDaysId,depositAmount,isActive,latitude,longitude,shippingAddress,shippingContactPerson,shippingContactNo,customerType,organizationName,createdBy,customer_id_proof,idProofType,pincode,dispenserCount,contractPeriod,rocNo,poNo,salesAgent) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
   // let customerDetailsQuery = "insert  into customerdetails (customerName,mobileNumber,EmailId,Address1,gstNo,registeredDate,invoicetype,natureOfBussiness,creditPeriodInDays,referredBy,isActive,qrcodeId,latitude,longitude,customerType,organizationName,createdBy) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
@@ -174,7 +174,7 @@ const saveDeliveryDetails = (customerId, customerdetails, res) => {
       let count = 0
       for (let i of customerdetails.deliveryDetails) {
         let latLong = await getLatLongDetails({ Address1: i.address })
-        saveDeliveryDays(i.deliveryDays).then(deliveryDays => {
+        saveDeliveryDays(i.deliveryDays).then(async deliveryDays => {
           let deliveryDetailsQuery = "insert  into DeliveryDetails (gstNo,location,address,phoneNumber,contactPerson,deliverydaysid,depositAmount,customer_Id,departmentId,isActive,gstProof,registeredDate,latitude,longitude,routeId) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
           var gstProof = i.gstProof && Buffer.from(i.gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64')
           let registeredDate = new Date()
@@ -380,7 +380,7 @@ router.get("/getMarketingCustomerDetailsByType/:customerType", (req, res) => { /
 });
 
 router.get("/getRoutes/:departmentId", (req, res) => {
-  customerQueries.getRoutesByDepartmentId(req.params.departmentId, (err, results) => {
+  customerQueries.getRoutesByDepartmentId(req, (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
       res.json(results)
@@ -423,8 +423,7 @@ router.get("/getCustomerDetailsByType", (req, res) => {
   })
 });
 router.get("/getInActiveCustomers", (req, res) => {
-  const { userId } = req.query
-  customerQueries.getInActiveCustomers(userId, (err, customersData) => {
+  customerQueries.getInActiveCustomers(req.userId, (err, customersData) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
       res.json(customersData)
@@ -458,7 +457,7 @@ router.get("/getMarketingCustomerDetailsByStatus", (req, res) => {
   })
 });
 router.get("/getCustomerDetailsById/:customerId", (req, res) => {
-  customerQueries.getCustomerDetails(req.params.customerId, (err, results) => {
+  customerQueries.getCustomerDetails(req.params.customerId, async (err, results) => {
     if (err) res.status(500).json(err);
     else {
       if (results.length) {
@@ -545,9 +544,9 @@ const getAddedDeliveryDetails = (deliveryDetailsId) => {
 // })
 const getDeliveryDetails = ({ customerId, deliveryDetailsId, isSuperAdmin }) => {
   return new Promise((resolve, reject) => {
-    let deliveryDetailsQuery = "SELECT d.location,d.contactPerson,d.customer_Id,d.deliveryDetailsId,d.phoneNumber,d.isActive as isApproved,d.location AS deliveryLocation,r.departmentName,ro.routeName FROM DeliveryDetails d INNER JOIN routes ro ON d.routeId=ro.RouteId INNER JOIN departmentmaster r ON r.departmentId=d.departmentId WHERE d.deleted=0 AND (d.customer_Id=? OR d.deliveryDetailsId=?) ORDER BY d.registeredDate DESC";
+    let deliveryDetailsQuery = "SELECT d.isClosed,d.location,d.contactPerson,d.customer_Id,d.deliveryDetailsId,d.phoneNumber,d.isActive as isApproved,d.location AS deliveryLocation,r.departmentName,ro.routeName FROM DeliveryDetails d INNER JOIN routes ro ON d.routeId=ro.RouteId INNER JOIN departmentmaster r ON r.departmentId=d.departmentId WHERE d.deleted=0 AND (d.customer_Id=? OR d.deliveryDetailsId=?) ORDER BY d.registeredDate DESC";
     if (isSuperAdmin == 'true') {
-      deliveryDetailsQuery = "SELECT d.*,d.isActive as isApproved,d.location AS deliveryLocation,r.departmentName,ro.routeName,json_object('SUN',cd.SUN,'MON',cd.MON,'TUE',cd.TUE,'WED',cd.WED,'THU',cd.THU,'FRI',cd.FRI,'SAT',cd.SAT) as 'deliveryDays' " +
+      deliveryDetailsQuery = "SELECT d.*,d.isClosed,d.isActive as isApproved,d.location AS deliveryLocation,r.departmentName,ro.routeName,json_object('SUN',cd.SUN,'MON',cd.MON,'TUE',cd.TUE,'WED',cd.WED,'THU',cd.THU,'FRI',cd.FRI,'SAT',cd.SAT) as 'deliveryDays' " +
         /*  "concat(CASE WHEN cd.sun=1 THEN 'Sunday,' ELSE '' END,"+
          "CASE WHEN cd.mon=1 THEN 'Monday,' ELSE '' END,"+
          "CASE WHEN cd.tue=1 THEN 'Tuesday,' ELSE '' END,"+
@@ -598,7 +597,7 @@ router.post('/updateCustomer', async (req, res) => {
       let customerDetailsQuery = "UPDATE customerdetails SET customerName=?,mobileNumber=?,alternatePhNo=?,EmailId=?,Address1=?,Address2=?,gstNo=?,contactperson=?,panNo=?,adharNo=?,invoicetype=?,natureOfBussiness=?,creditPeriodInDays=?,referredBy=?,departmentId=?,deliveryDaysId=?,depositAmount=?,isActive=?,latitude=?,longitude=?,shippingAddress=?,shippingContactPerson=?,shippingContactNo=?,customerType=?,organizationName=?,idProofType=?,pincode=?, dispenserCount=?, contractPeriod=?,rocNo=?,poNo=?,customer_id_proof=?,salesAgent=?,isReceiptCreated=? WHERE customerId=" + customerId;
       let promiseArray = req.body.idProofs[0] != null ? [getLatLongDetails(customerdetails), customer_id_proof ? updateProofs(req) : uploadImage(req)] : [getLatLongDetails(customerdetails)]
       Promise.all(promiseArray)
-        .then(response => {
+        .then(async response => {
           let customerIdProof = req.body.idProofs[0] != null && customer_id_proof ? customer_id_proof : response[1]
           // if (gstNo) gstNo = encrypt(gstNo)
           // if (panNo) panNo = encrypt(panNo)
@@ -1070,6 +1069,37 @@ const updateWHDelivery = (req) => {
 }
 
 
+router.get('/closeCustomer/:customerid', async (req, res) => {
+  customerQueries.closeCustomer({ customerId: req.params.customerid }, (err, data) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else {
+      customerClosingQueries.updateCustomerClosingStatus({ customerId: req.params.customerid }, (updateerr, updated) => {
+        if (updateerr) console.log(updateerr.sqlMessage);
+      })
+      res.send(UPDATEMESSAGE)
+    }
+  })
+});
+
+router.get('/closeCustomerdelivery/:deliveryId', async (req, res) => {
+  customerQueries.closeCustomerDelivery({ deliveryId: req.params.deliveryId }, (err, data) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else {
+      customerClosingQueries.updateCustomerClosingStatus({ deliveryDetailsId: req.params.deliveryId }, (updateerr, updated) => {
+        if (updateerr) console.log(updateerr.sqlMessage);
+        else {
+          if (req.query.hasMultipleDeliveries && req.query.hasMultipleDeliveries != "true") {
+            customerQueries.closeCustomer({ customerId: req.query.customerId }, (updateerr, updated) => {
+              if (updateerr) console.log(updateerr.sqlMessage);
+            })
+          }
+        }
+      })
+      res.send(UPDATEMESSAGE)
+    }
+  })
+});
+
 
 //Receipt APIS
 router.get('/getCustomerReceiptsPaginationCount', async (req, res) => {
@@ -1094,6 +1124,43 @@ router.get('/getCustomerReceipts', async (req, res) => {
 
 router.post('/createCustomerReceipt', async (req, res) => {
   createCustomerReceipt(req, res)
+});
+
+//Customer Closing APIS
+router.get('/getCustomerIdsByAgent', async (req, res) => {
+  customerClosingControllers.getCustomerIdsByAgent(req, res)
+});
+
+router.get('/getCustomerDeliveryIds', async (req, res) => {
+  customerClosingControllers.getCustomerDeliveryIds(req, res)
+});
+
+router.get('/getDepositDetailsByDeliveryId', async (req, res) => {
+  customerClosingControllers.getDepositDetailsByDeliveryId(req, res)
+});
+
+router.get('/getCustomerClosingDetails', async (req, res) => {
+  customerClosingControllers.getCustomerClosingDetails(req, res)
+});
+
+router.get('/getCustomerClosingDetails/:closingId', async (req, res) => {
+  customerClosingControllers.getCustomerClosingDetailsById(req, res)
+});
+
+router.get('/getClosingDetailsPaginationCount', async (req, res) => {
+  customerClosingControllers.getCustomerClosingDetailsPaginationCount(req, res)
+});
+
+router.get('/getCustomerAccountDetailsById/:customerId', async (req, res) => {
+  customerClosingControllers.getCustomerAccountDetailsById(req, res)
+});
+
+router.post('/addCustomerClosingDetails', async (req, res) => {
+  customerClosingControllers.addCustomerClosingDetails(req, res)
+});
+
+router.put('/updateCustomerClosingDetails', async (req, res) => {
+  customerClosingControllers.updateCustomerClosingDetails(req, res)
 });
 
 module.exports = router;

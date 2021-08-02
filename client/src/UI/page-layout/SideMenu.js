@@ -10,7 +10,7 @@ import {
     DashboardIcon, SettingIcon, FriendReqIcon, FriendReqIconLight, DocIconLight, FriendIcon,
     DashboardIconLight, SettingIconLight, ProjectIcon, ProjectIconLight, DocIcon, FriendsIconLight, FriendsIcon,
     FriendIconLight, LocationIcon, LocationIconLight, BlocksIcon, BlocksIconLight, StockIcon, StockIconLight, BadgeIcon, BadgeIconLight, RibbonIcon, RibbonIconLight, CheckIcon, CheckIconLight, StackIcon, StackIconLight,
-    HomeIcon, HomeIconLight
+    HomeIcon, HomeIconLight, ReportIconLight
 } from '../../components/SVG_Icons'
 
 const SideMenu = () => {
@@ -94,7 +94,10 @@ const SideMenu = () => {
                             {/* Below item should be: uncommented */}
                             {/* <Item key='/reports' style={{ pointerEvents: 'none' }} icon={selected === '/reports' ? <ReportIcon /> : <ReportIconLight />}>
                                 Reports
-                            </Item> */}
+                            </Item>*/}
+                            <Item key='/closed-customers' icon={selected === '/closed-customers' ? <FriendIcon /> : <FriendIconLight />}>
+                                Closed Customers
+                            </Item>
                         </>
                         : null
                 }
@@ -109,6 +112,9 @@ const SideMenu = () => {
                             </Item>
                             <Item key='/visited-customers' icon={selected === '/visited-customers' ? <FriendIcon /> : <FriendIconLight />}>
                                 Visited Customers
+                            </Item>
+                            <Item key='/closed-customers' icon={selected === '/closed-customers' ? <FriendIcon /> : <FriendIconLight />}>
+                                Closed Customers
                             </Item>
                             <Item key='/customerDashboard' style={{ pointerEvents: 'none' }} icon={selected === '/customerDashboard' ? <SettingIcon /> : <SettingIconLight />}>
                                 Settings
@@ -131,9 +137,12 @@ const SideMenu = () => {
                             <Item key='/visited-customers' icon={selected === '/visited-customers' ? <FriendIcon /> : <FriendIconLight />}>
                                 Visited Customers
                             </Item>
-                            <Item key='/customerDashboard' style={{ pointerEvents: 'none' }} icon={selected === '/customerDashboard' ? <SettingIcon /> : <SettingIconLight />}>
-                                Settings
+                            <Item key='/closed-customers' icon={selected === '/closed-customers' ? <FriendIcon /> : <FriendIconLight />}>
+                                Closed Customers
                             </Item>
+                            {/* <Item key='/customerDashboard' style={{ pointerEvents: 'none' }} icon={selected === '/customerDashboard' ? <SettingIcon /> : <SettingIconLight />}>
+                                Settings
+                            </Item>*/}
                         </>
                         : null
                 }
@@ -175,8 +184,10 @@ const SideMenu = () => {
                             <Item key='/visited-customers' icon={selected === '/visited-customers' ? <FriendIcon /> : <FriendIconLight />}>
                                 Visited Customers
                             </Item>
-                            {/* Below item should be: uncommented  */}
-                            {/* <SubMenu icon={<ReportIconLight />} title='Reports'>
+                            <Item key='/closed-customers' icon={selected === '/closed-customers' ? <DocIcon /> : <DocIconLight />}>
+                                Closed Customers
+                            </Item>
+                            <SubMenu icon={<ReportIconLight />} title='Reports'>
                                 <Item key='/new-customers-report' icon={selected === '/new-customers-report' ? <FriendIcon /> : <FriendIconLight />}>
                                     New Customers
                                 </Item>
@@ -187,7 +198,7 @@ const SideMenu = () => {
                                     Dispensers Viability
                                 </Item>
                             </SubMenu>
-                            <Item key='/settings' style={{ pointerEvents: 'none' }} icon={selected === '/settings' ? <SettingIcon /> : <SettingIconLight />}>
+                            {/* <Item key='/settings' style={{ pointerEvents: 'none' }} icon={selected === '/settings' ? <SettingIcon /> : <SettingIconLight />}>
                                 Settings
                             </Item> */}
                         </>
@@ -205,7 +216,9 @@ const SideMenu = () => {
                             <Item key='/invoices' icon={selected === '/invoices' ? <DocIcon /> : <DocIconLight />}>
                                 Invoices
                             </Item>
-                            {/* Below item should be: uncommented */}
+                            <Item key='/closed-customers' icon={selected === '/closed-customers' ? <FriendIcon /> : <FriendIconLight />}>
+                                Closed Customers
+                            </Item>
                             {/* <Item key='/settings' style={{ pointerEvents: 'none' }} icon={selected === '/settings' ? <SettingIcon /> : <SettingIconLight />}>
                                 Settings
                             </Item> */}

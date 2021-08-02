@@ -34,9 +34,9 @@ const DamagedStock = (props) => {
                 </div>
                 <div className='row'>
                     <div className='input-container stretch'>
-                        <InputLabel name='Quantity' error={errors.damagedCount} mandatory />
+                        <InputLabel name='Damaged Qty' error={errors.damagedCount} mandatory />
                         <CustomInput value={damagedCount}
-                            error={errors.damagedCount} placeholder='Add Quantity'
+                            error={errors.damagedCount} placeholder='Add Qty'
                             onBlur={(value) => onBlur(value, 'damagedCount')} maxLength={10}
                             onChange={(value) => onChange(value, 'damagedCount')}
                         />

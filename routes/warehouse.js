@@ -331,9 +331,15 @@ router.get('/getReturnedEmptyCans/:date', (req, res) => {
   });
 });
 router.post('/returnEmptyCans', (req, res) => {
+  const { emptycans_count = 0, motherplantId } = req.body
   warehouseQueries.returnEmptyCansToMotherplant(req.body, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
-    else res.json(results);
+    else {
+      res.json(results);
+      motherPlantDbQueries.updateRMDetailsEmptyCansCount({ emptycans_count, motherplantId }, (updateerr, results) => {
+        if (updateerr) res.status(500).json({ status: 500, message: updateerr.sqlMessage });
+      })
+    }
   });
 });
 router.put('/updateReturnEmptyCans', (req, res) => {
@@ -516,12 +522,16 @@ router.get('/getDCDetailsByCOId/:COId', (req, res) => {
 })
 
 router.put('/rescheduleDc', (req, res) => {
+  const { customerOrderId } = req.body
   warehouseQueries.checkDcSchedule(req.body, (deliveryErr, deliveryDetails) => {
     if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
     else if (!deliveryDetails.length) {
       warehouseQueries.rescheduleDC(req.body, (deliveryErr, rescheduled) => {
         if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
-        else res.json('Rescheduled successfully')
+        else {
+          departmenttransactionQueries.createDepartmentTransaction({ userId: adminUserId, description: `DC  Rescheduled by ${userRole} <b>(${userName})</b>`, transactionId: customerOrderId, departmentId, type: 'warehouse', subType: 'delivery' })
+          res.json('Rescheduled successfully')
+        }
       })
     } else {
       res.status(405).send('DC Already exists')
@@ -529,16 +539,20 @@ router.put('/rescheduleDc', (req, res) => {
   })
 })
 router.put('/closeDC', (req, res) => {
+  const { customerOrderId } = req.body
   warehouseQueries.closeDC(req.body, (deliveryErr, closedDetails) => {
     if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
-    else res.json(closedDetails)
+    else {
+      departmenttransactionQueries.createDepartmentTransaction({ userId: adminUserId, description: `DC  Cancelled by ${userRole} <b>(${userName})</b>`, transactionId: customerOrderId, departmentId, type: 'warehouse', subType: 'delivery' })
+      res.json(closedDetails)
+    }
   })
 })
 
 const saveDC = (req, res) => {
   let { customerName, contactPerson, phoneNumber, address, routeId, driverId, product20L, product1L, product500ML, product300ML, product2L, warehouseId, customerType, existingCustomerId, distributorId, creationType, isDelivered = 'InProgress', deliveryLocation, price20L, price2L, price1L, price500ML, price300ML, EmailId, deliveredDate } = req.body;
   let dcCreateQuery = "insert into customerorderdetails (customerName,contactPerson,phoneNumber,address,routeId,driverId,20LCans,1LBoxes,500MLBoxes,300MLBoxes,2LBoxes,warehouseId,customerType,existingCustomerId,distributorId,creationType,isDelivered,deliveryLocation,price20L,price2L,price1L,price500ML,price300ML,EmailId,deliveredDate) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-  let insertQueryValues = [customerName, contactPerson, phoneNumber, address, routeId, driverId, product20L, product1L, product500ML, product300ML, product2L, warehouseId, customerType, existingCustomerId, distributorId, creationType, isDelivered, deliveryLocation, price20L, price2L, price1L, price500ML, price300ML, EmailId, deliveredDate && new Date()]
+  let insertQueryValues = [customerName, contactPerson, phoneNumber, address, routeId, driverId, product20L, product1L, product500ML, product300ML, product2L, warehouseId, customerType, existingCustomerId, distributorId, creationType, isDelivered, deliveryLocation, price20L, price2L, price1L, price500ML, price300ML, EmailId, !driverId && new Date()]
   db.query(dcCreateQuery, insertQueryValues, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else {

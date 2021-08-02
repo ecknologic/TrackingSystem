@@ -6,7 +6,7 @@ const DATEFORMAT = 'DD/MM/YYYY'
 
 const MessageCard = ({ data, onSelect, active }) => {
 
-    const { createdDateTime, invoiceId, totalAmount, customerName, status } = data
+    const { createdDateTime, invoiceId, totalAmount, amountPaid, customerName, status } = data
     const color = getStatusColor(status)
     const classname = active.invoiceId === invoiceId ? 'selected' : ''
 
@@ -14,7 +14,7 @@ const MessageCard = ({ data, onSelect, active }) => {
         <div className={`message-card ${classname} ${invoiceId}`} onClick={() => onSelect(data)}>
             <div className='header'>
                 <span className='title clamp-1'>{customerName}</span>
-                <span className='amount'>₹{totalAmount}</span>
+                <span className='amount'>₹{totalAmount || amountPaid}</span>
             </div>
             <div className='footer'>
                 <div className='left-part'>

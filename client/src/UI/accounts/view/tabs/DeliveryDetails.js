@@ -30,6 +30,8 @@ const DeliveryDetails = ({ isAdmin, recentDelivery, onUpdate, ...rest }) => {
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
     const [modalDelete, setModalDelete] = useState(false)
+    const [exitMsg, setExitMsg] = useState('')
+    const [currentAction, setCurrentAction] = useState('')
     const [viewedArr, setViewedArr] = useState([])
     const [currentId, setCurrentId] = useState('')
     const [shake, setShake] = useState(false)
@@ -95,17 +97,31 @@ const DeliveryDetails = ({ isAdmin, recentDelivery, onUpdate, ...rest }) => {
         } catch (error) { }
     }
 
-    const optimisticUpdate = (data) => {
+    const handleAccountClose = async (id) => {
+        const options = { item: 'Delivery', v1Ing: 'Closing', v2: 'closed' }
+        const hasMD = delivery.filter(item => item.isClosed == 0).length > 1
+        const url = `customer/closeCustomerdelivery/${id}?hasMultipleDeliveries=${hasMD}&customerId=${accountId}`
+        try {
+            showToast({ ...options, action: 'loading' })
+            await http.GET(axios, url, config)
+            optimisticUpdate(id, 1, 'isClosed')
+            showToast(options)
+        } catch (error) {
+            message.destroy()
+        }
+    }
+
+    const optimisticDataUpdate = (data) => {
         let clone = deepClone(delivery);
         const index = clone.findIndex(item => item.deliveryDetailsId === data.deliveryDetailsId)
         clone[index] = data;
         setDelivery(clone)
     }
 
-    const optimisticApprove = (id, status) => {
+    const optimisticUpdate = (id, value, key) => {
         let clone = deepClone(delivery);
         const index = clone.findIndex(item => item.deliveryDetailsId === id)
-        clone[index].isApproved = status;
+        clone[index][key] = value;
         setDelivery(clone)
     }
 
@@ -208,6 +224,9 @@ const DeliveryDetails = ({ isAdmin, recentDelivery, onUpdate, ...rest }) => {
     }
 
     const handleMenuSelect = (key, id) => {
+        setCurrentId(id)
+        setCurrentAction(key)
+
         if (key === 'Active') {
             handleStatusUpdate(id, 1)
         }
@@ -215,7 +234,11 @@ const DeliveryDetails = ({ isAdmin, recentDelivery, onUpdate, ...rest }) => {
             handleStatusUpdate(id, 0)
         }
         else if (key === 'Delete') {
-            setCurrentId(id)
+            setExitMsg('Are you sure you want to delete?')
+            setModalDelete(true)
+        }
+        else if (key === 'Close') {
+            setExitMsg('Are you sure you want to close?')
             setModalDelete(true)
         }
     }
@@ -228,7 +251,7 @@ const DeliveryDetails = ({ isAdmin, recentDelivery, onUpdate, ...rest }) => {
         try {
             showToast({ ...options, action: 'loading' })
             await http.PUT(axios, url, body, config)
-            optimisticApprove(id, status)
+            optimisticUpdate(id, status, 'status')
             showToast(options)
         } catch (error) {
             message.destroy()
@@ -272,7 +295,7 @@ const DeliveryDetails = ({ isAdmin, recentDelivery, onUpdate, ...rest }) => {
             setBtnDisabled(true)
             showToast({ ...options, action: 'loading' })
             const { data: [data = {}] } = await http.POST(axios, url, body, config)
-            optimisticUpdate(data)
+            optimisticDataUpdate(data)
             showToast(options)
             onModalClose(true)
             setBtnDisabled(false)
@@ -304,7 +327,10 @@ const DeliveryDetails = ({ isAdmin, recentDelivery, onUpdate, ...rest }) => {
     }, [])
     const handleDeleteModalOk = useCallback(() => {
         setModalDelete(false);
-        handleDelete(currentId)
+        if (currentAction === 'Close')
+            handleAccountClose(currentId)
+        else
+            handleDelete(currentId)
     }, [currentId])
 
     const handleDeleteModalCancel = useCallback(() => {
@@ -364,7 +390,7 @@ const DeliveryDetails = ({ isAdmin, recentDelivery, onUpdate, ...rest }) => {
                 visible={modalDelete}
                 onOk={handleDeleteModalOk}
                 onCancel={handleDeleteModalCancel}
-                title='Are you sure you want to delete?'
+                title={exitMsg}
                 okTxt='Yes'
             >
                 <ConfirmMessage msg='This action cannot be undone.' />

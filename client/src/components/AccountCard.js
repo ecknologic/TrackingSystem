@@ -4,12 +4,12 @@ import Actions from './Actions';
 import NameCard from './NameCard';
 import PrimaryButton from './PrimaryButton';
 import { getBusinessTypes } from '../utils/Functions';
-import { FriendsIconGrey, FriendIconGrey, TrashIconGrey, TickIconGrey, BlockIconGrey } from './SVG_Icons';
+import { FriendsIconGrey, FriendIconGrey, TrashIconGrey, TickIconGrey, BlockIconGrey, CrossIconDark } from './SVG_Icons';
 import '../sass/accountCard.scss'
 
 const AccountCard = ({ data, onClick, btnTxt = 'Manage Account', onSelect, isAdmin, optionOneLabel = 'Active' }) => {
     const { customerId, isApproved, contactpersons, customerName, organizationName, address, natureOfBussiness,
-        isSuperAdminApproved, depositAmount, customerNo } = data
+        isSuperAdminApproved, depositAmount, customerNo, isClosed } = data
 
     const optionOne = isApproved ? 'Draft' : optionOneLabel
     const iconOne = isApproved ? <BlockIconGrey /> : <TickIconGrey />
@@ -24,14 +24,28 @@ const AccountCard = ({ data, onClick, btnTxt = 'Manage Account', onSelect, isAdm
         onSelect(key, customerId, isSAApproved)
     }
 
-    const options = [
-        <Menu.Item key={optionOne} icon={iconOne}>{optionOne}</Menu.Item>,
-        <Menu.Item key="Delete" icon={<TrashIconGrey />} >Delete</Menu.Item>
-    ]
+    const getOptions = () => {
+        let options = [
+            <Menu.Item key={optionOne} icon={iconOne}>{optionOne}</Menu.Item>,
+            <Menu.Item key="Delete" icon={<TrashIconGrey />} >Delete</Menu.Item>,
+        ]
+
+        if (isApproved) {
+            options.push(<Menu.Item key="Close" icon={<CrossIconDark />}>Close</Menu.Item>)
+        }
+
+        if (isClosed) {
+            options = [<Menu.Item key="Delete" icon={<TrashIconGrey />} >Delete</Menu.Item>]
+        }
+
+        return options
+    }
 
     return (
         <div className='account-card-container'>
-            <div className={isApproved ? 'badge active' : 'badge'}>{isApproved ? "ACTIVE" : "DRAFT"}</div>
+            <div className={isClosed ? 'badge closed' : isApproved ? 'badge active' : 'badge'}>
+                {isClosed ? 'CLOSED' : isApproved ? 'ACTIVE' : 'DRAFT'}
+            </div>
             <div className='header'>
                 <div className={isApproved ? 'inner green' : 'inner'}>
                     {contacts > 1 ? <FriendsIconGrey className='friends icon' /> : <FriendIconGrey className='friend icon' />}
@@ -66,7 +80,7 @@ const AccountCard = ({ data, onClick, btnTxt = 'Manage Account', onSelect, isAdm
                 <PrimaryButton text={btnTxt} onClick={() => onClick(customerId)} />
                 {
                     isAdmin &&
-                    <Actions options={options} onSelect={handleSelect} />
+                    <Actions options={getOptions()} onSelect={handleSelect} />
                 }
             </div>
         </div>

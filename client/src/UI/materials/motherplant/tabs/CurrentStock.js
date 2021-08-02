@@ -1,26 +1,28 @@
 import axios from 'axios';
 import { Menu, message, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import Stock from '../forms/Stock';
 import { http } from '../../../../modules/http';
+import CurrentStockForm from '../forms/CurrentStock';
 import DamagedStock from '../forms/DamagedStock';
 import Spinner from '../../../../components/Spinner';
 import Actions from '../../../../components/Actions';
 import SearchInput from '../../../../components/SearchInput';
 import CustomModal from '../../../../components/CustomModal';
 import ConfirmModal from '../../../../components/CustomModal';
-import { compareMaxNumber } from '../../../../utils/validations';
+import CustomButton from '../../../../components/CustomButton';
 import { currentStockColumns } from '../../../../assets/fixtures';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomPagination from '../../../../components/CustomPagination';
 import { TODAYDATE as d, TRACKFORM } from '../../../../utils/constants';
 import ActivityLogContent from '../../../../components/ActivityLogContent';
-import { PlusIconGrey, TrashIconGrey, ListViewIconGrey } from '../../../../components/SVG_Icons';
+import { compareMaxNumber, validateNumber } from '../../../../utils/validations';
+import { PlusIconGrey, ListViewIconGrey, EditIconGrey } from '../../../../components/SVG_Icons';
 import { deepClone, doubleKeyComplexSearch, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 
 const CurrentStock = ({ isSuperAdmin = false }) => {
     const [RM, setRM] = useState([])
     const [shake, setShake] = useState(false)
-    const [stock, setStock] = useState({})
     const [logs, setLogs] = useState([])
     const [loading, setLoading] = useState(true)
     const [formData, setFormData] = useState({})
@@ -29,32 +31,24 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
     const [formErrors, setFormErrors] = useState({})
     const [logModal, setLogModal] = useState(false)
     const [pageNumber, setPageNumber] = useState(1)
-    const [addModal, setAddModal] = useState(false)
+    const [viewModal, setViewModal] = useState(false)
+    const [viewTitle, setViewTitle] = useState(false)
+    const [addDamagedModal, setAddDamagedModal] = useState(false)
+    const [addStockModal, setAddStockModal] = useState(false)
     const [totalCount, setTotalCount] = useState(null)
     const [confirmModal, setConfirmModal] = useState(false)
     const [btnDisabled, setBtnDisabled] = useState(false)
 
-    const { product20LCount, product2LCount, product1LCount, product500MLCount, product300MLCount } = stock
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
         getRM()
-        getTotalStock(opData)
 
         return () => {
             http.ABORT(source)
         }
     }, [])
-
-    const getTotalStock = async ({ startDate, endDate, shift, fromStart }) => {
-        const url = `motherPlant/getTotalProductionDetails?startDate=${startDate}&endDate=${endDate}&shiftType=${shift}&fromStart=${fromStart}`
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setStock(data)
-        } catch (error) { }
-    }
 
     const getRM = async () => {
         const url = `motherPlant/getCurrentRMDetails?isSuperAdmin=${isSuperAdmin}`
@@ -81,13 +75,21 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
 
 
     const handleChange = (value, key) => {
+        const { totalQuantity } = formData
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
         // Validations
         if (key === 'damagedCount') {
-            const { totalQuantity } = formData
             const error = compareMaxNumber(value, totalQuantity, 'cans')
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'utilizedQuantity') {
+            const error = compareMaxNumber(value, totalQuantity, 'cans')
+            setFormErrors(errors => ({ ...errors, [key]: error }))
+        }
+        else if (key === 'reorderLevel') {
+            const error = validateNumber(value)
             setFormErrors(errors => ({ ...errors, [key]: error }))
         }
     }
@@ -101,7 +103,39 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
         }
     }
 
-    const handleAdd = async () => {
+    const handleSubmit = async () => {
+        let { id, utilizedQuantity = 0, totalQuantity } = formData
+        let errors = {}
+        const error = compareMaxNumber(utilizedQuantity, totalQuantity, 'cans')
+        error && (errors.utilizedQuantity = error)
+
+        if (!isEmpty(errors)) {
+            setShake(true)
+            setTimeout(() => setShake(false), 820)
+            setFormErrors(errors)
+            return
+        }
+        totalQuantity = totalQuantity - Number(utilizedQuantity)
+        const body = { id, totalQuantity }
+        const url = 'motherPlant/updateRMDetailsQuantityById'
+        const options = { item: 'Current Stock', v1Ing: 'Updating', v2: 'updated' }
+
+        try {
+            setBtnDisabled(true)
+            showToast({ ...options, action: 'loading' })
+            await http.PUT(axios, url, body, config)
+            showToast(options)
+            optimisticUpdate(id, totalQuantity, 'totalQuantity')
+            onModalClose(true)
+        } catch (error) {
+            message.destroy()
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+            }
+        }
+    }
+
+    const handleAddDamaged = async () => {
         const { id, damagedCount = 0, itemCode, totalQuantity } = formData
         let errors = {}
         const error = compareMaxNumber(damagedCount, totalQuantity, 'cans')
@@ -123,7 +157,7 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
             showToast({ ...options, action: 'loading' })
             await http.PUT(axios, url, body, config)
             showToast(options)
-            optimisticUpdate(id, damagedCount)
+            optimisticUpdate(id, damagedCount, 'damagedCount')
             onModalClose(true)
         } catch (error) {
             message.destroy()
@@ -133,10 +167,51 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
         }
     }
 
-    const optimisticUpdate = (id, damagedCount) => {
+    const handleAddStock = async () => {
+        const { totalQuantity, itemCode } = formData
+        let errors = {}
+        if (!itemCode) errors.itemCode = 'Required'
+        if (!Number(totalQuantity)) errors.totalQuantity = 'Required'
+        else {
+            const error = validateNumber(totalQuantity, true)
+            error && (errors.totalQuantity = error)
+        }
+
+        if (!isEmpty(errors)) {
+            setShake(true)
+            setTimeout(() => setShake(false), 820)
+            setFormErrors(errors)
+            return
+        }
+
+        const body = { itemCode, totalQuantity }
+        const url = 'motherPlant/addOldEmptyCans'
+        const options = { item: 'Stock', v1Ing: 'Adding', v2: 'added' }
+
+        try {
+            setBtnDisabled(true)
+            showToast({ ...options, action: 'loading' })
+            const [data] = await http.POST(axios, url, body, config)
+            showToast(options)
+            optimisticAdd(data)
+            onModalClose(true)
+        } catch (error) {
+            message.destroy()
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+            }
+        }
+    }
+
+    const optimisticAdd = (data) => {
+        let clone = deepClone(RM);
+        clone.unshift(data)
+        setRM(clone)
+    }
+    const optimisticUpdate = (id, value, key) => {
         let clone = deepClone(RM);
         const index = clone.findIndex(item => item.id === id)
-        clone[index].damagedCount = damagedCount;
+        clone[index][key] = value;
         setRM(clone)
     }
 
@@ -145,17 +220,28 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
         if (formHasChanged && !hasUpdated) {
             return setConfirmModal(true)
         }
-        setAddModal(false)
+        setAddStockModal(false)
+        setViewModal(false)
+        setAddDamagedModal(false)
         setFormData({})
         setFormErrors({})
         resetTrackForm()
         setBtnDisabled(false)
     }
 
+    const onAddStock = () => {
+        setAddStockModal(true)
+    }
+
     const handleMenuSelect = async (key, data) => {
-        if (key === 'Add') {
+        if (key === 'view') {
             setFormData(data)
-            setAddModal(true)
+            setViewTitle(`Material Details - ${data.itemName}`)
+            setViewModal(true)
+        }
+        else if (key === 'Add') {
+            setFormData(data)
+            setAddDamagedModal(true)
         }
         else if (key === 'logs') {
             await getLogs(data.id)
@@ -192,7 +278,7 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
             itemName,
             itemCode,
             totalQuantity,
-            reorderLevel,
+            reorderLevel: reorderLevel || '-',
             damagedCount,
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, item)} />
         }
@@ -204,7 +290,7 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
         onModalClose()
     }, [])
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
-    const handleModalCancel = useCallback(() => setAddModal(false), [])
+    const handleModalCancel = useCallback(() => onModalClose(), [])
     const handleLogModalCancel = useCallback(() => setLogModal(false), [])
 
     const sliceFrom = (pageNumber - 1) * pageSize
@@ -216,11 +302,16 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
                 <div className='left'>
                 </div>
                 <div className='right'>
+                    <CustomButton
+                        style={{ marginRight: '1em' }}
+                        text='Add Stock'
+                        onClick={onAddStock}
+                    />
                     <SearchInput
                         placeholder='Search Material'
                         className='delivery-search'
                         onChange={handleSearch}
-                        width='50%'
+                        width='40%'
                     />
                 </div>
             </div>
@@ -246,17 +337,50 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
             }
             <CustomModal
                 hideCancel
+                okTxt='Update'
+                visible={viewModal}
+                btnDisabled={btnDisabled}
+                title={viewTitle}
+                onOk={handleSubmit}
+                onCancel={handleModalCancel}
+                className={`app-form-modal ${shake ? 'app-shake' : ''}`}
+            >
+                <CurrentStockForm
+                    data={formData}
+                    onBlur={handleBlur}
+                    errors={formErrors}
+                    onChange={handleChange}
+                />
+            </CustomModal>
+            <CustomModal
+                hideCancel
                 okTxt='Add'
-                visible={addModal}
+                visible={addDamagedModal}
                 btnDisabled={btnDisabled}
                 title='Add Damaged Stock'
-                onOk={handleAdd}
+                onOk={handleAddDamaged}
                 onCancel={handleModalCancel}
                 className={`app-form-modal ${shake ? 'app-shake' : ''}`}
             >
                 <DamagedStock
                     data={formData}
                     onBlur={handleBlur}
+                    errors={formErrors}
+                    onChange={handleChange}
+                />
+            </CustomModal>
+            <CustomModal
+                hideCancel
+                okTxt='Add'
+                visible={addStockModal}
+                btnDisabled={btnDisabled}
+                title='Add Stock'
+                onOk={handleAddStock}
+                onCancel={handleModalCancel}
+                className={`app-form-modal ${shake ? 'app-shake' : ''}`}
+            >
+                <Stock
+                    data={formData}
                     errors={formErrors}
                     onChange={handleChange}
                 />
@@ -287,8 +411,7 @@ const CurrentStock = ({ isSuperAdmin = false }) => {
 
 const opData = { startDate: d, endDate: d, shift: 'All', fromStart: true }
 const options = [
-    // <Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>,
-    <Menu.Item key="Delete" icon={<TrashIconGrey />} >Delete</Menu.Item>,
+    <Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>,
     <Menu.Item key="logs" icon={<ListViewIconGrey />}>Acvitity Logs</Menu.Item>,
     <Menu.Item key="Add" icon={<PlusIconGrey />} >Add Damaged Stock</Menu.Item>
 ]

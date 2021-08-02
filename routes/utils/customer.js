@@ -1,4 +1,8 @@
+const dayjs = require("dayjs");
+const customerClosingQueries = require("../../dbQueries/Customer/closing");
 var customerQueries = require("../../dbQueries/Customer/queries");
+const { DATEFORMAT } = require("../../utils/constants");
+const { encryptObj } = require("../../utils/crypto");
 
 const compareCustomerData = (data, { userId, userRole, userName }) => {
     const { customerId } = data
@@ -199,6 +203,79 @@ const compareCustomerEnquiryData = (data, { userId, userRole, userName }) => {
     })
 }
 
+const compareCustomerClosingData = (data, { userId, userRole, userName }) => {
+    const { closingId } = data
+    return new Promise((resolve) => {
+        customerClosingQueries.getCustomerClosingDetailsById(closingId, (err, results) => {
+            if (err) resolve([])
+            else if (results.length) {
+                // console.log("data", JSON.stringify(data))
+                const oldData = results[0]
+                const records = []
+                const createdDateTime = new Date()
+                Object.entries(data).map(async ([key, updatedValue]) => {
+                    const oldValue = key == 'accountDetails' ? JSON.parse(oldData[key]) : oldData[key]
+                    if ((key == 'closingDate' || key == 'collectedDate') && dayjs(oldValue).format(DATEFORMAT) != dayjs(updatedValue).format(DATEFORMAT)) {
+                        records.push({
+                            oldValue: dayjs(oldValue).format(DATEFORMAT),
+                            updatedValue: dayjs(updatedValue).format(DATEFORMAT),
+                            createdDateTime,
+                            userId,
+                            description: `Updated ${key} by ${userRole} <b>(${userName})</b>`,
+                            customerId: closingId,
+                            type: "customerClosing"
+                        })
+                    }
+                    else if (key == 'accountDetails') {
+                        let encryptedValue = await encryptObj(updatedValue)
+                        Object.entries(encryptedValue).map(([accountKey, updatedAccountValue]) => {
+                            const oldAccountValue = oldValue[accountKey]
+                            if (accountKey == 'customerName') updatedAccountValue = updatedValue[accountKey]
+                            if (oldAccountValue != updatedAccountValue && accountKey != 'accountId') {
+                                records.push({
+                                    oldValue: oldAccountValue,
+                                    updatedValue: updatedAccountValue,
+                                    createdDateTime,
+                                    userId,
+                                    description: `Updated account details (${accountKey}) by ${userRole} <b>(${userName})</b>`,
+                                    customerId: closingId,
+                                    type: "customerClosing"
+                                })
+                            }
+                        })
+                    }
+                    else if (oldValue != updatedValue && key != 'RouteName' && key != 'createdBy' && key != 'departmentName' && key != 'createdDateTime' && key != 'location') {
+                        if (key == 'isConfirmed') {
+                            records.push({
+                                createdDateTime,
+                                userId,
+                                description: `Closing Details Confirmed by ${userRole} <b>(${userName})</b>`,
+                                customerId: closingId,
+                                type: "customerClosing"
+                            })
+                        }
+                        else {
+                            records.push({
+                                oldValue,
+                                updatedValue,
+                                createdDateTime,
+                                userId,
+                                description: `Updated ${key} by ${userRole} <b>(${userName})</b>`,
+                                customerId: closingId,
+                                type: "customerClosing"
+                            })
+                        }
+                    }
+                })
+                resolve(records)
+            }
+            else {
+                resolve([])
+            }
+        })
+    })
+}
+
 const getProductKeyName = (productName, key) => {
     if (key == 'noOfJarsTobePlaced') return `${productName} quantity`
     else if (key == 'productPrice') return `${productName} price`
@@ -209,4 +286,4 @@ const getDCKeyName = (key) => {
     else if (key == 'driverId') return `driver`
     else if (key == 'vehicleId') return `vehicle`
 }
-module.exports = { compareCustomerData, compareCustomerEnquiryData, compareCustomerOrderData, compareProductsData, compareCustomerDeliveryData, compareOrderData }
+module.exports = { compareCustomerData, compareCustomerClosingData, compareCustomerEnquiryData, compareCustomerOrderData, compareProductsData, compareCustomerDeliveryData, compareOrderData }

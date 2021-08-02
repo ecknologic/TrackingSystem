@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 const motherPlantDbQueries = require('../dbQueries/motherplant/queries');
 const { dbError, getBatchId, productionCount, getCompareData, getFormatedNumber, getGraphData } = require('../utils/functions');
-const { INSERTMESSAGE, UPDATEMESSAGE, WEEKDAYS } = require('../utils/constants');
+const { INSERTMESSAGE, UPDATEMESSAGE, WEEKDAYS, constants } = require('../utils/constants');
 const dayjs = require('dayjs');
 const usersQueries = require('../dbQueries/users/queries');
 const auditQueries = require('../dbQueries/auditlogs/queries');
@@ -197,6 +197,15 @@ router.post('/updateProductionQCStatus', (req, res) => {
     });
 })
 
+router.put('/updateRMDetailsQuantityById', (req, res) => {
+    let input = req.body;
+    motherPlantDbQueries.updateRMDetailsQuantityById({ ...input, departmentId }, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else
+            res.json(UPDATEMESSAGE);
+    });
+})
+
 router.post('/createQualityCheck', (req, res) => {
     let input = req.body;
     input.departmentId = departmentId
@@ -246,6 +255,27 @@ router.get('/getCurrentRMDetails', (req, res) => {
     });
 });
 
+router.get('/getCurrentStockDetails', (req, res) => {
+    const { isSuperAdmin = false } = req.query
+    let input = {
+        departmentId,
+        isSuperAdmin
+    }
+    motherPlantDbQueries.getCurrentRMDetails(input, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else {
+            const data = { emptyCansCount: 0 }
+            results.map(item => {
+                const { itemName, totalQuantity } = item;
+                if (itemName === constants.Old20LCans) data['emptyCansCount'] = totalQuantity;
+                else data[itemName] = totalQuantity
+            })
+
+            res.json(data)
+        }
+    });
+});
+
 router.post('/createRM', (req, res) => {
     let input = req.body;
     input.departmentId = departmentId
@@ -259,18 +289,41 @@ router.post('/createRM', (req, res) => {
                 if (updateErr) res.status(500).json(dbError(err));
                 else {
                     res.json(INSERTMESSAGE)
-                    motherPlantDbQueries.getRMDetailsByItemCode(input.itemCode, (getErr, data) => {
+                    motherPlantDbQueries.getRMDetailsByItemCode({ departmentId, itemCode: input.itemCode }, (getErr, data) => {
                         if (getErr) console.log("ERR", getErr);
                         else if (!data.length) {
                             motherPlantDbQueries.insertRMDetails(input, (insertErr, data) => {
-                                if (insertErr) console.log("ERR", err);
+                                if (insertErr) console.log("ERR", insertErr);
                             })
+                            // if (input.itemName == '20Lcans') {
+                            //     motherPlantDbQueries.insertRMDetails({ itemName: constants.Old20LCans, departmentId }, (insertErr, data) => {
+                            //         if (insertErr) console.log("ERR", insertErr);
+                            //     })
+                            // }
                         }
                     })
                 }
             })
         }
     });
+})
+
+router.post('/addOldEmptyCans', (req, res) => {
+    motherPlantDbQueries.getRMDetailsByItemCode({ itemName: constants.Old20LCans, departmentId }, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else if (results.length) {
+            motherPlantDbQueries.updateRMDetailsQuantity({ itemQty: req.body.totalQuantity, itemName: constants.Old20LCans, departmentId }, (insertErr, data) => {
+                if (insertErr) res.status(500).json(dbError(insertErr));
+                else res.json(data)
+            })
+        }
+        else {
+            motherPlantDbQueries.insertOldEmptyCans({ ...req.body, departmentId }, (insertErr, data) => {
+                if (insertErr) res.status(500).json(dbError(insertErr));
+                else res.json(data)
+            })
+        }
+    })
 })
 
 router.put('/updateRM', (req, res) => {
@@ -703,19 +756,26 @@ router.get('/getMPdamagedStock', (req, res) => {
     })
 })
 
+const getRetailQuantity = async ({ product1L, product500ML, product300ML, product2L }) => {
+    return (product1L * 12) + (product500ML * 24) + (product300ML * 30) + (product2L * 9)
+}
 
-const updateCurrentRMDetailsQuantity = (input) => {
-    const { product20L = 0, product1L = 0, product500ML = 0, product300ML = 0, product2L = 0, managerName } = input
+const updateCurrentRMDetailsQuantity = async (input) => {
+    const { product20L = 0, emptyCansCount = 0, product1L = 0, product500ML = 0, product300ML = 0, product2L = 0, managerName } = input
 
-    let retailQuantity = product1L + product500ML + product300ML + product2L
+    let retailQuantity = await getRetailQuantity({ product1L, product500ML, product300ML, product2L })
+    let quantity20L = parseInt(product20L) - parseInt(emptyCansCount)
 
-    motherPlantDbQueries.updateRetailQuantityRM(retailQuantity, (updateRetailErr, data) => {
+    motherPlantDbQueries.updateRetailQuantityRM({ retailQuantity, departmentId }, (updateRetailErr, data) => {
         if (updateRetailErr) console.log(updateRetailErr);
     })
-    motherPlantDbQueries.updateRMHandlesQuantity(product2L, (update2lErr, data) => {
+    motherPlantDbQueries.updateRMHandlesQuantity({ quantity2L: product2L * 9, departmentId }, (update2lErr, data) => {
         if (update2lErr) console.log(update2lErr);
     })
-    motherPlantDbQueries.update20LQuantityRM(product20L, (update20LErr, data) => {
+    motherPlantDbQueries.update20LQuantityRM({ quantity20L, departmentId }, (update20LErr, data) => {
+        if (update20LErr) console.log(update20LErr);
+    })
+    motherPlantDbQueries.update20LOldQuantityRM({ emptyCansCount, departmentId }, (update20LErr, data) => {
         if (update20LErr) console.log(update20LErr);
     })
     let logs = [];
@@ -726,7 +786,7 @@ const updateCurrentRMDetailsQuantity = (input) => {
                 const { totalQuantity, itemName, id } = i
                 logs.push({
                     oldValue: totalQuantity,
-                    updatedValue: getUpdatedValue({ totalQuantity, itemName, product2L, product20L, retailQuantity }),
+                    updatedValue: getUpdatedValue({ totalQuantity, itemName, product2L: product2L * 9, product20L, retailQuantity }),
                     createdDateTime: new Date(),
                     userId: adminUserId,
                     description: `Stock utilized by manager <b>(${managerName})</b>`,

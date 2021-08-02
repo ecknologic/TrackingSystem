@@ -59,29 +59,44 @@ const VisitedCustomers = () => {
     )
 }
 
-const getPieData = ({ paidCount, totalCount }) => {
-    // const cleared = Math.round(paidCount / (totalCount || 1) * 100)
-    // let pending = 100 - cleared
+const getPieData = (data) => {
+    const { onboardedCustomers, pendingApprovals, revisitCustomers, visitedCustomers } = data
+    const totalCount = onboardedCustomers + pendingApprovals + revisitCustomers + visitedCustomers;
+    const onboarded = Math.round(onboardedCustomers / (totalCount || 1) * 100)
+    const visited = Math.round(visitedCustomers / (totalCount || 1) * 100)
+    const pending = Math.round(pendingApprovals / (totalCount || 1) * 100)
+    const revisit = Math.round(revisitCustomers / (totalCount || 1) * 100)
 
-    // if (!totalCount) pending = 0
-    const corporate = 60
-    const other = 15
-    const membership = 25
+    const onobardedItem = {
+        type: 'Onboarded',
+        value: onboarded,
+    }
+    const visitedItem = {
+        type: 'Visited',
+        value: visited,
+    }
+    const pendingItem = {
+        type: 'Pending',
+        value: pending,
+    }
+    const revisitItem = {
+        type: 'Revisit',
+        value: revisit,
+    }
 
-    return [
-        {
-            type: 'Corporate',
-            value: corporate,
-        },
-        {
-            type: 'Other',
-            value: other,
-        },
-        {
-            type: 'Membership',
-            value: membership,
-        }
-    ]
+    if (onboarded || visited || pending || revisit) {
+
+        const data = []
+
+        if (onboarded) data.push(onobardedItem)
+        if (visited) data.push(visitedItem)
+        if (pending) data.push(pendingItem)
+        if (revisit) data.push(revisitItem)
+
+        return data
+    }
+
+    return [onobardedItem, visitedItem, pendingItem, revisitItem]
 }
 
 export default VisitedCustomers

@@ -94,7 +94,7 @@ const Payments = ({ reFetch, onUpdate }) => {
     const handleViewInvoice = (invoice) => {
         let url = '/invoices/manage'
         if (isWHAdmin) url = '/manage-invoices/manage'
-        history.push(url, { invoice, FOR: ROLE })
+        history.push(url, { invoice, FOR: ROLE, TYPE: 'PAYMENTS' })
     }
 
     const handleDateSelect = (value) => {

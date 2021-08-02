@@ -152,11 +152,11 @@ const Production = () => {
 
     const dataSource = useMemo(() => products.map((product) => {
         const { batchId, phLevel, TDS, ozoneLevel, managerName, productionDate,
-            shiftType = 'morning', isDelivered, ...rest } = product
+            shiftType = 'morning', status, ...rest } = product
         return {
             key: batchId,
             TDS, batchId, phLevel, ozoneLevel, managerName, shiftType,
-            status: renderStatus(isDelivered),
+            status: renderStatus(status),
             productionDetails: renderProductionDetails(rest),
             dateAndTime: dayjs(productionDate).format(DATEANDTIMEFORMAT),
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, product)} />
@@ -232,11 +232,11 @@ const Production = () => {
 
 const renderStatus = (status) => {
     const color = getStatusColor(status)
-    const text = status === 'Inprogress' ? 'Pending' : 'Delivered'
+
     return (
         <div className='status'>
             <span className='app-dot' style={{ background: color }}></span>
-            <span className='status-text'>{text}</span>
+            <span className='status-text'>{status}</span>
         </div>
     )
 }

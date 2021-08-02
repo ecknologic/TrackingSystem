@@ -74,20 +74,20 @@ const Materials = () => {
                         activeKey={activeTab}
                         onChange={handleTabChange}
                     >
-                        <TabPane tab="Materials Request" key="1">
+                        <TabPane tab="Current Stock" key="1">
+                            <CurrentStock />
+                        </TabPane>
+                        <TabPane tab="Materials Request" key="2">
                             <RequestMaterial goToTab={handleGoToTab} {...childProps} />
                         </TabPane>
-                        <TabPane tab="Requested Material Status" key="2">
+                        <TabPane tab="Requested Material Status" key="3">
                             <RequestedMaterialStatus reFetch={reFetch} />
                         </TabPane>
-                        <TabPane tab="Add Received Materials" key="3">
+                        <TabPane tab="Add Received Materials" key="4">
                             <AddMaterials onUpdate={toggleRefetch} />
                         </TabPane>
-                        <TabPane tab="Received Materials" key="4">
+                        <TabPane tab="Received Materials" key="5">
                             <ReceivedMaterials />
-                        </TabPane>
-                        <TabPane tab="Current Stock" key="5">
-                            <CurrentStock />
                         </TabPane>
                     </Tabs>
                 </div>

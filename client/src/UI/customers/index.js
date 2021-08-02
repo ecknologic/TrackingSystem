@@ -32,7 +32,9 @@ const Customers = () => {
     const [searchON, setSeachON] = useState(false)
     const [sortBy, setSortBy] = useState('NEW - OLD')
     const [activeTab, setActiveTab] = useState(tab)
+    const [exitMsg, setExitMsg] = useState('')
     const [modalDelete, setModalDelete] = useState(false)
+    const [currentAction, setCurrentAction] = useState('')
     const [currentId, setCurrentId] = useState('')
 
     const { account, creator, business, hasFilters } = useCustomerFilter()
@@ -194,6 +196,9 @@ const Customers = () => {
     }
 
     const handleMenuSelect = (key, id, isSAApproved) => {
+        setCurrentId(id)
+        setCurrentAction(key)
+
         if (key === 'Approve') {
             onAccountApprove(id, isSAApproved)
         }
@@ -204,7 +209,11 @@ const Customers = () => {
             handleStatusUpdate(id, 0)
         }
         else if (key === 'Delete') {
-            setCurrentId(id)
+            setExitMsg('Are you sure you want to delete?')
+            setModalDelete(true)
+        }
+        else if (key === 'Close') {
+            setExitMsg('Are you sure you want to close?')
             setModalDelete(true)
         }
     }
@@ -216,7 +225,20 @@ const Customers = () => {
         try {
             showToast({ ...options, action: 'loading' })
             await http.PUT(axios, url, body, config)
-            optimisticUpdate(customerId)
+            optimisticDelete(customerId)
+            showToast(options)
+        } catch (error) {
+            message.destroy()
+        }
+    }
+
+    const handleAccountClose = async (customerId) => {
+        const options = { item: 'Customer', v1Ing: 'Closing', v2: 'closed' }
+        const url = `customer/closeCustomer/${customerId}`
+        try {
+            showToast({ ...options, action: 'loading' })
+            await http.GET(axios, url, config)
+            optimisticDelete(customerId)
             showToast(options)
         } catch (error) {
             message.destroy()
@@ -230,7 +252,7 @@ const Customers = () => {
         try {
             showToast({ ...options, action: 'loading' })
             await http.POST(axios, url, body, config)
-            optimisticUpdate(customerId)
+            optimisticDelete(customerId)
             showToast(options)
         } catch (error) {
             message.destroy()
@@ -244,14 +266,14 @@ const Customers = () => {
         try {
             showToast({ ...options, action: 'loading' })
             await http.DELETE(axios, url, config)
-            optimisticUpdate(id)
+            optimisticDelete(id)
             showToast(options)
         } catch (error) {
             message.destroy()
         }
     }
 
-    const optimisticUpdate = (id) => {
+    const optimisticDelete = (id) => {
         if (filterON || searchON) {
             const filtered = accountsClone.filter(item => item.customerId !== id)
             setAccountsClone(filtered)
@@ -263,7 +285,10 @@ const Customers = () => {
 
     const handleDeleteModalOk = useCallback(() => {
         setModalDelete(false);
-        handleDelete(currentId)
+        if (currentAction === 'Close')
+            handleAccountClose(currentId)
+        else
+            handleDelete(currentId)
     }, [currentId])
 
     const handleDeleteModalCancel = useCallback(() => {
@@ -312,7 +337,7 @@ const Customers = () => {
                 visible={modalDelete}
                 onOk={handleDeleteModalOk}
                 onCancel={handleDeleteModalCancel}
-                title='Are you sure you want to delete?'
+                title={exitMsg}
                 okTxt='Yes'
             >
                 <ConfirmMessage msg='This action cannot be undone.' />

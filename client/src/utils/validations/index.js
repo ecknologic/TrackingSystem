@@ -164,7 +164,7 @@ export const validateDeliveryValues = (data) => {
     return { ...errors, ...productErrors }
 }
 
-export const validateBatchValues = (data) => {
+export const validateBatchValues = (data, currentStock) => {
     let errors = {};
     const text = 'Required'
     const { shiftType, batchId, phLevel, TDS, ozoneLevel, managerName, ...rest } = data
@@ -192,7 +192,27 @@ export const validateBatchValues = (data) => {
         error && (errors.managerName = error)
     }
 
-    const productErrors = validateProducts(rest)
+    let productErrors = validateProducts(rest)
+    if (isEmpty(productErrors)) {
+        const { emptyCansCount, retailClosures, handles } = currentStock
+        const textArray = []
+        if (Number(rest.product20L) > (currentStock['20Lcans'] + emptyCansCount)) {
+            textArray.push('20 Ltrs')
+        }
+        if (Number(rest.product20L) > currentStock['20LClosures']) {
+            textArray.push('20L Closures')
+        }
+        if (Number(rest.product2L * 9) > handles) {
+            textArray.push('Handles')
+        }
+        if ((Number(rest.product2L * 9) + Number(rest.product1L * 12) +
+            Number(rest.product500ML * 24) + Number(rest.product300ML * 30)) > retailClosures) {
+            textArray.push('Retail Closures')
+        }
+        if (textArray.length) {
+            productErrors.products = `${textArray.join(',')} qty exceeds current stock`
+        }
+    }
     return { ...errors, ...productErrors }
 }
 
@@ -460,6 +480,55 @@ export const validateEnquiryValues = (data) => {
     else {
         const error = validateEmailId(EmailId)
         error && (errors.EmailId = error)
+    }
+
+    return errors
+}
+
+export const validateClosureValues = (data) => {
+    let errors = {};
+    const text = 'Required'
+    const { customerId, customerName, routeId, noOfCans, pendingAmount, depositAmount, totalAmount,
+        balanceAmount, deliveryDetailsId } = data
+
+    if (!customerName) errors.customerName = text
+    if (!customerId) errors.customerId = text
+    if (!routeId) errors.routeId = text
+    if (!deliveryDetailsId) errors.deliveryDetailsId = text
+    if (noOfCans == null || !String(noOfCans)) errors.noOfCans = text;
+    if (totalAmount == null || !String(totalAmount)) errors.totalAmount = text;
+    if (depositAmount == null || !String(depositAmount)) errors.depositAmount = text;
+    if (pendingAmount == null || !String(pendingAmount)) errors.pendingAmount = text;
+    if (balanceAmount == null || !String(balanceAmount)) errors.balanceAmount = text;
+
+    return errors
+}
+
+export const validateClosureAccValues = (data) => {
+    let errors = {};
+    const text = 'Required'
+    const { accountNo, bankName, branchName, ifscCode, customerName } = data
+
+    if (!customerName) errors.customerName = text
+    if (!accountNo) errors.accountNo = text
+    else {
+        const error = validateNumber(accountNo)
+        error && (errors.accountNo = error)
+    }
+    if (!bankName) errors.bankName = text
+    else {
+        const error = validateNames(bankName)
+        error && (errors.bankName = error)
+    }
+    if (!branchName) errors.branchName = text
+    else {
+        const error = validateNames(branchName)
+        error && (errors.branchName = error)
+    }
+    if (!ifscCode) errors.ifscCode = text
+    else {
+        const error = validateIFSCCode(ifscCode, true)
+        error && (errors.ifscCode = error)
     }
 
     return errors
@@ -924,7 +993,7 @@ export const validateDamagedWithArrived = (data, key) => {
     return errors
 }
 
-export const validateDCValues = (data) => {
+export const validateDCValues = (data, currentStock) => {
     let errors = {};
     const text = 'Required'
 
@@ -973,7 +1042,17 @@ export const validateDCValues = (data) => {
         const error = validateMobileNumber(phoneNumber, true)
         error && (errors.phoneNumber = error)
     }
-    const productErrors = validateProductNPrice(rest)
+    let productErrors = validateProductNPrice(rest)
+    if (isEmpty(productErrors)) {
+        const _currentStock = {
+            product20LCount: currentStock.total1LBoxes,
+            product2LCount: currentStock.total2LBoxes,
+            product1LCount: currentStock.total20LCans,
+            product500MLCount: currentStock.total300MLBoxes,
+            product300MLCount: currentStock.total500MLBoxes
+        }
+        productErrors = validateProductsInStock(_currentStock, rest, 'productNPrice')
+    }
     return { ...errors, ...productErrors }
 }
 

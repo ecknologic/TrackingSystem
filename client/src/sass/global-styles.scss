@@ -350,6 +350,10 @@ $textColorDisabled:rgba(0,0,0,0.55);
     }
 }
 
+.ant-select-clear {
+    right: 1.5em;
+}
+
 .ant-select-focused.ant-select-single:not(.ant-select-customize-input) .ant-select-selector {
     border-color: $primaryColor !important;
     box-shadow: none !important;
@@ -1848,4 +1852,8 @@ textarea.ant-input {
 
 .nowrap {
     white-space: nowrap;
+}
+
+.u-case {
+    text-transform: uppercase;
 }
