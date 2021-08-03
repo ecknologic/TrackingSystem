@@ -41,7 +41,6 @@ const SelectInput = ({ options, mode, onSelect, onDeselect, value, disabled, sho
     return (
         <Select
             ref={ref}
-            allowClear
             showArrow
             mode={mode}
             size='large'
@@ -55,6 +54,7 @@ const SelectInput = ({ options, mode, onSelect, onDeselect, value, disabled, sho
             onSelect={handleSelect}
             placeholder={placeholder}
             onDeselect={handleDeselect}
+            allowClear={mode !== 'multiple'}
             filterOption={(input, option) => String(option.props.children).toLowerCase().indexOf(input.toLowerCase()) >= 0}
             dropdownClassName={showScroll && 'select-dropdown-overflow'}
             className={`${className} ${error && 'app-select-error'}`}

@@ -23,6 +23,7 @@ const DeliveryDetails = ({ isAdmin, recentDelivery, onUpdate, ...rest }) => {
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [viewModal, setViewModal] = useState(false)
+    const [_devDays, _setDevDays] = useState([])
     const [devDays, setDevDays] = useState([])
     const [routeList, setRouteList] = useState([])
     const [currentDepId, setCurrentDepId] = useState('')
@@ -76,6 +77,7 @@ const DeliveryDetails = ({ isAdmin, recentDelivery, onUpdate, ...rest }) => {
             const devDays = getDevDays(deliveryDays)
             const productsUI = getProductsForUI(products)
             const formData = { ...data, gstProof: gst, deliveryLocation: location, ...productsUI }
+            _setDevDays(devDays)
             setDevDays(devDays)
             handleGetNewRouteList(departmentId)
             setFormData(formData)
@@ -283,12 +285,12 @@ const DeliveryDetails = ({ isAdmin, recentDelivery, onUpdate, ...rest }) => {
             setDevDaysError(devDaysError)
             return
         }
-
         const productsUI = extractProductsFromForm(formData)
         const products = getProductsWithIdForDB(productsUI)
         const deliveryDays = getDevDaysForDB(devDays)
         const formValues = extractDeliveryDetails(formData)
-        const body = [{ ...formValues, isNew: false, delete: 0, products, deliveryDays }]
+        const isDeliveryDaysUpdated = _devDays.length !== devDays.length
+        const body = [{ ...formValues, isNew: false, delete: 0, products, deliveryDays, isDeliveryDaysUpdated }]
         const options = { item: 'Delivery details', v1Ing: 'Updating', v2: 'updated' }
         const url = 'customer/updateDeliveryDetails'
         try {
