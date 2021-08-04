@@ -428,6 +428,13 @@ customerQueries.getCurrentMonthTotalDepositAmount = (input, callback) => {
     return executeGetParamsQuery(query, options, callback)
 }
 
+customerQueries.checkDCExistsForTodayOrNot = (input, callback) => {
+    let { customer_Id, deliveryLocation, date = dayjs().format('YYYY-MM-DD')} = input
+    let query = `Select deliveryDate,existingCustomerId from customerorderdetails WHERE existingCustomerId=? AND deliveryLocation=? AND DATE(deliveryDate)=? `;
+    let requestBody = [customer_Id, deliveryLocation, date]
+    executeGetParamsQuery(query, requestBody, callback)
+}
+
 //POST Request Methods
 customerQueries.saveCustomerOrderDetails = (input, callback) => {
     // let { contactPerson, phoneNumber, address, routeId, driverId, customer_Id, latitude, longitude, dcNo, departmentId, customerType, product20L, price20L, product1L, price1L, product500ML, price500ML,
