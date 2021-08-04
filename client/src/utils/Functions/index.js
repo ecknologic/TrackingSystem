@@ -580,7 +580,7 @@ export const getAddressesForDB = (data, isUpdate) => {
 
         const products = isUpdate ? getProductsWithIdForDB(rest) : getProductsForDB(rest)
         const deliveryDays = getDevDaysForDB(devDays)
-        const isDeliveryDaysUpdated = !areEqualObjs(address.deliveryDays, deliveryDays)
+        const isDeliveryDaysUpdated = isUpdate ? !areEqualObjs(address.deliveryDays, deliveryDays) : undefined
         return { ...rest, products, deliveryDays, gstNo, gstProof, isDeliveryDaysUpdated }
     })
 }
