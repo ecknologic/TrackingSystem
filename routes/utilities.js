@@ -16,7 +16,7 @@ var days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 
 const insertToCustomerOrderDetails = (result, res, sendResponse, userId, userRole, userName) => {
-  const { deliveryDetailsId } = result
+  const { deliveryDetailsId, customer_Id, deliveryLocation } = result
 
   return new Promise((resolve, reject) => {
     // customerQueries.getsqlNo("customerorderdetails", (err, results) => {
@@ -46,29 +46,31 @@ const insertToCustomerOrderDetails = (result, res, sendResponse, userId, userRol
           requestBody.price2L = product.productPrice
         }
       })
-      customerQueries.saveCustomerOrderDetails(requestBody, (err, results) => {
-        if (err) throw err;
-        else {
-          /*   let updateQuery="update orderdetails set transactionid=? where orderid=?"
-          db.query(updateQuery,[warehouseName+results.insertId,results.insertId],(err,results)=>{
-              if(err) throw err;
-              else 
-          });*/
-          customerQueries.updateDCNo(results.insertId, (err, data) => {
-            resolve()
-          })
-          if (sendResponse && res) {
-            if (userId) {
-              console.log("customer_Id", result)
-              auditQueries.createLog({ userId, description: `Customer ${deliveryDetailsId ? 'Delivery Details' : ""} Approved by ${userRole} <b>(${userName})</b>`, customerId: result.customer_Id, type: "customer" }, (err, data) => {
-                if (err) console.log('errors>>>>', err)
-                else console.log('data>>>', data)
+      customerQueries.checkDCExistsForTodayOrNot({ customer_Id, deliveryLocation }, (err, data) => {
+        if (err) resolve()
+        else if (data.length) {
+          if (sendResponse && res) res.status(409).json('Dc already exists')
+          else resolve()
+        } else {
+          customerQueries.saveCustomerOrderDetails(requestBody, (err, results) => {
+            if (err) throw err;
+            else {
+              customerQueries.updateDCNo(results.insertId, (err, data) => {
+                resolve()
               })
+              if (sendResponse && res) {
+                if (userId) {
+                  auditQueries.createLog({ userId, description: `Customer ${deliveryDetailsId ? 'Delivery Details' : ""} Approved by ${userRole} <b>(${userName})</b>`, customerId: result.customer_Id, type: "customer" }, (err, data) => {
+                    if (err) console.log('errors>>>>', err)
+                    else console.log('data>>>', data)
+                  })
+                }
+                res.json('Success')
+              }
             }
-            res.json('Success')
-          }
+          });
         }
-      });
+      })
     }).catch(err => {
       reject()
       console.log(err)

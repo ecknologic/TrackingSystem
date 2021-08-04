@@ -188,6 +188,13 @@ export const getSideMenuKey = (path) => {
     return path
 }
 
+export const areEqualObjs = (obj1, obj2) => {
+    if (Object.keys(obj1).length === Object.keys(obj2).length) {
+        return Object.entries(obj1).every(([key, value]) => obj2[key] === value)
+    }
+
+    return false
+}
 export const deepClone = (data) => {
     return JSON.parse(JSON.stringify(data))
 }
@@ -573,7 +580,8 @@ export const getAddressesForDB = (data, isUpdate) => {
 
         const products = isUpdate ? getProductsWithIdForDB(rest) : getProductsForDB(rest)
         const deliveryDays = getDevDaysForDB(devDays)
-        return { ...rest, products, deliveryDays, gstNo, gstProof }
+        const isDeliveryDaysUpdated = !areEqualObjs(address.deliveryDays, deliveryDays)
+        return { ...rest, products, deliveryDays, gstNo, gstProof, isDeliveryDaysUpdated }
     })
 }
 
