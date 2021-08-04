@@ -270,4 +270,10 @@ warehouseQueries.closeDC = async (input, callback) => {
         }
     })
 }
+warehouseQueries.assignDriversForMultipleDcs = (input, callback) => {
+    const { driverId, routeId, selectedDate } = input
+    let query = "update customerorderdetails set driverId=? where routeId=? AND DATE(deliveryDate)=?";
+    let requestBody = [driverId, routeId, selectedDate]
+    executePostOrUpdateQuery(query, requestBody, callback)
+}
 module.exports = warehouseQueries

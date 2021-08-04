@@ -178,6 +178,13 @@ router.put('/updateDC', (req, res) => {
   });
 })
 
+router.put('/assignDriverForDcs', (req, res) => {
+  warehouseQueries.assignDriversForMultipleDcs(req.body, (err, results) => {
+    if (err) res.json({ status: 500, message: err.sqlMessage });
+    else res.json(UPDATEMESSAGE)
+  });
+})
+
 router.post('/confirmStockRecieved', (req, res) => {
   let input = req.body;
   input.departmentId = departmentId
