@@ -178,11 +178,16 @@ router.post('/createProductionQC', (req, res) => {
     motherPlantDbQueries.createProductionQC(input, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
-            input.batchId = getBatchId(input.shiftType)
-            input.productionQcId = results.insertId
-            motherPlantDbQueries.updateProductionQC(input, (updateErr, data) => {
-                if (updateErr) res.status(500).json(dbError(updateErr));
-                else res.json(INSERTMESSAGE);
+            motherPlantDbQueries.getProductionQCCountByShift(input, (err, data) => {
+                if (err) res.status(500).json(dbError(err));
+                else {
+                    input.batchId = getBatchId(input.shiftType, data[0]?.total)
+                    input.productionQcId = results.insertId
+                    motherPlantDbQueries.updateProductionQC(input, (updateErr, data) => {
+                        if (updateErr) res.status(500).json(dbError(updateErr));
+                        else res.json(INSERTMESSAGE);
+                    })
+                }
             })
         }
     });

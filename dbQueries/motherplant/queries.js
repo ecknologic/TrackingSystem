@@ -1,4 +1,4 @@
-const { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, dateComparisions } = require('../../utils/functions.js');
+const { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, dateComparisions, utils } = require('../../utils/functions.js');
 const dayjs = require('dayjs');
 const { constants } = require('../../utils/constants.js');
 
@@ -95,8 +95,8 @@ motherPlantDbQueries.getProductionQcBatchIds = async (departmentId, callback) =>
     return executeGetParamsQuery(query, [departmentId, "Pending"], callback)
 }
 motherPlantDbQueries.getProductionBatchIds = async ({ departmentId, shiftType }, callback) => {
-    let query = "select productionQcId,batchId from productionQC where departmentId=? AND shiftType=? AND productionCreated=0 AND status=? AND outOfStock='0' ORDER BY requestedDate DESC";
-    return executeGetParamsQuery(query, [departmentId, shiftType, "Approved"], callback)
+    let query = "select productionQcId,batchId from productionQC where departmentId=? AND shiftType=? AND productionCreated=0 AND status=? AND DATE(requestedDate)=? AND outOfStock='0' ORDER BY requestedDate DESC";
+    return executeGetParamsQuery(query, [departmentId, shiftType, "Approved", utils.getCurrentDate()], callback)
 }
 motherPlantDbQueries.getPostProductionBatchIds = async (departmentId, callback) => {
     let query = "select q.productionQcId,p.batchId from qualitycheck q INNER JOIN productionQC p ON q.productionQcId=p.productionQcId where q.departmentId=? AND q.testResult=? AND p.status='Approved' AND q.qcLevel != '1' AND p.outOfStock='0' ORDER BY q.testedDate DESC";
@@ -369,6 +369,14 @@ motherPlantDbQueries.getTotalRevenueChange = async (input, callback) => {
     }
     return executeGetParamsQuery(query, options, callback)
 }
+
+motherPlantDbQueries.getProductionQCCountByShift = async (input, callback) => {
+    const { shiftType, departmentId } = input
+    let query = "select count(*) as total FROM productionQC where DATE(requestedDate)=? AND shiftType=? AND departmentId=?";
+    let requestBody = [utils.getCurrentDate(), shiftType, departmentId]
+    return executeGetParamsQuery(query, requestBody, callback)
+}
+
 //POST Request Methods
 motherPlantDbQueries.createQC = async (input, callback) => {
     let query = "insert into qualitycontrol (reportdate,batchId,testType,reportImage,description) values(?,?,?,?,?)";
