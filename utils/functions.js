@@ -6,9 +6,12 @@ const { encrypt, decrypt } = require('./crypto.js');
 const format = 'DDMM-YY'
 let utils = {}
 
-const getBatchId = (shiftType) => {
+utils.getCurrentDate = () => dayjs().format(DATEFORMAT)
+
+const getBatchId = (shiftType, count) => {
     let shift = shiftType == 'Morning' ? 'A' : shiftType == 'Evening' ? 'B' : shiftType == 'Night' ? 'C' : 'A';
     let currentDate = dayjs().format(format)
+    if (count > 1) return shift + '-' + currentDate + `-${shift + (count - 1)}`
     return shift + '-' + currentDate
 }
 const checkUserExists = (req, res, next) => {
