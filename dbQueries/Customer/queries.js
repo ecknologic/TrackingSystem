@@ -21,7 +21,9 @@ customerQueries.getRoutesByDepartmentId = (req, callback) => {
     const { departmentId } = params
     let query = `SELECT r.RouteId,r.RouteName,r.RouteDescription,d.departmentName from routes r INNER JOIN departmentmaster d ON d.departmentId=r.departmentId WHERE r.departmentId=${departmentId} AND r.deleted='0' ORDER BY r.createdDateTime DESC`
     if (userRole == constants.SUPERADMIN || userRole == constants.ACCOUNTSADMIN || userRole == constants.MARKETINGMANAGER || userRole == constants.SALESADMIN) {
-        query = `SELECT r.RouteId,r.RouteName,r.RouteDescription,d.departmentName from routes r INNER JOIN departmentmaster d ON d.departmentId=r.departmentId WHERE r.deleted='0' ORDER BY r.createdDateTime DESC`
+        query = `SELECT r.RouteId,r.RouteName,r.RouteDescription,d.departmentName from routes r INNER JOIN departmentmaster d ON d.departmentId=r.departmentId WHERE r.deleted='0'`
+        if (departmentId != undefined && departmentId != null) query = query + ` AND r.departmentId=${departmentId} ORDER BY r.createdDateTime DESC`
+        else query = query + ' ORDER BY r.createdDateTime DESC'
         return executeGetQuery(query, callback)
     }
     executeGetQuery(query, callback)
