@@ -381,11 +381,11 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
     }
 
     const handleReschedule = async () => {
-        const { customerOrderId, existingCustomerId } = currentDC
+        const { customerOrderId, existingCustomerId, address } = currentDC
         const options = { item: 'DC', v1Ing: 'Rescheduling', v2: 'rescheduled' }
 
         const url = 'warehouse/rescheduleDc'
-        const body = { customerOrderId, date: selectedDate, existingCustomerId }
+        const body = { customerOrderId, date: selectedDate, existingCustomerId, address }
         try {
             showToast({ ...options, action: 'loading' })
             await http.PUT(axios, url, body, config)
