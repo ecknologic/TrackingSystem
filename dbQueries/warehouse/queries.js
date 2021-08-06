@@ -171,7 +171,7 @@ warehouseQueries.getDepartmentStaff = async (warehouseId, callback) => {
     return executeGetParamsQuery(query, [warehouseId], callback)
 }
 warehouseQueries.checkDcSchedule = async (input, callback) => {
-    const { existingCustomerId = 318, date = '2021-05-13' } = input
+    const { existingCustomerId, date } = input
     let query = `select dcNo,customerOrderId from customerorderdetails WHERE existingCustomerId=? AND DATE(deliveryDate)=?`;
     return executeGetParamsQuery(query, [existingCustomerId, date], callback)
 }
