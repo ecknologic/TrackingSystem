@@ -30,7 +30,7 @@ const Transport = () => {
     }, [])
 
     const getDepartmentList = async () => {
-        const url = 'bibo/getAllDepartmentsList'
+        const url = 'bibo/getDepartmentsList?departmentType=warehouse'
 
         try {
             const data = await http.GET(axios, url, config)
