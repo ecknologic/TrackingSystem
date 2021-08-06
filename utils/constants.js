@@ -11,6 +11,8 @@ constants.ACCOUNTSADMIN = 'Accounts'
 constants.SALESADMIN = 'SalesAndMarketing'
 constants.MARKETINGMANAGER = 'MarketingManager'
 constants.Old20LCans = '20Lcans-Old';
+constants.days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
 
 
 module.exports = { DATEFORMAT, DISTRIBUTOR, INSERTMESSAGE, UPDATEMESSAGE, DELETEMESSAGE, WEEKDAYS, FULLTIMEFORMAT, constants }
