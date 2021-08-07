@@ -190,6 +190,19 @@ router.put('/resetPassword', async (req, res) => {
   } else res.status(400).send('Invalid Token')
 })
 
+router.get('/validateToken', async (req, res) => {
+  let { token } = req.query
+  let userData = await utils.verifyLifetimeToken(token)
+  if (userData && userData.data) {
+    let data = JSON.parse(userData.data)
+    const { emailid } = data
+    usersQueries.checkUserTokenExistsOrNot({ emailid }, (updateErr, data) => {
+      if (updateErr) res.status(500).json(dbError(updateErr))
+      else if (!data.length) res.status(406).json('Token expired or already used')
+    })
+  } else res.status(400).send('Invalid Token')
+})
+
 
 const updatePassword = (input, res) => {
   let query = "Update usermaster set password=? where userId=?";
