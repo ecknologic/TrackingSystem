@@ -215,7 +215,7 @@ motherPlantDbQueries.getQCTestResults = async (input, callback) => {
     return executeGetParamsQuery(query, options, callback)
 }
 motherPlantDbQueries.getProdQCTestedBatches = async (departmentId, callback) => {
-    let query = `SELECT JSON_ARRAYAGG(JSON_OBJECT('phLevel',ROUND(q.phLevel,1),'tds',ROUND(q.TDS,1),'ozoneLevel',ROUND(q.ozoneLevel,1),'qcLevel',q.qcLevel,'testResult',q.testResult,'managerName',q.managerName,'testingDate',q.testedDate)) levels,p.batchId batchId FROM qualitycheck q INNER JOIN productionQC p ON q.productionQcId=p.productionQcId WHERE q.departmentId=${departmentId} GROUP BY q.productionQcId ORDER BY p.batchId DESC`;
+    let query = `SELECT JSON_ARRAYAGG(JSON_OBJECT('phLevel',ROUND(q.phLevel,1),'tds',ROUND(q.TDS,1),'ozoneLevel',ROUND(q.ozoneLevel,1),'qcLevel',q.qcLevel,'testResult',q.testResult,'managerName',q.managerName,'testingDate',q.testedDate)) levels,p.batchId batchId FROM qualitycheck q INNER JOIN productionQC p ON q.productionQcId=p.productionQcId WHERE q.departmentId=${departmentId} GROUP BY q.productionQcId ORDER BY q.testedDate DESC`;
     return executeGetQuery(query, callback)
 }
 motherPlantDbQueries.getCurrentProductionDetailsByDate = async (input, callback) => {
