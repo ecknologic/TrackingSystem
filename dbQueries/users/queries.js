@@ -8,6 +8,13 @@ usersQueries.checkUserIsValidOrNot = (input, callback) => {
     return executeGetParamsQuery(query, requestBody, callback)
 }
 
+usersQueries.checkUserTokenExistsOrNot = (input, callback) => {
+    const { emailid } = input
+    let query = "select emailid from usermaster where emailid=? AND isActive=1 AND deleted=0 AND token IS NOT NULL"
+    let requestBody = [emailid];
+    return executeGetParamsQuery(query, requestBody, callback)
+}
+
 usersQueries.getUsers = async (callback) => {
     let query = "SELECT u.userId,u.createdDateTime,u.userName,u.address,u.RoleId,u.isActive,u.emailid,u.mobileNumber,d.departmentName from usermaster u LEFT JOIN departmentmaster d ON u.departmentId=d.departmentId where u.deleted='0' ORDER BY u.createdDateTime DESC";
     return executeGetQuery(query, callback)
