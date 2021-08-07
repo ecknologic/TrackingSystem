@@ -537,7 +537,7 @@ router.put('/rescheduleDc', (req, res) => {
         if (err) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
         else if (!deliverydata.length) res.status(404).send('Customer is closed or not found')
         else {
-          var day = constants.days[new Date(date).getDay()];
+          var day = constants.days[new Date(date).getDay()].toUpperCase();
           if (deliverydata[0][day] == 1) res.status(405).send('DC Already exists')
           else {
             warehouseQueries.rescheduleDC(req.body, (deliveryErr, rescheduled) => {
