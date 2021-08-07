@@ -12,8 +12,10 @@ import Staff from './UI/employees/Staff';
 import PageLayout from './UI/page-layout';
 import AddAccount from './UI/accounts/add';
 import useUser from './utils/hooks/useUser';
+import ResetPassword from './UI/auth/Reset';
 import ManagePlant from './UI/plants/view';
 import Drivers from './UI/employees/Drivers';
+import ForgotPassword from './UI/auth/Forgot';
 import Distributors from './UI/distributors';
 import ViewAccount from './UI/accounts/view';
 import NoContent from './components/NoContent';
@@ -88,6 +90,16 @@ const App = () => {
       else return <Redirect to='/dashboard' />
    }
 
+   const forgotAuth = () => {
+      if (!isUser) return <ForgotPassword />
+      else return <Redirect to='/' />
+   }
+
+   const resetAuth = () => {
+      if (!isUser) return <ResetPassword />
+      else return <Redirect to='/' />
+   }
+
    const noMatchAuth = () => {
       if (!isUser) return <Redirect to='/' />
       return <NoContent content='Page Not found' />
@@ -102,6 +114,8 @@ const App = () => {
       <Router>
          <FilterProvider>
             <Switch>
+               <Route exact path='/reset-password' render={resetAuth} />
+               <Route exact path='/forgot-password' render={forgotAuth} />
                <Route exact path='/' render={loginAuth} />
                <PageLayout>
                   <Switch>

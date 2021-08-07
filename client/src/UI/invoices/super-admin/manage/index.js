@@ -55,9 +55,9 @@ const Invoices = () => {
         if (TYPE === 'PAYMENTS') {
             url = 'invoice/getDepartmentInvoicePayments'
         }
-        
+
         if (FOR === SUPERADMIN || FOR === ACCOUNTSADMIN) {
-            url = 'invoice/getInvoices'
+            url = 'invoice/getInvoices/Pending'
             if (TYPE === 'PAYMENTS') {
                 url = 'invoice/getInvoicePayments'
             }

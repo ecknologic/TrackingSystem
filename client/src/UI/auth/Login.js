@@ -1,4 +1,5 @@
-import React, { useContext, useState } from 'react'
+import dayjs from 'dayjs';
+import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom';
 import { QuestionCircleFilled } from '@ant-design/icons';
 import { Form, Row, Col, Input, Card, Button, Checkbox, message } from 'antd'
@@ -54,19 +55,23 @@ const Login = () => {
         if (key === "password") setPassword(value)
 
     }
+
+    const handleForgotPassword = () => {
+        history.replace('/forgot-password')
+    }
     return (
         <div className="login_component">
             <Row>
                 <Col span={12} className="first_col">
                     <div>
                         <img src={image} alt="contest-cover" />
-                        <div className="login_component_text">
+                        {/* <div className="login_component_text">
                             <h2>Hella narwhal Cosby sweater <br />McSweeney's, salvia kitsch before they <br />sold out High Life.</h2>
                             <p>
                                 Takamaru Ayako <br />
                                 Manager an inVision
                             </p>
-                        </div>
+                        </div> */}
                     </div>
                 </Col>
                 <Col span={12}>
@@ -81,19 +86,29 @@ const Login = () => {
                                 <h4>LOGIN</h4>
                                 <Form>
                                     <Form.Item>
-                                        <h5>User ID or E-mail</h5>
-                                        <Input placeholder="UserName" value={username} onChange={(e) => onInputChange(e.target.value, "username")} />
+                                        <h5>Username or Email</h5>
+                                        <Input
+                                            placeholder="Username or Email"
+                                            autoFocus
+                                            value={username} onChange={(e) => onInputChange(e.target.value, "username")}
+                                        />
                                         <p className="errors">{errors.username}</p>
                                     </Form.Item>
                                     <Form.Item>
                                         <h5>Password</h5>
-                                        <Input.Password type="password" onPressEnter={() => loginBtn()} placeholder="Password" value={password} onChange={(e) => onInputChange(e.target.value, "password")}
+                                        <Input.Password type="password"
+                                            onPressEnter={() => loginBtn()}
+                                            placeholder="Password"
+                                            value={password}
+                                            onChange={(e) => onInputChange(e.target.value, "password")}
                                             iconRender={visible => (visible ? <EyeIconGrey /> : <EyeHideIconGrey />)}
                                         />
                                         <p className="errors">{errors.password}</p>
                                     </Form.Item>
                                     <p className="forgotpasswordLink">
-                                        <span className="forgotpasswordLinkicon"><QuestionCircleFilled /></span>  <span className="forgotpasswordLinktext"> Forgot Password ?</span>
+                                        <span className="forgotpasswordLinkicon"><QuestionCircleFilled /></span>
+                                        &nbsp;&nbsp;
+                                        <span onClick={handleForgotPassword} className="forgotpasswordLinktext">Forgot Password?</span>
                                     </p>
                                     <Row>
                                         <Col span={12}>
@@ -113,7 +128,7 @@ const Login = () => {
                         <div>
                             <Row className="login_footer">
                                 <Col span={12}>
-                                    <p>© 2020. Bibo water</p>
+                                    <p>© {dayjs().year()}. Bibo water</p>
                                 </Col>
                                 <Col span={12}>
                                     <ul className="loginmenu">

@@ -1202,6 +1202,12 @@ export const validateIDNumbers = (key, value, isBlur) => {
     return ''
 }
 
+export const validatePassword = (value) => { //8 - letter,number,special char
+    const isValid = String(value).match(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/)
+    if (!isValid) return "Password doesn't meet requirements"
+    return ''
+}
+
 export const validateNames = (value) => {
     const isValid = isAlphaOnly(value)
     if (!isValid) return 'Enter letters only'

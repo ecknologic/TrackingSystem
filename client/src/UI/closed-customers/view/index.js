@@ -12,13 +12,11 @@ import ActivityLogDetails from '../../../components/ActivityLogDetails';
 const ManageClosedCustomer = () => {
     const history = useHistory()
     const { closingId } = useParams()
-    const { search } = useLocation()
     const { pathname, state } = useLocation()
     const [reFetch, setreFetch] = useState(false)
     const [headerContent, setHeaderContent] = useState({})
     const [confirmModal, setConfirmModal] = useState(false)
 
-    const customerId = new URLSearchParams(search).get('customerId');
     const mainUrl = useMemo(() => getMainPathname(pathname), [pathname])
 
     const handleBack = () => {

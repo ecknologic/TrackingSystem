@@ -2,9 +2,9 @@ const { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery } = req
 let usersQueries = {}
 
 usersQueries.checkUserIsValidOrNot = (input, callback) => {
-    const { userName } = input
+    const { username } = input
     let query = "select userId,loginId,emailid from usermaster where (loginId=? OR emailid=?) AND isActive=1 AND deleted=0"
-    let requestBody = [userName, userName];
+    let requestBody = [username, username];
     return executeGetParamsQuery(query, requestBody, callback)
 }
 
