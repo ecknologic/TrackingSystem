@@ -502,11 +502,12 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
         const { dcNo, customerOrderId, address, RouteName, driverName, customerName, isDelivered } = dc
 
         const isCancelled = isDelivered === 'Cancelled'
+        const isCompleted = isDelivered === 'Completed'
         const options = [
             <Menu.Item key="view" icon={isCancelled ? <EyeIconGrey /> : <EditIconGrey />}>View{isCancelled ? '' : '/Edit'}</Menu.Item>,
-            <Menu.Item key="cancel" className={isCancelled ? 'disabled' : ''} icon={<BlockIconGrey />}>Cancel</Menu.Item>,
+            <Menu.Item key="cancel" className={(isCancelled || isCompleted) ? 'disabled' : ''} icon={<BlockIconGrey />}>Cancel</Menu.Item>,
             <Menu.Item key="logs" icon={<ListViewIconGrey />}>Acvitity Logs</Menu.Item>,
-            <Menu.Item key="reschedule" className={isCancelled ? 'disabled' : ''} icon={<ScheduleIconGrey />}>Reschedule</Menu.Item>
+            <Menu.Item key="reschedule" className={(isCancelled || isCompleted) ? 'disabled' : ''} icon={<ScheduleIconGrey />}>Reschedule</Menu.Item>
         ]
 
         return {

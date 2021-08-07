@@ -49,7 +49,7 @@ const ClosureCard = ({ data, onClick, btnTxt = 'Manage Account' }) => {
                 </div>
             </div>
             <div className='footer'>
-                <PrimaryButton text={btnTxt} onClick={() => onClick(closingId, customerId)} />
+                <PrimaryButton text={btnTxt} onClick={() => onClick(closingId)} />
             </div>
         </div>
     )

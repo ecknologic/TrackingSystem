@@ -161,15 +161,15 @@ router.put('/forgotPassword', (req, res) => {
       let { userId, loginId, emailid } = results[0]
       let token = await utils.getLifetimeJwtToken({ userId, loginId, emailid })
       if (token) {
-        let url = process.env.BASE_URL + `/resetPassword?token=${token}`
-        sendMail({ mailId: emailid, message: `Reset Link of Bibo`, body: `<a href=${url}>Click on here</a> to reset your password` })
+        let url = process.env.BASE_URL + `/reset-password?token=${token}`
+        sendMail({ mailId: emailid, message: `Reset your password`, body: `<a href=${url}>Click on here</a> to reset your password` })
         usersQueries.updateUserToken({ emailid, token, isTokenExists: false }, (updateErr, data) => {
           if (updateErr) res.status(500).json(dbError(updateErr))
           else {
             res.json('Mail sent successfully')
           }
         })
-      } else res.status(406).json('Something went wrong')
+      } else res.status(500).json('Something went wrong')
     }
   })
 })
@@ -182,7 +182,7 @@ router.put('/resetPassword', async (req, res) => {
     const { emailid, userId } = data
     usersQueries.updateUserToken({ emailid, token: null }, (updateErr, data) => {
       if (updateErr) res.status(500).json(dbError(updateErr))
-      else if (!data.affectedRows) res.status(406).json('Token expired or already used')
+      else if (!data.affectedRows) res.status(400).json('Token expired or already used')
       else {
         updatePassword({ userId, password }, res)
       }
@@ -198,7 +198,8 @@ router.get('/validateToken', async (req, res) => {
     const { emailid } = data
     usersQueries.checkUserTokenExistsOrNot({ emailid }, (updateErr, data) => {
       if (updateErr) res.status(500).json(dbError(updateErr))
-      else if (!data.length) res.status(406).json('Token expired or already used')
+      else if (!data.length) res.status(400).json('Token expired or already used')
+      else res.send('Success')
     })
   } else res.status(400).send('Invalid Token')
 })
