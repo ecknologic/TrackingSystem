@@ -3,9 +3,10 @@ var router = express.Router();
 const db = require('../config/db.js')
 var bcrypt = require("bcryptjs");
 const usersQueries = require('../dbQueries/users/queries.js');
-const { dbError, createHash } = require('../utils/functions.js');
+const { dbError, createHash, utils } = require('../utils/functions.js');
 const auditQueries = require('../dbQueries/auditlogs/queries.js');
 const { compareWebUserData, compareWebUserDependentDetails } = require('./utils/users.js');
+const { sendMail } = require('./mailTemplate.js');
 let userId, adminUserName, userRole;
 
 router.use(function timeLog(req, res, next) {
@@ -149,21 +150,57 @@ router.post('/updateWebUser', async (req, res) => {
 });
 
 router.post('/updatePassword', (req, res) => {
-  // Generates hash using bCrypt
-  var createHash = function (password) {
-    return bcrypt.hashSync(password, bcrypt.genSaltSync(10), null);
-  }
+  updatePassword(req.body, res)
+});
+
+router.put('/forgotPassword', (req, res) => {
+  usersQueries.checkUserIsValidOrNot(req.body, async (err, results) => {
+    if (err) res.status(500).json(dbError(err))
+    else if (!results.length) res.status(404).send("User not found")
+    else {
+      let { userId, loginId, emailid } = results[0]
+      let token = await utils.getLifetimeJwtToken({ userId, loginId, emailid })
+      if (token) {
+        let url = process.env.BASE_URL + `/resetPassword?token=${token}`
+        sendMail({ mailId: emailid, message: `Reset Link of Bibo`, body: `<a href=${url}>Click on here</a> to reset your password` })
+        usersQueries.updateUserToken({ emailid, token, isTokenExists: false }, (updateErr, data) => {
+          if (updateErr) res.status(500).json(dbError(updateErr))
+          else {
+            res.json('Mail sent successfully')
+          }
+        })
+      } else res.status(406).json('Something went wrong')
+    }
+  })
+})
+
+router.put('/resetPassword', async (req, res) => {
+  let { token, password } = req.body
+  let userData = await utils.verifyLifetimeToken(token)
+  if (userData && userData.data) {
+    let data = JSON.parse(userData.data)
+    const { emailid, userId } = data
+    usersQueries.updateUserToken({ emailid, token: null }, (updateErr, data) => {
+      if (updateErr) res.status(500).json(dbError(updateErr))
+      else if (!data.affectedRows) res.status(406).json('Token expired or already used')
+      else {
+        updatePassword({ userId, password }, res)
+      }
+    })
+  } else res.status(400).send('Invalid Token')
+})
+
+
+const updatePassword = (input, res) => {
   let query = "Update usermaster set password=? where userId=?";
-  let userDetails = req.body;
-  let updateQueryValues = [createHash(userDetails.password), userDetails.userId]
+  let { userId, password } = input;
+  let updateQueryValues = [createHash(password), userId]
   db.query(query, updateQueryValues, (err, results) => {
     if (err) res.send(err);
     else {
       res.send("Password updated")
     }
   });
-});
-
-
+}
 
 module.exports = router;

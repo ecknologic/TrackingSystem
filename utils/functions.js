@@ -3,7 +3,10 @@ var dayjs = require('dayjs');
 var bcrypt = require("bcryptjs");
 const { DATEFORMAT, DISTRIBUTOR } = require('./constants.js');
 const { encrypt, decrypt } = require('./crypto.js');
+const config = require("../config/auth.config.js");
 const format = 'DDMM-YY'
+const jwt = require("jsonwebtoken");
+
 let utils = {}
 
 utils.getCurrentDate = () => dayjs().format(DATEFORMAT)
@@ -432,6 +435,33 @@ utils.getDecryptedProofs = async (input) => {
     panNo = panNo && await decrypt(panNo)
     adharNo = adharNo && await decrypt(adharNo)
     return { gstNo, panNo, adharNo }
+}
+
+utils.getLifetimeJwtToken = async (input) => {
+    return new Promise((resolve) => {
+        var secret = config.secret;
+        var payload = {
+            data: JSON.stringify(input)
+        };
+
+        jwt.sign(payload, secret, { algorithm: 'HS256' }, function (err, token) {
+            if (err) {
+                console.log('Error occurred while generating token');
+                console.log(err);
+                return resolve();
+            }
+            resolve(token)
+        })
+    })
+}
+
+utils.verifyLifetimeToken = async (token) => {
+    return new Promise((resolve) => {
+        jwt.verify(token, config.secret, function (err, decoded) {
+            if (err) return resolve()
+            resolve(decoded);
+        });
+    })
 }
 
 module.exports = {
