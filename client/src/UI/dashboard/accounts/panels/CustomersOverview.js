@@ -58,7 +58,7 @@ const CustomersOverview = () => {
 
     const goToCustomers = (tab) => history.push(`/customers/${tab}`)
     const goToDistributors = () => history.push('/distributors')
-
+console.log(totalActiveCustomers)
     return (
         <>
             <div className='total-customer-panel'>
@@ -66,7 +66,7 @@ const CustomersOverview = () => {
                     <span className='title'>Total Customers</span>
                     <span className='number'>{totalCustomers || 0}</span>
                 </div>
-                <div className='sub-title green'>Active Customers  {totalCustomers - totalInactiveCustomers || 0}</div>
+                <div className='sub-title green'>Active Customers  {totalActiveCustomers || 0}</div>
                 <div className='sub-title'>Inactive Customers  {totalInactiveCustomers || 0}</div>
             </div>
             <PanelHeader title='Customers Overview' onSelect={handleOperation} showShow />

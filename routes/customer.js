@@ -704,6 +704,10 @@ router.get('/getActiveCustomersCount', (req, res) => {
             if (err) res.status(500).json(dbError(err))
             else result.prevActiveCorporateCustomers = previousCorporate.length ? previousCorporate[0].totalCount : 0
           })
+          customerQueries.getTotalActiveCustomersCount(input, (err, activeCustomers) => {
+            if (err) res.status(500).json(dbError(err))
+            else result.totalActiveCustomers = activeCustomers.length ? activeCustomers[0].totalCount : 0
+          })
           customerQueries.getTotalActiveOtherCustomers(input, (err, other) => {
             if (err) res.status(500).json(dbError(err))
             else {
@@ -808,7 +812,7 @@ router.post('/updateDeliveryDetails', async (req, res) => {
           });
         })
       } else {
-        const { gstNo, deliveryLocation, address, phoneNumber, contactPerson, depositAmount, departmentId, isApproved, gstProof, routeId, deliveryDetailsId, customer_Id } = i
+        const { gstNo, deliveryLocation, address, phoneNumber, contactPerson, depositAmount, departmentId, isApproved, gstProof, routeId, deliveryDetailsId, customer_Id, isDeliveryDaysUpdated } = i
         const logs = await compareCustomerDeliveryData({ gstNo, deliveryLocation, address, phoneNumber, contactPerson, depositAmount, departmentId, isApproved, gstProof, routeId }, { deliveryDetailsId, customerId: customer_Id, userId, userRole, userName })
         updateDeliveryDays(i.deliveryDays, i.deliverydaysid).then(async (deliveryDays) => {
           let latLong = await getLatLongDetails({ Address1: i.address })
@@ -825,6 +829,7 @@ router.post('/updateDeliveryDetails', async (req, res) => {
                   let data = await getAddedDeliveryDetails(i.deliveryDetailsId)
                   updateWHDelivery(req)
                   res.json({ status: 200, message: "Delivery Details Updated Successfully", data });
+                  if (isDeliveryDaysUpdated) saveToCustomerOrderDetails(customer_Id, null, deliveryDetailsId, userId, userRole, userName)
                   if (logs.length) {
                     auditQueries.createLog(logs, (err, data) => {
                       if (err) console.log('log error', err)

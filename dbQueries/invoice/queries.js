@@ -99,7 +99,7 @@ invoiceQueries.getTotalInvoicePendingAmount = async (input, callback) => {
 
 invoiceQueries.getReceivedInvoiceAmount = async (callback) => {
     let query = `SELECT (SELECT COALESCE(CAST(SUM(totalAmount-pendingAmount)AS DECIMAL(10,2)), 0) FROM Invoice)
-    + (SELECT COALESCE(CAST(SUM(totalAmount-pendingAmount)AS DECIMAL(10,2)), 0) FROM departmentInvoices) AS totalAmount`;
+    + (SELECT COALESCE(CAST(SUM(totalAmount-pendingAmount)AS DECIMAL(10,2)), 0) FROM departmentInvoices Where status='Paid') AS totalAmount`;
     return executeGetQuery(query, callback)
 }
 

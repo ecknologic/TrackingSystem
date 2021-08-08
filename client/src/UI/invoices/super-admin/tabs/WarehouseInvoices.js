@@ -22,7 +22,7 @@ import { TODAYDATE, TRACKFORM, WAREHOUSEADMIN } from '../../../../utils/constant
 import { getDropdownOptions, getInvoiceColumns } from '../../../../assets/fixtures';
 import { compareMaxIntFloat, validatePaymentValues } from '../../../../utils/validations';
 import { ListViewIconGrey, ScheduleIcon, SendIconGrey, TickIconGrey } from '../../../../components/SVG_Icons';
-import { computeTotalAmount, deepClone, disableFutureDates, doubleKeyComplexSearch, getStatusColor, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
+import { deepClone, disableFutureDates, doubleKeyComplexSearch, getStatusColor, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
@@ -52,7 +52,7 @@ const WarehouseInvoices = () => {
 
     const paymentOptions = useMemo(() => getDropdownOptions(paymentList), [paymentList])
     const invoiceColumns = useMemo(() => getInvoiceColumns('warehouse'), [])
-    const totalAmount = useMemo(() => computeTotalAmount(invoices, 'pendingAmount', 'departmentStatus'), [invoices, payModal])
+    const totalAmount = useMemo(() => computeTotalAmount(invoices), [invoices, payModal])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
@@ -65,6 +65,17 @@ const WarehouseInvoices = () => {
             http.ABORT(source)
         }
     }, [])
+
+    function computeTotalAmount(data) {
+        let totalAmount = 0
+        if (!isEmpty(data)) {
+            totalAmount = data.filter((item) => getActualStatus(item.departmentStatus, item.status) !== 'Paid')
+                .map(({ pendingAmount, totalAmount }) => (pendingAmount || totalAmount))
+                .reduce((a, c) => a + c, 0).toLocaleString('en-IN')
+        }
+
+        return `₹ ${totalAmount}`
+    }
 
     const getInvoices = async () => {
         const url = 'invoice/getDepartmentInvoices'
@@ -248,13 +259,19 @@ const WarehouseInvoices = () => {
         setFormErrors({})
     }
 
-    const dataSource = useMemo(() => invoices.map((invoice) => {
-        const { invoiceId, invoiceDate, totalAmount, customerType, customerName, departmentName, dueDate, status, departmentStatus, billingAddress, pendingAmount } = invoice
-
+    function getActualStatus(departmentStatus, status) {
         let actualStatus = ''
         if ((departmentStatus === 'Paid' || departmentStatus === 'Pending') && status === 'Paid') actualStatus = 'Paid'
         else if (departmentStatus === 'Paid' && (status === '' || status === 'Pending')) actualStatus = 'In Progress'
         else if (departmentStatus == 'Pending' && status === 'Pending') actualStatus = 'Pending'
+
+        return actualStatus
+    }
+
+    const dataSource = useMemo(() => invoices.map((invoice) => {
+        const { invoiceId, invoiceDate, totalAmount, customerType, customerName, departmentName, dueDate, status, departmentStatus, billingAddress, pendingAmount } = invoice
+
+        let actualStatus = getActualStatus(departmentStatus, status)
 
         const allowPay = (customerType === 'distributor' && actualStatus !== 'Paid') || actualStatus === 'In Progress'
         const options = [
@@ -264,10 +281,14 @@ const WarehouseInvoices = () => {
             <Menu.Item key="logs" icon={<ListViewIconGrey />}>Acvitity Logs</Menu.Item>,
         ]
 
-        if (!pendingAmount) invoice.disableAmountPaid = true
-        const modifiedAmount = pendingAmount || totalAmount
-        invoice.pendingAmount = modifiedAmount
+        let modifiedAmount = pendingAmount
 
+        if (actualStatus !== 'Paid') {
+            modifiedAmount = pendingAmount || totalAmount
+            invoice.pendingAmount = modifiedAmount
+        }
+
+        if (!modifiedAmount) invoice.disableAmountPaid = true
 
         return {
             key: invoiceId,

@@ -13,7 +13,7 @@ warehouseQueries.getDCList = async (departmentId, callback) => {
     CASE WHEN co.customertype='distributor' THEN d.mailId ELSE c.EmailId  END AS EmailId
      FROM customerorderdetails co LEFT JOIN customerdetails c 
     ON co.existingCustomerId=c.customerId LEFT JOIN Distributors d ON
-     co.distributorId=d.distributorId WHERE warehouseId=? AND co.creationType='manual' ORDER BY co.deliveredDate`;
+     co.distributorId=d.distributorId WHERE warehouseId=? AND co.creationType='manual' AND isInvoiceGenerated=0 ORDER BY co.deliveredDate`;
     return executeGetParamsQuery(query, [departmentId], callback)
 }
 warehouseQueries.getDeliveryDetails = (input, callback) => {
@@ -171,7 +171,7 @@ warehouseQueries.getDepartmentStaff = async (warehouseId, callback) => {
     return executeGetParamsQuery(query, [warehouseId], callback)
 }
 warehouseQueries.checkDcSchedule = async (input, callback) => {
-    const { existingCustomerId = 318, date = '2021-05-13' } = input
+    const { existingCustomerId, date } = input
     let query = `select dcNo,customerOrderId from customerorderdetails WHERE existingCustomerId=? AND DATE(deliveryDate)=?`;
     return executeGetParamsQuery(query, [existingCustomerId, date], callback)
 }
@@ -269,5 +269,15 @@ warehouseQueries.closeDC = async (input, callback) => {
             executePostOrUpdateQuery(query, [customerOrderId], callback)
         }
     })
+}
+warehouseQueries.assignDriversForMultipleDcs = (input, callback) => {
+    const { driverId, routeId, selectedDate } = input
+    let query = "update customerorderdetails set driverId=? where routeId=?";
+    let requestBody = [driverId, routeId]
+    if (selectedDate != undefined && selectedDate != null) {
+        query = query + ' AND DATE(deliveryDate)=?';
+        requestBody = [driverId, routeId, selectedDate]
+    }
+    executePostOrUpdateQuery(query, requestBody, callback)
 }
 module.exports = warehouseQueries

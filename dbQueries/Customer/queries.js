@@ -21,7 +21,9 @@ customerQueries.getRoutesByDepartmentId = (req, callback) => {
     const { departmentId } = params
     let query = `SELECT r.RouteId,r.RouteName,r.RouteDescription,d.departmentName from routes r INNER JOIN departmentmaster d ON d.departmentId=r.departmentId WHERE r.departmentId=${departmentId} AND r.deleted='0' ORDER BY r.createdDateTime DESC`
     if (userRole == constants.SUPERADMIN || userRole == constants.ACCOUNTSADMIN || userRole == constants.MARKETINGMANAGER || userRole == constants.SALESADMIN) {
-        query = `SELECT r.RouteId,r.RouteName,r.RouteDescription,d.departmentName from routes r INNER JOIN departmentmaster d ON d.departmentId=r.departmentId WHERE r.deleted='0' ORDER BY r.createdDateTime DESC`
+        query = `SELECT r.RouteId,r.RouteName,r.RouteDescription,d.departmentName from routes r INNER JOIN departmentmaster d ON d.departmentId=r.departmentId WHERE r.deleted='0'`
+        if (departmentId != undefined && departmentId != null) query = query + ` AND r.departmentId=${departmentId} ORDER BY r.createdDateTime DESC`
+        else query = query + ' ORDER BY r.createdDateTime DESC'
         return executeGetQuery(query, callback)
     }
     executeGetQuery(query, callback)
@@ -56,6 +58,13 @@ customerQueries.getCustomerBillingAddress = (customerId, callback) => {
 customerQueries.getCustomerNames = (callback) => {
     let query = "SELECT customerNo,organizationName as customerName,customerId FROM customerdetails c WHERE isApproved=1 AND isClosed=0 and deleted=0 ORDER BY lastDraftedDate DESC"
     executeGetParamsQuery(query, callback)
+}
+customerQueries.getCustomerDeliveryDays = (input, callback) => {
+    const { existingCustomerId, departmentId, address } = input
+    let query = `SELECT d.deliveryDetailsId,cd.* FROM DeliveryDetails d
+                INNER JOIN customerdeliverydays  cd ON d.deliverydaysid=cd.deliveryDaysId
+                WHERE customer_Id=? AND departmentId=? AND address=? AND isClosed=0`
+    executeGetParamsQuery(query, [existingCustomerId, departmentId, address], callback)
 }
 customerQueries.getTotalCustomers = (input, callback) => {
     let { startDate, endDate, fromStart } = input;
@@ -93,6 +102,14 @@ customerQueries.getTotalActiveCorporateCustomers = (input, callback) => {
     let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND isClosed=0 AND deleted=0 AND customertype='Corporate'"
     if (fromStart !== 'true') {
         query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND isClosed=0 AND deleted=0 AND customertype='Corporate' AND  DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
+        executeGetParamsQuery(query, [startDate, endDate], callback)
+    } else executeGetParamsQuery(query, callback)
+}
+customerQueries.getTotalActiveCustomersCount = (input, callback) => {
+    let { startDate, endDate, fromStart } = input;
+    let query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND isClosed=0 AND deleted=0"
+    if (fromStart !== 'true') {
+        query = "SELECT COUNT(*) as totalCount FROM customerdetails WHERE isApproved=1 AND isClosed=0 AND deleted=0 AND DATE(registeredDate)>=? AND DATE(registeredDate)<=?"
         executeGetParamsQuery(query, [startDate, endDate], callback)
     } else executeGetParamsQuery(query, callback)
 }
@@ -418,6 +435,13 @@ customerQueries.getCurrentMonthTotalDepositAmount = (input, callback) => {
     let options = [startDate, endDate]
 
     return executeGetParamsQuery(query, options, callback)
+}
+
+customerQueries.checkDCExistsForTodayOrNot = (input, callback) => {
+    let { customer_Id, deliveryLocation, date = dayjs().format('YYYY-MM-DD') } = input
+    let query = `Select deliveryDate,existingCustomerId from customerorderdetails WHERE existingCustomerId=? AND deliveryLocation=? AND DATE(deliveryDate)=? `;
+    let requestBody = [customer_Id, deliveryLocation, date]
+    executeGetParamsQuery(query, requestBody, callback)
 }
 
 //POST Request Methods

@@ -259,10 +259,10 @@ function generateIndividualTableRow(
     quantity,
     price,
     GST,
-    taxValue = 5420,
-    CGST = 280,
-    SGST = 280,
-    IGST = 280
+    taxValue,
+    CGST,
+    SGST,
+    IGST
 ) {
     // console.log("y value:::" + y + "item:::");
     generateVr(doc, 125, y - 10, 140)
@@ -277,7 +277,7 @@ function generateIndividualTableRow(
         .fontSize(9)
         .text(product, 40, y, { align: "left" })
         .text(hsnCode, 130, y, { align: "left" })
-        .text(quantity, 210, y, { align: "ceter" })
+        .text(quantity, 200, y, { align: "left" })
         .text(price, 260, y, { align: "left" })
         .text(GST, 320, y, { align: "left" })
         .text(taxValue, 370, y, { align: "left" })

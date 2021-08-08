@@ -8,7 +8,7 @@ const departmenttransactionQueries = require('../dbQueries/departmenttransaction
 const motherPlantDbQueries = require('../dbQueries/motherplant/queries.js');
 const usersQueries = require('../dbQueries/users/queries.js');
 const warehouseQueries = require('../dbQueries/warehouse/queries.js');
-const { DATEFORMAT, INSERTMESSAGE, UPDATEMESSAGE, WEEKDAYS } = require('../utils/constants.js');
+const { DATEFORMAT, INSERTMESSAGE, UPDATEMESSAGE, WEEKDAYS, constants } = require('../utils/constants.js');
 const { customerProductDetails, dbError, getCompareData, getFormatedNumber, getGraphData, getCompareCustomersData } = require('../utils/functions.js');
 const { compareDepartmentData } = require('./utils/department.js');
 var departmentId, adminUserId, userName, userRole;
@@ -175,6 +175,13 @@ router.put('/updateDC', (req, res) => {
         else res.json({ status: 200, message: "DC Updated successfully", data: deliveryDetails })
       })
     }
+  });
+})
+
+router.put('/assignDriverForDcs', (req, res) => {
+  warehouseQueries.assignDriversForMultipleDcs(req.body, (err, results) => {
+    if (err) res.json({ status: 500, message: err.sqlMessage });
+    else res.json(UPDATEMESSAGE)
   });
 })
 
@@ -522,17 +529,28 @@ router.get('/getDCDetailsByCOId/:COId', (req, res) => {
 })
 
 router.put('/rescheduleDc', (req, res) => {
-  const { customerOrderId } = req.body
+  const { customerOrderId, date, existingCustomerId, address } = req.body
   warehouseQueries.checkDcSchedule(req.body, (deliveryErr, deliveryDetails) => {
     if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
     else if (!deliveryDetails.length) {
-      warehouseQueries.rescheduleDC(req.body, (deliveryErr, rescheduled) => {
-        if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
+      customerQueries.getCustomerDeliveryDays({ existingCustomerId, departmentId, address }, (err, deliverydata) => {
+        if (err) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
+        else if (!deliverydata.length) res.status(404).send('Customer is closed or not found')
         else {
-          departmenttransactionQueries.createDepartmentTransaction({ userId: adminUserId, description: `DC  Rescheduled by ${userRole} <b>(${userName})</b>`, transactionId: customerOrderId, departmentId, type: 'warehouse', subType: 'delivery' })
-          res.json('Rescheduled successfully')
+          var day = constants.days[new Date(date).getDay()].toUpperCase();
+          if (deliverydata[0][day] == 1) res.status(405).send('DC Already exists')
+          else {
+            warehouseQueries.rescheduleDC(req.body, (deliveryErr, rescheduled) => {
+              if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
+              else {
+                departmenttransactionQueries.createDepartmentTransaction({ userId: adminUserId, description: `DC  Rescheduled by ${userRole} <b>(${userName})</b>`, transactionId: customerOrderId, departmentId, type: 'warehouse', subType: 'delivery' })
+                res.json('Rescheduled successfully')
+              }
+            })
+          }
         }
       })
+
     } else {
       res.status(405).send('DC Already exists')
     }
@@ -552,7 +570,7 @@ router.put('/closeDC', (req, res) => {
 const saveDC = (req, res) => {
   let { customerName, contactPerson, phoneNumber, address, routeId, driverId, product20L, product1L, product500ML, product300ML, product2L, warehouseId, customerType, existingCustomerId, distributorId, creationType, isDelivered = 'InProgress', deliveryLocation, price20L, price2L, price1L, price500ML, price300ML, EmailId, deliveredDate } = req.body;
   let dcCreateQuery = "insert into customerorderdetails (customerName,contactPerson,phoneNumber,address,routeId,driverId,20LCans,1LBoxes,500MLBoxes,300MLBoxes,2LBoxes,warehouseId,customerType,existingCustomerId,distributorId,creationType,isDelivered,deliveryLocation,price20L,price2L,price1L,price500ML,price300ML,EmailId,deliveredDate) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-  let insertQueryValues = [customerName, contactPerson, phoneNumber, address, routeId, driverId, product20L, product1L, product500ML, product300ML, product2L, warehouseId, customerType, existingCustomerId, distributorId, creationType, isDelivered, deliveryLocation, price20L, price2L, price1L, price500ML, price300ML, EmailId, !driverId && new Date()]
+  let insertQueryValues = [customerName, contactPerson, phoneNumber, address, routeId, driverId, product20L, product1L, product500ML, product300ML, product2L, warehouseId, customerType, existingCustomerId, distributorId, creationType, isDelivered, deliveryLocation, price20L, price2L, price1L, price500ML, price300ML, EmailId, !driverId ? new Date() : null]
   db.query(dcCreateQuery, insertQueryValues, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else {

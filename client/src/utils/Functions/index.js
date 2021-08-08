@@ -43,10 +43,10 @@ export const resetSessionItems = (matcher) => {
         .map((key) => key.includes(matcher) && sessionStorage.removeItem(key))
 }
 
-export const computeTotalAmount = (data, key = 'totalAmount', statusKey = 'status') => {
+export const computeTotalAmount = (data, key = 'totalAmount') => {
     let totalAmount = 0
     if (!isEmpty(data)) {
-        totalAmount = data.filter((item) => item[statusKey] !== 'Paid')
+        totalAmount = data.filter((item) => item.status !== 'Paid')
             .map(item => item[key])
             .reduce((a, c) => a + c, 0).toLocaleString('en-IN')
     }
@@ -188,6 +188,13 @@ export const getSideMenuKey = (path) => {
     return path
 }
 
+export const areEqualObjs = (obj1, obj2) => {
+    if (Object.keys(obj1).length === Object.keys(obj2).length) {
+        return Object.entries(obj1).every(([key, value]) => obj2[key] === value)
+    }
+
+    return false
+}
 export const deepClone = (data) => {
     return JSON.parse(JSON.stringify(data))
 }
@@ -573,7 +580,8 @@ export const getAddressesForDB = (data, isUpdate) => {
 
         const products = isUpdate ? getProductsWithIdForDB(rest) : getProductsForDB(rest)
         const deliveryDays = getDevDaysForDB(devDays)
-        return { ...rest, products, deliveryDays, gstNo, gstProof }
+        const isDeliveryDaysUpdated = isUpdate ? !areEqualObjs(address.deliveryDays, deliveryDays) : undefined
+        return { ...rest, products, deliveryDays, gstNo, gstProof, isDeliveryDaysUpdated }
     })
 }
 

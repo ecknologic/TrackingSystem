@@ -4,6 +4,7 @@ import { Menu, message, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import DCForm from '../forms/DCForm';
 import { http } from '../../../../modules/http';
+import DriverAssign from '../forms/DriverAssign';
 import Spinner from '../../../../components/Spinner';
 import Actions from '../../../../components/Actions';
 import useUser from '../../../../utils/hooks/useUser';
@@ -41,11 +42,13 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
     const [totalCount, setTotalCount] = useState(null)
     const [pageNumber, setPageNumber] = useState(1)
     const [logModal, setLogModal] = useState(false)
+    const [assignModal, setAssignModal] = useState(false)
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
     const [cancelModal, setCancelModal] = useState(false)
     const [rescheduleModal, setRescheduleModal] = useState(false)
     const [resetSearch, setResetSearch] = useState(false)
+    const [routesList, setRoutesList] = useState([])
     const [customerList, setCustomerList] = useState([])
     const [distributorList, setDistributorList] = useState([])
     const [currentStock, setCurrentStock] = useState({})
@@ -62,6 +65,7 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
 
     const deliveryColumns = useMemo(() => getDeliveryColumns(), [])
     const routeOptions = useMemo(() => getRouteOptions(routeList), [routeList])
+    const routesOptions = useMemo(() => getRouteOptions(routesList), [routesList])
     const driverOptions = useMemo(() => getDriverOptions(driverList), [driverList])
     const locationOptions = useMemo(() => getDropdownOptions(locationList), [locationList])
     const distributorOptions = useMemo(() => getDistributorOptions(distributorList), [distributorList])
@@ -100,6 +104,15 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
         try {
             const data = await http.GET(axios, url, config)
             setCustomerList(data)
+        } catch (error) { }
+    }
+
+    const getRoutesList = async () => {
+        const url = `customer/getRoutes/${warehouseId}`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setRoutesList(data)
         } catch (error) { }
     }
 
@@ -367,6 +380,42 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
         }
     }
 
+    const handleAssignDrivers = async () => {
+        const formErrors = {}
+        const { driverId, routeId } = formData
+        if (!driverId) formErrors.driverId = 'Required'
+        if (!routeId) formErrors.routeId = 'Required'
+
+        if (!isEmpty(formErrors)) {
+            setShake(true)
+            setTimeout(() => setShake(false), 820)
+            setFormErrors(formErrors)
+            return
+        }
+
+        let url = 'warehouse/assignDriverForDcs'
+        const body = { driverId, routeId, selectedDate: date }
+        const options = { item: 'Driver', v1Ing: 'Assigning', v2: 'assigned' }
+
+        try {
+            setBtnDisabled(true)
+            showToast({ ...options, action: 'loading' })
+            await http.PUT(axios, url, body, config)
+            showToast(options)
+            onModalClose(true)
+            setLoading(true)
+            getDeliveries()
+        } catch (error) {
+            message.destroy()
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+                if (error.response.status === 400) {
+                    message.error('DCs for selected route do not exist.')
+                }
+            }
+        }
+    }
+
     const handleCancelDC = async ({ customerOrderId }) => {
         const options = { item: 'DC', v1Ing: 'Cancelling', v2: 'cancelled' }
 
@@ -381,11 +430,11 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
     }
 
     const handleReschedule = async () => {
-        const { customerOrderId, existingCustomerId } = currentDC
+        const { customerOrderId, existingCustomerId, address } = currentDC
         const options = { item: 'DC', v1Ing: 'Rescheduling', v2: 'rescheduled' }
 
         const url = 'warehouse/rescheduleDc'
-        const body = { customerOrderId, date: selectedDate, existingCustomerId }
+        const body = { customerOrderId, date: selectedDate, existingCustomerId, address }
         try {
             showToast({ ...options, action: 'loading' })
             await http.PUT(axios, url, body, config)
@@ -424,6 +473,7 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
             return setConfirmModal(true)
         }
         setDCModal(false)
+        setAssignModal(false)
         setBtnDisabled(false)
         setFormData(defaultValue)
         setFormErrors({})
@@ -452,11 +502,12 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
         const { dcNo, customerOrderId, address, RouteName, driverName, customerName, isDelivered } = dc
 
         const isCancelled = isDelivered === 'Cancelled'
+        const isCompleted = isDelivered === 'Completed'
         const options = [
             <Menu.Item key="view" icon={isCancelled ? <EyeIconGrey /> : <EditIconGrey />}>View{isCancelled ? '' : '/Edit'}</Menu.Item>,
-            <Menu.Item key="cancel" className={isCancelled ? 'disabled' : ''} icon={<BlockIconGrey />}>Cancel</Menu.Item>,
+            <Menu.Item key="cancel" className={(isCancelled || isCompleted) ? 'disabled' : ''} icon={<BlockIconGrey />}>Cancel</Menu.Item>,
             <Menu.Item key="logs" icon={<ListViewIconGrey />}>Acvitity Logs</Menu.Item>,
-            <Menu.Item key="reschedule" className={isCancelled ? 'disabled' : ''} icon={<ScheduleIconGrey />}>Reschedule</Menu.Item>
+            <Menu.Item key="reschedule" className={(isCancelled || isCompleted) ? 'disabled' : ''} icon={<ScheduleIconGrey />}>Reschedule</Menu.Item>
         ]
 
         return {
@@ -501,6 +552,11 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
         handleCancelDC(currentDC)
     }
 
+    const onAssignDrivers = () => {
+        isEmpty(routesList) && getRoutesList()
+        setAssignModal(true)
+    }
+
     const onCreateDC = () => {
         isEmpty(distributorList) && getDistributorList()
         isEmpty(customerList) && getCustomerList()
@@ -510,7 +566,7 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
         setDCModal(true)
     }
 
-    const handleDCModalCancel = useCallback(() => onModalClose(), [])
+    const handleModalCancel = useCallback(() => onModalClose(), [])
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
     const handleRescheduleModalCancel = useCallback(() => { setRescheduleModal(false); setSelectedDate() }, [])
     const handleCancelModalCancel = useCallback(() => setCancelModal(false), [])
@@ -522,7 +578,7 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
     return (
         <div className='stock-delivery-container'>
             <div className='header'>
-                <div className='left'>
+                <div className='left' style={{ width: '70%' }}>
                     <RoutesFilter
                         data={routeList}
                         keyValue='RouteId'
@@ -531,6 +587,7 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
                         onChange={onFilterChange}
                     />
                     <CustomButton text='Add New DC' onClick={onCreateDC} className='app-add-new-btn' icon={<PlusIcon />} />
+                    <CustomButton style={{ marginLeft: '1em' }} text='Assign Driver' onClick={onAssignDrivers} className='app-add-new-btn' icon={<PlusIcon />} />
                     <div className='app-date-picker-wrapper'>
                         <div className='date-picker' onClick={() => setOpen(true)}>
                             <ScheduleIcon />
@@ -547,13 +604,13 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
                         />
                     </div>
                 </div>
-                <div className='right'>
+                <div className='right' style={{ width: '30%' }}>
                     <SearchInput
                         placeholder='Search Delivery Challan'
                         className='delivery-search'
                         reset={resetSearch}
                         onChange={handleSearch}
-                        width='50%'
+                        width='80%'
                     />
                 </div>
             </div>
@@ -581,8 +638,8 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
                 className={`app-form-modal ${shake ? 'app-shake' : ''}`}
                 visible={DCModal}
                 btnDisabled={btnDisabled}
-                onOk={mode === 'view' ? handleDCModalCancel : handleSubmit}
-                onCancel={handleDCModalCancel}
+                onOk={mode === 'view' ? handleModalCancel : handleSubmit}
+                onCancel={handleModalCancel}
                 title={title}
                 okTxt={okTxt}
                 hideCancel={mode === 'view'}
@@ -594,6 +651,23 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     {...childProps}
+                />
+            </CustomModal>
+            <CustomModal
+                className={`app-form-modal ${shake ? 'app-shake' : ''}`}
+                visible={assignModal}
+                btnDisabled={btnDisabled}
+                onOk={handleAssignDrivers}
+                onCancel={handleModalCancel}
+                title='Assign Driver'
+                okTxt='Assign'
+            >
+                <DriverAssign
+                    data={formData}
+                    errors={formErrors}
+                    onChange={handleChange}
+                    routeOptions={routesOptions}
+                    driverOptions={driverOptions}
                 />
             </CustomModal>
             <QuitModal

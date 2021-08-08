@@ -130,7 +130,7 @@ const Dashboard = ({ reFetch }) => {
         setPageNumber(number)
     }
 
-    const goToViewCustomer = (closingId, customerId) => history.push(`/closed-customers/manage/${closingId}?customerId=${customerId}`, { page: pageNumber })
+    const goToViewCustomer = (closingId) => history.push(`/closed-customers/manage/${closingId}`, { page: pageNumber })
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize

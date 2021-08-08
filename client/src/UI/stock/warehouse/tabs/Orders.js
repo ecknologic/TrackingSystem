@@ -3,6 +3,7 @@ import { Menu, message, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import CreateDelivery from '../forms/Delivery';
 import { http } from '../../../../modules/http';
+import DriverAssign from '../forms/DriverAssign';
 import Spinner from '../../../../components/Spinner';
 import Actions from '../../../../components/Actions';
 import useUser from '../../../../utils/hooks/useUser';
@@ -10,10 +11,12 @@ import { TRACKFORM } from '../../../../utils/constants';
 import QuitModal from '../../../../components/CustomModal';
 import CustomModal from '../../../../components/CustomModal';
 import SearchInput from '../../../../components/SearchInput';
+import CustomButton from '../../../../components/CustomButton';
+import RoutesFilter from '../../../../components/RoutesFilter';
 import DeliveryForm from '../../../accounts/add/forms/Delivery';
-import { EditIconGrey, ListViewIconGrey } from '../../../../components/SVG_Icons';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomPagination from '../../../../components/CustomPagination';
+import { EditIconGrey, ListViewIconGrey, PlusIcon } from '../../../../components/SVG_Icons';
 import { orderColumns, getRouteOptions, getDriverOptions, getVehicleOptions, getWarehouseOptions, getDropdownOptions } from '../../../../assets/fixtures';
 import { isEmpty, resetTrackForm, showToast, deepClone, getProductsForUI, base64String, getDevDays, doubleKeyComplexSearch } from '../../../../utils/Functions';
 import ActivityLogContent from '../../../../components/ActivityLogContent';
@@ -25,6 +28,7 @@ const Orders = ({ driverList, vehicleList, locationList, warehouseList }) => {
     const [orders, setOrders] = useState([])
     const [logs, setLogs] = useState([])
     const [ordersClone, setOrdersClone] = useState([])
+    const [filteredClone, setFilteredClone] = useState([])
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [pageSize, setPageSize] = useState(10)
@@ -32,9 +36,14 @@ const Orders = ({ driverList, vehicleList, locationList, warehouseList }) => {
     const [pageNumber, setPageNumber] = useState(1)
     const [logModal, setLogModal] = useState(false)
     const [btnDisabled, setBtnDisabled] = useState(false)
+    const [assignModal, setAssignModal] = useState(false)
     const [DCModal, setDCModal] = useState(false)
     const [viewModal, setViewModal] = useState(false)
     const [currentDepId, setCurrentDepId] = useState('')
+    const [filterInfo, setFilterInfo] = useState([])
+    const [resetSearch, setResetSearch] = useState(false)
+    const [filterON, setFilterON] = useState(false)
+    const [searchON, setSeachON] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
     const [options, setOptions] = useState({})
     const [isFetched, setIsFetched] = useState(false)
@@ -107,10 +116,15 @@ const Orders = ({ driverList, vehicleList, locationList, warehouseList }) => {
         try {
             const data = await http.GET(axios, url, config)
             setPageNumber(1)
-            setLoading(false)
-            setTotalCount(data.length)
             setOrdersClone(data)
-            setOrders(data)
+            setLoading(false)
+            if (!isEmpty(filterInfo)) {
+                generateFiltered(data, filterInfo)
+            }
+            else {
+                setTotalCount(data.length)
+                setOrders(data)
+            }
         } catch (error) { }
     }
 
@@ -129,7 +143,7 @@ const Orders = ({ driverList, vehicleList, locationList, warehouseList }) => {
         setFormData(data => ({ ...data, [key]: value }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
-        if (key === 'driverId') {
+        if (key === 'driverId' && !assignModal) {
             let selectedDriver = driverList.find(driver => driver.driverId === Number(value))
             let { mobileNumber = null } = selectedDriver || {}
             setFormData(data => ({ ...data, mobileNumber }))
@@ -233,6 +247,41 @@ const Orders = ({ driverList, vehicleList, locationList, warehouseList }) => {
         }
     }
 
+    const handleAssignDrivers = async () => {
+        const formErrors = {}
+        const { driverId, routeId } = formData
+        if (!driverId) formErrors.driverId = 'Required'
+        if (!routeId) formErrors.routeId = 'Required'
+
+        if (!isEmpty(formErrors)) {
+            setShake(true)
+            setTimeout(() => setShake(false), 820)
+            setFormErrors(formErrors)
+            return
+        }
+
+        let url = 'warehouse/assignDriverForDcs'
+        const body = { ...formData }
+
+        try {
+            setBtnDisabled(true)
+            showToast({ ...options, action: 'loading' })
+            await http.PUT(axios, url, body, config)
+            showToast(options)
+            onModalClose(true)
+            setLoading(true)
+            getOrders()
+        } catch (error) {
+            message.destroy()
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+                if (error.response.status === 400) {
+                    message.error('DCs for selected route do not exist.')
+                }
+            }
+        }
+    }
+
     const optimisticUpdate = ({ driverName, deliveryDetailsId: id, routeName }) => {
         const clone = deepClone(orders)
         const index = clone.findIndex(dc => dc.deliveryDetailsId === id)
@@ -252,6 +301,7 @@ const Orders = ({ driverList, vehicleList, locationList, warehouseList }) => {
         }
         setDCModal(false)
         setViewModal(false)
+        setAssignModal(false)
         setBtnDisabled(false)
         setFormData({})
         setFormErrors({})
@@ -262,16 +312,39 @@ const Orders = ({ driverList, vehicleList, locationList, warehouseList }) => {
         setLogModal(false)
     }
 
+    const onFilterChange = (data) => {
+        setPageNumber(1)
+        setFilterInfo(data)
+        if (isEmpty(data)) {
+            setOrders(ordersClone)
+            setTotalCount(ordersClone.length)
+            setFilterON(false)
+        }
+        else generateFiltered(ordersClone, data)
+    }
+
+    const generateFiltered = (original, filterInfo) => {
+        const filtered = original.filter((item) => filterInfo.includes(item.routeId))
+        setOrders(filtered)
+        setFilteredClone(filtered)
+        setTotalCount(filtered.length)
+        setFilterON(true)
+        searchON && setResetSearch(!resetSearch)
+    }
+
     const handleSearch = (value) => {
         setPageNumber(1)
         if (value === "") {
             setTotalCount(ordersClone.length)
             setOrders(ordersClone)
+            setSeachON(false)
             return
         }
-        const result = doubleKeyComplexSearch(ordersClone, value, 'deliveryDetailsId', 'contactPerson')
+        const data = filterON ? filteredClone : ordersClone
+        const result = doubleKeyComplexSearch(data, value, 'deliveryDetailsId', 'contactPerson')
         setTotalCount(result.length)
         setOrders(result)
+        setSeachON(true)
     }
 
     const dataSource = useMemo(() => orders.map((order) => {
@@ -288,14 +361,19 @@ const Orders = ({ driverList, vehicleList, locationList, warehouseList }) => {
         }
     }), [orders, viewedArr, isFetched])
 
+    const onAssignDrivers = () => {
+        isEmpty(routeList) && getRouteList(WAREHOUSEID)
+        setOptions({ item: 'Driver', v1Ing: 'Assigning', v2: 'assigned' })
+        setAssignModal(true)
+    }
+
     const handleConfirmModalOk = useCallback(() => {
         setConfirmModal(false);
         resetTrackForm()
         onModalClose()
     }, [])
 
-    const handleDCModalCancel = useCallback(() => onModalClose(), [])
-    const handleViewModalCancel = useCallback(() => onModalClose(), [])
+    const handleModalCancel = useCallback(() => onModalClose(), [])
     const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
     const handleLogModalCancel = useCallback(() => onLogModalClose(), [])
 
@@ -305,7 +383,17 @@ const Orders = ({ driverList, vehicleList, locationList, warehouseList }) => {
     return (
         <div className='stock-delivery-container'>
             <div className='header'>
-                <div className='left'></div>
+                <div className='left'>
+                    <RoutesFilter
+                        data={routeList}
+                        keyValue='RouteId'
+                        keyLabel='RouteName'
+                        title='Select Routes'
+                        onChange={onFilterChange}
+                    />
+                    <CustomButton text='Assign Driver' onClick={onAssignDrivers} className='app-add-new-btn' icon={<PlusIcon />} />
+
+                </div>
                 <div className='right'>
                     <SearchInput
                         placeholder='Search Delivery Challan'
@@ -340,7 +428,7 @@ const Orders = ({ driverList, vehicleList, locationList, warehouseList }) => {
                 visible={DCModal}
                 btnDisabled={btnDisabled}
                 onOk={handleSubmit}
-                onCancel={handleDCModalCancel}
+                onCancel={handleModalCancel}
                 title={`${label} Delivery`}
                 okTxt={label}
             >
@@ -358,8 +446,8 @@ const Orders = ({ driverList, vehicleList, locationList, warehouseList }) => {
                 className={`app-form-modal ${shake ? 'app-shake' : ''}`}
                 visible={viewModal}
                 btnDisabled={btnDisabled}
-                onOk={handleViewModalCancel}
-                onCancel={handleViewModalCancel}
+                onOk={handleModalCancel}
+                onCancel={handleModalCancel}
                 title='Delivery Details'
                 hideCancel
                 okTxt='Close'
@@ -372,6 +460,23 @@ const Orders = ({ driverList, vehicleList, locationList, warehouseList }) => {
                     routeOptions={routeOptions}
                     locationOptions={locationOptions}
                     warehouseOptions={warehouseOptions}
+                />
+            </CustomModal>
+            <CustomModal
+                className={`app-form-modal ${shake ? 'app-shake' : ''}`}
+                visible={assignModal}
+                btnDisabled={btnDisabled}
+                onOk={handleAssignDrivers}
+                onCancel={handleModalCancel}
+                title='Assign Driver'
+                okTxt='Assign'
+            >
+                <DriverAssign
+                    data={formData}
+                    errors={formErrors}
+                    onChange={handleChange}
+                    routeOptions={routeOptions}
+                    driverOptions={driverOptions}
                 />
             </CustomModal>
             <QuitModal

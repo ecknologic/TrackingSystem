@@ -14,7 +14,7 @@ import NoContent from '../../../../components/NoContent';
 import CustomButton from '../../../../components/CustomButton';
 import { isEmpty, showToast, resetTrackForm } from '../../../../utils/Functions';
 import { getDepartmentOptions, getLocationOptions, getRouteOptions } from '../../../../assets/fixtures';
-import { ACCOUNTSADMIN, MARKETINGADMIN, MARKETINGMANAGER, SUPERADMIN, WAREHOUSEADMIN } from '../../../../utils/constants';
+import { ACCOUNTSADMIN, MARKETINGMANAGER, SUPERADMIN, WAREHOUSEADMIN } from '../../../../utils/constants';
 import { validateNumber, validateIFSCCode, validateClosureValues, validateClosureAccValues } from '../../../../utils/validations';
 import '../../../../sass/employees.scss'
 const APIDATEFORMAT = 'YYYY-MM-DD'

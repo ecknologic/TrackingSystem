@@ -3,12 +3,18 @@ var dayjs = require('dayjs');
 var bcrypt = require("bcryptjs");
 const { DATEFORMAT, DISTRIBUTOR } = require('./constants.js');
 const { encrypt, decrypt } = require('./crypto.js');
+const config = require("../config/auth.config.js");
 const format = 'DDMM-YY'
+const jwt = require("jsonwebtoken");
+
 let utils = {}
 
-const getBatchId = (shiftType) => {
+utils.getCurrentDate = () => dayjs().format(DATEFORMAT)
+
+const getBatchId = (shiftType, count) => {
     let shift = shiftType == 'Morning' ? 'A' : shiftType == 'Evening' ? 'B' : shiftType == 'Night' ? 'C' : 'A';
     let currentDate = dayjs().format(format)
+    if (count > 1) return shift + '-' + currentDate + `-${shift + (count - 1)}`
     return shift + '-' + currentDate
 }
 const checkUserExists = (req, res, next) => {
@@ -176,7 +182,7 @@ const getCompareData = (currentValues, previousValues, type, isRs) => {
     }
 }
 const getCompareCustomersData = (data, type) => {
-    const { totalCustomers, inActiveCustomers, activeCorporateCustomers, prevActiveCorporateCustomers,
+    const { totalCustomers, inActiveCustomers, totalActiveCustomers, activeCorporateCustomers, prevActiveCorporateCustomers,
         activeOtherCustomers, prevActiveOtherCustomers, totalDistributors = 0 } = data
 
     const totalCorporateCustomers = getFormatedNumber(activeCorporateCustomers)
@@ -187,7 +193,7 @@ const getCompareCustomersData = (data, type) => {
     const individualCustomersCompareText = getCompareText(type, prevActiveOtherCustomers)
     let obj = {
         totalCorporateCustomers, totalIndividualCustomers, totalCustomers: getFormatedNumber(totalCustomers + totalDistributors), corporateCustomersPercent, corporateCustomersCompareText,
-        individualCustomersPercent, individualCustomersCompareText
+        individualCustomersPercent, individualCustomersCompareText, totalActiveCustomers
     }
     if (inActiveCustomers) obj.totalInactiveCustomers = getFormatedNumber(inActiveCustomers)
     return obj
@@ -429,6 +435,33 @@ utils.getDecryptedProofs = async (input) => {
     panNo = panNo && await decrypt(panNo)
     adharNo = adharNo && await decrypt(adharNo)
     return { gstNo, panNo, adharNo }
+}
+
+utils.getLifetimeJwtToken = async (input) => {
+    return new Promise((resolve) => {
+        var secret = config.secret;
+        var payload = {
+            data: JSON.stringify(input)
+        };
+
+        jwt.sign(payload, secret, { algorithm: 'HS256' }, function (err, token) {
+            if (err) {
+                console.log('Error occurred while generating token');
+                console.log(err);
+                return resolve();
+            }
+            resolve(token)
+        })
+    })
+}
+
+utils.verifyLifetimeToken = async (token) => {
+    return new Promise((resolve) => {
+        jwt.verify(token, config.secret, function (err, decoded) {
+            if (err) return resolve()
+            resolve(decoded);
+        });
+    })
 }
 
 module.exports = {

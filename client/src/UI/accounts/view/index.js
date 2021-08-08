@@ -215,7 +215,10 @@ const ViewAccount = () => {
         const products = getProductsForDB(productsUI)
         const deliveryDays = getDevDaysForDB(devDays)
         const formValues = extractDeliveryDetails(formData)
-        const body = [{ ...formValues, isNew: true, delete: 0, isApproved: 0, products, deliveryDays, customer_Id: accountId }]
+        const body = [{
+            ...formValues, isNew: true, delete: 0, isApproved: 0, products,
+            deliveryDays, customer_Id: accountId, isDeliveryDaysUpdated: false
+        }]
 
         const options = { item: 'Delivery details', v1Ing: 'Adding', v2: 'added' }
         const url = 'customer/updateDeliveryDetails'
