@@ -1,10 +1,12 @@
 import React from 'react';
+import InputLabel from '../../../components/InputLabel';
 import InputValue from '../../../components/InputValue';
 
 const AccountView = ({ data }) => {
 
-    const { agencyName, operationalArea, contactPerson, mobileNumber, address,
-        alternatePhNo, mailId, alternateMailId, deliveryLocation } = data
+    const { agencyName, operationalArea, contactPerson, mobileNumber, address, alternatePhNo, mailId,
+        alternateMailId, deliveryLocation, product20L, price20L, product2L, product1L, price2L, price1L, product500ML,
+        price500ML, product300ML, price300ML } = data
 
     return (
         <div className='app-view-info'>
@@ -61,6 +63,61 @@ const AccountView = ({ data }) => {
                         </div>
                     )
                 }
+            </div>
+            <div className='columns'>
+                <InputLabel name='Stock Particulars' />
+                <div className='columns-container'>
+                    <div className='column'>
+                        <div className='input-container'>
+                            <InputLabel name='20 Ltrs' />
+                            <InputValue value={product20L} />
+                        </div>
+                        <div className='input-container'>
+                            <InputLabel name='Unit Price' />
+                            <InputValue value={price20L} />
+                        </div>
+                    </div>
+                    <div className='column'>
+                        <div className='input-container'>
+                            <InputLabel name='1 Ltrs (Box-1&times;12)' />
+                            <InputValue value={product2L} />
+                        </div>
+                        <div className='input-container'>
+                            <InputLabel name='Unit Price' />
+                            <InputValue value={price2L} />
+                        </div>
+                    </div>
+                    <div className='column'>
+                        <div className='input-container'>
+                            <InputLabel name='1 Ltrs (Box-1&times;12)' />
+                            <InputValue value={product1L} />
+                        </div>
+                        <div className='input-container'>
+                            <InputLabel name='Unit Price' />
+                            <InputValue value={price1L} />
+                        </div>
+                    </div>
+                    <div className='column'>
+                        <div className='input-container'>
+                            <InputLabel name='500 Ml (Box-1&times;24)' />
+                            <InputValue value={product500ML} />
+                        </div>
+                        <div className='input-container'>
+                            <InputLabel name='Unit Price' />
+                            <InputValue value={price500ML} />
+                        </div>
+                    </div>
+                    <div className='column'>
+                        <div className='input-container'>
+                            <InputLabel name='300 Ml (Box-1&times;30)' />
+                            <InputValue value={product300ML} />
+                        </div>
+                        <div className='input-container'>
+                            <InputLabel name='Unit Price' />
+                            <InputValue value={price300ML} />
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     )
