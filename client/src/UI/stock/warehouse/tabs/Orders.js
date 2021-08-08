@@ -21,9 +21,9 @@ import { orderColumns, getRouteOptions, getDriverOptions, getVehicleOptions, get
 import { isEmpty, resetTrackForm, showToast, deepClone, getProductsForUI, base64String, getDevDays, doubleKeyComplexSearch } from '../../../../utils/Functions';
 import ActivityLogContent from '../../../../components/ActivityLogContent';
 
-const Orders = ({ driverList, vehicleList, locationList, warehouseList }) => {
+const Orders = ({ driverList, vehicleList, locationList, warehouseList, routeList }) => {
     const { WAREHOUSEID } = useUser()
-    const [routeList, setRouteList] = useState([])
+    const [routesList, setRoutesList] = useState([])
     const [loading, setLoading] = useState(true)
     const [orders, setOrders] = useState([])
     const [logs, setLogs] = useState([])
@@ -53,6 +53,7 @@ const Orders = ({ driverList, vehicleList, locationList, warehouseList }) => {
     const [viewedArr, setViewedArr] = useState([])
 
     const routeOptions = useMemo(() => getRouteOptions(routeList), [routeList])
+    const routesOptions = useMemo(() => getRouteOptions(routesList), [routesList])
     const driverOptions = useMemo(() => getDriverOptions(driverList), [driverList])
     const vehicleOptions = useMemo(() => getVehicleOptions(vehicleList), [vehicleList])
     const warehouseOptions = useMemo(() => getWarehouseOptions(warehouseList), [warehouseList])
@@ -73,17 +74,17 @@ const Orders = ({ driverList, vehicleList, locationList, warehouseList }) => {
     const fetchData = async () => {
         if (!isFetched) {
             showToast(toastLoading)
-            await getRouteList(WAREHOUSEID)
+            await getRoutesList(WAREHOUSEID)
             message.destroy()
         }
     }
 
-    const getRouteList = async (depId) => {
+    const getRoutesList = async (depId) => {
         const url = `customer/getRoutes/${depId}`
 
         try {
             const data = await http.GET(axios, url, config)
-            setRouteList(data)
+            setRoutesList(data)
             setCurrentDepId(depId)
         } catch (error) { }
     }
@@ -100,7 +101,7 @@ const Orders = ({ driverList, vehicleList, locationList, warehouseList }) => {
             const productsUI = getProductsForUI(products)
             const formData = { ...data, gstProof: gst, deliveryLocation: location, ...productsUI }
             setDevDays(devDays)
-            handleGetNewRouteList(departmentId)
+            handleGetNewRoutesList(departmentId)
             setFormData(formData)
             setViewedArr([...viewedArr, formData])
             message.destroy()
@@ -188,9 +189,9 @@ const Orders = ({ driverList, vehicleList, locationList, warehouseList }) => {
         setPageNumber(number)
     }
 
-    const handleGetNewRouteList = (depId) => {
+    const handleGetNewRoutesList = (depId) => {
         if (currentDepId !== depId) {
-            getRouteList(depId)
+            getRoutesList(depId)
         }
     }
 
@@ -204,7 +205,7 @@ const Orders = ({ driverList, vehicleList, locationList, warehouseList }) => {
 
         if (delivery) {
             const { departmentId } = delivery
-            handleGetNewRouteList(departmentId)
+            handleGetNewRoutesList(departmentId)
             setFormData(delivery)
             setViewModal(true)
         }
@@ -226,7 +227,7 @@ const Orders = ({ driverList, vehicleList, locationList, warehouseList }) => {
         }
 
         const { driverName } = driverList.find(item => item.driverId === driverId)
-        const { RouteName: routeName } = routeList.find(item => item.RouteId === routeId)
+        const { RouteName: routeName } = routesList.find(item => item.RouteId === routeId)
         const { vehicleName } = vehicleList.find(item => item.vehicleId === vehicleId)
 
         let url = 'customer/createOrderDelivery'
@@ -362,7 +363,7 @@ const Orders = ({ driverList, vehicleList, locationList, warehouseList }) => {
     }), [orders, viewedArr, isFetched])
 
     const onAssignDrivers = () => {
-        isEmpty(routeList) && getRouteList(WAREHOUSEID)
+        isEmpty(routesList) && getRoutesList(WAREHOUSEID)
         setOptions({ item: 'Driver', v1Ing: 'Assigning', v2: 'assigned' })
         setAssignModal(true)
     }
@@ -436,7 +437,7 @@ const Orders = ({ driverList, vehicleList, locationList, warehouseList }) => {
                     data={formData}
                     errors={formErrors}
                     driverOptions={driverOptions}
-                    routeOptions={routeOptions}
+                    routeOptions={routesOptions}
                     vehicleOptions={vehicleOptions}
                     onChange={handleChange}
                     onBlur={handleBlur}
@@ -457,7 +458,7 @@ const Orders = ({ driverList, vehicleList, locationList, warehouseList }) => {
                     data={formData}
                     errors={formErrors}
                     devDays={devDays}
-                    routeOptions={routeOptions}
+                    routeOptions={routesOptions}
                     locationOptions={locationOptions}
                     warehouseOptions={warehouseOptions}
                 />
