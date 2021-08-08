@@ -18,8 +18,8 @@ const Login = () => {
 
     const loginBtn = () => {
         let errors1 = {};
-        if (username.trim() === "") errors1.username = "Please enter username";
-        if (password.trim() === "") errors1.password = "Please enter password"
+        if (username.trim() === "") errors1.username = "Please enter Username";
+        if (password.trim() === "") errors1.password = "Please enter Password"
         setErrors(errors1)
         if (Object.keys(errors1).length === 0) {
             let userData = {

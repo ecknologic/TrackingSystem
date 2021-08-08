@@ -101,7 +101,7 @@ export const getBase64 = (img, callback) => {
 }
 
 export const base64String = (buffer = [], format = 'image/png') => {
-    if (!isEmpty(buffer)) return `data:${format};base64,` + btoa(
+    if (!isEmpty(buffer)) return `data:${format};headers=filename%3DDilipReddy;base64,` + btoa(
         new Uint8Array(buffer)
             .reduce((data, byte) => data + String.fromCharCode(byte), '')
     );
