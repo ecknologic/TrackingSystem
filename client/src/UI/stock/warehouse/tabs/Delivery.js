@@ -48,7 +48,6 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
     const [cancelModal, setCancelModal] = useState(false)
     const [rescheduleModal, setRescheduleModal] = useState(false)
     const [resetSearch, setResetSearch] = useState(false)
-    const [routesList, setRoutesList] = useState([])
     const [customerList, setCustomerList] = useState([])
     const [distributorList, setDistributorList] = useState([])
     const [currentStock, setCurrentStock] = useState({})
@@ -65,7 +64,6 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
 
     const deliveryColumns = useMemo(() => getDeliveryColumns(), [])
     const routeOptions = useMemo(() => getRouteOptions(routeList), [routeList])
-    const routesOptions = useMemo(() => getRouteOptions(routesList), [routesList])
     const driverOptions = useMemo(() => getDriverOptions(driverList), [driverList])
     const locationOptions = useMemo(() => getDropdownOptions(locationList), [locationList])
     const distributorOptions = useMemo(() => getDistributorOptions(distributorList), [distributorList])
@@ -104,15 +102,6 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
         try {
             const data = await http.GET(axios, url, config)
             setCustomerList(data)
-        } catch (error) { }
-    }
-
-    const getRoutesList = async () => {
-        const url = `customer/getRoutes/${warehouseId}`
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setRoutesList(data)
         } catch (error) { }
     }
 
@@ -553,7 +542,6 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
     }
 
     const onAssignDrivers = () => {
-        isEmpty(routesList) && getRoutesList()
         setAssignModal(true)
     }
 
@@ -666,7 +654,7 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
                     data={formData}
                     errors={formErrors}
                     onChange={handleChange}
-                    routeOptions={routesOptions}
+                    routeOptions={routeOptions}
                     driverOptions={driverOptions}
                 />
             </CustomModal>

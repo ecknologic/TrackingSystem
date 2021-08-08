@@ -1045,11 +1045,11 @@ export const validateDCValues = (data, currentStock) => {
     let productErrors = validateProductNPrice(rest)
     if (isEmpty(productErrors)) {
         const _currentStock = {
-            product20LCount: currentStock.total1LBoxes,
+            product20LCount: currentStock.total20LCans,
             product2LCount: currentStock.total2LBoxes,
-            product1LCount: currentStock.total20LCans,
-            product500MLCount: currentStock.total300MLBoxes,
-            product300MLCount: currentStock.total500MLBoxes
+            product1LCount: currentStock.total1LBoxes,
+            product500MLCount: currentStock.total500MLBoxes,
+            product300MLCount: currentStock.total300MLBoxes
         }
         productErrors = validateProductsInStock(_currentStock, rest, 'productNPrice')
     }
