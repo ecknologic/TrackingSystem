@@ -272,11 +272,13 @@ warehouseQueries.closeDC = async (input, callback) => {
 }
 warehouseQueries.assignDriversForMultipleDcs = (input, callback) => {
     const { driverId, routeId, selectedDate } = input
-    let query = "update customerorderdetails set driverId=? where routeId=?";
+    let query;
     let requestBody = [driverId, routeId]
     if (selectedDate != undefined && selectedDate != null) {
-        query = query + ' AND DATE(deliveryDate)=?';
+        query = 'update customerorderdetails set driverId=? where routeId=? AND DATE(deliveryDate)=?';
         requestBody = [driverId, routeId, selectedDate]
+    }else{
+        query='update DeliveryDetails set driverId=? where routeId=?'
     }
     executePostOrUpdateQuery(query, requestBody, callback)
 }
