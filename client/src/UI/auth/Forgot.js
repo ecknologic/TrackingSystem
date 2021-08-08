@@ -27,7 +27,7 @@ const ForgotPassword = () => {
     const handleSendLink = async () => {
         const errors = {};
         if (username.trim() === "") {
-            errors.username = "Please enter User ID or E-mail";
+            errors.username = "Please enter Username or Email";
         }
 
         if (!isEmpty(errors)) {

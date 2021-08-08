@@ -96,7 +96,7 @@ usersQueries.addDepartmentAdmin = async (input) => {
 usersQueries.updateUserToken = (input, callback) => {
     const { emailid, token, isTokenExists } = input
     let query = "Update usermaster SET token=? where emailid=?"
-    if (isTokenExists != false) query = ' AND token IS NOT NULL'
+    if (isTokenExists != false) query = query + ' AND token IS NOT NULL'
     let requestBody = [token, emailid];
     return executePostOrUpdateQuery(query, requestBody, callback)
 }

@@ -26,7 +26,7 @@ const ResetPassword = () => {
         if (token) {
             validateToken(token)
         }
-        history.replace('/forgot-password')
+        else history.replace('/forgot-password')
     }, [])
 
     const validateToken = async (token) => {
@@ -63,14 +63,14 @@ const ResetPassword = () => {
             if (err) {
                 (errors.confirmPassword = err)
             }
-            else {
-                if (password !== confirmPassword) {
-                    errors.password = "Passwords do not match"
-                }
-                else {
-                    errors.confirmPassword = "Passwords match ✓"
-                }
-            }
+            // else {
+            //     if (password !== confirmPassword) {
+            //         errors.password = "Passwords do not match"
+            //     }
+            //     else {
+            //         errors.confirmPassword = "Passwords match ✓"
+            //     }
+            // }
         }
 
         if (!isEmpty(errors)) {
@@ -81,7 +81,7 @@ const ResetPassword = () => {
         const url = 'users/resetPassword'
         const body = { token, password }
         try {
-            setIsLoading(true)
+            // setIsLoading(true)
             await http.PUT(axios, url, body)
             setResetSuccess(true)
 
@@ -101,40 +101,40 @@ const ResetPassword = () => {
             if (errors[key] !== "") setErrors(errors => ({ ...errors, [key]: "" }))
 
             //match validation
-            if (password.trim() && confirmPassword.trim()) {
-                if (password !== confirmPassword) {
-                    setErrors(errors => ({ ...errors, confirmPassword: "Passwords do not match" }))
-                }
-                else {
-                    setErrors(errors => ({ ...errors, confirmPassword: "Passwords match ✓" }))
-                }
-            }
+            // if (password.trim() && confirmPassword.trim()) {
+            //     if (password !== confirmPassword) {
+            //         setErrors(errors => ({ ...errors, confirmPassword: "Passwords do not match" }))
+            //     }
+            //     else {
+            //         setErrors(errors => ({ ...errors, confirmPassword: "Passwords match ✓" }))
+            //     }
+            // }
         }
         if (key === "confirmPassword") {
             setConfirmPassword(value);
 
-            if (password.trim() && value.trim()) {
-                if (password !== value) {
-                    setErrors(errors => ({ ...errors, confirmPassword: "Passwords do not match" }))
-                }
-                else {
-                    setErrors(errors => ({ ...errors, confirmPassword: "Passwords match ✓" }))
-                }
-            }
-            else setErrors(errors => ({ ...errors, confirmPassword: "" }))
+            // if (password.trim() && value.trim()) {
+            //     if (password !== value) {
+            //         setErrors(errors => ({ ...errors, confirmPassword: "Passwords do not match" }))
+            //     }
+            //     else {
+            //         setErrors(errors => ({ ...errors, confirmPassword: "Passwords match ✓" }))
+            //     }
+            // }
+            // else setErrors(errors => ({ ...errors, confirmPassword: "" }))
         }
         else if (key === "password") {
             setPassword(value)
 
-            if (value.trim() && confirmPassword.trim()) {
-                if (value !== confirmPassword) {
-                    setErrors(errors => ({ ...errors, confirmPassword: "Passwords do not match" }))
-                }
-                else {
-                    setErrors(errors => ({ ...errors, confirmPassword: "Passwords match ✓" }))
-                }
-            }
-            else setErrors(errors => ({ ...errors, confirmPassword: "" }))
+            // if (value.trim() && confirmPassword.trim()) {
+            //     if (value !== confirmPassword) {
+            //         setErrors(errors => ({ ...errors, confirmPassword: "Passwords do not match" }))
+            //     }
+            //     else {
+            //         setErrors(errors => ({ ...errors, confirmPassword: "Passwords match ✓" }))
+            //     }
+            // }
+            // else setErrors(errors => ({ ...errors, confirmPassword: "" }))
         }
     }
 
