@@ -884,7 +884,7 @@ router.get("/getSalesPersons", (req, res) => {
 
 router.get('/customerDCDetails/:customerId', (req, res) => {
   var customerId = req.params.customerId;
-  warehouseQueries.getCustomerDcDetails(customerId, (err, results) => {
+  warehouseQueries.getCustomerDcDetails({ customerId, customerType: req.query.customerType }, (err, results) => {
     if (err) res.status(500).json(err.sqlMessage);
     res.send(JSON.stringify(results));
   });

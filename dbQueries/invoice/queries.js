@@ -46,6 +46,23 @@ invoiceQueries.getInvoiceByDepartment = async (departmentId, callback) => {
 
     return executeGetParamsQuery(query, [departmentId], callback)
 }
+
+invoiceQueries.getDepartmentInvoicesByCustomerId = async (input, callback) => {
+    const { departmentId, customerType, customerId } = input
+    let query = `select d.*,CASE WHEN d.customerType='distributor' THEN dis.deliveryLocation ELSE c.Address1 END AS billingAddress from departmentInvoices d LEFT JOIN customerdetails c 
+    ON d.customerId=c.customerId LEFT JOIN Distributors dis ON
+     d.customerId=dis.distributorId where d.departmentId=? AND customerType=? AND customerId=? ORDER BY updatedDateTime DESC`;
+
+    if (departmentId == "null" || !departmentId) {
+        query = `select d.*, dep.departmentName,CASE WHEN d.customerType='distributor' THEN dis.deliveryLocation ELSE c.Address1 END AS billingAddress from departmentInvoices d LEFT JOIN customerdetails c 
+        ON d.customerId=c.customerId LEFT JOIN Distributors dis ON
+         d.customerId=dis.distributorId INNER JOIN departmentmaster dep ON d.departmentId=dep.departmentId WHERE customerType=? AND customerId=? ORDER BY updatedDateTime DESC`;
+        return executeGetQuery(query, [customerType, customerId], callback)
+    }
+
+    return executeGetParamsQuery(query, [departmentId, customerType, customerId], callback)
+}
+
 invoiceQueries.checkInvoiceStatusByDCNO = (dcNo, callback) => {
     let query = `select * from customerorderdetails where dcNo=? AND isInvoiceGenerated=0`;
     return executeGetParamsQuery(query, [dcNo], callback)

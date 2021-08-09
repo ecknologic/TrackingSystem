@@ -56,6 +56,13 @@ router.get('/getDepartmentInvoices', (req, res) => {
     });
 });
 
+router.get('/getDepartmentInvoices/:customerId', (req, res) => {
+    invoiceQueries.getDepartmentInvoicesByCustomerId({ departmentId, customerType: req.query.customerType, customerId: req.params.customerId }, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.send(results);
+    });
+});
+
 router.get('/getInvoiceById/:invoiceId', (req, res) => {
     const { invoiceId } = req.params
     getInvoiceByInvoiceId({ invoiceId, departmentInvoice: false, res })
@@ -653,6 +660,10 @@ const computeFinalAmounts = (data) => {
 
     return { subTotal, cgstAmount, sgstAmount, igstAmount, totalAmount }
 }
+router.get('/getInvoiceByInvoiceId', (req, res) => {
+    getInvoiceByInvoiceId({ invoiceId: 'INV001' })
+    console.log("Res")
+})
 const getInvoiceByInvoiceId = ({ invoiceId, departmentInvoice, res }) => {
     invoiceQueries.getInvoiceById({ invoiceId, departmentInvoice }, (err, results) => {
         if (err) res.status(500).json(dbError(err));
@@ -729,7 +740,7 @@ const getInvoiceByInvoiceId = ({ invoiceId, departmentInvoice, res }) => {
                         fs.readFile(`${invoiceId}.pdf`, (err, result) => {
                             obj.invoicePdf = result
                             if (res) res.json(obj)
-                            else sendMail({ mailId: mailIds, message: `Bibo Invoice from ${dayjs(fromDate).format(DATEFORMAT)} to ${dayjs(toDate).format(DATEFORMAT)}`, attachment: result, invoiceId })
+                            // else sendMail({ mailId: mailIds, message: `Bibo Invoice from ${dayjs(fromDate).format(DATEFORMAT)} to ${dayjs(toDate).format(DATEFORMAT)}`, attachment: result, invoiceId })
                         })
                     }, 1500)
                 })
