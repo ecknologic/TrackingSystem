@@ -382,8 +382,10 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
             return
         }
 
+        const { driverName } = driverList.find(item => item.driverId === driverId)
+
         let url = 'warehouse/assignDriverForDcs'
-        const body = { driverId, routeId, selectedDate: date }
+        const body = { driverId, routeId, selectedDate: date, driverName }
         const options = { item: 'Driver', v1Ing: 'Assigning', v2: 'assigned' }
 
         try {
