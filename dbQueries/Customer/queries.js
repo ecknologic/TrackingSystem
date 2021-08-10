@@ -484,6 +484,16 @@ customerQueries.getOrderDetails = (customerOrderId, callback) => {
     let query = `select c.routeId,c.driverId,r.routeName,d.driverName from customerorderdetails c LEFT JOIN routes r ON c.routeId=r.RouteId LEFT JOIN driverdetails d ON c.driverId=d.driverId where customerOrderId=${customerOrderId}`;
     executeGetQuery(query, callback)
 }
+customerQueries.getOrderDetailsByRoute = (input, callback) => {
+    const { selectedDate, routeId } = input
+    let query = `select c.driverId,d.driverName,c.customerOrderId from customerorderdetails c LEFT JOIN driverdetails d ON c.driverId=d.driverId where c.routeId=? AND DATE(deliveryDate)=?`;
+    executeGetParamsQuery(query, [routeId, selectedDate], callback)
+}
+customerQueries.getDeliveryDetailsByRoute = (input, callback) => {
+    const { departmentId, routeId } = input
+    let query = `select c.driverId,d.driverName,c.deliveryDetailsId,c.customer_Id from DeliveryDetails c LEFT JOIN driverdetails d ON c.driverId=d.driverId where c.routeId=? AND c.departmentId=? AND c.isClosed=0 AND c.isActive=1`;
+    executeGetParamsQuery(query, [routeId, departmentId], callback)
+}
 customerQueries.updateOrderDetails = (input, callback) => {
     let { routeId, driverId, customerOrderId } = input
     let query = `update customerorderdetails SET routeId=?,driverId=? where customerOrderId=${customerOrderId}`;

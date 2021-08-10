@@ -134,6 +134,74 @@ const compareOrderData = (data, { departmentId, transactionId, userId, userRole,
     })
 }
 
+const compareDCDataByRoute = (data, { departmentId, userId, userRole, userName }) => {
+    const { routeId, driverName, selectedDate } = data
+    return new Promise((resolve) => {
+        customerQueries.getOrderDetailsByRoute({ routeId, selectedDate }, (err, results) => {
+            if (err) resolve([])
+            else if (results.length) {
+                const records = []
+                const createdDateTime = new Date()
+                results.map(item => {
+                    const { driverName: driver } = item
+                    oldValue = driver
+                    updatedValue = driverName
+                    if (oldValue != updatedValue) {
+                        records.push({
+                            oldValue,
+                            updatedValue,
+                            createdDateTime,
+                            userId,
+                            description: `Updated DC ${getDCKeyName('driverId')} by ${userRole} <b>(${userName})</b>`,
+                            transactionId: item.customerOrderId,
+                            departmentId,
+                            type: 'warehouse', subType: 'delivery'
+                        })
+                    }
+                })
+                resolve(records)
+            }
+            else {
+                resolve([])
+            }
+        })
+    })
+}
+
+const compareOrdersDataByRoute = (data, { userId, userRole, userName }) => {
+    const { routeId, driverName, departmentId } = data
+    return new Promise((resolve) => {
+        customerQueries.getDeliveryDetailsByRoute({ routeId, departmentId }, (err, results) => {
+            if (err) resolve([])
+            else if (results.length) {
+                const records = []
+                const createdDateTime = new Date()
+                results.map(item => {
+                    const { driverName: driver } = item
+                    oldValue = driver
+                    updatedValue = driverName
+                    if (oldValue != updatedValue) {
+                        records.push({
+                            oldValue,
+                            updatedValue,
+                            createdDateTime,
+                            userId,
+                            description: `Updated Order driver by ${userRole} <b>(${userName})</b>`,
+                            transactionId: item.deliveryDetailsId,
+                            departmentId,
+                            type: 'warehouse', subType: 'order'
+                        })
+                    }
+                })
+                resolve(records)
+            }
+            else {
+                resolve([])
+            }
+        })
+    })
+}
+
 const compareCustomerOrderData = (data, { departmentId, transactionId, userId, userRole, userName }) => {
     return new Promise((resolve) => {
         customerQueries.getOrderDetailsById(transactionId, (err, results) => {
@@ -286,4 +354,4 @@ const getDCKeyName = (key) => {
     else if (key == 'driverId') return `driver`
     else if (key == 'vehicleId') return `vehicle`
 }
-module.exports = { compareCustomerData, compareCustomerClosingData, compareCustomerEnquiryData, compareCustomerOrderData, compareProductsData, compareCustomerDeliveryData, compareOrderData }
+module.exports = { compareOrdersDataByRoute, compareDCDataByRoute, compareCustomerData, compareCustomerClosingData, compareCustomerEnquiryData, compareCustomerOrderData, compareProductsData, compareCustomerDeliveryData, compareOrderData }

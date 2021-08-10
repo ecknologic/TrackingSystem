@@ -10,6 +10,7 @@ const usersQueries = require('../dbQueries/users/queries.js');
 const warehouseQueries = require('../dbQueries/warehouse/queries.js');
 const { DATEFORMAT, INSERTMESSAGE, UPDATEMESSAGE, WEEKDAYS, constants } = require('../utils/constants.js');
 const { customerProductDetails, dbError, getCompareData, getFormatedNumber, getGraphData, getCompareCustomersData } = require('../utils/functions.js');
+const { compareDCDataByRoute, compareOrdersDataByRoute } = require('./utils/customer.js');
 const { compareDepartmentData } = require('./utils/department.js');
 var departmentId, adminUserId, userName, userRole;
 //Middle ware that is specific to this router
@@ -178,10 +179,32 @@ router.put('/updateDC', (req, res) => {
   });
 })
 
-router.put('/assignDriverForDcs', (req, res) => {
+router.put('/assignDriverForDcs', async (req, res) => {
+  const { selectedDate, driverName, routeId } = req.body
+  let logs;
+
+  if (selectedDate != undefined && selectedDate != null) {
+    logs = await compareDCDataByRoute({ driverName, routeId, selectedDate }, { departmentId, userId: adminUserId, userRole, userName })
+  } else {
+    logs = await compareOrdersDataByRoute({ driverName, routeId, departmentId }, { userId: adminUserId, userRole, userName })
+  }
+  
   warehouseQueries.assignDriversForMultipleDcs(req.body, (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
-    else res.json(UPDATEMESSAGE)
+    else {
+      if (logs.length && selectedDate != undefined && selectedDate != null) {
+        departmenttransactionQueries.createDepartmentTransaction(logs, (err, data) => {
+          if (err) console.log('log error', err)
+          else console.log('log data', data)
+        })
+      } else if (logs.length) {
+        departmenttransactionQueries.createDepartmentTransaction(logs, (err, data) => {
+          if (err) console.log('log error', err)
+          else console.log('log data', data)
+        })
+      }
+      res.json(UPDATEMESSAGE)
+    }
   });
 })
 
