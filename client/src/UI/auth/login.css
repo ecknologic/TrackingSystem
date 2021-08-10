@@ -35,6 +35,10 @@
     font-size: 15px !important;
     border-radius: 4px !important;
 }
+.login_btn:disabled {
+    opacity: 0.5;
+    color: #fff !important;
+}
 .remembermelabel {
     color: #999999;
     font-family: "Lato-Regular";
@@ -119,8 +123,13 @@
     letter-spacing: normal;
     color: #333333;
 }
-.errMsg {
-    color: red;
+.error-msg, .no-match {
+    color: #E90614;
+    font-size: .92em;
+}
+.match {
+    color: #34B53A;
+    font-size: .92em;
 }
 .fp-info {
     font-family: 'PoppinsSemiBold600';

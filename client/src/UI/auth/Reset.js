@@ -4,21 +4,23 @@ import React, { useEffect, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom';
 import { Form, Row, Col, Input, Card, Button } from 'antd'
 import { http } from '../../modules/http';
+import Spinner from '../../components/Spinner';
 import { isEmpty } from '../../utils/Functions';
 import image from '../../assets/images/login_img.png'
 import { BiboIcon, } from '../../components/SVG_Icons';
 import { validatePassword } from '../../utils/validations';
-import Spinner from '../../components/Spinner';
 
 const ResetPassword = () => {
-    const history = useHistory()
-    const { search } = useLocation()
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
+    const history = useHistory();
+    const { search } = useLocation();
     const [errors, setErrors] = useState({});
-    const [resetSuccess, setResetSuccess] = useState(false);
+    const [msg, setMsg] = useState('');
+    const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(true);
+    const [resetSuccess, setResetSuccess] = useState(false);
     const [isTokenValid, setIsTokenValid] = useState(false);
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [match, setMatch] = useState(false)
 
     const token = new URLSearchParams(search).get('token');
 
@@ -63,14 +65,6 @@ const ResetPassword = () => {
             if (err) {
                 (errors.confirmPassword = err)
             }
-            // else {
-            //     if (password !== confirmPassword) {
-            //         errors.password = "Passwords do not match"
-            //     }
-            //     else {
-            //         errors.confirmPassword = "Passwords match ✓"
-            //     }
-            // }
         }
 
         if (!isEmpty(errors)) {
@@ -81,7 +75,6 @@ const ResetPassword = () => {
         const url = 'users/resetPassword'
         const body = { token, password }
         try {
-            // setIsLoading(true)
             await http.PUT(axios, url, body)
             setResetSuccess(true)
 
@@ -95,46 +88,41 @@ const ResetPassword = () => {
         }
     }
 
+    const validateMatch = (password1, password2) => {
+        if (password1 === password2) {
+            setMsg('Passwords match ✓')
+            setMatch(true)
+        }
+        else {
+            setMsg('Passwords do not match')
+            setMatch(false)
+        }
+    }
+
     const onInputChange = (event, key) => {
         const { target: { value } } = event;
         if (value.trim()) {
-            if (errors[key] !== "") setErrors(errors => ({ ...errors, [key]: "" }))
-
-            //match validation
-            // if (password.trim() && confirmPassword.trim()) {
-            //     if (password !== confirmPassword) {
-            //         setErrors(errors => ({ ...errors, confirmPassword: "Passwords do not match" }))
-            //     }
-            //     else {
-            //         setErrors(errors => ({ ...errors, confirmPassword: "Passwords match ✓" }))
-            //     }
-            // }
+            if (errors[key] !== "") {
+                setErrors(errors => ({ ...errors, [key]: "" }))
+            }
+            if (errors.confirmPassword === "Password doesn't meet requirements") {
+                setErrors(errors => ({ ...errors, confirmPassword: "" }))
+            }
         }
         if (key === "confirmPassword") {
             setConfirmPassword(value);
-
-            // if (password.trim() && value.trim()) {
-            //     if (password !== value) {
-            //         setErrors(errors => ({ ...errors, confirmPassword: "Passwords do not match" }))
-            //     }
-            //     else {
-            //         setErrors(errors => ({ ...errors, confirmPassword: "Passwords match ✓" }))
-            //     }
-            // }
-            // else setErrors(errors => ({ ...errors, confirmPassword: "" }))
+            if (password.trim() && value.trim()) {
+                validateMatch(password, value)
+            }
+            else setMsg('')
         }
         else if (key === "password") {
             setPassword(value)
 
-            // if (value.trim() && confirmPassword.trim()) {
-            //     if (value !== confirmPassword) {
-            //         setErrors(errors => ({ ...errors, confirmPassword: "Passwords do not match" }))
-            //     }
-            //     else {
-            //         setErrors(errors => ({ ...errors, confirmPassword: "Passwords match ✓" }))
-            //     }
-            // }
-            // else setErrors(errors => ({ ...errors, confirmPassword: "" }))
+            if (confirmPassword.trim() && value.trim()) {
+                validateMatch(confirmPassword, value)
+            }
+            else setMsg('')
         }
     }
 
@@ -197,7 +185,7 @@ const ResetPassword = () => {
                                                         autoFocus
                                                         onChange={(e) => onInputChange(e, "password")}
                                                     />
-                                                    <p className="errors">{errors.password}</p>
+                                                    <p className="error-msg">{errors.password}</p>
                                                 </Form.Item>
                                                 <Form.Item>
                                                     <h5>Confirm New Password</h5>
@@ -207,14 +195,15 @@ const ResetPassword = () => {
                                                         value={confirmPassword}
                                                         onChange={(e) => onInputChange(e, "confirmPassword")}
                                                     />
-                                                    <p className="errors">{errors.confirmPassword}</p>
+                                                    {errors.confirmPassword ? <p className="error-msg">{errors.confirmPassword}</p>
+                                                        : <p className={match ? 'match' : 'no-match'}>{msg}</p>}
                                                 </Form.Item>
                                                 <Row>
                                                     <Col span={12}>
                                                     </Col>
                                                     <Col span={12}>
                                                         <Form.Item>
-                                                            <Button type="primary" className="login_btn" onClick={handleResetPassword}>Reset Password</Button>
+                                                            <Button type="primary" className="login_btn" disabled={!match} onClick={handleResetPassword}>Reset Password</Button>
                                                         </Form.Item>
                                                     </Col>
                                                 </Row>
