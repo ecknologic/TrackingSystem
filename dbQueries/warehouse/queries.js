@@ -51,8 +51,11 @@ warehouseQueries.getAllDcDetails = (input, callback) => {
     return executeGetParamsQuery(query, options, callback)
 }
 
-warehouseQueries.getCustomerDcDetails = (customerId, callback) => {
-    let query = "select c.customerOrderId,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS product20L,c.1LBoxes AS product1L,c.500MLBoxes AS product500ML,c.300MLBoxes AS product300ML,c.2LBoxes AS product2L,c.deliveredDate,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE existingCustomerId=? AND isDelivered='Completed' ORDER BY c.dcNo DESC";
+warehouseQueries.getCustomerDcDetails = (input, callback) => {
+    const { customerId, customerType = 'customer' } = input
+    let customerField = 'existingCustomerId'
+    if (customerType == 'distributor') customerField = 'distributorId'
+    let query = `select c.customerOrderId,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS product20L,c.1LBoxes AS product1L,c.500MLBoxes AS product500ML,c.300MLBoxes AS product300ML,c.2LBoxes AS product2L,c.deliveredDate,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE isDelivered='Completed' AND ${customerField}=? ORDER BY c.dcNo DESC`;
     return executeGetParamsQuery(query, [customerId], callback)
 }
 warehouseQueries.getDcDetailsByDcNo = (dcNo, callback) => {
@@ -277,8 +280,8 @@ warehouseQueries.assignDriversForMultipleDcs = (input, callback) => {
     if (selectedDate != undefined && selectedDate != null) {
         query = 'update customerorderdetails set driverId=? where routeId=? AND DATE(deliveryDate)=?';
         requestBody = [driverId, routeId, selectedDate]
-    }else{
-        query='update DeliveryDetails set driverId=? where routeId=?'
+    } else {
+        query = 'update DeliveryDetails set driverId=? where routeId=?'
     }
     executePostOrUpdateQuery(query, requestBody, callback)
 }

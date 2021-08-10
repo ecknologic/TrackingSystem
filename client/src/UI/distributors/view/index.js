@@ -4,10 +4,12 @@ import React, { Fragment, useCallback, useMemo, useState } from 'react';
 import Header from './header';
 import AccountOverview from './tabs/AccountOverview';
 import { TRACKFORM } from '../../../utils/constants';
+import Invoice from '../../accounts/view/tabs/Invoice';
 import QuitModal from '../../../components/CustomModal';
 import { getMainPathname } from '../../../utils/Functions';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import ActivityLogDetails from '../../../components/ActivityLogDetails';
+import DeliveryChallan from '../../accounts/view/tabs/DeliveryChallan';
 
 const ManageDistributor = () => {
     const history = useHistory()
@@ -45,7 +47,13 @@ const ManageDistributor = () => {
                                 onGoBack={handleBack}
                             />
                         </TabPane>
-                        <TabPane tab="Activity Log Details" key="2">
+                        <TabPane tab="Delivery Challan" key="2">
+                            <DeliveryChallan accountId={distributorId} customerType='distributor' />
+                        </TabPane>
+                        <TabPane tab="Invoice" key="3">
+                            <Invoice accountId={distributorId} customerType='distributor' />
+                        </TabPane>
+                        <TabPane tab="Activity Log Details" key="4">
                             <ActivityLogDetails type='distributor' id={distributorId} />
                         </TabPane>
                     </Tabs>

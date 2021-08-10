@@ -20,7 +20,7 @@ import { deepClone, getStatusColor, showToast, resetTrackForm, isEmpty } from '.
 import { DocIconGrey, ListViewIconGrey, SendIconGrey, TickIconGrey } from '../../../../components/SVG_Icons';
 const DATEFORMAT = 'DD/MM/YYYY'
 
-const Invoice = ({ accountId }) => {
+const Invoice = ({ accountId, customerType = 'customer' }) => {
     const { ROLE } = useUser()
     const history = useHistory()
     const [invoices, setInvoices] = useState([])
@@ -51,7 +51,11 @@ const Invoice = ({ accountId }) => {
     }, [])
 
     const getInvoices = async () => {
-        const url = `invoice/getCustomerInvoices/${accountId}`
+        let url = `invoice/getCustomerInvoices/${accountId}`
+
+        if (customerType === 'distributor') {
+            url = `invoice/getDepartmentInvoices/${accountId}?customerType=${customerType}`
+        }
 
         try {
             const data = await http.GET(axios, url, config)
@@ -112,7 +116,7 @@ const Invoice = ({ accountId }) => {
         }
     }
 
-    const handleViewInvoice = (invoice, id) => history.push('/invoices/manage', { invoice, FOR: 'CUSTOMER', id })
+    const handleViewInvoice = (invoice, id) => history.push('/invoices/manage', { invoice, FOR: customerType.toUpperCase(), id })
 
     const optimisticUpdate = (data) => {
         let clone = deepClone(invoices);

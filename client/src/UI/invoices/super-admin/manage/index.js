@@ -65,6 +65,9 @@ const Invoices = () => {
         else if (FOR === 'CUSTOMER') {
             url = `invoice/getCustomerInvoices/${id}`
         }
+        else if (FOR === 'DISTRIBUTOR') {
+            url = `invoice/getDepartmentInvoices/${id}?customerType=distributor`
+        }
         else if (FOR === MARKETINGMANAGER) {
             url = 'invoice/getInvoicesByRole/5' // 5 is Sales and Marketing Admin Role
         }

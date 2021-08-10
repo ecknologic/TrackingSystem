@@ -97,7 +97,7 @@ const ForgotPassword = () => {
                                                     autoFocus
                                                     value={username} onChange={handleEmailChange}
                                                 />
-                                                <p className="errors">{errors.username}</p>
+                                                <p className="error-msg">{errors.username}</p>
                                             </Form.Item>
                                             <Row>
                                                 <Col span={12}>

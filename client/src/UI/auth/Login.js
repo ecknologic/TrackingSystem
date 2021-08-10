@@ -92,7 +92,7 @@ const Login = () => {
                                             autoFocus
                                             value={username} onChange={(e) => onInputChange(e.target.value, "username")}
                                         />
-                                        <p className="errors">{errors.username}</p>
+                                        <p className="error-msg">{errors.username}</p>
                                     </Form.Item>
                                     <Form.Item>
                                         <h5>Password</h5>
@@ -103,7 +103,7 @@ const Login = () => {
                                             onChange={(e) => onInputChange(e.target.value, "password")}
                                             iconRender={visible => (visible ? <EyeIconGrey /> : <EyeHideIconGrey />)}
                                         />
-                                        <p className="errors">{errors.password}</p>
+                                        <p className="error-msg">{errors.password}</p>
                                     </Form.Item>
                                     <p className="forgotpasswordLink">
                                         <span className="forgotpasswordLinkicon"><QuestionCircleFilled /></span>

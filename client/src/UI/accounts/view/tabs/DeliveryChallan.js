@@ -15,7 +15,7 @@ import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomPagination from '../../../../components/CustomPagination';
 import { resetTrackForm, getStatusColor } from '../../../../utils/Functions';
 
-const DeliveryChallan = ({ accountId }) => {
+const DeliveryChallan = ({ accountId, customerType = 'customer' }) => {
     const [loading, setLoading] = useState(true)
     const [deliveries, setDeliveries] = useState([])
     const [formData, setFormData] = useState({})
@@ -41,7 +41,7 @@ const DeliveryChallan = ({ accountId }) => {
     }, [])
 
     const getDeliveries = async () => {
-        const url = `customer/customerDCDetails/${accountId}`
+        const url = `customer/customerDCDetails/${accountId}?customerType=${customerType}`
 
         try {
             const data = await http.GET(axios, url, config)
