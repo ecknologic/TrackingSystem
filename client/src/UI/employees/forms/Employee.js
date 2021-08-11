@@ -136,7 +136,8 @@ const EmployeeForm = (props) => {
                     <InputLabel name='Role' error={errors.roleId} mandatory />
                     <SelectInput track
                         options={roleOptions} value={roleId} disabled={isWHAdmin}
-                        error={errors.roleId} onSelect={(value) => onChange(value, 'roleId')}
+                        error={errors.roleId}
+                        onSelect={(value, label) => onChange(value, 'roleId', label, 'roleName')}
                     />
                 </div>
             </div>
@@ -147,7 +148,8 @@ const EmployeeForm = (props) => {
                             <InputLabel name='Department' error={errors.departmentId} />
                             <SelectInput track
                                 options={departmentOptions} value={departmentId} disabled={isWHAdmin}
-                                error={errors.departmentId} onSelect={(value) => onChange(value, 'departmentId')}
+                                error={errors.departmentId}
+                                onSelect={(value, label) => onChange(value, 'departmentId', label, 'departmentName')}
                             />
                         </div>
                     </div>

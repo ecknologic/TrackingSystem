@@ -11,7 +11,7 @@ import NoContent from '../../../../components/NoContent';
 import IDProofInfo from '../../../../components/IDProofInfo';
 import { getStaffOptions } from '../../../../assets/fixtures';
 import CustomButton from '../../../../components/CustomButton';
-import { isEmpty, showToast, base64String, getMainPathname, getBase64, getPlantValuesForDB, resetTrackForm } from '../../../../utils/Functions';
+import { isEmpty, showToast, base64String, getMainPathname, getBase64, getPlantValuesForDB, resetTrackForm, getLabel } from '../../../../utils/Functions';
 import { validateNames, validateMobileNumber, validatePinCode, validatePlantValues } from '../../../../utils/validations';
 import '../../../../sass/plants.scss'
 
@@ -77,8 +77,8 @@ const ManagePlant = ({ setHeaderContent, onGoBack }) => {
         } catch (error) { }
     }
 
-    const handleChange = (value, key) => {
-        setAccountValues(data => ({ ...data, [key]: value }))
+    const handleChange = (value, key, label, labelKey) => {
+        setAccountValues(data => ({ ...data, [key]: value, ...getLabel(labelKey, label) }))
         setAccountErrors(errors => ({ ...errors, [key]: '' }))
 
         if (key === 'adminId') {

@@ -7,8 +7,8 @@ const SelectInput = ({ options, mode, onSelect, onDeselect, value, disabled, sho
     placeholder = 'Select', track, error = '', className, suffixIcon = <DDownIcon />, ref }) => {
     const [hasTracked, setHasTracked] = useState(false)
 
-    const handleSelect = (value) => {
-        onSelect(value)
+    const handleSelect = (value, { props: { children } }) => {
+        onSelect(value, children)
 
         if (track && !hasTracked) {
             setTrackForm()
