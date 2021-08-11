@@ -10,7 +10,8 @@ driverQueries.getDriverById = async (driverId, callback) => {
     return executeGetQuery(query, callback)
 }
 driverQueries.getDriverDetailsById = async (driverId, callback) => {
-    let query = "SELECT driverName as userName, emailid, departmentId, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, licenseNo, adhar_frontside, adhar_backside, license_frontside, license_backside, accountNo, bankName, branchName, ifscCode, recommendedBy, recruitedBy from driverdetails where driverId=" + driverId;
+    let query = `SELECT d.driverName AS userName,d.emailid,d.departmentId,d.mobileNumber,d.joinedDate,d.parentName,d.gender,d.dob,d.adharNo,d.address,d.permanentAddress,d.licenseNo,d.adhar_frontside,d.adhar_backside,d.license_frontside,d.license_backside,d.accountNo,d.bankName,d.branchName,d.ifscCode,d.recommendedBy,d.recruitedBy,
+    r.RoleName AS roleName,dep.departmentName FROM driverdetails d INNER JOIN rolemaster r ON d.roleId=r.RoleId LEFT JOIN departmentmaster dep ON d.departmentId=dep.departmentId where driverId=${driverId}`;
     return executeGetQuery(query, callback)
 }
 driverQueries.getDriverDependentDetailsById = async (dependentId, callback) => {

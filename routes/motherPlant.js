@@ -95,9 +95,9 @@ router.post('/createMotherPlant', (req, res) => {
     });
 });
 router.post('/updateMotherPlant', async (req, res) => {
-    const { departmentId, adminId: userId, removedAdminId, address, departmentName, city, state, pinCode, adminId, phoneNumber, gstNo } = req.body
+    const { departmentId, adminId: userId, removedAdminId, address, departmentName, city, state, pinCode, adminId, phoneNumber, gstNo, adminName } = req.body
     let data = {
-        address, departmentName, city, state, pinCode, adminId, phoneNumber, gstNo
+        address, departmentName, city, state, pinCode, adminId, phoneNumber, gstNo, adminName
     }
     const logs = await compareDepartmentData(data, { departmentId, type: 'motherplant', adminUserId, userRole, userName })
     motherPlantDbQueries.updateMotherPlant(req.body, (err, results) => {
