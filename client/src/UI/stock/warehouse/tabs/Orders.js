@@ -261,8 +261,10 @@ const Orders = ({ driverList, vehicleList, locationList, warehouseList, routeLis
             return
         }
 
+        const { driverName } = driverList.find(item => item.driverId === driverId)
+
         let url = 'warehouse/assignDriverForDcs'
-        const body = { ...formData }
+        const body = { ...formData, driverName }
 
         try {
             setBtnDisabled(true)
