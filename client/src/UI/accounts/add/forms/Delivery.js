@@ -81,14 +81,15 @@ const DeliveryForm = (props) => {
                         <InputLabel name='Warehouse' error={errors.departmentId} mandatory />
                         <SelectInput track options={warehouseOptions} value={departmentId}
                             disabled={isDisabled} error={errors.departmentId}
-                            onSelect={(value) => onChange(value, 'departmentId')}
+                            onSelect={(value, label) => onChange(value, 'departmentId', label, 'departmentName')}
                         />
                     </div>
                     <div className='input-container'>
                         <InputLabel name='Route' error={errors.routeId} mandatory />
                         <SelectInput track options={routeOptions}
                             value={routeId} disabled={isDisabled}
-                            error={errors.routeId} onSelect={(value) => onChange(value, 'routeId')}
+                            error={errors.routeId}
+                            onSelect={(value, label) => onChange(value, 'routeId', label, 'routeName')}
                         />
                     </div>
                 </div>

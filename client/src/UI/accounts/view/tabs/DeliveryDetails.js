@@ -13,8 +13,8 @@ import AddressCard from '../../../../components/AddressCard';
 import DeleteModal from '../../../../components/CustomModal';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import { getRouteOptions, WEEKDAYS } from '../../../../assets/fixtures';
-import { getDevDays, getProductsWithIdForDB, getProductsForUI, isEmpty, extractDeliveryDetails, extractProductsFromForm, deepClone, getBase64, getDevDaysForDB, base64String, resetTrackForm, showToast } from '../../../../utils/Functions';
 import { validateDeliveryValues, validateDevDays, validateIntFloat, validateMobileNumber, validateNames, validateNumber } from '../../../../utils/validations';
+import { getDevDays, getProductsWithIdForDB, getProductsForUI, isEmpty, extractDeliveryDetails, extractProductsFromForm, deepClone, getBase64, getDevDaysForDB, base64String, resetTrackForm, showToast, getLabel } from '../../../../utils/Functions';
 
 const DeliveryDetails = ({ isAdmin, recentDelivery, onUpdate, ...rest }) => {
     const { accountId } = useParams()
@@ -151,8 +151,8 @@ const DeliveryDetails = ({ isAdmin, recentDelivery, onUpdate, ...rest }) => {
         }
     }
 
-    const handleChange = (value, key) => {
-        setFormData(data => ({ ...data, [key]: value }))
+    const handleChange = (value, key, label, labelKey) => {
+        setFormData(data => ({ ...data, [key]: value, ...getLabel(labelKey, label) }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
         if (key === 'departmentId') {

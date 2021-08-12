@@ -114,9 +114,9 @@ router.post('/createWarehouse', (req, res) => {
   });
 });
 router.post('/updateWarehouse', async (req, res) => {
-  const { departmentId, adminId: userId, removedAdminId, address, departmentName, city, state, pinCode, adminId, phoneNumber, gstNo } = req.body
+  const { departmentId, adminId: userId, removedAdminId, address, departmentName, city, state, pinCode, adminId, phoneNumber, gstNo, adminName } = req.body
   let data = {
-    address, departmentName, city, state, pinCode, adminId, phoneNumber, gstNo
+    address, departmentName, city, state, pinCode, adminId, phoneNumber, gstNo, adminName
   }
   const logs = await compareDepartmentData(data, { type: 'warehouse', departmentId, adminUserId, userRole, userName })
   warehouseQueries.updateWarehouse(req.body, (err, results) => {
@@ -188,7 +188,7 @@ router.put('/assignDriverForDcs', async (req, res) => {
   } else {
     logs = await compareOrdersDataByRoute({ driverName, routeId, departmentId }, { userId: adminUserId, userRole, userName })
   }
-  
+
   warehouseQueries.assignDriversForMultipleDcs(req.body, (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {

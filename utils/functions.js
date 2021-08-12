@@ -464,6 +464,17 @@ utils.verifyLifetimeToken = async (token) => {
     })
 }
 
+utils.getKeyName = async (key) => {
+    return new Promise((resolve) => {
+        let keyName;
+        if (key == 'routeId') keyName = 'route'
+        else if (key == 'adminId') keyName = 'admin'
+        else if (key == 'driverId') keyName = 'driver'
+        else if (key == 'departmentId') keyName = 'department'
+        resolve(getKeyName)
+    })
+}
+
 module.exports = {
     utils,
     executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, checkDepartmentExists, productionCount,

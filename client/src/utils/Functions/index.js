@@ -3,6 +3,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { TRACKFORM } from "../constants"
 import { message } from 'antd'
 
+export const getLabel = (labelKey, label) => {
+    return labelKey ? { [labelKey]: label } : {}
+}
+
 export const editData = (updatedItem, data, idField) => {
     return new Promise(resolve => {
         if (!isEmpty(data)) {

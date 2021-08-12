@@ -37,7 +37,9 @@ usersQueries.getUsersById = async (userId, callback) => {
     return executeGetQuery(query, callback)
 }
 usersQueries.getUserDetailsById = async (userId, callback) => {
-    let query = "SELECT userName,roleId,departmentId,emailid, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress,adhar_frontside,adhar_backside,accountNo,bankName,branchName,ifscCode,recommendedBy,recruitedBy,bloodGroup from usermaster where userId=" + userId;
+    let query = `SELECT u.userName,u.roleId,u.departmentId,u.emailid,u.mobileNumber,u.joinedDate,u.parentName,u.gender,u.dob,u.adharNo,u.address,u.permanentAddress,u.adhar_frontside,u.adhar_backside,u.
+    accountNo,u.bankName,u.branchName,u.ifscCode,u.recommendedBy,u.recruitedBy,u.bloodGroup,r.RoleName AS roleName,d.departmentName FROM usermaster u
+    INNER JOIN rolemaster r ON u.roleId=r.RoleId LEFT JOIN departmentmaster d ON u.roleId=d.departmentId  WHERE u.userId=${userId}`;
     return executeGetQuery(query, callback)
 }
 usersQueries.getDependentDetailsById = async (dependentId, callback) => {

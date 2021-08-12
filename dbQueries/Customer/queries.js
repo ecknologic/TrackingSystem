@@ -357,7 +357,10 @@ customerQueries.getBusinessRequests = (callback) => {
 }
 customerQueries.getDeliveryDetailsById = ({ deliveryDetailsId, isSuperAdmin }) => {
     return new Promise((resolve, reject) => {
-        let deliveryDetailsQuery = "SELECT gstNo,location as deliveryLocation,address,phoneNumber,contactPerson,depositAmount,departmentId,isActive as isApproved,gstProof,routeId from DeliveryDetails  WHERE deleted=0 AND deliveryDetailsId=?";
+        let deliveryDetailsQuery = `SELECT d.gstNo,d.location AS deliveryLocation,d.address,d.phoneNumber,d.contactPerson,d.depositAmount,d.departmentId,
+        d.isActive AS isApproved,d.gstProof,d.routeId,r.RouteName AS routeName,dep.departmentName 
+        FROM DeliveryDetails d LEFT JOIN routes r ON r.RouteId=d.routeId LEFT JOIN 
+        departmentmaster dep ON dep.departmentId=d.departmentId  WHERE d.deleted=0 AND d.deliveryDetailsId=?`;
         executePostOrUpdateQuery(deliveryDetailsQuery, [deliveryDetailsId], (err, results) => {
             if (err) reject(err)
             else {

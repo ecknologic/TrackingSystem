@@ -168,8 +168,8 @@ router.put('/updateDriverStatus', (req, res) => {
 })
 
 router.post('/updateDriver', async (req, res) => {
-    const { userName, emailid, departmentId, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, licenseNo, adhar_frontside, adhar_backside, license_frontside, license_backside, accountNo, bankName, branchName, ifscCode, recommendedBy, recruitedBy, driverId, dependentDetails } = req.body
-    let data = { userName, emailid, departmentId, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, licenseNo, adhar_frontside, adhar_backside, license_frontside, license_backside, accountNo, bankName, branchName, ifscCode, recommendedBy, recruitedBy }
+    const { userName, emailid, departmentId, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, licenseNo, adhar_frontside, adhar_backside, license_frontside, license_backside, accountNo, bankName, branchName, ifscCode, recommendedBy, recruitedBy, driverId, dependentDetails, roleName, departmentName } = req.body
+    let data = { userName, emailid, departmentId, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, licenseNo, adhar_frontside, adhar_backside, license_frontside, license_backside, accountNo, bankName, branchName, ifscCode, recommendedBy, recruitedBy, roleName, departmentName }
     const logs = await compareDriverData(data, { userId, userRole, adminUserName, staffId: driverId })
     driverQueries.updateDriver(req.body, async (err, results) => {
         if (err) res.json(dbError(err))

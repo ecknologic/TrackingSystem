@@ -12,7 +12,7 @@ import useUser from '../../../../utils/hooks/useUser';
 import ScrollUp from '../../../../components/ScrollUp';
 import NoContent from '../../../../components/NoContent';
 import CustomButton from '../../../../components/CustomButton';
-import { isEmpty, showToast, resetTrackForm } from '../../../../utils/Functions';
+import { isEmpty, showToast, resetTrackForm, getLabel } from '../../../../utils/Functions';
 import { getDepartmentOptions, getLocationOptions, getRouteOptions } from '../../../../assets/fixtures';
 import { ACCOUNTSADMIN, MARKETINGMANAGER, SUPERADMIN, WAREHOUSEADMIN } from '../../../../utils/constants';
 import { validateNumber, validateIFSCCode, validateClosureValues, validateClosureAccValues } from '../../../../utils/validations';
@@ -113,8 +113,8 @@ const ManageClosedCustomer = ({ setHeaderContent, onGoBack, onUpdate }) => {
         } catch (error) { }
     }
 
-    const handleChange = (value, key) => {
-        setFormData(data => ({ ...data, [key]: value }))
+    const handleChange = (value, key, label, labelKey) => {
+        setFormData(data => ({ ...data, [key]: value, ...getLabel(labelKey, label) }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
         // Validations

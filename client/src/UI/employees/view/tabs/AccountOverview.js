@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Divider, message } from 'antd';
+import { message } from 'antd';
 import { useParams } from 'react-router-dom';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import AccountView from '../../views/Account';
@@ -15,7 +15,7 @@ import IDProofInfo from '../../../../components/IDProofInfo';
 import CustomButton from '../../../../components/CustomButton';
 import { WAREHOUSEADMIN } from '../../../../utils/constants';
 import { getDepartmentOptions, getRoleOptions } from '../../../../assets/fixtures';
-import { isEmpty, showToast, base64String, getBase64, getValidDate, resetTrackForm } from '../../../../utils/Functions';
+import { isEmpty, showToast, base64String, getBase64, getValidDate, resetTrackForm, getLabel } from '../../../../utils/Functions';
 import {
     validateIDNumbers, validateNames, validateMobileNumber, validateEmailId, validateIDProofs,
     validateEmployeeValues, validateDependentValues, validateNumber, validateIFSCCode
@@ -115,8 +115,8 @@ const ManageEmployee = ({ isDriver, setHeaderContent, onGoBack }) => {
         } catch (error) { }
     }
 
-    const handleChange = (value, key) => {
-        setAccountValues(data => ({ ...data, [key]: value }))
+    const handleChange = (value, key, label, labelKey) => {
+        setAccountValues(data => ({ ...data, [key]: value, ...getLabel(labelKey, label) }))
         setAccountErrors(errors => ({ ...errors, [key]: '' }))
 
         if (key === 'roleId') {
