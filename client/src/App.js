@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
 import { getRoutesByRole, MARKETINGADMIN, MOTHERPLANTADMIN, SUPERADMIN, WAREHOUSEADMIN, ACCOUNTSADMIN, MARKETINGMANAGER } from './utils/constants';
 import { getMainPathname, resetTrackForm } from './utils/Functions';
+import Vendors from './UI/vendors';
 import Login from './UI/auth/Login';
 import Products from './UI/products';
 import Receipts from './UI/receipts';
@@ -14,10 +15,12 @@ import AddAccount from './UI/accounts/add';
 import useUser from './utils/hooks/useUser';
 import ResetPassword from './UI/auth/Reset';
 import ManagePlant from './UI/plants/view';
+import ManageVendor from './UI/vendors/view';
 import Drivers from './UI/employees/Drivers';
 import ForgotPassword from './UI/auth/Forgot';
 import Distributors from './UI/distributors';
 import ViewAccount from './UI/accounts/view';
+import ChangePassword from './UI/auth/Change';
 import NoContent from './components/NoContent';
 import Warehouses from './UI/plants/Warehouses';
 import Invoices from './UI/invoices/super-admin';
@@ -100,6 +103,11 @@ const App = () => {
       else return <Redirect to='/' />
    }
 
+   const changeAuth = () => {
+      if (isUser) return <ChangePassword />
+      else return <Redirect to='/' />
+   }
+
    const noMatchAuth = () => {
       if (!isUser) return <Redirect to='/' />
       return <NoContent content='Page Not found' />
@@ -115,6 +123,7 @@ const App = () => {
          <FilterProvider>
             <Switch>
                <Route exact path='/reset-password' render={resetAuth} />
+               <Route exact path='/change-password' render={changeAuth} />
                <Route exact path='/forgot-password' render={forgotAuth} />
                <Route exact path='/' render={loginAuth} />
                <PageLayout>
@@ -161,6 +170,8 @@ const App = () => {
                      <Route path='/new-customers-report' render={byRole(<NewCustomersReport />)} />
                      <Route path='/closed-customers-report' render={byRole(<ClosedCustomersReport />)} />
                      <Route path='/dispensers-viability-report' render={byRole(<DispensersViabilityReport />)} />
+                     <Route path='/vendors/manage/:closingId' render={byRole(<ManageVendor />)} />
+                     <Route path='/vendors/:tab?/:page?' render={byRole(<Vendors />)} />
                      <Route path='/closed-customers/manage/:closingId' render={byRole(<ManageClosedCustomer />)} />
                      <Route path='/closed-customers/:tab?/:page?' render={byRole(<ClosedCustomers />)} />
                      <Route path='/visited-customers/manage/:enquiryId' render={byRole(<ManageVisitedCustomer />)} />

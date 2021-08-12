@@ -507,13 +507,13 @@ export const validateClosureValues = (data) => {
 export const validateClosureAccValues = (data) => {
     let errors = {};
     const text = 'Required'
-    const { accountNo, bankName, branchName, ifscCode, customerName } = data
+    const { accountNumber, bankName, branchName, ifscCode, customerName } = data
 
     if (!customerName) errors.customerName = text
-    if (!accountNo) errors.accountNo = text
+    if (!accountNumber) errors.accountNumber = text
     else {
-        const error = validateNumber(accountNo)
-        error && (errors.accountNo = error)
+        const error = validateNumber(accountNumber)
+        error && (errors.accountNumber = error)
     }
     if (!bankName) errors.bankName = text
     else {
