@@ -8,6 +8,13 @@ usersQueries.checkUserIsValidOrNot = (input, callback) => {
     return executeGetParamsQuery(query, requestBody, callback)
 }
 
+usersQueries.getUserPassword = (input, callback) => {
+    const { userId } = input
+    let query = `select password from usermaster WHERE isActive=1 AND deleted=0 AND userId=?`
+    let requestBody = [userId];
+    return executeGetParamsQuery(query, requestBody, callback)
+}
+
 usersQueries.checkUserTokenExistsOrNot = (input, callback) => {
     const { emailid } = input
     let query = "select emailid from usermaster where emailid=? AND isActive=1 AND deleted=0 AND token IS NOT NULL"
