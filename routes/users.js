@@ -3,7 +3,7 @@ var router = express.Router();
 const db = require('../config/db.js')
 var bcrypt = require("bcryptjs");
 const usersQueries = require('../dbQueries/users/queries.js');
-const { dbError, createHash, utils } = require('../utils/functions.js');
+const { dbError, createHash, utils, isValidPassword } = require('../utils/functions.js');
 const auditQueries = require('../dbQueries/auditlogs/queries.js');
 const { compareWebUserData, compareWebUserDependentDetails } = require('./utils/users.js');
 const { sendMail } = require('./mailTemplate.js');
@@ -150,7 +150,16 @@ router.post('/updateWebUser', async (req, res) => {
 });
 
 router.post('/updatePassword', (req, res) => {
-  updatePassword(req.body, res)
+  const { currentPassword } = req.body
+  usersQueries.getUserPassword(req.body, (err, data) => {
+    if (err) res.status(500).json(dbError(err))
+    else if (!data.length) res.status(404).json('User not found')
+    else {
+      let user = data[0]
+      if (!isValidPassword(user, currentPassword)) return res.status(400).json('Bad request')
+      updatePassword(req.body, res)
+    }
+  })
 });
 
 router.put('/forgotPassword', (req, res) => {

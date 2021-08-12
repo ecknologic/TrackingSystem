@@ -15,7 +15,9 @@
     background-color: #f9fafb;
 }
 .login_container {
-    padding: 10% 15%;
+    padding: 50px 15% 10px;
+    max-height: 100vh;
+    overflow: auto;
 }
 .login_card {
     box-shadow: 0 0 22px 0 rgba(0, 0, 0, 0.1);

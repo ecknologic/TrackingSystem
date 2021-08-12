@@ -18,15 +18,21 @@ const Profile = ({ userName = '' }) => {
             history.replace('/')
             message.success("Logged out successfully.")
         }
+        else if (key === 'cp') {
+            history.push('/change-password')
+        }
     }
 
     const menu = (
         <Menu onClick={handleSelect}>
             <Menu.ItemGroup title={<NameCard name={userName} size='large' />}></Menu.ItemGroup>
             <Menu.Divider />
+            <Menu.Item key="cp" >
+                Change Password
+            </Menu.Item>
             <Menu.Item key="logout" >
                 Logout
-          </Menu.Item>
+            </Menu.Item>
         </Menu>
     );
 

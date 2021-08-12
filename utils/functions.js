@@ -118,6 +118,11 @@ const convertToWords = (number) => {
 var createHash = (password) => {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(10), null);
 }
+
+var isValidPassword = function (user, password) {
+    return bcrypt.compareSync(password, user.password);
+}
+
 var dateComparisions = (startDate, endDate, type) => {
     if (type == 'Today') {
         startDate = dayjs(startDate).subtract(1, 'day').format(DATEFORMAT)
@@ -477,6 +482,7 @@ utils.getKeyName = async (key) => {
 
 module.exports = {
     utils,
+    isValidPassword,
     executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, checkDepartmentExists, productionCount,
     getCompareData, dateComparisions, checkUserExists, dbError, getBatchId, customerProductDetails, createHash, convertToWords,
     saveProductDetails, saveEnquiryProductDetails, updateEnquiryProductDetails, updateProductDetails, getFormatedNumber, getCompareCustomersData, getCompareDistributorsData, getGraphData, formatDate, prepareOrderResponseObj
