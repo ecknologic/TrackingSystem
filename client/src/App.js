@@ -170,7 +170,7 @@ const App = () => {
                      <Route path='/new-customers-report' render={byRole(<NewCustomersReport />)} />
                      <Route path='/closed-customers-report' render={byRole(<ClosedCustomersReport />)} />
                      <Route path='/dispensers-viability-report' render={byRole(<DispensersViabilityReport />)} />
-                     <Route path='/vendors/manage/:closingId' render={byRole(<ManageVendor />)} />
+                     <Route path='/vendors/manage/:vendorId' render={byRole(<ManageVendor />)} />
                      <Route path='/vendors/:tab?/:page?' render={byRole(<Vendors />)} />
                      <Route path='/closed-customers/manage/:closingId' render={byRole(<ManageClosedCustomer />)} />
                      <Route path='/closed-customers/:tab?/:page?' render={byRole(<ClosedCustomers />)} />

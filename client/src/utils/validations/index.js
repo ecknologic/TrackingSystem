@@ -504,6 +504,30 @@ export const validateClosureValues = (data) => {
     return errors
 }
 
+export const validateVendorValues = (data) => {
+    let errors = {};
+    const text = 'Required'
+    const { vendorName, gstNo, address, contactPerson, creditPeriod, itemsSupplied, remarks } = data
+
+    if (!vendorName) errors.vendorName = text
+    if (!gstNo) errors.gstNo = text
+    if (!address) errors.address = text
+    if (!itemsSupplied) errors.itemsSupplied = text
+    if (!remarks) errors.remarks = text
+    if (!contactPerson) errors.contactPerson = text
+    else {
+        const error = validateNames(contactPerson)
+        error && (errors.contactPerson = error)
+    }
+    if (!creditPeriod) errors.creditPeriod = text
+    else {
+        const error = validateNumber(creditPeriod)
+        error && (errors.creditPeriod = error)
+    }
+
+    return errors
+}
+
 export const validateClosureAccValues = (data) => {
     let errors = {};
     const text = 'Required'

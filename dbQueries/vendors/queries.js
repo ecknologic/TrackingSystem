@@ -12,7 +12,7 @@ vendorQueries.getVendorById = async (vendorId, callback) => {
     return executeGetQuery(query, callback)
 }
 
-vendorQueries.saveVendor = (input, callback) => {
+vendorQueries.saveVendor = async (input, callback) => {
     let query = `insert into vendors (vendorName,contactPerson,address,gstNo,customerName,accountNumber,ifscCode,bankName,branchName,creditPeriod,itemsSupplied,remarks,createdDateTime) values(?,?,?,?,?,?,?,?,?,?,?,?,?)`;
     const { vendorName, contactPerson, address, gstNo, customerName, accountNumber, ifscCode, bankName, branchName, creditPeriod, itemsSupplied, remarks } = input
     let encryptedData = await encryptObj({ accountNumber, ifscCode, bankName, branchName })
