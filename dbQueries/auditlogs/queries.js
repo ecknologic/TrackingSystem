@@ -27,17 +27,17 @@ auditQueries.getAudits = (input, callback) => {
 auditQueries.createLog = (input, callback) => {
     if (Array.isArray(input)) {
         if (input.length) {
-            const { staffId, customerId, departmentId } = input[0]
-            const id = customerId ? 'customerId' : staffId ? 'staffId' : departmentId ? 'departmentId' : ""
+            const { staffId, customerId, departmentId, genericId } = input[0]
+            const id = customerId ? 'customerId' : staffId ? 'staffId' : departmentId ? 'departmentId' : genericId ? 'genericId' : ""
             const sql = input.map(item => "(" + item.userId + ", '" + dayjs(item.createdDateTime).format(FULLTIMEFORMAT) + "', '" + item.description + "', " + item[id] + ", '" + item.type + "'" + ", '" + item.oldValue + "'" + ", '" + item.updatedValue + "'" + ")")
             let query = `insert into auditlogs (userId, createdDateTime, description, ${id}, type,oldValue,updatedValue) values ` + sql;
             executeGetQuery(query, callback)
         }
     }
     else {
-        let query = `insert into auditlogs (userId, createdDateTime, description, customerId, type,departmentId,staffId,oldValue,updatedValue) values(?,?,?,?,?,?,?,?,?)`;
-        let { userId, description, customerId, type, staffId, departmentId, oldValue, updatedValue } = input
-        let requestBody = [userId, new Date(), description, customerId, type, departmentId, staffId, oldValue, updatedValue]
+        let query = `insert into auditlogs (userId, createdDateTime, description, customerId, type,departmentId,staffId,genericId,oldValue,updatedValue) values(?,?,?,?,?,?,?,?,?,?)`;
+        let { userId, description, customerId, type, staffId, departmentId, genericId, oldValue, updatedValue } = input
+        let requestBody = [userId, new Date(), description, customerId, type, departmentId, staffId, genericId, oldValue, updatedValue]
         executePostOrUpdateQuery(query, requestBody, callback)
     }
 }
