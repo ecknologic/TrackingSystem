@@ -49,6 +49,7 @@ router.get('/getVendorById/:vendorId', (req, res) => {
 })
 
 router.post('/updateVendor', async (req, res) => {
+  const { vendorName, contactPerson, address, gstNo, customerName, accountNumber, ifscCode, bankName, branchName, creditPeriod, itemsSupplied, remarks } = req.body
   let logs = await compareVendorData({ vendorName, contactPerson, address, gstNo, customerName, accountNumber, ifscCode, bankName, branchName, creditPeriod, itemsSupplied, remarks }, { vendorId: req.body.vendorId, userId, userName, userRole })
   vendorQueries.updateVendor(req.body, (err, results) => {
     if (err) res.status(500).json(dbError(err));
@@ -59,6 +60,28 @@ router.post('/updateVendor', async (req, res) => {
           else console.log('log data', data)
         })
       }
+      res.json(results)
+    }
+  })
+});
+
+router.put('/updateVendorStatus', async (req, res) => {
+  const { isActive, vendorId } = req.body
+  vendorQueries.updateVendorStatus(req.body, (err, results) => {
+    if (err) res.status(500).json(dbError(err));
+    else {
+      auditQueries.createLog({ userId, description: `Updated Vendor status to ${isActive ? 'Active' : 'Draft'} by ${userRole} <b>(${userName})</b>`, genericId: vendorId, type: "vendor" })
+      res.json(results)
+    }
+  })
+});
+
+router.delete('/deleteVendor/:vendorId', async (req, res) => {
+  const { vendorId } = req.params
+  vendorQueries.deleteVendor({ vendorId }, (err, results) => {
+    if (err) res.status(500).json(dbError(err));
+    else {
+      auditQueries.createLog({ userId, description: `Vendor Deleted by ${userRole} <b>(${userName})</b>`, genericId: vendorId, type: "vendor" })
       res.json(results)
     }
   })

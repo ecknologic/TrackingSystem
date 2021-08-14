@@ -27,4 +27,19 @@ vendorQueries.updateVendor = async (input, callback) => {
     let requestBody = [vendorName, contactPerson, address, gstNo, customerName, encryptedData.accountNumber, encryptedData.ifscCode, encryptedData.bankName, encryptedData.branchName, creditPeriod, itemsSupplied, remarks]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
+
+vendorQueries.updateVendorStatus = async (input, callback) => {
+    const { isActive, vendorId } = input
+    let query = `update vendors set isActive=? where vendorId=${vendorId}`;
+    let requestBody = [isActive]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+
+vendorQueries.deleteVendor = async (input, callback) => {
+    const { vendorId } = input
+    let query = `update vendors set deleted=? where vendorId=${vendorId}`;
+    let requestBody = [1]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+
 module.exports = vendorQueries
