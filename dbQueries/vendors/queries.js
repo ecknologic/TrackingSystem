@@ -3,7 +3,7 @@ const { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery } = req
 let vendorQueries = {}
 
 vendorQueries.getVendors = async (callback) => {
-    let query = "SELECT * from vendors ORDER BY createdDateTime DESC";
+    let query = "SELECT * from vendors WHERE deleted=0 ORDER BY createdDateTime DESC";
     return executeGetQuery(query, callback)
 }
 
