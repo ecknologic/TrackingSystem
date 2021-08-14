@@ -1,9 +1,10 @@
 import React from 'react';
 import InputValue from '../../../components/InputValue';
 
-const AccountView = ({ data }) => {
+const AccountView = ({ data, itemsSupplied }) => {
 
-    const { vendorName, gstNo, address, contactPerson, creditPeriod, itemsSupplied, remarks } = data
+    const { vendorName, gstNo, address, contactPerson, creditPeriod, remarks } = data
+    const items = itemsSupplied.filter(item => item !== "ALL").join(', ')
 
     return (
         <div className='app-view-info'>
@@ -33,19 +34,20 @@ const AccountView = ({ data }) => {
                     <InputValue size='large' value={creditPeriod} />
                 </div>
             </div>
-
             <div className='row half-stretch'>
-                <div className='input-container'>
+                <div className='input-container stretch'>
                     <InputValue size='smaller' value='Items Supplied' />
-                    <InputValue size='large' value={itemsSupplied} />
+                    <InputValue size='large' value={items} />
                 </div>
-                {remarks && (
-                    <div className='input-container'>
+            </div>
+            {remarks && (
+                <div className='row half-stretch'>
+                    <div className='input-container stretch'>
                         <InputValue size='smaller' value='Remarks' />
                         <InputValue size='large' value={remarks} />
                     </div>
-                )}
-            </div>
+                </div>
+            )}
         </div>
     )
 }

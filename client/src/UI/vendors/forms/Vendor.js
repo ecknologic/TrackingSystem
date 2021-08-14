@@ -2,13 +2,15 @@ import { Divider } from 'antd';
 import React, { useEffect } from 'react';
 import InputLabel from '../../../components/InputLabel';
 import CustomInput from '../../../components/CustomInput';
+import SelectInput from '../../../components/SelectInput';
 import CustomTextArea from '../../../components/CustomTextArea';
 import { resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
 
 const VendorForm = (props) => {
 
-    const { data, accData, errors, accErrors, onChange, disabled, onAccBlur, onAccChange, hideBank } = props
-    const { vendorName, gstNo, address, contactPerson, creditPeriod, itemsSupplied, remarks } = data
+    const { data, accData, errors, accErrors, onChange, disabled, itemsSupplied,
+        onAccBlur, onAccChange, onSelect, onDeselect, supplyOptions, hideBank, supplyErrors } = props
+    const { vendorName, gstNo, address, contactPerson, creditPeriod, remarks } = data
     const { accountNumber, bankName, branchName, ifscCode, customerName } = accData
 
     useEffect(() => {
@@ -69,10 +71,10 @@ const VendorForm = (props) => {
             </div>
             <div className='row'>
                 <div className='input-container'>
-                    <InputLabel name="Items Supplied" error={errors.itemsSupplied} mandatory />
-                    <CustomInput value={itemsSupplied} disabled={disabled}
-                        error={errors.itemsSupplied} placeholder="Items Supplied"
-                        onChange={(value) => onChange(value, 'itemsSupplied')}
+                    <InputLabel name="Items Supplied" error={supplyErrors.itemsSupplied} mandatory />
+                    <SelectInput track value={itemsSupplied} options={supplyOptions}
+                        disabled={disabled} error={supplyErrors.itemsSupplied} mode='multiple'
+                        onSelect={onSelect} onDeselect={onDeselect}
                     />
                 </div>
                 <div className='input-container'>

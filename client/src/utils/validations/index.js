@@ -46,10 +46,10 @@ export const validateIDProofs = (proofs, proofType) => {
     return errors
 }
 
-export const validateDevDays = (days) => {
+export const validateMultiOptions = (data, key = 'devDays') => {
     let errors = {};
     const text = 'Required'
-    if (isEmpty(days)) errors = { devDays: text }
+    if (isEmpty(data)) errors = { [key]: text }
 
     return errors
 }
@@ -507,13 +507,11 @@ export const validateClosureValues = (data) => {
 export const validateVendorValues = (data) => {
     let errors = {};
     const text = 'Required'
-    const { vendorName, gstNo, address, contactPerson, creditPeriod, itemsSupplied, remarks } = data
+    const { vendorName, gstNo, address, contactPerson, creditPeriod } = data
 
     if (!vendorName) errors.vendorName = text
     if (!gstNo) errors.gstNo = text
     if (!address) errors.address = text
-    if (!itemsSupplied) errors.itemsSupplied = text
-    if (!remarks) errors.remarks = text
     if (!contactPerson) errors.contactPerson = text
     else {
         const error = validateNames(contactPerson)
@@ -1137,7 +1135,7 @@ export const validateAddresses = (data) => {
     let errors = {};
     for (let index = 0; index < data.length; index++) {
         const error = validateDeliveryValues(data[index])
-        const devDaysError = validateDevDays(data[index]['devDays'])
+        const devDaysError = validateMultiOptions(data[index]['devDays'])
         if (!isEmpty(error) || !isEmpty(devDaysError)) {
             errors[`address${index}`] = { ...error, ...devDaysError }
             errors.key = String(index)

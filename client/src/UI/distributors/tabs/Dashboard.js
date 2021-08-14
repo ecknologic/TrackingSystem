@@ -12,12 +12,14 @@ import DeleteModal from '../../../components/CustomModal';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import DistributorCard from '../../../components/DistributorCard';
 import CustomPagination from '../../../components/CustomPagination';
-import { deepClone, doubleKeyComplexSearch, showToast, complexSort, complexDateSort, isEmpty } from '../../../utils/Functions';
+import useStatusFilter from '../../../utils/hooks/useStatusFilter';
+import { deepClone, doubleKeyComplexSearch, showToast, complexSort, complexDateSort } from '../../../utils/Functions';
 
 const Dashboard = ({ reFetch }) => {
     const { ROLE } = useUser()
     const history = useHistory()
     const { page = 1 } = useParams()
+    const { status, hasFilters } = useStatusFilter()
     const [distributorsClone, setDistributorsClone] = useState([])
     const [filteredClone, setFilteredClone] = useState([])
     const [distributors, setDistributors] = useState([])
@@ -46,6 +48,14 @@ const Dashboard = ({ reFetch }) => {
         setLoading(true)
         getDistributors()
     }, [reFetch])
+
+    useEffect(() => {
+        if (!loading) {
+            const filters = { status }
+            if (!hasFilters) handleRemoveFilters()
+            else handleApplyFilters(filters, distributorsClone)
+        }
+    }, [status])
 
     const getDistributors = async () => {
         const url = 'distributor/getDistributors'
@@ -167,15 +177,9 @@ const Dashboard = ({ reFetch }) => {
         setSortBy(type)
     }
 
-    const onFilterChange = (data) => {
-        const { status } = data
-        if (isEmpty(status)) handleFilterClear()
-        else handleFilter(data)
-    }
-
-    const handleFilter = (filterInfo) => {
-        const { status } = filterInfo
-        const filtered = distributorsClone.filter((item) => status.includes(item.isActive))
+    const handleApplyFilters = (filterInfo, distributors) => {
+        const status = filterInfo.status.filter(item => item.checked).map(item => item.value)
+        const filtered = distributors.filter((item) => status.includes(item.isActive))
         setFilterON(true)
         setPageNumber(1)
         setDistributors(filtered)
@@ -183,7 +187,7 @@ const Dashboard = ({ reFetch }) => {
         setTotalCount(filtered.length)
     }
 
-    const handleFilterClear = () => {
+    const handleRemoveFilters = () => {
         setPageNumber(1)
         setDistributors(distributorsClone)
         setTotalCount(distributorsClone.length)
@@ -217,7 +221,7 @@ const Dashboard = ({ reFetch }) => {
 
     return (
         <Fragment>
-            <MenuBar searchText='Search Accounts' onSearch={handleSearch} onSort={onSort} onFilter={onFilterChange} />
+            <MenuBar searchText='Search Accounts' onSearch={handleSearch} onSort={onSort} />
             <div className='employee-manager-content'>
                 <Row gutter={[{ lg: 32, xl: 16 }, { lg: 16, xl: 16 }]}>
                     {

@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { Col, Empty, Row } from 'antd';
+import { Col, Empty, message, Row } from 'antd';
 import { useHistory, useParams } from 'react-router-dom';
-import React, { Fragment, useEffect, useMemo, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../modules/http'
 import Spinner from '../../../components/Spinner';
 import MenuBar from '../../../components/MenuBar';
@@ -9,13 +9,17 @@ import useUser from '../../../utils/hooks/useUser';
 import NoContent from '../../../components/NoContent';
 import { SUPERADMIN } from '../../../utils/constants';
 import VendorCard from '../../../components/VendorCard';
+import DeleteModal from '../../../components/CustomModal';
+import ConfirmMessage from '../../../components/ConfirmMessage';
+import useStatusFilter from '../../../utils/hooks/useStatusFilter';
 import CustomPagination from '../../../components/CustomPagination';
-import { doubleKeyComplexSearch, complexSort, complexDateSort, isEmpty } from '../../../utils/Functions';
+import { doubleKeyComplexSearch, complexSort, complexDateSort, showToast, deepClone } from '../../../utils/Functions';
 
 const Dashboard = ({ reFetch }) => {
     const history = useHistory()
     const { ROLE } = useUser()
     const { page = 1 } = useParams()
+    const { status, hasFilters } = useStatusFilter()
     const [vendorsClone, setVendorsClone] = useState([])
     const [filteredClone, setFilteredClone] = useState([])
     const [vendors, setVendors] = useState([])
@@ -23,6 +27,8 @@ const Dashboard = ({ reFetch }) => {
     const [pageSize, setPageSize] = useState(12)
     const [filterON, setFilterON] = useState(false)
     const [searchON, setSeachON] = useState(false)
+    const [modalDelete, setModalDelete] = useState(false)
+    const [currentId, setCurrentId] = useState('')
     const [pageNumber, setPageNumber] = useState(Number(page))
     const [sortBy, setSortBy] = useState('NEW - OLD')
     const [totalCount, setTotalCount] = useState(null)
@@ -43,8 +49,16 @@ const Dashboard = ({ reFetch }) => {
         getVendors()
     }, [reFetch])
 
+    useEffect(() => {
+        if (!loading) {
+            const filters = { status }
+            if (!hasFilters) handleRemoveFilters()
+            else handleApplyFilters(filters, vendorsClone)
+        }
+    }, [status])
+
     const getVendors = async () => {
-        const url = `vendors/getvendors`
+        const url = 'vendors/getvendors'
 
         try {
             const data = await http.GET(axios, url, config)
@@ -95,15 +109,77 @@ const Dashboard = ({ reFetch }) => {
         setSortBy(type)
     }
 
-    const onFilterChange = (data) => {
-        const { status } = data
-        if (isEmpty(status)) handleFilterClear()
-        else handleFilter(data)
+    const handleMenuSelect = (key, id) => {
+        if (key === 'Active') {
+            handleStatusUpdate(id, 1)
+        }
+        else if (key === 'Inactive') {
+            handleStatusUpdate(id, 0)
+        }
+        else if (key === 'Delete') {
+            setModalDelete(true)
+            setCurrentId(id)
+        }
     }
 
-    const handleFilter = (filterInfo) => {
-        const { status } = filterInfo
-        const filtered = vendorsClone.filter((item) => status.includes(item.status))
+    const handleStatusUpdate = async (vendorId, status) => {
+        const options = { item: 'Vendor status', v1Ing: 'Updating', v2: 'updated' }
+        const url = 'vendors/updateVendorStatus'
+        const body = { status, vendorId }
+
+        try {
+            showToast({ ...options, action: 'loading' })
+            await http.PUT(axios, url, body, config)
+            optimisticApprove(vendorId, status)
+            showToast(options)
+        } catch (error) {
+            message.destroy()
+        }
+    }
+
+    const handleDelete = async (id) => {
+        const options = { item: 'Vendor', v1Ing: 'Deleting', v2: 'deleted' }
+        const url = `vendors/deleteVendor/${id}`
+
+        try {
+            showToast({ ...options, action: 'loading' })
+            await http.DELETE(axios, url, config)
+            optimisticDelete(id)
+            showToast(options)
+        } catch (error) {
+            message.destroy()
+        }
+    }
+
+    const optimisticApprove = (id, status) => {
+        let clone = deepClone(vendors);
+        const index = clone.findIndex(item => item.vendorId === id)
+        clone[index].isActive = status;
+        setVendors(clone)
+
+        if (searchON || filterON) {
+            let clone = deepClone(vendorsClone);
+            const index = clone.findIndex(item => item.vendorId === id)
+            clone[index].isActive = status;
+            setVendorsClone(clone)
+        }
+        else setVendorsClone(clone)
+    }
+
+    const optimisticDelete = (id) => {
+        const filtered = vendors.filter(item => item.vendorId !== id)
+        setVendors(filtered)
+
+        if (searchON || filterON) {
+            const filtered = vendors.filter(item => item.vendorId !== id)
+            setVendorsClone(filtered)
+        }
+        else setVendorsClone(filtered)
+    }
+
+    const handleApplyFilters = (filterInfo, vendors) => {
+        const status = filterInfo.status.filter(item => item.checked).map(item => item.value)
+        const filtered = vendors.filter((item) => status.includes(item.isActive))
         setFilterON(true)
         setPageNumber(1)
         setVendors(filtered)
@@ -111,7 +187,7 @@ const Dashboard = ({ reFetch }) => {
         setTotalCount(filtered.length)
     }
 
-    const handleFilterClear = () => {
+    const handleRemoveFilters = () => {
         setPageNumber(1)
         setVendors(vendorsClone)
         setTotalCount(vendorsClone.length)
@@ -129,6 +205,15 @@ const Dashboard = ({ reFetch }) => {
         setPageNumber(number)
     }
 
+    const handleDeleteModalOk = useCallback(() => {
+        setModalDelete(false);
+        handleDelete(currentId)
+    }, [currentId])
+
+    const handleDeleteModalCancel = useCallback(() => {
+        setModalDelete(false)
+    }, [])
+
     const goToViewCustomer = (vendorId) => history.push(`/vendors/manage/${vendorId}`, { page: pageNumber })
 
     const sliceFrom = (pageNumber - 1) * pageSize
@@ -136,7 +221,7 @@ const Dashboard = ({ reFetch }) => {
 
     return (
         <Fragment>
-            <MenuBar searchText='Search Accounts' onSearch={handleSearch} onSort={onSort} onFilter={onFilterChange} />
+            <MenuBar searchText='Search Accounts' onSearch={handleSearch} onSort={onSort} />
             <div className='employee-manager-content'>
                 <Row gutter={[{ lg: 32, xl: 16 }, { lg: 16, xl: 16 }]}>
                     {
@@ -146,6 +231,7 @@ const Dashboard = ({ reFetch }) => {
                                     <VendorCard
                                         data={customer}
                                         isSuperAdmin={isSuperAdmin}
+                                        onSelect={handleMenuSelect}
                                         onClick={goToViewCustomer}
                                     />
                                 </Col>
@@ -164,6 +250,15 @@ const Dashboard = ({ reFetch }) => {
                         />)
                 }
             </div>
+            <DeleteModal
+                visible={modalDelete}
+                onOk={handleDeleteModalOk}
+                onCancel={handleDeleteModalCancel}
+                title='Are you sure you want to delete?'
+                okTxt='Yes'
+            >
+                <ConfirmMessage msg='This action cannot be undone.' />
+            </DeleteModal>
         </Fragment>
     )
 }

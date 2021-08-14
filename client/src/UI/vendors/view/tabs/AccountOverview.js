@@ -11,9 +11,10 @@ import useUser from '../../../../utils/hooks/useUser';
 import ScrollUp from '../../../../components/ScrollUp';
 import NoContent from '../../../../components/NoContent';
 import CustomButton from '../../../../components/CustomButton';
+import { getDropdownOptions } from '../../../../assets/fixtures';
 import { isEmpty, showToast, resetTrackForm } from '../../../../utils/Functions';
 import { ACCOUNTSADMIN, MARKETINGMANAGER, SUPERADMIN, WAREHOUSEADMIN } from '../../../../utils/constants';
-import { validateNumber, validateIFSCCode, validateVendorValues, validateClosureAccValues, validateNames } from '../../../../utils/validations';
+import { validateNumber, validateIFSCCode, validateVendorValues, validateClosureAccValues, validateNames, validateMultiOptions } from '../../../../utils/validations';
 import '../../../../sass/employees.scss'
 
 const ManageClosedCustomer = ({ setHeaderContent, onGoBack, onUpdate }) => {
@@ -23,35 +24,60 @@ const ManageClosedCustomer = ({ setHeaderContent, onGoBack, onUpdate }) => {
     const [accData, setAccData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [accErrors, setAccErrors] = useState({})
+    const [itemsSupplied, setItemsSupplied] = useState([])
+    const [supplyList, setSupplyList] = useState([])
+    const [SUPPLIES, setSUPPLIES] = useState([])
+    const [suppliesCount, setSuppliesCount] = useState(0)
+    const [supplyErrors, setSupplyErrors] = useState({})
     const [loading, setLoading] = useState(true)
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [editMode, setEditMode] = useState('')
     const [shake, setShake] = useState(false)
 
+    const supplyOptions = useMemo(() => getDropdownOptions(supplyList), [supplyList])
     const isWHAdmin = useMemo(() => ROLE === WAREHOUSEADMIN, [ROLE])
     const canEdit = useMemo(() => ROLE === SUPERADMIN || ROLE === MARKETINGMANAGER
         || ROLE === WAREHOUSEADMIN || ROLE === ACCOUNTSADMIN, [ROLE])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
-    useEffect(() => {
-        getVendor()
+    useEffect(async () => {
+        const count = await getSupplyList()
+        getVendor(count)
 
         return () => {
             http.ABORT(source)
         }
     }, [])
 
-    const getVendor = async () => {
+    const getSupplyList = async () => {
+        const url = 'bibo/getList/itemName'
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setSuppliesCount(data.length)
+            setSupplyList([{ value: 'ALL', name: 'ALL' }, ...data])
+            setSUPPLIES(['ALL', ...data.map(item => item.value)])
+            return data.length
+        } catch (error) { }
+    }
+
+    const getVendor = async (count) => {
         const url = `vendors/getVendorById/${vendorId}`
 
         try {
             const [data] = await http.GET(axios, url, config)
-            const { accountNumber, bankName, branchName, ifscCode, customerName, ...rest } = data
+            const { accountNumber, bankName, branchName, ifscCode, customerName, itemsSupplied, ...rest } = data
             const { vendorName, address } = rest
+
+            let items = itemsSupplied.split(',')
+            if (count === items.length) {
+                items.push('ALL')
+            }
 
             setHeaderContent({ title: vendorName, address })
             setFormData(rest)
+            setItemsSupplied(items)
             setAccData({ accountNumber, bankName, branchName, ifscCode, customerName })
             setLoading(false)
         } catch (error) { }
@@ -86,19 +112,40 @@ const ManageClosedCustomer = ({ setHeaderContent, onGoBack, onUpdate }) => {
         }
     }
 
+    const handleSupplySelect = (value) => {
+        setSupplyErrors({ itemsSupplied: '' })
+        if (value == 'ALL') setItemsSupplied(SUPPLIES)
+        else {
+            const clone = [...itemsSupplied]
+            clone.push(value)
+            if (clone.length === suppliesCount) clone.push('ALL')
+            setItemsSupplied(clone)
+        }
+    }
+
+    const handleSupplyDeselect = (value) => {
+        if (value == 'ALL') setItemsSupplied([])
+        else {
+            const filtered = itemsSupplied.filter(item => item !== value && item !== "ALL")
+            setItemsSupplied(filtered)
+        }
+    }
+
     const handleUpdate = async () => {
         const formErrors = validateVendorValues(formData)
         const accErrors = validateClosureAccValues(accData)
+        const supplyErrors = validateMultiOptions(itemsSupplied, 'itemsSupplied')
 
-        if (!isEmpty(formErrors)) {
+        if (!isEmpty(formErrors) || !isEmpty(supplyErrors)) {
             setShake(true)
             setTimeout(() => setShake(false), 820)
             setFormErrors(formErrors)
             setAccErrors(accErrors)
+            setSupplyErrors(supplyErrors)
             return
         }
 
-        const body = { ...formData, ...accData }
+        const body = { ...formData, ...accData, itemsSupplied: itemsSupplied.filter((item) => item !== 'ALL').join(',') }
         const url = 'vendors/updateVendor'
         const options = { item: 'Customer Closure', v1Ing: 'Updating', v2: 'updated' }
 
@@ -142,15 +189,20 @@ const ManageClosedCustomer = ({ setHeaderContent, onGoBack, onUpdate }) => {
                                             accData={accData}
                                             errors={formErrors}
                                             accErrors={accErrors}
+                                            supplyErrors={supplyErrors}
+                                            itemsSupplied={itemsSupplied}
+                                            supplyOptions={supplyOptions}
                                             onAccBlur={handleAccBlur}
                                             onChange={handleChange}
                                             onAccChange={handleAccChange}
+                                            onSelect={handleSupplySelect}
+                                            onDeselect={handleSupplyDeselect}
                                             hideBank={isWHAdmin}
                                         />
                                     </>
                                 ) :
                                     <>
-                                        <AccountView data={formData} accData={accData} />
+                                        <AccountView data={formData} itemsSupplied={itemsSupplied} />
                                         {
                                             isWHAdmin ? null
                                                 : <>

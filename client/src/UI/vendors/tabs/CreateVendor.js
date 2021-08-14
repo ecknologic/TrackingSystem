@@ -4,26 +4,45 @@ import React, { useEffect, useMemo, useState } from 'react';
 import VendorForm from '../forms/Vendor';
 import { http } from '../../../modules/http';
 import CustomButton from '../../../components/CustomButton';
+import { getDropdownOptions } from '../../../assets/fixtures';
 import { isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
-import { validateClosureAccValues, validateVendorValues, validateIFSCCode, validateNames, validateNumber } from '../../../utils/validations';
+import { validateClosureAccValues, validateVendorValues, validateIFSCCode, validateNames, validateNumber, validateMultiOptions } from '../../../utils/validations';
 
 const CreateEnquiry = ({ goToTab }) => {
     const [formData, setFormData] = useState({})
     const [accData, setAccData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [accErrors, setAccErrors] = useState({})
+    const [itemsSupplied, setItemsSupplied] = useState([])
+    const [supplyList, setSupplyList] = useState([])
+    const [SUPPLIES, setSUPPLIES] = useState([])
+    const [suppliesCount, setSuppliesCount] = useState(0)
+    const [supplyErrors, setSupplyErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [shake, setShake] = useState(false)
 
+    const supplyOptions = useMemo(() => getDropdownOptions(supplyList), [supplyList])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
+        getSupplyList()
 
         return () => {
             http.ABORT(source)
         }
     }, [])
+
+    const getSupplyList = async () => {
+        const url = 'bibo/getList/itemName'
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setSuppliesCount(data.length)
+            setSupplyList([{ value: 'ALL', name: 'ALL' }, ...data])
+            setSUPPLIES(['ALL', ...data.map(item => item.value)])
+        } catch (error) { }
+    }
 
     const handleChange = (value, key) => {
         setFormData(data => ({ ...data, [key]: value }))
@@ -54,19 +73,40 @@ const CreateEnquiry = ({ goToTab }) => {
         }
     }
 
+    const handleSupplySelect = (value) => {
+        setSupplyErrors({ itemsSupplied: '' })
+        if (value == 'ALL') setItemsSupplied(SUPPLIES)
+        else {
+            const clone = [...itemsSupplied]
+            clone.push(value)
+            if (clone.length === suppliesCount) clone.push('ALL')
+            setItemsSupplied(clone)
+        }
+    }
+
+    const handleSupplyDeselect = (value) => {
+        if (value == 'ALL') setItemsSupplied([])
+        else {
+            const filtered = itemsSupplied.filter(item => item !== value && item !== "ALL")
+            setItemsSupplied(filtered)
+        }
+    }
+
     const handleSubmit = async () => {
         const formErrors = validateVendorValues(formData)
         const accErrors = validateClosureAccValues(accData)
+        const supplyErrors = validateMultiOptions(itemsSupplied, 'itemsSupplied')
 
-        if (!isEmpty(formErrors)) {
+        if (!isEmpty(formErrors) || !isEmpty(supplyErrors)) {
             setShake(true)
             setTimeout(() => setShake(false), 820)
             setFormErrors(formErrors)
             setAccErrors(accErrors)
+            setSupplyErrors(supplyErrors)
             return
         }
 
-        const body = { ...formData, ...accData }
+        const body = { ...formData, ...accData, itemsSupplied: itemsSupplied.filter((item) => item !== 'ALL').join(',') }
         const url = 'vendors/createVendor'
         const options = { item: 'Vendor', v1Ing: 'Adding', v2: 'added' }
 
@@ -104,9 +144,14 @@ const CreateEnquiry = ({ goToTab }) => {
                 accData={accData}
                 errors={formErrors}
                 accErrors={accErrors}
+                supplyErrors={supplyErrors}
+                itemsSupplied={itemsSupplied}
+                supplyOptions={supplyOptions}
                 onAccBlur={handleAccBlur}
                 onChange={handleChange}
                 onAccChange={handleAccChange}
+                onSelect={handleSupplySelect}
+                onDeselect={handleSupplyDeselect}
             />
             <div className='app-footer-buttons-container'>
                 <CustomButton

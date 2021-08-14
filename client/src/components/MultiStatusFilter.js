@@ -2,11 +2,11 @@ import { Dropdown, Menu } from 'antd';
 import React, { useState } from 'react';
 import { FilterIconGrey } from './SVG_Icons';
 import CheckboxOption from './CheckboxOption';
-import useStatusFilter from '../utils/hooks/useStatusFilter';
+import useMultiStatusFilter from '../utils/hooks/useMultiStatusFilter';
 
-const StatusFilter = () => {
+const MultiStatusFilter = () => {
 
-    const { onSelect, onDeselect, status } = useStatusFilter()
+    const { onSelect, onDeselect, status } = useMultiStatusFilter()
     const [visible, setVisible] = useState(false)
 
     const menu = () => (
@@ -45,4 +45,4 @@ const StatusFilter = () => {
         </Dropdown>
     )
 }
-export default StatusFilter
+export default MultiStatusFilter

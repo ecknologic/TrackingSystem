@@ -35,7 +35,7 @@ const VendorCard = ({ data, onClick, btnTxt = 'Manage Account', isSuperAdmin, on
             </div>
             <div className='body'>
                 <div className='contact-container'>
-                    <span className='type1'>Contact Details</span>
+                    <span className='type1'>Contact Person</span>
                     <div className='contacts'>
                         <NameCard name={contactPerson} />
                     </div>

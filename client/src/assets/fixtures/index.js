@@ -43,7 +43,7 @@ export const statusFilterList = [
     { value: 0, name: 'Draft' },
     { value: 1, name: 'Active' }
 ]
-export const closedFilterList = [
+export const multiFilterList = [
     { value: 'InProgress', name: 'In Progress' },
     { value: 'Confirmed', name: 'Confirmed' },
     { value: 'Closed', name: 'Closed' }

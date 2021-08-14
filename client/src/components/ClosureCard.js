@@ -6,7 +6,7 @@ import { FriendsIconGrey, FriendIconGrey } from './SVG_Icons';
 import '../sass/accountCard.scss'
 
 const ClosureCard = ({ data, onClick, btnTxt = 'Manage Account' }) => {
-    const { closingId, customerId, isApproved, contactpersons, customerName, organizationName,
+    const { closingId, isApproved, contactpersons, customerName, organizationName,
         status, address, natureOfBussiness, customerNo } = data
 
     const names = JSON.parse(contactpersons || "[]")
