@@ -21,6 +21,13 @@ warehouseQueries.getDeliveryDetails = (input, callback) => {
     let query = "select c.customerOrderId,c.deliveryLocation,c.contactPerson,c.EmailId,c.existingCustomerId,c.distributorId,c.creationType,c.customerType,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS product20L,c.1LBoxes AS product1L,c.500MLBoxes AS product500ML,c.300MLBoxes AS product300ML,c.2LBoxes AS product2L,c.price20L, c.price2L, c.price1L, c.price500ML, c.price300ML,r.*,d.driverName,d.mobileNumber,CASE WHEN c.creationType='manual' THEN c.EmailId ELSE cd.EmailId  END AS EmailId FROM customerorderdetails c LEFT JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid left JOIN customerdetails cd ON c.existingCustomerId=cd.customerId  WHERE DATE(`deliveryDate`) = ? AND warehouseId=? ORDER BY c.dcNo DESC";
     return executeGetParamsQuery(query, [date, departmentId], callback)
 }
+
+warehouseQueries.getDeliveryDetailsByDriver = (input, callback) => {
+    const { date, departmentId } = input
+    let query = "SELECT SUM(c.20LCans) AS product20L,SUM(c.1LBoxes) AS product1L,SUM(c.500MLBoxes) AS product500ML,SUM(c.300MLBoxes) AS product300ML,SUM(c.2LBoxes) AS product2L,COALESCE(SUM(CASE WHEN c.isDelivered!='Completed' THEN 1 END),0) AS pendingCount,COALESCE(SUM(CASE WHEN c.isDelivered='Completed' THEN 1 END),0) AS deliveredCount,d.driverName,d.mobileNumber FROM customerorderdetails c LEFT JOIN driverdetails d ON c.driverId=d.driverid  WHERE DATE(`deliveryDate`) = ? AND warehouseId=? AND c.driverId IS NOT NULL GROUP BY c.driverId ORDER BY c.driverId DESC";
+    return executeGetParamsQuery(query, [date, departmentId], callback)
+}
+
 warehouseQueries.getTotalWarehouseReturnCans = (input, callback) => { //Warehouse count
     const { departmentId, date } = input
     let query = 'SELECT SUM(returnEmptyCans) AS emptycans FROM customerorderdetails WHERE DATE(deliveredDate)=? AND warehouseId=?'
