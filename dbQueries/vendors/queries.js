@@ -8,7 +8,7 @@ vendorQueries.getVendors = async (callback) => {
 }
 
 vendorQueries.getVendorById = async (vendorId, callback) => {
-    let query = "SELECT * from vendors where vendorId=" + vendorId;
+    let query = "SELECT vendorId,vendorName, contactPerson, address, gstNo, customerName, accountNumber, ifscCode, bankName, branchName, creditPeriod, itemsSupplied, remarks,isActive from vendors where deleted=0 AND vendorId=" + vendorId;
     return executeGetQuery(query, callback)
 }
 
@@ -24,7 +24,7 @@ vendorQueries.updateVendor = async (input, callback) => {
     const { vendorName, contactPerson, address, gstNo, customerName, accountNumber, ifscCode, bankName, branchName, creditPeriod, itemsSupplied, remarks, vendorId } = input
     let query = `update vendors set vendorName=?, contactPerson=?, address=?, gstNo=?, customerName=?, accountNumber=?, ifscCode=?, bankName=?, branchName=?, creditPeriod=?, itemsSupplied=?, remarks=? where vendorId=${vendorId}`;
     let encryptedData = await encryptObj({ accountNumber, ifscCode, bankName, branchName })
-    let requestBody = [vendorName, contactPerson, address, gstNo, customerName, encryptedData.accountNumber, encryptedData.ifscCode, encryptedData.bankName, encryptedData.branchName, creditPeriod, itemsSupplied, remarks,]
+    let requestBody = [vendorName, contactPerson, address, gstNo, customerName, encryptedData.accountNumber, encryptedData.ifscCode, encryptedData.bankName, encryptedData.branchName, creditPeriod, itemsSupplied, remarks]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 module.exports = vendorQueries
