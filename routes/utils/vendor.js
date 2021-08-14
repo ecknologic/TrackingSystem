@@ -5,7 +5,7 @@ const { decryptObj } = require("../../utils/crypto");
 
 const compareVendorData = (data, { vendorId, userId, userRole, adminUserName }) => {
     return new Promise((resolve) => {
-        vendorQueries.getVendorById(vendorId, (err, results) => {
+        vendorQueries.getVendorById(vendorId, async (err, results) => {
             if (err) resolve([])
             else if (results.length) {
                 let oldData = results[0]
