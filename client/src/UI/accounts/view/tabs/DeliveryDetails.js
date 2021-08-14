@@ -13,7 +13,7 @@ import AddressCard from '../../../../components/AddressCard';
 import DeleteModal from '../../../../components/CustomModal';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import { getRouteOptions, WEEKDAYS } from '../../../../assets/fixtures';
-import { validateDeliveryValues, validateDevDays, validateIntFloat, validateMobileNumber, validateNames, validateNumber } from '../../../../utils/validations';
+import { validateDeliveryValues, validateMultiOptions, validateIntFloat, validateMobileNumber, validateNames, validateNumber } from '../../../../utils/validations';
 import { getDevDays, getProductsWithIdForDB, getProductsForUI, isEmpty, extractDeliveryDetails, extractProductsFromForm, deepClone, getBase64, getDevDaysForDB, base64String, resetTrackForm, showToast, getLabel } from '../../../../utils/Functions';
 
 const DeliveryDetails = ({ isAdmin, recentDelivery, onUpdate, ...rest }) => {
@@ -276,7 +276,7 @@ const DeliveryDetails = ({ isAdmin, recentDelivery, onUpdate, ...rest }) => {
 
     const handleUpdate = async () => {
         const deliveryErrors = validateDeliveryValues(formData)
-        const devDaysError = validateDevDays(devDays)
+        const devDaysError = validateMultiOptions(devDays)
 
         if (!isEmpty(deliveryErrors) || !isEmpty(devDaysError)) {
             setShake(true)

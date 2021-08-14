@@ -3,11 +3,11 @@ import { useLocation } from 'react-router';
 import React, { useEffect, useMemo, useState } from 'react';
 import useUser from '../utils/hooks/useUser';
 import { getMainPathname } from '../utils/Functions';
-import { ACCOUNTSADMIN, MARKETINGMANAGER, SUPERADMIN } from '../utils/constants';
+import { MARKETINGMANAGER } from '../utils/constants';
 import { accountFilterList, getDefaultOptions, statusFilterList, getCreatorOptions } from '../assets/fixtures';
-const FilterContext = React.createContext([{}, () => { }]);
+const CustomerFilterContext = React.createContext([{}, () => { }]);
 
-const FilterProvider = ({ children }) => {
+const CustomerFilterProvider = ({ children }) => {
     const { ROLE } = useUser()
     const { pathname } = useLocation()
     const [creator, setCreator] = useState([])
@@ -18,7 +18,6 @@ const FilterProvider = ({ children }) => {
     const [account, setAccount] = useState([...accountFilterList])
 
     const isSMManager = useMemo(() => ROLE === MARKETINGMANAGER, [ROLE])
-    const isAdmin = useMemo(() => ROLE === SUPERADMIN || ROLE === ACCOUNTSADMIN, [ROLE])
     const mainPathname = useMemo(() => getMainPathname(pathname), [pathname])
 
     useEffect(() => {
@@ -28,12 +27,6 @@ const FilterProvider = ({ children }) => {
     useEffect(() => {
         reset()
     }, [mainPathname])
-
-    useEffect(() => {
-        if (isAdmin) {
-            setStatus([])
-        }
-    }, [isAdmin])
 
     useEffect(() => {
         getCreatorList()
@@ -75,7 +68,7 @@ const FilterProvider = ({ children }) => {
     }
 
     return (
-        <FilterContext.Provider
+        <CustomerFilterContext.Provider
             value={{
                 account, setAccount,
                 creator, setCreator,
@@ -85,8 +78,8 @@ const FilterProvider = ({ children }) => {
             }}
         >
             {children}
-        </FilterContext.Provider>
+        </CustomerFilterContext.Provider>
     );
 };
 
-export { FilterContext, FilterProvider };
+export { CustomerFilterContext, CustomerFilterProvider };

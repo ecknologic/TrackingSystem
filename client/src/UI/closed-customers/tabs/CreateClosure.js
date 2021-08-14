@@ -161,7 +161,7 @@ const CreateEnquiry = ({ goToTab }) => {
     }
 
     const handleSubmit = async () => {
-        const { customerId, closingDate, collectedDate } = formData
+        const { closingDate, collectedDate } = formData
         const formErrors = validateClosureValues(formData)
         const accErrors = validateClosureAccValues(accData)
 

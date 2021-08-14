@@ -62,6 +62,8 @@ app.use("/logs", checkUserExists, require('./routes/auditlogs'));
 
 app.use("/reports", checkUserExists, require('./routes/Reports'));
 
+app.use("/vendors", checkUserExists, require('./routes/vendors'));
+
 app.use("/bibo", require('./routes/loginAuthentication.js'));
 
 app.use(function (req, res, next) {

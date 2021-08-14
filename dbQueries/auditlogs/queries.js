@@ -11,11 +11,14 @@ auditQueries.getAudits = (input, callback) => {
         query = `SELECT a.auditId,a.description,a.createdDateTime,a.oldValue,a.updatedValue from auditlogs a
         WHERE a.staffId=? AND type=? ORDER BY a.createdDateTime DESC`
     }
-    else if (type == 'customer' || type == 'customerEnquiry'|| type == 'customerClosing' || type == 'distributor') {
+    else if (type == 'customer' || type == 'customerEnquiry' || type == 'customerClosing' || type == 'distributor') {
         query = `SELECT a.auditId,a.description,a.createdDateTime,a.oldValue,a.updatedValue from auditlogs a WHERE a.customerId=? AND type=? ORDER BY a.createdDateTime DESC`
     }
     else if (type == 'motherplant' || type == 'warehouse') {
         query = `SELECT a.auditId,a.description,a.createdDateTime,a.oldValue,a.updatedValue from auditlogs a WHERE a.departmentId=? AND type=? ORDER BY a.createdDateTime DESC`
+    }
+    else {
+        query = `SELECT a.auditId,a.description,a.createdDateTime,a.oldValue,a.updatedValue from auditlogs a WHERE a.genericId=? AND type=? ORDER BY a.createdDateTime DESC`
     }
     executeGetParamsQuery(query, [id, type], callback)
 }

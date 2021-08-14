@@ -1,0 +1,30 @@
+.vendor-card-container {
+    height: 20.1em;
+
+    .header {
+        height: 8em;
+        
+        .address-container {
+            padding-top: .5em;
+        }
+    }
+
+    .body {
+        height: 7.5em;
+
+        .contacts {
+            flex-direction: column;
+        }
+
+        .mobile {
+            color: #535353;
+            font-family: 'PoppinsMedium500';
+            font-size: .85em;
+            margin-left: 2.8em;
+        }
+
+        .role {
+            padding-top: .5em;
+        }
+    }
+}
