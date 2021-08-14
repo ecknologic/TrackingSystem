@@ -147,7 +147,7 @@ const ManageClosedCustomer = ({ setHeaderContent, onGoBack, onUpdate }) => {
 
         const body = { ...formData, ...accData, itemsSupplied: itemsSupplied.filter((item) => item !== 'ALL').join(',') }
         const url = 'vendors/updateVendor'
-        const options = { item: 'Customer Closure', v1Ing: 'Updating', v2: 'updated' }
+        const options = { item: 'Vendor', v1Ing: 'Updating', v2: 'updated' }
 
         try {
             setBtnDisabled(true)

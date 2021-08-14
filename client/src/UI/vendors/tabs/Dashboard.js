@@ -122,15 +122,15 @@ const Dashboard = ({ reFetch }) => {
         }
     }
 
-    const handleStatusUpdate = async (vendorId, status) => {
+    const handleStatusUpdate = async (vendorId, isActive) => {
         const options = { item: 'Vendor status', v1Ing: 'Updating', v2: 'updated' }
         const url = 'vendors/updateVendorStatus'
-        const body = { status, vendorId }
+        const body = { isActive, vendorId }
 
         try {
             showToast({ ...options, action: 'loading' })
             await http.PUT(axios, url, body, config)
-            optimisticApprove(vendorId, status)
+            optimisticApprove(vendorId, isActive)
             showToast(options)
         } catch (error) {
             message.destroy()

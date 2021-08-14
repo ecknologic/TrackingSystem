@@ -3,13 +3,13 @@ const vendorQueries = require("../../dbQueries/vendors/queries");
 const { DATEFORMAT } = require("../../utils/constants");
 const { decryptObj } = require("../../utils/crypto");
 
-const compareVendorData = (data, { vendorId, userId, userRole, adminUserName }) => {
+const compareVendorData = (data, { vendorId, userId, userRole, userName }) => {
     return new Promise((resolve) => {
         vendorQueries.getVendorById(vendorId, async (err, results) => {
             if (err) resolve([])
             else if (results.length) {
                 let oldData = results[0]
-                const { accountNumber, ifscCode, bankName, branchName } = data
+                const { accountNumber, ifscCode, bankName, branchName } = oldData
                 let decryptedData = await decryptObj({ accountNumber, ifscCode, bankName, branchName })
                 oldData = { ...results[0], accountNumber: decryptedData.accountNumber, ifscCode: decryptedData.ifscCode, bankName: decryptedData.bankName, branchName: decryptedData.branchName }
                 const records = []
@@ -23,7 +23,7 @@ const compareVendorData = (data, { vendorId, userId, userRole, adminUserName }) 
                             createdDateTime,
                             userId,
                             description: `Updated Vendor ${key} by ${userRole} <b>(${userName})</b>`,
-                            customerId,
+                            genericId: vendorId,
                             type: "vendor"
                         })
                     }
