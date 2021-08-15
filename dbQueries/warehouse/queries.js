@@ -22,9 +22,21 @@ warehouseQueries.getDeliveryDetails = (input, callback) => {
     return executeGetParamsQuery(query, [date, departmentId], callback)
 }
 
-warehouseQueries.getDeliveryDetailsByDriver = (input, callback) => {
+warehouseQueries.getTotalDeliveryDetailsByDriver = (input, callback) => {
     const { date, departmentId } = input
-    let query = "SELECT SUM(c.20LCans) AS product20L,SUM(c.1LBoxes) AS product1L,SUM(c.500MLBoxes) AS product500ML,SUM(c.300MLBoxes) AS product300ML,SUM(c.2LBoxes) AS product2L,COALESCE(SUM(CASE WHEN c.isDelivered!='Completed' THEN 1 END),0) AS pendingCount,COALESCE(SUM(CASE WHEN c.isDelivered='Completed' THEN 1 END),0) AS deliveredCount,d.driverName,d.mobileNumber FROM customerorderdetails c LEFT JOIN driverdetails d ON c.driverId=d.driverid  WHERE DATE(`deliveryDate`) = ? AND warehouseId=? AND c.driverId IS NOT NULL GROUP BY c.driverId ORDER BY c.driverId DESC";
+    let query = "SELECT SUM(c.20LCans) AS product20L,SUM(c.1LBoxes) AS product1L,SUM(c.500MLBoxes) AS product500ML,SUM(c.300MLBoxes) AS product300ML,SUM(c.2LBoxes) AS product2L,d.driverName,d.mobileNumber FROM customerorderdetails c LEFT JOIN driverdetails d ON c.driverId=d.driverid  WHERE DATE(`deliveryDate`) = ? AND warehouseId=? AND c.driverId IS NOT NULL GROUP BY c.driverId ORDER BY c.driverId DESC";
+    return executeGetParamsQuery(query, [date, departmentId], callback)
+}
+
+warehouseQueries.getDeliveredDeliveryDetailsByDriver = (input, callback) => {
+    const { date, departmentId } = input
+    let query = "SELECT SUM(c.20LCans) AS product20L,SUM(c.1LBoxes) AS product1L,SUM(c.500MLBoxes) AS product500ML,SUM(c.300MLBoxes) AS product300ML,SUM(c.2LBoxes) AS product2L FROM customerorderdetails c WHERE DATE(`deliveryDate`) = ? AND warehouseId=? AND c.isDelivered='Completed' AND c.driverId IS NOT NULL GROUP BY c.driverId ORDER BY c.driverId DESC";
+    return executeGetParamsQuery(query, [date, departmentId], callback)
+}
+
+warehouseQueries.getPendingDeliveryDetailsByDriver = (input, callback) => {
+    const { date, departmentId } = input
+    let query = "SELECT SUM(c.20LCans) AS product20L,SUM(c.1LBoxes) AS product1L,SUM(c.500MLBoxes) AS product500ML,SUM(c.300MLBoxes) AS product300ML,SUM(c.2LBoxes) AS product2L FROM customerorderdetails c WHERE DATE(`deliveryDate`) = ? AND warehouseId=? AND c.isDelivered!='Completed' AND c.driverId IS NOT NULL GROUP BY c.driverId ORDER BY c.driverId DESC";
     return executeGetParamsQuery(query, [date, departmentId], callback)
 }
 

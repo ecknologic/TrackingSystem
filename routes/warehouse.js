@@ -249,9 +249,30 @@ router.get('/deliveryDetails/:date', (req, res) => {
 
 router.get('/deliveryDetailsByDriver/:date', (req, res) => {
   var date = req.params.date;
-  warehouseQueries.getDeliveryDetailsByDriver({ date, departmentId }, (err, results) => {
+  warehouseQueries.getTotalDeliveryDetailsByDriver({ date, departmentId: 2 }, (err, results) => {
     if (err) res.status(500).json(err.sqlMessage);
-    res.send(JSON.stringify(results));
+    else if (!results.length) res.send(JSON.stringify(results));
+    else {
+      let result = results[0]
+      let obj = {
+        driverName: result.driverName,
+        mobileNumber: result.mobileNumber
+      }
+      obj.stockDetails = result
+      warehouseQueries.getDeliveredDeliveryDetailsByDriver({ date, departmentId }, (err, deliveredData) => {
+        if (err) res.status(500).json(err.sqlMessage);
+        else {
+          obj.deliveredDetails = deliveredData.length ? deliveredData[0] : {};
+          warehouseQueries.getPendingDeliveryDetailsByDriver({ date, departmentId }, (err, pendingData) => {
+            if (err) res.status(500).json(err.sqlMessage);
+            else {
+              obj.pendingDetails = pendingData.length ? pendingData[0] : {};
+              res.send(JSON.stringify([obj]));
+            }
+          })
+        }
+      })
+    }
   });
 });
 
