@@ -256,7 +256,9 @@ router.get('/deliveryDetailsByDriver/:date', (req, res) => {
       let result = results[0]
       let obj = {
         driverName: result.driverName,
-        mobileNumber: result.mobileNumber
+        mobileNumber: result.mobileNumber,
+        routeName: result.routeName,
+        driverId: result.driverId
       }
       obj.stockDetails = result
       warehouseQueries.getDeliveredDeliveryDetailsByDriver({ date, departmentId }, (err, deliveredData) => {
