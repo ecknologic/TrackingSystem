@@ -555,9 +555,9 @@ export const orderColumns = [
         key: 'id',
     },
     {
-        title: 'Contact Person',
-        dataIndex: 'contactPerson',
-        key: 'contactPerson',
+        title: 'Name',
+        dataIndex: 'customerName',
+        key: 'customerName',
     },
     {
         title: 'Address',
@@ -584,6 +584,44 @@ export const orderColumns = [
         dataIndex: 'action',
         key: 'action'
     },
+]
+
+export const DDColumns = [
+    {
+        title: 'S. No',
+        dataIndex: 'sNo',
+        key: 'sNo',
+    },
+    {
+        title: 'Driver Name',
+        dataIndex: 'driverName',
+        key: 'driverName',
+    },
+    {
+        title: 'Route',
+        dataIndex: 'routeName',
+        key: 'routeName',
+    },
+    {
+        title: 'Stock Details',
+        dataIndex: 'stockDetails',
+        key: 'stockDetails',
+    },
+    {
+        title: 'Delivered Details',
+        dataIndex: 'deliveredDetails',
+        key: 'deliveredDetails',
+    },
+    {
+        title: 'Pending Details',
+        dataIndex: 'pendingDetails',
+        key: 'pendingDetails',
+    },
+    {
+        title: 'Actions',
+        dataIndex: 'action',
+        key: 'action'
+    }
 ]
 
 export const getStockColumns = (isDamaged, adminType) => {

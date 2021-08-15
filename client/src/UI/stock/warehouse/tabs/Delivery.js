@@ -271,13 +271,6 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
                 : customerType === 'internal' ? 'Existing Customer' : 'Distributor'}`
             setTitle(title)
 
-            try {
-                showToast({ v1Ing: 'Fetching', action: 'loading' })
-                isEmpty(distributorList) && await getDistributorList()
-                isEmpty(customerList) && await getCustomerList()
-                message.destroy()
-            } catch (error) { }
-
             const isDisabled = isDelivered === 'Completed' || isDelivered === 'Cancelled'
             setOkTxt(isDisabled ? 'Close' : 'Update')
             setMode(isDisabled ? 'view' : 'edit')

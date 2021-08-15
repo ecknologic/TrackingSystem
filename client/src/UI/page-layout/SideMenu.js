@@ -92,6 +92,9 @@ const SideMenu = () => {
                             <Item key='/manage-routes' icon={selected === '/manage-routes' ? <LocationIcon /> : <LocationIconLight />}>
                                 Routes
                             </Item>
+                            <Item key='/warehouse-staff' icon={selected === '/warehouse-staff' ? <FriendsIcon /> : <FriendsIconLight />}>
+                                Staff
+                            </Item>
                             <Item key='/reports' style={{ pointerEvents: 'none' }} icon={selected === '/reports' ? <ReportIcon /> : <ReportIconLight />}>
                                 Reports
                             </Item>

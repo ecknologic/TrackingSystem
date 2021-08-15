@@ -189,6 +189,8 @@ export const getSideMenuKey = (path) => {
         return '/drivers'
     if (path.includes('/distributors'))
         return '/distributors'
+    if (path.includes('/warehouse-staff'))
+        return '/warehouse-staff'
     return path
 }
 
