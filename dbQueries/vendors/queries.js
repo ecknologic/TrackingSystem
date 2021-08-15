@@ -7,6 +7,11 @@ vendorQueries.getVendors = async (callback) => {
     return executeGetQuery(query, callback)
 }
 
+vendorQueries.getVendorNames = async (callback) => {
+    let query = "SELECT vendorId as dropdownId,vendorName as name,vendorName as value from vendors WHERE deleted=0 AND isActive=1 ORDER BY createdDateTime DESC";
+    return executeGetQuery(query, callback)
+}
+
 vendorQueries.getVendorById = async (vendorId, callback) => {
     let query = "SELECT vendorId,vendorName, contactPerson, address, gstNo, customerName, accountNumber, ifscCode, bankName, branchName, creditPeriod, itemsSupplied, remarks,isActive from vendors where deleted=0 AND vendorId=" + vendorId;
     return executeGetQuery(query, callback)
