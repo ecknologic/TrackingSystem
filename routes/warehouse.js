@@ -249,7 +249,7 @@ router.get('/deliveryDetails/:date', (req, res) => {
 
 router.get('/deliveryDetailsByDriver/:date', (req, res) => {
   var date = req.params.date;
-  warehouseQueries.getTotalDeliveryDetailsByDriver({ date, departmentId: 2 }, (err, results) => {
+  warehouseQueries.getTotalDeliveryDetailsByDriver({ date, departmentId }, (err, results) => {
     if (err) res.status(500).json(err.sqlMessage);
     else if (!results.length) res.send(JSON.stringify(results));
     else {
