@@ -24,7 +24,7 @@ warehouseQueries.getDeliveryDetails = (input, callback) => {
 
 warehouseQueries.getTotalDeliveryDetailsByDriver = (input, callback) => {
     const { date, departmentId } = input
-    let query = "SELECT SUM(c.20LCans) AS product20L,SUM(c.1LBoxes) AS product1L,SUM(c.500MLBoxes) AS product500ML,SUM(c.300MLBoxes) AS product300ML,SUM(c.2LBoxes) AS product2L,d.driverName,d.mobileNumber FROM customerorderdetails c LEFT JOIN driverdetails d ON c.driverId=d.driverid  WHERE DATE(`deliveryDate`) = ? AND warehouseId=? AND c.driverId IS NOT NULL GROUP BY c.driverId ORDER BY c.driverId DESC";
+    let query = "SELECT SUM(c.20LCans) AS product20L,SUM(c.1LBoxes) AS product1L,SUM(c.500MLBoxes) AS product500ML,SUM(c.300MLBoxes) AS product300ML,SUM(c.2LBoxes) AS product2L,d.driverId,d.driverName,d.mobileNumber,r.RouteName as routeName FROM customerorderdetails c LEFT JOIN driverdetails d ON c.driverId=d.driverid LEFT JOIN routes r ON c.routeId=r.RouteId  WHERE DATE(`deliveryDate`) = ? AND warehouseId=? AND c.driverId IS NOT NULL GROUP BY c.driverId ORDER BY c.driverId DESC";
     return executeGetParamsQuery(query, [date, departmentId], callback)
 }
 
