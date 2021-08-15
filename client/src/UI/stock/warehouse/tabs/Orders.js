@@ -344,20 +344,20 @@ const Orders = ({ driverList, vehicleList, locationList, warehouseList, routeLis
             return
         }
         const data = filterON ? filteredClone : ordersClone
-        const result = doubleKeyComplexSearch(data, value, 'deliveryDetailsId', 'contactPerson')
+        const result = doubleKeyComplexSearch(data, value, 'deliveryDetailsId', 'customerName')
         setTotalCount(result.length)
         setOrders(result)
         setSeachON(true)
     }
 
     const dataSource = useMemo(() => orders.map((order) => {
-        const { deliveryDetailsId: key, contactPerson, address, routeName, driverName, products } = order
+        const { deliveryDetailsId: key, customerName, address, routeName, driverName, products } = order
         return {
             key,
             id: `${key}`,
             address,
             route: routeName,
-            contactPerson,
+            customerName,
             driverName: driverName || "Not Assigned",
             orderDetails: renderOrderDetails(getProductsForUI(products)),
             action: <Actions options={getActions(driverName)} onSelect={({ key }) => handleMenuSelect(key, order)} />

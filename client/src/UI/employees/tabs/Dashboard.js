@@ -6,13 +6,13 @@ import { http } from '../../../modules/http'
 import MenuBar from '../../../components/MenuBar';
 import Spinner from '../../../components/Spinner';
 import useUser from '../../../utils/hooks/useUser';
-import { SUPERADMIN } from '../../../utils/constants';
 import NoContent from '../../../components/NoContent';
 import DeleteModal from '../../../components/CustomModal';
 import EmployeeCard from '../../../components/EmployeeCard';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import CustomPagination from '../../../components/CustomPagination';
 import useStatusFilter from '../../../utils/hooks/useStatusFilter';
+import { SUPERADMIN, WAREHOUSEADMIN } from '../../../utils/constants';
 import { deepClone, doubleKeyComplexSearch, getMainPathname, showToast, complexSort, complexDateSort } from '../../../utils/Functions';
 
 const Dashboard = ({ reFetch, isDriver }) => {
@@ -35,6 +35,7 @@ const Dashboard = ({ reFetch, isDriver }) => {
     const [sortBy, setSortBy] = useState('NEW - OLD')
     const mainUrl = useMemo(() => getMainPathname(pathname), [pathname])
     const isSuperAdmin = useMemo(() => ROLE === SUPERADMIN, [])
+    const isWHAdmin = useMemo(() => ROLE === WAREHOUSEADMIN, [ROLE])
     const [employeeType] = useState(() => getEmployeeType(isDriver))
     const pageSizeOptions = useMemo(() => generatePageSizeOptions(), [window.innerWidth])
     const idKey = useMemo(() => getKey(isDriver), [])
@@ -61,7 +62,7 @@ const Dashboard = ({ reFetch, isDriver }) => {
     }, [status])
 
     const getEmployees = async () => {
-        const url = getUrl(isDriver)
+        const url = getUrl(isDriver, isWHAdmin)
 
         try {
             const data = await http.GET(axios, url, config)
@@ -224,7 +225,7 @@ const Dashboard = ({ reFetch, isDriver }) => {
 
     return (
         <Fragment>
-            <MenuBar searchText={`Search ${employeeType}`} onSearch={handleSearch} onSort={onSort} />
+            <MenuBar searchText={`Search ${isWHAdmin ? 'Staff' : employeeType}`} onSearch={handleSearch} onSort={onSort} />
             <div className='employee-manager-content'>
                 <Row gutter={[{ lg: 32, xl: 16 }, { lg: 16, xl: 16 }]}>
                     {
@@ -267,9 +268,13 @@ const Dashboard = ({ reFetch, isDriver }) => {
     )
 }
 
-const getUrl = (isDriver) => {
+const getUrl = (isDriver, isWHAdmin) => {
     const staffUrl = 'users/getUsers'
-    const driverUrl = 'driver/getDrivers'
+    let driverUrl = 'driver/getDrivers'
+
+    if (isWHAdmin) {
+        driverUrl = 'warehouse/getDepartmentStaff'
+    }
 
     if (isDriver) return driverUrl
     return staffUrl

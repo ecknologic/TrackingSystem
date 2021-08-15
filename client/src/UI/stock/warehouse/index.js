@@ -3,7 +3,6 @@ import { Tabs } from 'antd';
 import { useParams } from 'react-router';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import Orders from './tabs/Orders';
-import Staff from './tabs/Staff';
 import Delivery from './tabs/Delivery';
 import { http } from '../../../modules/http';
 import DeliveredDC from './tabs/DeliveredDC';
@@ -12,6 +11,7 @@ import DamagedStock from './tabs/DamagedStock';
 import StockReceived from './tabs/StockReceived';
 import useUser from '../../../utils/hooks/useUser';
 import { TODAYDATE } from '../../../utils/constants';
+import DeliveryDetails from './tabs/DeliveryDetails';
 import Header from '../../../components/ContentHeader';
 import ReportsDropdown from '../../../components/ReportsDropdown';
 import DatePickerPanel from '../../../components/DatePickerPanel';
@@ -28,7 +28,7 @@ const WarehouseStock = () => {
     const [locationList, setLocationList] = useState([])
     const [warehouseList, setWarehouseList] = useState([])
     const [motherplantList, setMotherplantList] = useState([])
-    const showDatePanel = activeTab === '1' || activeTab === '2'
+    const showDatePanel = activeTab === '1' || activeTab === '2' || activeTab === '5'
 
     const childProps = useMemo(() => ({ driverList, routeList, warehouseList, vehicleList, locationList, motherplantList }),
         [driverList, routeList, warehouseList, vehicleList, locationList, motherplantList])
@@ -126,7 +126,7 @@ const WarehouseStock = () => {
                         <TabPane tab="Delivery" key="2" />
                         <TabPane tab="Orders" key="3" />
                         <TabPane tab="Delivered DC" key="4" />
-                        <TabPane tab="Staff" key="5" />
+                        <TabPane tab="Delivery Details" key="5" />
                         <TabPane tab="Stock Received" key="6" />
                         <TabPane tab="Damaged Stock" key="7" />
                     </Tabs>
@@ -147,7 +147,7 @@ const WarehouseStock = () => {
                         : activeTab === '2' ? <Delivery date={selectedDate} {...childProps} />
                             : activeTab === '3' ? <Orders {...childProps} />
                                 : activeTab === '4' ? <DeliveredDC />
-                                    : activeTab === '5' ? <Staff />
+                                    : activeTab === '5' ? <DeliveryDetails date={selectedDate} {...childProps} />
                                         : activeTab === '6' ? <StockReceived motherplantList={motherplantList} />
                                             : activeTab === '7' ? <DamagedStock motherplantList={motherplantList} />
                                                 : null

@@ -136,7 +136,6 @@ const App = () => {
                            <Route path='/manage-invoices/manage' render={byRole(<ManageInvoices />)} />
                            <Route path='/manage-invoices/:tab?' render={byRole(<WarehouseInvoices />)} />
                            <Route path='/manage-empty-cans' render={byRole(<ReturnEmptyCans />)} />
-                           <Route path='/manage-stock/staff/:employeeId' render={byRole(<ManageEmployee isDriver />)} />
                            <Route path='/manage-stock/:tab?' render={byRole(<WarehouseStock />)} />
                            <Route path='/materials' render={byRole(<Materials />)} />
                            <Route path='/staff/manage/:employeeId' render={byRole(<ManageEmployee />)} />
@@ -147,6 +146,8 @@ const App = () => {
                            <Route path='/staff/:tab?/:page?' render={byRole(<Staff />)} />
                            <Route path='/routes' render={byRole(<Transport />)} />
                            <Route path='/drivers/:tab?/:page?' render={byRole(<Drivers />)} />
+                           <Route path='/warehouse-staff/manage/:employeeId' render={byRole(<ManageEmployee isDriver />)} />
+                           <Route path='/warehouse-staff/:tab?/:page?' render={byRole(<Drivers />)} />
                            <Route path='/invoices/manage' render={byRole(<ManageInvoices />)} />
                            <Route path='/invoices/dc-list/:invoiceId' render={byRole(<DeliveredDC />)} />
                            <Route path='/invoices/edit/:invoiceId' render={byRole(<EditInvoice />)} />

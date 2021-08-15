@@ -33,6 +33,13 @@ router.get('/getvendors', (req, res) => {
   })
 })
 
+router.get('/getvendorNamesList', (req, res) => {
+  vendorQueries.getVendorNames((err, results) => {
+    if (err) res.status(500).json(dbError(err));
+    else res.json(results)
+  })
+})
+
 router.get('/getVendorById/:vendorId', (req, res) => {
   vendorQueries.getVendorById(req.params.vendorId, async (err, results) => {
     if (err) res.status(500).json(dbError(err));
