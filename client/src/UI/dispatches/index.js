@@ -10,11 +10,12 @@ import Header from '../../components/ContentHeader';
 // import ExternalDispatches from './tabs/ExternalDispatches';
 import ReportsDropdown from '../../components/ReportsDropdown';
 // import CreateExternalDispatch from './tabs/CreateExternalDispatch';
+import { MOTHERPLANTADMIN } from '../../utils/constants';
 import { getBatchIdOptions, getWarehouseOptions, getDriverOptions, getVehicleOptions } from '../../assets/fixtures';
 import '../../sass/dispatches.scss'
 
 const Dispatche = () => {
-    const { WAREHOUSEID } = useUser()
+    const { WAREHOUSEID, ROLE } = useUser()
     const [activeTab, setActiveTab] = useState('1')
     const [reFetch, setreFetch] = useState(false)
     const [batchList, setBatchList] = useState([])
@@ -22,6 +23,7 @@ const Dispatche = () => {
     const [warehouseList, setWarehouseList] = useState([])
     const [vehiclesList, setVehiclesList] = useState([])
 
+    const isMPAdmin = useMemo(() => ROLE === MOTHERPLANTADMIN, [])
     const batchIdOptions = useMemo(() => getBatchIdOptions(batchList), [batchList])
     const driverOptions = useMemo(() => getDriverOptions(driverList), [driverList])
     const vehicleOptions = useMemo(() => getVehicleOptions(vehiclesList), [vehiclesList])
@@ -32,7 +34,7 @@ const Dispatche = () => {
     const config = { cancelToken: source.token }
 
     useEffect(() => {
-        getBatchsList()
+        isMPAdmin && getBatchsList()
         getDriverList()
         getVehicleDetails()
         getWarehouseList()
@@ -61,7 +63,10 @@ const Dispatche = () => {
     const getWarehouseList = async () => {
         const url = 'bibo/getDepartmentsList?departmentType=warehouse'
         try {
-            const data = await http.GET(axios, url, config)
+            let data = await http.GET(axios, url, config)
+            if (!isMPAdmin) {
+                data = data.filter(item => item.departmentId !== WAREHOUSEID)
+            }
             setWarehouseList(data)
         } catch (error) { }
     }

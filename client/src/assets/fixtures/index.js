@@ -830,7 +830,7 @@ export const currentStockColumns = [
     }
 ]
 
-export const getDispatchColumns = (type) => {
+export const getDispatchColumns = (type, isWHAdmin) => {
 
     const columns = [
         {
@@ -882,6 +882,9 @@ export const getDispatchColumns = (type) => {
 
     if (type === 'external') {
         columns.splice(3, 2)
+    }
+    if (isWHAdmin) {
+        columns.splice(1, 1)
     }
 
     return columns

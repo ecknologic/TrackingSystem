@@ -7,7 +7,7 @@ import { resetTrackForm, trackAccountFormOnce } from '../../../utils/Functions';
 const DispatchForm = (props) => {
 
     const { data, errors, batchIdOptions, warehouseOptions, vehicleOptions, disabled, driverOptions,
-        onChange, onBlur, distributorOptions } = props
+        onChange, onBlur, distributorOptions, isMPAdmin } = props
 
     const { batchId, dispatchTo, managerName, vehicleNo, driverId, mobileNumber,
         product20L, product2L, product1L, product500ML, product300ML, dispatchType } = data
@@ -26,15 +26,19 @@ const DispatchForm = (props) => {
     return (
         <>
             <div className='app-form-container dispatch-form-container'>
-                <div className='row'>
-                    <div className='input-container'>
-                        <InputLabel name='Batch No' error={errors.batchId} mandatory />
-                        <SelectInput track value={batchId} options={batchIdOptions}
-                            disabled={disabled} error={errors.batchId}
-                            onSelect={(value) => onChange(value, 'batchId')}
-                        />
-                    </div>
-                </div>
+                {
+                    isMPAdmin && (
+                        <div className='row'>
+                            <div className='input-container'>
+                                <InputLabel name='Batch No' error={errors.batchId} mandatory />
+                                <SelectInput track value={batchId} options={batchIdOptions}
+                                    disabled={disabled} error={errors.batchId}
+                                    onSelect={(value) => onChange(value, 'batchId')}
+                                />
+                            </div>
+                        </div>
+                    )
+                }
                 <div className='columns' style={{ width: '100%' }}>
                     <InputLabel name='Item Dispatched' error={errors.products} />
                     <div className='columns-container'>
