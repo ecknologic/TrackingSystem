@@ -693,12 +693,14 @@ export const validateQCcheckValues = (data, type) => {
     return errors
 }
 
-export const validateDispatchValues = (data, currentStock) => {
+export const validateDispatchValues = (data, currentStock, isMPAdmin) => {
     let errors = {};
     const text = 'Required'
     const { batchId, dispatchTo, managerName, vehicleNo, driverId, mobileNumber, ...rest } = data
 
-    if (!batchId) errors.batchId = text
+    if (isMPAdmin) {
+        if (!batchId) errors.batchId = text
+    }
     if (!driverId) errors.driverId = text
     if (!vehicleNo) errors.vehicleNo = text
     if (!dispatchTo) errors.dispatchTo = text

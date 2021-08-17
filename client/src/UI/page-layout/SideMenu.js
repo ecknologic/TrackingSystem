@@ -86,6 +86,9 @@ const SideMenu = () => {
                             <Item key='/manage-empty-cans' icon={selected === '/manage-empty-cans' ? <ProjectIcon /> : <ProjectIconLight />}>
                                 Empty Cans
                             </Item>
+                            <Item key='/manage-dispatches' icon={selected === '/manage-dispatches' ? <CheckIcon /> : <CheckIconLight />}>
+                                Dispatches
+                            </Item>
                             <Item key='/manage-invoices' icon={selected === '/manage-invoices' ? <DocIcon /> : <DocIconLight />}>
                                 Invoices
                             </Item>

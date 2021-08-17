@@ -28,16 +28,25 @@ const Profile = ({ userName = '' }) => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [match, setMatch] = useState(false)
 
+    const resetUser = () => {
+        setUser({})
+        sessionStorage.clear()
+        history.replace('/')
+    }
+
     const handleSelect = ({ key }) => {
         if (key === 'logout') {
-            setUser({})
-            sessionStorage.clear()
-            history.replace('/')
+            resetUser()
             message.success("Logged out successfully.")
         }
         else if (key === 'cp') {
             setCPModal(true)
         }
+    }
+
+    const postCP = () => {
+        resetUser()
+        message.success("You have been logged out. Please login again.")
     }
 
     const onInputChange = (event, key) => {
@@ -103,6 +112,7 @@ const Profile = ({ userName = '' }) => {
             await http.POST(axios, url, body)
             onModalClose(true)
             showToast(options)
+            setTimeout(() => postCP(), 1500)
 
         } catch (error) {
             message.destroy()

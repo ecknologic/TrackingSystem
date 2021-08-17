@@ -6,7 +6,7 @@ import InputValue from '../../../components/InputValue';
 import { getStatusColor } from '../../../utils/Functions';
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
-const DispatchView = ({ data }) => {
+const DispatchView = ({ data, isWHAdmin }) => {
 
     const { DCNO, batchId, dispatchedDate, vehicleNo, mobileNumber, managerName,
         product20L, product2L, product1L, product500ML, product300ML, dispatchAddress, vehicleType, driverName, status } = data
@@ -28,10 +28,14 @@ const DispatchView = ({ data }) => {
             </div>
             <Divider />
             <div className='row'>
-                <div className='input-container'>
-                    <InputLabel name='Batch No' />
-                    <InputValue size='large' value={batchId} />
-                </div>
+                {
+                    !isWHAdmin && (
+                        <div className='input-container'>
+                            <InputLabel name='Batch No' />
+                            <InputValue size='large' value={batchId} />
+                        </div>
+                    )
+                }
                 <div className='input-container'>
                     <InputLabel name='Dispatched On' />
                     <InputValue size='smaller' value={dayjs(dispatchedDate).format(DATEANDTIMEFORMAT)} />

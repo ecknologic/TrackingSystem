@@ -3,17 +3,19 @@ import { message } from 'antd';
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { http } from '../../../modules/http';
 import DispatchForm from '../forms/Dispatch';
-import { TRACKFORM } from '../../../utils/constants';
+import useUser from '../../../utils/hooks/useUser';
 import FormHeader from '../../../components/FormHeader';
 import ConfirmModal from '../../../components/CustomModal';
 import CustomButton from '../../../components/CustomButton';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import { getDistributorOptions } from '../../../assets/fixtures';
+import { TRACKFORM, MOTHERPLANTADMIN, TODAYDATE } from '../../../utils/constants';
 import { extractValidProductsForDB, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
 import { compareDispatchValues, validateDispatchValues, validateMobileNumber, validateNames, validateNumber } from '../../../utils/validations';
 
 const CreateDispatch = ({ goToTab, driverList, warehouseList, reFetch, ...rest }) => {
     const defaultValue = { dispatchType: 'warehouse' }
+    const { ROLE, WAREHOUSEID } = useUser()
     const [formData, setFormData] = useState(defaultValue)
     const [formErrors, setFormErrors] = useState({})
     const [btnDisabled, setBtnDisabled] = useState(false)
@@ -22,15 +24,35 @@ const CreateDispatch = ({ goToTab, driverList, warehouseList, reFetch, ...rest }
     const [distributorList, setDistributorList] = useState([])
     const [shake, setShake] = useState(false)
 
+    const isMPAdmin = useMemo(() => ROLE === MOTHERPLANTADMIN, [])
     const distributorOptions = useMemo(() => getDistributorOptions(distributorList), [distributorList])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
+        getWHCurrentStock()
+
         return () => {
             http.ABORT(source)
         }
     }, [])
+
+    const getWHCurrentStock = async () => {
+        const url = `warehouse/currentActiveStockDetails/${TODAYDATE}?warehouseId=${WAREHOUSEID}`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            const currentStock = {
+                product20LCount: data.total20LCans,
+                product2LCount: data.total2LBoxes,
+                product1LCount: data.total1LBoxes,
+                product500MLCount: data.total500MLBoxes,
+                product300MLCount: data.total300MLBoxes
+            }
+            setCurrentStock(currentStock)
+
+        } catch (error) { }
+    }
 
     const getCurrentStock = async (batchId) => {
 
@@ -60,12 +82,12 @@ const CreateDispatch = ({ goToTab, driverList, warehouseList, reFetch, ...rest }
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
         if (key === 'batchId') getCurrentStock(value)
-        if (key === 'dispatchType') {
-            setFormData(data => ({ ...data, dispatchTo: null }))
-            if (value === 'distributor' && isEmpty(distributorList)) {
-                // getDistributorList()
-            }
-        }
+        // if (key === 'dispatchType') {
+        //     setFormData(data => ({ ...data, dispatchTo: null }))
+        //     if (value === 'distributor' && isEmpty(distributorList)) {
+        //         getDistributorList()
+        //     }
+        // }
 
         // Validations
         if (key === 'driverId') {
@@ -94,7 +116,7 @@ const CreateDispatch = ({ goToTab, driverList, warehouseList, reFetch, ...rest }
 
     const handleSubmit = async () => {
         const { dispatchType } = formData
-        const formErrors = validateDispatchValues(formData, currentStock)
+        const formErrors = validateDispatchValues(formData, currentStock, isMPAdmin)
 
         if (!isEmpty(formErrors)) {
             setShake(true)
@@ -163,6 +185,7 @@ const CreateDispatch = ({ goToTab, driverList, warehouseList, reFetch, ...rest }
                 track
                 data={formData}
                 errors={formErrors}
+                isMPAdmin={isMPAdmin}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 distributorOptions={distributorOptions}
