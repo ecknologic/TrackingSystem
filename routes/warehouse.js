@@ -6,6 +6,7 @@ const auditQueries = require('../dbQueries/auditlogs/queries.js');
 const customerQueries = require('../dbQueries/Customer/queries.js');
 const departmenttransactionQueries = require('../dbQueries/departmenttransactions/queries.js');
 const motherPlantDbQueries = require('../dbQueries/motherplant/queries.js');
+const stockRequestQueries = require('../dbQueries/stockrequests/queries.js');
 const usersQueries = require('../dbQueries/users/queries.js');
 const warehouseQueries = require('../dbQueries/warehouse/queries.js');
 const { DATEFORMAT, INSERTMESSAGE, UPDATEMESSAGE, WEEKDAYS, constants } = require('../utils/constants.js');
@@ -620,6 +621,84 @@ router.put('/closeDC', (req, res) => {
     }
   })
 })
+
+router.post('/requestStock', (req, res) => {
+  const { products } = req.body
+  if (products.length) {
+    stockRequestQueries.requestStock({ ...req.body, departmentId }, (requestErr, requestDetails) => {
+      if (requestErr) res.status(500).json({ status: 500, message: requestErr.sqlMessage });
+      else {
+        const requestId = requestDetails.insertId
+        stockRequestQueries.saveRequestedStockDetails({ products, requestId, departmentId }, (err, results) => {
+          if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+          else {
+            departmenttransactionQueries.createDepartmentTransaction({ userId: adminUserId, description: `Stock requested by ${userRole} <b>(${userName})</b>`, transactionId: requestId, departmentId, type: 'warehouse', subType: 'stockRequest' })
+            res.json(requestDetails)
+          }
+        })
+      }
+    })
+  }
+  else res.status(400).send('Bad request')
+})
+
+router.post('/getRequestedStocks', (req, res) => {
+  stockRequestQueries.getDepartmentStockRequests({ departmentId }, (deliveryErr, requestDetails) => {
+    if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
+    else {
+      res.json(requestDetails)
+    }
+  })
+})
+
+router.post('/getRequestedStockById/:requestId', (req, res) => {
+  stockRequestQueries.getDepartmentStockRequestById({ requestId: req.params.requestId, departmentId }, (deliveryErr, requestDetails) => {
+    if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
+    else {
+      res.json(requestDetails)
+    }
+  })
+})
+
+router.put('/updateStockDetails', (req, res) => {
+  stockRequestQueries.updateRequestStock(req.body, (deliveryErr, requestDetails) => {
+    if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
+    else {
+      updateProductDetails(req.body.products).then(data => {
+        res.json(requestDetails)
+      })
+    }
+  })
+})
+
+const updateProductDetails = (products) => {
+  return new Promise(async (resolve, reject) => {
+    if (products.length) {
+      // let logs = [], count = 0
+      for (let i of products) {
+        // let productLog = await compareProductsData(i, { type: "customer", customerId, userId, userRole, userName })
+        // logs.push(...productLog)
+        let requestedProductsQuery = "UPDATE requestedproducts SET noOfJarsTobePlaced=?,productPrice=?,productName=? where productId=" + i.productId;
+        let updateQueryValues = [i.noOfJarsTobePlaced, i.productPrice, i.productName]
+        db.query(requestedProductsQuery, updateQueryValues, (err, results) => {
+          if (err) reject(err);
+          else {
+            // count++
+            // if (count == products.length) {
+            //   if (logs.length) {
+            //     auditQueries.createLog(logs, (err, data) => {
+            //       if (err) console.log('log error', err)
+            //       else console.log('log data', data)
+            //     })
+            //   }
+            // }
+            resolve(results)
+          }
+        });
+      }
+    }
+  })
+}
 
 const saveDC = (req, res) => {
   let { customerName, contactPerson, phoneNumber, address, routeId, driverId, product20L, product1L, product500ML, product300ML, product2L, warehouseId, customerType, existingCustomerId, distributorId, creationType, isDelivered = 'InProgress', deliveryLocation, price20L, price2L, price1L, price500ML, price300ML, EmailId, deliveredDate } = req.body;
