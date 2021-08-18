@@ -64,6 +64,15 @@ driverQueries.updateDeliveryStatus = (input, callback) => {
     }
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
+
+driverQueries.updateDeliveryProducts = (input, callback) => {
+    const { deliveryProducts, orderId } = input
+    const { product20L, product1L, product500ML, product300ML, product2L } = deliveryProducts
+    let query = "update customerorderdetails set 20LCans=?,1LBoxes=?,500MLBoxes=?,300MLBoxes=?,2LBoxes=? where customerOrderId=?"
+    let requestBody = [product20L, product1L, product500ML, product300ML, product2L, orderId];
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+
 driverQueries.updateDriverActiveStatus = (input, callback) => {
     const { driverId, status } = input
     let query = "update driverdetails set isActive=? where driverId=?"

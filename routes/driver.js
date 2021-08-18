@@ -68,11 +68,20 @@ router.post('/addReturnEmptyCans', (req, res) => {
 });
 router.post('/updateDeliveryStatus/:orderId', (req, res) => {
     var orderId = req.params.orderId;
-    const { status } = req.body
+    const { status, deliveryProducts, productsUpdated } = req.body
     driverQueries.updateDeliveryStatus({ status, orderId }, (err, results) => {
         if (err) res.send(err);
-        else
-            res.send('record updated');
+        else {
+            if (productsUpdated == 'true') {
+                driverQueries.updateDeliveryProducts({ deliveryProducts, orderId }, (updateErr, updated) => {
+                    if (updateErr) res.send(updateErr);
+                    else {
+                        res.send('record updated');
+                    }
+                })
+            }
+            else res.send('record updated');
+        }
     });
 });
 

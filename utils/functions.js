@@ -382,7 +382,10 @@ const prepareOrderResponseObj = (i) => {
         deliveryLocation: i.deliveryLocation,
         latitude: i.latitude || null,
         longitude: i.longitude || null,
-        customerproducts: `20L:${i["20LCans"]};1L:${i["1LBoxes"]};500ML:${i["500MLBoxes"]};300ML:${i["300MLBoxes"]};2L:${i["2LBoxes"]}`
+        customerproducts: `20L:${i["20LCans"]};1L:${i["1LBoxes"]};500ML:${i["500MLBoxes"]};300ML:${i["300MLBoxes"]};2L:${i["2LBoxes"]}`,
+        deliveryProducts: {
+            product20L: i["20LCans"], product500ML: i["500MLBoxes"], product300ML: i["300MLBoxes"], product2L: i["2LBoxes"], product1L: i["1LBoxes"]
+        }
     }
     return responseObj
 }
