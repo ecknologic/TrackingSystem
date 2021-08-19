@@ -36,6 +36,7 @@ import WarehouseInvoices from './UI/invoices/warehouse';
 import VisitedCustomers from './UI/visited-customers';
 import ReturnEmptyCans from './UI/empty-cans/warehouse';
 import EditInvoice from './UI/invoices/super-admin/edit';
+import WarehouseMaterials from './UI/materials/warehouse';
 import MarketingDashboard from './UI/dashboard/marketing';
 import WarehouseDashboard from './UI/dashboard/warehouse';
 import ReceivedEmptyCans from './UI/empty-cans/motherplant';
@@ -130,6 +131,7 @@ const App = () => {
                            <Route path='/manage-production' render={byRole(<MotherplantStock />)} />
                            <Route path='/manage-dispatches' render={byRole(<Dispatches />)} />
                            <Route path='/manage-materials' render={byRole(<MotherplantMaterials />)} />
+                           <Route path='/request-stock' render={byRole(<WarehouseMaterials />)} />
                            <Route path='/manage-routes' render={byRole(<Transport />)} />
                            <Route path='/manage-return-cans' render={byRole(<ReceivedEmptyCans />)} />
                            <Route path='/manage-invoices/dc-list/:invoiceId' render={byRole(<DeliveredDC />)} />

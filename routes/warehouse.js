@@ -642,7 +642,7 @@ router.post('/requestStock', (req, res) => {
   else res.status(400).send('Bad request')
 })
 
-router.post('/getRequestedStocks', (req, res) => {
+router.get('/getRequestedStock', (req, res) => {
   stockRequestQueries.getDepartmentStockRequests({ departmentId }, (deliveryErr, requestDetails) => {
     if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
     else {
