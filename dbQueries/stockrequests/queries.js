@@ -6,7 +6,7 @@ stockRequestQueries.getDepartmentStockRequests = async (input, callback) => {
     const { departmentId } = input
     let query = `SELECT d.*,JSON_ARRAYAGG(JSON_OBJECT('productId',r.productId,'noOfJarsTobePlaced',r.noOfJarsTobePlaced,'departmentId',r.departmentId,
     'productPrice',r.productPrice,'requestId',r.requestId,
-    'productName',r.productName, 'departmentType',r.departmentType)) as products from departmentstockrequests d INNER JOIN requestedproducts p ON p.requestId=d.requestId WHERE d.departmentId=? ORDER BY createdDateTime DESC`;
+    'productName',r.productName, 'departmentType',r.departmentType)) as products from departmentstockrequests d INNER JOIN requestedproducts r ON r.requestId=d.requestId WHERE d.departmentId=? ORDER BY createdDateTime DESC`;
     return executeGetParamsQuery(query, [departmentId], callback)
 }
 
@@ -35,7 +35,7 @@ stockRequestQueries.updateRequestStock = async (input, callback) => {
 stockRequestQueries.saveRequestedStockDetails = ({ products, requestId, departmentId }, callback) => {
     const departmentType = 'Warehouse';
     if (products.length) {
-        const sql = products.map(item => "(" + requestId + ", '" + departmentId + "', '" + item.noOfJarsTobePlaced + "', " + item.productPrice + ", '" + item.productName + "'" + ", '" + departmentType + ")")
+        const sql = products.map(item => "(" + requestId + ", " + departmentId + ", " + item.noOfJarsTobePlaced + ", " + item.productPrice + ", '" + item.productName + "'" + ", '" + departmentType + "')")
         let query = `insert into requestedproducts (requestId, departmentId, noOfJarsTobePlaced, productPrice, productName,departmentType) values ` + sql;
         executeGetQuery(query, callback);
     }
