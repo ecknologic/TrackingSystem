@@ -776,6 +776,19 @@ export const validateRequestMaterialValues = (data) => {
     return errors
 }
 
+export const validateRequestStockValues = (data) => {
+    let errors = {};
+    const text = 'Required'
+    const { requestTo, requiredDate, ...rest } = data
+
+    if (!requestTo) errors.requestTo = text
+    if (!requiredDate) errors.requiredDate = text
+
+    let productErrors = validateProductNPrice(rest)
+
+    return { ...errors, ...productErrors }
+}
+
 export const validatePaymentValues = (data) => {
     let errors = {};
     const text = 'Required'

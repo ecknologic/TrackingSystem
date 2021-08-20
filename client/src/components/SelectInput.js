@@ -7,18 +7,23 @@ const SelectInput = ({ options, mode, onSelect, onDeselect, value, disabled, sho
     placeholder = 'Select', track, error = '', className, suffixIcon = <DDownIcon />, ref }) => {
     const [hasTracked, setHasTracked] = useState(false)
 
-    const handleSelect = (value, { props: { children } }) => {
+    const handleSelect = (value, option) => {
+        const { props: { children } } = option
         onSelect(value, children)
-
-        if (track && !hasTracked) {
-            setTrackForm()
-            setHasTracked(true)
-        }
+        trackForm()
     }
 
     const handleDeselect = (value) => {
         onDeselect(value)
+        trackForm()
+    }
 
+    const handleClear = () => {
+        onSelect()
+        trackForm()
+    }
+
+    const trackForm = () => {
         if (track && !hasTracked) {
             setTrackForm()
             setHasTracked(true)
@@ -50,7 +55,7 @@ const SelectInput = ({ options, mode, onSelect, onDeselect, value, disabled, sho
             disabled={disabled}
             tagRender={tagRender}
             suffixIcon={suffixIcon}
-            onClear={handleSelect}
+            onClear={handleClear}
             onSelect={handleSelect}
             placeholder={placeholder}
             onDeselect={handleDeselect}
