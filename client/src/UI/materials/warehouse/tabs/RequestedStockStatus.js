@@ -1,47 +1,40 @@
 import axios from 'axios';
 import dayjs from 'dayjs';
-import { Menu, message, Table } from 'antd';
+import { Menu, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
 import Spinner from '../../../../components/Spinner';
 import Actions from '../../../../components/Actions';
+import { TODAYDATE } from '../../../../utils/constants';
 import DateValue from '../../../../components/DateValue';
-import { getRMColumns } from '../../../../assets/fixtures';
 import SearchInput from '../../../../components/SearchInput';
 import CustomModal from '../../../../components/CustomModal';
-import ConfirmModal from '../../../../components/CustomModal';
-import { TODAYDATE, TRACKFORM } from '../../../../utils/constants';
-import ConfirmMessage from '../../../../components/ConfirmMessage';
+import { stockRequestColumns } from '../../../../assets/fixtures';
 import CustomDateInput from '../../../../components/CustomDateInput';
 import CustomPagination from '../../../../components/CustomPagination';
 import RequestedStockStatusView from '../views/RequestedStockStatus';
-import { EditIconGrey, ScheduleIcon } from '../../../../components/SVG_Icons';
-import { deepClone, disableFutureDates, doubleKeyComplexSearch, getStatusColor, resetTrackForm, showToast } from '../../../../utils/Functions';
+import { EyeIconGrey, ScheduleIcon } from '../../../../components/SVG_Icons';
+import { disableFutureDates, doubleKeyComplexSearch, getProductsForUI, getStatusColor } from '../../../../utils/Functions';
 const DATEFORMAT = 'DD-MM-YYYY'
+const dateFormatUI = 'DD/MM/YYYY'
 const format = 'YYYY-MM-DD'
 
-const MaterialStatus = ({ reFetch, isSuperAdmin = false }) => {
+const MaterialStatus = ({ reFetch }) => {
     const [loading, setLoading] = useState(true)
     const [viewData, setViewData] = useState({})
     const [pageSize, setPageSize] = useState(10)
     const [totalCount, setTotalCount] = useState(null)
     const [pageNumber, setPageNumber] = useState(1)
-    const [formData, setFormData] = useState({})
-    const [formErrors, setFormErrors] = useState({})
     const [filteredClone, setFilteredClone] = useState([])
     const [viewModal, setViewModal] = useState(false)
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
-    const [confirmModal, setConfirmModal] = useState(false)
-    const [btnDisabled, setBtnDisabled] = useState(false)
     const [open, setOpen] = useState(false)
-    const [RM, setRM] = useState([])
-    const [RMClone, setRMClone] = useState([])
-    const [formTitle, setFormTitle] = useState('')
+    const [stock, setStock] = useState([])
+    const [stockClone, setStockClone] = useState([])
     const [resetSearch, setResetSearch] = useState(false)
     const [searchON, setSeachON] = useState(false)
     const [filterON, setFilterON] = useState(false)
 
-    const RMColumns = useMemo(() => getRMColumns(null, isSuperAdmin), [])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
@@ -53,16 +46,16 @@ const MaterialStatus = ({ reFetch, isSuperAdmin = false }) => {
 
     useEffect(() => {
         setLoading(true)
-        getRM()
+        getStock()
     }, [reFetch])
 
-    const getRM = async () => {
+    const getStock = async () => {
         const url = 'warehouse/getRequestedStock'
 
         try {
             const data = await http.GET(axios, url, config)
-            setRM(data)
-            setRMClone(data)
+            setStock(data)
+            setStockClone(data)
             setTotalCount(data.length)
             setLoading(false)
         } catch (error) { }
@@ -75,8 +68,8 @@ const MaterialStatus = ({ reFetch, isSuperAdmin = false }) => {
     const handleDateSelect = (value) => {
         setOpen(false)
         setSelectedDate(dayjs(value).format(format))
-        const filtered = RMClone.filter(item => dayjs(value).format(DATEFORMAT) === dayjs(item.requestedDate).format(DATEFORMAT))
-        setRM(filtered)
+        const filtered = stockClone.filter(item => dayjs(value).format(DATEFORMAT) === dayjs(item.createdDateTime).format(DATEFORMAT))
+        setStock(filtered)
         setTotalCount(filtered.length)
         setFilteredClone(filtered)
         setPageNumber(1)
@@ -85,37 +78,10 @@ const MaterialStatus = ({ reFetch, isSuperAdmin = false }) => {
     }
 
     const handleMenuSelect = (key, data) => {
-        const { rawmaterialid, itemCode } = data
         if (key === 'view') {
-            setFormTitle(`Requested Material Details - ${data.orderId}`)
             setViewData(data)
-            setFormData({ reason: data.reason || '' })
             setViewModal(true)
         }
-        else if (key === 'approve') {
-            updateRMStatus(rawmaterialid, itemCode, 'Approved')
-        }
-        else if (key === 'reject') {
-            updateRMStatus(rawmaterialid, itemCode, 'Rejected')
-        }
-    }
-
-    const handleApprove = () => {
-        const { rawmaterialid: id, itemCode } = viewData
-        const { reason } = formData
-        updateRMStatus(id, itemCode, 'Approved', reason)
-    }
-
-    const handleReject = () => {
-        const { rawmaterialid: id } = viewData
-        const { reason } = formData
-        if (!reason.trim()) return setFormErrors({ reason: 'Reason is required on Reject ' })
-        updateRMStatus(id, 'Rejected', reason)
-    }
-
-    const handleChange = (value, key) => {
-        setFormData(data => ({ ...data, [key]: value }))
-        setFormErrors(errors => ({ ...errors, [key]: '' }))
     }
 
     const handlePageChange = (number) => {
@@ -127,94 +93,40 @@ const MaterialStatus = ({ reFetch, isSuperAdmin = false }) => {
         setPageNumber(number)
     }
 
-    const updateRMStatus = async (rawmaterialid, itemCode, status, reason) => {
-        const url = 'motherPlant/updateRMStatus'
-        const body = { rawmaterialid, status, reason, itemCode }
-        const options = { item: 'Order', v1Ing: status === 'Approved' ? 'Approving' : 'Rejecting', v2: status }
-
-        try {
-            setBtnDisabled(true)
-            showToast({ ...options, action: 'loading' })
-            await http.PUT(axios, url, body, config)
-            showToast(options)
-            optimisticUpdate(rawmaterialid, status, reason)
-            onModalClose(true)
-        } catch (error) {
-            message.destroy()
-            if (!axios.isCancel(error)) {
-                setBtnDisabled(false)
-            }
-        }
-    }
-
-    const optimisticUpdate = (id, status, reason) => {
-        let clone = deepClone(RM);
-        const index = clone.findIndex(item => item.rawmaterialid === id)
-        clone[index].status = status;
-        clone[index].reason = reason;
-        setRM(clone)
-    }
-
     const handleSearch = (value) => {
         setPageNumber(1)
         if (value === "") {
-            setTotalCount(RMClone.length)
-            setRM(RMClone)
+            setTotalCount(stockClone.length)
+            setStock(stockClone)
             setSeachON(false)
             return
         }
-        const data = filterON ? filteredClone : RMClone
-        const result = doubleKeyComplexSearch(data, value, 'orderId', 'itemName')
+        const data = filterON ? filteredClone : stockClone
+        const result = doubleKeyComplexSearch(data, value, 'requestId', 'departmentName')
         setTotalCount(result.length)
-        setRM(result)
+        setStock(result)
         setSeachON(true)
     }
 
-    const dataSource = useMemo(() => RM.map((dispatch) => {
-        const { rawmaterialid: key, orderId, itemName, requestedDate, reorderLevel,
-            minOrderLevel, vendorName, itemQty, status, departmentName } = dispatch
-
+    const dataSource = useMemo(() => stock.map((stock, index) => {
+        const { requestId, requiredDate, status, departmentName, createdDateTime, products } = stock
+        const productsForUI = getProductsForUI(JSON.parse(products))
         return {
-            key,
-            orderId,
-            itemQty,
-            reorderLevel,
-            vendorName,
-            minOrderLevel,
+            key: requestId,
+            sNo: index + 1,
             departmentName,
-            itemName,
-            dateAndTime: dayjs(requestedDate).format('DD/MM/YYYY'),
+            dateAndTime: dayjs(createdDateTime).format(dateFormatUI),
+            requiredDate: dayjs(requiredDate).format(dateFormatUI),
             status: renderStatus(status),
-            action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, dispatch)} />
+            stockDetails: renderStockDetails(productsForUI),
+            action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, stock)} />
         }
-    }), [RM])
+    }), [stock])
 
-    const onModalClose = (hasSaved) => {
-        const formHasChanged = sessionStorage.getItem(TRACKFORM)
-        if (formHasChanged && !hasSaved) {
-            return setConfirmModal(true)
-        }
-        setViewModal(false)
-        setBtnDisabled(false)
-        setFormData({})
-        setFormErrors({})
-    }
-
-    const handleConfirmModalOk = useCallback(() => {
-        setConfirmModal(false);
-        resetTrackForm()
-        onModalClose()
-    }, [])
-    const handleConfirmModalCancel = useCallback(() => setConfirmModal(false), [])
-    const handleModalCancel = useCallback(() => onModalClose(), [])
+    const handleModalCancel = useCallback(() => setViewModal(false), [])
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
-
-    const { status } = viewData
-    const canApprove = status === 'Rejected' || status === 'Pending'
-    const canReject = status === 'Approved' || status === 'Pending'
-    const editMode = status !== 'Confirmed'
 
     return (
         <div className='stock-delivery-container'>
@@ -251,7 +163,7 @@ const MaterialStatus = ({ reFetch, isSuperAdmin = false }) => {
                 <Table
                     loading={{ spinning: loading, indicator: <Spinner /> }}
                     dataSource={dataSource.slice(sliceFrom, sliceTo)}
-                    columns={RMColumns}
+                    columns={stockRequestColumns}
                     pagination={false}
                     scroll={{ x: true }}
                 />
@@ -269,37 +181,15 @@ const MaterialStatus = ({ reFetch, isSuperAdmin = false }) => {
             }
             <CustomModal
                 hideCancel
-                bothDisabled={btnDisabled}
-                showTwinBtn={isSuperAdmin && editMode}
-                twinDisabled={!canReject}
-                btnDisabled={isSuperAdmin && !canApprove && editMode}
-                twinTxt='Reject'
-                okTxt={isSuperAdmin && editMode ? 'Approve' : 'Close'}
+                okTxt='Close'
                 visible={viewModal}
-                title={formTitle}
-                onOk={isSuperAdmin && editMode ? handleApprove : handleModalCancel}
-                onTwin={handleReject}
+                title='Requested Stock Details'
+                onOk={handleModalCancel}
                 onCancel={handleModalCancel}
                 className='app-form-modal app-view-modal'
             >
-                <RequestedStockStatusView
-                    data={viewData}
-                    formData={formData}
-                    errors={formErrors}
-                    onChange={handleChange}
-                    isSuperAdmin={isSuperAdmin}
-                    editMode={editMode}
-                />
+                <RequestedStockStatusView data={viewData} />
             </CustomModal>
-            <ConfirmModal
-                visible={confirmModal}
-                onOk={handleConfirmModalOk}
-                onCancel={handleConfirmModalCancel}
-                title='Are you sure you want to leave?'
-                okTxt='Yes'
-            >
-                <ConfirmMessage msg='Changes you made may not be saved.' />
-            </ConfirmModal>
         </div>
     )
 }
@@ -314,6 +204,13 @@ const renderStatus = (status) => {
     )
 }
 
-const options = [<Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>]
+const renderStockDetails = ({ product20L = 0, product2L = 0, product1L = 0, product500ML = 0, product300ML = 0 }) => {
+    return `
+    20 ltrs - ${Number(product20L)}, 2 ltrs - ${Number(product2L)} boxes, 1 ltr - ${Number(product1L)} boxes, 
+    500 ml - ${Number(product500ML)} boxes, 300 ml - ${Number(product300ML)} boxes
+    `
+}
+
+const options = [<Menu.Item key="view" icon={<EyeIconGrey />}>View</Menu.Item>]
 
 export default MaterialStatus

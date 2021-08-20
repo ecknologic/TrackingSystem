@@ -1,7 +1,7 @@
 import { Tabs } from 'antd';
 import React, { Fragment, useState, useCallback } from 'react';
-import ScrollUp from '../../../components/ScrollUp';
 import RequestStock from './tabs/RequestStock';
+import ScrollUp from '../../../components/ScrollUp';
 import Header from '../../../components/ContentHeader';
 import ReportsDropdown from '../../../components/ReportsDropdown';
 import RequestedStockStatus from './tabs/RequestedStockStatus';

@@ -830,6 +830,44 @@ export const currentStockColumns = [
     }
 ]
 
+export const stockRequestColumns = [
+    {
+        title: 'S No.',
+        dataIndex: 'sNo',
+        key: 'sNo',
+    },
+    {
+        title: 'Requested Date',
+        dataIndex: 'dateAndTime',
+        key: 'dateAndTime',
+    },
+    {
+        title: 'Stock Details',
+        dataIndex: 'stockDetails',
+        key: 'stockDetails',
+    },
+    {
+        title: 'Requested To',
+        dataIndex: 'departmentName',
+        key: 'departmentName',
+    },
+    {
+        title: 'Required Date',
+        dataIndex: 'requiredDate',
+        key: 'requiredDate',
+    },
+    {
+        title: 'Status',
+        dataIndex: 'status',
+        key: 'status'
+    },
+    {
+        title: 'Actions',
+        dataIndex: 'action',
+        key: 'action'
+    },
+]
+
 export const getDispatchColumns = (type, isWHAdmin) => {
 
     const columns = [

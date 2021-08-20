@@ -6,7 +6,7 @@ stockRequestQueries.getDepartmentStockRequests = async (input, callback) => {
     const { departmentId } = input
     let query = `SELECT d.*,JSON_ARRAYAGG(JSON_OBJECT('productId',r.productId,'noOfJarsTobePlaced',r.noOfJarsTobePlaced,'departmentId',r.departmentId,
     'productPrice',r.productPrice,'requestId',r.requestId,
-    'productName',r.productName, 'departmentType',r.departmentType)) as products from departmentstockrequests d INNER JOIN requestedproducts r ON r.requestId=d.requestId WHERE d.departmentId=? ORDER BY createdDateTime DESC`;
+    'productName',r.productName, 'departmentType',r.departmentType)) as products, dep.departmentName from departmentstockrequests d INNER JOIN requestedproducts r ON r.requestId=d.requestId INNER JOIN departmentmaster dep ON d.requestTo=dep.departmentId WHERE d.departmentId=? GROUP BY r.requestId ORDER BY createdDateTime DESC`;
     return executeGetParamsQuery(query, [departmentId], callback)
 }
 

@@ -1,36 +1,29 @@
 import dayjs from 'dayjs';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Divider } from 'antd';
 import InputLabel from '../../../../components/InputLabel';
 import InputValue from '../../../../components/InputValue';
-import CustomTextArea from '../../../../components/CustomTextArea';
-import { getStatusColor, resetTrackForm, trackAccountFormOnce } from '../../../../utils/Functions';
+import { getProductsForUI, getStatusColor } from '../../../../utils/Functions';
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
+const DATEFORMAT = 'DD/MM/YYYY'
 
-const RequestedMaterialStatusView = ({ data, formData, errors, isSuperAdmin, editMode, onChange }) => {
+const RequestedStockStatusView = ({ data }) => {
 
-    const { orderId, status, itemName, itemCode, itemQty, description, vendorName, requestedDate, approvedDate } = data
-    const { reason } = formData
-
-    useEffect(() => {
-        resetTrackForm()
-        trackAccountFormOnce()
-
-        return () => {
-            resetTrackForm()
-        }
-    }, [])
+    const { requiredDate, status, departmentName, createdDateTime, products } = data
+    const productsForUI = getProductsForUI(JSON.parse(products))
+    console.log('products UI',)
+    const { product20L, price20L, product2L, price2L, product1L, price1L,
+        product500ML, price500ML, product300ML, price300ML } = productsForUI
 
     const color = getStatusColor(status)
-    const label = status === 'Rejected' ? status : 'Approved'
 
     return (
         <>
             <div className='app-form-container'>
                 <div className='row'>
                     <div className='input-container'>
-                        <InputLabel name='Order Id' />
-                        <InputValue size='larger' value={orderId} />
+                        <InputLabel name='Requested On' />
+                        <InputValue size='smaller' value={dayjs(createdDateTime).format(DATEANDTIMEFORMAT)} />
                     </div>
                     <div className='input-container'>
                         <InputLabel name='Status' />
@@ -41,67 +34,72 @@ const RequestedMaterialStatusView = ({ data, formData, errors, isSuperAdmin, edi
                 <Divider />
                 <div className='row'>
                     <div className='input-container'>
-                        <InputLabel name='Item Name' />
-                        <InputValue size='smaller' value={itemName} />
+                        <InputLabel name='Required Date' />
+                        <InputValue size='smaller' value={dayjs(requiredDate).format(DATEFORMAT)} />
                     </div>
                     <div className='input-container'>
-                        <InputLabel name='Item Code' />
-                        <InputValue size='smaller' value={itemCode || '--'} />
+                        <InputLabel name='Requested To' />
+                        <InputValue size='smaller' value={departmentName} />
                     </div>
                 </div>
                 <Divider />
-                <div className='row'>
-                    <div className='input-container'>
-                        <InputLabel name='Item Description' />
-                        <InputValue size='smaller' value={description} />
-                    </div>
-                    <div className='input-container'>
-                        <InputLabel name='Quantity' />
-                        <InputValue size='smaller' value={itemQty} />
-                    </div>
-                </div>
-                <Divider />
-                <div className='row'>
-                    <div className='input-container'>
-                        <InputLabel name='Requested On' />
-                        <InputValue size='smaller' value={dayjs(requestedDate).format(DATEANDTIMEFORMAT)} />
-                    </div>
-                    {
-                        approvedDate && (
+                <div className='columns'>
+                    <InputLabel name='Stock Particulars' />
+                    <div className='columns-container'>
+                        <div className='column'>
                             <div className='input-container'>
-                                <InputLabel name={`${label} On`} />
-                                <InputValue size='smaller' value={dayjs(approvedDate).format(DATEANDTIMEFORMAT)} />
+                                <InputLabel name='20 Ltrs' />
+                                <InputValue size='smaller' value={product20L} />
                             </div>
-                        )
-                    }
-                </div>
-                <Divider />
-                <div className='row'>
-                    <div className='input-container'>
-                        <InputLabel name='Vendor' />
-                        <InputValue size='smaller' value={vendorName} />
-                    </div>
-                </div>
-                {
-                    isSuperAdmin &&
-                    <>
-                        <Divider />
-                        <div className='row'>
-                            <div className='input-container stretch'>
-                                <InputLabel name='Description' error={errors.reason} />
-                                {
-                                    editMode ? (
-                                        <CustomTextArea maxLength={256} error={errors.reason} placeholder='Add Description'
-                                            value={reason} maxRows={4} onChange={(value) => onChange(value, 'reason')}
-                                        />
-                                    ) : <InputValue size='smaller' value={reason || '--'} />
-                                }
+                            <div className='input-container'>
+                                <InputLabel name='Price' />
+                                <InputValue size='smaller' value={price20L} />
                             </div>
                         </div>
-                    </>
-                }
+                        <div className='column'>
+                            <div className='input-container'>
+                                <InputLabel name='2 Ltrs (Box-1&times;12)' />
+                                <InputValue size='smaller' value={product2L} />
+                            </div>
+                            <div className='input-container'>
+                                <InputLabel name='Price' />
+                                <InputValue size='smaller' value={price2L} />
+                            </div>
+                        </div>
+                        <div className='column'>
+                            <div className='input-container'>
+                                <InputLabel name='1 Ltrs (Box-1&times;12)' />
+                                <InputValue size='smaller' value={product1L} />
+                            </div>
+                            <div className='input-container'>
+                                <InputLabel name='Price' />
+                                <InputValue size='smaller' value={price1L} />
+                            </div>
+                        </div>
+                        <div className='column'>
+                            <div className='input-container'>
+                                <InputLabel name='500 Ml (Box-1&times;12)' />
+                                <InputValue size='smaller' value={product500ML} />
+                            </div>
+                            <div className='input-container'>
+                                <InputLabel name='Price' />
+                                <InputValue size='smaller' value={price500ML} />
+                            </div>
+                        </div>
+                        <div className='column'>
+                            <div className='input-container'>
+                                <InputLabel name='300 Ml (Box-1&times;12)' />
+                                <InputValue size='smaller' value={product300ML} />
+                            </div>
+                            <div className='input-container'>
+                                <InputLabel name='Price' />
+                                <InputValue size='smaller' value={price300ML} />
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </>
     )
 }
-export default RequestedMaterialStatusView
+export default RequestedStockStatusView
