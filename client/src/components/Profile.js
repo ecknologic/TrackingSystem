@@ -186,7 +186,7 @@ const Profile = ({ userName = '' }) => {
                 </div>
             </Dropdown>
             <CPModalForm
-                className='app-form-modal'
+                className='app-form-modal app-view-modal'
                 visible={CPModal}
                 btnDisabled={!match}
                 onOk={handleChangePassword}
