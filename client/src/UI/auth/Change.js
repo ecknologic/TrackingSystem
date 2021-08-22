@@ -17,7 +17,7 @@ const ChangePassword = ({ onChange, onSubmit, data, match, msg, errors }) => {
     return (
         <div className="login_component login_component_modal">
             <div className="login_container login_container_modal">
-                <Card className="login_card">
+                <Card className="login_card login_card_modal">
                     <p className='fp-info'>Create a new password that is at least 8 characters long and has a combination of letters, digits and punctuation marks.</p>
                     <Form>
                         <Form.Item>
