@@ -32,7 +32,7 @@ router.get('/getOrderDetails/:date', (req, res) => {
     var date = req.params.date;
     const { driverId, warehouseId } = req.query;
     // let query = "SELECT c.customerOrderId,c.damagedCount,c.isDelivered,c.dcNo,c.returnEmptyCans,c.deliveryDate,cd.customerName,cd.Address1,cd.Address2,cd.latitude,cd.longitude,cd.mobileNumber FROM customerorderdetails c INNER JOIN customerdetails cd ON c.existingCustomerId = cd.customerId WHERE DATE(`deliveryDate`) ='" + date + "'"
-    let query = "SELECT c.customerOrderId,c.damagedCount,c.isDelivered,c.dcNo,c.returnEmptyCans,c.deliveryDate,c.customerName,c.address,c.latitude,c.longitude,c.phoneNumber FROM customerorderdetails c  WHERE DATE(`deliveryDate`) =? AND c.driverId=? AND c.warehouseId=? AND routeId != 'NULL' AND driverId != 'NULL'"
+    let query = "SELECT c.customerOrderId,c.damagedCount,c.isDelivered,c.dcNo,c.returnEmptyCans,c.deliveryDate,c.customerName,c.address,c.latitude,c.longitude,c.phoneNumber,cd.customerNo FROM customerorderdetails c INNER JOIN customerdetails cd ON c.existingCustomerId=cd.customerId  WHERE DATE(`deliveryDate`) =? AND c.driverId=? AND c.warehouseId=? AND routeId != 'NULL' AND driverId != 'NULL'"
     let result = db.query(query, [date, driverId, warehouseId], (err, results) => {
 
         if (err) res.send(err);
@@ -68,10 +68,10 @@ router.post('/addReturnEmptyCans', (req, res) => {
 });
 router.post('/updateDeliveryStatus/:orderId', (req, res) => {
     var orderId = req.params.orderId;
-    const { status, deliveryProducts, productsUpdated } = req.body
-    driverQueries.updateDeliveryStatus({ status, orderId }, (err, results) => {
+    const { status, deliveryProducts, productsUpdated, customerNo } = req.body
+    driverQueries.updateDeliveryStatus({ status, orderId, customerNo }, (err, results) => {
         if (err) res.send(err);
-        else {
+        else if (results.affectedRows > 0) {
             if (productsUpdated == 'true') {
                 driverQueries.updateDeliveryProducts({ deliveryProducts, orderId }, (updateErr, updated) => {
                     if (updateErr) res.send(updateErr);
@@ -81,7 +81,7 @@ router.post('/updateDeliveryStatus/:orderId', (req, res) => {
                 })
             }
             else res.send('record updated');
-        }
+        } else res.send('Not updated')
     });
 });
 
