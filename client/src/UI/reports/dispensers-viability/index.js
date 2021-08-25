@@ -6,13 +6,14 @@ import Spinner from '../../../components/Spinner';
 import { TODAYDATE } from '../../../utils/constants';
 import DateValue from '../../../components/DateValue';
 import Header from '../../../components/SimpleHeader';
+import Worksheet from '../../../components/Worksheet';
 import SearchInput from '../../../components/SearchInput';
 import DateDropdown from '../../../components/DateDropdown';
 import CustomButton from '../../../components/CustomButton';
-import { doubleKeyComplexSearch } from '../../../utils/Functions';
 import CustomDateInput from '../../../components/CustomDateInput';
 import CustomPagination from '../../../components/CustomPagination';
 import CustomRangeInput from '../../../components/CustomRangeInput';
+import { doubleKeyComplexSearch, isEmpty } from '../../../utils/Functions';
 import { dispensersViabilityReportColumns } from '../../../assets/fixtures';
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
@@ -33,6 +34,7 @@ const DispensersViabilityReport = () => {
     const [searchON, setSeachON] = useState(false)
     const [dateOpen, setDateOpen] = useState(false)
     const [rangeOpen, setRangeOpen] = useState(false)
+    const [excelRows, setExelRows] = useState([])
 
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
@@ -57,7 +59,16 @@ const DispensersViabilityReport = () => {
             setReportsClone(data)
             setReports(data)
             searchON && setResetSearch(!resetSearch)
+            generateExcelRows(data)
         } catch (error) { }
+    }
+
+    const generateExcelRows = (data) => {
+        const rows = data.map((item, index) => {
+            return { ...item, sNo: index + 1 }
+        })
+
+        setExelRows(rows)
     }
 
     const datePickerStatus = (status) => {
@@ -155,7 +166,7 @@ const DispensersViabilityReport = () => {
                                     onClick={handleFilter}
                                 />
                                 <CustomButton
-                                    style={{ marginLeft: '1em' }}
+                                    style={{ marginLeft: '1em', marginRight: '1em' }}
                                     className={`app-cancel-btn border-btn ${clearBtnDisabled ? 'disabled' : ''}`}
                                     text='Clear'
                                     onClick={handleFilterClear}
@@ -177,6 +188,12 @@ const DispensersViabilityReport = () => {
                                     onOpenChange={datePickerStatus}
                                 />
                             </div>
+                            <Worksheet
+                                fileName='File Name'
+                                rows={excelRows}
+                                columns={columns}
+                                disabled={loading || isEmpty(reports)}
+                            />
                         </div>
                         <div className='right more'>
                             <SearchInput
@@ -213,5 +230,14 @@ const DispensersViabilityReport = () => {
         </Fragment>
     )
 }
+
+const columns = [
+    { label: 'S. No', value: 'sNo' },
+    { label: 'Customer ID', value: 'customerId' },
+    { label: 'Customer Name', value: 'customerName' },
+    { label: 'Price', value: 'price' },
+    { label: 'Invoice Amount', value: 'invoiceAmount' },
+    { label: 'No. of Coolers Placed', value: 'dispenserCount' }
+]
 
 export default DispensersViabilityReport
