@@ -37,6 +37,45 @@ reportsQueries.getEnquiriesCountBySalesAgent = async (input, callback) => {
     return executeGetParamsQuery(query, options, callback)
 }
 
+reportsQueries.getOpeningValuesBySalesAgent = async (input, callback) => {
+    const { startDate, endDate, fromStart } = input
+    let query = `SELECT COUNT(*) AS openingCount,CAST(SUM(i.pendingAmount) AS DECIMAL(10,2)) AS openingAmount,u.userName as executiveName,i.createdBy FROM Invoice i INNER JOIN usermaster u ON i.createdBy=u.userId WHERE DATE(i.invoiceDate) BETWEEN ? AND ?  GROUP BY i.createdBy`;
+    let options = [startDate, endDate]
+
+    // if (fromStart != 'true') {
+    //     query = `SELECT COUNT(c.salesAgent) AS totalCustomersCount,u.userName FROM 
+    //     customerenquirydetails c RIGHT JOIN usermaster u ON c.salesAgent=u.userId AND DATE(c.registeredDate) BETWEEN ? AND ? WHERE u.RoleId=5  GROUP BY c.salesAgent,u.userName`;
+    //     options = [startDate, endDate]
+    // }
+    return executeGetParamsQuery(query, options, callback)
+}
+
+reportsQueries.getLastMonthInvoiceAmountBySalesAgent = async (input, callback) => {
+    const { startDate, endDate, fromStart } = input
+    let query = `SELECT COUNT(*) AS invoiceCount,createdBy,COALESCE(CAST(SUM(totalAmount) AS DECIMAL(10,2)), 0) AS totalAmount FROM Invoice WHERE DATE(invoiceDate) BETWEEN ? AND ? GROUP BY createdBy`;
+    let options = [startDate, endDate]
+
+    // if (fromStart != 'true') {
+    //     query = `SELECT COUNT(c.salesAgent) AS totalCustomersCount,u.userName FROM 
+    //     customerenquirydetails c RIGHT JOIN usermaster u ON c.salesAgent=u.userId AND DATE(c.registeredDate) BETWEEN ? AND ? WHERE u.RoleId=5  GROUP BY c.salesAgent,u.userName`;
+    //     options = [startDate, endDate]
+    // }
+    return executeGetParamsQuery(query, options, callback)
+}
+
+reportsQueries.getReceivedAmountAsOnDate = async (input, callback) => {
+    const { startDate, endDate, fromStart } = input
+    let query = `SELECT count(*) AS paymentsCount,SUM(amountPaid) AS amountPaid,userId AS createdBy FROM invoicepaymentlogs WHERE paymentDate BETWEEN ? AND ? GROUP BY userId`;
+    let options = [startDate, endDate]
+
+    // if (fromStart != 'true') {
+    //     query = `SELECT COUNT(c.salesAgent) AS totalCustomersCount,u.userName FROM 
+    //     customerenquirydetails c RIGHT JOIN usermaster u ON c.salesAgent=u.userId AND DATE(c.registeredDate) BETWEEN ? AND ? WHERE u.RoleId=5  GROUP BY c.salesAgent,u.userName`;
+    //     options = [startDate, endDate]
+    // }
+    return executeGetParamsQuery(query, options, callback)
+}
+
 reportsQueries.getVisitedCustomersReport = async (input, callback) => {
     const { startDate, endDate, fromStart, staffId } = input
     let query = `SELECT COUNT(*) AS visitedCustomers,  SUM(revisitDate IS NOT NULL AND EmailId NOT IN (SELECT EmailId FROM customerdetails )) AS revisitCustomers
@@ -77,7 +116,7 @@ reportsQueries.getDispensersViabilityReport = async (input, callback) => {
     const { startDate, endDate, fromStart } = input
     let query = `SELECT IFNULL(c.organizationName,c.customerName)AS customerName,c.customerNo as customerId,
     IFNULL(c.dispenserCount,0)AS dispenserCount,MAX(cp.productPrice) AS price, 
-    CAST(SUM(co.20LCans*cp.productPrice+(cp.productPrice*12/100))AS DECIMAL(10,2)) AS  invoiceAmount
+    CAST(SUM(co.20LCans*cp.productPrice+(cp.productPrice*12/100)) AS DECIMAL(10,2)) AS  invoiceAmount
     FROM customerdetails c INNER JOIN customerproductdetails cp ON c.customerId=cp.customerId INNER JOIN 
     customerorderdetails co ON c.customerNo=co.existingCustomerId
     WHERE cp.customerType='customer' AND cp.productName='20L' AND c.customerType='Corporate'  AND co.deliveredDate<=? GROUP BY c.customerId ORDER BY c.customerId
