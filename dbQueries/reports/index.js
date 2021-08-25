@@ -52,7 +52,7 @@ reportsQueries.getOpeningValuesBySalesAgent = async (input, callback) => {
 
 reportsQueries.getLastMonthInvoiceAmountBySalesAgent = async (input, callback) => {
     const { startDate, endDate, fromStart } = input
-    let query = `SELECT COUNT(*) AS invoiceCount,createdBy,COALESCE(CAST(SUM(totalAmount) AS DECIMAL(10,2)), 0) AS totalAmount FROM Invoice WHERE DATE(invoiceDate) BETWEEN ? AND ? GROUP BY createdBy`;
+    let query = `SELECT COUNT(*) AS lastMonthCount,createdBy,COALESCE(CAST(SUM(totalAmount) AS DECIMAL(10,2)), 0) AS lastMonthAmount FROM Invoice WHERE DATE(invoiceDate) BETWEEN ? AND ? GROUP BY createdBy`;
     let options = [startDate, endDate]
 
     // if (fromStart != 'true') {
@@ -65,7 +65,7 @@ reportsQueries.getLastMonthInvoiceAmountBySalesAgent = async (input, callback) =
 
 reportsQueries.getReceivedAmountAsOnDate = async (input, callback) => {
     const { startDate, endDate, fromStart } = input
-    let query = `SELECT count(*) AS paymentsCount,SUM(amountPaid) AS amountPaid,userId AS createdBy FROM invoicepaymentlogs WHERE paymentDate BETWEEN ? AND ? GROUP BY userId`;
+    let query = `SELECT count(*) AS receivedCount,SUM(amountPaid) AS receivedAmount,userId AS createdBy FROM invoicepaymentlogs WHERE paymentDate BETWEEN ? AND ? GROUP BY userId`;
     let options = [startDate, endDate]
 
     // if (fromStart != 'true') {

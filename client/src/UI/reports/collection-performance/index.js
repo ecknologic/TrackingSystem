@@ -13,10 +13,10 @@ import { doubleKeyComplexSearch } from '../../../utils/Functions';
 import CustomDateInput from '../../../components/CustomDateInput';
 import CustomPagination from '../../../components/CustomPagination';
 import CustomRangeInput from '../../../components/CustomRangeInput';
-import { newCustomersReportColumns } from '../../../assets/fixtures';
+import { collectionPerformanceReportColumns } from '../../../assets/fixtures';
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
-const NewCustomersReport = () => {
+const CollectionPerformanceReport = () => {
     const [loading, setLoading] = useState(true)
     const [filterBtnDisabled, setFilterBtnDisabled] = useState(true)
     const [clearBtnDisabled, setClearBtnDisabled] = useState(true)
@@ -47,7 +47,7 @@ const NewCustomersReport = () => {
     }, [])
 
     const getReports = async ({ fromStart = true }) => {
-        const url = `reports/getNewCustomerBT?fromDate=${startDate}&toDate=${endDate}&fromStart=${fromStart}`
+        const url = `reports/getCollectionPerformance?fromDate=${startDate}&toDate=${endDate}&fromStart=${fromStart}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -139,7 +139,7 @@ const NewCustomersReport = () => {
 
     return (
         <Fragment>
-            <Header title='New Customers Report' />
+            <Header title='Collection Performance Report' />
             <div className='stock-manager-content'>
 
                 <div className='stock-delivery-container'>
@@ -192,8 +192,9 @@ const NewCustomersReport = () => {
                         <Table
                             loading={{ spinning: loading, indicator: <Spinner /> }}
                             dataSource={dataSource.slice(sliceFrom, sliceTo)}
-                            columns={newCustomersReportColumns}
+                            columns={collectionPerformanceReportColumns}
                             pagination={false}
+                            bordered
                             scroll={{ x: true }}
                         />
                     </div>
@@ -214,4 +215,4 @@ const NewCustomersReport = () => {
     )
 }
 
-export default NewCustomersReport
+export default CollectionPerformanceReport

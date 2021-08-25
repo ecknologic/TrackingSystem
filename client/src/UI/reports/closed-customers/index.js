@@ -3,7 +3,6 @@ import { Table } from 'antd';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../modules/http';
 import Spinner from '../../../components/Spinner';
-import useUser from '../../../utils/hooks/useUser';
 import { TODAYDATE } from '../../../utils/constants';
 import DateValue from '../../../components/DateValue';
 import Header from '../../../components/SimpleHeader';
@@ -18,10 +17,7 @@ import { closedCustomersReportColumns } from '../../../assets/fixtures';
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
 const ClosedCustomersReport = () => {
-    const { WAREHOUSEID } = useUser()
-    const [customerList, setCustomerList] = useState([])
     const [loading, setLoading] = useState(true)
-    const [customerIds, setCustomerIds] = useState([])
     const [filterBtnDisabled, setFilterBtnDisabled] = useState(true)
     const [clearBtnDisabled, setClearBtnDisabled] = useState(true)
     const [reports, setReports] = useState([])
@@ -44,24 +40,14 @@ const ClosedCustomersReport = () => {
     useEffect(() => {
         setLoading(true)
         getReports({ fromStart: true })
-        getCustomerList()
 
         return () => {
             http.ABORT(source)
         }
     }, [])
 
-    const getCustomerList = async () => {
-        const url = `customer/getCustomerNames`
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setCustomerList(data)
-        } catch (error) { }
-    }
-
     const getReports = async ({ fromStart = true }) => {
-        const url = `reports/getClosedCustomersReport?fromDate=${startDate}&toDate=${endDate}&fromStart=${fromStart}&departmentId=${WAREHOUSEID}&customerIds=${customerIds}`
+        const url = `reports/getClosedCustomersReport?fromDate=${startDate}&toDate=${endDate}&fromStart=${fromStart}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -116,14 +102,11 @@ const ClosedCustomersReport = () => {
     const handleFilterClear = async () => {
         setClearBtnDisabled(true)
         setFilterBtnDisabled(true)
-        setCustomerIds([])
-        setCustomerList([])
         setSelectedDate(TODAYDATE)
         setStartDate(TODAYDATE)
         setEndDate(TODAYDATE)
         setLoading(true)
         await getReports({ fromStart: true })
-        setCustomerList(customerList)
     }
 
     const handlePageChange = (number) => {

@@ -54,6 +54,7 @@ import ClosedCustomersReport from './UI/reports/closed-customers';
 import { StatusFilterProvider } from './modules/statusFilterContext';
 import { CustomerFilterProvider } from './modules/customerFilterContext';
 import DispensersViabilityReport from './UI/reports/dispensers-viability';
+import CollectionPerformanceReport from './UI/reports/collection-performance';
 import { MultiStatusFilterProvider } from './modules/multiStatusFilterContext';
 
 const App = () => {
@@ -168,6 +169,7 @@ const App = () => {
                            <Route path='/new-customers-report' render={byRole(<NewCustomersReport />)} />
                            <Route path='/closed-customers-report' render={byRole(<ClosedCustomersReport />)} />
                            <Route path='/dispensers-viability-report' render={byRole(<DispensersViabilityReport />)} />
+                           <Route path='/collection-performance-report' render={byRole(<CollectionPerformanceReport />)} />
                            <Route path='/vendors/manage/:vendorId' render={byRole(<ManageVendor />)} />
                            <Route path='/vendors/:tab?/:page?' render={byRole(<Vendors />)} />
                            <Route path='/closed-customers/manage/:closingId' render={byRole(<ManageClosedCustomer />)} />

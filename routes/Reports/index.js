@@ -89,11 +89,11 @@ router.get('/getCollectionPerformance', (req, res) => {
     let data1 = mergeArrayObjects(data, results[2])
     let finalData = []
     data1.map(item => {
-      const { openingAmount, totalAmount, amountPaid, openingCount, invoiceCount, paymentsCount } = item
-      item.closingAmount = Number((Number(openingAmount) + Number(totalAmount)) - Number(amountPaid)).toFixed(2)
-      item.closingCount = (Number(openingCount) + Number(invoiceCount)) - Number(paymentsCount)
-      item.performance = Number((amountPaid / totalAmount) * 100).toFixed(2)
-      item.performanceCount = Number((paymentsCount / invoiceCount) * 100).toFixed(2)
+      const { openingAmount, lastMonthAmount, receivedAmount, openingCount, lastMonthCount, receivedCount } = item
+      item.closingAmount = Number((Number(openingAmount) + Number(lastMonthAmount)) - Number(receivedAmount)).toFixed(2)
+      item.closingCount = (Number(openingCount) + Number(lastMonthCount)) - Number(receivedCount)
+      item.performance = Number((receivedAmount / lastMonthAmount) * 100).toFixed(2)
+      item.performanceCount = Number((receivedCount / lastMonthCount) * 100).toFixed(2)
       finalData.push(item)
     })
     res.json(finalData)

@@ -1271,6 +1271,80 @@ export const newCustomersReportColumns = [
         key: 'dispenserCount',
     }
 ]
+export const collectionPerformanceReportColumns = [
+    {
+        title: 'S. No',
+        dataIndex: 'sNo',
+        key: 'sNo',
+        fixed: 'left'
+    },
+    {
+        title: 'Executive Name',
+        dataIndex: 'executiveName',
+        key: 'executiveName',
+        fixed: 'left'
+    },
+    {
+        title: 'Value of Invoices in base',
+        children: [
+            {
+                title: 'Opening',
+                dataIndex: 'openingAmount',
+                key: 'openingAmount',
+            },
+            {
+                title: 'Last Month',
+                dataIndex: 'lastMonthAmount',
+                key: 'lastMonthAmount',
+            },
+            {
+                title: 'Received',
+                dataIndex: 'receivedAmount',
+                key: 'receivedAmount',
+            },
+            {
+                title: 'Closing',
+                dataIndex: 'closingAmount',
+                key: 'closingAmount',
+            },
+            {
+                title: 'Performance',
+                dataIndex: 'performance',
+                key: 'performance',
+            },
+        ]
+    },
+    {
+        title: 'No. of Invoices in base',
+        children: [
+            {
+                title: 'Opening',
+                dataIndex: 'openingCount',
+                key: 'openingCount',
+            },
+            {
+                title: 'Last Month',
+                dataIndex: 'lastMonthCount',
+                key: 'lastMonthCount',
+            },
+            {
+                title: 'Received',
+                dataIndex: 'receivedCount',
+                key: 'receivedCount',
+            },
+            {
+                title: 'Closing',
+                dataIndex: 'closingCount',
+                key: 'closingCount',
+            },
+            {
+                title: 'Performance',
+                dataIndex: 'performanceCount',
+                key: 'performanceCount',
+            },
+        ]
+    }
+]
 export const closedCustomersReportColumns = [
     {
         title: 'S. No',
