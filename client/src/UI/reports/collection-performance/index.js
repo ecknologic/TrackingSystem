@@ -14,10 +14,10 @@ import CustomDateInput from '../../../components/CustomDateInput';
 import CustomPagination from '../../../components/CustomPagination';
 import CustomRangeInput from '../../../components/CustomRangeInput';
 import { doubleKeyComplexSearch, isEmpty } from '../../../utils/Functions';
-import { dispensersViabilityReportColumns } from '../../../assets/fixtures';
+import { collectionPerformanceReportColumns } from '../../../assets/fixtures';
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
-const DispensersViabilityReport = () => {
+const CollectionPerformanceReport = () => {
     const [loading, setLoading] = useState(true)
     const [filterBtnDisabled, setFilterBtnDisabled] = useState(true)
     const [clearBtnDisabled, setClearBtnDisabled] = useState(true)
@@ -49,7 +49,7 @@ const DispensersViabilityReport = () => {
     }, [])
 
     const getReports = async ({ fromStart = true }) => {
-        const url = `reports/getViabilityReport?fromDate=${startDate}&toDate=${endDate}&fromStart=${fromStart}`
+        const url = `reports/getCollectionPerformance?fromDate=${startDate}&toDate=${endDate}&fromStart=${fromStart}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -150,7 +150,7 @@ const DispensersViabilityReport = () => {
 
     return (
         <Fragment>
-            <Header title='Dispensers Viability Report' />
+            <Header title='Collection Performance Report' />
             <div className='stock-manager-content'>
 
                 <div className='stock-delivery-container'>
@@ -209,8 +209,9 @@ const DispensersViabilityReport = () => {
                         <Table
                             loading={{ spinning: loading, indicator: <Spinner /> }}
                             dataSource={dataSource.slice(sliceFrom, sliceTo)}
-                            columns={dispensersViabilityReportColumns}
+                            columns={collectionPerformanceReportColumns}
                             pagination={false}
+                            bordered
                             scroll={{ x: true }}
                         />
                     </div>
@@ -233,11 +234,17 @@ const DispensersViabilityReport = () => {
 
 const columns = [
     { label: 'S. No', value: 'sNo' },
-    { label: 'Customer ID', value: 'customerId' },
-    { label: 'Customer Name', value: 'customerName' },
-    { label: 'Price', value: 'price' },
-    { label: 'Invoice Amount', value: 'invoiceAmount' },
-    { label: 'No. of Coolers Placed', value: 'dispenserCount' }
+    { label: 'Executive Name', value: 'executiveName' },
+    { label: 'Opening Amount', value: 'openingAmount' },
+    { label: 'Last Month Amount', value: 'lastMonthAmount' },
+    { label: 'Received Amount', value: 'receivedAmount' },
+    { label: 'Closing Amount', value: 'closingAmount' },
+    { label: 'Performance', value: 'performance' },
+    { label: 'Opening Count', value: 'openingCount' },
+    { label: 'Last Month Count', value: 'lastMonthCount' },
+    { label: 'Received Count', value: 'receivedCount' },
+    { label: 'Closing Count', value: 'closingCount' },
+    { label: 'Performance Count', value: 'performanceCount' },
 ]
 
-export default DispensersViabilityReport
+export default CollectionPerformanceReport

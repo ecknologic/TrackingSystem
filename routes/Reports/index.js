@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const reportsQueries = require('../../dbQueries/reports/index.js');
+const { utils } = require('../../utils/functions.js');
 let userId, adminUserName, userRole;
 
 router.use(function timeLog(req, res, next) {
@@ -62,6 +63,69 @@ router.get('/getVisitedCustomersReport', (req, res) => {
     }
   })
 })
+
+function mergeArrayObjects(arr1, arr2) {
+  let merged = [];
+
+  for (let i = 0; i < arr1.length; i++) {
+    merged.push({
+      ...arr1[i],
+      ...(arr2.find((itmInner) => itmInner.createdBy === arr1[i].createdBy))
+    }
+    );
+  }
+  return merged
+}
+
+router.get('/getCollectionPerformance', (req, res) => {
+  const { startDate, endDate } = utils.getPrevMonthStartAndEndDates(2)
+  // const startDate = '2021-08-01', endDate = '2021-08-30'
+  Promise.all([
+    getOpeningAmount({ startDate, endDate }),
+    getLastMonthInvoiceAmount({ startDate, endDate }),
+    getReceivedAmountAsOnDate({ startDate, endDate })
+  ]).then(results => {
+    let data = mergeArrayObjects(results[0], results[1])
+    let data1 = mergeArrayObjects(data, results[2])
+    let finalData = []
+    data1.map(item => {
+      const { openingAmount, lastMonthAmount, receivedAmount, openingCount, lastMonthCount, receivedCount } = item
+      item.closingAmount = Number((Number(openingAmount) + Number(lastMonthAmount)) - Number(receivedAmount)).toFixed(2)
+      item.closingCount = (Number(openingCount) + Number(lastMonthCount)) - Number(receivedCount)
+      item.performance = Number((receivedAmount / lastMonthAmount) * 100).toFixed(2)
+      item.performanceCount = Number((receivedCount / lastMonthCount) * 100).toFixed(2)
+      finalData.push(item)
+    })
+    res.json(finalData)
+  })
+})
+
+const getOpeningAmount = ({ startDate, endDate }) => {
+  return new Promise((resolve) => {
+    reportsQueries.getOpeningValuesBySalesAgent({ startDate, endDate }, (err, results) => {
+      if (err) resolve([])
+      else resolve(results)
+    })
+  })
+}
+
+const getLastMonthInvoiceAmount = ({ startDate, endDate }) => {
+  return new Promise((resolve) => {
+    reportsQueries.getLastMonthInvoiceAmountBySalesAgent({ startDate, endDate }, (err, results) => {
+      if (err) resolve([])
+      else resolve(results)
+    })
+  })
+}
+
+const getReceivedAmountAsOnDate = ({ startDate, endDate }) => {
+  return new Promise((resolve) => {
+    reportsQueries.getReceivedAmountAsOnDate({ startDate, endDate }, (err, results) => {
+      if (err) resolve([])
+      else resolve(results)
+    })
+  })
+}
 
 
 module.exports = router;

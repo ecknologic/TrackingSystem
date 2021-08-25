@@ -209,6 +209,9 @@ const SideMenu = () => {
                                 <Item key='/dispensers-viability-report' icon={selected === '/dispensers-viability-report' ? <FriendIcon /> : <FriendIconLight />}>
                                     Dispensers Viability
                                 </Item>
+                                <Item key='/collection-performance-report' icon={selected === '/collection-performance-report' ? <FriendIcon /> : <FriendIconLight />}>
+                                    Collection Performance
+                                </Item>
                             </SubMenu>
                             <Item key='/settings' style={{ pointerEvents: 'none' }} icon={selected === '/settings' ? <SettingIcon /> : <SettingIconLight />}>
                                 Settings
