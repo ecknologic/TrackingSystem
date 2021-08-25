@@ -138,21 +138,21 @@ reportsQueries.getDispensersViabilityReport = async (input, callback) => {
 }
 
 reportsQueries.getClosedCustomersReport = async (input, callback) => {
-    const { startDate, endDate, fromStart } = input
-    let query = `SELECT c.customerNo as customerId,,IFNULL(c.organizationName,c.customerName) AS customerName,
+    const { fromDate: startDate, toDate: endDate, fromStart } = input
+    let query = `SELECT c.customerNo as customerId,IFNULL(c.organizationName,c.customerName) AS customerName,
    IFNULL(SUM(co.20LCans-returnEmptyCans),0) AS  noOfBottlesWithCustomer,IFNULL(c.depositAmount,0) AS depositAmount,
    IFNULL(CAST(SUM(i.pendingAmount)AS DECIMAL(10,2)),0) AS pendingAmount
    FROM customerorderdetails co INNER JOIN customerdetails c ON c.customerId=co.existingCustomerId LEFT JOIN Invoice i ON 
-   i.customerId=co.existingCustomerId WHERE c.isApproved=0 AND c.approvedDate IS NOT NULL AND DATE(deliveredDate)<=?  GROUP BY co.existingCustomerId`;
+   i.customerId=co.existingCustomerId WHERE c.isClosed=1 AND DATE(deliveredDate)<=?  GROUP BY co.existingCustomerId`;
 
     let options = [endDate]
 
     if (fromStart != 'true') {
-        query = `SELECT c.customerNo as customerId,,IFNULL(c.organizationName,c.customerName) AS customerName,
+        query = `SELECT c.customerNo as customerId,IFNULL(c.organizationName,c.customerName) AS customerName,
         IFNULL(SUM(co.20LCans-returnEmptyCans),0) AS  noOfBottlesWithCustomer,IFNULL(c.depositAmount,0) AS depositAmount,
         IFNULL(CAST(SUM(i.pendingAmount)AS DECIMAL(10,2)),0) AS pendingAmount
         FROM customerorderdetails co INNER JOIN customerdetails c ON c.customerId=co.existingCustomerId LEFT JOIN Invoice i ON 
-        i.customerId=co.existingCustomerId WHERE c.isApproved=0 AND c.approvedDate IS NOT NULL AND deliveredDate BETWEEN ? AND ? GROUP BY co.existingCustomerId`;
+        i.customerId=co.existingCustomerId WHERE c.isClosed=1 AND DATE(deliveredDate) BETWEEN ? AND ? GROUP BY co.existingCustomerId`;
 
         options = [startDate, endDate]
     }
