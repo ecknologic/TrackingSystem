@@ -41,7 +41,7 @@ stockRequestQueries.updateRequestStock = async (input, callback) => {
 }
 
 stockRequestQueries.updateRequestedStockStatus = async (input, callback) => {
-    const { requestId, status } = input
+    const { requestId, status, reason } = input
     let query = `update departmentstockrequests set status=?,reason=? where requestId=${requestId}`;
     let requestBody = [status, reason]
     return executePostOrUpdateQuery(query, requestBody, callback)

@@ -71,6 +71,9 @@ const SideMenu = () => {
                             <Item key='/manage-materials' icon={selected === '/manage-materials' ? <RibbonIcon /> : <RibbonIconLight />}>
                                 Materials
                             </Item>
+                            <Item key='/manage-request-stock' icon={selected === '/manage-request-stock' ? <RibbonIcon /> : <RibbonIconLight />}>
+                                Stock Request
+                            </Item>
                             <Item key='/manage-qc' icon={selected === '/manage-qc' ? <BadgeIcon /> : <BadgeIconLight />}>
                                 Quality Control
                             </Item>

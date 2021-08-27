@@ -64,15 +64,19 @@ router.get('/getVisitedCustomersReport', (req, res) => {
   })
 })
 
-function mergeArrayObjects(arr1, arr2) {
+function mergeArrayObjects(arr1, ...arr2) {
   let merged = [];
 
   for (let i = 0; i < arr1.length; i++) {
-    merged.push({
-      ...arr1[i],
-      ...(arr2.find((itmInner) => itmInner.createdBy === arr1[i].createdBy))
-    }
-    );
+    const currentItem = arr1[i];
+    let resultItem = { ...currentItem }
+
+    arr2.map(item => {
+      const found = item.find((itmInner) => itmInner.createdBy === currentItem.createdBy) || {}
+      resultItem = { ...resultItem, ...found }
+    })
+
+    merged.push(resultItem)
   }
   return merged
 }
@@ -86,11 +90,11 @@ router.get('/getCollectionPerformance', (req, res) => {
     getReceivedAmountAsOnDate({ startDate, endDate }),
     getReceivedCountAsOnDate({ startDate, endDate })
   ]).then(results => {
-    let data = mergeArrayObjects(results[0], results[1])
-    let data1 = mergeArrayObjects(data, results[2])
-    let data2 = mergeArrayObjects(data1, results[3])
+    let data = mergeArrayObjects(results[0], results[1], results[2], results[3])
+    // let data1 = mergeArrayObjects(data, results[2])
+    // let data2 = mergeArrayObjects(data1, results[3])
     let finalData = []
-    data2.map(item => {
+    data.map(item => {
       const { openingAmount, lastMonthAmount, receivedAmount, openingCount, lastMonthCount, receivedCount } = item
       item.closingAmount = Number((Number(openingAmount) + Number(lastMonthAmount)) - Number(receivedAmount)).toFixed(2)
       item.closingCount = (Number(openingCount) + Number(lastMonthCount)) - Number(receivedCount)

@@ -36,7 +36,6 @@ import WarehouseInvoices from './UI/invoices/warehouse';
 import VisitedCustomers from './UI/visited-customers';
 import ReturnEmptyCans from './UI/empty-cans/warehouse';
 import EditInvoice from './UI/invoices/super-admin/edit';
-import WarehouseMaterials from './UI/materials/warehouse';
 import MarketingDashboard from './UI/dashboard/marketing';
 import WarehouseDashboard from './UI/dashboard/warehouse';
 import ReceivedEmptyCans from './UI/empty-cans/motherplant';
@@ -50,6 +49,8 @@ import MotherplantMaterials from './UI/materials/motherplant';
 import ManageClosedCustomer from './UI/closed-customers/view';
 import ManageVisitedCustomer from './UI/visited-customers/view';
 import DeliveredDC from './UI/invoices/super-admin/delivered-dc';
+import WarehouseStockRequest from './UI/stock-request/warehouse';
+import MotherplantStockRequest from './UI/stock-request/motherplant';
 import ClosedCustomersReport from './UI/reports/closed-customers';
 import { StatusFilterProvider } from './modules/statusFilterContext';
 import { CustomerFilterProvider } from './modules/customerFilterContext';
@@ -132,7 +133,8 @@ const App = () => {
                            <Route path='/manage-production' render={byRole(<MotherplantStock />)} />
                            <Route path='/manage-dispatches' render={byRole(<Dispatches />)} />
                            <Route path='/manage-materials' render={byRole(<MotherplantMaterials />)} />
-                           <Route path='/request-stock' render={byRole(<WarehouseMaterials />)} />
+                           <Route path='/request-stock' render={byRole(<WarehouseStockRequest />)} />
+                           <Route path='/manage-request-stock' render={byRole(<MotherplantStockRequest />)} />
                            <Route path='/manage-routes' render={byRole(<Transport />)} />
                            <Route path='/manage-return-cans' render={byRole(<ReceivedEmptyCans />)} />
                            <Route path='/manage-invoices/dc-list/:invoiceId' render={byRole(<DeliveredDC />)} />
