@@ -653,7 +653,7 @@ router.post('/requestStock', (req, res) => {
 })
 
 router.get('/getRequestedStock', (req, res) => {
-  stockRequestQueries.getDepartmentStockRequests({ departmentId }, (deliveryErr, requestDetails) => {
+  stockRequestQueries.getDepartmentStockRequests({ departmentId, userRole }, (deliveryErr, requestDetails) => {
     if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
     else {
       res.json(requestDetails)
@@ -661,10 +661,22 @@ router.get('/getRequestedStock', (req, res) => {
   })
 })
 
-router.post('/getRequestedStockById/:requestId', (req, res) => {
+router.get('/getRequestedStockById/:requestId', (req, res) => {
   stockRequestQueries.getDepartmentStockRequestById({ requestId: req.params.requestId, departmentId }, (deliveryErr, requestDetails) => {
     if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
     else {
+      res.json(requestDetails)
+    }
+  })
+})
+
+router.put('/updateRequestedStockStatus/:requestId', (req, res) => {
+  const { requestId } = req.params.requestId
+  stockRequestQueries.updateRequestedStockStatus({ requestId, status }, (deliveryErr, requestDetails) => {
+    if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
+    else if (!requestDetails.affectedRows) res.json(requestDetails)
+    else {
+      departmenttransactionQueries.createDepartmentTransaction({ userId: adminUserId, description: `Status changed to ${status} by ${userRole} <b>(${userName})</b>`, transactionId: requestId, departmentId, type: 'warehouse', subType: 'stockRequest' })
       res.json(requestDetails)
     }
   })

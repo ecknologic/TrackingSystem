@@ -1,12 +1,20 @@
+const { constants } = require('../../utils/constants.js');
 const { encryptObj } = require('../../utils/crypto.js');
 const { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery } = require('../../utils/functions.js');
 let stockRequestQueries = {}
 
 stockRequestQueries.getDepartmentStockRequests = async (input, callback) => {
-    const { departmentId } = input
+    const { departmentId, userRole } = input
     let query = `SELECT d.*,JSON_ARRAYAGG(JSON_OBJECT('productId',r.productId,'noOfJarsTobePlaced',r.noOfJarsTobePlaced,'departmentId',r.departmentId,
     'productPrice',r.productPrice,'requestId',r.requestId,
     'productName',r.productName, 'departmentType',r.departmentType)) as products, dep.departmentName from departmentstockrequests d INNER JOIN requestedproducts r ON r.requestId=d.requestId INNER JOIN departmentmaster dep ON d.requestTo=dep.departmentId WHERE d.departmentId=? GROUP BY r.requestId ORDER BY createdDateTime DESC`;
+
+    if (userRole != constants.WAREHOUSEADMIN) {
+        query = `SELECT d.*,JSON_ARRAYAGG(JSON_OBJECT('productId',r.productId,'noOfJarsTobePlaced',r.noOfJarsTobePlaced,'departmentId',r.departmentId,
+        'productPrice',r.productPrice,'requestId',r.requestId,
+        'productName',r.productName, 'departmentType',r.departmentType)) as products, dep.departmentName from departmentstockrequests d INNER JOIN requestedproducts r ON r.requestId=d.requestId INNER JOIN departmentmaster dep ON d.departmentId=dep.departmentId WHERE d.requestTo=? GROUP BY r.requestId ORDER BY createdDateTime DESC`
+    }
+
     return executeGetParamsQuery(query, [departmentId], callback)
 }
 
@@ -29,6 +37,13 @@ stockRequestQueries.updateRequestStock = async (input, callback) => {
     const { requestId } = input
     let query = `update departmentstockrequests set requestTo=?, requiredDate=? where requestId=${requestId}`;
     let requestBody = [requestTo, requiredDate]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+
+stockRequestQueries.updateRequestedStockStatus = async (input, callback) => {
+    const { requestId, status } = input
+    let query = `update departmentstockrequests set status=?,reason=? where requestId=${requestId}`;
+    let requestBody = [status, reason]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
