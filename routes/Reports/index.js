@@ -83,12 +83,14 @@ router.get('/getCollectionPerformance', (req, res) => {
   Promise.all([
     getOpeningAmount({ startDate, endDate }),
     getLastMonthInvoiceAmount({ startDate, endDate }),
-    getReceivedAmountAsOnDate({ startDate, endDate })
+    getReceivedAmountAsOnDate({ startDate, endDate }),
+    getReceivedCountAsOnDate({ startDate, endDate })
   ]).then(results => {
     let data = mergeArrayObjects(results[0], results[1])
     let data1 = mergeArrayObjects(data, results[2])
+    let data2 = mergeArrayObjects(data1, results[3])
     let finalData = []
-    data1.map(item => {
+    data2.map(item => {
       const { openingAmount, lastMonthAmount, receivedAmount, openingCount, lastMonthCount, receivedCount } = item
       item.closingAmount = Number((Number(openingAmount) + Number(lastMonthAmount)) - Number(receivedAmount)).toFixed(2)
       item.closingCount = (Number(openingCount) + Number(lastMonthCount)) - Number(receivedCount)
@@ -121,6 +123,15 @@ const getLastMonthInvoiceAmount = ({ startDate, endDate }) => {
 const getReceivedAmountAsOnDate = ({ startDate, endDate }) => {
   return new Promise((resolve) => {
     reportsQueries.getReceivedAmountAsOnDate({ startDate, endDate }, (err, results) => {
+      if (err) resolve([])
+      else resolve(results)
+    })
+  })
+}
+
+const getReceivedCountAsOnDate = ({ startDate, endDate }) => {
+  return new Promise((resolve) => {
+    reportsQueries.getReceivedCountAsOnDate({ startDate, endDate }, (err, results) => {
       if (err) resolve([])
       else resolve(results)
     })
