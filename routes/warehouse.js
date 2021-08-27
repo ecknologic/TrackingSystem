@@ -670,8 +670,8 @@ router.get('/getRequestedStockById/:requestId', (req, res) => {
   })
 })
 
-router.put('/updateRequestedStockStatus/:requestId', (req, res) => {
-  const { requestId } = req.params.requestId
+router.put('/updateRequestedStockStatus', (req, res) => {
+  const { requestId, status } = req.body
   stockRequestQueries.updateRequestedStockStatus({ requestId, status }, (deliveryErr, requestDetails) => {
     if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
     else if (!requestDetails.affectedRows) res.json(requestDetails)
