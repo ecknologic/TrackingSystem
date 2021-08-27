@@ -41,14 +41,14 @@ const CollectionPerformanceReport = () => {
 
     useEffect(() => {
         setLoading(true)
-        getReports({ fromStart: true })
+        getReports({ fromStart: true, startDate: TODAYDATE, endDate: TODAYDATE })
 
         return () => {
             http.ABORT(source)
         }
     }, [])
 
-    const getReports = async ({ fromStart = true }) => {
+    const getReports = async ({ fromStart = true, startDate, endDate }) => {
         const url = `reports/getCollectionPerformance?fromDate=${startDate}&toDate=${endDate}&fromStart=${fromStart}`
 
         try {
@@ -107,7 +107,7 @@ const CollectionPerformanceReport = () => {
         setClearBtnDisabled(false)
         setFilterBtnDisabled(true)
         setLoading(true)
-        getReports({ fromStart: false })
+        getReports({ fromStart: false, startDate, endDate })
     }
 
     const handleFilterClear = async () => {
@@ -117,7 +117,7 @@ const CollectionPerformanceReport = () => {
         setStartDate(TODAYDATE)
         setEndDate(TODAYDATE)
         setLoading(true)
-        await getReports({ fromStart: true })
+        await getReports({ fromStart: true, startDate: TODAYDATE, endDate: TODAYDATE })
     }
 
     const handlePageChange = (number) => {
