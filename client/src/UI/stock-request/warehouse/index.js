@@ -7,7 +7,7 @@ import ReportsDropdown from '../../../components/ReportsDropdown';
 import RequestedStockStatus from './tabs/RequestedStockStatus';
 import '../../../sass/materials.scss'
 
-const WarehouseMaterials = () => {
+const WarehouseStockRequest = () => {
     const [activeTab, setActiveTab] = useState('1')
     const [reFetch, setreFetch] = useState(false)
 
@@ -49,4 +49,4 @@ const WarehouseMaterials = () => {
     )
 }
 const { TabPane } = Tabs;
-export default WarehouseMaterials
+export default WarehouseStockRequest

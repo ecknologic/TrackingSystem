@@ -91,7 +91,7 @@ router.get("/customerOrderDetails/:orderId", (req, res) => {
         if (err) res.status(500).json(dbError(err));
         else if (orderData.length) {
             const { customerType } = orderData[0]
-            let customerOrderDetailsQuery = "SELECT cd.customerId,cd.customerName as ownerName,c.customerOrderId,c.*,GROUP_CONCAT(cp.productName,':',cp.noOfJarsTobePlaced SEPARATOR ';') AS customerproducts " +
+            let customerOrderDetailsQuery = "SELECT cd.customerId,cd.customerNo,c.customerName,cd.customerName as ownerName,c.customerOrderId,c.*,GROUP_CONCAT(cp.productName,':',cp.noOfJarsTobePlaced SEPARATOR ';') AS customerproducts " +
                 " FROM customerdetails  cd LEFT JOIN customerproductdetails cp ON cd.customerId=cp.customerId INNER JOIN" +
                 "  customerorderdetails c ON c.existingCustomerId=cd.customerId WHERE c.customerOrderId=?";
 

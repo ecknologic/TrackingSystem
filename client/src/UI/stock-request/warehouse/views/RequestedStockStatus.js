@@ -4,18 +4,21 @@ import { Divider } from 'antd';
 import InputLabel from '../../../../components/InputLabel';
 import InputValue from '../../../../components/InputValue';
 import { getProductsForUI, getStatusColor } from '../../../../utils/Functions';
+import CustomTextArea from '../../../../components/CustomTextArea';
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 const DATEFORMAT = 'DD/MM/YYYY'
 
-const RequestedStockStatusView = ({ data }) => {
+const RequestedStockStatusView = ({ data, formData, errors, isMPAdmin, editMode, onChange }) => {
 
     const { requiredDate, status, departmentName, createdDateTime, products } = data
     const productsForUI = getProductsForUI(JSON.parse(products))
-    console.log('products UI',)
+    const { reason } = formData
+
     const { product20L, price20L, product2L, price2L, product1L, price1L,
         product500ML, price500ML, product300ML, price300ML } = productsForUI
 
     const color = getStatusColor(status)
+    const label = status === 'Rejected' ? status : 'Approved'
 
     return (
         <>
@@ -38,7 +41,7 @@ const RequestedStockStatusView = ({ data }) => {
                         <InputValue size='smaller' value={dayjs(requiredDate).format(DATEFORMAT)} />
                     </div>
                     <div className='input-container'>
-                        <InputLabel name='Requested To' />
+                        <InputLabel name={isMPAdmin ? 'Requested By' : 'Requested To'} />
                         <InputValue size='smaller' value={departmentName} />
                     </div>
                 </div>
@@ -98,6 +101,24 @@ const RequestedStockStatusView = ({ data }) => {
                         </div>
                     </div>
                 </div>
+                {
+                    isMPAdmin &&
+                    <>
+                        <Divider />
+                        <div className='row'>
+                            <div className='input-container stretch'>
+                                <InputLabel name='Description' error={errors.reason} />
+                                {
+                                    editMode ? (
+                                        <CustomTextArea maxLength={256} error={errors.reason} placeholder='Add Description'
+                                            value={reason} maxRows={4} onChange={(value) => onChange(value, 'reason')}
+                                        />
+                                    ) : <InputValue size='smaller' value={reason || '--'} />
+                                }
+                            </div>
+                        </div>
+                    </>
+                }
             </div>
         </>
     )

@@ -357,9 +357,19 @@ router.get('/currentActiveStockDetails/:date', (req, res) => {
 
 router.get('/totalCurrentActiveStockDetails', (req, res) => {
   // let currentActiveStockQuery = "SELECT (`a`.`total20LCans` - IFNULL(`b`.`total20LCans`,0)) AS `total20LCans`, (`a`.`total1LBoxes` - IFNULL(`b`.`total1LBoxes`,0)) AS `total1LBoxes`, (`a`.`total500MLBoxes` - IFNULL(`b`.`total500MLBoxes`,0)) AS `total500MLBoxes`, (`a`.`total300MLBoxes` - IFNULL(`b`.`total300MLBoxes`,0)) AS `total300MLBoxes`,(`a`.`total2LBoxes` - IFNULL(`b`.`total2LBoxes`,0)) AS `total2LBoxes` FROM (SELECT  SUM(20LCans) AS `total20LCans`,SUM(1LBoxes) AS `total1LBoxes`, SUM(500MLBoxes) AS `total500MLBoxes`,SUM(300MLBoxes) AS `total300MLBoxes`,SUM(2LBoxes) AS `total2LBoxes` FROM `warehousestockdetails` WHERE warehouseId=? AND DATE(DeliveryDate)<=?) AS a INNER JOIN (SELECT  SUM(20LCans) AS `total20LCans`, SUM(1LBoxes) AS `total1LBoxes`,  SUM(500MLBoxes) AS `total500MLBoxes`, SUM(300MLBoxes) AS `total300MLBoxes`, SUM(2LBoxes) AS `total2LBoxes`  FROM  customerorderdetails WHERE  isDelivered='Completed' AND warehouseId=? AND DATE(DeliveryDate)<=?) AS b"
-  warehouseQueries.getTotalCurrentActiveStocks({ ...req.query, departmentId }, (err, results) => {
+  // warehouseQueries.getTotalCurrentActiveStocks({ ...req.query, departmentId }, (err, results) => {
+  //   if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+  //   else res.json(results[0]);
+  // });
+  let { startDate } = req.query;
+
+  let currentActiveStockQuery = `CALL warehouse_CurrentActiveStock(?,?)`;
+  // let currentActiveStockQuery = "SELECT (`a`.`total20LCans` - IFNULL(`b`.`total20LCans`,0)) AS `total20LCans`, (`a`.`total1LBoxes` - IFNULL(`b`.`total1LBoxes`,0)) AS `total1LBoxes`, (`a`.`total500MLBoxes` - IFNULL(`b`.`total500MLBoxes`,0)) AS `total500MLBoxes`, (`a`.`total300MLBoxes` - IFNULL(`b`.`total300MLBoxes`,0)) AS `total300MLBoxes`,(`a`.`total2LBoxes` - IFNULL(`b`.`total2LBoxes`,0)) AS `total2LBoxes` FROM (SELECT  SUM(20LCans) AS `total20LCans`,SUM(1LBoxes) AS `total1LBoxes`, SUM(500MLBoxes) AS `total500MLBoxes`,SUM(300MLBoxes) AS `total300MLBoxes`,SUM(2LBoxes) AS `total2LBoxes` FROM `warehousestockdetails` WHERE warehouseId=? AND DATE(DeliveryDate)<=?) AS a INNER JOIN (SELECT  SUM(20LCans) AS `total20LCans`, SUM(1LBoxes) AS `total1LBoxes`,  SUM(500MLBoxes) AS `total500MLBoxes`, SUM(300MLBoxes) AS `total300MLBoxes`, SUM(2LBoxes) AS `total2LBoxes`  FROM  customerorderdetails WHERE  isDelivered='Completed' AND warehouseId=? AND DATE(DeliveryDate)<=?) AS b"
+  db.query(currentActiveStockQuery, [departmentId, startDate], (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
-    else res.json(results[0]);
+    else {
+      res.json(results[0][0]);
+    }
   });
 });
 
@@ -632,7 +642,7 @@ router.post('/requestStock', (req, res) => {
         stockRequestQueries.saveRequestedStockDetails({ products, requestId, departmentId }, (err, results) => {
           if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
           else {
-            departmenttransactionQueries.createDepartmentTransaction({ userId: adminUserId, description: `Stock requested by ${userRole} <b>(${userName})</b>`, transactionId: requestId, departmentId, type: 'warehouse', subType: 'stockRequest' })
+            // departmenttransactionQueries.createDepartmentTransaction({ userId: adminUserId, description: `Stock requested by ${userRole} <b>(${userName})</b>`, transactionId: requestId, departmentId, type: 'warehouse', subType: 'stockRequest' })
             res.json(requestDetails)
           }
         })
@@ -643,7 +653,7 @@ router.post('/requestStock', (req, res) => {
 })
 
 router.get('/getRequestedStock', (req, res) => {
-  stockRequestQueries.getDepartmentStockRequests({ departmentId }, (deliveryErr, requestDetails) => {
+  stockRequestQueries.getDepartmentStockRequests({ departmentId, userRole }, (deliveryErr, requestDetails) => {
     if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
     else {
       res.json(requestDetails)
@@ -651,10 +661,22 @@ router.get('/getRequestedStock', (req, res) => {
   })
 })
 
-router.post('/getRequestedStockById/:requestId', (req, res) => {
+router.get('/getRequestedStockById/:requestId', (req, res) => {
   stockRequestQueries.getDepartmentStockRequestById({ requestId: req.params.requestId, departmentId }, (deliveryErr, requestDetails) => {
     if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
     else {
+      res.json(requestDetails)
+    }
+  })
+})
+
+router.put('/updateRequestedStockStatus', (req, res) => {
+  const { requestId, status, reason } = req.body
+  stockRequestQueries.updateRequestedStockStatus({ requestId, status, reason }, (deliveryErr, requestDetails) => {
+    if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
+    else if (!requestDetails.affectedRows) res.json(requestDetails)
+    else {
+      // departmenttransactionQueries.createDepartmentTransaction({ userId: adminUserId, description: `Status changed to ${status} by ${userRole} <b>(${userName})</b>`, transactionId: requestId, departmentId, type: 'warehouse', subType: 'stockRequest' })
       res.json(requestDetails)
     }
   })

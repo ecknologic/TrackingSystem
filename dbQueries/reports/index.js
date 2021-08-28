@@ -65,7 +65,21 @@ reportsQueries.getLastMonthInvoiceAmountBySalesAgent = async (input, callback) =
 
 reportsQueries.getReceivedAmountAsOnDate = async (input, callback) => {
     const { startDate, endDate, fromStart } = input
-    let query = `SELECT count(*) AS receivedCount,SUM(amountPaid) AS receivedAmount,userId AS createdBy FROM invoicepaymentlogs WHERE paymentDate BETWEEN ? AND ? GROUP BY userId`;
+    let query = `SELECT SUM(amountPaid) AS receivedAmount,userId AS createdBy FROM invoicepaymentlogs WHERE paymentDate BETWEEN ? AND ? GROUP BY userId`;
+    let options = [startDate, endDate]
+
+    // if (fromStart != 'true') {
+    //     query = `SELECT COUNT(c.salesAgent) AS totalCustomersCount,u.userName FROM 
+    //     customerenquirydetails c RIGHT JOIN usermaster u ON c.salesAgent=u.userId AND DATE(c.registeredDate) BETWEEN ? AND ? WHERE u.RoleId=5  GROUP BY c.salesAgent,u.userName`;
+    //     options = [startDate, endDate]
+    // }
+    return executeGetParamsQuery(query, options, callback)
+}
+
+reportsQueries.getReceivedCountAsOnDate = async (input, callback) => {
+    const { startDate, endDate, fromStart } = input
+    let query = `SELECT count(*) AS receivedCount,userId AS createdBy FROM invoicepaymentlogs l
+    INNER JOIN Invoice i ON l.invoiceId=i.invoiceId WHERE i.pendingAmount=0 AND paymentDate BETWEEN ? AND ? GROUP BY l.userId`;
     let options = [startDate, endDate]
 
     // if (fromStart != 'true') {
