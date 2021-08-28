@@ -363,7 +363,8 @@ const updateEnquiryProductDetails = (products) => {
 const prepareOrderResponseObj = (i) => {
     let responseObj = {
         "customerId": i.customerId,
-        "customerName": i.ownerName,
+        "customerNo": i.customerNo || i.customerId,
+        "customerName": i.ownerName || i.customerName,
         "mobileNumber": i.phoneNumber,
         // "AlternatePhNo": i.AlternatePhNo,
         "EmailId": i.EmailId,

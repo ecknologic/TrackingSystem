@@ -30,6 +30,7 @@ const Dashboard = () => {
     const [viewModal, setViewModal] = useState(false)
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [confirmModal, setConfirmModal] = useState(false)
+    const [shake, setShake] = useState(false)
 
     const totalAmount = useMemo(() => computeTotal(emptyCans, 'emptycans_count'), [emptyCans])
     const emptyCanColumns = useMemo(() => getEmptyCanColumns('motherplant'), [])
@@ -85,7 +86,11 @@ const Dashboard = () => {
     const handleReject = () => {
         const { id } = viewData
         const { reason } = formData
-        if (!reason.trim()) return setFormErrors({ reason: 'Reason is required on Reject ' })
+        if (!reason.trim()) {
+            setShake(true)
+            setTimeout(() => setShake(false), 820)
+            return setFormErrors({ reason: 'Reason is required on Reject' })
+        }
         updateCansStatus(id, 'Rejected', reason)
     }
 
@@ -205,7 +210,10 @@ const Dashboard = () => {
                 onOk={editMode ? handleApprove : handleModalCancel}
                 onTwin={handleReject}
                 onCancel={handleModalCancel}
-                className='app-form-modal app-view-modal'
+                className={`
+                    app-form-modal app-view-modal
+                    ${shake ? 'app-shake' : ''}
+                `}
             >
                 <EmptyCansView
                     data={viewData}
