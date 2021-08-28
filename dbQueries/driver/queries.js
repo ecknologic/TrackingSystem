@@ -56,11 +56,11 @@ driverQueries.updateDriverLoginId = (input, callback) => {
 }
 driverQueries.updateDeliveryStatus = (input, callback) => {
     const { status, orderId, customerNo } = input
-    let query = "update customerorderdetails co INNER JOIN customerdetails c ON co.existingCustomerId=c.customerId set co.isDelivered=? where co.customerOrderId=? AND c.customerNo=?"
-    let requestBody = [status, orderId, customerNo];
+    let query = "update customerorderdetails co INNER JOIN customerdetails c ON co.existingCustomerId=c.customerId set co.isDelivered=? where co.customerOrderId=? AND (c.customerNo=? OR c.distributorId=?)"
+    let requestBody = [status, orderId, customerNo, customerNo];
     if (status == "Completed") {
-        query = "update customerorderdetails co INNER JOIN customerdetails c ON co.existingCustomerId=c.customerId set isDelivered=?,deliveredDate=? where customerOrderId=? AND c.customerNo=?"
-        requestBody = [status, new Date(), orderId, customerNo]
+        query = "update customerorderdetails co INNER JOIN customerdetails c ON co.existingCustomerId=c.customerId set isDelivered=?,deliveredDate=? where customerOrderId=? AND (c.customerNo=? OR c.distributorId=?)"
+        requestBody = [status, new Date(), orderId, customerNo, customerNo]
     }
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
