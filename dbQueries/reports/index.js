@@ -132,7 +132,7 @@ reportsQueries.getDispensersViabilityReport = async (input, callback) => {
     IFNULL(c.dispenserCount,0)AS dispenserCount,MAX(cp.productPrice) AS price, 
     CAST(SUM(co.20LCans*cp.productPrice+(cp.productPrice*12/100)) AS DECIMAL(10,2)) AS  invoiceAmount
     FROM customerdetails c INNER JOIN customerproductdetails cp ON c.customerId=cp.customerId INNER JOIN 
-    customerorderdetails co ON c.customerNo=co.existingCustomerId
+    customerorderdetails co ON c.customerId=co.existingCustomerId
     WHERE cp.customerType='customer' AND cp.productName='20L' AND c.customerType='Corporate'  AND co.deliveredDate<=? GROUP BY c.customerId ORDER BY c.customerId
     `;
     let options = [endDate]
@@ -142,7 +142,7 @@ reportsQueries.getDispensersViabilityReport = async (input, callback) => {
         IFNULL(c.dispenserCount,0)AS dispenserCount,MAX(cp.productPrice) AS price, 
         CAST(SUM(co.20LCans*cp.productPrice+(cp.productPrice*12/100))AS DECIMAL(10,2)) AS  invoiceAmount
          FROM customerdetails c INNER JOIN customerproductdetails cp ON c.customerId=cp.customerId INNER JOIN 
-         customerorderdetails co ON c.customerNo=co.existingCustomerId
+         customerorderdetails co ON c.customerId=co.existingCustomerId
          WHERE cp.customerType='customer' AND cp.productName='20L' AND c.customerType='Corporate' AND co.deliveredDate BETWEEN ? AND ?  GROUP BY c.customerId ORDER BY c.customerId
          `;
         options = [startDate, endDate]
