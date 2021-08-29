@@ -72,7 +72,7 @@ router.post('/updateDeliveryStatus/:orderId', (req, res) => {
     driverQueries.updateDeliveryStatus({ status, orderId, customerNo }, (err, results) => {
         if (err) res.send(err);
         else if (results.affectedRows > 0) {
-            if (productsUpdated == 'true') {
+            if (productsUpdated == true) {
                 driverQueries.updateDeliveryProducts({ deliveryProducts, orderId }, (updateErr, updated) => {
                     if (updateErr) res.send(updateErr);
                     else {
