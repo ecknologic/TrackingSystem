@@ -197,6 +197,12 @@ warehouseQueries.checkDcSchedule = async (input, callback) => {
     let query = `select dcNo,customerOrderId from customerorderdetails WHERE existingCustomerId=? AND DATE(deliveryDate)=?`;
     return executeGetParamsQuery(query, [existingCustomerId, date], callback)
 }
+
+warehouseQueries.getDcDetailsGroupByCustomerId = async (input, callback) => {
+    const { date } = input
+    let query = `SELECT JSON_ARRAYAGG(JSON_OBJECT('isDelivered',isDelivered,'existingCustomerId',existingCustomerId)) as customersData FROM customerorderdetails WHERE DATE(deliveryDate)>=? AND isDelivered='NotDelivered' AND existingCustomerId IS NOT NULL GROUP BY existingCustomerId`;
+    return executeGetParamsQuery(query, [date], callback)
+}
 //POST Request Methods
 warehouseQueries.saveWarehouseStockDetails = (input, callback) => {
     const { isDamaged, departmentId, product20L, product1L, product300ML, product2L, product500ML, damaged500MLBoxes, damaged300MLBoxes, damaged2LBoxes, damaged20LCans, damaged1LBoxes, deliveryDate, dcNo, damagedDesc } = input

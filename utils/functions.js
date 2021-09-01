@@ -398,8 +398,12 @@ utils.getCurrentMonthStartAndEndDates = () => {
     return { startDate, endDate }
 }
 
-utils.getPrevMonthStartAndEndDates = (prevMonthLength) => {
-    var date = new Date();
+utils.getRequiredDate = (requiredDays) => {
+    return dayjs(dayjs().add(requiredDays, 'day')).format('YYYY-MM-DD')
+}
+
+utils.getPrevMonthStartAndEndDates = (prevMonthLength, startDate) => {
+    var date = startDate ? new Date(startDate) : new Date();
     var startDate = new Date(date.getFullYear(), date.getMonth() - prevMonthLength, 1);
     var endDate = new Date(date.getFullYear(), date.getMonth() - (prevMonthLength - 1), 0);
     return { startDate, endDate }

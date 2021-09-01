@@ -4,6 +4,11 @@ const { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, dateCo
 const { getDeliverysByCustomerOrderId } = require('../warehouse/queries.js');
 let customerQueries = {}
 
+customerQueries.getLastestDCByCustomerId = (customerId, callback) => {
+    let query = "SELECT deliveredDate FROM customerorderdetails WHERE existingCustomerId=? AND isDelivered='Completed' ORDER BY deliveredDate LIMIT 1"
+    executePostOrUpdateQuery(query, [customerId], callback)
+}
+
 customerQueries.getCustomerDetails = (customerId, callback) => {
     let query = "SELECT isSuperAdminApproved,isReceiptCreated,contactPerson,salesAgent,rocNo,poNo,depositAmount,customerId,customerName,c.mobileNumber,c.EmailId,c.Address1,c.gstNo,c.panNo,c.adharNo,c.registeredDate,c.invoicetype,c.natureOfBussiness,c.creditPeriodInDays,referredBy,isApproved,customertype,organizationName,idProofType,pincode as pinCode, dispenserCount, contractPeriod,customer_id_proof,d.idProof_backside,d.idProof_frontside,d.gstProof,u.userName as createdUserName,s.userName as salesAgentName from customerdetails c LEFT JOIN customerDocStore d ON c.customer_id_proof=d.docId INNER JOIN usermaster u ON u.userId=c.createdBy LEFT JOIN usermaster s ON c.salesAgent=s.userId WHERE c.customerId=" + customerId
     executeGetQuery(query, callback)
@@ -482,6 +487,10 @@ customerQueries.approveDeliveryDetails = (ids, callback) => {
 customerQueries.updateDCNo = (insertedId, callback) => {
     let query = "UPDATE customerorderdetails SET DCNO=? WHERE customerOrderId=?"
     executePostOrUpdateQuery(query, [`DC-${insertedId}`, insertedId], callback)
+}
+customerQueries.updateDCStatus = (date, callback) => {
+    let query = "UPDATE customerorderdetails SET isDelivered=? WHERE customerType='internal' AND creationType='auto' AND isDelivered='InProgress' AND DATE(deliveryDate)=?"
+    executePostOrUpdateQuery(query, ['NotDelivered', date], callback)
 }
 customerQueries.getOrderDetails = (customerOrderId, callback) => {
     let query = `select c.routeId,c.driverId,r.routeName,d.driverName from customerorderdetails c LEFT JOIN routes r ON c.routeId=r.RouteId LEFT JOIN driverdetails d ON c.driverId=d.driverId where customerOrderId=${customerOrderId}`;

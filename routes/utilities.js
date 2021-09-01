@@ -3,9 +3,12 @@ var router = express.Router();
 const db = require('../config/db.js')
 var cron = require('node-cron');
 const customerQueries = require('../dbQueries/Customer/queries.js');
-const { customerProductDetails } = require('../utils/functions.js');
+const { customerProductDetails, utils } = require('../utils/functions.js');
 const auditQueries = require('../dbQueries/auditlogs/queries.js');
 const dayjs = require('dayjs');
+const warehouseQueries = require('../dbQueries/warehouse/queries.js');
+const { constants } = require('../utils/constants.js');
+const { inactiveCustomerQueries } = require('../dbQueries/Customer/inactiveCustomer.js');
 
 router.use(function timeLog(req, res, next) {
   console.log('Time: ', Date.now());
@@ -83,7 +86,59 @@ const insertToCustomerOrderDetails = (result, res, sendResponse, userId, userRol
 //Scheduling the 
 cron.schedule('0 0 0 * * *', function () {
   saveToCustomerOrderDetails()
+  changeDcStatusToNotCompleted()
+  checkNotDeliveredDcs()
 });
+
+// cron.schedule('0 0 0 * * *', function () {
+//   changeDcStatusToNotCompleted()
+// });
+
+const changeDcStatusToNotCompleted = () => {
+  let yesterday = dayjs(dayjs().add(-1, 'day')).format('YYYY-MM-DD')
+  customerQueries.updateDCStatus(yesterday)
+}
+
+const checkNotDeliveredDcs = () => {
+  let prevTenthDate = utils.getRequiredDate(-10)
+  console.log(prevTenthDate)
+  warehouseQueries.getDcDetailsGroupByCustomerId({ date: prevTenthDate }, (err, data) => {
+    if (err) console.log("Err", err)
+    else {
+      if (data.length) {
+        for (let i of data) {
+          let parsedData = JSON.parse(i.customersData)
+
+          let sortedData = parsedData.sort((a, b) => b.deliveryDate - a.deliveryDate)
+          if (sortedData.length >= 3) {
+            if (sortedData[0].isDelivered == constants.NOTDELIVERED && sortedData[1].isDelivered == constants.NOTDELIVERED && sortedData[2].isDelivered == constants.NOTDELIVERED) {
+              let customerId = sortedData[0].existingCustomerId
+              checkReportAlreadyAdded(customerId, (err, result) => {
+                if (err) console.log("Err", err)
+                else if (!result.length) {
+                  customerQueries.getLastestDCByCustomerId(customerId, (err1, data1) => {
+                    if (err1) console.log("Err1", err1)
+                    else if (data1.length) {
+                      let lastDeliveredDate = data1[0].deliveredDate
+                      inactiveCustomerQueries.addInactiveCustomerDetails({ customerId, lastDeliveredDate }, (err2, data2) => {
+                        if (err2) console.log("Err2", err2)
+                        else console.log(data2)
+                      })
+                    }
+                  })
+                }
+              })
+            }
+          }
+        }
+      }
+    }
+  })
+}
+
+const checkReportAlreadyAdded = (customerId, callback) => {
+  inactiveCustomerQueries.getCustomerInactiveDetails({ customerId }, callback)
+}
 
 function saveToCustomerOrderDetails(customerId, res, deliveryDetailsId, userId, userRole, userName) {
   var day = days[new Date().getDay()];

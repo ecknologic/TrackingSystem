@@ -174,13 +174,22 @@ reportsQueries.getClosedCustomersReport = async (input, callback) => {
     return executeGetParamsQuery(query, options, callback)
 }
 
-reportsQueries.getInActiveCustomersReport = async (callback) => {
-    let query = `SELECT co.existingCustomerId,IFNULL(c.customerName,c.organizationName) AS customerName,
-    SUM(co.20LCans) AS  lastmonthQuantity,  SUM(co.20LCans*co.price20L+(co.price20L*12/100)) AS  lastmonthAmount,
+reportsQueries.getInActiveCustomersReport = async (input, callback) => {
+    const { startDate, endDate } = input
+    let query = `SELECT i.customerId,i.lastdeliveredDate,IFNULL(c.organizationName,c.customerName) as customerName,u.userName as executiveName
+    FROM inactivecustomerdetails i INNER JOIN customerdetails c ON c.customerId=i.customerId
+    INNER JOIN usermaster u ON u.userId=c.salesAgent
+    WHERE DATE(i.createdDateTime) BETWEEN ? AND ?`;
+    return executeGetParamsQuery(query, [startDate, endDate], callback)
+}
+
+reportsQueries.getInActiveCustomersInvoiceDetails = async (input, callback) => {
+    const { startDate, endDate, customerIds } = input
+    let query = `SELECT co.existingCustomerId as customerId,
+    SUM(co.20LCans) AS  lastmonthQuantity, SUM(co.20LCans*co.price20L+(co.price20L*12/100)) AS  lastmonthAmount,
     MAX(co.deliveredDate) AS lastdeliveredDate
-    FROM customerorderdetails co INNER JOIN customerdetails c ON c.customerId=co.existingCustomerId
-    WHERE deliveredDate BETWEEN '2021-04-01' AND '2021-04-30' GROUP BY
-    co.existingCustomerId`;
-    return executeGetQuery(query, callback)
+    FROM customerorderdetails co WHERE co.isDelivered='Completed' AND co.existingCustomerId IN (?) AND DATE(co.deliveredDate) BETWEEN ? AND ? GROUP BY co.existingCustomerId`;
+    return executeGetParamsQuery(query, [customerIds, startDate, endDate], callback)
+    // return executeGetParamsQuery(query, [customerIds, startDate, '2021-08-27'], callback) Testing
 }
 module.exports = reportsQueries

@@ -64,7 +64,27 @@ router.get('/getVisitedCustomersReport', (req, res) => {
   })
 })
 
-function mergeArrayObjects(arr1, ...arr2) {
+router.get('/getInactiveCustomersReport', (req, res) => {
+  const { startDate, endDate } = req.query;
+  // const { startDate = '2021-08-31', endDate = '2021-08-31' } = req.query; Testing
+  reportsQueries.getInActiveCustomersReport({ startDate, endDate }, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else if (results.length) {
+      let customerIds = results.map(item => item.customerId)
+      let { startDate: prevStartDate, endDate: prevEndDate } = utils.getPrevMonthStartAndEndDates(1, startDate)
+      reportsQueries.getInActiveCustomersInvoiceDetails({ customerIds, startDate: prevStartDate, endDate: prevEndDate }, (err1, data) => {
+        if (err1) res.status(500).json({ status: 500, message: err1.sqlMessage });
+        else {
+          let finalData = mergeArrayObjects('customerId', results, data)
+          res.json(finalData)
+        }
+      })
+    }
+    else res.json(results)
+  })
+})
+
+function mergeArrayObjects(key, arr1, ...arr2) {
   let merged = [];
 
   for (let i = 0; i < arr1.length; i++) {
@@ -72,7 +92,7 @@ function mergeArrayObjects(arr1, ...arr2) {
     let resultItem = { ...currentItem }
 
     arr2.map(item => {
-      const found = item.find((itmInner) => itmInner.createdBy === currentItem.createdBy) || {}
+      const found = item.find((itmInner) => itmInner[key] === currentItem[key]) || {}
       resultItem = { ...resultItem, ...found }
     })
 
@@ -90,7 +110,7 @@ router.get('/getCollectionPerformance', (req, res) => {
     getReceivedAmountAsOnDate({ startDate, endDate }),
     getReceivedCountAsOnDate({ startDate, endDate })
   ]).then(results => {
-    let data = mergeArrayObjects(results[0], results[1], results[2], results[3])
+    let data = mergeArrayObjects('createdBy', results[0], results[1], results[2], results[3])
     // let data1 = mergeArrayObjects(data, results[2])
     // let data2 = mergeArrayObjects(data1, results[3])
     let finalData = []

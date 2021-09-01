@@ -13,6 +13,7 @@ constants.MARKETINGMANAGER = 'MarketingManager'
 constants.WAREHOUSEADMIN = 'WarehouseAdmin'
 constants.Old20LCans = '20Lcans-Old';
 constants.days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+constants.NOTDELIVERED ='NotDelivered';
 
 
 
