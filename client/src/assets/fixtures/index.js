@@ -1279,6 +1279,38 @@ export const newCustomersReportColumns = [
         key: 'dispenserCount',
     }
 ]
+export const inactiveCustomersReportColumns = [
+    {
+        title: 'S. No',
+        dataIndex: 'sNo',
+        key: 'sNo',
+    },
+    {
+        title: 'Customer ID',
+        dataIndex: 'customerId',
+        key: 'customerId',
+    },
+    {
+        title: 'Customer Name',
+        dataIndex: 'customerName',
+        key: 'customerName',
+    },
+    {
+        title: 'Last Month Invoice Amount',
+        dataIndex: 'lastmonthAmount',
+        key: 'lastmonthAmount',
+    },
+    {
+        title: 'Last Month Supplied Qty',
+        dataIndex: 'lastmonthQuantity',
+        key: 'lastmonthQuantity',
+    },
+    {
+        title: 'Last Supplied Date',
+        dataIndex: 'lastdeliveredDate',
+        key: 'lastdeliveredDate',
+    }
+]
 export const collectionPerformanceReportColumns = [
     {
         title: 'S. No',

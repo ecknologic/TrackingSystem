@@ -1,23 +1,25 @@
 import axios from 'axios';
+import dayjs from 'dayjs';
 import { Table } from 'antd';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../modules/http';
 import Spinner from '../../../components/Spinner';
 import { TODAYDATE } from '../../../utils/constants';
 import DateValue from '../../../components/DateValue';
-import Worksheet from '../../../components/Worksheet';
 import Header from '../../../components/SimpleHeader';
+import Worksheet from '../../../components/Worksheet';
 import SearchInput from '../../../components/SearchInput';
 import DateDropdown from '../../../components/DateDropdown';
 import CustomButton from '../../../components/CustomButton';
 import CustomDateInput from '../../../components/CustomDateInput';
 import CustomPagination from '../../../components/CustomPagination';
 import CustomRangeInput from '../../../components/CustomRangeInput';
-import { closedCustomersReportColumns } from '../../../assets/fixtures';
+import { inactiveCustomersReportColumns } from '../../../assets/fixtures';
 import { doubleKeyComplexSearch, isEmpty } from '../../../utils/Functions';
 const APIDATEFORMAT = 'YYYY-MM-DD'
+const DATEFORMAT = 'DD/MM/YYYY'
 
-const ClosedCustomersReport = () => {
+const InactiveCustomersReport = () => {
     const [loading, setLoading] = useState(true)
     const [filterBtnDisabled, setFilterBtnDisabled] = useState(true)
     const [clearBtnDisabled, setClearBtnDisabled] = useState(true)
@@ -49,7 +51,7 @@ const ClosedCustomersReport = () => {
     }, [])
 
     const getReports = async ({ fromStart = true, startDate, endDate }) => {
-        const url = `reports/getClosedCustomersReport?fromDate=${startDate}&toDate=${endDate}&fromStart=${fromStart}`
+        const url = `reports/getInactiveCustomersReport?fromDate=${startDate}&toDate=${endDate}&fromStart=${fromStart}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -143,14 +145,24 @@ const ClosedCustomersReport = () => {
         setSeachON(true)
     }
 
-    const dataSource = useMemo(() => reports.map((dc, index) => ({ ...dc, closureStatus: dc.closureStatus || '-', sNo: index + 1 })), [reports])
+    const dataSource = useMemo(() => reports.map((report, index) => {
+        const { lastmonthAmount = 0, lastmonthQuantity = 0, lastdeliveredDate } = report
+
+        return {
+            ...report,
+            sNo: index + 1,
+            lastmonthAmount,
+            lastmonthQuantity,
+            lastdeliveredDate: dayjs(lastdeliveredDate).format(DATEFORMAT),
+        }
+    }), [reports])
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
 
     return (
         <Fragment>
-            <Header title='Closed Customers Report' />
+            <Header title='Inactive Customers Report' />
             <div className='stock-manager-content'>
 
                 <div className='stock-delivery-container'>
@@ -189,7 +201,7 @@ const ClosedCustomersReport = () => {
                                 />
                             </div>
                             <Worksheet
-                                fileName='Closed Customers Report'
+                                fileName='Inactive Customers Report'
                                 rows={excelRows}
                                 columns={columns}
                                 disabled={loading || isEmpty(reports)}
@@ -209,7 +221,7 @@ const ClosedCustomersReport = () => {
                         <Table
                             loading={{ spinning: loading, indicator: <Spinner /> }}
                             dataSource={dataSource.slice(sliceFrom, sliceTo)}
-                            columns={closedCustomersReportColumns}
+                            columns={inactiveCustomersReportColumns}
                             pagination={false}
                             scroll={{ x: true }}
                         />
@@ -233,12 +245,12 @@ const ClosedCustomersReport = () => {
 
 const columns = [
     { label: 'S. No', value: 'sNo' },
-    { label: 'Customer ID', value: 'customerId' },
+    { label: 'Customer ID', value: 'customerNo' },
     { label: 'Customer Name', value: 'customerName' },
+    { label: 'Executive Name', value: 'salesAgent' },
+    { label: 'No. of Bottles Placed', value: 'quantity' },
+    { label: 'Price', value: 'productPrice' },
     { label: 'Deposit', value: 'depositAmount' },
-    { label: 'No. of Bottles with Customer', value: 'noOfBottlesWithCustomer' },
-    { label: 'Amount Due', value: 'pendingAmount' },
-    { label: 'Status of Closure', value: 'closureStatus' }
+    { label: 'Dispensers Placed', value: 'dispenserCount' },
 ]
-
-export default ClosedCustomersReport
+export default InactiveCustomersReport
