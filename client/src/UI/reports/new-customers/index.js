@@ -189,7 +189,7 @@ const NewCustomersReport = () => {
                                 />
                             </div>
                             <Worksheet
-                                fileName='File Name'
+                                fileName='New Customers Report'
                                 rows={excelRows}
                                 columns={columns}
                                 disabled={loading || isEmpty(reports)}

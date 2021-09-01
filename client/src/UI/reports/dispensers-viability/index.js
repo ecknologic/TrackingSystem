@@ -189,7 +189,7 @@ const DispensersViabilityReport = () => {
                                 />
                             </div>
                             <Worksheet
-                                fileName='File Name'
+                                fileName='Dispensers Viability Report'
                                 rows={excelRows}
                                 columns={columns}
                                 disabled={loading || isEmpty(reports)}

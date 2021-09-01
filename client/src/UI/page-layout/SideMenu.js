@@ -206,6 +206,9 @@ const SideMenu = () => {
                                 <Item key='/new-customers-report' icon={selected === '/new-customers-report' ? <FriendIcon /> : <FriendIconLight />}>
                                     New Customers
                                 </Item>
+                                <Item key='/inactive-customers-report' icon={selected === '/inactive-customers-report' ? <FriendIcon /> : <FriendIconLight />}>
+                                    Inactive Customers
+                                </Item>
                                 <Item key='/closed-customers-report' icon={selected === '/closed-customers-report' ? <FriendIcon /> : <FriendIconLight />}>
                                     Closed Customers
                                 </Item>

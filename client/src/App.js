@@ -50,9 +50,10 @@ import ManageClosedCustomer from './UI/closed-customers/view';
 import ManageVisitedCustomer from './UI/visited-customers/view';
 import DeliveredDC from './UI/invoices/super-admin/delivered-dc';
 import WarehouseStockRequest from './UI/stock-request/warehouse';
-import MotherplantStockRequest from './UI/stock-request/motherplant';
 import ClosedCustomersReport from './UI/reports/closed-customers';
 import { StatusFilterProvider } from './modules/statusFilterContext';
+import MotherplantStockRequest from './UI/stock-request/motherplant';
+import InactiveCustomersReport from './UI/reports/inactive-customers';
 import { CustomerFilterProvider } from './modules/customerFilterContext';
 import DispensersViabilityReport from './UI/reports/dispensers-viability';
 import CollectionPerformanceReport from './UI/reports/collection-performance';
@@ -162,10 +163,11 @@ const App = () => {
                            <Route path='/distributors/:tab?/:page?' render={byRole(<Distributors />)} />
                            <Route path='/motherplants' render={byRole(<Motherplants />)} />
                            <Route path='/warehouses' render={byRole(<Warehouses />)} />
-                           <Route path='/customer-accounts/add-account' render={byRole(<AddAccount />)} />
                            <Route path='/customer-accounts/manage/:accountId' render={byRole(<ViewAccount />)} />
                            <Route path='/customers/add-account' render={byRole(<AddAccount />)} />
+                           <Route path='/customer-accounts/add-account' render={byRole(<AddAccount />)} />
                            <Route path='/customers/approval/:accountId' render={byRole(<ApproveAccount />)} />
+                           <Route path='/inactive-customers-report' render={byRole(<InactiveCustomersReport />)} />
                            <Route path='/customers/manage/:accountId' render={byRole(<ViewAccount />)} />
                            <Route path='/customers/:tab?/:page?' render={byRole(<Customers />)} />
                            <Route path='/new-customers-report' render={byRole(<NewCustomersReport />)} />

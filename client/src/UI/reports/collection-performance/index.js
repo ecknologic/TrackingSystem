@@ -189,7 +189,7 @@ const CollectionPerformanceReport = () => {
                                 />
                             </div>
                             <Worksheet
-                                fileName='File Name'
+                                fileName='Collection Performance Report'
                                 rows={excelRows}
                                 columns={columns}
                                 disabled={loading || isEmpty(reports)}

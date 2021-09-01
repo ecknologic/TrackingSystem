@@ -267,6 +267,7 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
     const handleMenuSelect = async (key, data) => {
         const { dcNo, isDelivered, customerType } = data
         if (key === 'view') {
+            isEmpty(customerList) && getCustomerList()
             const title = `${dcNo} - ${customerType === 'newCustomer' ? 'New Customer'
                 : customerType === 'internal' ? 'Existing Customer' : 'Distributor'}`
             setTitle(title)
