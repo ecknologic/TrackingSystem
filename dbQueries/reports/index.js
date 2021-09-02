@@ -192,4 +192,20 @@ reportsQueries.getInActiveCustomersInvoiceDetails = async (input, callback) => {
     return executeGetParamsQuery(query, [customerIds, startDate, endDate], callback)
     // return executeGetParamsQuery(query, [customerIds, startDate, '2021-08-27'], callback) Testing
 }
+
+reportsQueries.getCustomerSalesDetails = async (input, callback) => {
+    const { startDate, endDate } = input
+    let query = `SELECT c.salesAgent,MIN(co.deliveryDate) AS startingDate,co.price20L AS price,SUM(co.20LCans) AS supplies,co.existingCustomerId
+    FROM customerorderdetails co INNER JOIN customerdetails c ON co.existingCustomerId=c.customerId WHERE co.customerType='internal' AND DATE(deliveryDate) BETWEEN ? AND ? GROUP BY existingCustomerId`;
+    return executeGetParamsQuery(query, [startDate, endDate], callback)
+}
+
+reportsQueries.getCustomerCountBySalesAgent = async (input, callback) => {
+    const { startDate, endDate } = input
+    let query = `SELECT COUNT(*) AS newUsersCount,u.userName AS executiveName,c.salesAgent,COUNT(CASE WHEN customertype = 'Corporate' THEN 1 ELSE NULL END) AS corporateCount,
+    COUNT(CASE WHEN customertype = 'Individual' THEN 1 ELSE NULL END) AS individualCount
+     FROM customerdetails c INNER JOIN usermaster u ON u.userId=c.salesAgent WHERE c.createdBy IS NOT NULL AND DATE(c.approvedDate) BETWEEN ? AND ? GROUP BY c.salesAgent`;
+    return executeGetParamsQuery(query, [startDate, endDate], callback)
+}
+
 module.exports = reportsQueries

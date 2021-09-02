@@ -126,6 +126,73 @@ router.get('/getCollectionPerformance', (req, res) => {
   })
 })
 
+const calculateExpectedAndInvoiceValue = (obj) => {
+  const { startingDate, supplies, price } = obj
+  const { endDate } = utils.getCurrentMonthStartAndEndDates(startingDate)
+  let noOfDays = Math.abs(utils.getDiffBtwDates(startingDate, endDate))
+  let expectedSale = supplies / noOfDays;
+  let invoiceValue = expectedSale * price
+  return { expectedSale, invoiceValue }
+}
+
+const calculateAveragePrice = (data) => {
+  let obj = {}, finalArr = [];
+  data.map(item => {
+    if (obj[item.salesAgent]) {
+      obj[item.salesAgent] = { expectedSale: obj[item.salesAgent].expectedSale + item.expectedSale, invoiceValue: obj[item.salesAgent].invoiceValue + item.invoiceValue }
+    }
+    else {
+      obj[item.salesAgent] = { expectedSale: item.expectedSale, invoiceValue: item.invoiceValue }
+    }
+  })
+
+  for (let [key, value] of Object.entries(obj)) {
+    let averagePrice = Number(utils.getRoundValue((value.invoiceValue / value.expectedSale), 2));
+    let expectedSale = Number(utils.getRoundValue(value.expectedSale, 2))
+    finalArr.push({ salesAgent: Number(key), expectedSale, averagePrice })
+  }
+
+  return finalArr
+}
+
+router.get('/getMarketingPerformance', (req, res) => {
+  const { startDate, endDate } = req.query;
+  // const { startDate = '2021-08-01', endDate = '2021-08-21' } = req.query;
+  Promise.all([
+    getCustomersCountBySalesAgents({ startDate, endDate }),
+    getCustomerSalesDetails({ startDate, endDate })
+  ]).then(result => {
+    if (result[0].length && result[1].length) {
+      for (let i of result[1]) {
+        let { expectedSale, invoiceValue } = calculateExpectedAndInvoiceValue(i)
+        i.expectedSale = expectedSale
+        i.invoiceValue = invoiceValue
+      }
+      let finalResult = calculateAveragePrice(result[1])
+      let responseData = mergeArrayObjects("salesAgent", result[0], finalResult)
+      res.json(responseData)
+    }
+  })
+})
+
+const getCustomersCountBySalesAgents = ({ startDate, endDate }) => {
+  return new Promise((resolve) => {
+    reportsQueries.getCustomerCountBySalesAgent({ startDate, endDate }, (err, results) => {
+      if (err) resolve([])
+      else resolve(results)
+    })
+  })
+}
+
+const getCustomerSalesDetails = ({ startDate, endDate }) => {
+  return new Promise((resolve) => {
+    reportsQueries.getCustomerSalesDetails({ startDate, endDate }, (err, results) => {
+      if (err) resolve([])
+      else resolve(results)
+    })
+  })
+}
+
 const getOpeningAmount = ({ startDate, endDate }) => {
   return new Promise((resolve) => {
     reportsQueries.getOpeningValuesBySalesAgent({ startDate, endDate }, (err, results) => {
