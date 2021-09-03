@@ -23,6 +23,12 @@ driverQueries.getOrderDetailsByOrderId = async (orderId, callback) => {
     return executeGetQuery(query, callback)
 }
 
+driverQueries.getClosingCustomers = async (input, callback) => {
+    const { date, driverId } = input
+    let query = `SELECT cc.closingId,cc.customerName,cc.noOfCans,cc.collectedDate,cc.collectedCans,cc.missingCansCount,cc.status,d.contactPerson,d.phoneNumber,d.latitude,d.longitude,d.address,c.customerNo from customerclosingdetails cc INNER JOIN DeliveryDetails d ON cc.deliveryDetailsId=d.deliveryDetailsId INNER JOIN customerdetails c ON c.customerId=cc.customerId where DATE(cc.driverAssignedOn)=? AND cc.driverId=?`
+    return executeGetParamsQuery(query, [date, driverId], callback)
+}
+
 //POST Request Methods
 driverQueries.createDriver = async (input, callback) => {
     const { userName, emailid, departmentId, mobileNumber, password, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, licenseNo, adharProof, licenseProof, accountNo, bankName, branchName, ifscCode, recommendedBy, recruitedBy } = input;
@@ -83,6 +89,12 @@ driverQueries.deleteDriver = (driverId, callback) => {
     let query = "update driverdetails set deleted=? where driverId=?"
     let requestBody = [1, driverId];
     return executePostOrUpdateQuery(query, requestBody, callback)
+}
+
+driverQueries.updateClosingCustomerDetails = async (input, callback) => {
+    const { collectedDate, missingCansCount, collectedCans, damagedCans, closingId } = input
+    let query = `update customerclosingdetails SET collectedDate=?,missingCansCount=?,collectedCans=?,damagedCans=? WHERE closingId=?`
+    return executeGetParamsQuery(query, [collectedDate, missingCansCount, collectedCans, damagedCans, closingId], callback)
 }
 
 module.exports = driverQueries

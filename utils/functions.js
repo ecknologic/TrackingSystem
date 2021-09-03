@@ -391,11 +391,21 @@ const prepareOrderResponseObj = (i) => {
     return responseObj
 }
 
-utils.getCurrentMonthStartAndEndDates = () => {
-    var date = new Date();
+utils.getRoundValue = (value, roundCount = 2) => {
+    return Math.round(value).toFixed(roundCount)
+}
+
+utils.getCurrentMonthStartAndEndDates = (startDate) => {
+    var date = startDate ? new Date(startDate) : new Date();
     var startDate = new Date(date.getFullYear(), date.getMonth(), 1);
     var endDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
     return { startDate, endDate }
+}
+
+utils.getDiffBtwDates = (startDate, endDate) => {
+    const date1 = dayjs(startDate)
+    const date2 = dayjs(endDate)
+    return date1.diff(date2, 'day')
 }
 
 utils.getRequiredDate = (requiredDays) => {

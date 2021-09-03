@@ -209,4 +209,19 @@ router.post('/updateDriver', async (req, res) => {
     })
 })
 
+router.get('/getClosingCustomers/:date', (req, res) => {
+    const { driverId } = req.query;
+    driverQueries.getClosingCustomers({ driverId, date: req.params.date }, (err, results) => {
+        if (err) res.json(dbError(err))
+        else res.json(results)
+    })
+})
+
+router.put('/updateClosingCustomers/:closingId', (req, res) => {
+    driverQueries.updateClosingCustomerDetails({ ...req.body, closingId: req.params.closingId }, (err, results) => {
+        if (err) res.json(dbError(err))
+        else res.json(results)
+    })
+})
+
 module.exports = router;
