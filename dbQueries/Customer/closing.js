@@ -73,18 +73,18 @@ customerClosingQueries.getCustomerPendingAmount = async (customerId, callback) =
 }
 
 customerClosingQueries.addCustomerClosingDetails = async (input, callback) => {
-    const { routeId, closingDate, customerId, customerName, noOfCans, collectedDate, collectedCans, pendingAmount, depositAmount, balanceAmount, missingCansAmount, totalAmount, reason, missingCansCount, createdBy, departmentId, deliveryDetailsId } = input
-    let query = "insert into customerclosingdetails (routeId, closingDate, customerId,customerName,noOfCans,collectedDate,collectedCans,pendingAmount,depositAmount,balanceAmount,missingCansAmount,totalAmount,reason,missingCansCount,createdBy,departmentId,deliveryDetailsId,createdDateTime) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-    let requestBody = [routeId, closingDate, customerId, customerName, noOfCans, collectedDate, collectedCans, pendingAmount, depositAmount, balanceAmount, missingCansAmount, totalAmount, reason, missingCansCount, createdBy, departmentId, deliveryDetailsId, new Date()]
+    const { routeId, closingDate, customerId, customerName, noOfCans, collectedDate, collectedCans, pendingAmount, depositAmount, balanceAmount, missingCansAmount, totalAmount, reason, missingCansCount, createdBy, departmentId, deliveryDetailsId, driverId, driverAssignedOn } = input
+    let query = "insert into customerclosingdetails (routeId, closingDate, customerId,customerName,noOfCans,collectedDate,collectedCans,pendingAmount,depositAmount,balanceAmount,missingCansAmount,totalAmount,reason,missingCansCount,createdBy,departmentId,deliveryDetailsId,createdDateTime,driverId,driverAssignedOn) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    let requestBody = [routeId, closingDate, customerId, customerName, noOfCans, collectedDate, collectedCans, pendingAmount, depositAmount, balanceAmount, missingCansAmount, totalAmount, reason, missingCansCount, createdBy, departmentId, deliveryDetailsId, new Date(), driverId, driverAssignedOn]
     return executePostOrUpdateQuery(query, requestBody, callback)
 
 }
 
 customerClosingQueries.updateCustomerClosingDetails = async (input, callback) => {
-    let { routeId, closingDate, customerId, customerName, noOfCans, collectedDate, collectedCans, pendingAmount, depositAmount, balanceAmount, missingCansAmount, totalAmount, reason, missingCansCount, createdBy, departmentId, status, isConfirmed, closingId, deliveryDetailsId } = input
-    let query = "UPDATE customerclosingdetails SET routeId=?, closingDate=?, customerId=?,customerName=?,noOfCans=?,collectedDate=?,collectedCans=?,pendingAmount=?,depositAmount=?,balanceAmount=?,missingCansAmount=?,totalAmount=?,reason=?,missingCansCount=?,createdBy=?,deliveryDetailsId=?,status=?,departmentId=? WHERE closingId=?";
+    let { routeId, closingDate, customerId, customerName, noOfCans, collectedDate, collectedCans, pendingAmount, depositAmount, balanceAmount, missingCansAmount, totalAmount, reason, missingCansCount, createdBy, departmentId, status, isConfirmed, closingId, deliveryDetailsId,driverId, driverAssignedOn } = input
+    let query = "UPDATE customerclosingdetails SET routeId=?, closingDate=?, customerId=?,customerName=?,noOfCans=?,collectedDate=?,collectedCans=?,pendingAmount=?,depositAmount=?,balanceAmount=?,missingCansAmount=?,totalAmount=?,reason=?,missingCansCount=?,createdBy=?,deliveryDetailsId=?,status=?,departmentId=?,driverId=?,driverAssignedOn=? WHERE closingId=?";
     if (isConfirmed && isConfirmed == true) status = 'Confirmed'
-    let requestBody = [routeId, closingDate, customerId, customerName, noOfCans, collectedDate, collectedCans, pendingAmount, depositAmount, balanceAmount, missingCansAmount, totalAmount, reason, missingCansCount, createdBy, deliveryDetailsId, status, departmentId, closingId]
+    let requestBody = [routeId, closingDate, customerId, customerName, noOfCans, collectedDate, collectedCans, pendingAmount, depositAmount, balanceAmount, missingCansAmount, totalAmount, reason, missingCansCount, createdBy, deliveryDetailsId, status, departmentId,driverId, driverAssignedOn, closingId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
