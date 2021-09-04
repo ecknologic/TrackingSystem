@@ -9,11 +9,11 @@ import { disableFutureDates, resetTrackForm, trackAccountFormOnce } from '../../
 
 const ClosureForm = (props) => {
 
-    const { data, accData, errors, accErrors, onChange, disabled, onAccBlur, customerOptions,
+    const { data, accData, errors, accErrors, onChange, disabled, onAccBlur, customerOptions, driverOptions,
         onAccChange, routeOptions, locationOptions, warehouseOptions, hideBank, disableFew, editMode } = props
     const { customerId, customerName, routeId, departmentId, closingDate, noOfCans, collectedCans, collectedDate,
         pendingAmount, depositAmount, missingCansCount, missingCansAmount, balanceAmount, totalAmount,
-        reason, deliveryDetailsId } = data
+        reason, deliveryDetailsId, driverId, driverAssignedOn } = data
     const { accountNumber, bankName, branchName, ifscCode, customerName: accountName } = accData
 
     useEffect(() => {
@@ -61,6 +61,23 @@ const ClosureForm = (props) => {
                         options={warehouseOptions} value={departmentId} disabled={disableFew || disabled}
                         error={errors.departmentId}
                         onSelect={(value, label) => onChange(value, 'departmentId', label, 'departmentName')}
+                    />
+                </div>
+            </div>
+            <div className='row'>
+                <div className='input-container'>
+                    <InputLabel name='Driver Name' error={errors.driverId} mandatory />
+                    <SelectInput track options={driverOptions} value={driverId}
+                        error={errors.driverId} disabled={disabled}
+                        onSelect={(value, label) => onChange(value, 'driverId', label, 'driverName')}
+                    />
+                </div>
+                <div className='input-container'>
+                    <InputLabel name='Driver Assigned On' error={errors.driverAssignedOn} mandatory />
+                    <CustomDateInput
+                        track disabled={disabled} error={errors.driverAssignedOn}
+                        value={driverAssignedOn} disabledDate={disableFutureDates}
+                        onChange={(value) => onChange(value, 'driverAssignedOn')}
                     />
                 </div>
             </div>
