@@ -127,7 +127,7 @@ reportsQueries.getVisitedCustomersReportByStatus = async (input, callback) => {
 }
 
 reportsQueries.getDispensersViabilityReport = async (input, callback) => {
-    const { startDate, endDate, fromStart } = input
+    const { fromDate: startDate, toDate: endDate, fromStart } = input
     let query = `SELECT IFNULL(c.organizationName,c.customerName)AS customerName,c.customerNo as customerId,
     IFNULL(c.dispenserCount,0)AS dispenserCount,MAX(cp.productPrice) AS price, 
     CAST(SUM(co.20LCans*cp.productPrice+(cp.productPrice*12/100)) AS DECIMAL(10,2)) AS  invoiceAmount

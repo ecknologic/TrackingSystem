@@ -65,7 +65,7 @@ router.get('/getVisitedCustomersReport', (req, res) => {
 })
 
 router.get('/getInactiveCustomersReport', (req, res) => {
-  const { startDate, endDate } = req.query;
+  const { fromDate: startDate, toDate: endDate, fromStart } = req.query
   // const { startDate = '2021-08-31', endDate = '2021-08-31' } = req.query; Testing
   reportsQueries.getInActiveCustomersReport({ startDate, endDate }, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
@@ -156,7 +156,7 @@ const calculateAveragePrice = (data) => {
 }
 
 router.get('/getMarketingPerformance', (req, res) => {
-  const { startDate, endDate } = req.query;
+  const { fromDate: startDate, toDate: endDate, fromStart } = req.query
   // const { startDate = '2021-08-01', endDate = '2021-08-21' } = req.query;
   Promise.all([
     getCustomersCountBySalesAgents({ startDate, endDate }),
