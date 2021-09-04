@@ -54,6 +54,7 @@ import ClosedCustomersReport from './UI/reports/closed-customers';
 import { StatusFilterProvider } from './modules/statusFilterContext';
 import MotherplantStockRequest from './UI/stock-request/motherplant';
 import InactiveCustomersReport from './UI/reports/inactive-customers';
+import MarketingPerformanceReport from './UI/reports/marketing-performance';
 import { CustomerFilterProvider } from './modules/customerFilterContext';
 import DispensersViabilityReport from './UI/reports/dispensers-viability';
 import CollectionPerformanceReport from './UI/reports/collection-performance';
@@ -168,6 +169,7 @@ const App = () => {
                            <Route path='/customer-accounts/add-account' render={byRole(<AddAccount />)} />
                            <Route path='/customers/approval/:accountId' render={byRole(<ApproveAccount />)} />
                            <Route path='/inactive-customers-report' render={byRole(<InactiveCustomersReport />)} />
+                           <Route path='/marketing-performance-report' render={byRole(<MarketingPerformanceReport />)} />
                            <Route path='/customers/manage/:accountId' render={byRole(<ViewAccount />)} />
                            <Route path='/customers/:tab?/:page?' render={byRole(<Customers />)} />
                            <Route path='/new-customers-report' render={byRole(<NewCustomersReport />)} />

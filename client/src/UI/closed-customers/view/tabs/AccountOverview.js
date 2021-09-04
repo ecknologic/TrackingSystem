@@ -13,7 +13,7 @@ import ScrollUp from '../../../../components/ScrollUp';
 import NoContent from '../../../../components/NoContent';
 import CustomButton from '../../../../components/CustomButton';
 import { isEmpty, showToast, resetTrackForm, getLabel } from '../../../../utils/Functions';
-import { getDepartmentOptions, getLocationOptions, getRouteOptions } from '../../../../assets/fixtures';
+import { getDepartmentOptions, getDriverOptions, getLocationOptions, getRouteOptions } from '../../../../assets/fixtures';
 import { ACCOUNTSADMIN, MARKETINGMANAGER, SUPERADMIN, WAREHOUSEADMIN } from '../../../../utils/constants';
 import { validateNumber, validateIFSCCode, validateClosureValues, validateClosureAccValues } from '../../../../utils/validations';
 import '../../../../sass/employees.scss'
@@ -24,6 +24,7 @@ const ManageClosedCustomer = ({ setHeaderContent, onGoBack, onUpdate }) => {
     const { closingId } = useParams()
     const [formData, setFormData] = useState({})
     const [accData, setAccData] = useState({})
+    const [driverList, setDriverList] = useState([])
     const [formErrors, setFormErrors] = useState({})
     const [accErrors, setAccErrors] = useState({})
     const [loading, setLoading] = useState(true)
@@ -36,6 +37,7 @@ const ManageClosedCustomer = ({ setHeaderContent, onGoBack, onUpdate }) => {
 
     const isWHAdmin = useMemo(() => ROLE === WAREHOUSEADMIN, [ROLE])
     const routeOptions = useMemo(() => getRouteOptions(routeList), [routeList])
+    const driverOptions = useMemo(() => getDriverOptions(driverList), [driverList])
     const warehouseOptions = useMemo(() => getDepartmentOptions(warehouseList), [warehouseList])
     const locationOptions = useMemo(() => getLocationOptions(locationList), [locationList])
     let canEdit = useMemo(() => ROLE === SUPERADMIN || ROLE === MARKETINGMANAGER
@@ -55,15 +57,25 @@ const ManageClosedCustomer = ({ setHeaderContent, onGoBack, onUpdate }) => {
 
     useEffect(() => {
         if (editMode) {
-            const { customerId } = formData
-            getRouteList()
+            const { customerId, departmentId } = formData
             getWarehouseList()
+            getRouteList(departmentId)
+            getDriverList(departmentId)
             getDeliveryLocations(customerId)
         }
     }, [editMode])
 
-    const getRouteList = async () => {
-        const url = `customer/getRoutes/${WAREHOUSEID || 0}`
+    const getDriverList = async (warehouseId) => {
+        const url = `bibo/getdriverDetails/${warehouseId}`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setDriverList(data)
+        } catch (error) { }
+    }
+
+    const getRouteList = async (warehouseId) => {
+        const url = `customer/getRoutes/${warehouseId}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -85,6 +97,8 @@ const ManageClosedCustomer = ({ setHeaderContent, onGoBack, onUpdate }) => {
 
         try {
             const [data] = await http.GET(axios, url, config)
+            getDriverList(data.departmentId)
+            getRouteList(data.departmentId)
             setFormData(prev => ({ ...prev, ...data, totalAmount: data.balanceAmount }))
         } catch (error) { }
     }
@@ -120,6 +134,11 @@ const ManageClosedCustomer = ({ setHeaderContent, onGoBack, onUpdate }) => {
         // Validations
         if (key === 'deliveryDetailsId') {
             getDeliveryDetails(value)
+        }
+        else if (key === 'departmentId') {
+            getDriverList(value)
+            getRouteList(value)
+            setFormData(prev => ({ ...prev, driverId: null, routeId: null }))
         }
         else if (numerics.includes(key)) {
             const error = validateNumber(value)
@@ -163,11 +182,11 @@ const ManageClosedCustomer = ({ setHeaderContent, onGoBack, onUpdate }) => {
     }
 
     const handleUpdate = async () => {
-        const { closingDate, collectedDate } = formData
+        const { closingDate, collectedDate, driverAssignedOn } = formData
         const formErrors = validateClosureValues(formData)
         const accErrors = validateClosureAccValues(accData)
 
-        if (!isEmpty(formErrors)) {
+        if (!isEmpty(formErrors) || (!isWHAdmin && !isEmpty(accErrors))) {
             setShake(true)
             setTimeout(() => setShake(false), 820)
             setFormErrors(formErrors)
@@ -177,6 +196,7 @@ const ManageClosedCustomer = ({ setHeaderContent, onGoBack, onUpdate }) => {
 
         const body = {
             ...formData, accountDetails: accData,
+            driverAssignedOn: dayjs(driverAssignedOn).format(APIDATEFORMAT),
             closingDate: closingDate ? dayjs(closingDate).format(APIDATEFORMAT) : null,
             collectedDate: collectedDate ? dayjs(collectedDate).format(APIDATEFORMAT) : null,
         }
@@ -231,6 +251,7 @@ const ManageClosedCustomer = ({ setHeaderContent, onGoBack, onUpdate }) => {
                                             onChange={handleChange}
                                             onAccChange={handleAccChange}
                                             routeOptions={routeOptions}
+                                            driverOptions={driverOptions}
                                             locationOptions={locationOptions}
                                             warehouseOptions={warehouseOptions}
                                             hideBank={isWHAdmin}

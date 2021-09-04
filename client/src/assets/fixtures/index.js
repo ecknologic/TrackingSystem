@@ -1311,6 +1311,38 @@ export const inactiveCustomersReportColumns = [
         key: 'lastdeliveredDate',
     }
 ]
+export const marketingPerformanceReportColumns = [
+    {
+        title: 'Executive Name',
+        dataIndex: 'executiveName',
+        key: 'executiveName',
+    },
+    {
+        title: 'No. of New Customers',
+        dataIndex: 'newUsersCount',
+        key: 'newUsersCount',
+    },
+    {
+        title: 'No. of Individual Customers',
+        dataIndex: 'individualCount',
+        key: 'individualCount',
+    },
+    {
+        title: 'No. of Corporate Customers',
+        dataIndex: 'corporateCount',
+        key: 'corporateCount',
+    },
+    {
+        title: 'Expected Sales',
+        dataIndex: 'expectedSale',
+        key: 'expectedSale',
+    },
+    {
+        title: 'Average Price',
+        dataIndex: 'averagePrice',
+        key: 'averagePrice',
+    }
+]
 export const collectionPerformanceReportColumns = [
     {
         title: 'S. No',

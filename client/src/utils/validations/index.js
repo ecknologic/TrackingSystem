@@ -489,10 +489,12 @@ export const validateClosureValues = (data) => {
     let errors = {};
     const text = 'Required'
     const { customerId, customerName, routeId, noOfCans, pendingAmount, depositAmount, totalAmount,
-        balanceAmount, deliveryDetailsId } = data
+        balanceAmount, deliveryDetailsId, driverId, driverAssignedOn } = data
 
+    if (!driverAssignedOn) errors.driverAssignedOn = text
     if (!customerName) errors.customerName = text
     if (!customerId) errors.customerId = text
+    if (!driverId) errors.driverId = text
     if (!routeId) errors.routeId = text
     if (!deliveryDetailsId) errors.deliveryDetailsId = text
     if (noOfCans == null || !String(noOfCans)) errors.noOfCans = text;

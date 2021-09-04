@@ -6,8 +6,8 @@ const DATEFORMAT = 'DD/MM/YYYY'
 const AccountView = ({ data }) => {
 
     const { customerNo, location, departmentName, RouteName, closingDate, noOfCans, collectedCans, collectedDate,
-        pendingAmount, depositAmount, missingCansCount, missingCansAmount, balanceAmount, totalAmount,
-        reason } = data
+        pendingAmount, depositAmount, missingCansCount, missingCansAmount, balanceAmount, totalAmount, driverName,
+        reason, driverAssignedOn } = data
 
     return (
         <div className='app-view-info'>
@@ -29,6 +29,16 @@ const AccountView = ({ data }) => {
                 <div className='input-container'>
                     <InputValue size='smaller' value='Route' />
                     <InputValue size='large' value={RouteName} />
+                </div>
+            </div>
+            <div className='row half-stretch'>
+                <div className='input-container'>
+                    <InputValue size='smaller' value='Driver' />
+                    <InputValue size='large' value={driverName} />
+                </div>
+                <div className='input-container'>
+                    <InputValue size='smaller' value='Driver Assigned On' />
+                    <InputValue size='large' value={dayjs(driverAssignedOn).format(DATEFORMAT)} />
                 </div>
             </div>
             <div className='row half-stretch'>
