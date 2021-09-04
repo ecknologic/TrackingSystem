@@ -171,7 +171,7 @@ router.get('/getMarketingPerformance', (req, res) => {
       let finalResult = calculateAveragePrice(result[1])
       let responseData = mergeArrayObjects("salesAgent", result[0], finalResult)
       res.json(responseData)
-    }
+    } else res.json(result[0])
   })
 })
 
