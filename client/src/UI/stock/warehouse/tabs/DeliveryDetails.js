@@ -120,7 +120,7 @@ const DeliveryDetails = ({ date, driverList }) => {
         setSeachON(true)
     }
 
-    const dataSource = useMemo(() => deliveries.map((dc, index) => {
+    const dataSource = useMemo(() => deliveries.map((dc, index, thisArray) => {
         const { driverId, routeName, driverName, stockDetails, deliveredDetails, pendingDetails } = dc
 
         const options = [
@@ -129,7 +129,7 @@ const DeliveryDetails = ({ date, driverList }) => {
 
         return {
             key: driverId,
-            sNo: index + 1,
+            sNo: thisArray.length - index,
             driverName,
             routeName: routeName || 'Not Assigned',
             stockDetails: renderOrderDetails(stockDetails),

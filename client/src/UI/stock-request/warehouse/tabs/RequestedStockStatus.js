@@ -170,18 +170,18 @@ const MaterialStatus = ({ reFetch }) => {
         setStock(clone)
     }
 
-    const dataSource = useMemo(() => stock.map((stock, index) => {
+    const dataSource = useMemo(() => stock.map((stock, index, thisArray) => {
         const { requestId, requiredDate, status, departmentName, createdDateTime, products } = stock
         const productsForUI = getProductsForUI(JSON.parse(products))
 
         const getActions = () => {
-            if (status === 'Approved' || !isMPAdmin)
+            if (status === 'Approved' || status === 'Rejected' || !isMPAdmin)
                 return [<Menu.Item key="view" icon={<EyeIconGrey />}>View</Menu.Item>]
             return [<Menu.Item key="view" icon={<EditIconGrey />}>Edit</Menu.Item>]
         }
         return {
             key: requestId,
-            sNo: index + 1,
+            sNo: thisArray.length - index,
             departmentName,
             dateAndTime: dayjs(createdDateTime).format(dateFormatUI),
             requiredDate: dayjs(requiredDate).format(dateFormatUI),

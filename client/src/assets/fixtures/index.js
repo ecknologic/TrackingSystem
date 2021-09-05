@@ -638,7 +638,7 @@ export const getStockColumns = (isDamaged, adminType) => {
             key: 'dateAndTime',
         },
         {
-            title: 'Mother Plant',
+            title: 'Received From',
             dataIndex: 'departmentName',
             key: 'departmentName',
         },

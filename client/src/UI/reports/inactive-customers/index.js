@@ -66,8 +66,8 @@ const InactiveCustomersReport = () => {
     }
 
     const generateExcelRows = (data) => {
-        const rows = data.map((item, index) => {
-            return { ...item, sNo: index + 1 }
+        const rows = data.map((item, index, thisArray) => {
+            return { ...item, sNo: thisArray.length - index }
         })
 
         setExelRows(rows)
@@ -145,12 +145,12 @@ const InactiveCustomersReport = () => {
         setSeachON(true)
     }
 
-    const dataSource = useMemo(() => reports.map((report, index) => {
+    const dataSource = useMemo(() => reports.map((report, index, thisArray) => {
         const { lastmonthAmount = 0, lastmonthQuantity = 0, lastdeliveredDate } = report
 
         return {
             ...report,
-            sNo: index + 1,
+            sNo: thisArray.length - index,
             lastmonthAmount,
             lastmonthQuantity,
             lastdeliveredDate: dayjs(lastdeliveredDate).format(DATEFORMAT),

@@ -64,8 +64,8 @@ const NewCustomersReport = () => {
     }
 
     const generateExcelRows = (data) => {
-        const rows = data.map((item, index) => {
-            return { ...item, sNo: index + 1 }
+        const rows = data.map((item, index, thisArray) => {
+            return { ...item, sNo: thisArray.length - index }
         })
 
         setExelRows(rows)
@@ -143,7 +143,7 @@ const NewCustomersReport = () => {
         setSeachON(true)
     }
 
-    const dataSource = useMemo(() => reports.map((dc, index) => ({ ...dc, sNo: index + 1 })), [reports])
+    const dataSource = useMemo(() => reports.map((dc, index, thisArray) => ({ ...dc, sNo: thisArray.length - index })), [reports])
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
