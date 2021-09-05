@@ -2,6 +2,8 @@ import dayjs from 'dayjs'
 import { v4 as uuidv4 } from 'uuid';
 import { TRACKFORM } from "../constants"
 import { message } from 'antd'
+import InputLabel from '../../components/InputLabel';
+import InputValue from '../../components/InputValue';
 
 export const getLabel = (labelKey, label) => {
     return labelKey ? { [labelKey]: label } : {}
@@ -480,6 +482,103 @@ export const getProductsForUI = (data) => {
     })
     const products = { product20L, price20L, product2L, price2L, product1L, price1L, product500ML, price500ML, product300ML, price300ML, product20LId, product2LId, product1LId, product500MLId, product300MLId }
     return products
+}
+
+export const renderProductDetails = (data) => {
+    let textArray = []
+    const { product20L = 0, product2L = 0, product1L = 0, product300ML = 0, product500ML = 0 } = data
+
+    if (Number(product20L)) {
+        textArray.push(`20 ltrs - ${product20L}`)
+    }
+    if (Number(product2L)) {
+        textArray.push(` 2 ltrs - ${product2L} boxes`)
+    }
+    if (Number(product1L)) {
+        textArray.push(` 1 ltr - ${product1L} boxes`)
+    }
+    if (Number(product500ML)) {
+        textArray.push(` 500 ml - ${product500ML} boxes`)
+    }
+    if (Number(product300ML)) {
+        textArray.push(` 300 ml - ${product300ML} boxes`)
+    }
+
+    return textArray.join(',')
+}
+
+const getInputJSX = (product) => {
+    let JSX = null
+    switch (product) {
+        case '2 Ltrs':
+            JSX = <InputLabel name='2 Ltrs (Box-1&times;9)' />
+            break;
+
+        case '1 Ltrs':
+            JSX = <InputLabel name='1 Ltrs (Box-1&times;12)' />
+            break;
+
+        case '500 Ml':
+            JSX = <InputLabel name='500 Ml (Box-1&times;24)' />
+            break;
+
+        case '300 Ml':
+            JSX = <InputLabel name='300 Ml (Box-1&times;30)' />
+            break;
+
+        default:
+            JSX = <InputLabel name='20 Ltrs' />
+            break;
+    }
+
+    return JSX;
+}
+
+const renderColumn = (label, product, price) => {
+    const renderPriceJSX = () => {
+        if (Number(price)) {
+            return (
+                <div className='input-container'>
+                    <InputLabel name='Unit Price' />
+                    <InputValue value={price} />
+                </div>
+            )
+        }
+
+        return null;
+    }
+
+    if (Number(product)) {
+        return (
+            <div className='column'>
+                <div className='input-container'>
+                    {getInputJSX(label)}
+                    <InputValue value={product} />
+                </div>
+                {renderPriceJSX()}
+            </div>
+        )
+    }
+
+    return null;
+}
+
+export const renderProductDetailsJSX = (data, label = 'Stock Particulars') => {
+    const { product20L = 0, product2L = 0, product1L = 0, product300ML = 0, product500ML = 0,
+        price20L = 0, price2L = 0, price1L = 0, price500ML = 0, price300ML = 0 } = data
+
+    return (
+        <div className='columns'>
+            <InputLabel name={label} />
+            <div className='columns-container'>
+                {renderColumn('20 Ltrs', product20L, price20L)}
+                {renderColumn('2 Ltrs', product2L, price2L)}
+                {renderColumn('1 Ltrs', product1L, price1L)}
+                {renderColumn('500 Ml', product500ML, price500ML)}
+                {renderColumn('300 Ml', product300ML, price300ML)}
+            </div>
+        </div>
+    )
 }
 
 export const getIdProofsForDB = (data, proofType) => {

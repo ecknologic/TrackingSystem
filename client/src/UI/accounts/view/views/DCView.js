@@ -3,12 +3,12 @@ import dayjs from 'dayjs';
 import { Divider } from 'antd';
 import InputLabel from '../../../../components/InputLabel';
 import InputValue from '../../../../components/InputValue';
-import { getStatusColor } from '../../../../utils/Functions';
+import { getStatusColor, renderProductDetailsJSX } from '../../../../utils/Functions';
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
 const DCView = ({ data }) => {
-    const { dcNo, RouteName, mobileNumber, product20L, product2L, product1L, product500ML, contactPerson,
-        product300ML, address, driverName, isDelivered, deliveredDate, returnEmptyCans, customerName } = data
+    const { dcNo, RouteName, mobileNumber, contactPerson, address, driverName, isDelivered,
+        deliveredDate, returnEmptyCans, customerName, ...rest } = data
 
     const color = getStatusColor(isDelivered)
     const text = isDelivered === 'Completed' ? 'Delivered' : isDelivered === 'Postponed' ? isDelivered : 'Pending'
@@ -65,41 +65,7 @@ const DCView = ({ data }) => {
                 </div>
             </div>
             <Divider />
-            <div className='columns'>
-                <InputLabel name='Stock Particulars' />
-                <div className='columns-container'>
-                    <div className='column'>
-                        <div className='input-container'>
-                            <InputLabel name='20 Ltrs' />
-                            <InputValue size='smaller' value={product20L || 0} />
-                        </div>
-                    </div>
-                    <div className='column'>
-                        <div className='input-container'>
-                            <InputLabel name='2 Ltrs (Box-1&times;9)' />
-                            <InputValue size='smaller' value={product2L || 0} />
-                        </div>
-                    </div>
-                    <div className='column'>
-                        <div className='input-container'>
-                            <InputLabel name='1 Ltrs (Box-1&times;12)' />
-                            <InputValue size='smaller' value={product1L || 0} />
-                        </div>
-                    </div>
-                    <div className='column'>
-                        <div className='input-container'>
-                            <InputLabel name='500 Ml (Box-1&times;24)' />
-                            <InputValue size='smaller' value={product300ML || 0} />
-                        </div>
-                    </div>
-                    <div className='column'>
-                        <div className='input-container'>
-                            <InputLabel name='300 Ml (Box-1&times;30)' />
-                            <InputValue size='smaller' value={product500ML || 0} />
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {renderProductDetailsJSX(rest)}
             <Divider />
             <div className='columns'>
                 <InputLabel name='Return Cans' />

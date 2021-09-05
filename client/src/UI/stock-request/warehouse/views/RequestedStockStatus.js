@@ -3,22 +3,19 @@ import React from 'react';
 import { Divider } from 'antd';
 import InputLabel from '../../../../components/InputLabel';
 import InputValue from '../../../../components/InputValue';
-import { getProductsForUI, getStatusColor } from '../../../../utils/Functions';
+import { getProductsForUI, getStatusColor, renderProductDetailsJSX } from '../../../../utils/Functions';
 import CustomTextArea from '../../../../components/CustomTextArea';
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 const DATEFORMAT = 'DD/MM/YYYY'
 
 const RequestedStockStatusView = ({ data, formData, errors, isMPAdmin, editMode, onChange }) => {
 
-    const { requiredDate, status, departmentName, createdDateTime, products } = data
+    const { requiredDate, status, departmentName, createdDateTime, products,
+        warehouseAdminName, warehouseAdminMobileNo } = data
     const productsForUI = getProductsForUI(JSON.parse(products))
     const { reason } = formData
 
-    const { product20L, price20L, product2L, price2L, product1L, price1L,
-        product500ML, price500ML, product300ML, price300ML } = productsForUI
-
     const color = getStatusColor(status)
-    const label = status === 'Rejected' ? status : 'Approved'
 
     return (
         <>
@@ -45,62 +42,24 @@ const RequestedStockStatusView = ({ data, formData, errors, isMPAdmin, editMode,
                         <InputValue size='smaller' value={departmentName} />
                     </div>
                 </div>
+                {
+                    isMPAdmin &&
+                    (<>
+                        <Divider />
+                        <div className='row'>
+                            <div className='input-container'>
+                                <InputLabel name='Requestor Name' />
+                                <InputValue size='smaller' value={warehouseAdminName} />
+                            </div>
+                            <div className='input-container'>
+                                <InputLabel name='Requestor Mobile Number' />
+                                <InputValue size='smaller' value={warehouseAdminMobileNo} />
+                            </div>
+                        </div>
+                    </>)
+                }
                 <Divider />
-                <div className='columns'>
-                    <InputLabel name='Stock Particulars' />
-                    <div className='columns-container'>
-                        <div className='column'>
-                            <div className='input-container'>
-                                <InputLabel name='20 Ltrs' />
-                                <InputValue size='smaller' value={product20L} />
-                            </div>
-                            <div className='input-container'>
-                                <InputLabel name='Price' />
-                                <InputValue size='smaller' value={price20L} />
-                            </div>
-                        </div>
-                        <div className='column'>
-                            <div className='input-container'>
-                                <InputLabel name='2 Ltrs (Box-1&times;12)' />
-                                <InputValue size='smaller' value={product2L} />
-                            </div>
-                            <div className='input-container'>
-                                <InputLabel name='Price' />
-                                <InputValue size='smaller' value={price2L} />
-                            </div>
-                        </div>
-                        <div className='column'>
-                            <div className='input-container'>
-                                <InputLabel name='1 Ltrs (Box-1&times;12)' />
-                                <InputValue size='smaller' value={product1L} />
-                            </div>
-                            <div className='input-container'>
-                                <InputLabel name='Price' />
-                                <InputValue size='smaller' value={price1L} />
-                            </div>
-                        </div>
-                        <div className='column'>
-                            <div className='input-container'>
-                                <InputLabel name='500 Ml (Box-1&times;12)' />
-                                <InputValue size='smaller' value={product500ML} />
-                            </div>
-                            <div className='input-container'>
-                                <InputLabel name='Price' />
-                                <InputValue size='smaller' value={price500ML} />
-                            </div>
-                        </div>
-                        <div className='column'>
-                            <div className='input-container'>
-                                <InputLabel name='300 Ml (Box-1&times;12)' />
-                                <InputValue size='smaller' value={product300ML} />
-                            </div>
-                            <div className='input-container'>
-                                <InputLabel name='Price' />
-                                <InputValue size='smaller' value={price300ML} />
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {renderProductDetailsJSX(productsForUI)}
                 {
                     isMPAdmin &&
                     <>

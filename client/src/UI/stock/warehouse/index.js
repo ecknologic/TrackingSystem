@@ -32,6 +32,10 @@ const WarehouseStock = () => {
 
     const childProps = useMemo(() => ({ driverList, routeList, warehouseList, vehicleList, locationList, motherplantList }),
         [driverList, routeList, warehouseList, vehicleList, locationList, motherplantList])
+    const departmentList = useMemo(() => {
+        const WHList = warehouseList.filter(item => item.departmentId !== WAREHOUSEID);
+        return [...motherplantList, ...WHList]
+    }, [warehouseList, motherplantList])
     const source = useMemo(() => axios.CancelToken.source(), [selectedDate, activeTab]);
     const config = { cancelToken: source.token }
 
@@ -148,8 +152,8 @@ const WarehouseStock = () => {
                             : activeTab === '3' ? <Orders {...childProps} />
                                 : activeTab === '4' ? <DeliveredDC />
                                     : activeTab === '5' ? <DeliveryDetails date={selectedDate} {...childProps} />
-                                        : activeTab === '6' ? <StockReceived motherplantList={motherplantList} />
-                                            : activeTab === '7' ? <DamagedStock motherplantList={motherplantList} />
+                                        : activeTab === '6' ? <StockReceived departmentList={departmentList} />
+                                            : activeTab === '7' ? <DamagedStock departmentList={departmentList} />
                                                 : null
                 }
             </div>

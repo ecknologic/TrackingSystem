@@ -66,8 +66,8 @@ const MarketingPerformanceReport = () => {
     }
 
     const generateExcelRows = (data) => {
-        const rows = data.map((item, index) => {
-            return { ...item, sNo: index + 1 }
+        const rows = data.map((item, index, thisArray) => {
+            return { ...item, sNo: thisArray.length - index }
         })
 
         setExelRows(rows)
