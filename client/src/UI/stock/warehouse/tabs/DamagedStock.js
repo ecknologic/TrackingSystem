@@ -15,7 +15,7 @@ import CustomPagination from '../../../../components/CustomPagination';
 import { doubleKeyComplexSearch, getStatusColor, isEmpty, showToast } from '../../../../utils/Functions';
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
-const DamagedStock = ({ motherplantList }) => {
+const DamagedStock = ({ departmentList }) => {
     const [loading, setLoading] = useState(true)
     const [stock, setStock] = useState([])
     const [stockClone, setStockClone] = useState([])
@@ -140,10 +140,10 @@ const DamagedStock = ({ motherplantList }) => {
             <div className='header'>
                 <div className='left'>
                     <RoutesFilter
-                        data={motherplantList}
+                        data={departmentList}
                         keyValue='departmentId'
                         keyLabel='departmentName'
-                        title='Select Mother Plant'
+                        title='Select Department'
                         onChange={onFilterChange}
                     />
                 </div>
