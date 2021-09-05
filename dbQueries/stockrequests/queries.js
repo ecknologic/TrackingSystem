@@ -6,12 +6,12 @@ let stockRequestQueries = {}
 stockRequestQueries.getDepartmentStockRequests = async (input, callback) => {
     const { departmentId, userRole } = input
     let query = `SELECT d.*,JSON_ARRAYAGG(JSON_OBJECT('productId',r.productId,'noOfJarsTobePlaced',r.noOfJarsTobePlaced,'departmentId',r.departmentId,
-    'productPrice',r.productPrice,'requestId',r.requestId,
+    'requestId',r.requestId,
     'productName',r.productName, 'departmentType',r.departmentType)) as products, dep.departmentName from departmentstockrequests d INNER JOIN requestedproducts r ON r.requestId=d.requestId INNER JOIN departmentmaster dep ON d.requestTo=dep.departmentId WHERE d.departmentId=? GROUP BY r.requestId ORDER BY createdDateTime DESC`;
 
     if (userRole != constants.WAREHOUSEADMIN) {
         query = `SELECT d.*,JSON_ARRAYAGG(JSON_OBJECT('productId',r.productId,'noOfJarsTobePlaced',r.noOfJarsTobePlaced,'departmentId',r.departmentId,
-        'productPrice',r.productPrice,'requestId',r.requestId,
+        'requestId',r.requestId,
         'productName',r.productName, 'departmentType',r.departmentType)) as products, dep.departmentName from departmentstockrequests d INNER JOIN requestedproducts r ON r.requestId=d.requestId INNER JOIN departmentmaster dep ON d.departmentId=dep.departmentId WHERE d.requestTo=? GROUP BY r.requestId ORDER BY createdDateTime DESC`
     }
 
@@ -21,7 +21,7 @@ stockRequestQueries.getDepartmentStockRequests = async (input, callback) => {
 stockRequestQueries.getDepartmentStockRequestById = async (input, callback) => {
     const { departmentId, requestId } = input
     let query = `SELECT d.*,JSON_ARRAYAGG(JSON_OBJECT('productId',r.productId,'noOfJarsTobePlaced',r.noOfJarsTobePlaced,'departmentId',r.departmentId,
-    'productPrice',r.productPrice,'requestId',r.requestId,
+    'requestId',r.requestId,
     'productName',r.productName, 'departmentType',r.departmentType)) as products from departmentstockrequests d INNER JOIN requestedproducts p ON p.requestId=d.requestId WHERE d.departmentId=? AND requestId=? ORDER BY createdDateTime DESC`;
     return executeGetParamsQuery(query, [departmentId, requestId], callback)
 }
@@ -50,8 +50,8 @@ stockRequestQueries.updateRequestedStockStatus = async (input, callback) => {
 stockRequestQueries.saveRequestedStockDetails = ({ products, requestId, departmentId }, callback) => {
     const departmentType = 'Warehouse';
     if (products.length) {
-        const sql = products.map(item => "(" + requestId + ", " + departmentId + ", " + item.noOfJarsTobePlaced + ", " + item.productPrice + ", '" + item.productName + "'" + ", '" + departmentType + "')")
-        let query = `insert into requestedproducts (requestId, departmentId, noOfJarsTobePlaced, productPrice, productName,departmentType) values ` + sql;
+        const sql = products.map(item => "(" + requestId + ", " + departmentId + ", " + item.noOfJarsTobePlaced + ", '" + item.productName + "'" + ", '" + departmentType + "')")
+        let query = `insert into requestedproducts (requestId, departmentId, noOfJarsTobePlaced, productName,departmentType) values ` + sql;
         executeGetQuery(query, callback);
     }
 }
