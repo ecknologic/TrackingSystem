@@ -143,7 +143,7 @@ const DispensersViabilityReport = () => {
         setSeachON(true)
     }
 
-    const dataSource = useMemo(() => reports.map((dc, index, thisArray) => ({ ...dc, sNo: thisArray.length - index })), [reports])
+    const dataSource = useMemo(() => reports.map((dc, index, thisArray) => ({ ...dc, invoiceAmount: dc.invoiceAmount || 0, sNo: thisArray.length - index })), [reports])
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
