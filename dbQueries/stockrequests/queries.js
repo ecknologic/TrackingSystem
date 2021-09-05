@@ -12,7 +12,7 @@ stockRequestQueries.getDepartmentStockRequests = async (input, callback) => {
     if (userRole != constants.WAREHOUSEADMIN) {
         query = `SELECT d.*,JSON_ARRAYAGG(JSON_OBJECT('productId',r.productId,'noOfJarsTobePlaced',r.noOfJarsTobePlaced,'departmentId',r.departmentId,
         'requestId',r.requestId,
-        'productName',r.productName, 'departmentType',r.departmentType)) as products, dep.departmentName from departmentstockrequests d INNER JOIN requestedproducts r ON r.requestId=d.requestId INNER JOIN departmentmaster dep ON d.departmentId=dep.departmentId WHERE d.requestTo=? GROUP BY r.requestId ORDER BY createdDateTime DESC`
+        'productName',r.productName, 'departmentType',r.departmentType)) as products, dep.departmentName,u.userName as warehouseAdminName,u.mobileNumber as warehouseAdminMobileNo from departmentstockrequests d INNER JOIN requestedproducts r ON r.requestId=d.requestId INNER JOIN departmentmaster dep ON d.departmentId=dep.departmentId LEFT JOIN usermaster u ON dep.adminId=u.userId WHERE d.requestTo=? GROUP BY r.requestId ORDER BY createdDateTime DESC`
     }
 
     return executeGetParamsQuery(query, [departmentId], callback)
