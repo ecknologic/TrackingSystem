@@ -2,6 +2,8 @@ import dayjs from 'dayjs'
 import { v4 as uuidv4 } from 'uuid';
 import { TRACKFORM } from "../constants"
 import { message } from 'antd'
+import InputLabel from '../../components/InputLabel';
+import InputValue from '../../components/InputValue';
 
 export const getLabel = (labelKey, label) => {
     return labelKey ? { [labelKey]: label } : {}
@@ -503,6 +505,80 @@ export const renderProductDetails = (data) => {
     }
 
     return textArray.join(',')
+}
+
+const getInputJSX = (product) => {
+    let JSX = null
+    switch (product) {
+        case '2 Ltrs':
+            JSX = <InputLabel name='2 Ltrs (Box-1&times;9)' />
+            break;
+
+        case '1 Ltrs':
+            JSX = <InputLabel name='1 Ltrs (Box-1&times;12)' />
+            break;
+
+        case '500 Ml':
+            JSX = <InputLabel name='500 Ml (Box-1&times;24)' />
+            break;
+
+        case '300 Ml':
+            JSX = <InputLabel name='300 Ml (Box-1&times;30)' />
+            break;
+
+        default:
+            JSX = <InputLabel name='20 Ltrs' />
+            break;
+    }
+
+    return JSX;
+}
+
+const renderColumn = (label, product, price) => {
+    const renderPriceJSX = () => {
+        if (Number(price)) {
+            return (
+                <div className='input-container'>
+                    <InputLabel name='Unit Price' />
+                    <InputValue value={price} />
+                </div>
+            )
+        }
+
+        return null;
+    }
+
+    if (Number(product)) {
+        return (
+            <div className='column'>
+                <div className='input-container'>
+                    {getInputJSX(label)}
+                    <InputValue value={product} />
+                </div>
+                {renderPriceJSX()}
+            </div>
+        )
+    }
+
+    return null;
+}
+
+export const renderProductDetailsJSX = (data, label = 'Stock Particulars') => {
+    const { product20L = 0, product2L = 0, product1L = 0, product300ML = 0, product500ML = 0,
+        price20L = 0, price2L = 0, price1L = 0, price500ML = 0, price300ML = 0 } = data
+
+    return (
+        <div className='columns'>
+            <InputLabel name={label} />
+            <div className='columns-container'>
+                {renderColumn('20 Ltrs', product20L, price20L)}
+                {renderColumn('2 Ltrs', product2L, price2L)}
+                {renderColumn('1 Ltrs', product1L, price1L)}
+                {renderColumn('500 Ml', product500ML, price500ML)}
+                {renderColumn('300 Ml', product300ML, price300ML)}
+            </div>
+        </div>
+    )
 }
 
 export const getIdProofsForDB = (data, proofType) => {

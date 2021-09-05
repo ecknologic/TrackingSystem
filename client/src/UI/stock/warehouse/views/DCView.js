@@ -2,6 +2,7 @@ import React from 'react';
 import { Divider } from 'antd';
 import InputLabel from '../../../../components/InputLabel';
 import InputValue from '../../../../components/InputValue';
+import { renderProductDetailsJSX } from '../../../../utils/Functions';
 
 const DCView = ({ data }) => {
     const { routeName, mobileNumber, driverName, stockDetails, deliveredDetails, pendingDetails } = data
@@ -26,53 +27,13 @@ const DCView = ({ data }) => {
                 </div>
             </div>
             <Divider />
-            {renderColumns(stockDetails, 'Stock Details')}
+            {renderProductDetailsJSX(stockDetails, 'Stock Details')}
             <Divider />
-            {renderColumns(deliveredDetails, 'Delivered Details')}
+            {renderProductDetailsJSX(deliveredDetails, 'Delivered Details')}
             <Divider />
-            {renderColumns(pendingDetails, 'Pending Details')}
+            {renderProductDetailsJSX(pendingDetails, 'Pending Details')}
         </div>
     )
 }
 
-function renderColumns(data, title) {
-    const { product20L, product2L, product1L, product500ML, product300ML } = data
-    return (
-        <div className='columns'>
-            <InputLabel name={title} />
-            <div className='columns-container'>
-                <div className='column'>
-                    <div className='input-container'>
-                        <InputLabel name='20 Ltrs' />
-                        <InputValue size='smaller' value={product20L || 0} />
-                    </div>
-                </div>
-                <div className='column'>
-                    <div className='input-container'>
-                        <InputLabel name='2 Ltrs (Box-1&times;9)' />
-                        <InputValue size='smaller' value={product2L || 0} />
-                    </div>
-                </div>
-                <div className='column'>
-                    <div className='input-container'>
-                        <InputLabel name='1 Ltrs (Box-1&times;12)' />
-                        <InputValue size='smaller' value={product1L || 0} />
-                    </div>
-                </div>
-                <div className='column'>
-                    <div className='input-container'>
-                        <InputLabel name='500 Ml (Box-1&times;24)' />
-                        <InputValue size='smaller' value={product300ML || 0} />
-                    </div>
-                </div>
-                <div className='column'>
-                    <div className='input-container'>
-                        <InputLabel name='300 Ml (Box-1&times;30)' />
-                        <InputValue size='smaller' value={product500ML || 0} />
-                    </div>
-                </div>
-            </div>
-        </div>
-    )
-}
 export default DCView
