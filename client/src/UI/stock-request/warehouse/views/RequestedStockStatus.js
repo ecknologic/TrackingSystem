@@ -10,7 +10,8 @@ const DATEFORMAT = 'DD/MM/YYYY'
 
 const RequestedStockStatusView = ({ data, formData, errors, isMPAdmin, editMode, onChange }) => {
 
-    const { requiredDate, status, departmentName, createdDateTime, products } = data
+    const { requiredDate, status, departmentName, createdDateTime, products,
+        warehouseAdminName, warehouseAdminMobileNo } = data
     const productsForUI = getProductsForUI(JSON.parse(products))
     const { reason } = formData
 
@@ -41,6 +42,22 @@ const RequestedStockStatusView = ({ data, formData, errors, isMPAdmin, editMode,
                         <InputValue size='smaller' value={departmentName} />
                     </div>
                 </div>
+                {
+                    isMPAdmin &&
+                    (<>
+                        <Divider />
+                        <div className='row'>
+                            <div className='input-container'>
+                                <InputLabel name='Requestor Name' />
+                                <InputValue size='smaller' value={warehouseAdminName} />
+                            </div>
+                            <div className='input-container'>
+                                <InputLabel name='Requestor Mobile Number' />
+                                <InputValue size='smaller' value={warehouseAdminMobileNo} />
+                            </div>
+                        </div>
+                    </>)
+                }
                 <Divider />
                 {renderProductDetailsJSX(productsForUI)}
                 {
