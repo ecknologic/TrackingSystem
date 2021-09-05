@@ -482,6 +482,29 @@ export const getProductsForUI = (data) => {
     return products
 }
 
+export const renderProductDetails = (data) => {
+    let textArray = []
+    const { product20L = 0, product2L = 0, product1L = 0, product300ML = 0, product500ML = 0 } = data
+
+    if (Number(product20L)) {
+        textArray.push(`20 ltrs - ${product20L}`)
+    }
+    if (Number(product2L)) {
+        textArray.push(` 2 ltrs - ${product2L} boxes`)
+    }
+    if (Number(product1L)) {
+        textArray.push(` 1 ltr - ${product1L} boxes`)
+    }
+    if (Number(product500ML)) {
+        textArray.push(` 500 ml - ${product500ML} boxes`)
+    }
+    if (Number(product300ML)) {
+        textArray.push(` 300 ml - ${product300ML} boxes`)
+    }
+
+    return textArray.join(',')
+}
+
 export const getIdProofsForDB = (data, proofType) => {
     const { Front, Back } = data
     const idProofs = proofType === 'panNo' ? [Front] : [Front, Back]

@@ -11,7 +11,7 @@ import CustomModal from '../../../../components/CustomModal';
 import RoutesFilter from '../../../../components/RoutesFilter';
 import { EyeIconGrey } from '../../../../components/SVG_Icons';
 import CustomPagination from '../../../../components/CustomPagination';
-import { isEmpty, doubleKeyComplexSearch } from '../../../../utils/Functions';
+import { isEmpty, doubleKeyComplexSearch, renderProductDetails } from '../../../../utils/Functions';
 
 const DeliveryDetails = ({ date, driverList }) => {
     const [loading, setLoading] = useState(true)
@@ -132,9 +132,9 @@ const DeliveryDetails = ({ date, driverList }) => {
             sNo: thisArray.length - index,
             driverName,
             routeName: routeName || 'Not Assigned',
-            stockDetails: renderOrderDetails(stockDetails),
-            deliveredDetails: renderOrderDetails(deliveredDetails),
-            pendingDetails: renderOrderDetails(pendingDetails),
+            stockDetails: renderProductDetails(stockDetails),
+            deliveredDetails: renderProductDetails(deliveredDetails),
+            pendingDetails: renderProductDetails(pendingDetails),
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, dc)} />
         }
     }), [deliveries])
@@ -201,10 +201,4 @@ const DeliveryDetails = ({ date, driverList }) => {
     )
 }
 
-const renderOrderDetails = ({ product20L, product2L, product1L, product500ML, product300ML }) => {
-    return `
-    20 ltrs - ${Number(product20L)}, 2 ltrs - ${Number(product2L)} boxes, 1 ltr - ${Number(product1L)} boxes, 
-    500 ml - ${Number(product500ML)} boxes, 300 ml - ${Number(product300ML)} boxes
-    `
-}
 export default DeliveryDetails

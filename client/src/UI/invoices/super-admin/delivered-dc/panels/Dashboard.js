@@ -13,7 +13,7 @@ import CustomModal from '../../../../../components/CustomModal';
 import { EyeIconGrey } from '../../../../../components/SVG_Icons';
 import { getDeliveryColumns } from '../../../../../assets/fixtures';
 import CustomPagination from '../../../../../components/CustomPagination';
-import { doubleKeyComplexSearch, getStatusColor, isEmpty } from '../../../../../utils/Functions';
+import { doubleKeyComplexSearch, getStatusColor, isEmpty, renderProductDetails } from '../../../../../utils/Functions';
 const APIDATEFORMAT = 'YYYY-MM-DD'
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
@@ -64,7 +64,7 @@ const DeliveredDC = ({ invoiceId }) => {
 
     const generateExcelRows = (data) => {
         const rows = data.map((item) => {
-            const orderDetails = renderOrderDetails(item)
+            const orderDetails = renderProductDetails(item)
             const status = getStatusText(item.isDelivered)
             const deliveredDate = dayjs(item.deliveryDate).format(DATEANDTIMEFORMAT)
             return { ...item, status, orderDetails, deliveredDate }
@@ -117,7 +117,7 @@ const DeliveredDC = ({ invoiceId }) => {
             name: customerName,
             route: RouteName || 'Not Assigned',
             driverName: driverName || 'Not Assigned',
-            orderDetails: renderOrderDetails(dc),
+            orderDetails: renderProductDetails(dc),
             status: renderStatus(isDelivered),
             dateAndTime: dayjs(deliveredDate).format(DATEANDTIMEFORMAT),
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, dc)} />
@@ -212,11 +212,5 @@ const getStatusText = (status) => {
     return status === 'Completed' ? 'Delivered' : status === 'Postponed' ? status : 'Pending'
 }
 
-const renderOrderDetails = ({ product20L, product2L, product1L, product500ML, product300ML }) => {
-    return `
-    20 ltrs - ${Number(product20L)}, 2 ltrs - ${Number(product2L)} boxes, 1 ltr - ${Number(product1L)} boxes, 
-    500 ml - ${Number(product500ML)} boxes, 300 ml - ${Number(product300ML)} boxes
-    `
-}
 const options = [<Menu.Item key="view" icon={<EyeIconGrey />}>View</Menu.Item>]
 export default DeliveredDC

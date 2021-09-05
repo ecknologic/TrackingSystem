@@ -5,9 +5,9 @@ import { useHistory } from 'react-router-dom';
 import { http } from '../../../../modules/http';
 import Spinner from '../../../../components/Spinner';
 import { TODAYDATE } from '../../../../utils/constants';
-import { getStatusColor } from '../../../../utils/Functions';
 import CustomButton from '../../../../components/CustomButton';
 import { todayDeliveryColumns } from '../../../../assets/fixtures'
+import { getStatusColor, renderProductDetails } from '../../../../utils/Functions';
 import '../../../../sass/todayDeliveryDetails.scss'
 
 const DispatchDetails = () => {
@@ -90,10 +90,5 @@ const renderStatus = (status) => {
         </div>
     )
 }
-const renderProductDetails = ({ product20L, product2L, product1L, product500ML, product300ML }) => {
-    return `
-    20 ltrs - ${Number(product20L)}, 2 ltrs - ${Number(product2L)} boxes, 1 ltr - ${Number(product1L)} boxes, 
-    500 ml - ${Number(product500ML)} boxes, 300 ml - ${Number(product300ML)} boxes
-    `
-}
+
 export default DispatchDetails

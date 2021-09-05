@@ -1,20 +1,20 @@
+import axios from 'axios';
 import dayjs from 'dayjs';
 import { Menu, Table } from 'antd';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { http } from '../../../modules/http';
 import Spinner from '../../../components/Spinner';
-import QuitModal from '../../../components/CustomModal';
-import { EditIconGrey, ScheduleIcon } from '../../../components/SVG_Icons';
 import Actions from '../../../components/Actions';
-import SearchInput from '../../../components/SearchInput';
-import ConfirmMessage from '../../../components/ConfirmMessage';
-import { TODAYDATE, TRACKFORM } from '../../../utils/constants';
-import CustomPagination from '../../../components/CustomPagination';
-import { getDispatchColumns } from '../../../assets/fixtures';
-import { disableFutureDates, getStatusColor } from '../../../utils/Functions';
 import DateValue from '../../../components/DateValue';
+import QuitModal from '../../../components/CustomModal';
+import SearchInput from '../../../components/SearchInput';
+import { getDispatchColumns } from '../../../assets/fixtures';
+import { TODAYDATE, TRACKFORM } from '../../../utils/constants';
+import ConfirmMessage from '../../../components/ConfirmMessage';
 import CustomDateInput from '../../../components/CustomDateInput';
-import axios from 'axios';
+import CustomPagination from '../../../components/CustomPagination';
+import { EditIconGrey, ScheduleIcon } from '../../../components/SVG_Icons';
+import { disableFutureDates, getStatusColor, renderProductDetails } from '../../../utils/Functions';
 const DATEFORMAT = 'DD-MM-YYYY'
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 const format = 'YYYY-MM-DD'
@@ -117,7 +117,7 @@ const Dispatches = () => {
             driverName,
             dispatchTo: dispatchAddress,
             dateAndTime: dayjs(dispatchedDate).format(DATEANDTIMEFORMAT),
-            productionDetails: renderOrderDetails(dispatch),
+            productionDetails: renderProductDetails(dispatch),
             status: renderStatus(status),
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, dispatch)} />
         }
@@ -205,13 +205,6 @@ const renderStatus = (status) => {
             <span className='status-text'>{text}</span>
         </div>
     )
-}
-
-const renderOrderDetails = ({ product20L, product2L, product1L, product500ML, product300ML }) => {
-    return `
-    20 ltrs - ${Number(product20L)}, 2 ltrs - ${Number(product2L)} boxes, 1 ltr - ${Number(product1L)} boxes, 
-    500 ml - ${Number(product500ML)} boxes, 300 ml - ${Number(product300ML)} boxes
-    `
 }
 const options = [<Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>]
 export default Dispatches

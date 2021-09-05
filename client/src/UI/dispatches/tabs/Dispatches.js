@@ -15,7 +15,7 @@ import CustomDateInput from '../../../components/CustomDateInput';
 import CustomPagination from '../../../components/CustomPagination';
 import { TODAYDATE, WAREHOUSEADMIN } from '../../../utils/constants';
 import { EditIconGrey, ScheduleIcon } from '../../../components/SVG_Icons';
-import { disableFutureDates, doubleKeyComplexSearch, getStatusColor } from '../../../utils/Functions';
+import { disableFutureDates, doubleKeyComplexSearch, getStatusColor, renderProductDetails } from '../../../utils/Functions';
 const DATEFORMAT = 'DD-MM-YYYY'
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 const format = 'YYYY-MM-DD'
@@ -125,7 +125,7 @@ const Dispatches = ({ reFetch }) => {
             driverName,
             dispatchTo: dispatchAddress,
             dateAndTime: dayjs(dispatchedDate).format(DATEANDTIMEFORMAT),
-            productionDetails: renderOrderDetails(dispatch),
+            productionDetails: renderProductDetails(dispatch),
             status: renderStatus(status),
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, dispatch)} />
         }
@@ -216,11 +216,5 @@ const renderStatus = (status) => {
     )
 }
 
-const renderOrderDetails = ({ product20L = 0, product2L = 0, product1L = 0, product500ML = 0, product300ML = 0 }) => {
-    return `
-    20 ltrs - ${Number(product20L)}, 2 ltrs - ${Number(product2L)} boxes, 1 ltr - ${Number(product1L)} boxes, 
-    500 ml - ${Number(product500ML)} boxes, 300 ml - ${Number(product300ML)} boxes
-    `
-}
 const options = [<Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>]
 export default Dispatches

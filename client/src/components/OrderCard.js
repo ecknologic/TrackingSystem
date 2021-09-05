@@ -1,12 +1,12 @@
 import React from 'react';
 import '../sass/orderCard.scss'
-import { getStatusColor } from '../utils/Functions';
 import CustomButton from './CustomButton';
+import { getStatusColor, renderProductDetails } from '../utils/Functions';
 
 const OrderCard = ({ data, onClick }) => {
     const { dcNo, address, stock, isDelivered, ...rest } = data
     const status = renderStatus(isDelivered)
-    const details = renderOrderDetails(rest)
+    const details = renderProductDetails(rest)
 
     return (
         <div className='order-card-container'>
@@ -33,13 +33,6 @@ const renderStatus = (status) => {
             <span className='status-text'>{text}</span>
         </div>
     )
-}
-
-const renderOrderDetails = ({ product20L, product2L, product1L, product500ML, product300ML }) => {
-    return `
-    20 ltrs - ${Number(product20L)}, 2 ltrs - ${Number(product2L)} boxes, 1 ltr - ${Number(product1L)} boxes, 
-    500 ml - ${Number(product500ML)} boxes, 300 ml - ${Number(product300ML)} boxes
-    `
 }
 
 export default OrderCard

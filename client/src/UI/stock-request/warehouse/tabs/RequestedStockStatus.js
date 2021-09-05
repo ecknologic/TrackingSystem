@@ -17,7 +17,7 @@ import CustomDateInput from '../../../../components/CustomDateInput';
 import CustomPagination from '../../../../components/CustomPagination';
 import { MOTHERPLANTADMIN, TODAYDATE, TRACKFORM } from '../../../../utils/constants';
 import { EditIconGrey, EyeIconGrey, ScheduleIcon } from '../../../../components/SVG_Icons';
-import { deepClone, disableFutureDates, doubleKeyComplexSearch, getProductsForUI, getStatusColor, resetTrackForm, showToast } from '../../../../utils/Functions';
+import { deepClone, disableFutureDates, doubleKeyComplexSearch, getProductsForUI, getStatusColor, renderProductDetails, resetTrackForm, showToast } from '../../../../utils/Functions';
 const DATEFORMAT = 'DD-MM-YYYY'
 const dateFormatUI = 'DD/MM/YYYY'
 const format = 'YYYY-MM-DD'
@@ -186,7 +186,7 @@ const MaterialStatus = ({ reFetch }) => {
             dateAndTime: dayjs(createdDateTime).format(dateFormatUI),
             requiredDate: dayjs(requiredDate).format(dateFormatUI),
             status: renderStatus(status),
-            stockDetails: renderStockDetails(productsForUI),
+            stockDetails: renderProductDetails(productsForUI),
             action: <Actions options={getActions(status)} onSelect={({ key }) => handleMenuSelect(key, stock)} />
         }
     }), [stock])
@@ -317,13 +317,6 @@ const renderStatus = (status) => {
             <span className='status-text'>{status}</span>
         </div>
     )
-}
-
-const renderStockDetails = ({ product20L = 0, product2L = 0, product1L = 0, product500ML = 0, product300ML = 0 }) => {
-    return `
-    20 ltrs - ${Number(product20L)}, 2 ltrs - ${Number(product2L)} boxes, 1 ltr - ${Number(product1L)} boxes, 
-    500 ml - ${Number(product500ML)} boxes, 300 ml - ${Number(product300ML)} boxes
-    `
 }
 
 export default MaterialStatus
