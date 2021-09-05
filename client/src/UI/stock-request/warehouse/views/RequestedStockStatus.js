@@ -14,11 +14,9 @@ const RequestedStockStatusView = ({ data, formData, errors, isMPAdmin, editMode,
     const productsForUI = getProductsForUI(JSON.parse(products))
     const { reason } = formData
 
-    const { product20L, price20L, product2L, price2L, product1L, price1L,
-        product500ML, price500ML, product300ML, price300ML } = productsForUI
+    const { product20L, product2L, product1L, product500ML, product300ML } = productsForUI
 
     const color = getStatusColor(status)
-    const label = status === 'Rejected' ? status : 'Approved'
 
     return (
         <>
@@ -54,19 +52,11 @@ const RequestedStockStatusView = ({ data, formData, errors, isMPAdmin, editMode,
                                 <InputLabel name='20 Ltrs' />
                                 <InputValue size='smaller' value={product20L} />
                             </div>
-                            <div className='input-container'>
-                                <InputLabel name='Price' />
-                                <InputValue size='smaller' value={price20L} />
-                            </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='2 Ltrs (Box-1&times;12)' />
                                 <InputValue size='smaller' value={product2L} />
-                            </div>
-                            <div className='input-container'>
-                                <InputLabel name='Price' />
-                                <InputValue size='smaller' value={price2L} />
                             </div>
                         </div>
                         <div className='column'>
@@ -74,29 +64,17 @@ const RequestedStockStatusView = ({ data, formData, errors, isMPAdmin, editMode,
                                 <InputLabel name='1 Ltrs (Box-1&times;12)' />
                                 <InputValue size='smaller' value={product1L} />
                             </div>
-                            <div className='input-container'>
-                                <InputLabel name='Price' />
-                                <InputValue size='smaller' value={price1L} />
-                            </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='500 Ml (Box-1&times;12)' />
                                 <InputValue size='smaller' value={product500ML} />
                             </div>
-                            <div className='input-container'>
-                                <InputLabel name='Price' />
-                                <InputValue size='smaller' value={price500ML} />
-                            </div>
                         </div>
                         <div className='column'>
                             <div className='input-container'>
                                 <InputLabel name='300 Ml (Box-1&times;12)' />
                                 <InputValue size='smaller' value={product300ML} />
-                            </div>
-                            <div className='input-container'>
-                                <InputLabel name='Price' />
-                                <InputValue size='smaller' value={price300ML} />
                             </div>
                         </div>
                     </div>

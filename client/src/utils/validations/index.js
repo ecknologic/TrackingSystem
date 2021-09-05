@@ -786,7 +786,7 @@ export const validateRequestStockValues = (data) => {
     if (!requestTo) errors.requestTo = text
     if (!requiredDate) errors.requiredDate = text
 
-    let productErrors = validateProductNPrice(rest)
+    let productErrors = validateProducts(rest)
 
     return { ...errors, ...productErrors }
 }
