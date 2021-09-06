@@ -10,7 +10,7 @@ import {
     DashboardIcon, SettingIcon, FriendReqIcon, FriendReqIconLight, DocIconLight, FriendIcon,
     DashboardIconLight, SettingIconLight, ProjectIcon, ProjectIconLight, DocIcon, FriendsIconLight, FriendsIcon,
     FriendIconLight, LocationIcon, LocationIconLight, BlocksIcon, BlocksIconLight, StockIcon, StockIconLight, BadgeIcon, BadgeIconLight, RibbonIcon, RibbonIconLight, CheckIcon, CheckIconLight, StackIcon, StackIconLight,
-    HomeIcon, HomeIconLight, ReportIconLight
+    HomeIcon, HomeIconLight, ReportIconLight, ReportIcon
 } from '../../components/SVG_Icons'
 
 const SideMenu = () => {
@@ -105,7 +105,7 @@ const SideMenu = () => {
                             </Item>
                             <Item key='/reports' style={{ pointerEvents: 'none' }} icon={selected === '/reports' ? <ReportIcon /> : <ReportIconLight />}>
                                 Reports
-                            </Item>*/}
+                            </Item>
                             <Item key='/closed-customers' icon={selected === '/closed-customers' ? <FriendIcon /> : <FriendIconLight />}>
                                 Closed Customers
                             </Item>

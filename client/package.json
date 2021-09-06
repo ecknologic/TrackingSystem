@@ -30,8 +30,8 @@
     "build": "react-scripts build",
     "buildQa": "SET REACT_APP_API_HOST=http://15.207.25.20:8888/&& SET GENERATE_SOURCEMAP=false&&react-scripts build",
     "buildAwsQa": "export REACT_APP_API_HOST=http://15.207.25.20:8888/&& export GENERATE_SOURCEMAP=false&&react-scripts build",
-    "buildProd": "SET REACT_APP_API_HOST=http://65.1.190.193:8888/&& SET GENERATE_SOURCEMAP=false&&react-scripts build",
-    "buildAwsProd": "export REACT_APP_API_HOST=http://65.1.190.193:8888/&& export GENERATE_SOURCEMAP=false&&react-scripts build",
+    "buildProd": "SET REACT_APP_API_HOST=https://bibowater.org/&& SET GENERATE_SOURCEMAP=false&&react-scripts build",
+    "buildAwsProd": "export REACT_APP_API_HOST=https://bibowater.org/&& export GENERATE_SOURCEMAP=false&&react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
