@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import socketIOClient from "socket.io-client";
 import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
 import { getRoutesByRole, MARKETINGADMIN, MOTHERPLANTADMIN, SUPERADMIN, WAREHOUSEADMIN, ACCOUNTSADMIN, MARKETINGMANAGER } from './utils/constants';
 import { getMainPathname, resetTrackForm } from './utils/Functions';
@@ -61,10 +62,19 @@ import CollectionPerformanceReport from './UI/reports/collection-performance';
 import { MultiStatusFilterProvider } from './modules/multiStatusFilterContext';
 
 const App = () => {
+   const ENDPOINT = "http://localhost:8080";
    const { isLogged: isUser, ROLE } = useUser()
 
    useEffect(() => {
       resetTrackForm()
+
+      const socket = socketIOClient(ENDPOINT);
+      socket.emit("connect", data => {
+         console.log('~~Socket message from "connect"~~', data)
+      });
+
+      // CLEAN UP THE EFFECT
+      return () => socket.disconnect();
    }, [])
 
    const byRole = (Component) => (props) => {
