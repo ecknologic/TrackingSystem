@@ -24,7 +24,7 @@ import { DDownIcon, TrashIconLight } from '../../../components/SVG_Icons'
 import { getDropdownOptions, getStaffOptions, getWarehouseOptions } from '../../../assets/fixtures';
 import {
     getIdProofsForDB, getAddressesForDB, isEmpty, showToast, extractCADetails, base64String, getDevDays,
-    getProductsForUI, resetSessionItems, getSessionItems, resetTrackForm, getBase64
+    getProductsForUI, resetSessionItems, getSessionItems, resetTrackForm, getBase64, getLabel
 } from '../../../utils/Functions';
 import { ACCOUNTSADMIN, MARKETINGADMIN, SUPERADMIN, TRACKFORM } from '../../../utils/constants';
 import {
@@ -174,8 +174,8 @@ const ApproveAccount = () => {
         } catch (error) { }
     }
 
-    const handleChange = (value, key) => {
-        setAccountValues(data => ({ ...data, [key]: value }))
+    const handleChange = (value, key, label, labelKey) => {
+        setAccountValues(data => ({ ...data, [key]: value, ...getLabel(labelKey, label) }))
         setAccountErrors(errors => ({ ...errors, [key]: '' }))
 
         if (value === 'adharNo' || value === 'panNo' || value === 'licenseNo' || key === 'rocNo') {

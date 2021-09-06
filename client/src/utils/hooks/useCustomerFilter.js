@@ -1,9 +1,9 @@
 import { useContext } from 'react';
-import { FilterContext } from '../../modules/filterContext';
+import { CustomerFilterContext } from '../../modules/customerFilterContext';
 
 const useCustomerFilter = () => {
     const { setAccount, setCreator, setBusiness, setStatus,
-        setMainUrl, reset, ...rest } = useContext(FilterContext);
+        setMainUrl, reset, ...rest } = useContext(CustomerFilterContext);
 
     function onChange(value, target, checked) {
         const data = [...rest[target]]
@@ -48,7 +48,8 @@ const useCustomerFilter = () => {
         onSelect: (value, target) => onChange(value, target, true),
         onDeselect: (value, target) => onChange(value, target, false),
         hasFilters: hasFilters(),
-        resetFilters: reset
+        resetFilters: reset,
+        setStatus
     }
 };
 

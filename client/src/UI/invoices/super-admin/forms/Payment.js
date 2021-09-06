@@ -21,7 +21,7 @@ const PaymentForm = ({ data, paymentOptions = [], errors, onChange, onBlur }) =>
 
     const disableDates = (current) => {
         if (!current) return false
-        return current.valueOf() > Date.now() || current.valueOf() <= dayjs(createdDateTime).subtract(1, 'day')
+        return current.valueOf() > Date.now() || current.valueOf() <= dayjs(createdDateTime)
     }
 
     return (

@@ -18,7 +18,7 @@ import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomPagination from '../../../../components/CustomPagination';
 import { EditIconGrey, ListViewIconGrey, PlusIcon } from '../../../../components/SVG_Icons';
 import { orderColumns, getRouteOptions, getDriverOptions, getVehicleOptions, getWarehouseOptions, getDropdownOptions } from '../../../../assets/fixtures';
-import { isEmpty, resetTrackForm, showToast, deepClone, getProductsForUI, base64String, getDevDays, doubleKeyComplexSearch } from '../../../../utils/Functions';
+import { isEmpty, resetTrackForm, showToast, deepClone, getProductsForUI, base64String, getDevDays, doubleKeyComplexSearch, renderProductDetails } from '../../../../utils/Functions';
 import ActivityLogContent from '../../../../components/ActivityLogContent';
 
 const Orders = ({ driverList, vehicleList, locationList, warehouseList, routeList }) => {
@@ -261,8 +261,10 @@ const Orders = ({ driverList, vehicleList, locationList, warehouseList, routeLis
             return
         }
 
+        const { driverName } = driverList.find(item => item.driverId === driverId)
+
         let url = 'warehouse/assignDriverForDcs'
-        const body = { ...formData }
+        const body = { ...formData, driverName }
 
         try {
             setBtnDisabled(true)
@@ -342,22 +344,22 @@ const Orders = ({ driverList, vehicleList, locationList, warehouseList, routeLis
             return
         }
         const data = filterON ? filteredClone : ordersClone
-        const result = doubleKeyComplexSearch(data, value, 'deliveryDetailsId', 'contactPerson')
+        const result = doubleKeyComplexSearch(data, value, 'deliveryDetailsId', 'customerName')
         setTotalCount(result.length)
         setOrders(result)
         setSeachON(true)
     }
 
     const dataSource = useMemo(() => orders.map((order) => {
-        const { deliveryDetailsId: key, contactPerson, address, routeName, driverName, products } = order
+        const { deliveryDetailsId: key, customerName, address, routeName, driverName, products } = order
         return {
             key,
             id: `${key}`,
             address,
             route: routeName,
-            contactPerson,
+            customerName,
             driverName: driverName || "Not Assigned",
-            orderDetails: renderOrderDetails(getProductsForUI(products)),
+            orderDetails: renderProductDetails(getProductsForUI(products)),
             action: <Actions options={getActions(driverName)} onSelect={({ key }) => handleMenuSelect(key, order)} />
         }
     }), [orders, viewedArr, isFetched])
@@ -504,12 +506,6 @@ const Orders = ({ driverList, vehicleList, locationList, warehouseList, routeLis
     )
 }
 
-const renderOrderDetails = ({ product20L, product2L, product1L, product500ML, product300ML }) => {
-    return `
-    20 ltrs - ${Number(product20L)}, 2 ltrs - ${Number(product2L)} boxes, 1 ltr - ${Number(product1L)} boxes, 
-    500 ml - ${Number(product500ML)} boxes, 300 ml - ${Number(product300ML)} boxes
-    `
-}
 const getActions = (driverName) => {
     return [<Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>,
     <Menu.Item key="delivery" icon={<EditIconGrey />}>{`${driverName ? "Update" : "Add"} Delivery`}</Menu.Item>,

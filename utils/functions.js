@@ -118,6 +118,11 @@ const convertToWords = (number) => {
 var createHash = (password) => {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(10), null);
 }
+
+var isValidPassword = function (user, password) {
+    return bcrypt.compareSync(password, user.password);
+}
+
 var dateComparisions = (startDate, endDate, type) => {
     if (type == 'Today') {
         startDate = dayjs(startDate).subtract(1, 'day').format(DATEFORMAT)
@@ -358,7 +363,8 @@ const updateEnquiryProductDetails = (products) => {
 const prepareOrderResponseObj = (i) => {
     let responseObj = {
         "customerId": i.customerId,
-        "customerName": i.ownerName,
+        "customerNo": i.customerNo || i.customerId,
+        "customerName": i.ownerName || i.customerName,
         "mobileNumber": i.phoneNumber,
         // "AlternatePhNo": i.AlternatePhNo,
         "EmailId": i.EmailId,
@@ -377,20 +383,37 @@ const prepareOrderResponseObj = (i) => {
         deliveryLocation: i.deliveryLocation,
         latitude: i.latitude || null,
         longitude: i.longitude || null,
-        customerproducts: `20L:${i["20LCans"]};1L:${i["1LBoxes"]};500ML:${i["500MLBoxes"]};300ML:${i["300MLBoxes"]};2L:${i["2LBoxes"]}`
+        customerproducts: `20L:${i["20LCans"]};1L:${i["1LBoxes"]};500ML:${i["500MLBoxes"]};300ML:${i["300MLBoxes"]};2L:${i["2LBoxes"]}`,
+        deliveryProducts: {
+            product20L: i["20LCans"], product500ML: i["500MLBoxes"], product300ML: i["300MLBoxes"], product2L: i["2LBoxes"], product1L: i["1LBoxes"]
+        }
     }
     return responseObj
 }
 
-utils.getCurrentMonthStartAndEndDates = () => {
-    var date = new Date();
+utils.getRoundValue = (value, roundCount = 2) => {
+    return Math.round(value).toFixed(roundCount)
+}
+
+utils.getCurrentMonthStartAndEndDates = (startDate) => {
+    var date = startDate ? new Date(startDate) : new Date();
     var startDate = new Date(date.getFullYear(), date.getMonth(), 1);
     var endDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
     return { startDate, endDate }
 }
 
-utils.getPrevMonthStartAndEndDates = (prevMonthLength) => {
-    var date = new Date();
+utils.getDiffBtwDates = (startDate, endDate) => {
+    const date1 = dayjs(startDate)
+    const date2 = dayjs(endDate)
+    return date1.diff(date2, 'day')
+}
+
+utils.getRequiredDate = (requiredDays) => {
+    return dayjs(dayjs().add(requiredDays, 'day')).format('YYYY-MM-DD')
+}
+
+utils.getPrevMonthStartAndEndDates = (prevMonthLength, startDate) => {
+    var date = startDate ? new Date(startDate) : new Date();
     var startDate = new Date(date.getFullYear(), date.getMonth() - prevMonthLength, 1);
     var endDate = new Date(date.getFullYear(), date.getMonth() - (prevMonthLength - 1), 0);
     return { startDate, endDate }
@@ -464,8 +487,20 @@ utils.verifyLifetimeToken = async (token) => {
     })
 }
 
+utils.getKeyName = async (key) => {
+    return new Promise((resolve) => {
+        let keyName;
+        if (key == 'routeId') keyName = 'route'
+        else if (key == 'adminId') keyName = 'admin'
+        else if (key == 'driverId') keyName = 'driver'
+        else if (key == 'departmentId') keyName = 'department'
+        resolve(getKeyName)
+    })
+}
+
 module.exports = {
     utils,
+    isValidPassword,
     executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, checkDepartmentExists, productionCount,
     getCompareData, dateComparisions, checkUserExists, dbError, getBatchId, customerProductDetails, createHash, convertToWords,
     saveProductDetails, saveEnquiryProductDetails, updateEnquiryProductDetails, updateProductDetails, getFormatedNumber, getCompareCustomersData, getCompareDistributorsData, getGraphData, formatDate, prepareOrderResponseObj

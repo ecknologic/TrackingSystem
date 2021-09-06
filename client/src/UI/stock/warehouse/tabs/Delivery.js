@@ -21,7 +21,7 @@ import ActivityLogContent from '../../../../components/ActivityLogContent';
 import { BlockIconGrey, EditIconGrey, EyeIconGrey, ListViewIconGrey, PlusIcon, ScheduleIcon, ScheduleIconGrey } from '../../../../components/SVG_Icons';
 import { validateMobileNumber, validateNames, validateNumber, validateDCValues, validateEmailId, validateIntFloat } from '../../../../utils/validations';
 import { getRouteOptions, getDriverOptions, getDeliveryColumns, getDistributorOptions, getCustomerOptions, getDropdownOptions } from '../../../../assets/fixtures';
-import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone, getStatusColor, doubleKeyComplexSearch, getProductsForUI, disablePastDates } from '../../../../utils/Functions';
+import { isEmpty, resetTrackForm, getDCValuesForDB, showToast, deepClone, getStatusColor, doubleKeyComplexSearch, getProductsForUI, disablePastDates, renderProductDetails } from '../../../../utils/Functions';
 const format = 'YYYY-MM-DD'
 
 const Delivery = ({ date, routeList, locationList, driverList }) => {
@@ -267,16 +267,10 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
     const handleMenuSelect = async (key, data) => {
         const { dcNo, isDelivered, customerType } = data
         if (key === 'view') {
+            isEmpty(customerList) && getCustomerList()
             const title = `${dcNo} - ${customerType === 'newCustomer' ? 'New Customer'
                 : customerType === 'internal' ? 'Existing Customer' : 'Distributor'}`
             setTitle(title)
-
-            try {
-                showToast({ v1Ing: 'Fetching', action: 'loading' })
-                isEmpty(distributorList) && await getDistributorList()
-                isEmpty(customerList) && await getCustomerList()
-                message.destroy()
-            } catch (error) { }
 
             const isDisabled = isDelivered === 'Completed' || isDelivered === 'Cancelled'
             setOkTxt(isDisabled ? 'Close' : 'Update')
@@ -382,8 +376,10 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
             return
         }
 
+        const { driverName } = driverList.find(item => item.driverId === driverId)
+
         let url = 'warehouse/assignDriverForDcs'
-        const body = { driverId, routeId, selectedDate: date }
+        const body = { driverId, routeId, selectedDate: date, driverName }
         const options = { item: 'Driver', v1Ing: 'Assigning', v2: 'assigned' }
 
         try {
@@ -506,7 +502,7 @@ const Delivery = ({ date, routeList, locationList, driverList }) => {
             name: customerName,
             route: RouteName || 'Not Assigned',
             driverName: driverName || 'Not Assigned',
-            orderDetails: renderOrderDetails(dc),
+            orderDetails: renderProductDetails(dc),
             status: renderStatus(isDelivered),
             action: <>
                 <CustomDateInput // Hidden in the DOM
@@ -711,10 +707,4 @@ const renderStatus = (status) => {
     )
 }
 
-const renderOrderDetails = ({ product20L, product2L, product1L, product500ML, product300ML }) => {
-    return `
-    20 ltrs - ${Number(product20L)}, 2 ltrs - ${Number(product2L)} boxes, 1 ltr - ${Number(product1L)} boxes, 
-    500 ml - ${Number(product500ML)} boxes, 300 ml - ${Number(product300ML)} boxes
-    `
-}
 export default Delivery

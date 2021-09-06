@@ -104,80 +104,80 @@ const EnquiryForm = (props) => {
                 </div>
             </div>
             <div className='columns'>
-                    <InputLabel name='Products and Price' error={errors.productNPrice} mandatory />
-                    <div className='columns-container'>
-                        <div className='column'>
-                            <div className='input-container'>
-                                <InputLabel name='20 Ltrs' />
-                                <CustomInput value={product20L} 
-                                    placeholder='Qty' onChange={(value) => onChange(value, 'product20L')}
-                                />
-                            </div>
-                            <div className='input-container'>
-                                <InputLabel name='Price' />
-                                <CustomInput value={price20L} 
-                                    onBlur={(value) => onBlur(value, 'price20L')}
-                                    placeholder='Rs' onChange={(value) => onChange(value, 'price20L')} />
-                            </div>
+                <InputLabel name='Products and Price' error={errors.productNPrice} mandatory />
+                <div className='columns-container'>
+                    <div className='column'>
+                        <div className='input-container'>
+                            <InputLabel name='20 Ltrs' />
+                            <CustomInput value={product20L}
+                                placeholder='Qty' onChange={(value) => onChange(value, 'product20L')}
+                            />
                         </div>
-                        <div className='column'>
-                            <div className='input-container'>
-                                <InputLabel name='2 Ltrs (Box-1&times;9)' />
-                                <CustomInput value={product2L} 
-                                    placeholder='Qty' onChange={(value) => onChange(value, 'product2L')}
-                                />
-                            </div>
-                            <div className='input-container'>
-                                <InputLabel name='Price' />
-                                <CustomInput value={price2L} 
-                                    onBlur={(value) => onBlur(value, 'price2L')}
-                                    placeholder='Rs' onChange={(value) => onChange(value, 'price2L')} />
-                            </div>
+                        <div className='input-container'>
+                            <InputLabel name='Price' />
+                            <CustomInput value={price20L}
+                                onBlur={(value) => onBlur(value, 'price20L')}
+                                placeholder='Rs' onChange={(value) => onChange(value, 'price20L')} />
                         </div>
-                        <div className='column'>
-                            <div className='input-container'>
-                                <InputLabel name='1 Ltrs (Box-1&times;12)' />
-                                <CustomInput value={product1L} 
-                                    placeholder='Qty' onChange={(value) => onChange(value, 'product1L')}
-                                />
-                            </div>
-                            <div className='input-container'>
-                                <InputLabel name='Price' />
-                                <CustomInput value={price1L} 
-                                    onBlur={(value) => onBlur(value, 'price1L')}
-                                    placeholder='Rs' onChange={(value) => onChange(value, 'price1L')} />
-                            </div>
+                    </div>
+                    <div className='column'>
+                        <div className='input-container'>
+                            <InputLabel name='2 Ltrs (Box-1&times;9)' />
+                            <CustomInput value={product2L}
+                                placeholder='Qty' onChange={(value) => onChange(value, 'product2L')}
+                            />
                         </div>
-                        <div className='column'>
-                            <div className='input-container'>
-                                <InputLabel name='500 Ml (Box-1&times;24)' />
-                                <CustomInput value={product500ML} 
-                                    placeholder='Qty' onChange={(value) => onChange(value, 'product500ML')}
-                                />
-                            </div>
-                            <div className='input-container'>
-                                <InputLabel name='Price' />
-                                <CustomInput value={price500ML} 
-                                    onBlur={(value) => onBlur(value, 'price500ML')}
-                                    placeholder='Rs' onChange={(value) => onChange(value, 'price500ML')} />
-                            </div>
+                        <div className='input-container'>
+                            <InputLabel name='Price' />
+                            <CustomInput value={price2L}
+                                onBlur={(value) => onBlur(value, 'price2L')}
+                                placeholder='Rs' onChange={(value) => onChange(value, 'price2L')} />
                         </div>
-                        <div className='column'>
-                            <div className='input-container'>
-                                <InputLabel name='300 Ml (Box-1&times;30)' />
-                                <CustomInput value={product300ML} 
-                                    placeholder='Qty' onChange={(value) => onChange(value, 'product300ML')}
-                                />
-                            </div>
-                            <div className='input-container'>
-                                <InputLabel name='Price' />
-                                <CustomInput value={price300ML} 
-                                    onBlur={(value) => onBlur(value, 'price300ML')}
-                                    placeholder='Rs' onChange={(value) => onChange(value, 'price300ML')} />
-                            </div>
+                    </div>
+                    <div className='column'>
+                        <div className='input-container'>
+                            <InputLabel name='1 Ltrs (Box-1&times;12)' />
+                            <CustomInput value={product1L}
+                                placeholder='Qty' onChange={(value) => onChange(value, 'product1L')}
+                            />
+                        </div>
+                        <div className='input-container'>
+                            <InputLabel name='Price' />
+                            <CustomInput value={price1L}
+                                onBlur={(value) => onBlur(value, 'price1L')}
+                                placeholder='Rs' onChange={(value) => onChange(value, 'price1L')} />
+                        </div>
+                    </div>
+                    <div className='column'>
+                        <div className='input-container'>
+                            <InputLabel name='500 Ml (Box-1&times;24)' />
+                            <CustomInput value={product500ML}
+                                placeholder='Qty' onChange={(value) => onChange(value, 'product500ML')}
+                            />
+                        </div>
+                        <div className='input-container'>
+                            <InputLabel name='Price' />
+                            <CustomInput value={price500ML}
+                                onBlur={(value) => onBlur(value, 'price500ML')}
+                                placeholder='Rs' onChange={(value) => onChange(value, 'price500ML')} />
+                        </div>
+                    </div>
+                    <div className='column'>
+                        <div className='input-container'>
+                            <InputLabel name='300 Ml (Box-1&times;30)' />
+                            <CustomInput value={product300ML}
+                                placeholder='Qty' onChange={(value) => onChange(value, 'product300ML')}
+                            />
+                        </div>
+                        <div className='input-container'>
+                            <InputLabel name='Price' />
+                            <CustomInput value={price300ML}
+                                onBlur={(value) => onBlur(value, 'price300ML')}
+                                placeholder='Rs' onChange={(value) => onChange(value, 'price300ML')} />
                         </div>
                     </div>
                 </div>
+            </div>
             <div className='row'>
                 <div className='input-container'>
                     <InputLabel name='Registered Date' error={errors.registeredDate} />
@@ -199,7 +199,7 @@ const EnquiryForm = (props) => {
                     <InputLabel name='Sales & Collection Agent' error={errors.salesAgent} mandatory />
                     <SelectInput options={agentOptions} showSearch
                         disabled={disabled} error={errors.salesAgent} value={salesAgent}
-                        onSelect={(value) => onChange(value, 'salesAgent')}
+                        onSelect={(value, label) => onChange(value, 'salesAgent', label, 'salesAgentName')}
                     />
                 </div>
                 <div className='input-container'>

@@ -262,7 +262,7 @@ const ApprovalForm = (props) => {
                         options={agentOptions}
                         track disabled={disabled}
                         error={errors.salesAgent}
-                        onSelect={(value) => onChange(value, 'salesAgent')}
+                        onSelect={(value, label) => onChange(value, 'salesAgent', label, 'salesAgentName')}
                     />
                 </div>
             </div>

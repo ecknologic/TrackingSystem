@@ -1,36 +1,27 @@
 import { Dropdown, Menu } from 'antd';
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { FilterIconGrey } from './SVG_Icons';
 import CheckboxOption from './CheckboxOption';
+import useStatusFilter from '../utils/hooks/useStatusFilter';
 
-const StatusFilter = ({ onChange, filterList }) => {
+const StatusFilter = () => {
 
-    const dataRef = useRef({ status: [] })
+    const { onSelect, onDeselect, status } = useStatusFilter()
     const [visible, setVisible] = useState(false)
-
-    const handleSelect = (option, target) => {
-        dataRef.current[target].push(option)
-        onChange(dataRef.current)
-    }
-
-    const handleDeselect = (option, target) => {
-        const filtered = dataRef.current[target].filter((item) => item !== option)
-        dataRef.current[target] = filtered
-        onChange(dataRef.current)
-    }
 
     const menu = () => (
         <Menu className='app-accounts-filter'>
             <Menu.ItemGroup title='Select Status'>
                 {
-                    filterList.map((item) => {
+                    status.map(({ name, value, checked }) => {
                         return (
-                            <Menu.Item key={item.value}>
+                            <Menu.Item key={value}>
                                 <CheckboxOption
-                                    value={item.value}
-                                    option={item.name}
-                                    onSelect={(value) => handleSelect(value, 'status')}
-                                    onDeselect={(value) => handleDeselect(value, 'status')}
+                                    value={value}
+                                    option={name}
+                                    checked={checked}
+                                    onSelect={(value) => onSelect(value, 'status')}
+                                    onDeselect={(value) => onDeselect(value, 'status')}
                                 />
                             </Menu.Item>
                         )

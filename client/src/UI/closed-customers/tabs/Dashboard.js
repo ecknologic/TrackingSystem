@@ -5,30 +5,26 @@ import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../modules/http'
 import Spinner from '../../../components/Spinner';
 import MenuBar from '../../../components/MenuBar';
-import useUser from '../../../utils/hooks/useUser';
 import NoContent from '../../../components/NoContent';
 import ClosureCard from '../../../components/ClosureCard';
-import { closedFilterList } from '../../../assets/fixtures';
 import CustomPagination from '../../../components/CustomPagination';
-import { ACCOUNTSADMIN, SUPERADMIN } from '../../../utils/constants';
-import { doubleKeyComplexSearch, complexSort, complexDateSort, isEmpty } from '../../../utils/Functions';
+import useMultiStatusFilter from '../../../utils/hooks/useMultiStatusFilter';
+import { doubleKeyComplexSearch, complexSort, complexDateSort } from '../../../utils/Functions';
 
 const Dashboard = ({ reFetch }) => {
     const history = useHistory()
-    const { ROLE } = useUser()
     const { page = 1 } = useParams()
+    const { status, hasFilters } = useMultiStatusFilter()
     const [customersClone, setCustomersClone] = useState([])
     const [filteredClone, setFilteredClone] = useState([])
     const [customers, setCustomers] = useState([])
     const [loading, setLoading] = useState(true)
     const [pageSize, setPageSize] = useState(12)
     const [filterON, setFilterON] = useState(false)
-    const [searchON, setSeachON] = useState(false)
     const [pageNumber, setPageNumber] = useState(Number(page))
     const [sortBy, setSortBy] = useState('NEW - OLD')
     const [totalCount, setTotalCount] = useState(null)
 
-    const isAdmin = useMemo(() => ROLE === SUPERADMIN || ROLE === ACCOUNTSADMIN, [ROLE])
     const pageSizeOptions = useMemo(() => generatePageSizeOptions(), [window.innerWidth])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
@@ -43,6 +39,14 @@ const Dashboard = ({ reFetch }) => {
         setLoading(true)
         getClosedCustomers()
     }, [reFetch])
+
+    useEffect(() => {
+        if (!loading) {
+            const filters = { status }
+            if (!hasFilters) handleRemoveFilters()
+            else handleApplyFilters(filters, customersClone)
+        }
+    }, [status])
 
     const getClosedCustomers = async () => {
         const url = `customer/getCustomerClosingDetails`
@@ -61,13 +65,11 @@ const Dashboard = ({ reFetch }) => {
         if (value === "") {
             setTotalCount(customersClone.length)
             setCustomers(customersClone)
-            setSeachON(false)
             return
         }
         const result = doubleKeyComplexSearch(customersClone, value, 'customerName', 'contactperson')
         setTotalCount(result.length)
         setCustomers(result)
-        setSeachON(true)
     }
 
     const onSort = (type) => {
@@ -96,15 +98,9 @@ const Dashboard = ({ reFetch }) => {
         setSortBy(type)
     }
 
-    const onFilterChange = (data) => {
-        const { status } = data
-        if (isEmpty(status)) handleFilterClear()
-        else handleFilter(data)
-    }
-
-    const handleFilter = (filterInfo) => {
-        const { status } = filterInfo
-        const filtered = customersClone.filter((item) => status.includes(item.status))
+    const handleApplyFilters = (filterInfo, customers) => {
+        const status = filterInfo.status.filter(item => item.checked).map(item => item.value)
+        const filtered = customers.filter((item) => status.includes(item.status))
         setFilterON(true)
         setPageNumber(1)
         setCustomers(filtered)
@@ -112,7 +108,7 @@ const Dashboard = ({ reFetch }) => {
         setTotalCount(filtered.length)
     }
 
-    const handleFilterClear = () => {
+    const handleRemoveFilters = () => {
         setPageNumber(1)
         setCustomers(customersClone)
         setTotalCount(customersClone.length)
@@ -137,7 +133,7 @@ const Dashboard = ({ reFetch }) => {
 
     return (
         <Fragment>
-            <MenuBar filterList={closedFilterList} searchText='Search Accounts' onSearch={handleSearch} onSort={onSort} onFilter={onFilterChange} />
+            <MenuBar searchText='Search Accounts' onSearch={handleSearch} onSort={onSort} isMulti />
             <div className='employee-manager-content'>
                 <Row gutter={[{ lg: 32, xl: 16 }, { lg: 16, xl: 16 }]}>
                     {

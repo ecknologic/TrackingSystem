@@ -102,7 +102,8 @@ const PlantForm = (props) => {
                     <InputLabel name='Name' error={errors.adminId} />
                     <SelectInput track
                         options={staffOptions} value={adminId}
-                        error={errors.adminId} onSelect={(value) => onChange(value, 'adminId')}
+                        error={errors.adminId}
+                        onSelect={(value, label) => onChange(value, 'adminId', label, 'adminName')}
                     />
                 </div>
                 <div className='input-container'>

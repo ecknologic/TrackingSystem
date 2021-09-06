@@ -40,6 +40,7 @@ const MaterialStatus = ({ reFetch, isSuperAdmin = false }) => {
     const [resetSearch, setResetSearch] = useState(false)
     const [searchON, setSeachON] = useState(false)
     const [filterON, setFilterON] = useState(false)
+    const [shake, setShake] = useState(false)
 
     const RMColumns = useMemo(() => getRMColumns(null, isSuperAdmin), [])
     const source = useMemo(() => axios.CancelToken.source(), []);
@@ -85,18 +86,11 @@ const MaterialStatus = ({ reFetch, isSuperAdmin = false }) => {
     }
 
     const handleMenuSelect = (key, data) => {
-        const { rawmaterialid, itemCode } = data
         if (key === 'view') {
             setFormTitle(`Requested Material Details - ${data.orderId}`)
             setViewData(data)
             setFormData({ reason: data.reason || '' })
             setViewModal(true)
-        }
-        else if (key === 'approve') {
-            updateRMStatus(rawmaterialid, itemCode, 'Approved')
-        }
-        else if (key === 'reject') {
-            updateRMStatus(rawmaterialid, itemCode, 'Rejected')
         }
     }
 
@@ -107,10 +101,14 @@ const MaterialStatus = ({ reFetch, isSuperAdmin = false }) => {
     }
 
     const handleReject = () => {
-        const { rawmaterialid: id } = viewData
+        const { rawmaterialid: id, itemCode } = viewData
         const { reason } = formData
-        if (!reason.trim()) return setFormErrors({ reason: 'Reason is required on Reject ' })
-        updateRMStatus(id, 'Rejected', reason)
+        if (!reason.trim()) {
+            setShake(true)
+            setTimeout(() => setShake(false), 820)
+            return setFormErrors({ reason: 'Reason is required on Reject' })
+        }
+        updateRMStatus(id, itemCode, 'Rejected', reason)
     }
 
     const handleChange = (value, key) => {
@@ -130,7 +128,7 @@ const MaterialStatus = ({ reFetch, isSuperAdmin = false }) => {
     const updateRMStatus = async (rawmaterialid, itemCode, status, reason) => {
         const url = 'motherPlant/updateRMStatus'
         const body = { rawmaterialid, status, reason, itemCode }
-        const options = { item: 'Order', v1Ing: status === 'Approved' ? 'Approving' : 'Rejecting', v2: status }
+        const options = { item: 'Material Request', v1Ing: status === 'Approved' ? 'Approving' : 'Rejecting', v2: status }
 
         try {
             setBtnDisabled(true)
@@ -280,7 +278,10 @@ const MaterialStatus = ({ reFetch, isSuperAdmin = false }) => {
                 onOk={isSuperAdmin && editMode ? handleApprove : handleModalCancel}
                 onTwin={handleReject}
                 onCancel={handleModalCancel}
-                className='app-form-modal app-view-modal'
+                className={`
+                    app-form-modal app-view-modal
+                    ${shake ? 'app-shake' : ''}
+                `}
             >
                 <RequestedMaterialStatusView
                     data={viewData}

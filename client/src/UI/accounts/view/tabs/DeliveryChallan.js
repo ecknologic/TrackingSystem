@@ -13,9 +13,9 @@ import { getDeliveryColumns } from '../../../../assets/fixtures';
 import { EyeIconGrey } from '../../../../components/SVG_Icons';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomPagination from '../../../../components/CustomPagination';
-import { resetTrackForm, getStatusColor } from '../../../../utils/Functions';
+import { resetTrackForm, getStatusColor, renderProductDetails } from '../../../../utils/Functions';
 
-const DeliveryChallan = ({ accountId }) => {
+const DeliveryChallan = ({ accountId, customerType = 'customer' }) => {
     const [loading, setLoading] = useState(true)
     const [deliveries, setDeliveries] = useState([])
     const [formData, setFormData] = useState({})
@@ -41,7 +41,7 @@ const DeliveryChallan = ({ accountId }) => {
     }, [])
 
     const getDeliveries = async () => {
-        const url = `customer/customerDCDetails/${accountId}`
+        const url = `customer/customerDCDetails/${accountId}?customerType=${customerType}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -88,7 +88,7 @@ const DeliveryChallan = ({ accountId }) => {
             route: RouteName,
             name: customerName,
             driverName: driverName || 'Not Assigned',
-            orderDetails: renderOrderDetails(dc),
+            orderDetails: renderProductDetails(dc),
             status: renderStatus(isDelivered),
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, dc)} />
         }
@@ -171,13 +171,6 @@ const renderStatus = (status) => {
             <span className='status-text'>{text}</span>
         </div>
     )
-}
-
-const renderOrderDetails = ({ product20L, product2L, product1L, product500ML, product300ML }) => {
-    return `
-    20 ltrs - ${Number(product20L)}, 2 ltrs - ${Number(product2L)} boxes, 1 ltr - ${Number(product1L)} boxes, 
-    500 ml - ${Number(product500ML)} boxes, 300 ml - ${Number(product300ML)} boxes
-    `
 }
 const options = [<Menu.Item key="view" icon={<EyeIconGrey />}>View</Menu.Item>]
 export default DeliveryChallan

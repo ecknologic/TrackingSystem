@@ -18,8 +18,8 @@ const Login = () => {
 
     const loginBtn = () => {
         let errors1 = {};
-        if (username.trim() === "") errors1.username = "Please enter username";
-        if (password.trim() === "") errors1.password = "Please enter password"
+        if (username.trim() === "") errors1.username = "Please enter Username";
+        if (password.trim() === "") errors1.password = "Please enter Password"
         setErrors(errors1)
         if (Object.keys(errors1).length === 0) {
             let userData = {
@@ -92,7 +92,7 @@ const Login = () => {
                                             autoFocus
                                             value={username} onChange={(e) => onInputChange(e.target.value, "username")}
                                         />
-                                        <p className="errors">{errors.username}</p>
+                                        <p className="error-msg">{errors.username}</p>
                                     </Form.Item>
                                     <Form.Item>
                                         <h5>Password</h5>
@@ -103,7 +103,7 @@ const Login = () => {
                                             onChange={(e) => onInputChange(e.target.value, "password")}
                                             iconRender={visible => (visible ? <EyeIconGrey /> : <EyeHideIconGrey />)}
                                         />
-                                        <p className="errors">{errors.password}</p>
+                                        <p className="error-msg">{errors.password}</p>
                                     </Form.Item>
                                     <p className="forgotpasswordLink">
                                         <span className="forgotpasswordLinkicon"><QuestionCircleFilled /></span>

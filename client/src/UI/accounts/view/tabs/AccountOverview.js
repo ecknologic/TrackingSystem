@@ -15,7 +15,7 @@ import CustomButton from '../../../../components/CustomButton';
 import GeneralAccountForm from '../../add/forms/GeneralAccount';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CorporateAccountForm from '../../add/forms/CorporateAccount';
-import { base64String, extractCADetails, extractGADetails, getBase64, getIdProofsForDB, getMainPathname, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
+import { base64String, extractCADetails, extractGADetails, getBase64, getIdProofsForDB, getLabel, getMainPathname, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 import { validateIDProofs, validateAccountValues, validateIDNumbers, validateMobileNumber, validateNames, validateEmailId, validateNumber, compareMaxNumber, validatePinCode } from '../../../../utils/validations';
 
 const AccountOverview = ({ data, onUpdate, isAdmin, locationOptions, businessOptions, agentOptions }) => {
@@ -62,8 +62,8 @@ const AccountOverview = ({ data, onUpdate, isAdmin, locationOptions, businessOpt
         }
     }, [])
 
-    const handleChange = (value, key) => {
-        setAccountValues(data => ({ ...data, [key]: value }))
+    const handleChange = (value, key, label, labelKey) => {
+        setAccountValues(data => ({ ...data, [key]: value, ...getLabel(labelKey, label) }))
         setAccountErrors(errors => ({ ...errors, [key]: '' }))
 
         if (value === 'adharNo' || value === 'panNo' || value === 'licenseNo' || key === 'rocNo') {

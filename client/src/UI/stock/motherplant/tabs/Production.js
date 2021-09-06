@@ -13,7 +13,7 @@ import { EditIconGrey } from '../../../../components/SVG_Icons';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CustomPagination from '../../../../components/CustomPagination';
 import { shiftOptions, productionColumns } from '../../../../assets/fixtures';
-import { deepClone, getStatusColor, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
+import { deepClone, getStatusColor, isEmpty, renderProductDetails, resetTrackForm, showToast } from '../../../../utils/Functions';
 import { validateBatchValues, validateIntFloat, validateNames, validateNumber } from '../../../../utils/validations';
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
@@ -157,7 +157,7 @@ const Production = () => {
             key: batchId,
             TDS, batchId, phLevel, ozoneLevel, managerName, shiftType,
             status: renderStatus(status),
-            productionDetails: renderProductionDetails(rest),
+            productionDetails: renderProductDetails(rest),
             dateAndTime: dayjs(productionDate).format(DATEANDTIMEFORMAT),
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, product)} />
         }
@@ -241,11 +241,5 @@ const renderStatus = (status) => {
     )
 }
 
-const renderProductionDetails = ({ product20L, product2L, product1L, product500ML, product300ML }) => {
-    return `
-    20 ltrs - ${Number(product20L)}, 2 ltrs - ${Number(product2L)}, 1 ltr - ${Number(product1L)}, 
-    500 ml - ${Number(product500ML)}, 300 ml - ${Number(product300ML)}
-    `
-}
 const options = [<Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>]
 export default Production

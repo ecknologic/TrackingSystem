@@ -48,17 +48,20 @@ export const getRoutesByRole = (role) => {
         case SUPERADMIN:
             return ['/customers', '/materials', '/motherplants', '/warehouses', '/staff', '/drivers',
                 '/products', '/routes', '/distributors', '/invoices', '/roles', '/new-customers-report',
-                '/closed-customers-report', '/dispensers-viability-report', '/visited-customers',
-                '/closed-customers']
+                '/closed-customers-report', '/inactive-customers-report', '/dispensers-viability-report',
+                '/collection-performance-report', '/marketing-performance-report', '/visited-customers',
+                '/closed-customers', '/vendors']
 
         case ACCOUNTSADMIN:
             return ['/customers', '/invoices', '/receipts', '/closed-customers']
 
         case WAREHOUSEADMIN:
-            return ['/manage-stock', '/manage-routes', '/manage-empty-cans', '/drivers', '/manage-invoices', '/closed-customers']
+            return ['/manage-stock', '/manage-routes', '/manage-empty-cans', '/drivers', '/manage-invoices',
+                '/closed-customers', '/warehouse-staff', '/manage-dispatches', '/request-stock']
 
         case MOTHERPLANTADMIN:
-            return ['/manage-production', '/manage-dispatches', '/manage-materials', '/manage-qc', '/manage-return-cans']
+            return ['/manage-production', '/manage-dispatches', '/manage-materials', '/manage-qc', '/manage-return-cans',
+                '/manage-request-stock']
 
         default:
             return ['']

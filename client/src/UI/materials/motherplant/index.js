@@ -31,7 +31,7 @@ const Materials = () => {
     }, [])
 
     const getVendorList = async () => {
-        const url = `bibo/getList/vendor`
+        const url = `vendors/getvendorNamesList`
 
         try {
             const data = await http.GET(axios, url, config)

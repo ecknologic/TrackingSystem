@@ -2,9 +2,9 @@ import React from 'react';
 import SortBy from './SortByDropdown';
 import SearchInput from './SearchInput';
 import StatusFilter from './StatusFilter';
-import { statusFilterList } from '../assets/fixtures'
+import MultiStatusFilter from './MultiStatusFilter';
 
-const MenuBar = ({ searchText, onSearch, onSort, onFilter, filterList = statusFilterList }) => {
+const MenuBar = ({ searchText, onSearch, onSort, isMulti }) => {
 
     return (
         <div className='app-menu-container'>
@@ -18,7 +18,7 @@ const MenuBar = ({ searchText, onSearch, onSort, onFilter, filterList = statusFi
             <div className='rest-container'>
                 <div className='op-container'>
                     <SortBy onSelect={onSort} />
-                    <StatusFilter onChange={onFilter} filterList={filterList} />
+                    {isMulti ? <MultiStatusFilter /> : <StatusFilter />}
                 </div>
             </div>
         </div>

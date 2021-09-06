@@ -4,6 +4,11 @@ const { executeGetQuery, executeGetParamsQuery, executePostOrUpdateQuery, dateCo
 const { getDeliverysByCustomerOrderId } = require('../warehouse/queries.js');
 let customerQueries = {}
 
+customerQueries.getLastestDCByCustomerId = (customerId, callback) => {
+    let query = "SELECT deliveredDate FROM customerorderdetails WHERE existingCustomerId=? AND isDelivered='Completed' ORDER BY deliveredDate LIMIT 1"
+    executePostOrUpdateQuery(query, [customerId], callback)
+}
+
 customerQueries.getCustomerDetails = (customerId, callback) => {
     let query = "SELECT isSuperAdminApproved,isReceiptCreated,contactPerson,salesAgent,rocNo,poNo,depositAmount,customerId,customerName,c.mobileNumber,c.EmailId,c.Address1,c.gstNo,c.panNo,c.adharNo,c.registeredDate,c.invoicetype,c.natureOfBussiness,c.creditPeriodInDays,referredBy,isApproved,customertype,organizationName,idProofType,pincode as pinCode, dispenserCount, contractPeriod,customer_id_proof,d.idProof_backside,d.idProof_frontside,d.gstProof,u.userName as createdUserName,s.userName as salesAgentName from customerdetails c LEFT JOIN customerDocStore d ON c.customer_id_proof=d.docId INNER JOIN usermaster u ON u.userId=c.createdBy LEFT JOIN usermaster s ON c.salesAgent=s.userId WHERE c.customerId=" + customerId
     executeGetQuery(query, callback)
@@ -13,7 +18,7 @@ customerQueries.getCustomerDetailsForDC = (customerId, callback) => {
     executeGetQuery(query, callback)
 }
 customerQueries.getOrdersByDepartmentId = (departmentId, callback) => {
-    let query = "SELECT d.registeredDate,d.address,d.contactPerson,d.deliveryDetailsId,d.isActive as isApproved,d.vehicleId,r.routeName,r.routeId,dri.driverName,dri.driverId,dri.mobileNumber FROM DeliveryDetails d INNER JOIN routes r ON d.routeId=r.routeId left JOIN driverdetails dri ON d.driverId=dri.driverid WHERE d.deleted=0 AND d.isActive=1 AND d.isClosed=0 AND d.departmentId=? ORDER BY d.registeredDate DESC";
+    let query = "SELECT IFNULL(c.customerName,c.organizationName) as customerName,d.registeredDate,d.address,d.deliveryDetailsId,d.isActive as isApproved,d.vehicleId,r.routeName,r.routeId,dri.driverName,dri.driverId,dri.mobileNumber FROM DeliveryDetails d  INNER JOIN customerdetails c ON c.customerId=d.customer_Id INNER JOIN routes r ON d.routeId=r.routeId left JOIN driverdetails dri ON d.driverId=dri.driverid WHERE d.deleted=0 AND d.isActive=1 AND d.isClosed=0 AND d.departmentId=? ORDER BY d.registeredDate DESC";
     executeGetParamsQuery(query, [departmentId], callback)
 }
 customerQueries.getRoutesByDepartmentId = (req, callback) => {
@@ -357,7 +362,10 @@ customerQueries.getBusinessRequests = (callback) => {
 }
 customerQueries.getDeliveryDetailsById = ({ deliveryDetailsId, isSuperAdmin }) => {
     return new Promise((resolve, reject) => {
-        let deliveryDetailsQuery = "SELECT gstNo,location as deliveryLocation,address,phoneNumber,contactPerson,depositAmount,departmentId,isActive as isApproved,gstProof,routeId from DeliveryDetails  WHERE deleted=0 AND deliveryDetailsId=?";
+        let deliveryDetailsQuery = `SELECT d.gstNo,d.location AS deliveryLocation,d.address,d.phoneNumber,d.contactPerson,d.depositAmount,d.departmentId,
+        d.isActive AS isApproved,d.gstProof,d.routeId,r.RouteName AS routeName,dep.departmentName 
+        FROM DeliveryDetails d LEFT JOIN routes r ON r.RouteId=d.routeId LEFT JOIN 
+        departmentmaster dep ON dep.departmentId=d.departmentId  WHERE d.deleted=0 AND d.deliveryDetailsId=?`;
         executePostOrUpdateQuery(deliveryDetailsQuery, [deliveryDetailsId], (err, results) => {
             if (err) reject(err)
             else {
@@ -480,9 +488,23 @@ customerQueries.updateDCNo = (insertedId, callback) => {
     let query = "UPDATE customerorderdetails SET DCNO=? WHERE customerOrderId=?"
     executePostOrUpdateQuery(query, [`DC-${insertedId}`, insertedId], callback)
 }
+customerQueries.updateDCStatus = (date, callback) => {
+    let query = "UPDATE customerorderdetails SET isDelivered=? WHERE customerType='internal' AND creationType='auto' AND isDelivered='InProgress' AND DATE(deliveryDate)=?"
+    executePostOrUpdateQuery(query, ['NotDelivered', date], callback)
+}
 customerQueries.getOrderDetails = (customerOrderId, callback) => {
     let query = `select c.routeId,c.driverId,r.routeName,d.driverName from customerorderdetails c LEFT JOIN routes r ON c.routeId=r.RouteId LEFT JOIN driverdetails d ON c.driverId=d.driverId where customerOrderId=${customerOrderId}`;
     executeGetQuery(query, callback)
+}
+customerQueries.getOrderDetailsByRoute = (input, callback) => {
+    const { selectedDate, routeId } = input
+    let query = `select c.driverId,d.driverName,c.customerOrderId from customerorderdetails c LEFT JOIN driverdetails d ON c.driverId=d.driverId where c.routeId=? AND DATE(deliveryDate)=?`;
+    executeGetParamsQuery(query, [routeId, selectedDate], callback)
+}
+customerQueries.getDeliveryDetailsByRoute = (input, callback) => {
+    const { departmentId, routeId } = input
+    let query = `select c.driverId,d.driverName,c.deliveryDetailsId,c.customer_Id from DeliveryDetails c LEFT JOIN driverdetails d ON c.driverId=d.driverId where c.routeId=? AND c.departmentId=? AND c.isClosed=0 AND c.isActive=1`;
+    executeGetParamsQuery(query, [routeId, departmentId], callback)
 }
 customerQueries.updateOrderDetails = (input, callback) => {
     let { routeId, driverId, customerOrderId } = input

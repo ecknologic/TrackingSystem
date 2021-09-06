@@ -70,6 +70,9 @@ const SideMenu = () => {
                             <Item key='/manage-materials' icon={selected === '/manage-materials' ? <RibbonIcon /> : <RibbonIconLight />}>
                                 Materials
                             </Item>
+                            <Item key='/manage-request-stock' icon={selected === '/manage-request-stock' ? <RibbonIcon /> : <RibbonIconLight />}>
+                                Stock Request
+                            </Item>
                             <Item key='/manage-qc' icon={selected === '/manage-qc' ? <BadgeIcon /> : <BadgeIconLight />}>
                                 Quality Control
                             </Item>
@@ -85,14 +88,22 @@ const SideMenu = () => {
                             <Item key='/manage-empty-cans' icon={selected === '/manage-empty-cans' ? <ProjectIcon /> : <ProjectIconLight />}>
                                 Empty Cans
                             </Item>
+                            <Item key='/manage-dispatches' icon={selected === '/manage-dispatches' ? <CheckIcon /> : <CheckIconLight />}>
+                                Dispatches
+                            </Item>
+                            <Item key='/request-stock' icon={selected === '/request-stock' ? <RibbonIcon /> : <RibbonIconLight />}>
+                                Stock Request
+                            </Item>
                             <Item key='/manage-invoices' icon={selected === '/manage-invoices' ? <DocIcon /> : <DocIconLight />}>
                                 Invoices
                             </Item>
                             <Item key='/manage-routes' icon={selected === '/manage-routes' ? <LocationIcon /> : <LocationIconLight />}>
                                 Routes
                             </Item>
-                            {/* Below item should be: uncommented */}
-                            {/* <Item key='/reports' style={{ pointerEvents: 'none' }} icon={selected === '/reports' ? <ReportIcon /> : <ReportIconLight />}>
+                            <Item key='/warehouse-staff' icon={selected === '/warehouse-staff' ? <FriendsIcon /> : <FriendsIconLight />}>
+                                Staff
+                            </Item>
+                            <Item key='/reports' style={{ pointerEvents: 'none' }} icon={selected === '/reports' ? <ReportIcon /> : <ReportIconLight />}>
                                 Reports
                             </Item>*/}
                             <Item key='/closed-customers' icon={selected === '/closed-customers' ? <FriendIcon /> : <FriendIconLight />}>
@@ -165,6 +176,9 @@ const SideMenu = () => {
                                 <Item key='/distributors' icon={selected === '/distributors' ? <FriendsIcon /> : <FriendsIconLight />}>
                                     Distributors
                                 </Item>
+                                <Item key='/vendors' icon={selected === '/vendors' ? <FriendsIcon /> : <FriendsIconLight />}>
+                                    Vendors
+                                </Item>
                                 <Item key='/routes' icon={selected === '/routes' ? <LocationIcon /> : <LocationIconLight />}>
                                     Routes
                                 </Item>
@@ -191,11 +205,20 @@ const SideMenu = () => {
                                 <Item key='/new-customers-report' icon={selected === '/new-customers-report' ? <FriendIcon /> : <FriendIconLight />}>
                                     New Customers
                                 </Item>
+                                <Item key='/inactive-customers-report' icon={selected === '/inactive-customers-report' ? <FriendIcon /> : <FriendIconLight />}>
+                                    Inactive Customers
+                                </Item>
                                 <Item key='/closed-customers-report' icon={selected === '/closed-customers-report' ? <FriendIcon /> : <FriendIconLight />}>
                                     Closed Customers
                                 </Item>
                                 <Item key='/dispensers-viability-report' icon={selected === '/dispensers-viability-report' ? <FriendIcon /> : <FriendIconLight />}>
                                     Dispensers Viability
+                                </Item>
+                                <Item key='/collection-performance-report' icon={selected === '/collection-performance-report' ? <FriendIcon /> : <FriendIconLight />}>
+                                    Collection Performance
+                                </Item>
+                                <Item key='/marketing-performance-report' icon={selected === '/marketing-performance-report' ? <FriendIcon /> : <FriendIconLight />}>
+                                    Marketing Performance
                                 </Item>
                             </SubMenu>
                             {/* <Item key='/settings' style={{ pointerEvents: 'none' }} icon={selected === '/settings' ? <SettingIcon /> : <SettingIconLight />}>

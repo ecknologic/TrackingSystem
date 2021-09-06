@@ -10,8 +10,8 @@ import CustomModal from '../../../../components/CustomModal';
 import SearchInput from '../../../../components/SearchInput';
 import { EyeIconGrey } from '../../../../components/SVG_Icons';
 import { damagedStockColumns } from '../../../../assets/fixtures';
-import { doubleKeyComplexSearch } from '../../../../utils/Functions';
 import CustomPagination from '../../../../components/CustomPagination';
+import { doubleKeyComplexSearch, renderProductDetails } from '../../../../utils/Functions';
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
 const DamagedStock = () => {
@@ -90,7 +90,7 @@ const DamagedStock = () => {
             batchId,
             managerName,
             dateAndTime: dayjs(createdDateTime).format(DATEANDTIMEFORMAT),
-            stockDetails: renderStockDetails({ product20L, product1L, product2L, product300ML, product500ML }),
+            stockDetails: renderProductDetails({ product20L, product1L, product2L, product300ML, product500ML }),
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, order)} />
         }
     }), [stock])
@@ -147,12 +147,6 @@ const DamagedStock = () => {
             </CustomModal>
         </div>
     )
-}
-const renderStockDetails = ({ product20L, product1L, product2L, product500ML, product300ML }) => {
-    return `
-    20 ltrs - ${Number(product20L)}, 2 ltrs - ${Number(product2L)} boxes, 1 ltr - ${Number(product1L)} boxes,
-    500 ml - ${Number(product500ML)} boxes, 300 ml - ${Number(product300ML)} boxes
-    `
 }
 const options = [<Menu.Item key="view" icon={<EyeIconGrey />}>View</Menu.Item>]
 export default DamagedStock

@@ -5,21 +5,23 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../modules/http';
 import DispatchView from '../views/Dispatch';
 import Spinner from '../../../components/Spinner';
-import { TODAYDATE } from '../../../utils/constants';
-import DateValue from '../../../components/DateValue';
-import { EditIconGrey, ScheduleIcon } from '../../../components/SVG_Icons';
 import Actions from '../../../components/Actions';
+import useUser from '../../../utils/hooks/useUser';
+import DateValue from '../../../components/DateValue';
 import SearchInput from '../../../components/SearchInput';
 import CustomModal from '../../../components/CustomModal';
 import { getDispatchColumns } from '../../../assets/fixtures';
 import CustomDateInput from '../../../components/CustomDateInput';
 import CustomPagination from '../../../components/CustomPagination';
-import { disableFutureDates, doubleKeyComplexSearch, getStatusColor } from '../../../utils/Functions';
+import { TODAYDATE, WAREHOUSEADMIN } from '../../../utils/constants';
+import { EditIconGrey, ScheduleIcon } from '../../../components/SVG_Icons';
+import { disableFutureDates, doubleKeyComplexSearch, getStatusColor, renderProductDetails } from '../../../utils/Functions';
 const DATEFORMAT = 'DD-MM-YYYY'
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 const format = 'YYYY-MM-DD'
 
 const Dispatches = ({ reFetch }) => {
+    const { ROLE } = useUser()
     const [loading, setLoading] = useState(true)
     const [viewData, setViewData] = useState({})
     const [pageSize, setPageSize] = useState(10)
@@ -36,7 +38,8 @@ const Dispatches = ({ reFetch }) => {
     const [filterON, setFilterON] = useState(false)
     const [open, setOpen] = useState(false)
 
-    const dispatchColumns = useMemo(() => getDispatchColumns(), [])
+    const isWHAdmin = useMemo(() => ROLE === WAREHOUSEADMIN, [])
+    const dispatchColumns = useMemo(() => getDispatchColumns(null, isWHAdmin), [])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
@@ -105,7 +108,7 @@ const Dispatches = ({ reFetch }) => {
             return
         }
         const data = filterON ? filteredClone : dispatchesClone
-        const result = doubleKeyComplexSearch(data, value, 'dcNo', 'batchId')
+        const result = doubleKeyComplexSearch(data, value, 'DCNO', 'batchId')
         setTotalCount(result.length)
         setDispatches(result)
         setSeachON(true)
@@ -122,7 +125,7 @@ const Dispatches = ({ reFetch }) => {
             driverName,
             dispatchTo: dispatchAddress,
             dateAndTime: dayjs(dispatchedDate).format(DATEANDTIMEFORMAT),
-            productionDetails: renderOrderDetails(dispatch),
+            productionDetails: renderProductDetails(dispatch),
             status: renderStatus(status),
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, dispatch)} />
         }
@@ -194,6 +197,7 @@ const Dispatches = ({ reFetch }) => {
                 className='app-form-modal app-view-modal'
             >
                 <DispatchView
+                    isWHAdmin={isWHAdmin}
                     data={viewData}
                 />
             </CustomModal>
@@ -212,11 +216,5 @@ const renderStatus = (status) => {
     )
 }
 
-const renderOrderDetails = ({ product20L = 0, product2L = 0, product1L = 0, product500ML = 0, product300ML = 0 }) => {
-    return `
-    20 ltrs - ${Number(product20L)}, 2 ltrs - ${Number(product2L)} boxes, 1 ltr - ${Number(product1L)} boxes, 
-    500 ml - ${Number(product500ML)} boxes, 300 ml - ${Number(product300ML)} boxes
-    `
-}
 const options = [<Menu.Item key="view" icon={<EditIconGrey />}>View/Edit</Menu.Item>]
 export default Dispatches

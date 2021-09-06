@@ -3,7 +3,7 @@ var router = express.Router();
 const db = require('../config/db.js')
 var bcrypt = require("bcryptjs");
 const usersQueries = require('../dbQueries/users/queries.js');
-const { dbError, createHash, utils } = require('../utils/functions.js');
+const { dbError, createHash, utils, isValidPassword } = require('../utils/functions.js');
 const auditQueries = require('../dbQueries/auditlogs/queries.js');
 const { compareWebUserData, compareWebUserDependentDetails } = require('./utils/users.js');
 const { sendMail } = require('./mailTemplate.js');
@@ -101,11 +101,11 @@ router.put('/updateUserStatus', (req, res) => {
 })
 router.post('/updateWebUser', async (req, res) => {
   let query = "UPDATE usermaster SET userName=?,roleId=?,departmentId=?,emailid=?, mobileNumber=?, joinedDate=?, parentName=?, gender=?, dob=?, adharNo=?, address=?, permanentAddress=?,adhar_frontside=?,adhar_backside=?,accountNo=?,bankName=?,branchName=?,ifscCode=?,recommendedBy=?,recruitedBy=?,bloodGroup=?  where userId=?";
-  const { userName, roleId, departmentId, emailid, mobileNumber, userId: webUserId, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, adharProof, dependentDetails, accountNo, bankName, branchName, ifscCode, recommendedBy, recruitedBy, removedDepartmentId, bloodGroup } = req.body
+  const { userName, roleId, departmentId, emailid, mobileNumber, userId: webUserId, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, adharProof, dependentDetails, accountNo, bankName, branchName, ifscCode, recommendedBy, recruitedBy, removedDepartmentId, bloodGroup, roleName, departmentName } = req.body
   let adhar_frontside = adharProof && adharProof.Front && Buffer.from(adharProof.Front.replace(/^data:image\/\w+;base64,/, ""), 'base64')
   let adhar_backside = adharProof && adharProof.Back && Buffer.from(adharProof.Back.replace(/^data:image\/\w+;base64,/, ""), 'base64')
   let insertQueryValues = [userName, roleId, departmentId, emailid, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, adhar_frontside, adhar_backside, accountNo, bankName, branchName, ifscCode, recommendedBy, recruitedBy, bloodGroup, webUserId]
-  const logs = await compareWebUserData({ userName, roleId, departmentId, emailid, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, adhar_frontside, adhar_backside, accountNo, bankName, branchName, ifscCode, recommendedBy, recruitedBy, bloodGroup }, { staffId: webUserId, userId, userRole, adminUserName })
+  const logs = await compareWebUserData({ userName, roleId, departmentId, emailid, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, adhar_frontside, adhar_backside, accountNo, bankName, branchName, ifscCode, recommendedBy, recruitedBy, bloodGroup, roleName, departmentName }, { staffId: webUserId, userId, userRole, adminUserName })
   db.query(query, insertQueryValues, async (err, results) => {
     if (err) res.send(err);
     else {
@@ -150,7 +150,16 @@ router.post('/updateWebUser', async (req, res) => {
 });
 
 router.post('/updatePassword', (req, res) => {
-  updatePassword(req.body, res)
+  const { currentPassword } = req.body
+  usersQueries.getUserPassword(req.body, (err, data) => {
+    if (err) res.status(500).json(dbError(err))
+    else if (!data.length) res.status(404).json('User not found')
+    else {
+      let user = data[0]
+      if (!isValidPassword(user, currentPassword)) return res.status(400).json('Bad request')
+      updatePassword(req.body, res)
+    }
+  })
 });
 
 router.put('/forgotPassword', (req, res) => {

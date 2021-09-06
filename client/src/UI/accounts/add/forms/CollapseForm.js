@@ -1,15 +1,15 @@
 import axios from 'axios';
 import React, { useEffect, useMemo, useState } from 'react';
 import { http } from '../../../../modules/http';
-import { getBase64 } from '../../../../utils/Functions';
 import InputLabel from '../../../../components/InputLabel';
 import SelectInput from '../../../../components/SelectInput';
 import CustomInput from '../../../../components/CustomInput';
 import DraggerInput from '../../../../components/DraggerInput';
+import { getBase64, getLabel } from '../../../../utils/Functions';
 import CustomTextArea from '../../../../components/CustomTextArea';
 import UploadPreviewer from '../../../../components/UploadPreviewer';
 import { dayOptions, getRouteOptions, WEEKDAYS } from '../../../../assets/fixtures'
-import { validateIntFloat, validateMobileNumber, validateNames, validateNumber } from '../../../../utils/validations';
+import { validateIntFloat, validateMobileNumber, validateNumber } from '../../../../utils/validations';
 
 const CollapseForm = ({ data, warehouseOptions, locationOptions, uniqueId, addressesErrors }) => {
 
@@ -56,8 +56,8 @@ const CollapseForm = ({ data, warehouseOptions, locationOptions, uniqueId, addre
         } catch (error) { }
     }
 
-    const onChange = (value, key) => {
-        setDeliveryValues(data => ({ ...data, [key]: value }))
+    const onChange = (value, key, label, labelKey) => {
+        setDeliveryValues(data => ({ ...data, [key]: value, ...getLabel(labelKey, label) }))
         setErrors(errors => ({ ...errors, [key]: '' }))
 
         if (key === 'departmentId') {
@@ -79,7 +79,7 @@ const CollapseForm = ({ data, warehouseOptions, locationOptions, uniqueId, addre
             setErrors(errors => ({ ...errors, productNPrice: error }))
         }
     }
-
+    console.log('asdfsf', deliveryValues)
     const onBlur = (value, key) => {
 
         // Validations
@@ -178,13 +178,13 @@ const CollapseForm = ({ data, warehouseOptions, locationOptions, uniqueId, addre
                         <InputLabel name='Warehouse' error={errors.departmentId} mandatory />
                         <SelectInput options={warehouseOptions} value={departmentId}
                             error={errors.departmentId}
-                            onSelect={(value) => onChange(value, 'departmentId')} />
+                            onSelect={(value, label) => onChange(value, 'departmentId', label, 'departmentName')} />
                     </div>
                     <div className='input-container'>
                         <InputLabel name='Route' error={errors.routeId} mandatory />
                         <SelectInput track options={routeOptions}
                             value={routeId} error={errors.routeId}
-                            onSelect={(value) => onChange(value, 'routeId')}
+                            onSelect={(value, label) => onChange(value, 'routeId', label, 'routeName')}
                         />
                     </div>
                 </div>

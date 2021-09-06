@@ -27,7 +27,7 @@ const ForgotPassword = () => {
     const handleSendLink = async () => {
         const errors = {};
         if (username.trim() === "") {
-            errors.username = "Please enter User ID or E-mail";
+            errors.username = "Please enter Username or Email";
         }
 
         if (!isEmpty(errors)) {
@@ -97,7 +97,7 @@ const ForgotPassword = () => {
                                                     autoFocus
                                                     value={username} onChange={handleEmailChange}
                                                 />
-                                                <p className="errors">{errors.username}</p>
+                                                <p className="error-msg">{errors.username}</p>
                                             </Form.Item>
                                             <Row>
                                                 <Col span={12}>

@@ -6,15 +6,16 @@ const compareDepartmentData = (data, { departmentId, type, adminUserId: userId, 
         motherplantQueries.getDepartmentDetailsById(departmentId, (err, results) => {
             if (err) resolve([])
             else if (results.length) {
+                const { adminName } = data
                 const oldData = results[0]
                 const records = []
                 const createdDateTime = new Date()
                 Object.entries(data).map(([key, updatedValue]) => {
                     const oldValue = oldData[key]
-                    if (oldValue != updatedValue && key != 'idProofs' && key != 'gstProof') {
+                    if (oldValue != updatedValue && key != 'adminName' && key != 'idProofs' && key != 'gstProof') {
                         records.push({
-                            oldValue,
-                            updatedValue,
+                            oldValue: key == 'adminId' ? oldData.adminName : oldValue,
+                            updatedValue: key == 'adminId' ? adminName : updatedValue,
                             createdDateTime,
                             userId,
                             description: `Updated ${type == "motherplant" ? 'Motherplant' : 'Warehouse'} ${key} by ${userRole} <b>(${userName})</b>`,
@@ -35,7 +36,7 @@ const compareDepartmentData = (data, { departmentId, type, adminUserId: userId, 
 //Motherplant Current Stock
 const compareCurrentStockLog = (data, { departmentId, itemCode, userId, userRole, userName }) => {
     return new Promise((resolve) => {
-        motherPlantDbQueries.getCurrentRMDetailsByItemCode({itemCode,departmentId}, (err, results) => {
+        motherPlantDbQueries.getCurrentRMDetailsByItemCode({ itemCode, departmentId }, (err, results) => {
             if (err) resolve([])
             else if (results.length) {
                 const oldData = results[0]
@@ -65,9 +66,9 @@ const compareCurrentStockLog = (data, { departmentId, itemCode, userId, userRole
     })
 }
 
-const getCurrentStockKeyName=(key)=>{
-    if(key=='totalQuantity') return 'Total Quantity'
-    if(key=='damagedCount') return 'Damaged Count'
+const getCurrentStockKeyName = (key) => {
+    if (key == 'totalQuantity') return 'Total Quantity'
+    if (key == 'damagedCount') return 'Damaged Count'
 }
 
 module.exports = { compareDepartmentData, compareCurrentStockLog }

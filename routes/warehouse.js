@@ -6,10 +6,12 @@ const auditQueries = require('../dbQueries/auditlogs/queries.js');
 const customerQueries = require('../dbQueries/Customer/queries.js');
 const departmenttransactionQueries = require('../dbQueries/departmenttransactions/queries.js');
 const motherPlantDbQueries = require('../dbQueries/motherplant/queries.js');
+const stockRequestQueries = require('../dbQueries/stockrequests/queries.js');
 const usersQueries = require('../dbQueries/users/queries.js');
 const warehouseQueries = require('../dbQueries/warehouse/queries.js');
 const { DATEFORMAT, INSERTMESSAGE, UPDATEMESSAGE, WEEKDAYS, constants } = require('../utils/constants.js');
 const { customerProductDetails, dbError, getCompareData, getFormatedNumber, getGraphData, getCompareCustomersData } = require('../utils/functions.js');
+const { compareDCDataByRoute, compareOrdersDataByRoute } = require('./utils/customer.js');
 const { compareDepartmentData } = require('./utils/department.js');
 var departmentId, adminUserId, userName, userRole;
 //Middle ware that is specific to this router
@@ -113,9 +115,9 @@ router.post('/createWarehouse', (req, res) => {
   });
 });
 router.post('/updateWarehouse', async (req, res) => {
-  const { departmentId, adminId: userId, removedAdminId, address, departmentName, city, state, pinCode, adminId, phoneNumber, gstNo } = req.body
+  const { departmentId, adminId: userId, removedAdminId, address, departmentName, city, state, pinCode, adminId, phoneNumber, gstNo, adminName } = req.body
   let data = {
-    address, departmentName, city, state, pinCode, adminId, phoneNumber, gstNo
+    address, departmentName, city, state, pinCode, adminId, phoneNumber, gstNo, adminName
   }
   const logs = await compareDepartmentData(data, { type: 'warehouse', departmentId, adminUserId, userRole, userName })
   warehouseQueries.updateWarehouse(req.body, (err, results) => {
@@ -178,10 +180,32 @@ router.put('/updateDC', (req, res) => {
   });
 })
 
-router.put('/assignDriverForDcs', (req, res) => {
+router.put('/assignDriverForDcs', async (req, res) => {
+  const { selectedDate, driverName, routeId } = req.body
+  let logs;
+
+  if (selectedDate != undefined && selectedDate != null) {
+    logs = await compareDCDataByRoute({ driverName, routeId, selectedDate }, { departmentId, userId: adminUserId, userRole, userName })
+  } else {
+    logs = await compareOrdersDataByRoute({ driverName, routeId, departmentId }, { userId: adminUserId, userRole, userName })
+  }
+
   warehouseQueries.assignDriversForMultipleDcs(req.body, (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
-    else res.json(UPDATEMESSAGE)
+    else {
+      if (logs.length && selectedDate != undefined && selectedDate != null) {
+        departmenttransactionQueries.createDepartmentTransaction(logs, (err, data) => {
+          if (err) console.log('log error', err)
+          else console.log('log data', data)
+        })
+      } else if (logs.length) {
+        departmenttransactionQueries.createDepartmentTransaction(logs, (err, data) => {
+          if (err) console.log('log error', err)
+          else console.log('log data', data)
+        })
+      }
+      res.json(UPDATEMESSAGE)
+    }
   });
 })
 
@@ -221,6 +245,37 @@ router.get('/deliveryDetails/:date', (req, res) => {
   warehouseQueries.getDeliveryDetails({ date, departmentId }, (err, results) => {
     if (err) res.status(500).json(err.sqlMessage);
     res.send(JSON.stringify(results));
+  });
+});
+
+router.get('/deliveryDetailsByDriver/:date', (req, res) => {
+  var date = req.params.date;
+  warehouseQueries.getTotalDeliveryDetailsByDriver({ date, departmentId }, (err, results) => {
+    if (err) res.status(500).json(err.sqlMessage);
+    else if (!results.length) res.send(JSON.stringify(results));
+    else {
+      let result = results[0]
+      let obj = {
+        driverName: result.driverName,
+        mobileNumber: result.mobileNumber,
+        routeName: result.routeName,
+        driverId: result.driverId
+      }
+      obj.stockDetails = result
+      warehouseQueries.getDeliveredDeliveryDetailsByDriver({ date, departmentId }, (err, deliveredData) => {
+        if (err) res.status(500).json(err.sqlMessage);
+        else {
+          obj.deliveredDetails = deliveredData.length ? deliveredData[0] : {};
+          warehouseQueries.getPendingDeliveryDetailsByDriver({ date, departmentId }, (err, pendingData) => {
+            if (err) res.status(500).json(err.sqlMessage);
+            else {
+              obj.pendingDetails = pendingData.length ? pendingData[0] : {};
+              res.send(JSON.stringify([obj]));
+            }
+          })
+        }
+      })
+    }
   });
 });
 
@@ -302,9 +357,19 @@ router.get('/currentActiveStockDetails/:date', (req, res) => {
 
 router.get('/totalCurrentActiveStockDetails', (req, res) => {
   // let currentActiveStockQuery = "SELECT (`a`.`total20LCans` - IFNULL(`b`.`total20LCans`,0)) AS `total20LCans`, (`a`.`total1LBoxes` - IFNULL(`b`.`total1LBoxes`,0)) AS `total1LBoxes`, (`a`.`total500MLBoxes` - IFNULL(`b`.`total500MLBoxes`,0)) AS `total500MLBoxes`, (`a`.`total300MLBoxes` - IFNULL(`b`.`total300MLBoxes`,0)) AS `total300MLBoxes`,(`a`.`total2LBoxes` - IFNULL(`b`.`total2LBoxes`,0)) AS `total2LBoxes` FROM (SELECT  SUM(20LCans) AS `total20LCans`,SUM(1LBoxes) AS `total1LBoxes`, SUM(500MLBoxes) AS `total500MLBoxes`,SUM(300MLBoxes) AS `total300MLBoxes`,SUM(2LBoxes) AS `total2LBoxes` FROM `warehousestockdetails` WHERE warehouseId=? AND DATE(DeliveryDate)<=?) AS a INNER JOIN (SELECT  SUM(20LCans) AS `total20LCans`, SUM(1LBoxes) AS `total1LBoxes`,  SUM(500MLBoxes) AS `total500MLBoxes`, SUM(300MLBoxes) AS `total300MLBoxes`, SUM(2LBoxes) AS `total2LBoxes`  FROM  customerorderdetails WHERE  isDelivered='Completed' AND warehouseId=? AND DATE(DeliveryDate)<=?) AS b"
-  warehouseQueries.getTotalCurrentActiveStocks({ ...req.query, departmentId }, (err, results) => {
+  // warehouseQueries.getTotalCurrentActiveStocks({ ...req.query, departmentId }, (err, results) => {
+  //   if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+  //   else res.json(results[0]);
+  // });
+  let { startDate } = req.query;
+
+  let currentActiveStockQuery = `CALL warehouse_CurrentActiveStock(?,?)`;
+  // let currentActiveStockQuery = "SELECT (`a`.`total20LCans` - IFNULL(`b`.`total20LCans`,0)) AS `total20LCans`, (`a`.`total1LBoxes` - IFNULL(`b`.`total1LBoxes`,0)) AS `total1LBoxes`, (`a`.`total500MLBoxes` - IFNULL(`b`.`total500MLBoxes`,0)) AS `total500MLBoxes`, (`a`.`total300MLBoxes` - IFNULL(`b`.`total300MLBoxes`,0)) AS `total300MLBoxes`,(`a`.`total2LBoxes` - IFNULL(`b`.`total2LBoxes`,0)) AS `total2LBoxes` FROM (SELECT  SUM(20LCans) AS `total20LCans`,SUM(1LBoxes) AS `total1LBoxes`, SUM(500MLBoxes) AS `total500MLBoxes`,SUM(300MLBoxes) AS `total300MLBoxes`,SUM(2LBoxes) AS `total2LBoxes` FROM `warehousestockdetails` WHERE warehouseId=? AND DATE(DeliveryDate)<=?) AS a INNER JOIN (SELECT  SUM(20LCans) AS `total20LCans`, SUM(1LBoxes) AS `total1LBoxes`,  SUM(500MLBoxes) AS `total500MLBoxes`, SUM(300MLBoxes) AS `total300MLBoxes`, SUM(2LBoxes) AS `total2LBoxes`  FROM  customerorderdetails WHERE  isDelivered='Completed' AND warehouseId=? AND DATE(DeliveryDate)<=?) AS b"
+  db.query(currentActiveStockQuery, [departmentId, startDate], (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
-    else res.json(results[0]);
+    else {
+      res.json(results[0][0]);
+    }
   });
 });
 
@@ -566,6 +631,96 @@ router.put('/closeDC', (req, res) => {
     }
   })
 })
+
+router.post('/requestStock', (req, res) => {
+  const { products } = req.body
+  if (products.length) {
+    stockRequestQueries.requestStock({ ...req.body, departmentId }, (requestErr, requestDetails) => {
+      if (requestErr) res.status(500).json({ status: 500, message: requestErr.sqlMessage });
+      else {
+        const requestId = requestDetails.insertId
+        stockRequestQueries.saveRequestedStockDetails({ products, requestId, departmentId }, (err, results) => {
+          if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+          else {
+            // departmenttransactionQueries.createDepartmentTransaction({ userId: adminUserId, description: `Stock requested by ${userRole} <b>(${userName})</b>`, transactionId: requestId, departmentId, type: 'warehouse', subType: 'stockRequest' })
+            res.json(requestDetails)
+          }
+        })
+      }
+    })
+  }
+  else res.status(400).send('Bad request')
+})
+
+router.get('/getRequestedStock', (req, res) => {
+  stockRequestQueries.getDepartmentStockRequests({ departmentId, userRole }, (deliveryErr, requestDetails) => {
+    if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
+    else {
+      res.json(requestDetails)
+    }
+  })
+})
+
+router.get('/getRequestedStockById/:requestId', (req, res) => {
+  stockRequestQueries.getDepartmentStockRequestById({ requestId: req.params.requestId, departmentId }, (deliveryErr, requestDetails) => {
+    if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
+    else {
+      res.json(requestDetails)
+    }
+  })
+})
+
+router.put('/updateRequestedStockStatus', (req, res) => {
+  const { requestId, status, reason } = req.body
+  stockRequestQueries.updateRequestedStockStatus({ requestId, status, reason }, (deliveryErr, requestDetails) => {
+    if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
+    else if (!requestDetails.affectedRows) res.json(requestDetails)
+    else {
+      // departmenttransactionQueries.createDepartmentTransaction({ userId: adminUserId, description: `Status changed to ${status} by ${userRole} <b>(${userName})</b>`, transactionId: requestId, departmentId, type: 'warehouse', subType: 'stockRequest' })
+      res.json(requestDetails)
+    }
+  })
+})
+
+router.put('/updateStockDetails', (req, res) => {
+  stockRequestQueries.updateRequestStock(req.body, (deliveryErr, requestDetails) => {
+    if (deliveryErr) res.status(500).json({ status: 500, message: deliveryErr.sqlMessage });
+    else {
+      updateProductDetails(req.body.products).then(data => {
+        res.json(requestDetails)
+      })
+    }
+  })
+})
+
+const updateProductDetails = (products) => {
+  return new Promise(async (resolve, reject) => {
+    if (products.length) {
+      // let logs = [], count = 0
+      for (let i of products) {
+        // let productLog = await compareProductsData(i, { type: "customer", customerId, userId, userRole, userName })
+        // logs.push(...productLog)
+        let requestedProductsQuery = "UPDATE requestedproducts SET noOfJarsTobePlaced=?,productPrice=?,productName=? where productId=" + i.productId;
+        let updateQueryValues = [i.noOfJarsTobePlaced, i.productPrice, i.productName]
+        db.query(requestedProductsQuery, updateQueryValues, (err, results) => {
+          if (err) reject(err);
+          else {
+            // count++
+            // if (count == products.length) {
+            //   if (logs.length) {
+            //     auditQueries.createLog(logs, (err, data) => {
+            //       if (err) console.log('log error', err)
+            //       else console.log('log data', data)
+            //     })
+            //   }
+            // }
+            resolve(results)
+          }
+        });
+      }
+    }
+  })
+}
 
 const saveDC = (req, res) => {
   let { customerName, contactPerson, phoneNumber, address, routeId, driverId, product20L, product1L, product500ML, product300ML, product2L, warehouseId, customerType, existingCustomerId, distributorId, creationType, isDelivered = 'InProgress', deliveryLocation, price20L, price2L, price1L, price500ML, price300ML, EmailId, deliveredDate } = req.body;

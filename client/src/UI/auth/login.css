@@ -1,140 +1,169 @@
 .first_col {
-    /* background-image:url(../assets/images/login_img.png);
+  /* background-image:url(../assets/images/login_img.png);
     height:100vh; */
-    /* background-repeat: no-repeat; */
-    /* background-position: 50% 50%;
+  /* background-repeat: no-repeat; */
+  /* background-position: 50% 50%;
     background-color: #30def7; */
-    /* background-size:cover; */
-    background: linear-gradient(to top left, #2edef8 56%, #6acef0 80%);
+  /* background-size:cover; */
+  background: linear-gradient(to top left, #2edef8 56%, #6acef0 80%);
 }
 .first_col img {
-    height: 100vh;
-    float: right;
+  height: 100vh;
+  float: right;
 }
 .login_component {
-    background-color: #f9fafb;
+  background-color: #f9fafb;
 }
 .login_container {
-    padding: 10% 15%;
+  padding: 50px 15% 10px;
+  max-height: 100vh;
+  overflow: auto;
+}
+.login_container_modal {
+  padding: 1em;
+  max-height: fit-content;
+  max-width: 70%;
 }
 .login_card {
-    box-shadow: 0 0 22px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 22px 0 rgba(0, 0, 0, 0.1);
 }
+
 .login_card .ant-card-body {
-    padding: 24px 35px;
+  padding: 24px 35px;
 }
 .login_btn {
-    float: right;
-    background-color: #0062FF !important;
-    border: 0px !important;
-    padding: 10px 25px !important;
-    height: 100% !important;
-    font-family: "Lato-Bold";
-    box-shadow: none !important;
-    letter-spacing: 0.02px;
-    font-size: 15px !important;
-    border-radius: 4px !important;
+  float: right;
+  background-color: #0062ff !important;
+  border: 0px !important;
+  padding: 10px 25px !important;
+  height: 100% !important;
+  font-family: "Lato-Bold";
+  box-shadow: none !important;
+  letter-spacing: 0.02px;
+  font-size: 15px !important;
+  border-radius: 4px !important;
+}
+.login_btn:disabled {
+  opacity: 0.5;
+  color: #fff !important;
 }
 .remembermelabel {
-    color: #999999;
-    font-family: "Lato-Regular";
+  color: #999999;
+  font-family: "Lato-Regular";
 }
 .forgotpasswordLink {
-    color: #0062FF;
-    font-size: 12px;
-    vertical-align: middle;
+  color: #0062ff;
+  font-size: 12px;
+  vertical-align: middle;
 }
 .forgotpasswordLinktext {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .forgotpasswordLinktext:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 .forgotpasswordLinkicon {
-    display: inline-block;
-    vertical-align: middle;
+  display: inline-block;
+  vertical-align: middle;
 }
 .loginmenu p {
-    margin-left: 8px;
-    font-size: 13px;
-    line-height: 1.54;
-    color: #b3b3b3;
+  margin-left: 8px;
+  font-size: 13px;
+  line-height: 1.54;
+  color: #b3b3b3;
 }
 .login_footer p {
-    font-size: 13px;
-    line-height: 1.54;
-    color: #b3b3b3;
+  font-size: 13px;
+  line-height: 1.54;
+  color: #b3b3b3;
 }
 .loginmenu {
-    display: flex;
-    float: right;
-    float: right;
-    padding: 0px;
-    margin: 0px;
+  display: flex;
+  float: right;
+  float: right;
+  padding: 0px;
+  margin: 0px;
 }
 .login_component .first_col h2 {
-    font-family: "Lato-Light";
-    font-size: 34px;
-    font-weight: 300;
-    line-height: normal;
-    letter-spacing: -0.12px;
-    text-align: center;
-    color: #4e4d4d;
+  font-family: "Lato-Light";
+  font-size: 34px;
+  font-weight: 300;
+  line-height: normal;
+  letter-spacing: -0.12px;
+  text-align: center;
+  color: #4e4d4d;
 }
 .login_component .first_col p {
-    font-family: "Lato-Regular";
-    font-size: 14px;
-    line-height: normal;
-    letter-spacing: -0.05px;
-    text-align: center;
-    color: #ffffff;
+  font-family: "Lato-Regular";
+  font-size: 14px;
+  line-height: normal;
+  letter-spacing: -0.05px;
+  text-align: center;
+  color: #ffffff;
 }
 .login_component_text {
-    position: absolute;
-    bottom: 0px;
-    width: 100%;
-    margin-bottom: 30px;
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
+  margin-bottom: 30px;
 }
 .login_bibo_text {
-    color: #0062FF;
+  color: #0062ff;
 }
 .login_footer {
-    padding-top: 31px;
+  padding-top: 31px;
 }
 .login_container h3 {
-    font-family: "Lato-Regular";
-    font-size: 24px;
-    margin: 0px;
-    padding-bottom: 25px;
-    letter-spacing: -0.09px;
-    color: #4c4e4e;
+  font-family: "Lato-Regular";
+  font-size: 24px;
+  margin: 0px;
+  padding-bottom: 25px;
+  letter-spacing: -0.09px;
+  color: #4c4e4e;
 }
 .login_card h4 {
-    font-family: "Lato-Medium";
-    font-size: 24px;
-    padding-bottom: 15px;
-    line-height: normal;
-    letter-spacing: normal;
-    color: #333333;
+  font-family: "Lato-Medium";
+  font-size: 24px;
+  padding-bottom: 15px;
+  line-height: normal;
+  letter-spacing: normal;
+  color: #333333;
 }
-.errMsg {
-    color: red;
+.error-msg,
+.no-match {
+  color: #e90614;
+  font-size: 0.92em;
+}
+.match {
+  color: #34b53a;
+  font-size: 0.92em;
 }
 .fp-info {
-    font-family: 'PoppinsSemiBold600';
-    color: rgba(0,0,0,0.85);;
+  font-family: "PoppinsSemiBold600";
+  color: rgba(0, 0, 0, 0.85);
 }
 
 .loading {
-    font-family: 'PoppinsRegular400';
+  font-family: "PoppinsRegular400";
 }
 
 .full_screen_center {
-    height: 100vh;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login_component_modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: transparent;
+}
+.login_card_modal {
+  box-shadow: none;
+  border: none !important;
 }

@@ -25,7 +25,7 @@ import {
     getProductsForDB, extractGADeliveryDetails, extractGADetails, isEmpty, showToast, extractCADetails, getMainPathname
 } from '../../../utils/Functions';
 import {
-    validateAccountValues, validateDeliveryValues, validateDevDays,
+    validateAccountValues, validateDeliveryValues, validateMultiOptions,
     validateIDProofs, validateAddresses, validateIDNumbers, validateNames, validateNumber, validateMobileNumber, validateEmailId, validateIntFloat, compareMaxNumber, validatePinCode
 } from '../../../utils/validations';
 
@@ -388,7 +388,7 @@ const AddAccount = () => {
             const address = { ...deliveryValues, devDays, isNew: true }
 
             const errors = validateDeliveryValues(deliveryValues)
-            const devDaysError = validateDevDays(devDays)
+            const devDaysError = validateMultiOptions(devDays)
 
             if (!isEmpty(errors) || !isEmpty(devDaysError)) {
                 setAddShake(true)
@@ -458,7 +458,7 @@ const AddAccount = () => {
 
             const accountErrors = validateAccountValues(corporateValues, 'Corporate')
             const deliveryErrors = validateDeliveryValues(deliveryValues)
-            const devDaysError = validateDevDays(devDays)
+            const devDaysError = validateMultiOptions(devDays)
             const extraDeliveryErrors = validateAddresses(sessionAddresses)
 
             const currentDelivery = { ...deliveryValues, devDays, isNew: true }
@@ -483,7 +483,7 @@ const AddAccount = () => {
         else {
 
             const accountErrors = validateAccountValues(generalValues)
-            const devDaysError = validateDevDays(devDays)
+            const devDaysError = validateMultiOptions(devDays)
 
             if (!isEmpty(accountErrors) || !isEmpty(devDaysError) || !isEmpty(IDProofError)) {
                 setCreateShake(true)

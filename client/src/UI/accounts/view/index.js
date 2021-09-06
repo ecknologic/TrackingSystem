@@ -18,7 +18,7 @@ import ConfirmMessage from '../../../components/ConfirmMessage';
 import ActivityLogDetails from '../../../components/ActivityLogDetails';
 import { ACCOUNTSADMIN, MARKETINGADMIN, SUPERADMIN, TRACKFORM } from '../../../utils/constants';
 import { getDropdownOptions, getRouteOptions, getStaffOptions, getWarehouseOptions, WEEKDAYS } from '../../../assets/fixtures';
-import { validateDeliveryValues, validateDevDays, validateIntFloat, validateMobileNumber, validateNumber } from '../../../utils/validations';
+import { validateDeliveryValues, validateMultiOptions, validateIntFloat, validateMobileNumber, validateNumber } from '../../../utils/validations';
 import { extractDeliveryDetails, getProductsForDB, extractProductsFromForm, isEmpty, getDevDaysForDB, getBase64, resetTrackForm, showToast, getMainPathname } from '../../../utils/Functions';
 
 const ViewAccount = () => {
@@ -201,7 +201,7 @@ const ViewAccount = () => {
 
     const handleCreate = async () => {
         const deliveryErrors = validateDeliveryValues(formData)
-        const devDaysError = validateDevDays(devDays)
+        const devDaysError = validateMultiOptions(devDays)
 
         if (!isEmpty(deliveryErrors) || !isEmpty(devDaysError)) {
             setShake(true)

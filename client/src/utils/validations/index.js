@@ -46,10 +46,10 @@ export const validateIDProofs = (proofs, proofType) => {
     return errors
 }
 
-export const validateDevDays = (days) => {
+export const validateMultiOptions = (data, key = 'devDays') => {
     let errors = {};
     const text = 'Required'
-    if (isEmpty(days)) errors = { devDays: text }
+    if (isEmpty(data)) errors = { [key]: text }
 
     return errors
 }
@@ -489,10 +489,12 @@ export const validateClosureValues = (data) => {
     let errors = {};
     const text = 'Required'
     const { customerId, customerName, routeId, noOfCans, pendingAmount, depositAmount, totalAmount,
-        balanceAmount, deliveryDetailsId } = data
+        balanceAmount, deliveryDetailsId, driverId, driverAssignedOn } = data
 
+    if (!driverAssignedOn) errors.driverAssignedOn = text
     if (!customerName) errors.customerName = text
     if (!customerId) errors.customerId = text
+    if (!driverId) errors.driverId = text
     if (!routeId) errors.routeId = text
     if (!deliveryDetailsId) errors.deliveryDetailsId = text
     if (noOfCans == null || !String(noOfCans)) errors.noOfCans = text;
@@ -504,16 +506,38 @@ export const validateClosureValues = (data) => {
     return errors
 }
 
+export const validateVendorValues = (data) => {
+    let errors = {};
+    const text = 'Required'
+    const { vendorName, gstNo, address, contactPerson, creditPeriod } = data
+
+    if (!vendorName) errors.vendorName = text
+    if (!gstNo) errors.gstNo = text
+    if (!address) errors.address = text
+    if (!contactPerson) errors.contactPerson = text
+    else {
+        const error = validateNames(contactPerson)
+        error && (errors.contactPerson = error)
+    }
+    if (!creditPeriod) errors.creditPeriod = text
+    else {
+        const error = validateNumber(creditPeriod)
+        error && (errors.creditPeriod = error)
+    }
+
+    return errors
+}
+
 export const validateClosureAccValues = (data) => {
     let errors = {};
     const text = 'Required'
-    const { accountNo, bankName, branchName, ifscCode, customerName } = data
+    const { accountNumber, bankName, branchName, ifscCode, customerName } = data
 
     if (!customerName) errors.customerName = text
-    if (!accountNo) errors.accountNo = text
+    if (!accountNumber) errors.accountNumber = text
     else {
-        const error = validateNumber(accountNo)
-        error && (errors.accountNo = error)
+        const error = validateNumber(accountNumber)
+        error && (errors.accountNumber = error)
     }
     if (!bankName) errors.bankName = text
     else {
@@ -671,12 +695,14 @@ export const validateQCcheckValues = (data, type) => {
     return errors
 }
 
-export const validateDispatchValues = (data, currentStock) => {
+export const validateDispatchValues = (data, currentStock, isMPAdmin) => {
     let errors = {};
     const text = 'Required'
     const { batchId, dispatchTo, managerName, vehicleNo, driverId, mobileNumber, ...rest } = data
 
-    if (!batchId) errors.batchId = text
+    if (isMPAdmin) {
+        if (!batchId) errors.batchId = text
+    }
     if (!driverId) errors.driverId = text
     if (!vehicleNo) errors.vehicleNo = text
     if (!dispatchTo) errors.dispatchTo = text
@@ -750,6 +776,19 @@ export const validateRequestMaterialValues = (data) => {
     }
 
     return errors
+}
+
+export const validateRequestStockValues = (data) => {
+    let errors = {};
+    const text = 'Required'
+    const { requestTo, requiredDate, ...rest } = data
+
+    if (!requestTo) errors.requestTo = text
+    if (!requiredDate) errors.requiredDate = text
+
+    let productErrors = validateProducts(rest)
+
+    return { ...errors, ...productErrors }
 }
 
 export const validatePaymentValues = (data) => {
@@ -1113,7 +1152,7 @@ export const validateAddresses = (data) => {
     let errors = {};
     for (let index = 0; index < data.length; index++) {
         const error = validateDeliveryValues(data[index])
-        const devDaysError = validateDevDays(data[index]['devDays'])
+        const devDaysError = validateMultiOptions(data[index]['devDays'])
         if (!isEmpty(error) || !isEmpty(devDaysError)) {
             errors[`address${index}`] = { ...error, ...devDaysError }
             errors.key = String(index)

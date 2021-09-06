@@ -18,11 +18,12 @@ customerClosingQueries.getCustomerClosingDetails = async (input, callback) => {
 }
 
 customerClosingQueries.getCustomerClosingDetailsById = async (id, callback) => {
-    let query = `SELECT c.*,cust.customerNo,dep.departmentName,d.location,r.RouteName,JSON_OBJECT('accountId',a.accountId,'closingId',a.closingId,'accountNumber',a.accountNumber,'customerName',a.customerName,
+    let query = `SELECT c.*,dri.driverName,cust.customerNo,dep.departmentName,d.location,r.RouteName,JSON_OBJECT('accountId',a.accountId,'closingId',a.closingId,'accountNumber',a.accountNumber,'customerName',a.customerName,
     'ifscCode',a.ifscCode,'bankName',a.bankName,'branchName',a.branchName) AS accountDetails FROM customerclosingdetails c
     INNER JOIN  customeraccountdetails a ON c.closingId=a.closingId INNER JOIN  DeliveryDetails d ON c.customerId=d.customer_Id
     INNER JOIN  departmentmaster dep ON d.departmentId=dep.departmentId
     INNER JOIN  routes r ON d.routeId=r.RouteId
+    LEFT JOIN  driverdetails dri ON c.driverId=dri.driverId
     INNER JOIN customerdetails cust ON c.customerId=cust.customerId  WHERE c.closingId=${id}`
     return executeGetQuery(query, callback)
 }
@@ -73,18 +74,18 @@ customerClosingQueries.getCustomerPendingAmount = async (customerId, callback) =
 }
 
 customerClosingQueries.addCustomerClosingDetails = async (input, callback) => {
-    const { routeId, closingDate, customerId, customerName, noOfCans, collectedDate, collectedCans, pendingAmount, depositAmount, balanceAmount, missingCansAmount, totalAmount, reason, missingCansCount, createdBy, departmentId, deliveryDetailsId } = input
-    let query = "insert into customerclosingdetails (routeId, closingDate, customerId,customerName,noOfCans,collectedDate,collectedCans,pendingAmount,depositAmount,balanceAmount,missingCansAmount,totalAmount,reason,missingCansCount,createdBy,departmentId,deliveryDetailsId,createdDateTime) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-    let requestBody = [routeId, closingDate, customerId, customerName, noOfCans, collectedDate, collectedCans, pendingAmount, depositAmount, balanceAmount, missingCansAmount, totalAmount, reason, missingCansCount, createdBy, departmentId, deliveryDetailsId, new Date()]
+    const { routeId, closingDate, customerId, customerName, noOfCans, collectedDate, collectedCans, pendingAmount, depositAmount, balanceAmount, missingCansAmount, totalAmount, reason, missingCansCount, createdBy, departmentId, deliveryDetailsId, driverId, driverAssignedOn } = input
+    let query = "insert into customerclosingdetails (routeId, closingDate, customerId,customerName,noOfCans,collectedDate,collectedCans,pendingAmount,depositAmount,balanceAmount,missingCansAmount,totalAmount,reason,missingCansCount,createdBy,departmentId,deliveryDetailsId,createdDateTime,driverId,driverAssignedOn) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    let requestBody = [routeId, closingDate, customerId, customerName, noOfCans, collectedDate, collectedCans, pendingAmount, depositAmount, balanceAmount, missingCansAmount, totalAmount, reason, missingCansCount, createdBy, departmentId, deliveryDetailsId, new Date(), driverId, driverAssignedOn]
     return executePostOrUpdateQuery(query, requestBody, callback)
 
 }
 
 customerClosingQueries.updateCustomerClosingDetails = async (input, callback) => {
-    let { routeId, closingDate, customerId, customerName, noOfCans, collectedDate, collectedCans, pendingAmount, depositAmount, balanceAmount, missingCansAmount, totalAmount, reason, missingCansCount, createdBy, departmentId, status, isConfirmed, closingId, deliveryDetailsId } = input
-    let query = "UPDATE customerclosingdetails SET routeId=?, closingDate=?, customerId=?,customerName=?,noOfCans=?,collectedDate=?,collectedCans=?,pendingAmount=?,depositAmount=?,balanceAmount=?,missingCansAmount=?,totalAmount=?,reason=?,missingCansCount=?,createdBy=?,deliveryDetailsId=?,status=?,departmentId=? WHERE closingId=?";
+    let { routeId, closingDate, customerId, customerName, noOfCans, collectedDate, collectedCans, pendingAmount, depositAmount, balanceAmount, missingCansAmount, totalAmount, reason, missingCansCount, createdBy, departmentId, status, isConfirmed, closingId, deliveryDetailsId,driverId, driverAssignedOn } = input
+    let query = "UPDATE customerclosingdetails SET routeId=?, closingDate=?, customerId=?,customerName=?,noOfCans=?,collectedDate=?,collectedCans=?,pendingAmount=?,depositAmount=?,balanceAmount=?,missingCansAmount=?,totalAmount=?,reason=?,missingCansCount=?,createdBy=?,deliveryDetailsId=?,status=?,departmentId=?,driverId=?,driverAssignedOn=? WHERE closingId=?";
     if (isConfirmed && isConfirmed == true) status = 'Confirmed'
-    let requestBody = [routeId, closingDate, customerId, customerName, noOfCans, collectedDate, collectedCans, pendingAmount, depositAmount, balanceAmount, missingCansAmount, totalAmount, reason, missingCansCount, createdBy, deliveryDetailsId, status, departmentId, closingId]
+    let requestBody = [routeId, closingDate, customerId, customerName, noOfCans, collectedDate, collectedCans, pendingAmount, depositAmount, balanceAmount, missingCansAmount, totalAmount, reason, missingCansCount, createdBy, deliveryDetailsId, status, departmentId,driverId, driverAssignedOn, closingId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 

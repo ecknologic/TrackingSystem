@@ -8,11 +8,13 @@ import Spinner from '../../../components/Spinner';
 import NoContent from '../../../components/NoContent';
 import CustomPagination from '../../../components/CustomPagination';
 import VisitedCustomerCard from '../../../components/VisitedCustomerCard';
-import { doubleKeyComplexSearch, complexSort, complexDateSort, isEmpty } from '../../../utils/Functions';
+import useStatusFilter from '../../../utils/hooks/useStatusFilter';
+import { doubleKeyComplexSearch, complexSort, complexDateSort } from '../../../utils/Functions';
 
 const Dashboard = ({ reFetch }) => {
     const history = useHistory()
     const { page = 1 } = useParams()
+    const { status, hasFilters } = useStatusFilter()
     const [enquiriesClone, setEnquiriesClone] = useState([])
     const [filteredClone, setFilteredClone] = useState([])
     const [enquiries, setEnquiries] = useState([])
@@ -38,6 +40,14 @@ const Dashboard = ({ reFetch }) => {
         setLoading(true)
         getCustomerEnquiries()
     }, [reFetch])
+
+    useEffect(() => {
+        if (!loading) {
+            const filters = { status }
+            if (!hasFilters) handleRemoveFilters()
+            else handleApplyFilters(filters, enquiriesClone)
+        }
+    }, [status])
 
     const getCustomerEnquiries = async () => {
         const url = `customer/getCustomerEnquiries`
@@ -91,15 +101,9 @@ const Dashboard = ({ reFetch }) => {
         setSortBy(type)
     }
 
-    const onFilterChange = (data) => {
-        const { status } = data
-        if (isEmpty(status)) handleFilterClear()
-        else handleFilter(data)
-    }
-
-    const handleFilter = (filterInfo) => {
-        const { status } = filterInfo
-        const filtered = enquiriesClone.filter((item) => status.includes(item.isActive))
+    const handleApplyFilters = (filterInfo, enquiries) => {
+        const status = filterInfo.status.filter(item => item.checked).map(item => item.value)
+        const filtered = enquiries.filter((item) => status.includes(item.isActive))
         setFilterON(true)
         setPageNumber(1)
         setEnquiries(filtered)
@@ -107,7 +111,7 @@ const Dashboard = ({ reFetch }) => {
         setTotalCount(filtered.length)
     }
 
-    const handleFilterClear = () => {
+    const handleRemoveFilters = () => {
         setPageNumber(1)
         setEnquiries(enquiriesClone)
         setTotalCount(enquiriesClone.length)
@@ -132,7 +136,7 @@ const Dashboard = ({ reFetch }) => {
 
     return (
         <Fragment>
-            <MenuBar searchText='Search Accounts' onSearch={handleSearch} onSort={onSort} onFilter={onFilterChange} />
+            <MenuBar searchText='Search Accounts' onSearch={handleSearch} onSort={onSort} />
             <div className='employee-manager-content'>
                 <Row gutter={[{ lg: 32, xl: 16 }, { lg: 16, xl: 16 }]}>
                     {

@@ -12,7 +12,7 @@ import { EyeIconGrey } from '../../../../components/SVG_Icons';
 import RoutesFilter from '../../../../components/RoutesFilter';
 import ArrivedStockView from '../../warehouse/forms/ArrivedStock';
 import CustomPagination from '../../../../components/CustomPagination';
-import { doubleKeyComplexSearch, getStatusColor, isEmpty, showToast } from '../../../../utils/Functions';
+import { doubleKeyComplexSearch, getStatusColor, isEmpty, renderProductDetails, showToast } from '../../../../utils/Functions';
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
 
 const DamagedStockWH = () => {
@@ -136,7 +136,7 @@ const DamagedStockWH = () => {
             mobileNumber,
             status: renderStatus(isConfirmed),
             dateAndTime: dayjs(deliveryDate).format(DATEANDTIMEFORMAT),
-            stockDetails: renderStockDetails({ product20L, product1L, product2L, product300ML, product500ML }),
+            stockDetails: renderProductDetails({ product20L, product1L, product2L, product300ML, product500ML }),
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, id)} />
         }
     }), [stock])
@@ -210,12 +210,6 @@ const renderStatus = (status) => {
             <span className='status-text'>{text}</span>
         </div>
     )
-}
-const renderStockDetails = ({ product20L, product1L, product2L, product500ML, product300ML }) => {
-    return `
-    20 ltrs - ${Number(product20L)}, 2 ltrs - ${Number(product2L)} boxes, 1 ltr - ${Number(product1L)} boxes,
-    500 ml - ${Number(product500ML)} boxes, 300 ml - ${Number(product300ML)} boxes
-    `
 }
 const options = [<Menu.Item key="view" icon={<EyeIconGrey />}>View</Menu.Item>]
 export default DamagedStockWH

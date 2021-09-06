@@ -32,7 +32,7 @@ router.get('/getOrderDetails/:date', (req, res) => {
     var date = req.params.date;
     const { driverId, warehouseId } = req.query;
     // let query = "SELECT c.customerOrderId,c.damagedCount,c.isDelivered,c.dcNo,c.returnEmptyCans,c.deliveryDate,cd.customerName,cd.Address1,cd.Address2,cd.latitude,cd.longitude,cd.mobileNumber FROM customerorderdetails c INNER JOIN customerdetails cd ON c.existingCustomerId = cd.customerId WHERE DATE(`deliveryDate`) ='" + date + "'"
-    let query = "SELECT c.customerOrderId,c.damagedCount,c.isDelivered,c.dcNo,c.returnEmptyCans,c.deliveryDate,c.customerName,c.address,c.latitude,c.longitude,c.phoneNumber FROM customerorderdetails c  WHERE DATE(`deliveryDate`) =? AND c.driverId=? AND c.warehouseId=? AND routeId != 'NULL' AND driverId != 'NULL'"
+    let query = "SELECT c.customerOrderId,c.damagedCount,c.isDelivered,c.dcNo,c.returnEmptyCans,c.deliveryDate,c.customerName,c.address,c.latitude,c.longitude,c.phoneNumber,cd.customerNo FROM customerorderdetails c INNER JOIN customerdetails cd ON c.existingCustomerId=cd.customerId  WHERE DATE(`deliveryDate`) =? AND c.driverId=? AND c.warehouseId=? AND routeId != 'NULL' AND driverId != 'NULL'"
     let result = db.query(query, [date, driverId, warehouseId], (err, results) => {
 
         if (err) res.send(err);
@@ -68,11 +68,20 @@ router.post('/addReturnEmptyCans', (req, res) => {
 });
 router.post('/updateDeliveryStatus/:orderId', (req, res) => {
     var orderId = req.params.orderId;
-    const { status } = req.body
-    driverQueries.updateDeliveryStatus({ status, orderId }, (err, results) => {
+    const { status, deliveryProducts, productsUpdated, customerNo } = req.body
+    driverQueries.updateDeliveryStatus({ status, orderId, customerNo }, (err, results) => {
         if (err) res.send(err);
-        else
-            res.send('record updated');
+        else if (results.affectedRows > 0) {
+            if (productsUpdated == true) {
+                driverQueries.updateDeliveryProducts({ deliveryProducts, orderId }, (updateErr, updated) => {
+                    if (updateErr) res.send(updateErr);
+                    else {
+                        res.send('record updated');
+                    }
+                })
+            }
+            else res.send('record updated');
+        } else res.send('Not updated')
     });
 });
 
@@ -82,7 +91,7 @@ router.get("/customerOrderDetails/:orderId", (req, res) => {
         if (err) res.status(500).json(dbError(err));
         else if (orderData.length) {
             const { customerType } = orderData[0]
-            let customerOrderDetailsQuery = "SELECT cd.customerId,cd.customerName as ownerName,c.customerOrderId,c.*,GROUP_CONCAT(cp.productName,':',cp.noOfJarsTobePlaced SEPARATOR ';') AS customerproducts " +
+            let customerOrderDetailsQuery = "SELECT cd.customerId,cd.customerNo,c.customerName,cd.customerName as ownerName,c.customerOrderId,c.*,GROUP_CONCAT(cp.productName,':',cp.noOfJarsTobePlaced SEPARATOR ';') AS customerproducts " +
                 " FROM customerdetails  cd LEFT JOIN customerproductdetails cp ON cd.customerId=cp.customerId INNER JOIN" +
                 "  customerorderdetails c ON c.existingCustomerId=cd.customerId WHERE c.customerOrderId=?";
 
@@ -168,8 +177,8 @@ router.put('/updateDriverStatus', (req, res) => {
 })
 
 router.post('/updateDriver', async (req, res) => {
-    const { userName, emailid, departmentId, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, licenseNo, adhar_frontside, adhar_backside, license_frontside, license_backside, accountNo, bankName, branchName, ifscCode, recommendedBy, recruitedBy, driverId, dependentDetails } = req.body
-    let data = { userName, emailid, departmentId, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, licenseNo, adhar_frontside, adhar_backside, license_frontside, license_backside, accountNo, bankName, branchName, ifscCode, recommendedBy, recruitedBy }
+    const { userName, emailid, departmentId, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, licenseNo, adhar_frontside, adhar_backside, license_frontside, license_backside, accountNo, bankName, branchName, ifscCode, recommendedBy, recruitedBy, driverId, dependentDetails, roleName, departmentName } = req.body
+    let data = { userName, emailid, departmentId, mobileNumber, joinedDate, parentName, gender, dob, adharNo, address, permanentAddress, licenseNo, adhar_frontside, adhar_backside, license_frontside, license_backside, accountNo, bankName, branchName, ifscCode, recommendedBy, recruitedBy, roleName, departmentName }
     const logs = await compareDriverData(data, { userId, userRole, adminUserName, staffId: driverId })
     driverQueries.updateDriver(req.body, async (err, results) => {
         if (err) res.json(dbError(err))
@@ -197,6 +206,21 @@ router.post('/updateDriver', async (req, res) => {
             }
             res.json(results)
         }
+    })
+})
+
+router.get('/getClosingCustomers/:date', (req, res) => {
+    const { driverId } = req.query;
+    driverQueries.getClosingCustomers({ driverId, date: req.params.date }, (err, results) => {
+        if (err) res.json(dbError(err))
+        else res.json(results)
+    })
+})
+
+router.put('/updateClosingCustomers/:closingId', (req, res) => {
+    driverQueries.updateClosingCustomerDetails({ ...req.body, closingId: req.params.closingId }, (err, results) => {
+        if (err) res.json(dbError(err))
+        else res.json(results)
     })
 })
 

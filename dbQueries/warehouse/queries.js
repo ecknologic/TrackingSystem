@@ -21,6 +21,25 @@ warehouseQueries.getDeliveryDetails = (input, callback) => {
     let query = "select c.customerOrderId,c.deliveryLocation,c.contactPerson,c.EmailId,c.existingCustomerId,c.distributorId,c.creationType,c.customerType,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS product20L,c.1LBoxes AS product1L,c.500MLBoxes AS product500ML,c.300MLBoxes AS product300ML,c.2LBoxes AS product2L,c.price20L, c.price2L, c.price1L, c.price500ML, c.price300ML,r.*,d.driverName,d.mobileNumber,CASE WHEN c.creationType='manual' THEN c.EmailId ELSE cd.EmailId  END AS EmailId FROM customerorderdetails c LEFT JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid left JOIN customerdetails cd ON c.existingCustomerId=cd.customerId  WHERE DATE(`deliveryDate`) = ? AND warehouseId=? ORDER BY c.dcNo DESC";
     return executeGetParamsQuery(query, [date, departmentId], callback)
 }
+
+warehouseQueries.getTotalDeliveryDetailsByDriver = (input, callback) => {
+    const { date, departmentId } = input
+    let query = "SELECT SUM(c.20LCans) AS product20L,SUM(c.1LBoxes) AS product1L,SUM(c.500MLBoxes) AS product500ML,SUM(c.300MLBoxes) AS product300ML,SUM(c.2LBoxes) AS product2L,d.driverId,d.driverName,d.mobileNumber,r.RouteName as routeName FROM customerorderdetails c LEFT JOIN driverdetails d ON c.driverId=d.driverid LEFT JOIN routes r ON c.routeId=r.RouteId  WHERE DATE(`deliveryDate`) = ? AND warehouseId=? AND c.driverId IS NOT NULL GROUP BY c.driverId ORDER BY c.driverId DESC";
+    return executeGetParamsQuery(query, [date, departmentId], callback)
+}
+
+warehouseQueries.getDeliveredDeliveryDetailsByDriver = (input, callback) => {
+    const { date, departmentId } = input
+    let query = "SELECT SUM(c.20LCans) AS product20L,SUM(c.1LBoxes) AS product1L,SUM(c.500MLBoxes) AS product500ML,SUM(c.300MLBoxes) AS product300ML,SUM(c.2LBoxes) AS product2L FROM customerorderdetails c WHERE DATE(`deliveryDate`) = ? AND warehouseId=? AND c.isDelivered='Completed' AND c.driverId IS NOT NULL GROUP BY c.driverId ORDER BY c.driverId DESC";
+    return executeGetParamsQuery(query, [date, departmentId], callback)
+}
+
+warehouseQueries.getPendingDeliveryDetailsByDriver = (input, callback) => {
+    const { date, departmentId } = input
+    let query = "SELECT SUM(c.20LCans) AS product20L,SUM(c.1LBoxes) AS product1L,SUM(c.500MLBoxes) AS product500ML,SUM(c.300MLBoxes) AS product300ML,SUM(c.2LBoxes) AS product2L FROM customerorderdetails c WHERE DATE(`deliveryDate`) = ? AND warehouseId=? AND c.isDelivered!='Completed' AND c.driverId IS NOT NULL GROUP BY c.driverId ORDER BY c.driverId DESC";
+    return executeGetParamsQuery(query, [date, departmentId], callback)
+}
+
 warehouseQueries.getTotalWarehouseReturnCans = (input, callback) => { //Warehouse count
     const { departmentId, date } = input
     let query = 'SELECT SUM(returnEmptyCans) AS emptycans FROM customerorderdetails WHERE DATE(deliveredDate)=? AND warehouseId=?'
@@ -51,8 +70,11 @@ warehouseQueries.getAllDcDetails = (input, callback) => {
     return executeGetParamsQuery(query, options, callback)
 }
 
-warehouseQueries.getCustomerDcDetails = (customerId, callback) => {
-    let query = "select c.customerOrderId,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS product20L,c.1LBoxes AS product1L,c.500MLBoxes AS product500ML,c.300MLBoxes AS product300ML,c.2LBoxes AS product2L,c.deliveredDate,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c INNER JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE existingCustomerId=? AND isDelivered='Completed' ORDER BY c.dcNo DESC";
+warehouseQueries.getCustomerDcDetails = (input, callback) => {
+    const { customerId, customerType = 'customer' } = input
+    let customerField = 'existingCustomerId'
+    if (customerType == 'distributor') customerField = 'distributorId'
+    let query = `select c.customerOrderId,c.customerName,c.phoneNumber,c.address,c.routeId,c.driverId,c.isDelivered,c.dcNo,c.20LCans AS product20L,c.1LBoxes AS product1L,c.500MLBoxes AS product500ML,c.300MLBoxes AS product300ML,c.2LBoxes AS product2L,c.deliveredDate,r.*,d.driverName,d.mobileNumber FROM customerorderdetails c LEFT JOIN routes r  ON c.routeId=r.routeid left JOIN driverdetails d ON c.driverId=d.driverid  WHERE isDelivered='Completed' AND ${customerField}=? ORDER BY c.dcNo DESC`;
     return executeGetParamsQuery(query, [customerId], callback)
 }
 warehouseQueries.getDcDetailsByDcNo = (dcNo, callback) => {
@@ -175,6 +197,12 @@ warehouseQueries.checkDcSchedule = async (input, callback) => {
     let query = `select dcNo,customerOrderId from customerorderdetails WHERE existingCustomerId=? AND DATE(deliveryDate)=?`;
     return executeGetParamsQuery(query, [existingCustomerId, date], callback)
 }
+
+warehouseQueries.getDcDetailsGroupByCustomerId = async (input, callback) => {
+    const { date } = input
+    let query = `SELECT JSON_ARRAYAGG(JSON_OBJECT('isDelivered',isDelivered,'existingCustomerId',existingCustomerId)) as customersData FROM customerorderdetails WHERE DATE(deliveryDate)>=? AND isDelivered='NotDelivered' AND existingCustomerId IS NOT NULL GROUP BY existingCustomerId`;
+    return executeGetParamsQuery(query, [date], callback)
+}
 //POST Request Methods
 warehouseQueries.saveWarehouseStockDetails = (input, callback) => {
     const { isDamaged, departmentId, product20L, product1L, product300ML, product2L, product500ML, damaged500MLBoxes, damaged300MLBoxes, damaged2LBoxes, damaged20LCans, damaged1LBoxes, deliveryDate, dcNo, damagedDesc } = input
@@ -277,8 +305,8 @@ warehouseQueries.assignDriversForMultipleDcs = (input, callback) => {
     if (selectedDate != undefined && selectedDate != null) {
         query = 'update customerorderdetails set driverId=? where routeId=? AND DATE(deliveryDate)=?';
         requestBody = [driverId, routeId, selectedDate]
-    }else{
-        query='update DeliveryDetails set driverId=? where routeId=?'
+    } else {
+        query = 'update DeliveryDetails set driverId=? where routeId=?'
     }
     executePostOrUpdateQuery(query, requestBody, callback)
 }

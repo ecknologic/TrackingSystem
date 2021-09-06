@@ -43,7 +43,7 @@ export const statusFilterList = [
     { value: 0, name: 'Draft' },
     { value: 1, name: 'Active' }
 ]
-export const closedFilterList = [
+export const multiFilterList = [
     { value: 'InProgress', name: 'In Progress' },
     { value: 'Confirmed', name: 'Confirmed' },
     { value: 'Closed', name: 'Closed' }
@@ -555,9 +555,9 @@ export const orderColumns = [
         key: 'id',
     },
     {
-        title: 'Contact Person',
-        dataIndex: 'contactPerson',
-        key: 'contactPerson',
+        title: 'Name',
+        dataIndex: 'customerName',
+        key: 'customerName',
     },
     {
         title: 'Address',
@@ -586,6 +586,44 @@ export const orderColumns = [
     },
 ]
 
+export const DDColumns = [
+    {
+        title: 'S. No',
+        dataIndex: 'sNo',
+        key: 'sNo',
+    },
+    {
+        title: 'Driver Name',
+        dataIndex: 'driverName',
+        key: 'driverName',
+    },
+    {
+        title: 'Route',
+        dataIndex: 'routeName',
+        key: 'routeName',
+    },
+    {
+        title: 'Stock Details',
+        dataIndex: 'stockDetails',
+        key: 'stockDetails',
+    },
+    {
+        title: 'Delivered Details',
+        dataIndex: 'deliveredDetails',
+        key: 'deliveredDetails',
+    },
+    {
+        title: 'Pending Details',
+        dataIndex: 'pendingDetails',
+        key: 'pendingDetails',
+    },
+    {
+        title: 'Actions',
+        dataIndex: 'action',
+        key: 'action'
+    }
+]
+
 export const getStockColumns = (isDamaged, adminType) => {
 
     const columns = [
@@ -600,7 +638,7 @@ export const getStockColumns = (isDamaged, adminType) => {
             key: 'dateAndTime',
         },
         {
-            title: 'Mother Plant',
+            title: 'Received From',
             dataIndex: 'departmentName',
             key: 'departmentName',
         },
@@ -792,7 +830,53 @@ export const currentStockColumns = [
     }
 ]
 
-export const getDispatchColumns = (type) => {
+export const getStockRequestColumns = (isMPAdmin) => {
+    const columns = [
+        {
+            title: 'S No.',
+            dataIndex: 'sNo',
+            key: 'sNo',
+        },
+        {
+            title: 'Date',
+            dataIndex: 'dateAndTime',
+            key: 'dateAndTime',
+        },
+        {
+            title: 'Stock Details',
+            dataIndex: 'stockDetails',
+            key: 'stockDetails',
+        },
+        {
+            title: 'Requested To',
+            dataIndex: 'departmentName',
+            key: 'departmentName',
+        },
+        {
+            title: 'Required Date',
+            dataIndex: 'requiredDate',
+            key: 'requiredDate',
+        },
+        {
+            title: 'Status',
+            dataIndex: 'status',
+            key: 'status'
+        },
+        {
+            title: 'Actions',
+            dataIndex: 'action',
+            key: 'action'
+        },
+    ]
+
+    if (isMPAdmin) {
+        columns[3].title = 'Requested By'
+    }
+
+    return columns
+}
+
+export const getDispatchColumns = (type, isWHAdmin) => {
 
     const columns = [
         {
@@ -844,6 +928,9 @@ export const getDispatchColumns = (type) => {
 
     if (type === 'external') {
         columns.splice(3, 2)
+    }
+    if (isWHAdmin) {
+        columns.splice(1, 1)
     }
 
     return columns
@@ -1190,6 +1277,144 @@ export const newCustomersReportColumns = [
         title: 'Dispensers Placed',
         dataIndex: 'dispenserCount',
         key: 'dispenserCount',
+    }
+]
+export const inactiveCustomersReportColumns = [
+    {
+        title: 'S. No',
+        dataIndex: 'sNo',
+        key: 'sNo',
+    },
+    {
+        title: 'Customer ID',
+        dataIndex: 'customerId',
+        key: 'customerId',
+    },
+    {
+        title: 'Customer Name',
+        dataIndex: 'customerName',
+        key: 'customerName',
+    },
+    {
+        title: 'Last Month Invoice Amount',
+        dataIndex: 'lastmonthAmount',
+        key: 'lastmonthAmount',
+    },
+    {
+        title: 'Last Month Supplied Qty',
+        dataIndex: 'lastmonthQuantity',
+        key: 'lastmonthQuantity',
+    },
+    {
+        title: 'Last Supplied Date',
+        dataIndex: 'lastdeliveredDate',
+        key: 'lastdeliveredDate',
+    }
+]
+export const marketingPerformanceReportColumns = [
+    {
+        title: 'Executive Name',
+        dataIndex: 'executiveName',
+        key: 'executiveName',
+    },
+    {
+        title: 'No. of New Customers',
+        dataIndex: 'newUsersCount',
+        key: 'newUsersCount',
+    },
+    {
+        title: 'No. of Individual Customers',
+        dataIndex: 'individualCount',
+        key: 'individualCount',
+    },
+    {
+        title: 'No. of Corporate Customers',
+        dataIndex: 'corporateCount',
+        key: 'corporateCount',
+    },
+    {
+        title: 'Expected Sales',
+        dataIndex: 'expectedSale',
+        key: 'expectedSale',
+    },
+    {
+        title: 'Average Price',
+        dataIndex: 'averagePrice',
+        key: 'averagePrice',
+    }
+]
+export const collectionPerformanceReportColumns = [
+    {
+        title: 'S. No',
+        dataIndex: 'sNo',
+        key: 'sNo',
+        fixed: 'left'
+    },
+    {
+        title: 'Executive Name',
+        dataIndex: 'executiveName',
+        key: 'executiveName',
+        fixed: 'left'
+    },
+    {
+        title: 'Value of Invoices in base',
+        children: [
+            {
+                title: 'Opening',
+                dataIndex: 'openingAmount',
+                key: 'openingAmount',
+            },
+            {
+                title: 'Last Month',
+                dataIndex: 'lastMonthAmount',
+                key: 'lastMonthAmount',
+            },
+            {
+                title: 'Received',
+                dataIndex: 'receivedAmount',
+                key: 'receivedAmount',
+            },
+            {
+                title: 'Closing',
+                dataIndex: 'closingAmount',
+                key: 'closingAmount',
+            },
+            {
+                title: 'Performance',
+                dataIndex: 'performance',
+                key: 'performance',
+            },
+        ]
+    },
+    {
+        title: 'No. of Invoices in base',
+        children: [
+            {
+                title: 'Opening',
+                dataIndex: 'openingCount',
+                key: 'openingCount',
+            },
+            {
+                title: 'Last Month',
+                dataIndex: 'lastMonthCount',
+                key: 'lastMonthCount',
+            },
+            {
+                title: 'Received',
+                dataIndex: 'receivedCount',
+                key: 'receivedCount',
+            },
+            {
+                title: 'Closing',
+                dataIndex: 'closingCount',
+                key: 'closingCount',
+            },
+            {
+                title: 'Performance',
+                dataIndex: 'performanceCount',
+                key: 'performanceCount',
+            },
+        ]
     }
 ]
 export const closedCustomersReportColumns = [

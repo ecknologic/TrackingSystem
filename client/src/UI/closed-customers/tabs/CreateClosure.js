@@ -4,19 +4,18 @@ import { message } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import ClosureForm from '../forms/Closure';
 import { http } from '../../../modules/http';
-import useUser from '../../../utils/hooks/useUser';
 import CustomButton from '../../../components/CustomButton';
 import { validateClosureAccValues, validateClosureValues, validateIFSCCode, validateNumber } from '../../../utils/validations';
 import { isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
-import { getCustomerIdOptions, getDepartmentOptions, getLocationOptions, getRouteOptions } from '../../../assets/fixtures';
+import { getCustomerIdOptions, getDepartmentOptions, getDriverOptions, getLocationOptions, getRouteOptions } from '../../../assets/fixtures';
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
 const CreateEnquiry = ({ goToTab }) => {
-    const { WAREHOUSEID } = useUser()
     const [formData, setFormData] = useState({})
     const [accData, setAccData] = useState({})
     const [formErrors, setFormErrors] = useState({})
     const [accErrors, setAccErrors] = useState({})
+    const [driverList, setDriverList] = useState([])
     const [btnDisabled, setBtnDisabled] = useState(false)
     const [customerList, setCustomerList] = useState([])
     const [warehouseList, setWarehouseList] = useState([])
@@ -25,6 +24,7 @@ const CreateEnquiry = ({ goToTab }) => {
     const [shake, setShake] = useState(false)
 
     const routeOptions = useMemo(() => getRouteOptions(routeList), [routeList])
+    const driverOptions = useMemo(() => getDriverOptions(driverList), [driverList])
     const warehouseOptions = useMemo(() => getDepartmentOptions(warehouseList), [warehouseList])
     const customerOptions = useMemo(() => getCustomerIdOptions(customerList), [customerList])
     const locationOptions = useMemo(() => getLocationOptions(locationList), [locationList])
@@ -32,7 +32,6 @@ const CreateEnquiry = ({ goToTab }) => {
     const config = { cancelToken: source.token }
 
     useEffect(() => {
-        getRouteList()
         getCustomerList()
         getWarehouseList()
 
@@ -40,6 +39,15 @@ const CreateEnquiry = ({ goToTab }) => {
             http.ABORT(source)
         }
     }, [])
+
+    const getDriverList = async (warehouseId) => {
+        const url = `bibo/getdriverDetails/${warehouseId}`
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setDriverList(data)
+        } catch (error) { }
+    }
 
     const getCustomerList = async () => {
         const url = 'customer/getCustomerIdsByAgent'
@@ -50,8 +58,8 @@ const CreateEnquiry = ({ goToTab }) => {
         } catch (error) { }
     }
 
-    const getRouteList = async () => {
-        const url = `customer/getRoutes/${WAREHOUSEID || 0}`
+    const getRouteList = async (warehouseId) => {
+        const url = `customer/getRoutes/${warehouseId}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -82,6 +90,8 @@ const CreateEnquiry = ({ goToTab }) => {
 
         try {
             const [data] = await http.GET(axios, url, config)
+            getDriverList(data.departmentId)
+            getRouteList(data.departmentId)
             setFormData(prev => ({ ...prev, ...data, totalAmount: data.balanceAmount }))
         } catch (error) { }
     }
@@ -109,6 +119,11 @@ const CreateEnquiry = ({ goToTab }) => {
         }
         else if (key === 'deliveryDetailsId') {
             getDeliveryDetails(value)
+        }
+        else if (key === 'departmentId') {
+            getDriverList(value)
+            getRouteList(value)
+            setFormData(prev => ({ ...prev, driverId: null, routeId: null }))
         }
         else if (numerics.includes(key)) {
             const error = validateNumber(value)
@@ -161,11 +176,11 @@ const CreateEnquiry = ({ goToTab }) => {
     }
 
     const handleSubmit = async () => {
-        const { customerId, closingDate, collectedDate } = formData
+        const { closingDate, collectedDate, driverAssignedOn } = formData
         const formErrors = validateClosureValues(formData)
         const accErrors = validateClosureAccValues(accData)
 
-        if (!isEmpty(formErrors)) {
+        if (!isEmpty(formErrors) || !isEmpty(accErrors)) {
             setShake(true)
             setTimeout(() => setShake(false), 820)
             setFormErrors(formErrors)
@@ -175,6 +190,7 @@ const CreateEnquiry = ({ goToTab }) => {
 
         const body = {
             ...formData, accountDetails: accData,
+            driverAssignedOn: dayjs(driverAssignedOn).format(APIDATEFORMAT),
             closingDate: closingDate ? dayjs(closingDate).format(APIDATEFORMAT) : null,
             collectedDate: collectedDate ? dayjs(collectedDate).format(APIDATEFORMAT) : null,
         }
@@ -219,6 +235,7 @@ const CreateEnquiry = ({ goToTab }) => {
                 onChange={handleChange}
                 onAccChange={handleAccChange}
                 routeOptions={routeOptions}
+                driverOptions={driverOptions}
                 customerOptions={customerOptions}
                 locationOptions={locationOptions}
                 warehouseOptions={warehouseOptions}

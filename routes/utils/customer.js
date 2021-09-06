@@ -5,7 +5,7 @@ const { DATEFORMAT } = require("../../utils/constants");
 const { encryptObj } = require("../../utils/crypto");
 
 const compareCustomerData = (data, { userId, userRole, userName }) => {
-    const { customerId } = data
+    const { customerId, salesAgentName } = data
     return new Promise((resolve) => {
         customerQueries.getCustomerDetails(customerId, (err, results) => {
             if (err) resolve([])
@@ -17,8 +17,8 @@ const compareCustomerData = (data, { userId, userRole, userName }) => {
                     const oldValue = oldData[key]
                     if (oldValue != updatedValue && key != 'salesAgentName' && key != 'idProofs' && key != 'gstProof') {
                         records.push({
-                            oldValue,
-                            updatedValue,
+                            oldValue: key == 'salesAgent' ? oldData.salesAgentName : oldValue,
+                            updatedValue: key == 'salesAgent' ? salesAgentName : updatedValue,
                             createdDateTime,
                             userId,
                             description: `Updated Customer ${key} by ${userRole} <b>(${userName})</b>`,
@@ -41,18 +41,19 @@ const compareCustomerDeliveryData = (data, { deliveryDetailsId, customerId, user
     return new Promise((resolve) => {
         customerQueries.getDeliveryDetailsById({ deliveryDetailsId }).then(results => {
             if (results.length) {
+                const { departmentName, routeName } = data
                 const oldData = results[0]
                 const records = []
                 const createdDateTime = new Date()
                 Object.entries(data).map(([key, updatedValue]) => {
                     const oldValue = oldData[key]
-                    if (oldValue != updatedValue && key != 'idProofs' && key != 'gstProof') {
+                    if (oldValue != updatedValue && key != 'idProofs' && key != 'departmentName' && key != 'routeName' && key != 'gstProof') {
                         records.push({
-                            oldValue,
-                            updatedValue,
+                            oldValue: key == 'routeId' ? oldData.routeName : key == 'departmentId' ? oldData.departmentName : oldValue,
+                            updatedValue: key == 'routeId' ? routeName : key == 'departmentId' ? departmentName : updatedValue,
                             createdDateTime,
                             userId,
-                            description: `Updated Customer Delivery Details ${key} by ${userRole} <b>(${userName})</b>`,
+                            description: `Updated Customer Delivery Details ${getKeyName(key)} by ${userRole} <b>(${userName})</b>`,
                             customerId,
                             type: "customer"
                         })
@@ -134,6 +135,74 @@ const compareOrderData = (data, { departmentId, transactionId, userId, userRole,
     })
 }
 
+const compareDCDataByRoute = (data, { departmentId, userId, userRole, userName }) => {
+    const { routeId, driverName, selectedDate } = data
+    return new Promise((resolve) => {
+        customerQueries.getOrderDetailsByRoute({ routeId, selectedDate }, (err, results) => {
+            if (err) resolve([])
+            else if (results.length) {
+                const records = []
+                const createdDateTime = new Date()
+                results.map(item => {
+                    const { driverName: driver } = item
+                    oldValue = driver
+                    updatedValue = driverName
+                    if (oldValue != updatedValue) {
+                        records.push({
+                            oldValue,
+                            updatedValue,
+                            createdDateTime,
+                            userId,
+                            description: `Updated DC ${getDCKeyName('driverId')} by ${userRole} <b>(${userName})</b>`,
+                            transactionId: item.customerOrderId,
+                            departmentId,
+                            type: 'warehouse', subType: 'delivery'
+                        })
+                    }
+                })
+                resolve(records)
+            }
+            else {
+                resolve([])
+            }
+        })
+    })
+}
+
+const compareOrdersDataByRoute = (data, { userId, userRole, userName }) => {
+    const { routeId, driverName, departmentId } = data
+    return new Promise((resolve) => {
+        customerQueries.getDeliveryDetailsByRoute({ routeId, departmentId }, (err, results) => {
+            if (err) resolve([])
+            else if (results.length) {
+                const records = []
+                const createdDateTime = new Date()
+                results.map(item => {
+                    const { driverName: driver } = item
+                    oldValue = driver
+                    updatedValue = driverName
+                    if (oldValue != updatedValue) {
+                        records.push({
+                            oldValue,
+                            updatedValue,
+                            createdDateTime,
+                            userId,
+                            description: `Updated Order driver by ${userRole} <b>(${userName})</b>`,
+                            transactionId: item.deliveryDetailsId,
+                            departmentId,
+                            type: 'warehouse', subType: 'order'
+                        })
+                    }
+                })
+                resolve(records)
+            }
+            else {
+                resolve([])
+            }
+        })
+    })
+}
+
 const compareCustomerOrderData = (data, { departmentId, transactionId, userId, userRole, userName }) => {
     return new Promise((resolve) => {
         customerQueries.getOrderDetailsById(transactionId, (err, results) => {
@@ -171,12 +240,11 @@ const compareCustomerOrderData = (data, { departmentId, transactionId, userId, u
 }
 
 const compareCustomerEnquiryData = (data, { userId, userRole, userName }) => {
-    const { enquiryId } = data
+    const { enquiryId, salesAgentName } = data
     return new Promise((resolve) => {
         customerQueries.getCustomerEnquiryById(enquiryId, (err, results) => {
             if (err) resolve([])
             else if (results.length) {
-                // console.log("data", JSON.stringify(data))
                 const oldData = results[0]
                 const records = []
                 const createdDateTime = new Date()
@@ -184,8 +252,8 @@ const compareCustomerEnquiryData = (data, { userId, userRole, userName }) => {
                     const oldValue = oldData[key]
                     if (oldValue != updatedValue && key != 'salesAgentName' && key != 'products' && key != 'idProofs' && key != 'gstProof') {
                         records.push({
-                            oldValue,
-                            updatedValue,
+                            oldValue: key == 'salesAgent' ? oldData.salesAgentName : oldValue,
+                            updatedValue: key == 'salesAgent' ? salesAgentName : updatedValue,
                             createdDateTime,
                             userId,
                             description: `Updated Enquiry ${key} by ${userRole} <b>(${userName})</b>`,
@@ -204,12 +272,11 @@ const compareCustomerEnquiryData = (data, { userId, userRole, userName }) => {
 }
 
 const compareCustomerClosingData = (data, { userId, userRole, userName }) => {
-    const { closingId } = data
+    const { closingId, departmentName, routeName } = data
     return new Promise((resolve) => {
         customerClosingQueries.getCustomerClosingDetailsById(closingId, (err, results) => {
             if (err) resolve([])
             else if (results.length) {
-                // console.log("data", JSON.stringify(data))
                 const oldData = results[0]
                 const records = []
                 const createdDateTime = new Date()
@@ -244,7 +311,7 @@ const compareCustomerClosingData = (data, { userId, userRole, userName }) => {
                             }
                         })
                     }
-                    else if (oldValue != updatedValue && key != 'RouteName' && key != 'createdBy' && key != 'departmentName' && key != 'createdDateTime' && key != 'location') {
+                    else if (oldValue != updatedValue && key != 'RouteName' && key != 'routeName' && key != 'createdBy' && key != 'departmentName' && key != 'createdDateTime' && key != 'location') {
                         if (key == 'isConfirmed') {
                             records.push({
                                 createdDateTime,
@@ -256,8 +323,8 @@ const compareCustomerClosingData = (data, { userId, userRole, userName }) => {
                         }
                         else {
                             records.push({
-                                oldValue,
-                                updatedValue,
+                                oldValue: key == 'departmentId' ? oldData.departmentName : key == 'routeId' ? oldData.RouteName : oldValue,
+                                updatedValue: key == 'departmentId' ? departmentName : key == 'routeId' ? routeName : updatedValue,
                                 createdDateTime,
                                 userId,
                                 description: `Updated ${key} by ${userRole} <b>(${userName})</b>`,
@@ -286,4 +353,11 @@ const getDCKeyName = (key) => {
     else if (key == 'driverId') return `driver`
     else if (key == 'vehicleId') return `vehicle`
 }
-module.exports = { compareCustomerData, compareCustomerClosingData, compareCustomerEnquiryData, compareCustomerOrderData, compareProductsData, compareCustomerDeliveryData, compareOrderData }
+
+const getKeyName = (key) => {
+    if (key == 'routeId') return `route`
+    else if (key == 'driverId') return `driver`
+    else if (key == 'departmentId') return `department`
+    else return key
+}
+module.exports = { compareOrdersDataByRoute, compareDCDataByRoute, compareCustomerData, compareCustomerClosingData, compareCustomerEnquiryData, compareCustomerOrderData, compareProductsData, compareCustomerDeliveryData, compareOrderData }

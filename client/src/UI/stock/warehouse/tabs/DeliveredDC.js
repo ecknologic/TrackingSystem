@@ -19,7 +19,7 @@ import CustomDateInput from '../../../../components/CustomDateInput';
 import CustomPagination from '../../../../components/CustomPagination';
 import CustomRangeInput from '../../../../components/CustomRangeInput';
 import { EyeIconGrey, ListViewIconGrey } from '../../../../components/SVG_Icons';
-import { getStatusColor, doubleKeyComplexSearch, showToast, disableFutureDates } from '../../../../utils/Functions';
+import { getStatusColor, doubleKeyComplexSearch, showToast, disableFutureDates, renderProductDetails } from '../../../../utils/Functions';
 import ActivityLogContent from '../../../../components/ActivityLogContent';
 const APIDATEFORMAT = 'YYYY-MM-DD'
 const DATEANDTIMEFORMAT = 'DD/MM/YYYY hh:mm A'
@@ -218,7 +218,7 @@ const DeliveredDC = () => {
             route: RouteName || 'Not Assigned',
             returnEmptyCans: returnEmptyCans || 0,
             driverName: driverName || 'Not Assigned',
-            orderDetails: renderOrderDetails(dc),
+            orderDetails: renderProductDetails(dc),
             status: renderStatus(isDelivered),
             dateAndTime: dayjs(deliveredDate).format(DATEANDTIMEFORMAT),
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, dc)} />
@@ -346,12 +346,6 @@ const renderStatus = (status) => {
     )
 }
 
-const renderOrderDetails = ({ product20L, product2L, product1L, product500ML, product300ML }) => {
-    return `
-    20 ltrs - ${Number(product20L)}, 2 ltrs - ${Number(product2L)} boxes, 1 ltr - ${Number(product1L)} boxes, 
-    500 ml - ${Number(product500ML)} boxes, 300 ml - ${Number(product300ML)} boxes
-    `
-}
 const options = [
     <Menu.Item key="view" icon={<EyeIconGrey />}>View</Menu.Item>,
     <Menu.Item key="logs" icon={<ListViewIconGrey />}>Acvitity Logs</Menu.Item>

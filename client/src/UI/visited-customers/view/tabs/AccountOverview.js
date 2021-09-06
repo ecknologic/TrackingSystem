@@ -9,13 +9,12 @@ import EnquiryForm from '../../forms/Enquiry';
 import Spinner from '../../../../components/Spinner';
 import ScrollUp from '../../../../components/ScrollUp';
 import NoContent from '../../../../components/NoContent';
-import IDProofInfo from '../../../../components/IDProofInfo';
 import CustomButton from '../../../../components/CustomButton';
-import { getDropdownOptions, getStaffOptions } from '../../../../assets/fixtures';
-import { isEmpty, showToast, base64String, getBase64, getProductsForUI, getProductsWithIdForDB, extractDistributorDetails, extractProductsFromForm, resetTrackForm } from '../../../../utils/Functions';
-import { validateNames, validateMobileNumber, validateEmailId, validateDistributorValues, validateEnquiryValues } from '../../../../utils/validations';
-import '../../../../sass/employees.scss'
 import { MARKETINGADMIN, DATEFORMAT } from '../../../../utils/constants';
+import { getDropdownOptions, getStaffOptions } from '../../../../assets/fixtures';
+import { validateMobileNumber, validateEmailId, validateEnquiryValues } from '../../../../utils/validations';
+import { isEmpty, showToast, getProductsForUI, getProductsWithIdForDB, extractProductsFromForm, resetTrackForm, getLabel } from '../../../../utils/Functions';
+import '../../../../sass/employees.scss'
 
 const ManageDistributor = ({ setHeaderContent, onGoBack }) => {
     const { enquiryId } = useParams()
@@ -80,8 +79,8 @@ const ManageDistributor = ({ setHeaderContent, onGoBack }) => {
         } catch (error) { }
     }
 
-    const handleChange = (value, key) => {
-        setFormData(data => ({ ...data, [key]: value }))
+    const handleChange = (value, key, label, labelKey) => {
+        setFormData(data => ({ ...data, [key]: value, ...getLabel(labelKey, label) }))
         setFormErrors(errors => ({ ...errors, [key]: '' }))
 
         if (value === 'notintrested') {
@@ -172,7 +171,6 @@ const ManageDistributor = ({ setHeaderContent, onGoBack }) => {
                                     </>
                                 ) :
                                     <>
-                                        {/* <IDProofInfo data={gstProof} /> */}
                                         <AccountView data={formData} />
                                     </>
                             }
