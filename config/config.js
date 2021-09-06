@@ -1,10 +1,10 @@
 const config = {
 
   db: {
-    host: 'tracking-system.cnz4ify3r0by.ap-south-1.rds.amazonaws.com',
-    dbName: 'trackingsystem',
-    user: 'admin',
-    password: 'gptmFGgWdyEbymqSw2PX'
+      host: process.env.HOST,
+      dbName: process.env.DB_NAME,
+      user: process.env.USER_NAME,
+      password: process.env.PASSWORD 
   }
 };
 
