@@ -2,9 +2,9 @@ import React from 'react';
 import { Drawer } from 'antd';
 import { CrossIconDark } from './SVG_Icons';
 import DrinkIcon from '../assets/color/drink.svg'
-import '../sass/notificationDrawer.scss'
 import Scrollbars from 'react-custom-scrollbars-2';
 import NotificationCard from './NotificationCard';
+import '../sass/notificationDrawer.scss'
 
 const NotificationDrawer = ({ onClose, visible }) => {
 
