@@ -64,6 +64,7 @@ app.use("/logs", checkUserExists, require('./routes/auditlogs'));
 app.use("/reports", checkUserExists, require('./routes/Reports'));
 
 app.use("/vendors", checkUserExists, require('./routes/vendors'));
+app.use("/notifications", require('./routes/Notifications'));
 
 app.use("/bibo", require('./routes/loginAuthentication.js'));
 
