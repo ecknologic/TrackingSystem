@@ -25,8 +25,7 @@ const customerClosingControllers = require('./Customers/closing.js');
 const customerClosingQueries = require('../dbQueries/Customer/closing.js');
 const { notificationContent } = require('./Notifications/content.js');
 const notificationQueries = require('../dbQueries/notifications/queries.js');
-const { notificationConstants } = require('./Notifications/constants.js');
-const { getSocketIo } = require('../sockets/index.js');
+const { emitSocketToUsers } = require('./Notifications/functions.js');
 let departmentId, userId, userName, userRole;
 
 var storage = multer.diskStorage({
@@ -213,11 +212,10 @@ const createCustomerCreationNotification = ({ customerId, customerName }) => {
         if (notificationErr) console.log('notificationErr', notificationErr)
         else {
           const notificationId = results.insertId;
-          let messageId = notificationConstants.RECEIVE_NOTIFICATION + userId
           notificationQueries.createNotificationUsers({ userIds: usersData, notificationId }, (notifyUsersErr, data) => {
             if (notifyUsersErr) console.log('notifyUsersErr', notifyUsersErr)
             else {
-              getSocketIo().emit(`${messageId}`, { ...notificationData, notificationId })
+              emitSocketToUsers({ ...notificationData, notificationId }, usersData)
             }
           })
         }

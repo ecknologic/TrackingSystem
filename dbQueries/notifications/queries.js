@@ -8,6 +8,12 @@ notificationQueries.getNotifications = (userId, callback) => {
     return executeGetParamsQuery(query, [userId], callback)
 }
 
+notificationQueries.getUnreadNotificationsCount = (userId, callback) => {
+    let query = `SELECT COUNT(CASE WHEN isRead = 0 THEN 1 ELSE NULL END) AS unreadCount
+    FROM NotificationUsers WHERE userId=?`;
+    return executeGetParamsQuery(query, [userId], callback)
+}
+
 notificationQueries.createNotification = (input, callback) => {
     const { title, description, navigationUrl } = input;
     let query = `insert into Notifications (title,description,navigationUrl,createdDateTime) values(?,?,?,?)`;

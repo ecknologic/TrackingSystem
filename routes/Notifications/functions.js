@@ -1,3 +1,4 @@
+const { getSocketIo } = require("../../sockets")
 const { notificationConstants } = require("./constants")
 
 const getNavigationUrl = (type) => {
@@ -6,4 +7,13 @@ const getNavigationUrl = (type) => {
     }
 }
 
-module.exports = { getNavigationUrl }
+const emitSocketToUsers = (data, userIds) => {
+    if (userIds.length) {
+        for (let i of userIds) {
+            let messageId = notificationConstants.RECEIVE_NOTIFICATION + i.userId
+            getSocketIo().emit(`${messageId}`, data)
+        }
+    }
+}
+
+module.exports = { getNavigationUrl, emitSocketToUsers }
