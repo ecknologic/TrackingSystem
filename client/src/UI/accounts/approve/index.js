@@ -69,6 +69,7 @@ const ApproveAccount = () => {
 
     const confirmMsg = 'Changes you made may not be saved.'
     const showTrashIcon = useMemo(() => addresses.length !== 1, [addresses.length])
+    const isSuperAdmin = useMemo(() => ROLE === SUPERADMIN, [])
     const isAdmin = useMemo(() => ROLE === SUPERADMIN || ROLE === ACCOUNTSADMIN, [])
     const { organizationName, customerId, customertype, customerName, depositAmount, isSuperAdminApproved } = accountValues
     const canApprove = isAdmin || isSuperAdminApproved || Number(depositAmount)
@@ -94,7 +95,16 @@ const ApproveAccount = () => {
         try {
             const { data: [data = {}] } = await http.GET(axios, url, config)
             const { gstProof, idProof_frontside, idProof_backside, Address1, registeredDate, ...rest } = data
-            const { customerName, organizationName, customertype, gstNo, adharNo, panNo, idProofType, depositAmount } = rest
+            const { customerName, organizationName, customertype, gstNo, adharNo, panNo, idProofType,
+                isApproved, isSuperAdminApproved, customerId, depositAmount } = rest
+
+            // Redirection Logic in case of already approved
+            if (isApproved) {
+                return goToManageAccount(customerId, customertype)
+            }
+            else if (isSuperAdmin && isSuperAdminApproved) {
+                return goToManageAccount(customerId, customertype)
+            }
 
             setHeaderContent({
                 title: organizationName || customerName,
@@ -422,6 +432,14 @@ const ApproveAccount = () => {
             setConfirmModal(true)
         }
         else goToCustomers()
+    }
+
+    const goToManageAccount = (id, type) => {
+        let tab = 1
+        if (type === 'Individual') {
+            tab = 2
+        }
+        history.push(`/customers/manage/${id}`, { tab, page: 1 })
     }
 
     const genExtra = (id, isDrafted, index) => (

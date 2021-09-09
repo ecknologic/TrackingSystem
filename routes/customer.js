@@ -23,6 +23,9 @@ const { getReceiptId, getCustomerIdsForReceiptsDropdown, getCustomerDepositDetai
 const { encrypt, decrypt } = require('../utils/crypto.js');
 const customerClosingControllers = require('./Customers/closing.js');
 const customerClosingQueries = require('../dbQueries/Customer/closing.js');
+const { notificationContent } = require('./Notifications/content.js');
+const notificationQueries = require('../dbQueries/notifications/queries.js');
+const { emitSocketToUsers } = require('./Notifications/functions.js');
 let departmentId, userId, userName, userRole;
 
 var storage = multer.diskStorage({
@@ -162,14 +165,14 @@ router.post('/createCustomer', async (req, res) => {
       db.query(customerDetailsQuery, insertQueryValues, (err, results) => {
         if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
         else {
-          saveDeliveryDetails(results.insertId, customerdetails, res)
+          saveDeliveryDetails(results.insertId, customerdetails, res, customerName)
         }
       });
     })
   //   }
   // })
 });
-const saveDeliveryDetails = (customerId, customerdetails, res) => {
+const saveDeliveryDetails = (customerId, customerdetails, res, customerName) => {
   return new Promise(async (resolve, reject) => {
     if (customerdetails.deliveryDetails.length) {
       let count = 0
@@ -186,10 +189,10 @@ const saveDeliveryDetails = (customerId, customerdetails, res) => {
             else {
               count++
               saveProductDetails(i.products, results.insertId, customerId).then(productDetails => {
-                // console.log(count, customerdetails.deliveryDetails.length)
                 if (count == customerdetails.deliveryDetails.length) {
                   auditQueries.createLog({ userId, description: `Customer created by ${userRole} <b>(${userName})</b>`, customerId, type: "customer" })
                   res.json({ status: 200, message: "Customer Created Successfully" })
+                  createCustomerCreationNotification({ customerName, customerId })
                 }
               })
             }
@@ -199,6 +202,28 @@ const saveDeliveryDetails = (customerId, customerdetails, res) => {
     }
   })
 }
+
+const createCustomerCreationNotification = ({ customerId, customerName }) => {
+  let notificationData = notificationContent.customerCreated({ customerId, customerName, userName })
+  usersQueries.getUserIdsByRole(notificationData.userRoles, (err, usersData) => {
+    if (err) console.log('Err', err)
+    else {
+      notificationQueries.createNotification(notificationData, (notificationErr, results) => {
+        if (notificationErr) console.log('notificationErr', notificationErr)
+        else {
+          const notificationId = results.insertId;
+          notificationQueries.createNotificationUsers({ userIds: usersData, notificationId }, (notifyUsersErr, data) => {
+            if (notifyUsersErr) console.log('notifyUsersErr', notifyUsersErr)
+            else {
+              emitSocketToUsers({ ...notificationData, notificationId }, usersData)
+            }
+          })
+        }
+      })
+    }
+  })
+}
+
 const saveDeliveryDays = (deliveryDays) => {
   return new Promise((resolve, reject) => {
     let deliveryDayQuery = "insert  into customerdeliverydays (SUN,MON,TUE,WED,THU,FRI,SAT) values(?,?,?,?,?,?,?)";

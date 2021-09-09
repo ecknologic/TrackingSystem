@@ -414,8 +414,8 @@ utils.getRequiredDate = (requiredDays) => {
 
 utils.getPrevMonthStartAndEndDates = (prevMonthLength, startDate) => {
     var date = startDate ? new Date(startDate) : new Date();
-    var startDate = new Date(date.getFullYear(), date.getMonth() - prevMonthLength, 1);
-    var endDate = new Date(date.getFullYear(), date.getMonth() - (prevMonthLength - 1), 0);
+    var startDate = dayjs(new Date(date.getFullYear(), date.getMonth() - prevMonthLength, 1)).format('YYYY-MM-DD');
+    var endDate = dayjs(new Date(date.getFullYear(), date.getMonth() - (prevMonthLength - 1), 0)).format('YYYY-MM-DD');
     return { startDate, endDate }
 }
 
