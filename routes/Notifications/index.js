@@ -2,11 +2,11 @@ var express = require('express');
 const notificationQueries = require('../../dbQueries/notifications/queries');
 var router = express.Router();
 const { dbError } = require('../../utils/functions');
-let departmentId, userId = 1;
+let departmentId, userId;
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
     departmentId = req.headers['departmentid']
-    // userId = req.headers['userid']
+    userId = req.headers['userid']
     next();
 });
 
