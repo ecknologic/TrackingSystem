@@ -44,7 +44,7 @@ const Header = () => {
     const handleReadNotification = async (id) => {
         const url = `notifications/updateNotificationStatus/${id}`
         try {
-            await http.GET(axios, url, config)
+            await http.PUT(axios, url, config)
             setUnreadCount(prev => prev - 1)
             optimisticRead(id)
         } catch (error) { }
