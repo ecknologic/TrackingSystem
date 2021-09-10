@@ -5,12 +5,45 @@ const { constants } = require("../../utils/constants")
 let notificationContent = {}
 let { SUPERADMIN, MARKETINGMANAGER, ACCOUNTSADMIN } = constants
 
-notificationContent.customerCreated = ({ customerName, userName, customerId }) => {
+notificationContent.customerCreated = ({ name, userName, id }) => {
     return {
         title: "Customer created",
-        description: `<b>${customerName}</b> created by ${userName}`,
+        description: `<b>${name}</b> created by ${userName}`,
         createdDateTime: new Date(),
-        navigationUrl: getNavigationUrl(notificationConstants.CUSTOMER_CREATED, customerId),
+        navigationUrl: getNavigationUrl(notificationConstants.CUSTOMER_CREATED, id),
+        isRead: 0,
+        userRoles: [SUPERADMIN, MARKETINGMANAGER, ACCOUNTSADMIN]
+    }
+}
+
+notificationContent.customerCreatedWithZeroDeposit = ({ name, userName, id }) => {
+    return {
+        title: "Customer created",
+        description: `<b>${name}</b> created by ${userName} with zero deposit amount`,
+        createdDateTime: new Date(),
+        navigationUrl: getNavigationUrl(notificationConstants.CUSTOMER_CREATED, id),
+        isRead: 0,
+        userRoles: [SUPERADMIN]
+    }
+}
+
+notificationContent.customerCreatedWithLowPrice = ({ name, userName, id }) => {
+    return {
+        title: "Customer created",
+        description: `<b>${name}</b> created by ${userName} with low product price`,
+        createdDateTime: new Date(),
+        navigationUrl: getNavigationUrl(notificationConstants.CUSTOMER_CREATED, id),
+        isRead: 0,
+        userRoles: [SUPERADMIN]
+    }
+}
+
+notificationContent.customerDeliveryDetailsAdded = ({ name, userName, id }) => {
+    return {
+        title: "Delivery Details Added",
+        description: `<b>${name}</b> Delivery Details added by ${userName}`,
+        createdDateTime: new Date(),
+        navigationUrl: getNavigationUrl(notificationConstants.DELIVERY_DETAILS_ADDED, id),
         isRead: 0,
         userRoles: [SUPERADMIN, MARKETINGMANAGER, ACCOUNTSADMIN]
     }

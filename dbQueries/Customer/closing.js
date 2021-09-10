@@ -82,10 +82,10 @@ customerClosingQueries.addCustomerClosingDetails = async (input, callback) => {
 }
 
 customerClosingQueries.updateCustomerClosingDetails = async (input, callback) => {
-    let { routeId, closingDate, customerId, customerName, noOfCans, collectedDate, collectedCans, pendingAmount, depositAmount, balanceAmount, missingCansAmount, totalAmount, reason, missingCansCount, createdBy, departmentId, status, isConfirmed, closingId, deliveryDetailsId,driverId, driverAssignedOn } = input
+    let { routeId, closingDate, customerId, customerName, noOfCans, collectedDate, collectedCans, pendingAmount, depositAmount, balanceAmount, missingCansAmount, totalAmount, reason, missingCansCount, createdBy, departmentId, status, isConfirmed, closingId, deliveryDetailsId, driverId, driverAssignedOn } = input
     let query = "UPDATE customerclosingdetails SET routeId=?, closingDate=?, customerId=?,customerName=?,noOfCans=?,collectedDate=?,collectedCans=?,pendingAmount=?,depositAmount=?,balanceAmount=?,missingCansAmount=?,totalAmount=?,reason=?,missingCansCount=?,createdBy=?,deliveryDetailsId=?,status=?,departmentId=?,driverId=?,driverAssignedOn=? WHERE closingId=?";
     if (isConfirmed && isConfirmed == true) status = 'Confirmed'
-    let requestBody = [routeId, closingDate, customerId, customerName, noOfCans, collectedDate, collectedCans, pendingAmount, depositAmount, balanceAmount, missingCansAmount, totalAmount, reason, missingCansCount, createdBy, deliveryDetailsId, status, departmentId,driverId, driverAssignedOn, closingId]
+    let requestBody = [routeId, closingDate, customerId, customerName, noOfCans, collectedDate, collectedCans, pendingAmount, depositAmount, balanceAmount, missingCansAmount, totalAmount, reason, missingCansCount, createdBy, deliveryDetailsId, status, departmentId, driverId, driverAssignedOn, closingId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
@@ -113,6 +113,13 @@ customerClosingQueries.updateCustomerClosingStatus = async (input, callback) => 
     else query = query + 'WHERE deliveryDetailsId=?'
     let id = customerId ? customerId : deliveryDetailsId
     let requestBody = ['Closed', id]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
+
+customerClosingQueries.updateCustomerClosingInitiatedStatus = async (input, callback) => {
+    let { deliveryDetailsId } = input
+    let query = "UPDATE DeliveryDetails SET closingInitiated=? WHERE deliveryDetailsId=?"
+    let requestBody = [1, deliveryDetailsId]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 

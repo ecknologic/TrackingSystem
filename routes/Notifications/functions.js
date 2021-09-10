@@ -1,9 +1,12 @@
+const notificationQueries = require("../../dbQueries/notifications/queries")
+const usersQueries = require("../../dbQueries/users/queries")
 const { getSocketIo } = require("../../sockets")
 const { notificationConstants } = require("./constants")
+const { notificationContent } = require("./content")
 
-const getNavigationUrl = (type) => {
+const getNavigationUrl = (type, id) => {
     switch (type) {
-        case `${notificationConstants.CUSTOMER_CREATED}`: return
+        case `${notificationConstants.CUSTOMER_CREATED}`: return `/customers/approval/${id}`
     }
 }
 
@@ -16,4 +19,25 @@ const emitSocketToUsers = (data, userIds) => {
     }
 }
 
-module.exports = { getNavigationUrl, emitSocketToUsers }
+const createNotifications = ({ id, name, userName }, key) => {
+    let notificationData = notificationContent[key]({ id, name, userName })
+    usersQueries.getUserIdsByRole(notificationData.userRoles, (err, usersData) => {
+        if (err) console.log('Err', err)
+        else {
+            notificationQueries.createNotification(notificationData, (notificationErr, results) => {
+                if (notificationErr) console.log('notificationErr', notificationErr)
+                else {
+                    const notificationId = results.insertId;
+                    notificationQueries.createNotificationUsers({ userIds: usersData, notificationId }, (notifyUsersErr, data) => {
+                        if (notifyUsersErr) console.log('notifyUsersErr', notifyUsersErr)
+                        else {
+                            emitSocketToUsers({ ...notificationData, notificationId }, usersData)
+                        }
+                    })
+                }
+            })
+        }
+    })
+}
+
+module.exports = { getNavigationUrl, emitSocketToUsers, createNotifications }
