@@ -813,7 +813,7 @@ router.post('/updateDeliveryDetails', async (req, res) => {
                   updateWHDelivery(req)
                   auditQueries.createLog({ userId, description: `New Delivery details added by ${userRole} <b>(${userName})</b>`, customerId: i.customer_Id, type: "customer" })
                   res.json({ status: 200, message: "Delivery Details Updated Successfully", data });
-                  createNotifications({ name: location, id: i.customer_Id, userName }, 'customerDeliveryDetailsAdded') //Need to check the isApproved status of the customer
+                  createNotifications({ name: i.deliveryLocation, id: i.customer_Id, userName }, 'customerDeliveryDetailsAdded') //Need to check the isApproved status of the customer
                 }
               })
             }
