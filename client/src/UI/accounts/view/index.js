@@ -24,7 +24,7 @@ import { extractDeliveryDetails, getProductsForDB, extractProductsFromForm, isEm
 const ViewAccount = () => {
     const { ROLE } = useUser()
     const history = useHistory()
-    const { accountId } = useParams()
+    const { accountId, tab = '1' } = useParams()
     const { pathname, state } = useLocation()
     const [reFetch, setreFetch] = useState(false)
     const [account, setAccount] = useState({ loading: true })
@@ -45,7 +45,7 @@ const ViewAccount = () => {
     const [currentDepId, setCurrentDepId] = useState('')
     const [shake, setShake] = useState(false)
     const [navigateTo, setNavigateTo] = useState('')
-    const [activeTab, setActiveTab] = useState('1')
+    const [activeTab, setActiveTab] = useState(tab)
 
     const isAdmin = useMemo(() => ROLE === SUPERADMIN || ROLE === ACCOUNTSADMIN, [])
     const routeOptions = useMemo(() => getRouteOptions(routeList), [routeList])
@@ -300,6 +300,7 @@ const ViewAccount = () => {
             <div className='account-view-content'>
                 <div className='app-tabs-container'>
                     <Tabs
+                        activeKey={activeTab}
                         onChange={(key) => setActiveTab(key)}
                         tabBarExtraContent={
                             activeTab === '2' &&

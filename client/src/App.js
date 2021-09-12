@@ -173,7 +173,7 @@ const App = () => {
                               <Route path='/customers/approval/:accountId' render={byRole(<ApproveAccount />)} />
                               <Route path='/inactive-customers-report' render={byRole(<InactiveCustomersReport />)} />
                               <Route path='/marketing-performance-report' render={byRole(<MarketingPerformanceReport />)} />
-                              <Route path='/customers/manage/:accountId' render={byRole(<ViewAccount />)} />
+                              <Route path='/customers/manage/:accountId/:tab?/:page?' render={byRole(<ViewAccount />)} />
                               <Route path='/customers/:tab?/:page?' render={byRole(<Customers />)} />
                               <Route path='/new-customers-report' render={byRole(<NewCustomersReport />)} />
                               <Route path='/closed-customers-report' render={byRole(<ClosedCustomersReport />)} />
