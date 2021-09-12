@@ -73,6 +73,23 @@ export const computeTotal = (data, key) => {
 
 }
 
+export const price20LBelowCriteria = (data, type) => {
+    return data.some(({ price20L }) => {
+        if (type === 'Individual') {
+            if (Number(price20L) < 60) {
+                return true
+            }
+            return false
+        }
+        else {
+            if (Number(price20L) < 42) {
+                return true
+            }
+            return false
+        }
+    })
+}
+
 export const showToast = (props) => {
     let { item = 'Data', action = 'success',
         v1Ing = 'Saving', v2 = 'saved', duration } = props

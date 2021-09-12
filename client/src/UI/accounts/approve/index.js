@@ -24,7 +24,7 @@ import { DDownIcon, TrashIconLight } from '../../../components/SVG_Icons'
 import { getDropdownOptions, getStaffOptions, getWarehouseOptions } from '../../../assets/fixtures';
 import {
     getIdProofsForDB, getAddressesForDB, isEmpty, showToast, extractCADetails, base64String, getDevDays,
-    getProductsForUI, resetSessionItems, getSessionItems, resetTrackForm, getBase64, getLabel
+    getProductsForUI, resetSessionItems, getSessionItems, resetTrackForm, getBase64, getLabel, price20LBelowCriteria
 } from '../../../utils/Functions';
 import { ACCOUNTSADMIN, MARKETINGADMIN, SUPERADMIN, TRACKFORM } from '../../../utils/constants';
 import {
@@ -72,7 +72,8 @@ const ApproveAccount = () => {
     const isSuperAdmin = useMemo(() => ROLE === SUPERADMIN, [])
     const isAdmin = useMemo(() => ROLE === SUPERADMIN || ROLE === ACCOUNTSADMIN, [])
     const { organizationName, customerId, customertype, customerName, depositAmount, isSuperAdminApproved } = accountValues
-    const canApprove = isAdmin || isSuperAdminApproved || Number(depositAmount)
+    const canApprove = (!price20LBelowCriteria(addresses, customertype) && Number(depositAmount)) || isSuperAdmin || isSuperAdminApproved
+    const needsSAApproval = price20LBelowCriteria(addresses, customertype) || Number(depositAmount) === 0
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
@@ -403,7 +404,7 @@ const ApproveAccount = () => {
         const url = `customer/approveCustomer/${customerId}`
         const body = {
             deliveryDetailsIds: activeAddressIds,
-            isSuperAdminApproved: isSuperAdminApproved || (Number(depositAmount) === 0 ? Number(isAdmin) : 0)
+            isSuperAdminApproved: isSuperAdminApproved || (needsSAApproval ? Number(isSuperAdmin) : 0)
         }
         try {
             setBtnDisabled(true)
