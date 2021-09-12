@@ -83,14 +83,16 @@ customerClosingControllers.getCustomerAccountDetailsById = (req, res) => {
 }
 
 customerClosingControllers.addCustomerClosingDetails = (req, res) => {
+    const { deliveryDetailsId, accountDetails,customerId } = req.body
     customerClosingQueries.addCustomerClosingDetails({ ...req.body, createdBy: req.userId }, (err, result) => {
         if (err) res.status(500).json(dbError(err));
         else {
-            customerClosingQueries.addCustomerAccountDetails({ ...req.body.accountDetails, customerId: req.body.customerId, closingId: result.insertId }, (err1, data) => {
+            customerClosingQueries.addCustomerAccountDetails({ ...accountDetails, customerId, closingId: result.insertId }, (err1, data) => {
                 if (err1) res.status(500).json(dbError(err1));
                 else {
                     const { userId, userRole, userName } = req
                     auditQueries.createLog({ userId, description: `Customer Closing created by ${userRole} <b>(${userName})</b>`, customerId: result.insertId, type: "customerClosing" })
+                    customerClosingQueries.updateCustomerClosingInitiatedStatus({ deliveryDetailsId })
                     res.json('Details added successfully')
                 }
             })

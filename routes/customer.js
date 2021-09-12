@@ -23,9 +23,7 @@ const { getReceiptId, getCustomerIdsForReceiptsDropdown, getCustomerDepositDetai
 const { encrypt, decrypt } = require('../utils/crypto.js');
 const customerClosingControllers = require('./Customers/closing.js');
 const customerClosingQueries = require('../dbQueries/Customer/closing.js');
-const { notificationContent } = require('./Notifications/content.js');
-const notificationQueries = require('../dbQueries/notifications/queries.js');
-const { emitSocketToUsers } = require('./Notifications/functions.js');
+const { createNotifications } = require('./Notifications/functions.js');
 let departmentId, userId, userName, userRole;
 
 var storage = multer.diskStorage({
@@ -165,14 +163,16 @@ router.post('/createCustomer', async (req, res) => {
       db.query(customerDetailsQuery, insertQueryValues, (err, results) => {
         if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
         else {
-          saveDeliveryDetails(results.insertId, customerdetails, res, customerName)
+          let name = customerName || organizationName;
+          saveDeliveryDetails(results.insertId, customerdetails, res, name, depositAmount)
+          if (depositAmount == 0) createNotifications({ id: results.insertId, name }, 'customerCreatedWithZeroDeposit')
         }
       });
     })
   //   }
   // })
 });
-const saveDeliveryDetails = (customerId, customerdetails, res, customerName) => {
+const saveDeliveryDetails = (customerId, customerdetails, res, customerName, depositAmount) => {
   return new Promise(async (resolve, reject) => {
     if (customerdetails.deliveryDetails.length) {
       let count = 0
@@ -192,7 +192,8 @@ const saveDeliveryDetails = (customerId, customerdetails, res, customerName) => 
                 if (count == customerdetails.deliveryDetails.length) {
                   auditQueries.createLog({ userId, description: `Customer created by ${userRole} <b>(${userName})</b>`, customerId, type: "customer" })
                   res.json({ status: 200, message: "Customer Created Successfully" })
-                  createCustomerCreationNotification({ customerName, customerId })
+                  if ((customerdetails.customertype == 'Corporate' && i.products[0].productPrice < 42) || (customerdetails.customertype == 'Individual' && i.products[0].productPrice < 60)) createNotifications({ name: customerName, id: customerId, userName }, 'customerCreatedWithLowPrice')
+                  else if (depositAmount > 0) createNotifications({ name: customerName, id: customerId, userName }, 'customerCreated')
                 }
               })
             }
@@ -203,26 +204,6 @@ const saveDeliveryDetails = (customerId, customerdetails, res, customerName) => 
   })
 }
 
-const createCustomerCreationNotification = ({ customerId, customerName }) => {
-  let notificationData = notificationContent.customerCreated({ customerId, customerName, userName })
-  usersQueries.getUserIdsByRole(notificationData.userRoles, (err, usersData) => {
-    if (err) console.log('Err', err)
-    else {
-      notificationQueries.createNotification(notificationData, (notificationErr, results) => {
-        if (notificationErr) console.log('notificationErr', notificationErr)
-        else {
-          const notificationId = results.insertId;
-          notificationQueries.createNotificationUsers({ userIds: usersData, notificationId }, (notifyUsersErr, data) => {
-            if (notifyUsersErr) console.log('notifyUsersErr', notifyUsersErr)
-            else {
-              emitSocketToUsers({ ...notificationData, notificationId }, usersData)
-            }
-          })
-        }
-      })
-    }
-  })
-}
 
 const saveDeliveryDays = (deliveryDays) => {
   return new Promise((resolve, reject) => {
@@ -324,7 +305,7 @@ const getLatLongDetails = (req) => {
 }
 router.post("/approveCustomer/:customerId", (req, res) => {
   const { customerId } = req.params;
-  const { isSuperAdminApproved } = req.body
+  const { isSuperAdminApproved, customerName } = req.body
   customerQueries.approveCustomer({ customerId, isSuperAdminApproved }, (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
@@ -332,6 +313,7 @@ router.post("/approveCustomer/:customerId", (req, res) => {
         if (err) res.json({ status: 500, message: err.sqlMessage });
         else {
           saveToCustomerOrderDetails(customerId, res, null, userId, userRole, userName)
+          isSuperAdminApproved && createNotifications({ name: customerName, id: customerId, userName, isSuperAdminApproved }, 'customerCreated')
         }
       })
     }
@@ -831,6 +813,7 @@ router.post('/updateDeliveryDetails', async (req, res) => {
                   updateWHDelivery(req)
                   auditQueries.createLog({ userId, description: `New Delivery details added by ${userRole} <b>(${userName})</b>`, customerId: i.customer_Id, type: "customer" })
                   res.json({ status: 200, message: "Delivery Details Updated Successfully", data });
+                  createNotifications({ name: location, id: i.customer_Id, userName }, 'customerDeliveryDetailsAdded') //Need to check the isApproved status of the customer
                 }
               })
             }
