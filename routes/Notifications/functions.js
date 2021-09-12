@@ -4,12 +4,6 @@ const { getSocketIo } = require("../../sockets")
 const { notificationConstants } = require("./constants")
 const { notificationContent } = require("./content")
 
-function getNavigationUrl(type, id) {
-    return new Promise((resolve) => {
-        if (type == notificationConstants.CUSTOMER_CREATED) resolve(`/customers/approval/${id}`)
-    })
-}
-
 const emitSocketToUsers = (data, userIds) => {
     if (userIds.length) {
         for (let i of userIds) {
@@ -19,25 +13,27 @@ const emitSocketToUsers = (data, userIds) => {
     }
 }
 
-const createNotifications = ({ id, name, userName, isSuperAdminApproved }, key) => {
-    let notificationData = notificationContent[key]({ id, name, userName, isSuperAdminApproved })
+const createNotifications = async ({ id, name, userName, isSuperAdminApproved }, key) => {
+    let notificationData = await notificationContent[key]({ id, name, userName, isSuperAdminApproved })
     usersQueries.getUserIdsByRole(notificationData.userRoles, (err, usersData) => {
         if (err) console.log('Err', err)
         else {
-            notificationQueries.createNotification(notificationData, (notificationErr, results) => {
-                if (notificationErr) console.log('notificationErr', notificationErr)
-                else {
-                    const notificationId = results.insertId;
-                    notificationQueries.createNotificationUsers({ userIds: usersData, notificationId }, (notifyUsersErr, data) => {
-                        if (notifyUsersErr) console.log('notifyUsersErr', notifyUsersErr)
-                        else {
-                            emitSocketToUsers({ ...notificationData, notificationId }, usersData)
-                        }
-                    })
-                }
-            })
+            if (usersData.length) {
+                notificationQueries.createNotification(notificationData, (notificationErr, results) => {
+                    if (notificationErr) console.log('notificationErr', notificationErr)
+                    else {
+                        const notificationId = results.insertId;
+                        notificationQueries.createNotificationUsers({ userIds: usersData, notificationId }, (notifyUsersErr, data) => {
+                            if (notifyUsersErr) console.log('notifyUsersErr', notifyUsersErr)
+                            else {
+                                emitSocketToUsers({ ...notificationData, notificationId }, usersData)
+                            }
+                        })
+                    }
+                })
+            }
         }
     })
 }
 
-module.exports = { getNavigationUrl, emitSocketToUsers, createNotifications }
+module.exports = { emitSocketToUsers, createNotifications }
