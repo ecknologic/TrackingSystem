@@ -403,6 +403,7 @@ const ApproveAccount = () => {
         const options = { item: 'Customer', action: 'loading', v1Ing: 'Approving' }
         const url = `customer/approveCustomer/${customerId}`
         const body = {
+            customerName,
             deliveryDetailsIds: activeAddressIds,
             isSuperAdminApproved: isSuperAdminApproved || (needsSAApproval ? Number(isSuperAdmin) : 0)
         }

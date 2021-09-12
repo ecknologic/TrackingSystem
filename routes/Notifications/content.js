@@ -12,10 +12,10 @@ const getNavigationUrl = (type, id) => {
 
 notificationContent.customerCreated = async ({ name, userName, id, isSuperAdminApproved }) => {
     return {
-        title: "Customer created",
-        description: `<b>${name}</b> created by ${userName}`,
+        title: `Customer ${isSuperAdminApproved ? 'approved' : 'created'}`,
+        description: `<b>${name}</b> ${isSuperAdminApproved ? 'approved' : 'created'} by ${userName}`,
         createdDateTime: new Date(),
-        navigationUrl: await getNavigationUrl(notificationConstants.CUSTOMER_CREATED, id),
+        navigationUrl: getNavigationUrl(notificationConstants.CUSTOMER_CREATED, id),
         isRead: 0,
         userRoles: isSuperAdminApproved ? [ACCOUNTSADMIN] : [SUPERADMIN, MARKETINGMANAGER, ACCOUNTSADMIN]
     }
@@ -26,18 +26,19 @@ notificationContent.customerCreatedWithZeroDeposit = async ({ name, userName, id
         title: "Customer created",
         description: `<b>${name}</b> created by ${userName} with zero deposit amount`,
         createdDateTime: new Date(),
-        navigationUrl: await getNavigationUrl(notificationConstants.CUSTOMER_CREATED, id),
+        navigationUrl: getNavigationUrl(notificationConstants.CUSTOMER_CREATED, id),
         isRead: 0,
         userRoles: [SUPERADMIN, MARKETINGMANAGER]
     }
 }
 
 notificationContent.customerCreatedWithLowPrice = async ({ name, userName, id }) => {
+    console.log('called')
     return {
         title: "Customer created",
         description: `<b>${name}</b> created by ${userName} with low product price`,
         createdDateTime: new Date(),
-        navigationUrl: await getNavigationUrl(notificationConstants.CUSTOMER_CREATED, id),
+        navigationUrl: getNavigationUrl(notificationConstants.CUSTOMER_CREATED, id),
         isRead: 0,
         userRoles: [SUPERADMIN, MARKETINGMANAGER]
     }
@@ -48,7 +49,7 @@ notificationContent.customerDeliveryDetailsAdded = async ({ name, userName, id }
         title: "Delivery Details Added",
         description: `<b>${name}</b> Delivery Details added by ${userName}`,
         createdDateTime: new Date(),
-        navigationUrl: await getNavigationUrl(notificationConstants.DELIVERY_DETAILS_ADDED, id),
+        navigationUrl: getNavigationUrl(notificationConstants.DELIVERY_DETAILS_ADDED, id),
         isRead: 0,
         userRoles: [SUPERADMIN, MARKETINGMANAGER, ACCOUNTSADMIN]
     }
