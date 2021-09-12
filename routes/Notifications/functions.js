@@ -4,10 +4,10 @@ const { getSocketIo } = require("../../sockets")
 const { notificationConstants } = require("./constants")
 const { notificationContent } = require("./content")
 
-const getNavigationUrl = (type, id) => {
-    switch (type) {
-        case `${notificationConstants.CUSTOMER_CREATED}`: return `/customers/approval/${id}`
-    }
+function getNavigationUrl(type, id) {
+    return new Promise((resolve) => {
+        if (type == notificationConstants.CUSTOMER_CREATED) resolve(`/customers/approval/${id}`)
+    })
 }
 
 const emitSocketToUsers = (data, userIds) => {
