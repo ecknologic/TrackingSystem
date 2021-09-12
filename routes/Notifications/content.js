@@ -1,9 +1,14 @@
 const { notificationConstants } = require("./constants")
-const { getNavigationUrl } = require("./functions")
 const { constants } = require("../../utils/constants")
 
 let notificationContent = {}
 let { SUPERADMIN, MARKETINGMANAGER, ACCOUNTSADMIN } = constants
+
+const getNavigationUrl = (type, id) => {
+    switch (type) {
+        case `${notificationConstants.CUSTOMER_CREATED}`: return `/customers/approval/${id}`
+    }
+}
 
 notificationContent.customerCreated = async ({ name, userName, id, isSuperAdminApproved }) => {
     return {

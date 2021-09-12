@@ -4,12 +4,6 @@ const { getSocketIo } = require("../../sockets")
 const { notificationConstants } = require("./constants")
 const { notificationContent } = require("./content")
 
-function getNavigationUrl(type, id) {
-    return new Promise((resolve) => {
-        if (type == notificationConstants.CUSTOMER_CREATED) resolve(`/customers/approval/${id}`)
-    })
-}
-
 const emitSocketToUsers = (data, userIds) => {
     if (userIds.length) {
         for (let i of userIds) {
@@ -40,4 +34,4 @@ const createNotifications = ({ id, name, userName, isSuperAdminApproved }, key) 
     })
 }
 
-module.exports = { getNavigationUrl, emitSocketToUsers, createNotifications }
+module.exports = { emitSocketToUsers, createNotifications }
