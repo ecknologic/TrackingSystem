@@ -305,7 +305,7 @@ const getLatLongDetails = (req) => {
 }
 router.post("/approveCustomer/:customerId", (req, res) => {
   const { customerId } = req.params;
-  const { isSuperAdminApproved } = req.body
+  const { isSuperAdminApproved, customerName } = req.body
   customerQueries.approveCustomer({ customerId, isSuperAdminApproved }, (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
@@ -313,6 +313,7 @@ router.post("/approveCustomer/:customerId", (req, res) => {
         if (err) res.json({ status: 500, message: err.sqlMessage });
         else {
           saveToCustomerOrderDetails(customerId, res, null, userId, userRole, userName)
+          isSuperAdminApproved && createNotifications({ name: customerName, id: customerId, userName, isSuperAdminApproved }, 'customerCreated')
         }
       })
     }
@@ -812,7 +813,7 @@ router.post('/updateDeliveryDetails', async (req, res) => {
                   updateWHDelivery(req)
                   auditQueries.createLog({ userId, description: `New Delivery details added by ${userRole} <b>(${userName})</b>`, customerId: i.customer_Id, type: "customer" })
                   res.json({ status: 200, message: "Delivery Details Updated Successfully", data });
-                  createNotifications({ name: location, id: i.customer_Id, userName }, 'customerDeliveryDetailsAdded')
+                  createNotifications({ name: location, id: i.customer_Id, userName }, 'customerDeliveryDetailsAdded') //Need to check the isApproved status of the customer
                 }
               })
             }

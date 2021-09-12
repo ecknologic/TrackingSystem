@@ -5,14 +5,14 @@ const { constants } = require("../../utils/constants")
 let notificationContent = {}
 let { SUPERADMIN, MARKETINGMANAGER, ACCOUNTSADMIN } = constants
 
-notificationContent.customerCreated = ({ name, userName, id }) => {
+notificationContent.customerCreated = ({ name, userName, id, isSuperAdminApproved }) => {
     return {
         title: "Customer created",
         description: `<b>${name}</b> created by ${userName}`,
         createdDateTime: new Date(),
         navigationUrl: getNavigationUrl(notificationConstants.CUSTOMER_CREATED, id),
         isRead: 0,
-        userRoles: [SUPERADMIN, MARKETINGMANAGER, ACCOUNTSADMIN]
+        userRoles: isSuperAdminApproved ? [ACCOUNTSADMIN] : [SUPERADMIN, MARKETINGMANAGER, ACCOUNTSADMIN]
     }
 }
 
@@ -23,7 +23,7 @@ notificationContent.customerCreatedWithZeroDeposit = ({ name, userName, id }) =>
         createdDateTime: new Date(),
         navigationUrl: getNavigationUrl(notificationConstants.CUSTOMER_CREATED, id),
         isRead: 0,
-        userRoles: [SUPERADMIN]
+        userRoles: [SUPERADMIN, MARKETINGMANAGER]
     }
 }
 
@@ -34,7 +34,7 @@ notificationContent.customerCreatedWithLowPrice = ({ name, userName, id }) => {
         createdDateTime: new Date(),
         navigationUrl: getNavigationUrl(notificationConstants.CUSTOMER_CREATED, id),
         isRead: 0,
-        userRoles: [SUPERADMIN]
+        userRoles: [SUPERADMIN, MARKETINGMANAGER]
     }
 }
 

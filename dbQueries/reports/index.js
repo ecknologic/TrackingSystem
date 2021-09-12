@@ -6,14 +6,14 @@ reportsQueries.getNewCustomerBTDetails = async (input, callback) => {
     let query = `SELECT c.customerNo,IFNULL(c.organizationName,c.customerName) as customerName,u.userName AS salesAgent,
     c.depositAmount,IFNULL(c.dispenserCount,0)AS dispenserCount ,SUM(cp.noOfJarsTobePlaced) quantity,
     CAST(cp.productPrice AS DECIMAL(10,2)) productPrice
-    FROM customerdetails c INNER JOIN usermaster u ON c.salesAgent=u.userId INNER JOIN customerproductdetails cp ON c.customerId=cp.customerId WHERE cp.customerType='customer' AND cp.productName='20L' AND cp.noOfJarsTobePlaced>0 GROUP BY cp.customerId,cp.productPrice
+    FROM customerdetails c INNER JOIN usermaster u ON c.salesAgent=u.userId INNER JOIN customerproductdetails cp ON c.customerId=cp.customerId WHERE cp.customerType='customer' AND c.lastApprovedDate IS NOT NULL AND cp.productName='20L' AND cp.noOfJarsTobePlaced>0 GROUP BY cp.customerId,cp.productPrice
      ORDER BY c.registeredDate DESC`;
 
     if (fromStart != 'true') {
         query = `SELECT c.customerNo,IFNULL(c.organizationName,c.customerName) as customerName,u.userName AS salesAgent,
          c.depositAmount,IFNULL(c.dispenserCount,0)AS dispenserCount ,SUM(cp.noOfJarsTobePlaced) quantity,
          CAST(cp.productPrice AS DECIMAL(10,2)) productPrice
-         FROM customerdetails c INNER JOIN usermaster u ON c.salesAgent=u.userId INNER JOIN customerproductdetails cp ON c.customerId=cp.customerId WHERE cp.customerType='customer' AND cp.productName='20L' AND cp.noOfJarsTobePlaced>0 AND  DATE(c.registeredDate) BETWEEN ? AND ? GROUP BY cp.customerId,cp.productPrice
+         FROM customerdetails c INNER JOIN usermaster u ON c.salesAgent=u.userId INNER JOIN customerproductdetails cp ON c.customerId=cp.customerId WHERE cp.customerType='customer' AND c.lastApprovedDate IS NOT NULL AND cp.productName='20L' AND cp.noOfJarsTobePlaced>0 AND  DATE(c.registeredDate) BETWEEN ? AND ? GROUP BY cp.customerId,cp.productPrice
          ORDER BY c.registeredDate DESC`;
         let options = [fromDate, toDate]
         return executeGetParamsQuery(query, options, callback)

@@ -86,22 +86,20 @@ const insertToCustomerOrderDetails = (result, res, sendResponse, userId, userRol
 //Scheduling the 
 cron.schedule('0 0 0 * * *', function () {
   saveToCustomerOrderDetails()
-  changeDcStatusToNotCompleted()
   checkNotDeliveredDcs()
 });
 
-// cron.schedule('0 0 0 * * *', function () {
-//   changeDcStatusToNotCompleted()
-// });
+cron.schedule('30 16 * * *', function () {
+  changeDcStatusToNotCompleted()
+});
 
 const changeDcStatusToNotCompleted = () => {
-  let yesterday = dayjs(dayjs().add(-1, 'day')).format('YYYY-MM-DD')
-  customerQueries.updateDCStatus(yesterday)
+  let date = dayjs().format('YYYY-MM-DD')
+  customerQueries.updateDCStatus(date)
 }
 
 const checkNotDeliveredDcs = () => {
   let prevTenthDate = utils.getRequiredDate(-10)
-  console.log(prevTenthDate)
   warehouseQueries.getDcDetailsGroupByCustomerId({ date: prevTenthDate }, (err, data) => {
     if (err) console.log("Err", err)
     else {

@@ -19,8 +19,8 @@ const emitSocketToUsers = (data, userIds) => {
     }
 }
 
-const createNotifications = ({ id, name, userName }, key) => {
-    let notificationData = notificationContent[key]({ id, name, userName })
+const createNotifications = ({ id, name, userName, isSuperAdminApproved }, key) => {
+    let notificationData = notificationContent[key]({ id, name, userName, isSuperAdminApproved })
     usersQueries.getUserIdsByRole(notificationData.userRoles, (err, usersData) => {
         if (err) console.log('Err', err)
         else {
