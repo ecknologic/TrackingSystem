@@ -28,18 +28,19 @@ notificationContent.customerCreatedWithZeroDeposit = async ({ name, userName, id
         createdDateTime: new Date(),
         navigationUrl: getNavigationUrl(notificationConstants.CUSTOMER_CREATED, id),
         isRead: 0,
+        backgroundColor:'rgba(233,6,20,0.2)',
         userRoles: [SUPERADMIN, MARKETINGMANAGER]
     }
 }
 
 notificationContent.customerCreatedWithLowPrice = async ({ name, userName, id }) => {
-    console.log('called')
     return {
         title: "Customer created",
         description: `<b>${name}</b> created by ${userName} with low product price`,
         createdDateTime: new Date(),
         navigationUrl: getNavigationUrl(notificationConstants.CUSTOMER_CREATED, id),
         isRead: 0,
+        backgroundColor:'rgba(233,6,20,0.2)',
         userRoles: [SUPERADMIN, MARKETINGMANAGER]
     }
 }

@@ -15,9 +15,9 @@ notificationQueries.getUnreadNotificationsCount = (userId, callback) => {
 }
 
 notificationQueries.createNotification = (input, callback) => {
-    const { title, description, navigationUrl } = input;
-    let query = `insert into Notifications (title,description,navigationUrl,createdDateTime) values(?,?,?,?)`;
-    let requestBody = [title, description, navigationUrl, new Date()]
+    const { title, description, navigationUrl, backgroundColor } = input;
+    let query = `insert into Notifications (title,description,navigationUrl,createdDateTime,backgroundColor) values(?,?,?,?,?)`;
+    let requestBody = [title, description, navigationUrl, new Date(), backgroundColor]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
 
