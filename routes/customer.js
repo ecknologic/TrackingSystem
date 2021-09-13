@@ -447,7 +447,7 @@ router.get("/getMarketingInActiveCustomers", (req, res) => {
 });
 router.get("/getCustomerDetailsByStatus", (req, res) => {
   const { status, userId } = req.query
-  customerQueries.getCustomerDetailsByStatus({ status, userId }, (err, customersData) => {
+  customerQueries.getCustomerDetailsByStatus({ status, userId ,userRole}, (err, customersData) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
       res.json(customersData)
