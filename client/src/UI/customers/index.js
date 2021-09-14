@@ -9,7 +9,6 @@ import useUser from '../../utils/hooks/useUser';
 import NoContent from '../../components/NoContent';
 import AccountCard from '../../components/AccountCard';
 import DeleteModal from '../../components/CustomModal';
-import { statusFilterList } from '../../assets/fixtures';
 import ConfirmMessage from '../../components/ConfirmMessage';
 import CustomPagination from '../../components/CustomPagination';
 import useCustomerFilter from '../../utils/hooks/useCustomerFilter';
@@ -38,7 +37,7 @@ const Customers = () => {
     const [currentAction, setCurrentAction] = useState('')
     const [currentId, setCurrentId] = useState('')
 
-    const { account, creator, business, hasFilters, status, setStatus } = useCustomerFilter()
+    const { account, creator, business, hasFilters, status } = useCustomerFilter()
     const pageSizeOptions = useMemo(() => generatePageSizeOptions(), [window.innerWidth])
     const isAdmin = useMemo(() => ROLE === SUPERADMIN || ROLE === ACCOUNTSADMIN, [ROLE])
     const isSalesAdmin = useMemo(() => ROLE === MARKETINGADMIN, [ROLE])
