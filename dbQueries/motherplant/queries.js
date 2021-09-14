@@ -7,6 +7,17 @@ motherPlantDbQueries.getMotherPlantsList = async (callback) => {
     let query = `select d.departmentId, d.departmentName,d.address,d.state,d.city,d.isApproved,u.userName as adminName,u.emailid as adminEmail, u.mobileNumber as adminNumber from departmentmaster d INNER JOIN usermaster u on d.adminId=u.userId WHERE d.departmentType='MotherPlant' AND d.deleted='0' ORDER BY d.createdDateTime DESC`;
     return executeGetQuery(query, callback)
 }
+
+motherPlantDbQueries.getDepartmentNameByAdminId = async (userId, callback) => {
+    let query = `select departmentName from departmentmaster WHERE adminId=${userId}`;
+    return executeGetQuery(query, callback)
+}
+
+motherPlantDbQueries.getAdminIdByDepartmentId = async (departmentId, callback) => {
+    let query = `select adminId from departmentmaster WHERE departmentId=${departmentId}`;
+    return executeGetQuery(query, callback)
+}
+
 motherPlantDbQueries.getMotherPlantById = async (motherPlantId, callback) => {
     let query = `select d.*,u.userName,u.mobileNumber,u.emailid,u.RoleId as roleId from departmentmaster d INNER JOIN usermaster u on d.adminId=u.userId WHERE d.departmentId=${motherPlantId}`;
     return executeGetQuery(query, callback)
@@ -635,7 +646,10 @@ motherPlantDbQueries.updateEmptyCansStatus = async (input, callback) => {
     const { status, reason, id } = input
     let query = "update EmptyCanDetails set status=?,reason=?,approvedDate=? where id=?";
     let requestBody = [status, reason, new Date(), id]
-    return executePostOrUpdateQuery(query, requestBody, callback)
+    executePostOrUpdateQuery(query, requestBody, (err, data) => {
+        let getQuery = `Select warehouseId from EmptyCanDetails where id=${id}`;
+        return executeGetQuery(getQuery, callback)
+    })
 }
 motherPlantDbQueries.updateProductionQCStockStatus = async (batchId, callback) => {
     let query = "update productionQC set outOfStock='1' where batchId=?";

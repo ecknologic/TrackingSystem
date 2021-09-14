@@ -217,7 +217,13 @@ router.post('/createQualityCheck', (req, res) => {
     input.departmentId = departmentId
     motherPlantDbQueries.createQualityCheck(input, (err, results) => {
         if (err) res.status(500).json(dbError(err));
-        else res.json(INSERTMESSAGE);
+        else {
+            const { qcLevel, testResult, batchId } = input
+            if (qcLevel != 1) {
+                createNotifications({ status: testResult, id: batchId, userId: adminUserId }, 'qualityCheck')
+            }
+            res.json(INSERTMESSAGE);
+        }
     });
 })
 
@@ -301,7 +307,7 @@ router.post('/createRM', (req, res) => {
                             motherPlantDbQueries.insertRMDetails(input, (insertErr, data) => {
                                 if (insertErr) console.log("ERR", insertErr);
                             })
-                            createNotifications({ id: results.insertId, userName }, 'rmRequest') //Need to check the isApproved status of the customer
+                            createNotifications({ id: results.insertId, userName, userId: adminUserId }, 'rmRequest') //Need to check the isApproved status of the customer
                             // if (input.itemName == '20Lcans') {
                             //     motherPlantDbQueries.insertRMDetails({ itemName: constants.Old20LCans, departmentId }, (insertErr, data) => {
                             //         if (insertErr) console.log("ERR", insertErr);
@@ -409,6 +415,7 @@ router.post('/createRMReceipt', (req, res) => {
                     motherPlantDbQueries.updateRMDetailsQuantity(input, (updateErr, success) => {
                         if (updateErr) console.log("ERR", updateErr);
                     })
+                    createNotifications({ userId: adminUserId }, 'rmConfirmed')
                 }
             });
         } else res.json('No data found with this material Id')
@@ -460,7 +467,10 @@ router.post('/addDispatchDetails', (req, res) => {
             input.dispatchId = results.insertId
             motherPlantDbQueries.updateDispatchDetails(input, (updateErr, data) => {
                 if (updateErr) console.log(updateErr)
-                else res.json(INSERTMESSAGE);
+                else {
+                    createNotifications({ userName, userId: adminUserId, dispatchTo: input.dispatchTo }, 'stockDispatch')
+                    res.json(INSERTMESSAGE);
+                }
             })
         }
     });
@@ -738,7 +748,12 @@ router.put('/updateEmptyCansStatus', (req, res) => {
     let input = req.body;
     motherPlantDbQueries.updateEmptyCansStatus(input, (updateErr, data) => {
         if (updateErr) res.status(500).json(dbError(updateErr));
-        else res.json(data);
+        else {
+            if (data.length) {
+                createNotifications({ userId: adminUserId, status: input.status, dispatchTo: data[0].warehouseId }, 'confirmEmptyCans')
+            }
+            res.json(data);
+        }
     })
 })
 router.delete('/deleteVehicle/:vehicleId', (req, res) => {
