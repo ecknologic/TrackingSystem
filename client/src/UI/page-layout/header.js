@@ -1,21 +1,23 @@
 import axios from 'axios';
-import { Layout, Badge } from 'antd';
+import { Layout, Badge, notification } from 'antd';
+import parse from 'html-react-parser';
 import { useHistory } from 'react-router';
 import { ClockCircleOutlined } from '@ant-design/icons';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { http } from '../../modules/http';
 import Profile from '../../components/Profile';
 import useUser from '../../utils/hooks/useUser';
-import { http } from '../../modules/http';
-import { deepClone } from '../../utils/Functions';
 import { SocketContext } from '../../modules/socketContext';
 import NotificationDrawer from '../../components/NotificationDrawer';
-import { BiboIcon, ChatIconGrey, NotificationIconGrey, SettingIconGrey } from '../../components/SVG_Icons';
+import { deepClone, playNotificationSound } from '../../utils/Functions';
+import { BiboIcon, ChatIconGrey, CrossIconDark, NotificationIconGrey, SettingIconGrey } from '../../components/SVG_Icons';
 
 const Header = () => {
     const history = useHistory()
     const { USERNAME, USERID } = useUser()
     const socket = useContext(SocketContext);
     const [loading, setLoading] = useState(true)
+    const [activeN, setActiveN] = useState(null)
     const [unreadCount, setUnreadCount] = useState(0)
     const [notifications, setNotifications] = useState([])
     const [drawerOpen, setDrawerOpen] = useState(false)
@@ -28,8 +30,16 @@ const Header = () => {
         socket.on(`RECEIVE_NOTIFICATION_${USERID}`, (data) => {
             setUnreadCount(prev => prev + 1)
             setNotifications(prev => [data, ...prev])
+            setActiveN(data)
         })
     }, [])
+
+    useEffect(() => {
+        if (activeN) {
+            playNotificationSound()
+            showNotification(activeN)
+        }
+    }, [activeN])
 
     const getNotifications = async () => {
         const url = 'notifications/getNotifications'
@@ -44,7 +54,7 @@ const Header = () => {
     const handleReadNotification = async (id) => {
         const url = `notifications/updateNotificationStatus/${id}`
         try {
-            await http.PUT(axios, url, config)
+            await http.PUT(axios, url, null, config)
             setUnreadCount(prev => prev - 1)
             optimisticRead(id)
         } catch (error) { }
@@ -61,6 +71,28 @@ const Header = () => {
         const index = clone.findIndex(item => item.notificationId === id)
         clone[index].isRead = 1;
         setNotifications(clone)
+    }
+
+    const showNotification = (data) => {
+        const { notificationId, title, description, navigationUrl } = data
+
+        notification.open({
+            message: title,
+            key: notificationId,
+            closeIcon: <CrossIconDark />,
+            className: 'app-notification',
+            placement: 'bottomRight',
+            duration: 10,
+            description: parse(description),
+            onClick: () => handleNotificationClick(data),
+            icon: <img src='/favicon.ico' alt='' width={24} />,
+            style: { cursor: navigationUrl ? 'pointer' : 'default' }
+        })
+    }
+
+    const handleNotificationClick = (data) => {
+        notification.close(data.notificationId)
+        handleNavigation(data)
     }
 
     return (
@@ -107,4 +139,5 @@ const bageStyle = {
     right: '-17px',
     width: '28.9px'
 }
+
 export default Header

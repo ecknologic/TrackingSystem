@@ -7,7 +7,7 @@ import '../sass/notificationCard.scss'
 const NotificationCard = ({ data, onClick }) => {
     const { createdDateTime, title, description, isRead, navigationUrl, backgroundColor } = data;
 
-    const background = backgroundColor ? backgroundColor : getBgColor(isRead)
+    const background = getBgColor(isRead, backgroundColor)
 
     return (
         <div
@@ -26,9 +26,11 @@ const NotificationCard = ({ data, onClick }) => {
     )
 }
 
-const getBgColor = (isRead) => {
+export const getBgColor = (isRead, bgColor) => {
     if (!isRead) {
-        // return 'rgba(217, 217, 217, 0.4)'
+        if (bgColor) {
+            return bgColor
+        }
         return 'rgba(63, 166, 65, 0.2)'
     }
 
