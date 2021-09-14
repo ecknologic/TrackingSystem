@@ -8,6 +8,7 @@ const usersQueries = require('../dbQueries/users/queries');
 const auditQueries = require('../dbQueries/auditlogs/queries');
 const { compareDepartmentData, compareCurrentStockLog } = require('./utils/department');
 const departmenttransactionQueries = require('../dbQueries/departmenttransactions/queries');
+const { createNotifications } = require('./Notifications/functions');
 let departmentId, adminUserId, userName, userRole;
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -300,6 +301,7 @@ router.post('/createRM', (req, res) => {
                             motherPlantDbQueries.insertRMDetails(input, (insertErr, data) => {
                                 if (insertErr) console.log("ERR", insertErr);
                             })
+                            createNotifications({ id: results.insertId, userName }, 'rmRequest') //Need to check the isApproved status of the customer
                             // if (input.itemName == '20Lcans') {
                             //     motherPlantDbQueries.insertRMDetails({ itemName: constants.Old20LCans, departmentId }, (insertErr, data) => {
                             //         if (insertErr) console.log("ERR", insertErr);

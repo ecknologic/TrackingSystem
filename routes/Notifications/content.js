@@ -7,6 +7,8 @@ let { SUPERADMIN, MARKETINGMANAGER, ACCOUNTSADMIN } = constants
 const getNavigationUrl = (type, id) => {
     switch (type) {
         case `${notificationConstants.CUSTOMER_CREATED}`: return `/customers/approval/${id}`
+        case `${notificationConstants.DELIVERY_DETAILS_ADDED}`: return `/customers/manage/${id}/2`
+        default: return null
     }
 }
 
@@ -28,7 +30,7 @@ notificationContent.customerCreatedWithZeroDeposit = async ({ name, userName, id
         createdDateTime: new Date(),
         navigationUrl: getNavigationUrl(notificationConstants.CUSTOMER_CREATED, id),
         isRead: 0,
-        backgroundColor:'rgba(233,6,20,0.2)',
+        backgroundColor: 'rgba(233,6,20,0.2)',
         userRoles: [SUPERADMIN, MARKETINGMANAGER]
     }
 }
@@ -40,7 +42,7 @@ notificationContent.customerCreatedWithLowPrice = async ({ name, userName, id })
         createdDateTime: new Date(),
         navigationUrl: getNavigationUrl(notificationConstants.CUSTOMER_CREATED, id),
         isRead: 0,
-        backgroundColor:'rgba(233,6,20,0.2)',
+        backgroundColor: 'rgba(233,6,20,0.2)',
         userRoles: [SUPERADMIN, MARKETINGMANAGER]
     }
 }
@@ -53,6 +55,17 @@ notificationContent.customerDeliveryDetailsAdded = async ({ name, userName, id }
         navigationUrl: getNavigationUrl(notificationConstants.DELIVERY_DETAILS_ADDED, id),
         isRead: 0,
         userRoles: [SUPERADMIN, MARKETINGMANAGER, ACCOUNTSADMIN]
+    }
+}
+
+notificationContent.rmRequest = async ({ userName, id }) => {
+    return {
+        title: "Material Request",
+        description: `Raw Material requested by <b>${userName}</b>`,
+        createdDateTime: new Date(),
+        navigationUrl: getNavigationUrl(notificationConstants.RM_REQUEST, id),
+        isRead: 0,
+        userRoles: [SUPERADMIN]
     }
 }
 
