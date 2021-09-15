@@ -111,7 +111,7 @@ $textColorDisabled: rgba(0, 0, 0, 0.55);
   }
 }
 
-.ant-drawer-close {
+.ant-drawer-close, .ant-notification-notice-close {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -124,6 +124,27 @@ $textColorDisabled: rgba(0, 0, 0, 0.55);
     svg {
       transform: scale(1.2);
     }
+  }
+}
+
+.ant-notification-notice-close {
+  padding: 6px;
+  top: 10px;
+  right: 16px;
+}
+
+.app-notification {
+  border-radius: .1em;
+
+  .ant-notification-notice-message {
+    color: #323130;
+    font-family: 'PoppinsMedium500';
+    padding-bottom: .2em;
+  }
+
+  .ant-notification-notice-description {
+    font-family: 'PoppinsRegular400';
+    font-size: .9em;
   }
 }
 

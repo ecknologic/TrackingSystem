@@ -99,11 +99,8 @@ const ApproveAccount = () => {
             const { customerName, organizationName, customertype, gstNo, adharNo, panNo, idProofType,
                 isApproved, isSuperAdminApproved, customerId, depositAmount } = rest
 
-            // Redirection Logic in case of already approved
-            if (isApproved) {
-                return goToManageAccount(customerId, customertype)
-            }
-            else if (isSuperAdmin && isSuperAdminApproved) {
+            // Redirection Logic
+            if (isApproved || !isAdmin || (isSuperAdmin && isSuperAdminApproved)) {
                 return goToManageAccount(customerId, customertype)
             }
 

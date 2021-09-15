@@ -1,5 +1,6 @@
 const { notificationConstants } = require("./constants")
 const { constants } = require("../../utils/constants")
+const motherPlantDbQueries = require("../../dbQueries/motherplant/queries")
 
 let notificationContent = {}
 let { SUPERADMIN, MARKETINGMANAGER, ACCOUNTSADMIN } = constants
@@ -58,15 +59,102 @@ notificationContent.customerDeliveryDetailsAdded = async ({ name, userName, id }
     }
 }
 
-notificationContent.rmRequest = async ({ userName, id }) => {
-    return {
+notificationContent.rmRequest = async ({ userName, id, userId }) => {
+    let obj = {
         title: "Material Request",
         description: `Raw Material requested by <b>${userName}</b>`,
         createdDateTime: new Date(),
-        navigationUrl: getNavigationUrl(notificationConstants.RM_REQUEST, id),
+        navigationUrl: null,
         isRead: 0,
         userRoles: [SUPERADMIN]
     }
+    motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
+        if (err || !data.length) return obj
+        else {
+            obj.description = `Raw Material requested by <b>${data[0].departmentName}</b> admin`
+            return obj;
+        }
+    })
+}
+
+notificationContent.stockDispatch = async ({ dispatchTo, userId }) => {
+    let obj = {
+        title: "Stock Dispatch",
+        description: `Stock dispatched`,
+        createdDateTime: new Date(),
+        navigationUrl: null,
+        isRead: 0,
+        userIds: []
+    }
+    motherPlantDbQueries.getAdminIdByDepartmentId(dispatchTo, (err, data) => {
+        if (err || !data.length) return obj
+        else obj.userIds = [{ userId: data[0].adminId }]
+    })
+    motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
+        if (err || !data.length) return obj
+        else {
+            obj.description = `Stock dispatched by <b>${data[0].departmentName}</b> admin`
+            return obj;
+        }
+    })
+}
+
+notificationContent.confirmEmptyCans = async ({ dispatchTo, userId, status }) => {
+    let obj = {
+        title: "Empty Cans Confirmation",
+        description: `Empty Cans ${status}`,
+        createdDateTime: new Date(),
+        navigationUrl: null,
+        isRead: 0,
+        userIds: []
+    }
+    motherPlantDbQueries.getAdminIdByDepartmentId(dispatchTo, (err, data) => {
+        if (err || !data.length) return obj
+        else obj.userIds = [{ userId: data[0].adminId }]
+    })
+    motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
+        if (err || !data.length) return obj
+        else {
+            obj.description = `Empty Cans ${status} by <b>${data[0].departmentName}</b> admin`
+            return obj;
+        }
+    })
+}
+
+notificationContent.qualityCheck = async ({ id, status, userId }) => {
+    let obj = {
+        title: "Quality Test",
+        description: `Quality Test`,
+        createdDateTime: new Date(),
+        navigationUrl: null,
+        isRead: 0,
+        userRoles: [SUPERADMIN]
+    }
+    motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
+        if (err || !data.length) return obj
+        else {
+            obj.description = `Batch ${id} Quality Test ${status} by <b>${data[0].departmentName}</b> admin`
+            return obj;
+        }
+    })
+}
+
+notificationContent.rmConfirmed = async ({ userId }) => {
+    let obj = {
+        title: "Required Raw Materials",
+        description: `Raw Materials confirmed`,
+        createdDateTime: new Date(),
+        navigationUrl: null,
+        isRead: 0,
+        userRoles: [SUPERADMIN]
+    }
+    motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
+        if (err || !data.length) return obj
+        else {
+            obj.description = `Raw Materials confirmed by <b>${data[0].departmentName}</b> admin`
+            return obj;
+        }
+    })
 }
 
 module.exports = { notificationContent }

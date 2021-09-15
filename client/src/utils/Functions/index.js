@@ -4,6 +4,12 @@ import { TRACKFORM } from "../constants"
 import { message } from 'antd'
 import InputLabel from '../../components/InputLabel';
 import InputValue from '../../components/InputValue';
+import sound from '../../assets/sounds/notification.wav';
+
+export const playNotificationSound = () => {
+    const audio = new Audio(sound);
+    audio.play();
+}
 
 export const getLabel = (labelKey, label) => {
     return labelKey ? { [labelKey]: label } : {}
