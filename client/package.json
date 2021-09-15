@@ -26,13 +26,13 @@
     "web-vitals": "^0.2.4"
   },
   "scripts": {
-    "start": "SET REACT_APP_API_HOST=http://localhost:8888/&&react-scripts start",
-    "qa": "SET REACT_APP_API_HOST=http://15.207.25.20:8888/&&react-scripts start",
+    "start": "SET REACT_APP_API_HOST=http://localhost:8888/&& SET REACT_APP_SOCKET_HOST=http://localhost:8080&&react-scripts start",
+    "qa": "SET REACT_APP_API_HOST=http://15.207.25.20:8888/&& SET REACT_APP_SOCKET_HOST=http://localhost:8080&&react-scripts start",
     "build": "react-scripts build",
-    "buildQa": "SET REACT_APP_API_HOST=http://15.207.25.20:8888/&& SET GENERATE_SOURCEMAP=false&&react-scripts build",
-    "buildAwsQa": "export REACT_APP_API_HOST=http://15.207.25.20:8888/&& export GENERATE_SOURCEMAP=false&&react-scripts build",
-    "buildProd": "SET REACT_APP_API_HOST=http://65.1.190.193:8888/&& SET GENERATE_SOURCEMAP=false&&react-scripts build",
-    "buildAwsProd": "export REACT_APP_API_HOST=http://65.1.190.193:8888/&& export GENERATE_SOURCEMAP=false&&react-scripts build",
+    "buildQa": "SET REACT_APP_API_HOST=http://15.207.25.20:8888/&& SET REACT_APP_SOCKET_HOST=http://15.207.25.20:8080&& SET GENERATE_SOURCEMAP=false&&react-scripts build",
+    "buildAwsQa": "export REACT_APP_API_HOST=http://15.207.25.20:8888/&& export REACT_APP_SOCKET_HOST=http://15.207.25.20:8080&& export GENERATE_SOURCEMAP=false&&react-scripts build",
+    "buildProd": "SET REACT_APP_API_HOST=http://65.1.190.193:8888/&& SET REACT_APP_SOCKET_HOST=http://65.1.190.193:8080&& SET GENERATE_SOURCEMAP=false&&react-scripts build",
+    "buildAwsProd": "export REACT_APP_API_HOST=http://65.1.190.193:8888/&& export REACT_APP_SOCKET_HOST=http://65.1.190.193:8080&& export GENERATE_SOURCEMAP=false&&react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
