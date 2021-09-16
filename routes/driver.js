@@ -5,6 +5,7 @@ const auditQueries = require('../dbQueries/auditlogs/queries.js');
 const driverQueries = require('../dbQueries/driver/queries.js');
 const usersQueries = require('../dbQueries/users/queries.js');
 const { dbError, createHash, prepareOrderResponseObj } = require('../utils/functions.js');
+const { createNotifications } = require('./Notifications/functions.js');
 const { compareDriverData, compareDriverDependentDetails } = require('./utils/driver.js');
 let userId, adminUserName, userRole;
 
@@ -204,6 +205,7 @@ router.post('/updateDriver', async (req, res) => {
                     }
                 })
             }
+            createNotifications({ userId, name: userName, warehouseId: departmentId }, 'driverUpdated')
             res.json(results)
         }
     })

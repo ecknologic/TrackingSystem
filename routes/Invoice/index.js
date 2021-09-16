@@ -10,6 +10,7 @@ const fs = require('fs');
 const { generatePDF, generateCustomerPDF } = require('../../dbQueries/Customer/queries.js');
 const dayjs = require('dayjs');
 const { sendMail } = require('../mailTemplate.js');
+const { createNotifications } = require('../Notifications/functions.js');
 var departmentId, isSuperAdmin, userId;
 
 //Middle ware that is specific to this router
@@ -534,6 +535,7 @@ const saveDepartmentInvoice = async (requestObj, res, response) => {
                         invoiceQueries.updateDCInvoiceFlag(dcNo)
                         if (requestObj.departmentStatus != "Pending") addDepartmentPayment(invoiceId, requestObj)
                         response && res.json({ message: 'Invoice created successfully' })
+                        createNotifications({ userId, id: invoiceId }, 'invoiceCreated')
                     }
                 })
             } else res.status(500).json({ message: "Products should not be empty" })

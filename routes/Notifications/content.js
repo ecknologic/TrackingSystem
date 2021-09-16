@@ -99,6 +99,7 @@ notificationContent.stockDispatch = async ({ dispatchTo, userId }) => {
     })
 }
 
+
 notificationContent.confirmEmptyCans = async ({ dispatchTo, userId, status }) => {
     let obj = {
         title: "Empty Cans Confirmation",
@@ -152,6 +153,126 @@ notificationContent.rmConfirmed = async ({ userId }) => {
         if (err || !data.length) return obj
         else {
             obj.description = `Raw Materials confirmed by <b>${data[0].departmentName}</b> admin`
+            return obj;
+        }
+    })
+}
+
+notificationContent.confirmStockReceived = async ({ motherplantId, userId }) => {
+    let obj = {
+        title: "Stock Received",
+        description: `Stock Received`,
+        createdDateTime: new Date(),
+        navigationUrl: null,
+        isRead: 0,
+        userIds: []
+    }
+    motherPlantDbQueries.getAdminIdByDepartmentId(motherplantId, (err, data) => {
+        if (err || !data.length) return obj
+        else obj.userIds = [{ userId: data[0].adminId }]
+    })
+    motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
+        if (err || !data.length) return obj
+        else {
+            obj.description = `Stock Details confirmed by <b>${data[0].departmentName}</b> admin`
+            return obj;
+        }
+    })
+}
+
+notificationContent.returnedEmptyCans = async ({ motherplantId, userId }) => {
+    let obj = {
+        title: "Empty Cans Returned",
+        description: `Empty Cans Returned`,
+        createdDateTime: new Date(),
+        navigationUrl: null,
+        isRead: 0,
+        userIds: []
+    }
+    motherPlantDbQueries.getAdminIdByDepartmentId(motherplantId, (err, data) => {
+        if (err || !data.length) return obj
+        else obj.userIds = [{ userId: data[0].adminId }]
+    })
+    motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
+        if (err || !data.length) return obj
+        else {
+            obj.description = `Empty cans returned by <b>${data[0].departmentName}</b> admin`
+            return obj;
+        }
+    })
+}
+
+notificationContent.requestStock = async ({ motherplantId, userId }) => {
+    let obj = {
+        title: "Stock Requested",
+        description: `Stock Requested`,
+        createdDateTime: new Date(),
+        navigationUrl: null,
+        isRead: 0,
+        userIds: []
+    }
+    motherPlantDbQueries.getAdminIdByDepartmentId(motherplantId, (err, data) => {
+        if (err || !data.length) return obj
+        else obj.userIds = [{ userId: data[0].adminId }]
+    })
+    motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
+        if (err || !data.length) return obj
+        else {
+            obj.description = `Stock Requested by <b>${data[0].departmentName}</b> admin`
+            return obj;
+        }
+    })
+}
+
+notificationContent.routeCreated = async ({ name, userId }) => {
+    let obj = {
+        title: "Route created",
+        description: `Route Created`,
+        createdDateTime: new Date(),
+        navigationUrl: null,
+        isRead: 0,
+        userRoles: [SUPERADMIN]
+    }
+    motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
+        if (err || !data.length) return obj
+        else {
+            obj.description = `${name} Route created by <b>${data[0].departmentName}</b> admin`
+            return obj;
+        }
+    })
+}
+
+notificationContent.driverUpdated = async ({ name, userId }) => {
+    let obj = {
+        title: "Driver Updated",
+        description: `Driver Updated`,
+        createdDateTime: new Date(),
+        navigationUrl: null,
+        isRead: 0,
+        userRoles: [SUPERADMIN]
+    }
+    motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
+        if (err || !data.length) return obj
+        else {
+            obj.description = `Driver <b>${name}</b> updated by <b>${data[0].departmentName}</b> admin`
+            return obj;
+        }
+    })
+}
+
+notificationContent.invoiceCreated = async ({ id, userId }) => {
+    let obj = {
+        title: "Invoice Created",
+        description: `Invoice Created`,
+        createdDateTime: new Date(),
+        navigationUrl: null,
+        isRead: 0,
+        userRoles: [SUPERADMIN, ACCOUNTSADMIN]
+    }
+    motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
+        if (err || !data.length) return obj
+        else {
+            obj.description = `Invoice <b>${id}</b> created by <b>${data[0].departmentName}</b> admin`
             return obj;
         }
     })

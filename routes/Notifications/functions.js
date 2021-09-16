@@ -13,8 +13,8 @@ const emitSocketToUsers = (data, userIds) => {
     }
 }
 
-const createNotifications = async ({ id, name, userName, isSuperAdminApproved, userId, dispatchTo, status }, key) => {
-    let notificationData = await notificationContent[key]({ id, name, userName, isSuperAdminApproved, status, userId, dispatchTo })
+const createNotifications = async ({ id, name, userName, isSuperAdminApproved, userId, dispatchTo, status, warehouseId, motherplantId }, key) => {
+    let notificationData = await notificationContent[key]({ id, name, userName, isSuperAdminApproved, status, userId, dispatchTo, warehouseId, motherplantId })
     if (notificationData.userIds && notificationData.userIds.length) {
         insertNotificationsToDB({ notificationData, userIds: notificationData.userIds })
     }
