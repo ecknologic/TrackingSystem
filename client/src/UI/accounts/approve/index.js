@@ -397,10 +397,12 @@ const ApproveAccount = () => {
     }
 
     const onAccountApprove = async () => {
+        const { salesAgent } = accountValues
         const options = { item: 'Customer', action: 'loading', v1Ing: 'Approving' }
         const url = `customer/approveCustomer/${customerId}`
         const body = {
             customerName,
+            salesAgent,
             deliveryDetailsIds: activeAddressIds,
             isSuperAdminApproved: isSuperAdminApproved || (needsSAApproval ? Number(isSuperAdmin) : 0)
         }

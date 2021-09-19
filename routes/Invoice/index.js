@@ -511,6 +511,7 @@ const saveInvoice = async (requestObj, res, response) => {
                         invoiceQueries.updateMultipleDcsInvoiceFlag(requestObj, (updateerr, success) => {
                             if (updateerr) console.log("updateerr", updateerr)
                         })
+                        createNotifications({ userName }, 'invoiceCreated')
                         // invoiceQueries.saveInvoicePdf({ invoiceId }, (err, data) => {
                         //     if (err) res.status(500).json(dbError(err));
                         //     else res.json({ message: 'Invoice created successfully' })
