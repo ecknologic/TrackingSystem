@@ -15,7 +15,10 @@ const emitSocketToUsers = (data, userIds) => {
 
 const createNotifications = async ({ id, name, userName, isSuperAdminApproved, userId, dispatchTo, status, warehouseId, motherplantId }, key) => {
     let notificationData = await notificationContent[key]({ id, name, userName, isSuperAdminApproved, status, userId, dispatchTo, warehouseId, motherplantId })
-    if (notificationData.userIds && notificationData.userIds.length) {
+    if (notificationData.userIds && notificationData.userIds.length && notificationData.userRoles && notificationData.userRoles.length) {
+        insertNotificationsToDB({ notificationData, userIds: [...notificationData.userIds, ...notificationData.userRoles] })
+    }
+    else if (notificationData.userIds && notificationData.userIds.length) {
         insertNotificationsToDB({ notificationData, userIds: notificationData.userIds })
     }
     else if (notificationData.userRoles.length) {
@@ -23,6 +26,7 @@ const createNotifications = async ({ id, name, userName, isSuperAdminApproved, u
             if (err) console.log('Err', err)
             else {
                 if (userIds.length) {
+                    if (key == 'customerApproved') userIds = [...userIds, { userId }]
                     insertNotificationsToDB({ notificationData, userIds })
                 }
             }

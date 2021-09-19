@@ -305,7 +305,7 @@ const getLatLongDetails = (req) => {
 }
 router.post("/approveCustomer/:customerId", (req, res) => {
   const { customerId } = req.params;
-  const { isSuperAdminApproved, customerName } = req.body
+  const { isSuperAdminApproved, customerName, salesAgent } = req.body
   customerQueries.approveCustomer({ customerId, isSuperAdminApproved }, (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
@@ -313,7 +313,8 @@ router.post("/approveCustomer/:customerId", (req, res) => {
         if (err) res.json({ status: 500, message: err.sqlMessage });
         else {
           saveToCustomerOrderDetails(customerId, res, null, userId, userRole, userName)
-          isSuperAdminApproved && createNotifications({ name: customerName, id: customerId, userName, isSuperAdminApproved }, 'customerCreated')
+          if (isSuperAdminApproved) createNotifications({ name: customerName, id: customerId, userName, isSuperAdminApproved }, 'customerCreated')
+          else createNotifications({ name: customerName, id: customerId, userId: salesAgent, userName }, 'customerApproved')
         }
       })
     }
@@ -447,7 +448,7 @@ router.get("/getMarketingInActiveCustomers", (req, res) => {
 });
 router.get("/getCustomerDetailsByStatus", (req, res) => {
   const { status, userId } = req.query
-  customerQueries.getCustomerDetailsByStatus({ status, userId ,userRole}, (err, customersData) => {
+  customerQueries.getCustomerDetailsByStatus({ status, userId, userRole }, (err, customersData) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
       res.json(customersData)
@@ -553,7 +554,7 @@ const getAddedDeliveryDetails = (deliveryDetailsId) => {
 // })
 const getDeliveryDetails = ({ customerId, deliveryDetailsId, isSuperAdmin }) => {
   return new Promise((resolve, reject) => {
-    let deliveryDetailsQuery = "SELECT d.isClosed,d.location,d.contactPerson,d.customer_Id,d.deliveryDetailsId,d.phoneNumber,d.isActive as isApproved,d.location AS deliveryLocation,r.departmentName,ro.routeName FROM DeliveryDetails d INNER JOIN routes ro ON d.routeId=ro.RouteId INNER JOIN departmentmaster r ON r.departmentId=d.departmentId WHERE d.deleted=0 AND (d.customer_Id=? OR d.deliveryDetailsId=?) ORDER BY d.registeredDate DESC";
+    let deliveryDetailsQuery = "SELECT d.isClosed,d.location,d.contactPerson,d.customer_Id,d.deliveryDetailsId,d.phoneNumber,d.isActive as isApproved,d.location AS deliveryLocation,d.departmentId,r.departmentName,ro.routeName FROM DeliveryDetails d INNER JOIN routes ro ON d.routeId=ro.RouteId INNER JOIN departmentmaster r ON r.departmentId=d.departmentId WHERE d.deleted=0 AND (d.customer_Id=? OR d.deliveryDetailsId=?) ORDER BY d.registeredDate DESC";
     if (isSuperAdmin == 'true') {
       deliveryDetailsQuery = "SELECT d.*,d.isClosed,d.isActive as isApproved,d.location AS deliveryLocation,r.departmentName,ro.routeName,json_object('SUN',cd.SUN,'MON',cd.MON,'TUE',cd.TUE,'WED',cd.WED,'THU',cd.THU,'FRI',cd.FRI,'SAT',cd.SAT) as 'deliveryDays' " +
         /*  "concat(CASE WHEN cd.sun=1 THEN 'Sunday,' ELSE '' END,"+
@@ -672,7 +673,11 @@ router.put('/updateCustomerStatus', (req, res) => {
 router.put('/updateDeliveryDetailsStatus', (req, res) => {
   customerQueries.updateCustomerDeliveryStatus(req.body, (err, update) => {
     if (err) res.status(500).json(dbError(err))
-    else res.json(UPDATEMESSAGE)
+    else {
+      const { location, deliveryDetailsId, status, departmentId } = req.body;
+      if (status == 1) createNotifications({ name: location, id: deliveryDetailsId, warehouseId: departmentId, userId, userName }, 'deliveryDetailsApproved')
+      res.json(UPDATEMESSAGE)
+    }
   })
 })
 

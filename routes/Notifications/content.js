@@ -24,6 +24,34 @@ notificationContent.customerCreated = async ({ name, userName, id, isSuperAdminA
     }
 }
 
+notificationContent.deliveryDetailsApproved = async ({ name, userName, id, warehouseId }) => {
+    let obj = {
+        title: `Delivery Details`,
+        description: `<b>${name}</b> delivery approved by ${userName}`,
+        createdDateTime: new Date(),
+        navigationUrl: getNavigationUrl(notificationConstants.DELIVERY_DETAILS_ADDED, id),
+        isRead: 0,
+        userRoles: [SUPERADMIN, MARKETINGMANAGER]
+    }
+    motherPlantDbQueries.getAdminIdByDepartmentId(warehouseId, (err, data) => {
+        if (err || !data.length) return obj
+        else obj.userIds = [{ userId: data[0].adminId }]
+    })
+
+    return obj
+}
+
+notificationContent.customerApproved = async ({ name, userName, id }) => {
+    return {
+        title: `Customer approved`,
+        description: `<b>${name}</b> approved by ${userName}`,
+        createdDateTime: new Date(),
+        navigationUrl: getNavigationUrl(notificationConstants.CUSTOMER_CREATED, id),
+        isRead: 0,
+        userRoles: [MARKETINGMANAGER]
+    }
+}
+
 notificationContent.customerCreatedWithZeroDeposit = async ({ name, userName, id }) => {
     return {
         title: "Customer created",
@@ -260,7 +288,7 @@ notificationContent.driverUpdated = async ({ name, userId }) => {
     })
 }
 
-notificationContent.invoiceCreated = async ({ id, userId }) => {
+notificationContent.departmentInvoiceCreated = async ({ id, userId }) => {
     let obj = {
         title: "Invoice Created",
         description: `Invoice Created`,
@@ -276,6 +304,18 @@ notificationContent.invoiceCreated = async ({ id, userId }) => {
             return obj;
         }
     })
+}
+
+notificationContent.invoiceCreated = async ({ userName }) => {
+    let obj = {
+        title: "Invoice Created",
+        description: `Invoice Created by <b>${userName}</b>`,
+        createdDateTime: new Date(),
+        navigationUrl: null,
+        isRead: 0,
+        userRoles: [SUPERADMIN]
+    }
+    return obj
 }
 
 module.exports = { notificationContent }
