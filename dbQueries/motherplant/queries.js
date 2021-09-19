@@ -14,7 +14,11 @@ motherPlantDbQueries.getDepartmentNameByAdminId = async (userId, callback) => {
 }
 
 motherPlantDbQueries.getAdminIdByDepartmentId = async (departmentId, callback) => {
-    let query = `select adminId from departmentmaster WHERE departmentId=${departmentId}`;
+    let query = `select adminId as userId from departmentmaster WHERE departmentId=${departmentId}`;
+    if (departmentId.length) {
+        query = `select adminId as userId from departmentmaster WHERE departmentId IN (?)`;
+        return executeGetParamsQuery(query, [departmentId], callback)
+    }
     return executeGetQuery(query, callback)
 }
 

@@ -455,6 +455,11 @@ customerQueries.checkDCExistsForTodayOrNot = (input, callback) => {
     executeGetParamsQuery(query, requestBody, callback)
 }
 
+customerQueries.getWarehouseIdsByDeliveryIds = (ids, callback) => {
+    let query = 'Select JSON_ARRAYAGG(departmentId) as warehouseIds from DeliveryDetails where deliveryDetailsId IN (?)'
+    executePostOrUpdateQuery(query, [ids], callback)
+}
+
 //POST Request Methods
 customerQueries.saveCustomerOrderDetails = (input, callback) => {
     // let { contactPerson, phoneNumber, address, routeId, driverId, customer_Id, latitude, longitude, dcNo, departmentId, customerType, product20L, price20L, product1L, price1L, product500ML, price500ML,

@@ -35,7 +35,23 @@ notificationContent.deliveryDetailsApproved = async ({ name, userName, id, wareh
     }
     motherPlantDbQueries.getAdminIdByDepartmentId(warehouseId, (err, data) => {
         if (err || !data.length) return obj
-        else obj.userIds = [{ userId: data[0].adminId }]
+        else obj.userIds = data
+    })
+
+    return obj
+}
+
+notificationContent.deliveryDetailsBulkApproved = async ({ name, userName, id, warehouseId }) => {
+    let obj = {
+        title: `Delivery Details`,
+        description: `<b>${name}</b> delivery approved by ${userName}`,
+        createdDateTime: new Date(),
+        navigationUrl: null,
+        isRead: 0
+    }
+    motherPlantDbQueries.getAdminIdByDepartmentId(warehouseId, (err, data) => {
+        if (err || !data.length) return obj
+        else obj.userIds = data
     })
 
     return obj
@@ -116,7 +132,7 @@ notificationContent.stockDispatch = async ({ dispatchTo, userId }) => {
     }
     motherPlantDbQueries.getAdminIdByDepartmentId(dispatchTo, (err, data) => {
         if (err || !data.length) return obj
-        else obj.userIds = [{ userId: data[0].adminId }]
+        else obj.userIds = data
     })
     motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
         if (err || !data.length) return obj
@@ -139,7 +155,7 @@ notificationContent.confirmEmptyCans = async ({ dispatchTo, userId, status }) =>
     }
     motherPlantDbQueries.getAdminIdByDepartmentId(dispatchTo, (err, data) => {
         if (err || !data.length) return obj
-        else obj.userIds = [{ userId: data[0].adminId }]
+        else obj.userIds = data
     })
     motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
         if (err || !data.length) return obj
@@ -197,7 +213,7 @@ notificationContent.confirmStockReceived = async ({ motherplantId, userId }) => 
     }
     motherPlantDbQueries.getAdminIdByDepartmentId(motherplantId, (err, data) => {
         if (err || !data.length) return obj
-        else obj.userIds = [{ userId: data[0].adminId }]
+        else obj.userIds = data
     })
     motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
         if (err || !data.length) return obj
@@ -219,7 +235,7 @@ notificationContent.returnedEmptyCans = async ({ motherplantId, userId }) => {
     }
     motherPlantDbQueries.getAdminIdByDepartmentId(motherplantId, (err, data) => {
         if (err || !data.length) return obj
-        else obj.userIds = [{ userId: data[0].adminId }]
+        else obj.userIds = data
     })
     motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
         if (err || !data.length) return obj
@@ -241,7 +257,7 @@ notificationContent.requestStock = async ({ motherplantId, userId }) => {
     }
     motherPlantDbQueries.getAdminIdByDepartmentId(motherplantId, (err, data) => {
         if (err || !data.length) return obj
-        else obj.userIds = [{ userId: data[0].adminId }]
+        else obj.userIds = data
     })
     motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
         if (err || !data.length) return obj

@@ -303,6 +303,7 @@ const getLatLongDetails = (req) => {
     });
   })
 }
+
 router.post("/approveCustomer/:customerId", (req, res) => {
   const { customerId } = req.params;
   const { isSuperAdminApproved, customerName, salesAgent } = req.body
@@ -314,7 +315,15 @@ router.post("/approveCustomer/:customerId", (req, res) => {
         else {
           saveToCustomerOrderDetails(customerId, res, null, userId, userRole, userName)
           if (isSuperAdminApproved) createNotifications({ name: customerName, id: customerId, userName, isSuperAdminApproved }, 'customerCreated')
-          else createNotifications({ name: customerName, id: customerId, userId: salesAgent, userName }, 'customerApproved')
+          else {
+            customerQueries.getWarehouseIdsByDeliveryIds(req.body.deliveryDetailsIds, (err1, data) => {
+              if (err1) console.log(err1)
+              else if (data.length) {
+                createNotifications({ name: customerName, warehouseId: JSON.parse(data[0].warehouseIds), userId, userName }, 'deliveryDetailsBulkApproved')
+              }
+            })
+            createNotifications({ name: customerName, id: customerId, userId: salesAgent, userName }, 'customerApproved')
+          }
         }
       })
     }
