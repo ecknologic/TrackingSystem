@@ -222,7 +222,10 @@ router.get('/getClosingCustomers/:date', (req, res) => {
 router.put('/updateClosingCustomers/:closingId', (req, res) => {
     driverQueries.updateClosingCustomerDetails({ ...req.body, closingId: req.params.closingId }, (err, results) => {
         if (err) res.json(dbError(err))
-        else res.json(results)
+        else {
+            if (results.affectedRows > 0) res.json({ driverStatus: 'Updated' })
+            else res.json({ driverStatus: 'Inprogress' })
+        }
     })
 })
 
