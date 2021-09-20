@@ -2,6 +2,7 @@ const auditQueries = require("../../dbQueries/auditlogs/queries");
 const customerClosingQueries = require("../../dbQueries/Customer/closing");
 const { decrypt, decryptObj } = require("../../utils/crypto");
 const { dbError } = require("../../utils/functions");
+const { createNotifications } = require("../Notifications/functions");
 const { compareCustomerClosingData } = require("../utils/customer");
 let customerClosingControllers = {}
 
@@ -83,7 +84,7 @@ customerClosingControllers.getCustomerAccountDetailsById = (req, res) => {
 }
 
 customerClosingControllers.addCustomerClosingDetails = (req, res) => {
-    const { deliveryDetailsId, accountDetails,customerId } = req.body
+    const { deliveryDetailsId, accountDetails, customerId } = req.body
     customerClosingQueries.addCustomerClosingDetails({ ...req.body, createdBy: req.userId }, (err, result) => {
         if (err) res.status(500).json(dbError(err));
         else {
@@ -93,6 +94,7 @@ customerClosingControllers.addCustomerClosingDetails = (req, res) => {
                     const { userId, userRole, userName } = req
                     auditQueries.createLog({ userId, description: `Customer Closing created by ${userRole} <b>(${userName})</b>`, customerId: result.insertId, type: "customerClosing" })
                     customerClosingQueries.updateCustomerClosingInitiatedStatus({ deliveryDetailsId })
+                    createNotifications({ id: result.insertId, warehouseId: req.body.departmentId, userName: req.userName }, 'customerClosing')
                     res.json('Details added successfully')
                 }
             })
@@ -115,6 +117,8 @@ customerClosingControllers.updateCustomerClosingDetails = async (req, res) => {
                             else console.log('log data', data)
                         })
                     }
+                    const { isConfirmed, closingId } = req.body
+                    if (isConfirmed && isConfirmed == true) createNotifications({ id: closingId, userId }, 'customerClosingUpdated')
                     res.json('Details updated successfully')
                 }
             })

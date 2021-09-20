@@ -322,6 +322,43 @@ notificationContent.departmentInvoiceCreated = async ({ id, userId }) => {
     })
 }
 
+notificationContent.customerClosing = async ({ id, userName, warehouseId }) => {
+    let obj = {
+        title: "Customer Closing",
+        description: `Customer Closing Initiated`,
+        createdDateTime: new Date(),
+        navigationUrl: null,
+        isRead: 0,
+        userIds: []
+    }
+    motherPlantDbQueries.getAdminIdByDepartmentId(warehouseId, (err, data) => {
+        if (err || !data.length) return obj
+        else {
+            obj.description = `Customer Closing ${id} initiated by <b>${userName}</b>`
+            obj.userIds = data
+            return obj;
+        }
+    })
+}
+
+notificationContent.customerClosingUpdated = async ({ id, userId }) => {
+    let obj = {
+        title: "Customer Closing",
+        description: `Customer Closing Confirmed`,
+        createdDateTime: new Date(),
+        navigationUrl: null,
+        isRead: 0,
+        userRoles: [ACCOUNTSADMIN]
+    }
+    motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
+        if (err || !data.length) return obj
+        else {
+            obj.description = `Customer Closing ${id} Details Confirmed by <b>${data[0].departmentName}</b> admin`
+            return obj;
+        }
+    })
+}
+
 notificationContent.invoiceCreated = async ({ userName }) => {
     let obj = {
         title: "Invoice Created",
