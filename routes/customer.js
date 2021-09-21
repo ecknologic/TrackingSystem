@@ -329,10 +329,14 @@ router.post("/approveCustomer/:customerId", (req, res) => {
     }
   })
 });
-
+// router.get('/ss',(req,res)=>{
+//   customerQueries.getDeliveryIdsByCustomerId(153, (deliveryIdsErr, data) => {
+//     res.json(JSON.parse(data[0].deliveryIds))
+//   })
+// })
 router.post("/approveCustomerDirectly/:customerId", (req, res) => {
   const { customerId } = req.params;
-  const { isSuperAdminApproved } = req.body
+  const { isSuperAdminApproved, customerName, salesAgent} = req.body
   customerQueries.approveCustomer({ customerId, isSuperAdminApproved }, (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
@@ -340,6 +344,19 @@ router.post("/approveCustomerDirectly/:customerId", (req, res) => {
         if (err) res.json({ status: 500, message: err.sqlMessage });
         else {
           saveToCustomerOrderDetails(customerId, res, null, userId, userRole, userName)
+          createNotifications({ name: customerName, id: customerId, userId: salesAgent, userName }, 'customerApproved')
+          customerQueries.getDeliveryIdsByCustomerId(customerId, (deliveryIdsErr, data1) => {
+            if (deliveryIdsErr) console.log(deliveryIdsErr)
+            else if (data1.length) {
+              customerQueries.getWarehouseIdsByDeliveryIds(JSON.parse(data1[0].deliveryIds), (err1, data) => {
+                if (err1) console.log(err1)
+                else if (data.length) {
+                  const warehouseIds = JSON.parse(data[0].warehouseIds)
+                  createNotifications({ name: customerName, warehouseId: [...new Set(warehouseIds)], userId, userName }, 'deliveryDetailsBulkApproved')
+                }
+              })
+            }
+          })
         }
       })
     }

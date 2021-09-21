@@ -31,7 +31,8 @@ notificationContent.deliveryDetailsApproved = async ({ name, userName, id, wareh
         createdDateTime: new Date(),
         navigationUrl: getNavigationUrl(notificationConstants.DELIVERY_DETAILS_ADDED, id),
         isRead: 0,
-        userRoles: [SUPERADMIN, MARKETINGMANAGER]
+        userRoles: [SUPERADMIN, MARKETINGMANAGER],
+        userIds:[]
     }
     motherPlantDbQueries.getAdminIdByDepartmentId(warehouseId, (err, data) => {
         if (err || !data.length) return obj
@@ -47,24 +48,29 @@ notificationContent.deliveryDetailsBulkApproved = async ({ name, userName, id, w
         description: `<b>${name}</b> delivery approved by ${userName}`,
         createdDateTime: new Date(),
         navigationUrl: null,
-        isRead: 0
+        isRead: 0,
+        userIds: []
     }
-    motherPlantDbQueries.getAdminIdByDepartmentId(warehouseId, (err, data) => {
-        if (err || !data.length) return obj
-        else obj.userIds = data
+    return new Promise((resolve)=>{
+        motherPlantDbQueries.getAdminIdByDepartmentId(warehouseId, (err, data) => {
+            if (err || !data.length) resolve(obj)
+            else {
+                obj.userIds = data
+                resolve(obj)
+            }
+        })
     })
-
-    return obj
 }
 
-notificationContent.customerApproved = async ({ name, userName, id }) => {
+notificationContent.customerApproved = async ({ name, userId, userName, id }) => {
     return {
         title: `Customer approved`,
         description: `<b>${name}</b> approved by ${userName}`,
         createdDateTime: new Date(),
         navigationUrl: getNavigationUrl(notificationConstants.CUSTOMER_CREATED, id),
         isRead: 0,
-        userRoles: [MARKETINGMANAGER]
+        userRoles: [MARKETINGMANAGER],
+        userIds: [{ userId }]
     }
 }
 

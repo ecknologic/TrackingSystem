@@ -460,6 +460,12 @@ customerQueries.getWarehouseIdsByDeliveryIds = (ids, callback) => {
     executePostOrUpdateQuery(query, [ids], callback)
 }
 
+customerQueries.getDeliveryIdsByCustomerId = (customerId, callback) => {  //If user approves from the dashboard
+    let currentDate = new Date();
+    let query = 'Select JSON_ARRAYAGG(deliveryDetailsId) AS deliveryIds FROM DeliveryDetails where customer_Id=' + customerId
+    executeGetQuery(query, callback)
+}
+
 //POST Request Methods
 customerQueries.saveCustomerOrderDetails = (input, callback) => {
     // let { contactPerson, phoneNumber, address, routeId, driverId, customer_Id, latitude, longitude, dcNo, departmentId, customerType, product20L, price20L, product1L, price1L, product500ML, price500ML,
