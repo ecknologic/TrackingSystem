@@ -32,14 +32,16 @@ notificationContent.deliveryDetailsApproved = async ({ name, userName, id, wareh
         navigationUrl: getNavigationUrl(notificationConstants.DELIVERY_DETAILS_ADDED, id),
         isRead: 0,
         userRoles: [SUPERADMIN, MARKETINGMANAGER],
-        userIds:[]
+        userIds: []
     }
-    motherPlantDbQueries.getAdminIdByDepartmentId(warehouseId, (err, data) => {
-        if (err || !data.length) return obj
-        else obj.userIds = data
-    })
+    return new Promise((resolve) => {
+        motherPlantDbQueries.getAdminIdByDepartmentId(warehouseId, (err, data) => {
+            if (err || !data.length) resolve(obj)
+            else obj.userIds = data
+        })
 
-    return obj
+        resolve(obj)
+    })
 }
 
 notificationContent.deliveryDetailsBulkApproved = async ({ name, userName, id, warehouseId }) => {
@@ -51,7 +53,7 @@ notificationContent.deliveryDetailsBulkApproved = async ({ name, userName, id, w
         isRead: 0,
         userIds: []
     }
-    return new Promise((resolve)=>{
+    return new Promise((resolve) => {
         motherPlantDbQueries.getAdminIdByDepartmentId(warehouseId, (err, data) => {
             if (err || !data.length) resolve(obj)
             else {
@@ -118,12 +120,14 @@ notificationContent.rmRequest = async ({ userName, id, userId }) => {
         isRead: 0,
         userRoles: [SUPERADMIN]
     }
-    motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
-        if (err || !data.length) return obj
-        else {
-            obj.description = `Raw Material requested by <b>${data[0].departmentName}</b> admin`
-            return obj;
-        }
+    return new Promise((resolve) => {
+        motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
+            if (err || !data.length) return resolve(obj)
+            else {
+                obj.description = `Raw Material requested by <b>${data[0].departmentName}</b> admin`
+                resolve(obj);
+            }
+        })
     })
 }
 
@@ -136,16 +140,18 @@ notificationContent.stockDispatch = async ({ dispatchTo, userId }) => {
         isRead: 0,
         userIds: []
     }
-    motherPlantDbQueries.getAdminIdByDepartmentId(dispatchTo, (err, data) => {
-        if (err || !data.length) return obj
-        else obj.userIds = data
-    })
-    motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
-        if (err || !data.length) return obj
-        else {
-            obj.description = `Stock dispatched by <b>${data[0].departmentName}</b> admin`
-            return obj;
-        }
+    return new Promise((resolve) => {
+        motherPlantDbQueries.getAdminIdByDepartmentId(dispatchTo, (err, data) => {
+            if (err || !data.length) resolve(obj)
+            else obj.userIds = data
+        })
+        motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
+            if (err || !data.length) resolve(obj)
+            else {
+                obj.description = `Stock dispatched by <b>${data[0].departmentName}</b> admin`
+                resolve(obj);
+            }
+        })
     })
 }
 
@@ -159,16 +165,18 @@ notificationContent.confirmEmptyCans = async ({ dispatchTo, userId, status }) =>
         isRead: 0,
         userIds: []
     }
-    motherPlantDbQueries.getAdminIdByDepartmentId(dispatchTo, (err, data) => {
-        if (err || !data.length) return obj
-        else obj.userIds = data
-    })
-    motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
-        if (err || !data.length) return obj
-        else {
-            obj.description = `Empty Cans ${status} by <b>${data[0].departmentName}</b> admin`
-            return obj;
-        }
+    return new Promise((resolve) => {
+        motherPlantDbQueries.getAdminIdByDepartmentId(dispatchTo, (err, data) => {
+            if (err || !data.length) resolve(obj)
+            else obj.userIds = data
+        })
+        motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
+            if (err || !data.length) resolve(obj)
+            else {
+                obj.description = `Empty Cans ${status} by <b>${data[0].departmentName}</b> admin`
+                resolve(obj);
+            }
+        })
     })
 }
 
@@ -181,12 +189,14 @@ notificationContent.qualityCheck = async ({ id, status, userId }) => {
         isRead: 0,
         userRoles: [SUPERADMIN]
     }
-    motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
-        if (err || !data.length) return obj
-        else {
-            obj.description = `Batch ${id} Quality Test ${status} by <b>${data[0].departmentName}</b> admin`
-            return obj;
-        }
+    return new Promise((resolve) => {
+        motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
+            if (err || !data.length) resolve(obj)
+            else {
+                obj.description = `Batch ${id} Quality Test ${status} by <b>${data[0].departmentName}</b> admin`
+                resolve(obj);
+            }
+        })
     })
 }
 
@@ -199,12 +209,14 @@ notificationContent.rmConfirmed = async ({ userId }) => {
         isRead: 0,
         userRoles: [SUPERADMIN]
     }
-    motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
-        if (err || !data.length) return obj
-        else {
-            obj.description = `Raw Materials confirmed by <b>${data[0].departmentName}</b> admin`
-            return obj;
-        }
+    return new Promise((resolve) => {
+        motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
+            if (err || !data.length) resolve(obj)
+            else {
+                obj.description = `Raw Materials confirmed by <b>${data[0].departmentName}</b> admin`
+                resolve(obj);
+            }
+        })
     })
 }
 
@@ -217,16 +229,18 @@ notificationContent.confirmStockReceived = async ({ motherplantId, userId }) => 
         isRead: 0,
         userIds: []
     }
-    motherPlantDbQueries.getAdminIdByDepartmentId(motherplantId, (err, data) => {
-        if (err || !data.length) return obj
-        else obj.userIds = data
-    })
-    motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
-        if (err || !data.length) return obj
-        else {
-            obj.description = `Stock Details confirmed by <b>${data[0].departmentName}</b> admin`
-            return obj;
-        }
+    return new Promise((resolve) => {
+        motherPlantDbQueries.getAdminIdByDepartmentId(motherplantId, (err, data) => {
+            if (err || !data.length) resolve(obj)
+            else obj.userIds = data
+        })
+        motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
+            if (err || !data.length) resolve(obj)
+            else {
+                obj.description = `Stock Details confirmed by <b>${data[0].departmentName}</b> admin`
+                resolve(obj);
+            }
+        })
     })
 }
 
@@ -239,16 +253,18 @@ notificationContent.returnedEmptyCans = async ({ motherplantId, userId }) => {
         isRead: 0,
         userIds: []
     }
-    motherPlantDbQueries.getAdminIdByDepartmentId(motherplantId, (err, data) => {
-        if (err || !data.length) return obj
-        else obj.userIds = data
-    })
-    motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
-        if (err || !data.length) return obj
-        else {
-            obj.description = `Empty cans returned by <b>${data[0].departmentName}</b> admin`
-            return obj;
-        }
+    return new Promise((resolve) => {
+        motherPlantDbQueries.getAdminIdByDepartmentId(motherplantId, (err, data) => {
+            if (err || !data.length) resolve(obj)
+            else obj.userIds = data
+        })
+        motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
+            if (err || !data.length) resolve(obj)
+            else {
+                obj.description = `Empty cans returned by <b>${data[0].departmentName}</b> admin`
+                resolve(obj);
+            }
+        })
     })
 }
 
@@ -261,16 +277,18 @@ notificationContent.requestStock = async ({ motherplantId, userId }) => {
         isRead: 0,
         userIds: []
     }
-    motherPlantDbQueries.getAdminIdByDepartmentId(motherplantId, (err, data) => {
-        if (err || !data.length) return obj
-        else obj.userIds = data
-    })
-    motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
-        if (err || !data.length) return obj
-        else {
-            obj.description = `Stock Requested by <b>${data[0].departmentName}</b> admin`
-            return obj;
-        }
+    return new Promise((resolve) => {
+        motherPlantDbQueries.getAdminIdByDepartmentId(motherplantId, (err, data) => {
+            if (err || !data.length) resolve(obj)
+            else obj.userIds = data
+        })
+        motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
+            if (err || !data.length) resolve(obj)
+            else {
+                obj.description = `Stock Requested by <b>${data[0].departmentName}</b> admin`
+                resolve(obj);
+            }
+        })
     })
 }
 
@@ -283,12 +301,14 @@ notificationContent.routeCreated = async ({ name, userId }) => {
         isRead: 0,
         userRoles: [SUPERADMIN]
     }
-    motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
-        if (err || !data.length) return obj
-        else {
-            obj.description = `${name} Route created by <b>${data[0].departmentName}</b> admin`
-            return obj;
-        }
+    return new Promise((resolve) => {
+        motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
+            if (err || !data.length) resolve(obj)
+            else {
+                obj.description = `${name} Route created by <b>${data[0].departmentName}</b> admin`
+                resolve(obj);
+            }
+        })
     })
 }
 
@@ -301,12 +321,14 @@ notificationContent.driverUpdated = async ({ name, userId }) => {
         isRead: 0,
         userRoles: [SUPERADMIN]
     }
-    motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
-        if (err || !data.length) return obj
-        else {
-            obj.description = `Driver <b>${name}</b> updated by <b>${data[0].departmentName}</b> admin`
-            return obj;
-        }
+    return new Promise((resolve) => {
+        motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
+            if (err || !data.length) resolve(obj)
+            else {
+                obj.description = `Driver <b>${name}</b> updated by <b>${data[0].departmentName}</b> admin`
+                resolve(obj);
+            }
+        })
     })
 }
 
@@ -319,12 +341,14 @@ notificationContent.departmentInvoiceCreated = async ({ id, userId }) => {
         isRead: 0,
         userRoles: [SUPERADMIN, ACCOUNTSADMIN]
     }
-    motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
-        if (err || !data.length) return obj
-        else {
-            obj.description = `Invoice <b>${id}</b> created by <b>${data[0].departmentName}</b> admin`
-            return obj;
-        }
+    return new Promise((resolve) => {
+        motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
+            if (err || !data.length) resolve(obj)
+            else {
+                obj.description = `Invoice <b>${id}</b> created by <b>${data[0].departmentName}</b> admin`
+                resolve(obj);
+            }
+        })
     })
 }
 
@@ -337,13 +361,15 @@ notificationContent.customerClosing = async ({ id, userName, warehouseId }) => {
         isRead: 0,
         userIds: []
     }
-    motherPlantDbQueries.getAdminIdByDepartmentId(warehouseId, (err, data) => {
-        if (err || !data.length) return obj
-        else {
-            obj.description = `Customer Closing ${id} initiated by <b>${userName}</b>`
-            obj.userIds = data
-            return obj;
-        }
+    return new Promise((resolve) => {
+        motherPlantDbQueries.getAdminIdByDepartmentId(warehouseId, (err, data) => {
+            if (err || !data.length) resolve(obj)
+            else {
+                obj.description = `Customer Closing ${id} initiated by <b>${userName}</b>`
+                obj.userIds = data
+                resolve(obj);
+            }
+        })
     })
 }
 
@@ -356,12 +382,14 @@ notificationContent.customerClosingUpdated = async ({ id, userId }) => {
         isRead: 0,
         userRoles: [ACCOUNTSADMIN]
     }
-    motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
-        if (err || !data.length) return obj
-        else {
-            obj.description = `Customer Closing ${id} Details Confirmed by <b>${data[0].departmentName}</b> admin`
-            return obj;
-        }
+    return new Promise((resolve) => {
+        motherPlantDbQueries.getDepartmentNameByAdminId(userId, (err, data) => {
+            if (err || !data.length) resolve(obj)
+            else {
+                obj.description = `Customer Closing ${id} Details Confirmed by <b>${data[0].departmentName}</b> admin`
+                resolve(obj);
+            }
+        })
     })
 }
 
