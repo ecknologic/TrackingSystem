@@ -21,7 +21,7 @@ const AccountCard = ({ data, onClick, btnTxt = 'Manage Account', onSelect, isAdm
 
     const handleSelect = ({ key }) => {
         const isSAApproved = isSuperAdminApproved || (Number(depositAmount) === 0 ? Number(isAdmin) : 0)
-        onSelect(key, customerId, isSAApproved)
+        onSelect(key, data, isSAApproved)
     }
 
     const getOptions = () => {
