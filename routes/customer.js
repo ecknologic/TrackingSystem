@@ -336,7 +336,7 @@ router.post("/approveCustomer/:customerId", (req, res) => {
 // })
 router.post("/approveCustomerDirectly/:customerId", (req, res) => {
   const { customerId } = req.params;
-  const { isSuperAdminApproved, customerName, salesAgent} = req.body
+  const { isSuperAdminApproved, customerName, salesAgent } = req.body
   customerQueries.approveCustomer({ customerId, isSuperAdminApproved }, (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
@@ -700,8 +700,8 @@ router.put('/updateDeliveryDetailsStatus', (req, res) => {
   customerQueries.updateCustomerDeliveryStatus(req.body, (err, update) => {
     if (err) res.status(500).json(dbError(err))
     else {
-      const { location, deliveryDetailsId, status, departmentId } = req.body;
-      if (status == 1) createNotifications({ name: location, id: deliveryDetailsId, warehouseId: departmentId, userId, userName }, 'deliveryDetailsApproved')
+      const { location, status, customerId, departmentId } = req.body;
+      if (status == 1) createNotifications({ name: location, id: customerId, warehouseId: departmentId, userId, userName }, 'deliveryDetailsApproved')
       res.json(UPDATEMESSAGE)
     }
   })

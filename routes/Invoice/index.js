@@ -11,7 +11,7 @@ const { generatePDF, generateCustomerPDF } = require('../../dbQueries/Customer/q
 const dayjs = require('dayjs');
 const { sendMail } = require('../mailTemplate.js');
 const { createNotifications } = require('../Notifications/functions.js');
-var departmentId, isSuperAdmin, userId;
+var departmentId, isSuperAdmin, userId,userName;
 
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -19,6 +19,7 @@ router.use(function timeLog(req, res, next) {
     departmentId = req.headers['departmentid']
     isSuperAdmin = req.headers['issuperadmin']
     userId = req.headers['userid']
+    userName = req.headers['username']
     next();
 });
 
@@ -536,7 +537,7 @@ const saveDepartmentInvoice = async (requestObj, res, response) => {
                         invoiceQueries.updateDCInvoiceFlag(dcNo)
                         if (requestObj.departmentStatus != "Pending") addDepartmentPayment(invoiceId, requestObj)
                         response && res.json({ message: 'Invoice created successfully' })
-                        createNotifications({ userId, id: invoiceId }, 'invoiceCreated')
+                        createNotifications({ userId, userName, id: invoiceId }, 'invoiceCreated')
                     }
                 })
             } else res.status(500).json({ message: "Products should not be empty" })
