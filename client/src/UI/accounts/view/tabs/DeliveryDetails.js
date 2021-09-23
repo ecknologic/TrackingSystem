@@ -247,10 +247,10 @@ const DeliveryDetails = ({ isAdmin, recentDelivery, onUpdate, ...rest }) => {
     }
 
     const handleStatusUpdate = async (data, status) => {
-        const { deliveryDetailsId, departmentId, location } = data
+        const { deliveryDetailsId, departmentId, location, customer_Id: customerId } = data
         const options = { item: 'Delivery status', v1Ing: 'Updating', v2: 'updated' }
         const url = `customer/updateDeliveryDetailsStatus`
-        const body = { status, deliveryDetailsId, departmentId, location }
+        const body = { status, deliveryDetailsId, departmentId, location, customerId }
 
         try {
             showToast({ ...options, action: 'loading' })
