@@ -7,7 +7,7 @@ const { compareCustomerClosingData } = require("../utils/customer");
 let customerClosingControllers = {}
 
 customerClosingControllers.getCustomerIdsByAgent = (req, res) => {
-    customerClosingQueries.getCustomerIdsByAgent(req, (err, results) => {
+    customerClosingQueries.getCustomerIdsByAgent(req.headers, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
             res.json(results)
@@ -46,7 +46,8 @@ customerClosingControllers.getDepositDetailsByDeliveryId = (req, res) => {
 }
 
 customerClosingControllers.getCustomerClosingDetails = (req, res) => {
-    customerClosingQueries.getCustomerClosingDetails({ ...req.query, departmentId: req.departmentId, createdBy: req.userId, userRole: req.userRole }, (err, results) => {
+    const { departmentid, userid, userrole } = req.headers
+    customerClosingQueries.getCustomerClosingDetails({ ...req.query, departmentId: departmentid, createdBy: userid, userRole: userrole }, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else if (results.length) {
             if (results.length == 1 && results[0].closingId == null) res.json([])
@@ -85,16 +86,16 @@ customerClosingControllers.getCustomerAccountDetailsById = (req, res) => {
 
 customerClosingControllers.addCustomerClosingDetails = (req, res) => {
     const { deliveryDetailsId, accountDetails, customerId } = req.body
-    customerClosingQueries.addCustomerClosingDetails({ ...req.body, createdBy: req.userId }, (err, result) => {
+    customerClosingQueries.addCustomerClosingDetails({ ...req.body, createdBy: req.headers.userid }, (err, result) => {
         if (err) res.status(500).json(dbError(err));
         else {
             customerClosingQueries.addCustomerAccountDetails({ ...accountDetails, customerId, closingId: result.insertId }, (err1, data) => {
                 if (err1) res.status(500).json(dbError(err1));
                 else {
-                    const { userId, userRole, userName } = req
+                    const { userid: userId, userrole: userRole, username: userName } = req.headers
                     auditQueries.createLog({ userId, description: `Customer Closing created by ${userRole} <b>(${userName})</b>`, customerId: result.insertId, type: "customerClosing" })
                     customerClosingQueries.updateCustomerClosingInitiatedStatus({ deliveryDetailsId })
-                    createNotifications({ id: result.insertId, warehouseId: req.body.departmentId, userName: req.userName }, 'customerClosing')
+                    createNotifications({ id: result.insertId, warehouseId: req.body.departmentId, userName: req.headers.username }, 'customerClosing')
                     res.json('Details added successfully')
                 }
             })
@@ -103,9 +104,9 @@ customerClosingControllers.addCustomerClosingDetails = (req, res) => {
 }
 
 customerClosingControllers.updateCustomerClosingDetails = async (req, res) => {
-    const { userId, userRole, userName } = req
+    const { userid: userId, userrole: userRole, username: userName } = req.headers
     let logs = await compareCustomerClosingData(req.body, { userId, userRole, userName })
-    customerClosingQueries.updateCustomerClosingDetails({ ...req.body, createdBy: req.userId }, (err, results) => {
+    customerClosingQueries.updateCustomerClosingDetails({ ...req.body, createdBy: req.headers.userid }, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
             customerClosingQueries.updateCustomerAccountDetails(req.body.accountDetails, (err1, data) => {
@@ -127,7 +128,7 @@ customerClosingControllers.updateCustomerClosingDetails = async (req, res) => {
 }
 
 customerClosingControllers.getCustomerClosingDetailsPaginationCount = (req, res) => {
-    customerClosingQueries.getCustomerClosingDetailsPaginationCount({ createdBy: req.userId, userRole: req.userRole }, (err, results) => {
+    customerClosingQueries.getCustomerClosingDetailsPaginationCount({ createdBy: req.headers.userid, userRole: req.headers.userrole }, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
             res.json(results)

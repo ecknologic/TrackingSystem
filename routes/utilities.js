@@ -108,7 +108,7 @@ const checkNotDeliveredDcs = () => {
           let parsedData = JSON.parse(i.customersData)
 
           let sortedData = parsedData.sort((a, b) => b.deliveryDate - a.deliveryDate)
-          if (sortedData.length >= 3) {
+          if (sortedData.length >= 3 && i.deliveredCount > 0) {
             if (sortedData[0].isDelivered == constants.NOTDELIVERED && sortedData[1].isDelivered == constants.NOTDELIVERED && sortedData[2].isDelivered == constants.NOTDELIVERED) {
               let customerId = sortedData[0].existingCustomerId
               checkReportAlreadyAdded(customerId, (err, result) => {

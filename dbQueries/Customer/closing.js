@@ -14,7 +14,9 @@ customerClosingQueries.getCustomerClosingDetails = async (input, callback) => {
         query = `SELECT c.*,cust.customerNo,cust.natureOfBussiness,d.location as address,JSON_ARRAYAGG(d.contactPerson) as contactpersons FROM customerclosingdetails c INNER JOIN customerdetails cust ON c.customerId=cust.customerId INNER JOIN DeliveryDetails d ON c.deliveryDetailsId=d.deliveryDetailsId WHERE c.departmentId=? GROUP BY c.closingId ORDER BY createdDateTime DESC LIMIT ? OFFSET ?`
         return executeGetParamsQuery(query, [departmentId, limit, offset], callback)
     }
-    else return executeGetParamsQuery(query, [createdBy, limit, offset], callback)
+    else {
+        return executeGetParamsQuery(query, [createdBy, limit, offset], callback)
+    }
 }
 
 customerClosingQueries.getCustomerClosingDetailsById = async (id, callback) => {
@@ -45,13 +47,13 @@ customerClosingQueries.getCustomerClosingDetailsPaginationCount = async (input, 
 }
 
 customerClosingQueries.getCustomerIdsByAgent = async (input, callback) => {
-    const { userId, userRole } = input
+    const { userid, userrole } = input
     let query = `SELECT customerNo,customerId,IFNULL(organizationName,customerName) as customerName FROM customerdetails WHERE isClosed=0 AND (createdBy=? OR salesAgent=?) AND approvedDate IS NOT NULL ORDER BY customerNo DESC`
-    if (userRole == constants.SUPERADMIN || userRole == constants.ACCOUNTSADMIN || userRole == constants.MARKETINGMANAGER) {
+    if (userrole == constants.SUPERADMIN || userrole == constants.ACCOUNTSADMIN || userrole == constants.MARKETINGMANAGER) {
         query = `SELECT customerNo,customerId,IFNULL(organizationName,customerName) as customerName FROM customerdetails WHERE isClosed=0 AND createdBy IS NOT NULL AND approvedDate IS NOT NULL ORDER BY customerNo DESC`
         return executeGetQuery(query, callback)
     }
-    return executeGetParamsQuery(query, [userId, userId], callback)
+    return executeGetParamsQuery(query, [userid, userid], callback)
 }
 
 customerClosingQueries.getCustomerDeliveryIds = async (input, callback) => {
