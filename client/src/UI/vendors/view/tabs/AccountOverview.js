@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import { message, Divider } from 'antd';
 import React, { Fragment, useEffect, useState, useMemo } from 'react';
 import BankView from '../../views/Bank';
@@ -12,13 +12,14 @@ import ScrollUp from '../../../../components/ScrollUp';
 import NoContent from '../../../../components/NoContent';
 import CustomButton from '../../../../components/CustomButton';
 import { getDropdownOptions } from '../../../../assets/fixtures';
-import { isEmpty, showToast, resetTrackForm } from '../../../../utils/Functions';
+import { isEmpty, showToast, resetTrackForm, isStatus404 } from '../../../../utils/Functions';
 import { ACCOUNTSADMIN, MARKETINGMANAGER, SUPERADMIN, WAREHOUSEADMIN } from '../../../../utils/constants';
 import { validateNumber, validateIFSCCode, validateVendorValues, validateClosureAccValues, validateNames, validateMultiOptions } from '../../../../utils/validations';
 import '../../../../sass/employees.scss'
 
 const ManageClosedCustomer = ({ setHeaderContent, onGoBack, onUpdate }) => {
     const { ROLE } = useUser()
+    const history = useHistory()
     const { vendorId } = useParams()
     const [formData, setFormData] = useState({})
     const [accData, setAccData] = useState({})
@@ -80,7 +81,11 @@ const ManageClosedCustomer = ({ setHeaderContent, onGoBack, onUpdate }) => {
             setItemsSupplied(items)
             setAccData({ accountNumber, bankName, branchName, ifscCode, customerName })
             setLoading(false)
-        } catch (error) { }
+        } catch (error) {
+            if (isStatus404(error)) {
+                history.replace('/not-found', { entity: 'vendor' })
+            }
+        }
     }
 
     const handleChange = (value, key) => {

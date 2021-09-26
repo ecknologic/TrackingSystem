@@ -6,7 +6,7 @@ import { Form, Row, Col, Input, Card, Button } from 'antd'
 import { http } from '../../modules/http';
 import image from '../../assets/images/login_img.png'
 import { BiboIcon } from '../../components/SVG_Icons';
-import { isEmpty } from '../../utils/Functions';
+import { isEmpty, isStatus404 } from '../../utils/Functions';
 
 const ForgotPassword = () => {
     const history = useHistory()
@@ -45,7 +45,7 @@ const ForgotPassword = () => {
         } catch (error) {
             if (!axios.isCancel(error)) {
                 setIsLoading(false)
-                if (error.response.status === 404) {
+                if (isStatus404(error)) {
                     const errors = {};
                     errors.username = "Invalid Username or Email";
                     setErrors(errors)

@@ -24,7 +24,7 @@ import { DDownIcon, TrashIconLight } from '../../../components/SVG_Icons'
 import { getDropdownOptions, getStaffOptions, getWarehouseOptions } from '../../../assets/fixtures';
 import {
     getIdProofsForDB, getAddressesForDB, isEmpty, showToast, extractCADetails, base64String, getDevDays,
-    getProductsForUI, resetSessionItems, getSessionItems, resetTrackForm, getBase64, getLabel, price20LBelowCriteria
+    getProductsForUI, resetSessionItems, getSessionItems, resetTrackForm, getBase64, getLabel, price20LBelowCriteria, isStatus404
 } from '../../../utils/Functions';
 import { ACCOUNTSADMIN, MARKETINGADMIN, SUPERADMIN, TRACKFORM } from '../../../utils/constants';
 import {
@@ -121,7 +121,11 @@ const ApproveAccount = () => {
             setAccountValues(newData)
             _setDepositAmount(depositAmount)
             return Promise.resolve()
-        } catch (error) { }
+        } catch (error) {
+            if (isStatus404(error)) {
+                history.replace('/not-found', { entity: 'customer' })
+            }
+        }
     }
 
     const getAddresses = async () => {

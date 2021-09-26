@@ -6,6 +6,12 @@ import InputLabel from '../../components/InputLabel';
 import InputValue from '../../components/InputValue';
 import sound from '../../assets/sounds/notification.wav';
 
+export const isStatus404 = (error) => {
+    if (error?.response?.status === 404) {
+        return true
+    }
+    return false
+}
 export const playNotificationSound = () => {
     const audio = new Audio(sound);
     audio.play();

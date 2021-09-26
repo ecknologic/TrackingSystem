@@ -132,7 +132,12 @@ router.get('/getDrivers', (req, res) => {
 router.get('/getDriver/:driverId', (req, res) => {
     driverQueries.getDriverById(req.params.driverId, (err, results) => {
         if (err) res.json(dbError(err))
-        else res.json(results)
+        else {
+            if (results.length) {
+                res.json(results)
+            }
+            else res.send(404).json()
+        }
     })
 })
 

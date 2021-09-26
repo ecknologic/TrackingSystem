@@ -1,0 +1,40 @@
+.resource-not-found-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .content {
+    max-width: 50%;
+
+    .text-wrapper {
+      color: rgba(0,0,0,0.85);
+  
+      .title {
+        font-family: 'PoppinsMedium500';
+      }
+      
+      .info {
+        font-family: 'PoppinsRegular400';
+      }
+    }
+  
+    .btns-wrapper {
+      display: flex;
+  
+      .back-btn {
+        margin-right: 1em;
+        border: 1px solid #0062ff;
+      }
+    }
+  }
+
+  .image {
+    margin-right: 1em;
+    
+    img {
+      width: 200px;
+    }
+  }
+}

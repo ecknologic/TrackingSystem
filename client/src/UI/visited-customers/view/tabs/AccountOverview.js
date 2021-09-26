@@ -1,7 +1,7 @@
 import axios from 'axios';
 import dayjs from 'dayjs';
 import { message } from 'antd';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import React, { Fragment, useEffect, useState, useMemo } from 'react';
 import AccountView from '../../views/Account';
 import { http } from '../../../../modules/http'
@@ -13,10 +13,11 @@ import CustomButton from '../../../../components/CustomButton';
 import { MARKETINGADMIN, DATEFORMAT } from '../../../../utils/constants';
 import { getDropdownOptions, getStaffOptions } from '../../../../assets/fixtures';
 import { validateMobileNumber, validateEmailId, validateEnquiryValues } from '../../../../utils/validations';
-import { isEmpty, showToast, getProductsForUI, getProductsWithIdForDB, extractProductsFromForm, resetTrackForm, getLabel } from '../../../../utils/Functions';
+import { isEmpty, showToast, getProductsForUI, getProductsWithIdForDB, extractProductsFromForm, resetTrackForm, getLabel, isStatus404 } from '../../../../utils/Functions';
 import '../../../../sass/employees.scss'
 
 const ManageDistributor = ({ setHeaderContent, onGoBack }) => {
+    const history = useHistory()
     const { enquiryId } = useParams()
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
@@ -76,7 +77,11 @@ const ManageDistributor = ({ setHeaderContent, onGoBack }) => {
             setHeaderContent({ title: customerName })
             setFormData({ ...rest, ...productsUI })
             setLoading(false)
-        } catch (error) { }
+        } catch (error) {
+            if (isStatus404(error)) {
+                history.replace('/not-found', { entity: 'customer' })
+            }
+        }
     }
 
     const handleChange = (value, key, label, labelKey) => {

@@ -19,7 +19,7 @@ import ActivityLogDetails from '../../../components/ActivityLogDetails';
 import { ACCOUNTSADMIN, MARKETINGADMIN, SUPERADMIN, TRACKFORM } from '../../../utils/constants';
 import { getDropdownOptions, getRouteOptions, getStaffOptions, getWarehouseOptions, WEEKDAYS } from '../../../assets/fixtures';
 import { validateDeliveryValues, validateMultiOptions, validateIntFloat, validateMobileNumber, validateNumber } from '../../../utils/validations';
-import { extractDeliveryDetails, getProductsForDB, extractProductsFromForm, isEmpty, getDevDaysForDB, getBase64, resetTrackForm, showToast, getMainPathname } from '../../../utils/Functions';
+import { extractDeliveryDetails, getProductsForDB, extractProductsFromForm, isEmpty, getDevDaysForDB, getBase64, resetTrackForm, showToast, getMainPathname, isStatus404 } from '../../../utils/Functions';
 
 const ViewAccount = () => {
     const { ROLE } = useUser()
@@ -78,7 +78,11 @@ const ViewAccount = () => {
                 title: organizationName || customerName,
                 address: Address1
             })
-        } catch (error) { }
+        } catch (error) {
+            if (isStatus404(error)) {
+                history.replace('/not-found', { entity: 'customer' })
+            }
+        }
     }
 
     const getWarehouseList = async () => {

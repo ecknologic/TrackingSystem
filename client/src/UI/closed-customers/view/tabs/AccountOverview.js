@@ -1,6 +1,6 @@
 import axios from 'axios';
 import dayjs from 'dayjs';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import { message, Divider, Checkbox } from 'antd';
 import React, { Fragment, useEffect, useState, useMemo } from 'react';
 import BankView from '../../views/Bank';
@@ -12,7 +12,7 @@ import useUser from '../../../../utils/hooks/useUser';
 import ScrollUp from '../../../../components/ScrollUp';
 import NoContent from '../../../../components/NoContent';
 import CustomButton from '../../../../components/CustomButton';
-import { isEmpty, showToast, resetTrackForm, getLabel } from '../../../../utils/Functions';
+import { isEmpty, showToast, resetTrackForm, getLabel, isStatus404 } from '../../../../utils/Functions';
 import { getDepartmentOptions, getDriverOptions, getLocationOptions, getRouteOptions } from '../../../../assets/fixtures';
 import { ACCOUNTSADMIN, MARKETINGMANAGER, SUPERADMIN, WAREHOUSEADMIN } from '../../../../utils/constants';
 import { validateNumber, validateIFSCCode, validateClosureValues, validateClosureAccValues } from '../../../../utils/validations';
@@ -20,7 +20,8 @@ import '../../../../sass/employees.scss'
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
 const ManageClosedCustomer = ({ setHeaderContent, onGoBack, onUpdate }) => {
-    const { ROLE, WAREHOUSEID } = useUser()
+    const { ROLE } = useUser()
+    const history = useHistory()
     const { closingId } = useParams()
     const [formData, setFormData] = useState({})
     const [accData, setAccData] = useState({})
@@ -124,7 +125,11 @@ const ManageClosedCustomer = ({ setHeaderContent, onGoBack, onUpdate }) => {
             setFormData({ ...rest, totalAmount: Number(balanceAmount || 0) + Number(missingCansAmount || 0) })
             setAccData(accountDetails)
             setLoading(false)
-        } catch (error) { }
+        } catch (error) {
+            if (isStatus404(error)) {
+                history.replace('/not-found', { entity: 'customer' })
+            }
+        }
     }
 
     const handleChange = (value, key, label, labelKey) => {

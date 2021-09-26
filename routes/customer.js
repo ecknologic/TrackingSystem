@@ -502,7 +502,7 @@ router.get("/getCustomerDetailsById/:customerId", (req, res) => {
         if (result.panNo) result.panNo = decryptedData.panNo
         if (result.adharNo) result.adharNo = decryptedData.adharNo
         res.json({ status: 200, statusMessage: "Success", data: [result] })
-      } else res.json({ status: 200, statusMessage: "Success", data: results })
+      } else res.send(404).json({ status: 200, statusMessage: "Success", data: results })
     }
   })
 });
@@ -1052,7 +1052,7 @@ router.get('/getTotalDepositAmount', (req, res) => {
 router.get('/getCustomerEnquiry/:enquiryId', async (req, res) => {
   customerQueries.getCustomerEnquiryById(req.params.enquiryId, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
-    else if (!results.length) res.json(results)
+    else if (!results.length) res.send(404).json(results)
     else {
       customerQueries.getCustomerEnquiryProducts(req.params.enquiryId, (err, products) => {
         results[0].products = products

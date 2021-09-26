@@ -86,7 +86,12 @@ router.get('/getUsersByRole/:roleName', (req, res) => {
 router.get('/getUser/:userId', (req, res) => {
   usersQueries.getUsersById(req.params.userId, (err, results) => {
     if (err) res.json(err);
-    else res.json(results)
+    else {
+      if (results.length) {
+        res.json(results)
+      }
+      else res.send(404).json()
+    }
   })
 })
 router.put('/updateUserStatus', (req, res) => {

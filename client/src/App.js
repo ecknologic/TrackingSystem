@@ -46,6 +46,7 @@ import AccountsAdminDashboard from './UI/dashboard/accounts';
 import ManageInvoices from './UI/invoices/super-admin/manage';
 import MotherplantDashboard from './UI/dashboard/motherplant';
 import SalesAdminDashboard from './UI/dashboard/sales-admin';
+import ResourceNotFound from './components/ResourceNotFound';
 import MotherplantMaterials from './UI/materials/motherplant';
 import ManageClosedCustomer from './UI/closed-customers/view';
 import ManageVisitedCustomer from './UI/visited-customers/view';
@@ -112,7 +113,7 @@ const App = () => {
 
    const noMatchAuth = () => {
       if (!isUser) return <Redirect to='/' />
-      return <NoContent content='Page Not found' />
+      return <ResourceNotFound />
    }
 
    const Unauthorized = () => {

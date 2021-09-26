@@ -62,7 +62,7 @@ customerClosingControllers.getCustomerClosingDetails = (req, res) => {
 customerClosingControllers.getCustomerClosingDetailsById = (req, res) => {
     customerClosingQueries.getCustomerClosingDetailsById(req.params.closingId, async (err, results) => {
         if (err) res.status(500).json(dbError(err));
-        else if (!results.length) res.json(results)
+        else if (!results.length) res.send(404).json(results)
         else {
             let result = results[0]
             let accountDetails = await getAccountsDetails(JSON.parse(result.accountDetails))

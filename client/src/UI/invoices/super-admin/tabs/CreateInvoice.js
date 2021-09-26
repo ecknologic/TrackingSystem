@@ -9,7 +9,7 @@ import Spinner from '../../../../components/Spinner';
 import { TODAYDATE } from '../../../../utils/constants';
 import NoContent from '../../../../components/NoContent';
 import CustomButton from '../../../../components/CustomButton';
-import { isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
+import { isEmpty, isStatus404, resetTrackForm, showToast } from '../../../../utils/Functions';
 import { getCustomerOptions, getStaffOptions } from '../../../../assets/fixtures';
 import { validateNumber, validateInvoiceValues } from '../../../../utils/validations';
 const APIDATEFORMAT = 'YYYY-MM-DD'
@@ -153,7 +153,7 @@ const CreateInvoice = ({ goToTab, editMode, setHeader }) => {
                 if (error.response.status === 400) {
                     message.info('Oops! Already generated or DCs do not exist for the selection.')
                 }
-                else if (error.response.status === 404) {
+                else if (isStatus404(error)) {
                     message.info('Oops! DCs do not exist for the selection.')
                 }
             }

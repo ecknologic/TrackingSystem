@@ -100,7 +100,12 @@ router.get('/getWarehouseList', (req, res) => {
 router.get('/getWarehouseById/:warehouseId', (req, res) => {
   warehouseQueries.getWarehouseById(req.params.warehouseId, (err, results) => {
     if (err) res.status(500).json(dbError(err));
-    else res.json(results);
+    else {
+      if (results.length) {
+        res.json(results)
+      }
+      else res.send(404).json()
+    }
   });
 });
 router.post('/createWarehouse', (req, res) => {
