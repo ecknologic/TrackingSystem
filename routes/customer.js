@@ -165,7 +165,7 @@ router.post('/createCustomer', async (req, res) => {
         else {
           let name = customerName || organizationName;
           saveDeliveryDetails(results.insertId, customerdetails, res, name, depositAmount)
-          if (depositAmount == 0) createNotifications({ id: results.insertId, name }, 'customerCreatedWithZeroDeposit')
+          if (depositAmount == 0) createNotifications({ id: results.insertId, name, userName }, 'customerCreatedWithZeroDeposit')
         }
       });
     })

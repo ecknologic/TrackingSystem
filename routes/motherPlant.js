@@ -219,7 +219,7 @@ router.post('/createQualityCheck', (req, res) => {
         if (err) res.status(500).json(dbError(err));
         else {
             const { qcLevel, testResult, batchId } = input
-            if (qcLevel != 1) {
+            if (qcLevel == 1) {
                 createNotifications({ status: testResult, id: batchId, userId: adminUserId }, 'qualityCheck')
             }
             res.json(INSERTMESSAGE);

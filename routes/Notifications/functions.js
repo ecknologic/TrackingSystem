@@ -36,8 +36,8 @@ const createNotifications = async ({ id, name, userName, isSuperAdminApproved, u
                 }
             }
         })
-    }else {
-        console.log('Else Condition',JSON.stringify(notificationData))
+    } else {
+        console.log('Else Condition', JSON.stringify(notificationData))
     }
 }
 
