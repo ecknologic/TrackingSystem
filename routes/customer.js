@@ -12,7 +12,7 @@ const customerQueries = require('../dbQueries/Customer/queries.js');
 const { customerProductDetails, dbError, getCompareCustomersData, getCompareDistributorsData, utils } = require('../utils/functions.js');
 const { saveToCustomerOrderDetails } = require('./utilities');
 const { createInvoice } = require('./Invoice/invoice');
-const { UPDATEMESSAGE, DELETEMESSAGE } = require('../utils/constants.js');
+const { UPDATEMESSAGE, DELETEMESSAGE, constants } = require('../utils/constants.js');
 const { saveEnquiryProductDetails, updateEnquiryProductDetails } = require('../utils/functions');
 const usersQueries = require('../dbQueries/users/queries.js');
 const warehouseQueries = require('../dbQueries/warehouse/queries.js');
@@ -1023,7 +1023,7 @@ router.get('/getRevisitCustomers', async (req, res) => {
 })
 
 router.get('/getCustomerEnquiries', async (req, res) => {
-  if (userRole != 'MarketingManager') req.query.staffId = userId
+  if (userRole != constants.SUPERADMIN && userRole != constants.MARKETINGMANAGER && userRole != constants.ACCOUNTSADMIN) req.query.staffId = userId
   customerQueries.getAllCustomerEnquiries(req.query, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else res.json(results)
