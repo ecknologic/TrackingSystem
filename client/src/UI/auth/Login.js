@@ -6,7 +6,8 @@ import { Form, Row, Col, Input, Card, Button, Checkbox, message } from 'antd'
 import useUser from '../../utils/hooks/useUser';
 import { createOrUpdateAPI } from '../../utils/apis';
 import image from '../../assets/images/login_img.png'
-import { BiboIcon, EyeHideIconGrey, EyeIconGrey } from '../../components/SVG_Icons';
+import { EyeHideIconGrey, EyeIconGrey } from '../../components/SVG_Icons';
+import BiboIcon from '../../assets/images/logo.png';
 import './login.css'
 
 const Login = () => {
@@ -77,7 +78,8 @@ const Login = () => {
                 <Col span={12}>
                     <div className="login_container">
                         <div>
-                            <h3><BiboIcon className='app-logo' /></h3>
+                            <img src={BiboIcon} alt='' width={200} />
+                            {/* <h3><BiboIcon className='app-logo' /></h3> */}
                             {/* <h3><span>&#8592;</span>  <span className="login_bibo_text">Bibo</span> <span>Water</span></h3> */}
                             {/* <ArrowLeftOutlined /> */}
                         </div>
@@ -128,7 +130,7 @@ const Login = () => {
                         <div>
                             <Row className="login_footer">
                                 <Col span={12}>
-                                    <p>© {dayjs().year()}. Bibo water</p>
+                                    <p>© {dayjs().year()}. ERP Systems</p>
                                 </Col>
                                 <Col span={12}>
                                     <ul className="loginmenu">

@@ -2,6 +2,7 @@ import { Badge } from 'antd';
 import dayjs from 'dayjs';
 import React from 'react';
 import parse from 'html-react-parser';
+import ERPIcon from '../assets/images/logo.png'
 import '../sass/notificationCard.scss'
 
 const NotificationCard = ({ data, onClick }) => {
@@ -18,7 +19,7 @@ const NotificationCard = ({ data, onClick }) => {
             <div className='time'>{dayjs(createdDateTime).format('MMM DD, h:mm a')}</div>
             {!isRead && <Badge size="small" color="#f5222d" className='notification-card__dot' />}
             <div className='header'>
-                <img src='/favicon.ico' alt='' width={16} />
+                <img src={ERPIcon} alt='' width={16} />
                 {title}
             </div>
             <div className='body'>{parse(description)}</div>

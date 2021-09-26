@@ -10,7 +10,8 @@ import useUser from '../../utils/hooks/useUser';
 import { SocketContext } from '../../modules/socketContext';
 import NotificationDrawer from '../../components/NotificationDrawer';
 import { deepClone, playNotificationSound } from '../../utils/Functions';
-import { BiboIcon, ChatIconGrey, CrossIconDark, NotificationIconGrey, SettingIconGrey } from '../../components/SVG_Icons';
+import { ChatIconGrey, CrossIconDark, NotificationIconGrey, SettingIconGrey } from '../../components/SVG_Icons';
+import BiboIcon from '../../assets/images/logo.png';
 
 const Header = () => {
     const history = useHistory()
@@ -98,7 +99,7 @@ const Header = () => {
     return (
         <Layout.Header id='app-header'>
             <div id="logo-container">
-                <BiboIcon className='app-logo' />
+                <img src={BiboIcon} alt='' width={200} />
             </div>
             <div id='nav-container'>
                 <div className='nav-icon'>

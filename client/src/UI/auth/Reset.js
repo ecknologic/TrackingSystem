@@ -7,7 +7,8 @@ import { http } from '../../modules/http';
 import Spinner from '../../components/Spinner';
 import { isEmpty } from '../../utils/Functions';
 import image from '../../assets/images/login_img.png'
-import { BiboIcon, } from '../../components/SVG_Icons';
+// import { BiboIcon } from '../../components/SVG_Icons';
+import BiboIcon from '../../assets/images/logo.png';
 import { validatePassword } from '../../utils/validations';
 
 const ResetPassword = () => {
@@ -155,7 +156,8 @@ const ResetPassword = () => {
                 <Col span={12}>
                     <div className="login_container">
                         <div>
-                            <h3><BiboIcon className='app-logo' /></h3>
+                            <img src={BiboIcon} alt='' width={200} />
+                            {/* <h3><BiboIcon className='app-logo' /></h3> */}
                         </div>
                         <div>
                             {
@@ -228,7 +230,7 @@ const ResetPassword = () => {
                         <div>
                             <Row className="login_footer">
                                 <Col span={12}>
-                                    <p>© {dayjs().year()}. Bibo water</p>
+                                    <p>© {dayjs().year()}. ERP Systems</p>
                                 </Col>
                                 <Col span={12}>
                                     <ul className="loginmenu">
