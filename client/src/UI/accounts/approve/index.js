@@ -401,9 +401,9 @@ const ApproveAccount = () => {
         const options = { item: 'Customer', action: 'loading', v1Ing: 'Approving' }
         const url = `customer/approveCustomer/${customerId}`
         const body = {
-            customerName,
             salesAgent,
             deliveryDetailsIds: activeAddressIds,
+            customerName: organizationName || customerName,
             isSuperAdminApproved: isSuperAdminApproved || (needsSAApproval ? Number(isSuperAdmin) : 0)
         }
         try {
