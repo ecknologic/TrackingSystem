@@ -28,7 +28,7 @@ invoiceQueries.getCustomerInvoices = async (customerId, callback) => {
 }
 
 invoiceQueries.getInvoiceByStatus = async (status, callback) => {
-    let query = `select i.*,c.Address1 AS billingAddress from Invoice i INNER JOIN customerdetails c ON i.customerId=c.customerId where status=? ORDER BY invoiceId DESC`;
+    let query = `select i.*,c.Address1 AS billingAddress,u.userName as salesAgent from Invoice i INNER JOIN customerdetails c ON i.customerId=c.customerId LEFT JOIN usermaster u ON u.userId=i.salesPerson where status=? ORDER BY invoiceId DESC`;
     return executeGetParamsQuery(query, [status], callback)
 }
 
@@ -349,6 +349,12 @@ invoiceQueries.updateDepartmentInvoicePaymentDetails = (input, callback) => {
     let status = pendingAmount == 0 ? 'Paid' : 'Pending'
     let query = "update departmentInvoices SET updatedDateTime=?,noOfPayments=?, pendingAmount=?,status=? WHERE invoiceId=?";
     executePostOrUpdateQuery(query, [new Date(), noOfPayments, pendingAmount, status, invoiceId], callback)
+}
+
+invoiceQueries.updateInvoiceSalesAgent = (input, callback) => {
+    const { invoiceIds, assignTo } = input
+    let query = "update Invoice SET updatedDateTime=?,salesPerson=? WHERE invoiceId IN (?)";
+    executePostOrUpdateQuery(query, [new Date(), assignTo, invoiceIds], callback)
 }
 
 module.exports = invoiceQueries

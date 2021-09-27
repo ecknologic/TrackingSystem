@@ -11,7 +11,7 @@ const { generatePDF, generateCustomerPDF } = require('../../dbQueries/Customer/q
 const dayjs = require('dayjs');
 const { sendMail } = require('../mailTemplate.js');
 const { createNotifications } = require('../Notifications/functions.js');
-var departmentId, isSuperAdmin, userId,userName;
+var departmentId, isSuperAdmin, userId, userName;
 
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -281,6 +281,13 @@ router.post("/createDepartmentInvoice", (req, res) => {
         if (err) res.status(500).json(dbError(err));
         else if (!results.length) res.status(400).json({ message: "Invoice already created with this DC number" })
         else saveDepartmentInvoice(req.body, res, true)
+    })
+});
+
+router.put("/updateInvoiceSalesAgent", (req, res) => {
+    invoiceQueries.updateInvoiceSalesAgent(req.body, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.json(results)
     })
 });
 

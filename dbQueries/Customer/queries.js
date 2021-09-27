@@ -263,7 +263,7 @@ customerQueries.getTotalInActiveDistributors = (input, callback) => {
 customerQueries.getCustomerDetailsByStatus = (input, callback) => {
     const { status, userId, userRole } = input
     let options = [status]
-    let query = "SELECT c.organizationName,c.salesAgent,c.customerNo,c.isSuperAdminApproved,c.depositAmount,c.customertype,c.isApproved,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.isApproved=? AND c.isClosed=0 and d.deleted=0 AND c.approvedDate IS NULL GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.customerId,c.registeredDate ORDER BY c.registeredDate DESC"
+    let query = "SELECT c.organizationName,c.salesAgent,c.customerNo,c.isSuperAdminApproved,c.depositAmount,c.customertype,c.isApproved,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.isApproved=? AND c.isClosed=0 and d.deleted=0 GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.customerId,c.registeredDate ORDER BY c.registeredDate DESC"
     if (userRole != constants.SUPERADMIN) {
         query = "SELECT c.organizationName,c.salesAgent,c.customerNo,c.isSuperAdminApproved,c.depositAmount,c.customertype,c.isApproved,c.customerId,c.natureOfBussiness,c.customerName,c.registeredDate,c.address1 AS address,JSON_ARRAYAGG(d.contactperson) AS contactpersons FROM customerdetails c INNER JOIN DeliveryDetails d ON c.customerId=d.customer_Id WHERE c.isApproved=? AND c.isClosed=0 and d.deleted=0 AND (c.approvedDate IS NULL or c.isSuperAdminApproved=1) GROUP BY c.organizationName,c.customerName,c.natureOfBussiness,c.address1,c.isActive,c.customerId,c.registeredDate ORDER BY c.registeredDate DESC"
     }
@@ -583,7 +583,7 @@ customerQueries.deleteCustomerDeliveries = (customerId, callback) => {
 }
 customerQueries.generatePDF = (input, callback) => {
     const { fromDate, toDate, customerIds } = input
-    let query = `SELECT c.gstNo,c.customerId,c.createdBy,c.EmailId,c.customerName,c.organizationName,
+    let query = `SELECT c.salesAgent,c.creditPeriodInDays,c.gstNo,c.customerId,c.createdBy,c.EmailId,c.customerName,c.organizationName,
     c.address1,c.gstNo,c.panNo,c.mobileNumber,
     JSON_ARRAYAGG(JSON_OBJECT('deliveryAddress',co.address,'location',co.deliveryLocation,'20LCans',co.20LCans,
     'price20L',co.price20L,'1LBoxes',co.1LBoxes,
@@ -595,7 +595,7 @@ customerQueries.generatePDF = (input, callback) => {
     AND( DATE(co.deliveredDate) BETWEEN ? AND ?) GROUP BY c.customerId`
     let options = [fromDate, toDate, fromDate, toDate]
     if (customerIds.length) {
-        query = `SELECT c.gstNo,c.customerId,c.createdBy,c.EmailId,c.customerName,c.organizationName,
+        query = `SELECT c.salesAgent,c.creditPeriodInDays,c.gstNo,c.customerId,c.createdBy,c.EmailId,c.customerName,c.organizationName,
         c.address1,c.gstNo,c.panNo,c.mobileNumber,
         JSON_ARRAYAGG(JSON_OBJECT('deliveryAddress',co.address,'location',co.deliveryLocation,'20LCans',co.20LCans,'price20L',co.price20L,'1LBoxes',co.1LBoxes,
         'price1L',co.price1L, '500MLBoxes',co.500MLBoxes,'price500ML',co.price500ML,'300MLBoxes',co.300MLBoxes,'price300ML',co.price300ML,'2LBoxes',co.2LBoxes,'price2L',co.price2L)) as products
@@ -628,7 +628,7 @@ customerQueries.getOrderDetailsById = (deliveryDetailsId, callback) => {
 
 customerQueries.generateCustomerPDF = (input, callback) => {
     const { fromDate, toDate, customerId } = input
-    let query = `SELECT c.gstNo,c.customerId,c.createdBy,c.EmailId,c.customerName,c.organizationName,c.salesAgent,
+    let query = `SELECT c.creditPeriodInDays,c.gstNo,c.customerId,c.createdBy,c.EmailId,c.customerName,c.organizationName,c.salesAgent,
     c.address1,c.gstNo,c.panNo,c.mobileNumber,
     JSON_ARRAYAGG(JSON_OBJECT('deliveryAddress',d.address,'location',d.location,'20LCans',co.20LCans,'price20L',co.price20L,'1LBoxes',co.1LBoxes,
     'price1L',co.price1L, '500MLBoxes',co.500MLBoxes,'price500ML',co.price500ML,'300MLBoxes',co.300MLBoxes,'price300ML',co.price300ML,'2LBoxes',co.2LBoxes,'price2L',co.price2L)) as products
