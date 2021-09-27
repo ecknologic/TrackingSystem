@@ -8,7 +8,7 @@ invoiceQueries.getInvoices = async (status, callback) => {
 }
 
 invoiceQueries.getInvoicesByRole = async (roleId, callback) => {
-    let query = `select i.*,c.Address1 AS billingAddress from Invoice i INNER JOIN customerdetails c ON i.customerId=c.customerId INNER JOIN usermaster u ON i.salesPerson=u.userId WHERE u.roleId=?  ORDER BY invoiceId DESC`;
+    let query = `select i.*,c.Address1 AS billingAddress,u.userName as salesAgent from Invoice i INNER JOIN customerdetails c ON i.customerId=c.customerId INNER JOIN usermaster u ON i.salesPerson=u.userId WHERE u.roleId=?  ORDER BY invoiceId DESC`;
     return executeGetParamsQuery(query, [roleId], callback)
 }
 
