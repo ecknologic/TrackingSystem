@@ -433,6 +433,13 @@ export const getInvoiceColumns = (type) => {
             key: 'departmentName',
         })
     }
+    else {
+        columns.splice(7, 0, {
+            title: 'Assigned To',
+            dataIndex: 'salesAgent',
+            key: 'salesAgent',
+        })
+    }
 
     return columns
 }
