@@ -31,6 +31,7 @@ import {
     validateAccountValues, validateAddresses, validateIDNumbers, validateNames, validateNumber,
     validateMobileNumber, validateEmailId, compareMaxNumber, validateIDProofs
 } from '../../../utils/validations';
+import CustomTooltip from '../../../components/CustomTooltip';
 
 const ApproveAccount = () => {
     const { ROLE } = useUser()
@@ -580,13 +581,19 @@ const ApproveAccount = () => {
                                             `}
                                                 text='Edit'
                                             />
-                                            <CustomButton
-                                                onClick={onAccountApprove}
-                                                className={`
+                                            <CustomTooltip
+                                                overlayInnerStyle={{ width: '240px' }}
+                                                title="Approval by Super Admin is required."
+                                                visible={!canApprove && isReviewed}
+                                            >
+                                                <CustomButton
+                                                    onClick={onAccountApprove}
+                                                    className={`
                                                 approve-btn footer-btn ${(!canApprove || !isReviewed || btnDisabled) && 'disabled'}
-                                            `}
-                                                text='Approve'
-                                            />
+                                                `}
+                                                    text='Approve'
+                                                />
+                                            </CustomTooltip>
                                         </div>
                                     )
                                 }

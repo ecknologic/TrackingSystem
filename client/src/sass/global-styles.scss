@@ -155,6 +155,14 @@ $textColorDisabled: rgba(0, 0, 0, 0.55);
   color: #e3e3e3;
 }
 
+// -------------- antd Tooltip styles ------------------- //
+
+.ant-tooltip-inner {
+  border-radius: 0.4em;
+  font-family: 'PoppinsRegular400';
+  text-align: center;
+}
+
 // -------------- antd Collapse styles ------------------- //
 
 .ant-collapse {
@@ -1826,6 +1834,7 @@ textarea.ant-input {
     display: flex;
     flex-basis: 60%;
     align-items: center;
+    position: relative;
 
     .check-confirm {
       display: flex;
