@@ -21,7 +21,7 @@ const ResourceNotFound = () => {
             <div className='content'>
                 <div className='text-wrapper'>
                     <h3 className='title'>The {entity} you are looking for could not be found.</h3>
-                    <p className='info'>The resource you are looking for might have been removed, had its name changed, or is temporarily unavailable.</p>
+                    <p className='info'>It might have been removed, had its name changed, or is temporarily unavailable.</p>
                 </div>
                 <div className='btns-wrapper'>
                     <CustomButton onClick={goBack} className='app-cancel-btn back-btn' text='Back' />

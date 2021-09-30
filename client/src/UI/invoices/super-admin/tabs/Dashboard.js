@@ -26,7 +26,7 @@ import ActivityLogContent from '../../../../components/ActivityLogContent';
 import { MARKETINGMANAGER, TODAYDATE, TRACKFORM } from '../../../../utils/constants';
 import { validateIntFloat, validatePaymentValues } from '../../../../utils/validations';
 import { getDropdownOptions, getInvoiceColumns, getStaffOptions } from '../../../../assets/fixtures';
-import { ListViewIconGrey, ScheduleIcon, SendIconGrey, TickIconGrey } from '../../../../components/SVG_Icons';
+import { ListViewIconGrey, PlusIconGrey, ScheduleIcon, SendIconGrey, TickIconGrey } from '../../../../components/SVG_Icons';
 import { computeTotalAmount, deepClone, disableFutureDates, doubleKeyComplexSearch, getStatusColor, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
@@ -355,7 +355,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
             }
         }
         let invoiceIds = invoiceId ? [invoiceId] : selectedRowKeys
-        const options = { item: 'Selected invoices', v1Ing: 'Assigning', v2: 'assigned' }
+        const options = { item: invoiceId ? 'Invoice' : 'Selected invoices', v1Ing: 'Assigning', v2: 'assigned' }
         const url = 'invoice/updateInvoiceSalesAgent'
         const body = { invoiceIds, assignTo }
 
@@ -368,7 +368,10 @@ const Dashboard = ({ reFetch, onUpdate }) => {
             showToast(options)
             setSelectedRowKeys([])
             onModalClose(true)
-            optimisticKeyUpdate(invoiceId, userName, 'salesAgent')
+            if (invoiceId) {
+                optimisticKeyUpdate(invoiceId, userName, 'salesAgent')
+            }
+            else refreshData()
         } catch (error) {
             message.destroy()
             if (!axios.isCancel(error)) {
@@ -417,7 +420,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
         const options = [
             <Menu.Item key="resend" icon={<SendIconGrey />}>Resend</Menu.Item>,
             <Menu.Item key="dcList" icon={<ListViewIconGrey />}>DC List</Menu.Item>,
-            <Menu.Item key="assignTo" icon={<ListViewIconGrey />}>Assign To</Menu.Item>,
+            <Menu.Item key="assignTo" icon={<PlusIconGrey />}>Assign To</Menu.Item>,
             <Menu.Item key="paid" className={status === 'Paid' ? 'disabled' : ''} icon={<TickIconGrey />}>Paid</Menu.Item>,
             <Menu.Item key="logs" icon={<ListViewIconGrey />}>Acvitity Logs</Menu.Item>
         ]
