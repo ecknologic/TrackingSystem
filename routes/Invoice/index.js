@@ -11,7 +11,9 @@ const { generatePDF, generateCustomerPDF } = require('../../dbQueries/Customer/q
 const dayjs = require('dayjs');
 const { sendMail } = require('../mailTemplate.js');
 const { createNotifications } = require('../Notifications/functions.js');
-var departmentId, isSuperAdmin, userId, userName;
+const auditQueries = require('../../dbQueries/auditlogs/queries.js');
+const { compareInvoiceData } = require('../utils/invoice.js');
+var departmentId, isSuperAdmin, userId, userName, userRole;
 
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -20,6 +22,7 @@ router.use(function timeLog(req, res, next) {
     isSuperAdmin = req.headers['issuperadmin']
     userId = req.headers['userid']
     userName = req.headers['username']
+    userRole = req.headers['userrole']
     next();
 });
 
@@ -284,10 +287,19 @@ router.post("/createDepartmentInvoice", (req, res) => {
     })
 });
 
-router.put("/updateInvoiceSalesAgent", (req, res) => {
+router.put("/updateInvoiceSalesAgent", async (req, res) => {
+    const logs = await compareInvoiceData({ ...req.body, salesPerson }, { userId, userRole, userName })
     invoiceQueries.updateInvoiceSalesAgent(req.body, (err, results) => {
         if (err) res.status(500).json(dbError(err));
-        else res.json(results)
+        else {
+            if (logs.length) {
+                auditQueries.createLog(logs, (err, data) => {
+                    if (err) console.log('log error', err)
+                    else console.log('log data', data)
+                })
+            }
+            res.json(results)
+        }
     })
 });
 

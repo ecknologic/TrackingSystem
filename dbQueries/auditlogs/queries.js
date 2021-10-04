@@ -29,7 +29,7 @@ auditQueries.createLog = (input, callback) => {
         if (input.length) {
             const { staffId, customerId, departmentId, genericId } = input[0]
             const id = customerId ? 'customerId' : staffId ? 'staffId' : departmentId ? 'departmentId' : genericId ? 'genericId' : ""
-            const sql = input.map(item => "(" + item.userId + ", '" + dayjs(item.createdDateTime).format(FULLTIMEFORMAT) + "', '" + item.description + "', " + item[id] + ", '" + item.type + "'" + ", '" + item.oldValue + "'" + ", '" + item.updatedValue + "'" + ")")
+            const sql = input.map(item => "(" + item.userId + ", '" + dayjs(item.createdDateTime).format(FULLTIMEFORMAT) + "', '" + item.description + "', '" + item[id] + "', '" + item.type + "'" + ", '" + item.oldValue + "'" + ", '" + item.updatedValue + "'" + ")")
             let query = `insert into auditlogs (userId, createdDateTime, description, ${id}, type,oldValue,updatedValue) values ` + sql;
             executeGetQuery(query, callback)
         }
