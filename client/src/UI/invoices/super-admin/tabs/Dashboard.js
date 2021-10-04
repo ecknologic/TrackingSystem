@@ -355,11 +355,11 @@ const Dashboard = ({ reFetch, onUpdate }) => {
             }
         }
         let invoiceIds = invoiceId ? [invoiceId] : selectedRowKeys
+        const { userName: salesPerson } = creatorList.find(item => item.userId === assignTo)
         const options = { item: invoiceId ? 'Invoice' : 'Selected invoices', v1Ing: 'Assigning', v2: 'assigned' }
         const url = 'invoice/updateInvoiceSalesAgent'
-        const body = { invoiceIds, assignTo }
+        const body = { invoiceIds, assignTo, salesPerson }
 
-        const { userName } = creatorList.find(item => item.userId === assignTo)
 
         try {
             setBtnDisabled(true)
@@ -369,7 +369,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
             setSelectedRowKeys([])
             onModalClose(true)
             if (invoiceId) {
-                optimisticKeyUpdate(invoiceId, userName, 'salesAgent')
+                optimisticKeyUpdate(invoiceId, salesPerson, 'salesAgent')
             }
             else refreshData()
         } catch (error) {
