@@ -358,9 +358,9 @@ invoiceQueries.updateDepartmentInvoicePaymentDetails = (input, callback) => {
 }
 
 invoiceQueries.updateInvoiceSalesAgent = (input, callback) => {
-    const { invoiceIds, salesPerson } = input
+    const { invoiceIds, assignTo } = input
     let query = "update Invoice SET updatedDateTime=?,salesPerson=? WHERE invoiceId IN (?)";
-    executePostOrUpdateQuery(query, [new Date(), salesPerson, invoiceIds], callback)
+    executePostOrUpdateQuery(query, [new Date(), assignTo, invoiceIds], callback)
 }
 
 module.exports = invoiceQueries

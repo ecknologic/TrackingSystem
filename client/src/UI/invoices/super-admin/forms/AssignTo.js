@@ -7,7 +7,7 @@ const AssignTo = (props) => {
 
     const { data, errors, creatorOptions, onChange } = props
 
-    const { salesPerson } = data
+    const { assignTo } = data
 
 
     useEffect(() => {
@@ -24,10 +24,10 @@ const AssignTo = (props) => {
             <div className='app-form-container'>
                 <div className='row'>
                     <div className='input-container'>
-                        <InputLabel name='Assign To' error={errors.salesPerson} mandatory />
+                        <InputLabel name='Assign To' error={errors.assignTo} mandatory />
                         <SelectInput track options={creatorOptions}
-                            error={errors.salesPerson} value={salesPerson}
-                            onSelect={(value) => onChange(value, 'salesPerson')}
+                            error={errors.assignTo} value={assignTo}
+                            onSelect={(value) => onChange(value, 'assignTo')}
                         />
                     </div>
                 </div>

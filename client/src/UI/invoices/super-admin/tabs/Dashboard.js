@@ -342,10 +342,10 @@ const Dashboard = ({ reFetch, onUpdate }) => {
     }
 
     const handleAssign = async (validate) => {
-        const { salesPerson, invoiceId } = formData
+        const { assignTo, invoiceId } = formData
         if (validate) {
             const formErrors = {}
-            if (!salesPerson) formErrors.salesPerson = 'Required'
+            if (!assignTo) formErrors.assignTo = 'Required'
 
             if (!isEmpty(formErrors)) {
                 setShake(true)
@@ -357,9 +357,9 @@ const Dashboard = ({ reFetch, onUpdate }) => {
         let invoiceIds = invoiceId ? [invoiceId] : selectedRowKeys
         const options = { item: invoiceId ? 'Invoice' : 'Selected invoices', v1Ing: 'Assigning', v2: 'assigned' }
         const url = 'invoice/updateInvoiceSalesAgent'
-        const body = { invoiceIds, salesPerson }
+        const body = { invoiceIds, assignTo }
 
-        const { userName } = creatorList.find(item => item.userId === salesPerson)
+        const { userName } = creatorList.find(item => item.userId === assignTo)
 
         try {
             setBtnDisabled(true)
@@ -442,14 +442,14 @@ const Dashboard = ({ reFetch, onUpdate }) => {
 
     const AssinedToBar = (<>
         <SelectInput
-            value={formData.salesPerson}
+            value={formData.assignTo}
             options={creatorOptions}
             placeholder='Selected assign to'
-            onSelect={(value) => handleChange(value, 'salesPerson')}
+            onSelect={(value) => handleChange(value, 'assignTo')}
         />
         <CustomButton
             style={{ marginLeft: '1em' }}
-            className={`${formData.salesPerson ? '' : 'disabled'}`}
+            className={`${formData.assignTo ? '' : 'disabled'}`}
             text='Assign'
             onClick={() => handleAssign()}
         />
