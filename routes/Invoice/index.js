@@ -288,7 +288,7 @@ router.post("/createDepartmentInvoice", (req, res) => {
 });
 
 router.put("/updateInvoiceSalesAgent", async (req, res) => {
-    const logs = await compareInvoiceData({ ...req.body, salesPerson }, { userId, userRole, userName })
+    const logs = await compareInvoiceData(req.body, { userId, userRole, userName })
     invoiceQueries.updateInvoiceSalesAgent(req.body, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
