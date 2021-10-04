@@ -5,6 +5,7 @@ const auditQueries = require('../dbQueries/auditlogs/queries.js');
 const driverQueries = require('../dbQueries/driver/queries.js');
 const usersQueries = require('../dbQueries/users/queries.js');
 const { dbError, createHash, prepareOrderResponseObj } = require('../utils/functions.js');
+const { createNotifications } = require('./Notifications/functions.js');
 const { compareDriverData, compareDriverDependentDetails } = require('./utils/driver.js');
 let userId, adminUserName, userRole;
 
@@ -131,7 +132,12 @@ router.get('/getDrivers', (req, res) => {
 router.get('/getDriver/:driverId', (req, res) => {
     driverQueries.getDriverById(req.params.driverId, (err, results) => {
         if (err) res.json(dbError(err))
-        else res.json(results)
+        else {
+            if (results.length) {
+                res.json(results)
+            }
+            else res.send(404).json()
+        }
     })
 })
 
@@ -204,6 +210,7 @@ router.post('/updateDriver', async (req, res) => {
                     }
                 })
             }
+            createNotifications({ userId, name: userName, warehouseId: departmentId }, 'driverUpdated')
             res.json(results)
         }
     })
@@ -220,7 +227,10 @@ router.get('/getClosingCustomers/:date', (req, res) => {
 router.put('/updateClosingCustomers/:closingId', (req, res) => {
     driverQueries.updateClosingCustomerDetails({ ...req.body, closingId: req.params.closingId }, (err, results) => {
         if (err) res.json(dbError(err))
-        else res.json(results)
+        else {
+            if (results.affectedRows > 0) res.json({ driverStatus: 'Updated' })
+            else res.json({ driverStatus: 'Inprogress' })
+        }
     })
 })
 

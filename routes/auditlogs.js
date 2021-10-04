@@ -49,13 +49,33 @@ router.get('/getInvoiceLogs', (req, res) => {
     invoiceQueries[queryMethod](id, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else if (results.length) {
-            prepareResponseArray(results, res)
+            if (type != 'warehouse') {
+                auditQueries.getAudits({ type: 'invoice', id }, async (err, logsData) => {
+                    if (err) res.status(500).json(dbError(err));
+                    else if (logsData.length) {
+                        prepareResponseArray(results, res, logsData)
+                    } else {
+                        prepareResponseArray(results, res)
+                    }
+                })
+            } else {
+                prepareResponseArray(results, res)
+            }
         }
-        else res.json(results);
+        else {
+            if (type != 'warehouse') {
+                auditQueries.getAudits({ type: 'invoice', id }, async (err, logsData) => {
+                    if (err) res.status(500).json(dbError(err));
+                    else res.json(logsData);
+                })
+            } else {
+                res.json(results);
+            }
+        }
     });
 });
 
-const prepareResponseArray = (results, res) => {
+const prepareResponseArray = (results, res, logsData) => {
     const { createdUserName, invoiceDate, creatorRole } = results[0]
     let logs = [];
     for (let i of results) {
@@ -70,7 +90,12 @@ const prepareResponseArray = (results, res) => {
                 createdDateTime: invoiceDate,
                 description: `Invoice created by ${creatorRole} <b>(${createdUserName})</b>`
             })
-            res.json(logs)
+            if (logsData) {
+                let finalArr = [...logs, ...logsData]
+                finalArr = finalArr.sort((a, b) => b.createdDateTime - a.createdDateTime)
+                res.json(finalArr)
+            }
+            else res.json(logs)
         }
     }
 }

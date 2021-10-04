@@ -111,7 +111,7 @@ $textColorDisabled: rgba(0, 0, 0, 0.55);
   }
 }
 
-.ant-drawer-close {
+.ant-drawer-close, .ant-notification-notice-close {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -127,11 +127,40 @@ $textColorDisabled: rgba(0, 0, 0, 0.55);
   }
 }
 
+.ant-notification-notice-close {
+  padding: 6px;
+  top: 10px;
+  right: 16px;
+}
+
+.app-notification {
+  border-radius: .1em;
+
+  .ant-notification-notice-message {
+    color: #323130;
+    font-family: 'PoppinsMedium500';
+    padding-bottom: .2em;
+  }
+
+  .ant-notification-notice-description {
+    font-family: 'PoppinsRegular400';
+    font-size: .9em;
+  }
+}
+
 // -------------- antd Divider styles ------------------- //
 
 .ant-divider-horizontal {
   margin: 0;
   color: #e3e3e3;
+}
+
+// -------------- antd Tooltip styles ------------------- //
+
+.ant-tooltip-inner {
+  border-radius: 0.4em;
+  font-family: 'PoppinsRegular400';
+  text-align: center;
 }
 
 // -------------- antd Collapse styles ------------------- //
@@ -1805,6 +1834,7 @@ textarea.ant-input {
     display: flex;
     flex-basis: 60%;
     align-items: center;
+    position: relative;
 
     .check-confirm {
       display: flex;

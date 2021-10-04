@@ -38,7 +38,7 @@ router.get('/getDistributor/:distributorId', (req, res) => {
                 res.send(results);
             })
         }
-        else res.json("Distributor not Found")
+        else res.send(404).json("Distributor not Found")
     });
 });
 

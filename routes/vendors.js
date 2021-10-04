@@ -50,7 +50,7 @@ router.get('/getVendorById/:vendorId', (req, res) => {
         results = [{ ...results[0], accountNumber: decryptedData.accountNumber, ifscCode: decryptedData.ifscCode, bankName: decryptedData.bankName, branchName: decryptedData.branchName }]
         return res.json(results)
       }
-      res.json(results)
+      res.send(404).json(results)
     }
   })
 })

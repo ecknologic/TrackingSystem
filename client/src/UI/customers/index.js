@@ -9,7 +9,6 @@ import useUser from '../../utils/hooks/useUser';
 import NoContent from '../../components/NoContent';
 import AccountCard from '../../components/AccountCard';
 import DeleteModal from '../../components/CustomModal';
-import { statusFilterList } from '../../assets/fixtures';
 import ConfirmMessage from '../../components/ConfirmMessage';
 import CustomPagination from '../../components/CustomPagination';
 import useCustomerFilter from '../../utils/hooks/useCustomerFilter';
@@ -38,7 +37,7 @@ const Customers = () => {
     const [currentAction, setCurrentAction] = useState('')
     const [currentId, setCurrentId] = useState('')
 
-    const { account, creator, business, hasFilters, status, setStatus } = useCustomerFilter()
+    const { account, creator, business, hasFilters, status } = useCustomerFilter()
     const pageSizeOptions = useMemo(() => generatePageSizeOptions(), [window.innerWidth])
     const isAdmin = useMemo(() => ROLE === SUPERADMIN || ROLE === ACCOUNTSADMIN, [ROLE])
     const isSalesAdmin = useMemo(() => ROLE === MARKETINGADMIN, [ROLE])
@@ -196,18 +195,19 @@ const Customers = () => {
         return history.push(`/customers/manage/${id}`, { tab: activeTab, page: pageNumber })
     }
 
-    const handleMenuSelect = (key, id, isSAApproved) => {
-        setCurrentId(id)
+    const handleMenuSelect = (key, data, isSAApproved) => {
+        const { customerId } = data
+        setCurrentId(customerId)
         setCurrentAction(key)
 
         if (key === 'Approve') {
-            onAccountApprove(id, isSAApproved)
+            onAccountApprove(data, isSAApproved)
         }
         else if (key === 'Active') {
-            handleStatusUpdate(id, 1)
+            handleStatusUpdate(customerId, 1)
         }
         else if (key === 'Draft') {
-            handleStatusUpdate(id, 0)
+            handleStatusUpdate(customerId, 0)
         }
         else if (key === 'Delete') {
             setExitMsg('Are you sure you want to delete?')
@@ -246,10 +246,11 @@ const Customers = () => {
         }
     }
 
-    const onAccountApprove = async (customerId, isSuperAdminApproved) => {
+    const onAccountApprove = async (data, isSuperAdminApproved) => {
+        const { customerId, customerName, salesAgent } = data
         const options = { item: 'Customer', v1Ing: 'Approving', v2: 'approved' }
         const url = `customer/approveCustomerDirectly/${customerId}`
-        const body = { isSuperAdminApproved }
+        const body = { isSuperAdminApproved, customerName, salesAgent }
         try {
             showToast({ ...options, action: 'loading' })
             await http.POST(axios, url, body, config)

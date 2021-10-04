@@ -4,6 +4,18 @@ import { TRACKFORM } from "../constants"
 import { message } from 'antd'
 import InputLabel from '../../components/InputLabel';
 import InputValue from '../../components/InputValue';
+import sound from '../../assets/sounds/notification.wav';
+
+export const isStatus404 = (error) => {
+    if (error?.response?.status === 404) {
+        return true
+    }
+    return false
+}
+export const playNotificationSound = () => {
+    const audio = new Audio(sound);
+    audio.play();
+}
 
 export const getLabel = (labelKey, label) => {
     return labelKey ? { [labelKey]: label } : {}
@@ -71,6 +83,23 @@ export const computeTotal = (data, key) => {
 
     return total
 
+}
+
+export const price20LBelowCriteria = (data, type) => {
+    return data.some(({ price20L }) => {
+        if (type === 'Individual') {
+            if (Number(price20L) < 60) {
+                return true
+            }
+            return false
+        }
+        else {
+            if (Number(price20L) < 42) {
+                return true
+            }
+            return false
+        }
+    })
 }
 
 export const showToast = (props) => {

@@ -24,13 +24,14 @@ import { DDownIcon, TrashIconLight } from '../../../components/SVG_Icons'
 import { getDropdownOptions, getStaffOptions, getWarehouseOptions } from '../../../assets/fixtures';
 import {
     getIdProofsForDB, getAddressesForDB, isEmpty, showToast, extractCADetails, base64String, getDevDays,
-    getProductsForUI, resetSessionItems, getSessionItems, resetTrackForm, getBase64, getLabel
+    getProductsForUI, resetSessionItems, getSessionItems, resetTrackForm, getBase64, getLabel, price20LBelowCriteria, isStatus404
 } from '../../../utils/Functions';
 import { ACCOUNTSADMIN, MARKETINGADMIN, SUPERADMIN, TRACKFORM } from '../../../utils/constants';
 import {
     validateAccountValues, validateAddresses, validateIDNumbers, validateNames, validateNumber,
     validateMobileNumber, validateEmailId, compareMaxNumber, validateIDProofs
 } from '../../../utils/validations';
+import CustomTooltip from '../../../components/CustomTooltip';
 
 const ApproveAccount = () => {
     const { ROLE } = useUser()
@@ -69,9 +70,11 @@ const ApproveAccount = () => {
 
     const confirmMsg = 'Changes you made may not be saved.'
     const showTrashIcon = useMemo(() => addresses.length !== 1, [addresses.length])
+    const isSuperAdmin = useMemo(() => ROLE === SUPERADMIN, [])
     const isAdmin = useMemo(() => ROLE === SUPERADMIN || ROLE === ACCOUNTSADMIN, [])
     const { organizationName, customerId, customertype, customerName, depositAmount, isSuperAdminApproved } = accountValues
-    const canApprove = isAdmin || isSuperAdminApproved || Number(depositAmount)
+    const canApprove = (!price20LBelowCriteria(addresses, customertype) && Number(depositAmount)) || isSuperAdmin || isSuperAdminApproved
+    const needsSAApproval = price20LBelowCriteria(addresses, customertype) || Number(depositAmount) === 0
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
@@ -94,7 +97,13 @@ const ApproveAccount = () => {
         try {
             const { data: [data = {}] } = await http.GET(axios, url, config)
             const { gstProof, idProof_frontside, idProof_backside, Address1, registeredDate, ...rest } = data
-            const { customerName, organizationName, customertype, gstNo, adharNo, panNo, idProofType, depositAmount } = rest
+            const { customerName, organizationName, customertype, gstNo, adharNo, panNo, idProofType,
+                isApproved, isSuperAdminApproved, customerId, depositAmount } = rest
+
+            // Redirection Logic
+            if (isApproved || !isAdmin || (isSuperAdmin && isSuperAdminApproved)) {
+                return goToManageAccount(customerId, customertype)
+            }
 
             setHeaderContent({
                 title: organizationName || customerName,
@@ -113,7 +122,11 @@ const ApproveAccount = () => {
             setAccountValues(newData)
             _setDepositAmount(depositAmount)
             return Promise.resolve()
-        } catch (error) { }
+        } catch (error) {
+            if (isStatus404(error)) {
+                history.replace('/not-found', { entity: 'customer' })
+            }
+        }
     }
 
     const getAddresses = async () => {
@@ -389,11 +402,14 @@ const ApproveAccount = () => {
     }
 
     const onAccountApprove = async () => {
+        const { salesAgent } = accountValues
         const options = { item: 'Customer', action: 'loading', v1Ing: 'Approving' }
         const url = `customer/approveCustomer/${customerId}`
         const body = {
+            salesAgent,
             deliveryDetailsIds: activeAddressIds,
-            isSuperAdminApproved: isSuperAdminApproved || (Number(depositAmount) === 0 ? Number(isAdmin) : 0)
+            customerName: organizationName || customerName,
+            isSuperAdminApproved: isSuperAdminApproved || (needsSAApproval ? Number(isSuperAdmin) : 0)
         }
         try {
             setBtnDisabled(true)
@@ -422,6 +438,14 @@ const ApproveAccount = () => {
             setConfirmModal(true)
         }
         else goToCustomers()
+    }
+
+    const goToManageAccount = (id, type) => {
+        let tab = 1
+        if (type === 'Individual') {
+            tab = 2
+        }
+        history.push(`/customers/manage/${id}`, { tab, page: 1 })
     }
 
     const genExtra = (id, isDrafted, index) => (
@@ -557,13 +581,19 @@ const ApproveAccount = () => {
                                             `}
                                                 text='Edit'
                                             />
-                                            <CustomButton
-                                                onClick={onAccountApprove}
-                                                className={`
+                                            <CustomTooltip
+                                                overlayInnerStyle={{ width: '240px' }}
+                                                title="Approval by Super Admin is required."
+                                                visible={!canApprove && isReviewed}
+                                            >
+                                                <CustomButton
+                                                    onClick={onAccountApprove}
+                                                    className={`
                                                 approve-btn footer-btn ${(!canApprove || !isReviewed || btnDisabled) && 'disabled'}
-                                            `}
-                                                text='Approve'
-                                            />
+                                                `}
+                                                    text='Approve'
+                                                />
+                                            </CustomTooltip>
                                         </div>
                                     )
                                 }

@@ -22,7 +22,7 @@ const Invoices = () => {
     const [activeMsg, setActiveMsg] = useState(state ? state.invoice : {})
 
     const mainUrl = useMemo(() => getMainPathname(pathname), [pathname])
-    const isSMManager = useMemo(() => ROLE === MARKETINGMANAGER, [ROLE])
+    const canAddInvoice = useMemo(() => ROLE === MARKETINGMANAGER || ROLE === SUPERADMIN || ROLE === ACCOUNTSADMIN, [])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
@@ -95,7 +95,7 @@ const Invoices = () => {
 
     return (
         <div className='manage-invoice'>
-            <Header onAdd={onAdd} onClick={handleBack} hideAdd={isSMManager} />
+            <Header onAdd={onAdd} onClick={handleBack} hideAdd={!canAddInvoice} />
             {
                 loading ? <NoContent content={<Spinner />} />
                     : (

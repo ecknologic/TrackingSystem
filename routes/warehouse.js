@@ -11,6 +11,7 @@ const usersQueries = require('../dbQueries/users/queries.js');
 const warehouseQueries = require('../dbQueries/warehouse/queries.js');
 const { DATEFORMAT, INSERTMESSAGE, UPDATEMESSAGE, WEEKDAYS, constants } = require('../utils/constants.js');
 const { customerProductDetails, dbError, getCompareData, getFormatedNumber, getGraphData, getCompareCustomersData } = require('../utils/functions.js');
+const { createNotifications } = require('./Notifications/functions.js');
 const { compareDCDataByRoute, compareOrdersDataByRoute } = require('./utils/customer.js');
 const { compareDepartmentData } = require('./utils/department.js');
 var departmentId, adminUserId, userName, userRole;
@@ -37,8 +38,10 @@ router.post('/createRoute', (req, res) => {
   let input = req.body;
   warehouseQueries.createRoute(input, (err, results) => {
     if (err) res.status(500).json(dbError(err));
-    else
+    else {
       res.json(INSERTMESSAGE);
+      createNotifications({ userId: adminUserId, name: input.RouteName }, 'routeCreated')
+    }
   });
 })
 router.post('/updateRoute', (req, res) => {
@@ -97,7 +100,12 @@ router.get('/getWarehouseList', (req, res) => {
 router.get('/getWarehouseById/:warehouseId', (req, res) => {
   warehouseQueries.getWarehouseById(req.params.warehouseId, (err, results) => {
     if (err) res.status(500).json(dbError(err));
-    else res.json(results);
+    else {
+      if (results.length) {
+        res.json(results)
+      }
+      else res.send(404).json()
+    }
   });
 });
 router.post('/createWarehouse', (req, res) => {
@@ -236,6 +244,7 @@ router.post('/confirmStockRecieved', (req, res) => {
   input.deliveryDate = new Date()
   warehouseQueries.saveWarehouseStockDetails(input, (err, warehouseData) => {
     if (err) res.status(500).json(dbError(err))
+    createNotifications({ userId: adminUserId, warehouseId: departmentId, motherplantId: input.motherplantId }, 'confirmStockReceived')
   })
 });
 
@@ -410,6 +419,7 @@ router.post('/returnEmptyCans', (req, res) => {
       res.json(results);
       motherPlantDbQueries.updateRMDetailsEmptyCansCount({ emptycans_count, motherplantId }, (updateerr, results) => {
         if (updateerr) res.status(500).json({ status: 500, message: updateerr.sqlMessage });
+        createNotifications({ userId: adminUserId, motherplantId }, 'returnedEmptyCans')
       })
     }
   });
@@ -633,7 +643,7 @@ router.put('/closeDC', (req, res) => {
 })
 
 router.post('/requestStock', (req, res) => {
-  const { products } = req.body
+  const { products, requestTo } = req.body
   if (products.length) {
     stockRequestQueries.requestStock({ ...req.body, departmentId }, (requestErr, requestDetails) => {
       if (requestErr) res.status(500).json({ status: 500, message: requestErr.sqlMessage });
@@ -644,6 +654,7 @@ router.post('/requestStock', (req, res) => {
           else {
             // departmenttransactionQueries.createDepartmentTransaction({ userId: adminUserId, description: `Stock requested by ${userRole} <b>(${userName})</b>`, transactionId: requestId, departmentId, type: 'warehouse', subType: 'stockRequest' })
             res.json(requestDetails)
+            createNotifications({ userId: adminUserId, motherplantId: requestTo }, 'requestStock')
           }
         })
       }

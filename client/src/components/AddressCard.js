@@ -13,7 +13,7 @@ const AddressCard = ({ data, isAdmin, onClick, onSelect }) => {
     const iconOne = isApproved ? <BlockIconGrey /> : <TickIconGrey />
 
     const handleSelect = ({ key }) => {
-        onSelect(key, deliveryDetailsId)
+        onSelect(key, data)
     }
 
     const options = [

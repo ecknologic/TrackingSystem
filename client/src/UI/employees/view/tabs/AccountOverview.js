@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { message } from 'antd';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import AccountView from '../../views/Account';
 import { http } from '../../../../modules/http'
@@ -15,7 +15,7 @@ import IDProofInfo from '../../../../components/IDProofInfo';
 import CustomButton from '../../../../components/CustomButton';
 import { WAREHOUSEADMIN } from '../../../../utils/constants';
 import { getDepartmentOptions, getRoleOptions } from '../../../../assets/fixtures';
-import { isEmpty, showToast, base64String, getBase64, getValidDate, resetTrackForm, getLabel } from '../../../../utils/Functions';
+import { isEmpty, showToast, base64String, getBase64, getValidDate, resetTrackForm, getLabel, isStatus404 } from '../../../../utils/Functions';
 import {
     validateIDNumbers, validateNames, validateMobileNumber, validateEmailId, validateIDProofs,
     validateEmployeeValues, validateDependentValues, validateNumber, validateIFSCCode
@@ -25,6 +25,7 @@ const DATEFORMAT = 'YYYY-MM-DD'
 
 const ManageEmployee = ({ isDriver, setHeaderContent, onGoBack }) => {
     const { ROLE } = useUser()
+    const history = useHistory()
     const { employeeId } = useParams()
     const [accountValues, setAccountValues] = useState({ loading: true })
     // const [depValues, setDepValues] = useState({})
@@ -87,7 +88,11 @@ const ManageEmployee = ({ isDriver, setHeaderContent, onGoBack }) => {
             // setPrevDepartmentId(departmentId)
             // setDepValues({ ...JSON.parse(dep), adharNo: dependentAdharNo })
             setLoading(false)
-        } catch (error) { }
+        } catch (error) {
+            if (isStatus404(error)) {
+                history.replace('/not-found', { entity: isDriver ? 'driver' : 'staff' })
+            }
+        }
     }
 
     const getEmployeeType = () => {

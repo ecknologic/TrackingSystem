@@ -66,23 +66,6 @@ const ClosureForm = (props) => {
             </div>
             <div className='row'>
                 <div className='input-container'>
-                    <InputLabel name='Driver Name' error={errors.driverId} mandatory />
-                    <SelectInput track options={driverOptions} value={driverId}
-                        error={errors.driverId} disabled={disabled}
-                        onSelect={(value, label) => onChange(value, 'driverId', label, 'driverName')}
-                    />
-                </div>
-                <div className='input-container'>
-                    <InputLabel name='Driver Assigned On' error={errors.driverAssignedOn} mandatory />
-                    <CustomDateInput
-                        track disabled={disabled} error={errors.driverAssignedOn}
-                        value={driverAssignedOn} disabledDate={disableFutureDates}
-                        onChange={(value) => onChange(value, 'driverAssignedOn')}
-                    />
-                </div>
-            </div>
-            <div className='row'>
-                <div className='input-container'>
                     <InputLabel name='Route' error={errors.routeId} mandatory />
                     <SelectInput track
                         options={routeOptions} value={routeId} disabled={disableFew || disabled}
@@ -177,6 +160,23 @@ const ClosureForm = (props) => {
                     <CustomInput value={totalAmount} disabled={disableFew || disabled}
                         error={errors.totalAmount} placeholder="Total Balance Amount"
                         onChange={(value) => onChange(value, 'totalAmount')}
+                    />
+                </div>
+            </div>
+            <div className='row'>
+                <div className='input-container'>
+                    <InputLabel name='Driver Name' error={errors.driverId} mandatory />
+                    <SelectInput track options={driverOptions} value={driverId}
+                        error={errors.driverId} disabled={disabled}
+                        onSelect={(value, label) => onChange(value, 'driverId', label, 'driverName')}
+                    />
+                </div>
+                <div className='input-container'>
+                    <InputLabel name='Driver Assigned On' error={errors.driverAssignedOn} mandatory />
+                    <CustomDateInput
+                        track disabled={disabled} error={errors.driverAssignedOn}
+                        value={driverAssignedOn} disabledDate={disableFutureDates}
+                        onChange={(value) => onChange(value, 'driverAssignedOn')}
                     />
                 </div>
             </div>

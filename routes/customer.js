@@ -12,7 +12,7 @@ const customerQueries = require('../dbQueries/Customer/queries.js');
 const { customerProductDetails, dbError, getCompareCustomersData, getCompareDistributorsData, utils } = require('../utils/functions.js');
 const { saveToCustomerOrderDetails } = require('./utilities');
 const { createInvoice } = require('./Invoice/invoice');
-const { UPDATEMESSAGE, DELETEMESSAGE } = require('../utils/constants.js');
+const { UPDATEMESSAGE, DELETEMESSAGE, constants } = require('../utils/constants.js');
 const { saveEnquiryProductDetails, updateEnquiryProductDetails } = require('../utils/functions');
 const usersQueries = require('../dbQueries/users/queries.js');
 const warehouseQueries = require('../dbQueries/warehouse/queries.js');
@@ -23,6 +23,7 @@ const { getReceiptId, getCustomerIdsForReceiptsDropdown, getCustomerDepositDetai
 const { encrypt, decrypt } = require('../utils/crypto.js');
 const customerClosingControllers = require('./Customers/closing.js');
 const customerClosingQueries = require('../dbQueries/Customer/closing.js');
+const { createNotifications } = require('./Notifications/functions.js');
 let departmentId, userId, userName, userRole;
 
 var storage = multer.diskStorage({
@@ -152,23 +153,29 @@ router.post('/createCustomer', async (req, res) => {
   //     res.status(400).json({ status: 400, message: "This Customer already created" })
   //   }
   //   else {
-      let promiseArray = req.body.idProofs[0] != null ? [getLatLongDetails(customerdetails), uploadImage(req)] : [getLatLongDetails(customerdetails)]
-      Promise.all(promiseArray)
-        .then(response => {
-          let registeredDate = customerdetails.registeredDate ? customerdetails.registeredDate : new Date()
-          let customer_id_proof = response[1] && response[1]
-          let insertQueryValues = [customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactPerson, panNo, adharNo, registeredDate, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, response[0].latitude, response[0].longitude, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, createdBy, customer_id_proof, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, salesAgent]
-          db.query(customerDetailsQuery, insertQueryValues, (err, results) => {
-            if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
-            else {
-              saveDeliveryDetails(results.insertId, customerdetails, res)
-            }
-          });
-        })
+  let promiseArray = req.body.idProofs[0] != null ? [getLatLongDetails(customerdetails), uploadImage(req)] : [getLatLongDetails(customerdetails)]
+  Promise.all(promiseArray)
+    .then(async response => {
+      // let registeredDate = customerdetails.registeredDate ? customerdetails.registeredDate : new Date()
+      // let customer_id_proof = response[1] && response[1]
+      // let encryptedData = await utils.getEncryptedProofs({ gstNo, panNo, adharNo })
+      // let insertQueryValues = [customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, encryptedData.gstNo, contactPerson, encryptedData.panNo, encryptedData.adharNo, registeredDate, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, response[0].latitude, response[0].longitude, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, createdBy, customer_id_proof, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, salesAgent]
+      let registeredDate = customerdetails.registeredDate ? customerdetails.registeredDate : new Date()
+      let customer_id_proof = response[1] && response[1]
+      let insertQueryValues = [customerName, mobileNumber, alternatePhNo, EmailId, Address1, Address2, gstNo, contactPerson, panNo, adharNo, registeredDate, invoicetype, natureOfBussiness, creditPeriodInDays, referredBy, departmentId, deliveryDaysId, depositAmount, isActive, response[0].latitude, response[0].longitude, shippingAddress, shippingContactPerson, shippingContactNo, customertype, organizationName, createdBy, customer_id_proof, idProofType, pinCode, dispenserCount, contractPeriod, rocNo, poNo, salesAgent]
+      db.query(customerDetailsQuery, insertQueryValues, (err, results) => {
+        if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+        else {
+          let name = customerName || organizationName;
+          saveDeliveryDetails(results.insertId, customerdetails, res, name, depositAmount)
+          if (depositAmount == 0) createNotifications({ id: results.insertId, name, userName }, 'customerCreatedWithZeroDeposit')
+        }
+      });
+    })
   //   }
   // })
 });
-const saveDeliveryDetails = (customerId, customerdetails, res) => {
+const saveDeliveryDetails = (customerId, customerdetails, res, customerName, depositAmount) => {
   return new Promise(async (resolve, reject) => {
     if (customerdetails.deliveryDetails.length) {
       let count = 0
@@ -186,10 +193,11 @@ const saveDeliveryDetails = (customerId, customerdetails, res) => {
             else {
               count++
               saveProductDetails(i.products, results.insertId, customerId).then(productDetails => {
-                // console.log(count, customerdetails.deliveryDetails.length)
                 if (count == customerdetails.deliveryDetails.length) {
                   auditQueries.createLog({ userId, description: `Customer created by ${userRole} <b>(${userName})</b>`, customerId, type: "customer" })
                   res.json({ status: 200, message: "Customer Created Successfully" })
+                  if ((customerdetails.customertype == 'Corporate' && i.products[0].productPrice < 42) || (customerdetails.customertype == 'Individual' && i.products[0].productPrice < 60)) createNotifications({ name: customerName, id: customerId, userName }, 'customerCreatedWithLowPrice')
+                  else if (depositAmount > 0) createNotifications({ name: customerName, id: customerId, userName }, 'customerCreated')
                 }
               })
             }
@@ -199,6 +207,8 @@ const saveDeliveryDetails = (customerId, customerdetails, res) => {
     }
   })
 }
+
+
 const saveDeliveryDays = (deliveryDays) => {
   return new Promise((resolve, reject) => {
     let deliveryDayQuery = "insert  into customerdeliverydays (SUN,MON,TUE,WED,THU,FRI,SAT) values(?,?,?,?,?,?,?)";
@@ -297,9 +307,10 @@ const getLatLongDetails = (req) => {
     });
   })
 }
+
 router.post("/approveCustomer/:customerId", (req, res) => {
   const { customerId } = req.params;
-  const { isSuperAdminApproved } = req.body
+  const { isSuperAdminApproved, customerName, salesAgent } = req.body
   customerQueries.approveCustomer({ customerId, isSuperAdminApproved }, (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
@@ -307,15 +318,29 @@ router.post("/approveCustomer/:customerId", (req, res) => {
         if (err) res.json({ status: 500, message: err.sqlMessage });
         else {
           saveToCustomerOrderDetails(customerId, res, null, userId, userRole, userName)
+          if (isSuperAdminApproved) createNotifications({ name: customerName, id: customerId, userName, isSuperAdminApproved }, 'customerCreated')
+          else {
+            customerQueries.getWarehouseIdsByDeliveryIds(req.body.deliveryDetailsIds, (err1, data) => {
+              if (err1) console.log(err1)
+              else if (data.length) {
+                createNotifications({ name: customerName, warehouseId: JSON.parse(data[0].warehouseIds), userId, userName }, 'deliveryDetailsBulkApproved')
+              }
+            })
+            createNotifications({ name: customerName, id: customerId, userId: salesAgent, userName }, 'customerApproved')
+          }
         }
       })
     }
   })
 });
-
+// router.get('/ss',(req,res)=>{
+//   customerQueries.getDeliveryIdsByCustomerId(153, (deliveryIdsErr, data) => {
+//     res.json(JSON.parse(data[0].deliveryIds))
+//   })
+// })
 router.post("/approveCustomerDirectly/:customerId", (req, res) => {
   const { customerId } = req.params;
-  const { isSuperAdminApproved } = req.body
+  const { isSuperAdminApproved, customerName, salesAgent } = req.body
   customerQueries.approveCustomer({ customerId, isSuperAdminApproved }, (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
@@ -323,6 +348,19 @@ router.post("/approveCustomerDirectly/:customerId", (req, res) => {
         if (err) res.json({ status: 500, message: err.sqlMessage });
         else {
           saveToCustomerOrderDetails(customerId, res, null, userId, userRole, userName)
+          createNotifications({ name: customerName, id: customerId, userId: salesAgent, userName }, 'customerApproved')
+          customerQueries.getDeliveryIdsByCustomerId(customerId, (deliveryIdsErr, data1) => {
+            if (deliveryIdsErr) console.log(deliveryIdsErr)
+            else if (data1.length) {
+              customerQueries.getWarehouseIdsByDeliveryIds(JSON.parse(data1[0].deliveryIds), (err1, data) => {
+                if (err1) console.log(err1)
+                else if (data.length) {
+                  const warehouseIds = JSON.parse(data[0].warehouseIds)
+                  createNotifications({ name: customerName, warehouseId: [...new Set(warehouseIds)], userId, userName }, 'deliveryDetailsBulkApproved')
+                }
+              })
+            }
+          })
         }
       })
     }
@@ -440,7 +478,7 @@ router.get("/getMarketingInActiveCustomers", (req, res) => {
 });
 router.get("/getCustomerDetailsByStatus", (req, res) => {
   const { status, userId } = req.query
-  customerQueries.getCustomerDetailsByStatus({ status, userId }, (err, customersData) => {
+  customerQueries.getCustomerDetailsByStatus({ status, userId, userRole }, (err, customersData) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
       res.json(customersData)
@@ -466,7 +504,7 @@ router.get("/getCustomerDetailsById/:customerId", (req, res) => {
         // if (result.panNo) result.panNo = decrypt(result.panNo)
         // if (result.adharNo) result.adharNo = decrypt(result.adharNo)
         res.json({ status: 200, statusMessage: "Success", data: [result] })
-      } else res.json({ status: 200, statusMessage: "Success", data: results })
+      } else res.send(404).json({ status: 200, statusMessage: "Success", data: results })
     }
   })
 });
@@ -544,7 +582,7 @@ const getAddedDeliveryDetails = (deliveryDetailsId) => {
 // })
 const getDeliveryDetails = ({ customerId, deliveryDetailsId, isSuperAdmin }) => {
   return new Promise((resolve, reject) => {
-    let deliveryDetailsQuery = "SELECT d.isClosed,d.location,d.contactPerson,d.customer_Id,d.deliveryDetailsId,d.phoneNumber,d.isActive as isApproved,d.location AS deliveryLocation,r.departmentName,ro.routeName FROM DeliveryDetails d INNER JOIN routes ro ON d.routeId=ro.RouteId INNER JOIN departmentmaster r ON r.departmentId=d.departmentId WHERE d.deleted=0 AND (d.customer_Id=? OR d.deliveryDetailsId=?) ORDER BY d.registeredDate DESC";
+    let deliveryDetailsQuery = "SELECT d.isClosed,d.location,d.contactPerson,d.customer_Id,d.deliveryDetailsId,d.phoneNumber,d.isActive as isApproved,d.location AS deliveryLocation,d.departmentId,r.departmentName,ro.routeName FROM DeliveryDetails d INNER JOIN routes ro ON d.routeId=ro.RouteId INNER JOIN departmentmaster r ON r.departmentId=d.departmentId WHERE d.deleted=0 AND (d.customer_Id=? OR d.deliveryDetailsId=?) ORDER BY d.registeredDate DESC";
     if (isSuperAdmin == 'true') {
       deliveryDetailsQuery = "SELECT d.*,d.isClosed,d.isActive as isApproved,d.location AS deliveryLocation,r.departmentName,ro.routeName,json_object('SUN',cd.SUN,'MON',cd.MON,'TUE',cd.TUE,'WED',cd.WED,'THU',cd.THU,'FRI',cd.FRI,'SAT',cd.SAT) as 'deliveryDays' " +
         /*  "concat(CASE WHEN cd.sun=1 THEN 'Sunday,' ELSE '' END,"+
@@ -665,7 +703,11 @@ router.put('/updateCustomerStatus', (req, res) => {
 router.put('/updateDeliveryDetailsStatus', (req, res) => {
   customerQueries.updateCustomerDeliveryStatus(req.body, (err, update) => {
     if (err) res.status(500).json(dbError(err))
-    else res.json(UPDATEMESSAGE)
+    else {
+      const { location, status, customerId, departmentId } = req.body;
+      if (status == 1) createNotifications({ name: location, id: customerId, warehouseId: departmentId, userId, userName }, 'deliveryDetailsApproved')
+      res.json(UPDATEMESSAGE)
+    }
   })
 })
 
@@ -806,6 +848,7 @@ router.post('/updateDeliveryDetails', async (req, res) => {
                   updateWHDelivery(req)
                   auditQueries.createLog({ userId, description: `New Delivery details added by ${userRole} <b>(${userName})</b>`, customerId: i.customer_Id, type: "customer" })
                   res.json({ status: 200, message: "Delivery Details Updated Successfully", data });
+                  createNotifications({ name: i.deliveryLocation, id: i.customer_Id, userName }, 'customerDeliveryDetailsAdded') //Need to check the isApproved status of the customer
                 }
               })
             }
@@ -984,7 +1027,7 @@ router.get('/getRevisitCustomers', async (req, res) => {
 })
 
 router.get('/getCustomerEnquiries', async (req, res) => {
-  if (userRole != 'MarketingManager') req.query.staffId = userId
+  if (userRole != constants.SUPERADMIN && userRole != constants.MARKETINGMANAGER && userRole != constants.ACCOUNTSADMIN) req.query.staffId = userId
   customerQueries.getAllCustomerEnquiries(req.query, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else res.json(results)
@@ -1013,7 +1056,7 @@ router.get('/getTotalDepositAmount', (req, res) => {
 router.get('/getCustomerEnquiry/:enquiryId', async (req, res) => {
   customerQueries.getCustomerEnquiryById(req.params.enquiryId, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
-    else if (!results.length) res.json(results)
+    else if (!results.length) res.send(404).json(results)
     else {
       customerQueries.getCustomerEnquiryProducts(req.params.enquiryId, (err, products) => {
         results[0].products = products

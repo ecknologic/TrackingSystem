@@ -12,6 +12,7 @@ const AccountCard = ({ data, onClick, btnTxt = 'Manage Account', onSelect, isAdm
         isSuperAdminApproved, depositAmount, customerNo, isClosed } = data
 
     const optionOne = isApproved ? 'Draft' : optionOneLabel
+    const partiallyApproved = isSuperAdminApproved && !isApproved
     const iconOne = isApproved ? <BlockIconGrey /> : <TickIconGrey />
     const names = JSON.parse(contactpersons)
     const contacts = names.length
@@ -21,7 +22,7 @@ const AccountCard = ({ data, onClick, btnTxt = 'Manage Account', onSelect, isAdm
 
     const handleSelect = ({ key }) => {
         const isSAApproved = isSuperAdminApproved || (Number(depositAmount) === 0 ? Number(isAdmin) : 0)
-        onSelect(key, customerId, isSAApproved)
+        onSelect(key, data, isSAApproved)
     }
 
     const getOptions = () => {
@@ -43,8 +44,8 @@ const AccountCard = ({ data, onClick, btnTxt = 'Manage Account', onSelect, isAdm
 
     return (
         <div className='account-card-container'>
-            <div className={isClosed ? 'badge closed' : isApproved ? 'badge active' : 'badge'}>
-                {isClosed ? 'CLOSED' : isApproved ? 'ACTIVE' : 'DRAFT'}
+            <div className={`badge ${isClosed ? 'closed' : isApproved ? 'active' : partiallyApproved ? 'progress' : ''}`}>
+                {isClosed ? 'CLOSED' : isApproved ? 'ACTIVE' : partiallyApproved ? 'PARTIALLY APPROVED' : 'DRAFT'}
             </div>
             <div className='header'>
                 <div className={isApproved ? 'inner green' : 'inner'}>

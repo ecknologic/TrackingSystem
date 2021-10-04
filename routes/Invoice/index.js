@@ -10,7 +10,10 @@ const fs = require('fs');
 const { generatePDF, generateCustomerPDF } = require('../../dbQueries/Customer/queries.js');
 const dayjs = require('dayjs');
 const { sendMail } = require('../mailTemplate.js');
-var departmentId, isSuperAdmin, userId;
+const { createNotifications } = require('../Notifications/functions.js');
+const auditQueries = require('../../dbQueries/auditlogs/queries.js');
+const { compareInvoiceData } = require('../utils/invoice.js');
+var departmentId, isSuperAdmin, userId, userName, userRole;
 
 //Middle ware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -18,6 +21,8 @@ router.use(function timeLog(req, res, next) {
     departmentId = req.headers['departmentid']
     isSuperAdmin = req.headers['issuperadmin']
     userId = req.headers['userid']
+    userName = req.headers['username']
+    userRole = req.headers['userrole']
     next();
 });
 
@@ -282,6 +287,22 @@ router.post("/createDepartmentInvoice", (req, res) => {
     })
 });
 
+router.put("/updateInvoiceSalesAgent", async (req, res) => {
+    const logs = await compareInvoiceData(req.body, { userId, userRole, userName })
+    invoiceQueries.updateInvoiceSalesAgent(req.body, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else {
+            if (logs.length) {
+                auditQueries.createLog(logs, (err, data) => {
+                    if (err) console.log('log error', err)
+                    else console.log('log data', data)
+                })
+            }
+            res.json(results)
+        }
+    })
+});
+
 router.post("/createInvoice", (req, res) => {
     // let { customerId, customerName, organizationName, address, gstNo, panNo, mobileNumber, products } = req.body
     // let obj = {
@@ -510,6 +531,7 @@ const saveInvoice = async (requestObj, res, response) => {
                         invoiceQueries.updateMultipleDcsInvoiceFlag(requestObj, (updateerr, success) => {
                             if (updateerr) console.log("updateerr", updateerr)
                         })
+                        createNotifications({ userName }, 'invoiceCreated')
                         // invoiceQueries.saveInvoicePdf({ invoiceId }, (err, data) => {
                         //     if (err) res.status(500).json(dbError(err));
                         //     else res.json({ message: 'Invoice created successfully' })
@@ -534,6 +556,7 @@ const saveDepartmentInvoice = async (requestObj, res, response) => {
                         invoiceQueries.updateDCInvoiceFlag(dcNo)
                         if (requestObj.departmentStatus != "Pending") addDepartmentPayment(invoiceId, requestObj)
                         response && res.json({ message: 'Invoice created successfully' })
+                        createNotifications({ userId, userName, id: invoiceId }, 'invoiceCreated')
                     }
                 })
             } else res.status(500).json({ message: "Products should not be empty" })

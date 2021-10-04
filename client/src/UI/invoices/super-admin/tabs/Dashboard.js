@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 import { Menu, message, Table } from 'antd';
 import { useHistory } from 'react-router-dom';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import AssignTo from '../forms/AssignTo';
 import PaymentForm from '../forms/Payment';
 import { http } from '../../../../modules/http'
 import Actions from '../../../../components/Actions';
@@ -13,6 +14,7 @@ import InputValue from '../../../../components/InputValue';
 import InputLabel from '../../../../components/InputLabel';
 import SearchInput from '../../../../components/SearchInput';
 import CustomModal from '../../../../components/CustomModal';
+import SelectInput from '../../../../components/SelectInput';
 import ConfirmModal from '../../../../components/CustomModal';
 import CustomButton from '../../../../components/CustomButton';
 import RoutesFilter from '../../../../components/RoutesFilter';
@@ -21,10 +23,10 @@ import CustomDateInput from '../../../../components/CustomDateInput';
 import CustomPagination from '../../../../components/CustomPagination';
 import CustomRangeInput from '../../../../components/CustomRangeInput';
 import ActivityLogContent from '../../../../components/ActivityLogContent';
-import { getDropdownOptions, getInvoiceColumns } from '../../../../assets/fixtures';
 import { MARKETINGMANAGER, TODAYDATE, TRACKFORM } from '../../../../utils/constants';
 import { validateIntFloat, validatePaymentValues } from '../../../../utils/validations';
-import { ListViewIconGrey, ScheduleIcon, SendIconGrey, TickIconGrey } from '../../../../components/SVG_Icons';
+import { getDropdownOptions, getInvoiceColumns, getStaffOptions } from '../../../../assets/fixtures';
+import { ListViewIconGrey, PlusIconGrey, ScheduleIcon, SendIconGrey, TickIconGrey } from '../../../../components/SVG_Icons';
 import { computeTotalAmount, deepClone, disableFutureDates, doubleKeyComplexSearch, getStatusColor, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
@@ -42,6 +44,9 @@ const Dashboard = ({ reFetch, onUpdate }) => {
     const [pageNumber, setPageNumber] = useState(1)
     const [customerIds, setCustomerIds] = useState([])
     const [totalCount, setTotalCount] = useState(null)
+    const [selectedRowKeys, setSelectedRowKeys] = useState([])
+    const [btnDisabled, setBtnDisabled] = useState(false)
+    const [assignModal, setAssignModal] = useState(false)
     const [customerList, setCustomerList] = useState([])
     const [paymentList, setPaymentList] = useState([])
     const [formData, setFormData] = useState({})
@@ -60,27 +65,49 @@ const Dashboard = ({ reFetch, onUpdate }) => {
     const [searchON, setSeachON] = useState(false)
     const [open, setOpen] = useState(false)
 
+    const creatorOptions = useMemo(() => getStaffOptions(creatorList), [creatorList])
     const paymentOptions = useMemo(() => getDropdownOptions(paymentList), [paymentList])
     const isSMManager = useMemo(() => ROLE === MARKETINGMANAGER, [ROLE])
     const invoiceColumns = useMemo(() => getInvoiceColumns(), [])
     const totalAmount = useMemo(() => computeTotalAmount(invoices, 'pendingAmount'), [invoices, payModal])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
+    const hasSelection = selectedRowKeys.length
+
+    const rowSelection = {
+        selectedRowKeys,
+        onChange: onSelectChange,
+        selections: [
+            Table.SELECTION_ALL,
+            Table.SELECTION_INVERT,
+            Table.SELECTION_NONE
+        ]
+    };
 
     useEffect(() => {
-        getCustomerList()
         getPaymentList()
-        isSMManager && getCreatorList()
+        getCreatorList()
+        getCustomerList()
 
         return () => {
             http.ABORT(source)
         }
     }, [])
 
-    useEffect(async () => {
+    useEffect(() => {
+        refreshData()
+    }, [reFetch])
+
+    useEffect(() => {
+        if (!hasSelection) {
+            setFormData({})
+        }
+    }, [hasSelection])
+
+    const refreshData = () => {
         setLoading(true)
         getInvoices()
-    }, [reFetch])
+    }
 
     const getInvoices = async () => {
         let url = 'invoice/getInvoices/Pending'
@@ -185,6 +212,10 @@ const Dashboard = ({ reFetch, onUpdate }) => {
         setPageNumber(number)
     }
 
+    function onSelectChange(selectedRowKeys) {
+        setSelectedRowKeys(selectedRowKeys)
+    };
+
     const onFilterChange = (data) => {
         setPageNumber(1)
 
@@ -218,7 +249,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
     }
 
     const handleMenuSelect = async (key, data) => {
-        const { noOfPayments, pendingAmount: amountPaid } = data
+        const { invoiceId, noOfPayments, pendingAmount: amountPaid } = data
         if (key === 'resend') {
         }
         else if (key === 'dcList') {
@@ -231,6 +262,10 @@ const Dashboard = ({ reFetch, onUpdate }) => {
         else if (key === 'logs') {
             await getLogs(data.invoiceId)
             setLogModal(true)
+        }
+        else if (key === 'assignTo') {
+            setFormData({ invoiceId })
+            setAssignModal(true)
         }
     }
 
@@ -306,6 +341,52 @@ const Dashboard = ({ reFetch, onUpdate }) => {
         }
     }
 
+    const handleAssign = async (validate) => {
+        const { assignTo, invoiceId } = formData
+        if (validate) {
+            const formErrors = {}
+            if (!assignTo) formErrors.assignTo = 'Required'
+
+            if (!isEmpty(formErrors)) {
+                setShake(true)
+                setTimeout(() => setShake(false), 820)
+                setFormErrors(formErrors)
+                return
+            }
+        }
+        let invoiceIds = invoiceId ? [invoiceId] : selectedRowKeys
+        const { userName: salesPerson } = creatorList.find(item => item.userId === assignTo)
+        const options = { item: invoiceId ? 'Invoice' : 'Selected invoices', v1Ing: 'Assigning', v2: 'assigned' }
+        const url = 'invoice/updateInvoiceSalesAgent'
+        const body = { invoiceIds, assignTo, salesPerson }
+
+
+        try {
+            setBtnDisabled(true)
+            showToast({ ...options, action: 'loading' })
+            await http.PUT(axios, url, body, config)
+            showToast(options)
+            setSelectedRowKeys([])
+            onModalClose(true)
+            if (invoiceId) {
+                optimisticKeyUpdate(invoiceId, salesPerson, 'salesAgent')
+            }
+            else refreshData()
+        } catch (error) {
+            message.destroy()
+            if (!axios.isCancel(error)) {
+                setBtnDisabled(false)
+            }
+        }
+    }
+
+    const optimisticKeyUpdate = (id, value, key) => {
+        let clone = deepClone(invoices);
+        const index = clone.findIndex(item => item.invoiceId === id)
+        clone[index][key] = value;
+        setInvoices(clone)
+    }
+
     const handleSearch = (value) => {
         setPageNumber(1)
         if (value === "") {
@@ -327,16 +408,19 @@ const Dashboard = ({ reFetch, onUpdate }) => {
             return setConfirmModal(true)
         }
         setPayModal(false)
+        setAssignModal(false)
+        setBtnDisabled(false)
         setFormData({})
         setFormErrors({})
     }
 
     const dataSource = useMemo(() => invoices.map((invoice) => {
-        const { invoiceId, invoiceDate, totalAmount, customerName, dueDate, status, billingAddress, pendingAmount } = invoice
+        const { invoiceId, invoiceDate, totalAmount, customerName, dueDate, status, billingAddress, pendingAmount, salesAgent } = invoice
 
         const options = [
             <Menu.Item key="resend" icon={<SendIconGrey />}>Resend</Menu.Item>,
             <Menu.Item key="dcList" icon={<ListViewIconGrey />}>DC List</Menu.Item>,
+            <Menu.Item key="assignTo" icon={<PlusIconGrey />}>Assign To</Menu.Item>,
             <Menu.Item key="paid" className={status === 'Paid' ? 'disabled' : ''} icon={<TickIconGrey />}>Paid</Menu.Item>,
             <Menu.Item key="logs" icon={<ListViewIconGrey />}>Acvitity Logs</Menu.Item>
         ]
@@ -347,6 +431,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
             totalAmount,
             billingAddress,
             pendingAmount,
+            salesAgent,
             status: renderStatus(status),
             dueDate: dayjs(dueDate).format(DATEFORMAT),
             date: dayjs(invoiceDate).format(DATEFORMAT),
@@ -354,6 +439,21 @@ const Dashboard = ({ reFetch, onUpdate }) => {
             action: <Actions options={options} onSelect={({ key }) => handleMenuSelect(key, invoice)} />
         }
     }), [invoices])
+
+    const AssinedToBar = (<>
+        <SelectInput
+            value={formData.assignTo}
+            options={creatorOptions}
+            placeholder='Selected assign to'
+            onSelect={(value) => handleChange(value, 'assignTo')}
+        />
+        <CustomButton
+            style={{ marginLeft: '1em' }}
+            className={`${formData.assignTo ? '' : 'disabled'}`}
+            text='Assign'
+            onClick={() => handleAssign()}
+        />
+    </>)
 
     const handleConfirmModalOk = useCallback(() => {
         setConfirmModal(false);
@@ -375,61 +475,72 @@ const Dashboard = ({ reFetch, onUpdate }) => {
                     isSMManager ?
                         (
                             <div className='left'>
-                                <RoutesFilter
-                                    data={creatorList}
-                                    title='Select Creators'
-                                    keyValue='userId'
-                                    keyLabel='userName'
-                                    onChange={onFilterChange}
-                                />
-                                <DateValue date={selectedDate} />
-                                <div className='app-date-picker-wrapper'>
-                                    <div className='date-picker' onClick={() => setOpen(true)}>
-                                        <ScheduleIcon />
-                                        <span>Select Date</span>
-                                    </div>
-                                    <CustomDateInput // Hidden in the DOM
-                                        open={open}
-                                        style={{ left: 0 }}
-                                        value={selectedDate}
-                                        className='app-date-panel-picker'
-                                        onChange={handleDateSelect}
-                                        onOpenChange={datePickerStatus}
-                                        disabledDate={disableFutureDates}
-                                    />
-                                </div>
+                                {
+                                    hasSelection ?
+                                        AssinedToBar
+                                        : (<>
+                                            <RoutesFilter
+                                                data={creatorList}
+                                                title='Select Creators'
+                                                keyValue='userId'
+                                                keyLabel='userName'
+                                                onChange={onFilterChange}
+                                            />
+                                            <DateValue date={selectedDate} />
+                                            <div className='app-date-picker-wrapper'>
+                                                <div className='date-picker' onClick={() => setOpen(true)}>
+                                                    <ScheduleIcon />
+                                                    <span>Select Date</span>
+                                                </div>
+                                                <CustomDateInput // Hidden in the DOM
+                                                    open={open}
+                                                    style={{ left: 0 }}
+                                                    value={selectedDate}
+                                                    className='app-date-panel-picker'
+                                                    onChange={handleDateSelect}
+                                                    onOpenChange={datePickerStatus}
+                                                    disabledDate={disableFutureDates}
+                                                />
+                                            </div>
+                                        </>)
+                                }
                             </div>
                         ) : (
                             <div className='left'>
-                                <RoutesFilter
-                                    data={customerList}
-                                    title='Select Customers'
-                                    keyValue='customerId'
-                                    keyLabel='customerName'
-                                    onChange={onFilterChange}
-                                />
-                                <DateValue date={startDate} to={endDate} />
-                                <div className='app-date-picker-wrapper'>
-                                    <div className='date-picker' onClick={() => setOpen(true)}>
-                                        <ScheduleIcon />
-                                        <span>Select Date</span>
-                                    </div>
-                                    <CustomButton
-                                        style={{ marginLeft: '1em' }}
-                                        className={`${generateDisabled ? 'disabled' : ''}`}
-                                        text='Generate'
-                                        onClick={handleFilter}
-                                    />
-                                    <CustomRangeInput // Hidden in the DOM
-                                        open={open}
-                                        value={selectedRange}
-                                        style={{ left: 0 }}
-                                        className='app-date-panel-picker'
-                                        onChange={handleDateSelect}
-                                        disabledDate={disableFutureDates}
-                                        onOpenChange={datePickerStatus}
-                                    />
-                                </div>
+                                {
+                                    hasSelection ?
+                                        AssinedToBar : (<>
+                                            <RoutesFilter
+                                                data={customerList}
+                                                title='Select Customers'
+                                                keyValue='customerId'
+                                                keyLabel='customerName'
+                                                onChange={onFilterChange}
+                                            />
+                                            <DateValue date={startDate} to={endDate} />
+                                            <div className='app-date-picker-wrapper'>
+                                                <div className='date-picker' onClick={() => setOpen(true)}>
+                                                    <ScheduleIcon />
+                                                    <span>Select Date</span>
+                                                </div>
+                                                <CustomButton
+                                                    style={{ marginLeft: '1em' }}
+                                                    className={`${generateDisabled ? 'disabled' : ''}`}
+                                                    text='Generate'
+                                                    onClick={handleFilter}
+                                                />
+                                                <CustomRangeInput // Hidden in the DOM
+                                                    open={open}
+                                                    value={selectedRange}
+                                                    style={{ left: 0 }}
+                                                    className='app-date-panel-picker'
+                                                    onChange={handleDateSelect}
+                                                    disabledDate={disableFutureDates}
+                                                    onOpenChange={datePickerStatus}
+                                                />
+                                            </div>
+                                        </>)
+                                }
                             </div>
                         )
                 }
@@ -451,6 +562,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
                 <Table
                     loading={{ spinning: loading, indicator: <Spinner /> }}
                     dataSource={dataSource.slice(sliceFrom, sliceTo)}
+                    rowSelection={rowSelection}
                     columns={invoiceColumns}
                     pagination={false}
                     scroll={{ x: true }}
@@ -504,6 +616,22 @@ const Dashboard = ({ reFetch, onUpdate }) => {
             >
                 <ConfirmMessage msg='Changes you made may not be saved.' />
             </ConfirmModal>
+            <CustomModal
+                className={`app-form-modal ${shake ? 'app-shake' : ''}`}
+                visible={assignModal}
+                btnDisabled={btnDisabled}
+                onOk={() => handleAssign(true)}
+                onCancel={handleModalCancel}
+                title='Assign Invoice To'
+                okTxt='Assign'
+            >
+                <AssignTo
+                    data={formData}
+                    errors={formErrors}
+                    onChange={handleChange}
+                    creatorOptions={creatorOptions}
+                />
+            </CustomModal>
         </div>
     )
 }

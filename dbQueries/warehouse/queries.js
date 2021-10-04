@@ -200,7 +200,7 @@ warehouseQueries.checkDcSchedule = async (input, callback) => {
 
 warehouseQueries.getDcDetailsGroupByCustomerId = async (input, callback) => {
     const { date } = input
-    let query = `SELECT JSON_ARRAYAGG(JSON_OBJECT('isDelivered',isDelivered,'existingCustomerId',existingCustomerId)) as customersData FROM customerorderdetails WHERE DATE(deliveryDate)>=? AND isDelivered='NotDelivered' AND existingCustomerId IS NOT NULL GROUP BY existingCustomerId`;
+    let query = `SELECT SUM(CASE WHEN isDelivered='Completed' THEN 1 ELSE 0  END) AS deliveredCount,JSON_ARRAYAGG(JSON_OBJECT('isDelivered',isDelivered,'existingCustomerId',existingCustomerId)) as customersData FROM customerorderdetails WHERE DATE(deliveryDate)>=? AND (isDelivered='NotDelivered' OR isDelivered='Completed') AND existingCustomerId IS NOT NULL GROUP BY existingCustomerId`;
     return executeGetParamsQuery(query, [date], callback)
 }
 //POST Request Methods

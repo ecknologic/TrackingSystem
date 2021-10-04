@@ -2,11 +2,12 @@ const auditQueries = require("../../dbQueries/auditlogs/queries");
 const customerClosingQueries = require("../../dbQueries/Customer/closing");
 const { decrypt, decryptObj } = require("../../utils/crypto");
 const { dbError } = require("../../utils/functions");
+const { createNotifications } = require("../Notifications/functions");
 const { compareCustomerClosingData } = require("../utils/customer");
 let customerClosingControllers = {}
 
 customerClosingControllers.getCustomerIdsByAgent = (req, res) => {
-    customerClosingQueries.getCustomerIdsByAgent(req, (err, results) => {
+    customerClosingQueries.getCustomerIdsByAgent(req.headers, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
             res.json(results)
@@ -45,7 +46,8 @@ customerClosingControllers.getDepositDetailsByDeliveryId = (req, res) => {
 }
 
 customerClosingControllers.getCustomerClosingDetails = (req, res) => {
-    customerClosingQueries.getCustomerClosingDetails({ ...req.query, departmentId: req.departmentId, createdBy: req.userId, userRole: req.userRole }, (err, results) => {
+    const { departmentid, userid, userrole } = req.headers
+    customerClosingQueries.getCustomerClosingDetails({ ...req.query, departmentId: departmentid, createdBy: userid, userRole: userrole }, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else if (results.length) {
             if (results.length == 1 && results[0].closingId == null) res.json([])
@@ -60,7 +62,7 @@ customerClosingControllers.getCustomerClosingDetails = (req, res) => {
 customerClosingControllers.getCustomerClosingDetailsById = (req, res) => {
     customerClosingQueries.getCustomerClosingDetailsById(req.params.closingId, async (err, results) => {
         if (err) res.status(500).json(dbError(err));
-        else if (!results.length) res.json(results)
+        else if (!results.length) res.send(404).json(results)
         else {
             let result = results[0]
             let accountDetails = await getAccountsDetails(JSON.parse(result.accountDetails))
@@ -83,14 +85,17 @@ customerClosingControllers.getCustomerAccountDetailsById = (req, res) => {
 }
 
 customerClosingControllers.addCustomerClosingDetails = (req, res) => {
-    customerClosingQueries.addCustomerClosingDetails({ ...req.body, createdBy: req.userId }, (err, result) => {
+    const { deliveryDetailsId, accountDetails, customerId } = req.body
+    customerClosingQueries.addCustomerClosingDetails({ ...req.body, createdBy: req.headers.userid }, (err, result) => {
         if (err) res.status(500).json(dbError(err));
         else {
-            customerClosingQueries.addCustomerAccountDetails({ ...req.body.accountDetails, customerId: req.body.customerId, closingId: result.insertId }, (err1, data) => {
+            customerClosingQueries.addCustomerAccountDetails({ ...accountDetails, customerId, closingId: result.insertId }, (err1, data) => {
                 if (err1) res.status(500).json(dbError(err1));
                 else {
-                    const { userId, userRole, userName } = req
+                    const { userid: userId, userrole: userRole, username: userName } = req.headers
                     auditQueries.createLog({ userId, description: `Customer Closing created by ${userRole} <b>(${userName})</b>`, customerId: result.insertId, type: "customerClosing" })
+                    customerClosingQueries.updateCustomerClosingInitiatedStatus({ deliveryDetailsId })
+                    createNotifications({ id: result.insertId, warehouseId: req.body.departmentId, userName: req.headers.username }, 'customerClosing')
                     res.json('Details added successfully')
                 }
             })
@@ -99,9 +104,9 @@ customerClosingControllers.addCustomerClosingDetails = (req, res) => {
 }
 
 customerClosingControllers.updateCustomerClosingDetails = async (req, res) => {
-    const { userId, userRole, userName } = req
+    const { userid: userId, userrole: userRole, username: userName } = req.headers
     let logs = await compareCustomerClosingData(req.body, { userId, userRole, userName })
-    customerClosingQueries.updateCustomerClosingDetails({ ...req.body, createdBy: req.userId }, (err, results) => {
+    customerClosingQueries.updateCustomerClosingDetails({ ...req.body, createdBy: req.headers.userid }, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
             customerClosingQueries.updateCustomerAccountDetails(req.body.accountDetails, (err1, data) => {
@@ -113,6 +118,8 @@ customerClosingControllers.updateCustomerClosingDetails = async (req, res) => {
                             else console.log('log data', data)
                         })
                     }
+                    const { isConfirmed, closingId } = req.body
+                    if (isConfirmed && isConfirmed == true) createNotifications({ id: closingId, userId }, 'customerClosingUpdated')
                     res.json('Details updated successfully')
                 }
             })
@@ -121,7 +128,7 @@ customerClosingControllers.updateCustomerClosingDetails = async (req, res) => {
 }
 
 customerClosingControllers.getCustomerClosingDetailsPaginationCount = (req, res) => {
-    customerClosingQueries.getCustomerClosingDetailsPaginationCount({ createdBy: req.userId, userRole: req.userRole }, (err, results) => {
+    customerClosingQueries.getCustomerClosingDetailsPaginationCount({ createdBy: req.headers.userid, userRole: req.headers.userrole }, (err, results) => {
         if (err) res.status(500).json(dbError(err));
         else {
             res.json(results)

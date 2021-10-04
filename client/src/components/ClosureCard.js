@@ -57,11 +57,12 @@ const ClosureCard = ({ data, onClick, btnTxt = 'Manage Account' }) => {
 }
 
 const renderStatus = (status) => {
-    const isActive = status === 'InProgress' || status === 'Confirmed'
+    const isActive = status === 'Confirmed'
+    const inProgress = status === 'InProgress'
     const text = status === 'InProgress' ? 'In Progress' : status
 
     return (
-        <div className={isActive ? 'badge active' : 'badge closed'}>{text}</div>
+        <div className={`badge ${inProgress ? 'progress' : isActive ? 'active' : 'closed'}`}>{text}</div>
     )
 }
 

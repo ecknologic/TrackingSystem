@@ -6,14 +6,14 @@ reportsQueries.getNewCustomerBTDetails = async (input, callback) => {
     let query = `SELECT c.customerNo,IFNULL(c.organizationName,c.customerName) as customerName,u.userName AS salesAgent,
     c.depositAmount,IFNULL(c.dispenserCount,0)AS dispenserCount ,SUM(cp.noOfJarsTobePlaced) quantity,
     CAST(cp.productPrice AS DECIMAL(10,2)) productPrice
-    FROM customerdetails c INNER JOIN usermaster u ON c.salesAgent=u.userId INNER JOIN customerproductdetails cp ON c.customerId=cp.customerId WHERE cp.customerType='customer' AND cp.productName='20L' AND cp.noOfJarsTobePlaced>0 GROUP BY cp.customerId,cp.productPrice
+    FROM customerdetails c INNER JOIN usermaster u ON c.salesAgent=u.userId INNER JOIN customerproductdetails cp ON c.customerId=cp.customerId WHERE cp.customerType='customer' AND c.lastApprovedDate IS NOT NULL AND cp.productName='20L' AND cp.noOfJarsTobePlaced>0 GROUP BY cp.customerId,cp.productPrice
      ORDER BY c.registeredDate DESC`;
 
     if (fromStart != 'true') {
         query = `SELECT c.customerNo,IFNULL(c.organizationName,c.customerName) as customerName,u.userName AS salesAgent,
          c.depositAmount,IFNULL(c.dispenserCount,0)AS dispenserCount ,SUM(cp.noOfJarsTobePlaced) quantity,
          CAST(cp.productPrice AS DECIMAL(10,2)) productPrice
-         FROM customerdetails c INNER JOIN usermaster u ON c.salesAgent=u.userId INNER JOIN customerproductdetails cp ON c.customerId=cp.customerId WHERE cp.customerType='customer' AND cp.productName='20L' AND cp.noOfJarsTobePlaced>0 AND  DATE(c.registeredDate) BETWEEN ? AND ? GROUP BY cp.customerId,cp.productPrice
+         FROM customerdetails c INNER JOIN usermaster u ON c.salesAgent=u.userId INNER JOIN customerproductdetails cp ON c.customerId=cp.customerId WHERE cp.customerType='customer' AND c.lastApprovedDate IS NOT NULL AND cp.productName='20L' AND cp.noOfJarsTobePlaced>0 AND  DATE(c.registeredDate) BETWEEN ? AND ? GROUP BY cp.customerId,cp.productPrice
          ORDER BY c.registeredDate DESC`;
         let options = [fromDate, toDate]
         return executeGetParamsQuery(query, options, callback)
@@ -34,6 +34,15 @@ reportsQueries.getEnquiriesCountBySalesAgent = async (input, callback) => {
         customerenquirydetails c RIGHT JOIN usermaster u ON c.salesAgent=u.userId AND DATE(c.registeredDate) BETWEEN ? AND ? WHERE u.RoleId=5  GROUP BY c.salesAgent,u.userName`;
         options = [startDate, endDate]
     }
+    return executeGetParamsQuery(query, options, callback)
+}
+
+reportsQueries.getLastMonthInvoicesGroupByCustomerId = async (input, callback) => {
+    const { startDate, endDate, customerIds } = input
+    console.log(startDate, endDate)
+    let query = `SELECT CAST(SUM(totalAmount) AS DECIMAL(10,2)) AS invoiceAmount,customerId AS customer_id FROM Invoice 
+    WHERE customerId IN (?) AND DATE(fromdate) >=? AND DATE(toDate)<=? GROUP BY customerId`;
+    let options = [customerIds, startDate, endDate]
     return executeGetParamsQuery(query, options, callback)
 }
 
@@ -128,22 +137,18 @@ reportsQueries.getVisitedCustomersReportByStatus = async (input, callback) => {
 
 reportsQueries.getDispensersViabilityReport = async (input, callback) => {
     const { fromDate: startDate, toDate: endDate, fromStart } = input
-    let query = `SELECT IFNULL(c.organizationName,c.customerName)AS customerName,c.customerNo as customerId,
-    IFNULL(c.dispenserCount,0)AS dispenserCount,MAX(cp.productPrice) AS price, 
-    CAST(SUM(co.20LCans*cp.productPrice+(cp.productPrice*12/100)) AS DECIMAL(10,2)) AS  invoiceAmount
-    FROM customerdetails c INNER JOIN customerproductdetails cp ON c.customerId=cp.customerId INNER JOIN 
-    customerorderdetails co ON c.customerId=co.existingCustomerId
-    WHERE cp.customerType='customer' AND cp.productName='20L' AND c.customerType='Corporate'  AND co.deliveredDate<=? GROUP BY c.customerId ORDER BY c.customerId
+    let query = `SELECT IFNULL(c.organizationName,c.customerName)AS customerName,c.customerNo as customerId,c.customerId as customer_id,
+    IFNULL(c.dispenserCount,0)AS dispenserCount,MAX(cp.productPrice) AS price
+    FROM customerdetails c INNER JOIN customerproductdetails cp ON c.customerId=cp.customerId
+    WHERE cp.customerType='customer' AND cp.productName='20L' AND c.customerType='Corporate' AND DATE(c.approvedDate)<=? GROUP BY c.customerId ORDER BY c.customerId
     `;
     let options = [endDate]
 
     if (fromStart != 'true') {
-        query = `SELECT IFNULL(c.organizationName,c.customerName)AS customerName,c.customerNo as customerId,
-        IFNULL(c.dispenserCount,0)AS dispenserCount,MAX(cp.productPrice) AS price, 
-        CAST(SUM(co.20LCans*cp.productPrice+(cp.productPrice*12/100))AS DECIMAL(10,2)) AS  invoiceAmount
-         FROM customerdetails c INNER JOIN customerproductdetails cp ON c.customerId=cp.customerId INNER JOIN 
-         customerorderdetails co ON c.customerId=co.existingCustomerId
-         WHERE cp.customerType='customer' AND cp.productName='20L' AND c.customerType='Corporate' AND co.deliveredDate BETWEEN ? AND ?  GROUP BY c.customerId ORDER BY c.customerId
+        query = `SELECT IFNULL(c.organizationName,c.customerName)AS customerName,c.customerNo as customerId,c.customerId as customer_id,
+        IFNULL(c.dispenserCount,0)AS dispenserCount,MAX(cp.productPrice) AS price
+         FROM customerdetails c INNER JOIN customerproductdetails cp ON c.customerId=cp.customerId 
+         WHERE cp.customerType='customer' AND cp.productName='20L' AND c.customerType='Corporate' AND DATE(c.approvedDate) BETWEEN ? AND ? GROUP BY c.customerId ORDER BY c.customerId
          `;
         options = [startDate, endDate]
     }

@@ -26,9 +26,21 @@ router.get('/getClosedCustomersReport', (req, res) => {
 })
 
 router.get('/getViabilityReport', (req, res) => {
+  const { startDate: inputDate } = req.query
   reportsQueries.getDispensersViabilityReport(req.query, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
-    else res.json(results)
+    else if (!results.length) res.json(results)
+    else {
+      let customerIds = results.map(item => item.customer_id)
+      let { startDate, endDate } = utils.getPrevMonthStartAndEndDates(1, inputDate)
+      reportsQueries.getLastMonthInvoicesGroupByCustomerId({ startDate, endDate, customerIds }, (err1, invoiceData) => {
+        if (err1) res.json(results)
+        else {
+          let finalData = mergeArrayObjects('customer_id', results, invoiceData)
+          res.json(finalData)
+        }
+      })
+    }
   })
 })
 
@@ -92,7 +104,7 @@ function mergeArrayObjects(key, arr1, ...arr2) {
     let resultItem = { ...currentItem }
 
     arr2.map(item => {
-      const found = item.find((itmInner) => itmInner[key] === currentItem[key]) || {}
+      const found = item.find((itmInner) => itmInner[key] == currentItem[key]) || {}
       resultItem = { ...resultItem, ...found }
     })
 

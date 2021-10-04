@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { message } from 'antd';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation, useParams, useHistory } from 'react-router-dom';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import PlantForm from '../../forms/Plant';
 import AccountView from '../../views/Account';
@@ -11,12 +11,13 @@ import NoContent from '../../../../components/NoContent';
 import IDProofInfo from '../../../../components/IDProofInfo';
 import { getStaffOptions } from '../../../../assets/fixtures';
 import CustomButton from '../../../../components/CustomButton';
-import { isEmpty, showToast, base64String, getMainPathname, getBase64, getPlantValuesForDB, resetTrackForm, getLabel } from '../../../../utils/Functions';
+import { isEmpty, showToast, base64String, getMainPathname, getBase64, getPlantValuesForDB, resetTrackForm, getLabel, isStatus404 } from '../../../../utils/Functions';
 import { validateNames, validateMobileNumber, validatePinCode, validatePlantValues } from '../../../../utils/validations';
 import '../../../../sass/plants.scss'
 
 const ManagePlant = ({ setHeaderContent, onGoBack }) => {
     const { plantId } = useParams()
+    const history = useHistory()
     const { pathname } = useLocation()
     const [accountValues, setAccountValues] = useState({ loading: true })
     const [loading, setLoading] = useState(true)
@@ -59,7 +60,11 @@ const ManagePlant = ({ setHeaderContent, onGoBack }) => {
             setPrevAdminId(adminId)
             setAdmin({ userName, mobileNumber, emailid, roleId })
             setLoading(false)
-        } catch (error) { }
+        } catch (error) {
+            if (isStatus404(error)) {
+                history.replace('/not-found', { entity: mainUrl === '/warehouses' ? 'warehouse' : 'mother plant' })
+            }
+        }
     }
 
     const getPlantType = () => {

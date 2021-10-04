@@ -225,15 +225,16 @@ const DeliveryDetails = ({ isAdmin, recentDelivery, onUpdate, ...rest }) => {
         else fetchDelivery(id)
     }
 
-    const handleMenuSelect = (key, id) => {
+    const handleMenuSelect = (key, data) => {
+        const { deliveryDetailsId: id } = data
         setCurrentId(id)
         setCurrentAction(key)
 
         if (key === 'Active') {
-            handleStatusUpdate(id, 1)
+            handleStatusUpdate(data, 1)
         }
         else if (key === 'Draft') {
-            handleStatusUpdate(id, 0)
+            handleStatusUpdate(data, 0)
         }
         else if (key === 'Delete') {
             setExitMsg('Are you sure you want to delete?')
@@ -245,15 +246,16 @@ const DeliveryDetails = ({ isAdmin, recentDelivery, onUpdate, ...rest }) => {
         }
     }
 
-    const handleStatusUpdate = async (id, status) => {
+    const handleStatusUpdate = async (data, status) => {
+        const { deliveryDetailsId, departmentId, location, customer_Id: customerId } = data
         const options = { item: 'Delivery status', v1Ing: 'Updating', v2: 'updated' }
         const url = `customer/updateDeliveryDetailsStatus`
-        const body = { status, deliveryDetailsId: id }
+        const body = { status, deliveryDetailsId, departmentId, location, customerId }
 
         try {
             showToast({ ...options, action: 'loading' })
             await http.PUT(axios, url, body, config)
-            optimisticUpdate(id, status, 'status')
+            optimisticUpdate(deliveryDetailsId, status, 'isApproved')
             showToast(options)
         } catch (error) {
             message.destroy()

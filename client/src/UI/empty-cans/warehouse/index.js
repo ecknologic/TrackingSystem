@@ -6,25 +6,23 @@ import { http } from '../../../modules/http';
 import useUser from '../../../utils/hooks/useUser';
 import ReturnEmptyCans from './tabs/ReturnEmptyCans';
 import Header from '../../../components/ContentHeader';
-import { getDepartmentOptions, getDriverOptions, getVehicleOptions, getWarehouseOptions } from '../../../assets/fixtures';
+import { getDriverOptions, getVehicleOptions, getWarehouseOptions } from '../../../assets/fixtures';
 import '../../../sass/products.scss';
 
 const EmptyCans = () => {
     const { WAREHOUSEID } = useUser()
     const [activeTab, setActiveTab] = useState('1')
     const [reFetch, setreFetch] = useState(false)
-    const [departmentList, setDepartmentList] = useState([])
     const [motherplantList, setMotherplantList] = useState([])
     const [driverList, setDriverList] = useState([])
     const [vehicleList, setVehicleList] = useState([])
     const [isFetched, setIsFetched] = useState(false)
 
-    const departmentOptions = useMemo(() => getDepartmentOptions(departmentList), [departmentList])
     const motherplantOptions = useMemo(() => getWarehouseOptions(motherplantList), [motherplantList])
     const driverOptions = useMemo(() => getDriverOptions(driverList), [driverList])
     const vehicleOptions = useMemo(() => getVehicleOptions(vehicleList), [vehicleList])
-    const childProps = useMemo(() => ({ motherplantOptions, driverOptions, driverList, vehicleOptions, departmentOptions }),
-        [motherplantOptions, driverOptions, vehicleOptions, departmentOptions])
+    const childProps = useMemo(() => ({ motherplantOptions, driverOptions, driverList, vehicleOptions }),
+        [motherplantOptions, driverOptions, vehicleOptions])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
@@ -33,15 +31,6 @@ const EmptyCans = () => {
             http.ABORT(source)
         }
     }, [])
-
-    const getDepartmentList = async () => {
-        const url = 'bibo/getAllDepartmentsList'
-
-        try {
-            const data = await http.GET(axios, url, config)
-            setDepartmentList(data)
-        } catch (error) { }
-    }
 
     const getMotherplantList = async () => {
         const url = 'bibo/getDepartmentsList?departmentType=MotherPlant'
@@ -83,9 +72,8 @@ const EmptyCans = () => {
         if (!isFetched) {
             const p2 = getDriverList()
             const p3 = getVehicleList()
-            const p4 = getDepartmentList()
             const p1 = getMotherplantList()
-            await Promise.all([p1, p2, p3, p4])
+            await Promise.all([p1, p2, p3])
             setIsFetched(true)
         }
     }

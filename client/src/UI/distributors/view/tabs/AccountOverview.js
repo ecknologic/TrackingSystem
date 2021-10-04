@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { message } from 'antd';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import React, { Fragment, useEffect, useState, useMemo } from 'react';
 import AccountView from '../../views/Account';
 import { http } from '../../../../modules/http'
@@ -11,11 +11,12 @@ import NoContent from '../../../../components/NoContent';
 import IDProofInfo from '../../../../components/IDProofInfo';
 import CustomButton from '../../../../components/CustomButton';
 import { getDropdownOptions } from '../../../../assets/fixtures';
-import { isEmpty, showToast, base64String, getBase64, getProductsForUI, getProductsWithIdForDB, extractDistributorDetails, extractProductsFromForm, resetTrackForm } from '../../../../utils/Functions';
+import { isEmpty, showToast, base64String, getBase64, getProductsForUI, getProductsWithIdForDB, extractDistributorDetails, extractProductsFromForm, resetTrackForm, isStatus404 } from '../../../../utils/Functions';
 import { validateNames, validateMobileNumber, validateEmailId, validateDistributorValues } from '../../../../utils/validations';
 import '../../../../sass/employees.scss'
 
 const ManageDistributor = ({ setHeaderContent, onGoBack }) => {
+    const history = useHistory()
     const { distributorId } = useParams()
     const [formData, setFormData] = useState({})
     const [formErrors, setFormErrors] = useState({})
@@ -52,7 +53,11 @@ const ManageDistributor = ({ setHeaderContent, onGoBack }) => {
             setHeaderContent({ title: agencyName })
             setFormData({ ...rest, gstProof, ...productsUI })
             setLoading(false)
-        } catch (error) { }
+        } catch (error) {
+            if (isStatus404(error)) {
+                history.replace('/not-found', { entity: 'distributor' })
+            }
+        }
     }
 
     const getLocationList = async () => {

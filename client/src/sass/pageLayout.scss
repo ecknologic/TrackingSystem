@@ -17,8 +17,8 @@
 
         #nav-container {
             height: 100%;
-            min-width: 10em;
-            // border-left: 1px solid  #E2E2EA; // should be: uncommented
+            min-width: 8.5em;
+            border-left: 1px solid  #E2E2EA;
             padding: 0 1em;
     
             display: flex;
@@ -26,9 +26,10 @@
             align-items: center;
 
             .nav-icon {
-                margin-right: 1.2em;
+                position: relative;
+                display: inline-flex;
+                margin-right: 1.5em;
             }
-
         }
     }
 
