@@ -7,9 +7,9 @@ const compareInvoiceData = (data, { type = "invoice", userId, userRole, userName
             console.log('results', JSON.stringify(results), invoiceIds)
             if (err) resolve([])
             else if (results.length) {
+                const records = []
                 for (let [index, i] of results.entries()) {
                     const oldData = i
-                    const records = []
                     const createdDateTime = new Date()
                     Object.entries(data).map(([key, updatedValue]) => {
                         const oldValue = oldData[key]
