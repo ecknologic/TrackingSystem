@@ -18,6 +18,11 @@ invoiceQueries.getInvoicesByRole = async (roleId, callback) => {
     return executeGetParamsQuery(query, [roleId], callback)
 }
 
+invoiceQueries.getInvoicesBySalesAgent = async (userId, callback) => {
+    let query = `select i.*,c.Address1 AS billingAddress,u.userName as salesAgent from Invoice i INNER JOIN customerdetails c ON i.customerId=c.customerId INNER JOIN usermaster u ON i.salesPerson=u.userId WHERE i.salesPerson=? ORDER BY invoiceId DESC`;
+    return executeGetParamsQuery(query, [userId], callback)
+}
+
 invoiceQueries.getInvoicesLogsById = async (invoiceId, callback) => {
     let query = `select l.*,i.createdDateTime as invoiceDate,u.userName,r.RoleName,u1.userName as createdUserName,r1.RoleName as creatorRole from invoicepaymentlogs l INNER JOIN Invoice i ON i.invoiceId=l.invoiceId INNER JOIN usermaster u ON l.userId=u.userId INNER JOIN usermaster u1 ON i.createdBy=u1.userId INNER JOIN rolemaster r ON r.RoleId=u.roleId INNER JOIN rolemaster r1 ON r1.RoleId=u1.roleId WHERE l.invoiceId=?  ORDER BY createdDateTime DESC`;
     return executeGetParamsQuery(query, [invoiceId], callback)

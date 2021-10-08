@@ -40,6 +40,13 @@ router.get('/getInvoicesByRole/:roleId', (req, res) => {
     });
 });
 
+router.get('/getInvoicesBySalesAgent', (req, res) => {
+    invoiceQueries.getInvoicesBySalesAgent(userId, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.send(results);
+    });
+});
+
 router.get('/getCustomerInvoices/:customerId', (req, res) => {
     invoiceQueries.getCustomerInvoices(req.params.customerId, (err, results) => {
         if (err) res.status(500).json(dbError(err));
