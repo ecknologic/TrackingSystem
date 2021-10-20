@@ -210,6 +210,12 @@ $primary-color: #0062FF;
 }
 .account-view-account-overview {
 
+    .acc-qr-code {
+        position: absolute;
+        right: 0;
+        left: 60%;
+    }
+
     .footer {
         justify-content: flex-end;
     }

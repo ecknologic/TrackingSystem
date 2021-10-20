@@ -13,6 +13,7 @@ import IDProofInfo from '../../../../components/IDProofInfo';
 import ConfirmModal from '../../../../components/CustomModal';
 import CustomButton from '../../../../components/CustomButton';
 import GeneralAccountForm from '../../add/forms/GeneralAccount';
+import QRCodePreview from '../../../../components/QRCodePreview';
 import ConfirmMessage from '../../../../components/ConfirmMessage';
 import CorporateAccountForm from '../../add/forms/CorporateAccount';
 import { base64String, extractCADetails, extractGADetails, getBase64, getIdProofsForDB, getLabel, getMainPathname, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
@@ -268,6 +269,11 @@ const AccountOverview = ({ data, onUpdate, isAdmin, locationOptions, businessOpt
                                 <IDProofInfo data={IDProofs} />
                                 <IDProofInfo data={gstProofs} />
                                 <AccountView data={accountValues} />
+                                <QRCodePreview
+                                    className='acc-qr-code'
+                                    base64={accountValues.qrCode}
+                                    fileName={accountValues.organizationName}
+                                />
                             </>
                         }
                         {
