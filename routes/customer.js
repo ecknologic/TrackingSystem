@@ -268,26 +268,34 @@ const updateProductDetails = (products, customerId) => {
     }
   })
 }
+
 const createQrCode = (qrcodeText) => {
   return new Promise((resolve, reject) => {
-    filePath = "assests/QRImages/" + qrcodeText + ".png";
-    QRCode.toFile(filePath, qrcodeText, {
-      color: {
-        dark: '#00F'  // Blue dots
-      }
-    }, function (err) {
-      if (err) reject(err)
-      else {
-        let customerDetailsQuery = "insert  into QRDetails (QRImage) values(?)";
-        let insertQueryValues = [fs.readFileSync(filePath)]
-        db.query(customerDetailsQuery, insertQueryValues, (err, results) => {
-          if (err) reject(err);
-          else {
-            resolve(results.insertId);
-          }
-        })
-      }
-    })
+    QRCode.toDataURL(qrcodeText)
+      .then(url => {
+        resolve(url)
+      })
+      .catch(err => {
+        reject(err)
+      })
+    // filePath = "assests/QRImages/" + qrcodeText + ".png";
+    // QRCode.toFile(filePath, qrcodeText, {
+    //   color: {
+    //     dark: '#00F'  // Blue dots
+    //   }
+    // }, function (err) {
+    //   if (err) reject(err)
+    //   else {
+    //     let customerDetailsQuery = "insert  into QRDetails (QRImage) values(?)";
+    //     let insertQueryValues = [fs.readFileSync(filePath)]
+    //     db.query(customerDetailsQuery, insertQueryValues, (err, results) => {
+    //       if (err) reject(err);
+    //       else {
+    //         resolve(results.insertId);
+    //       }
+    //     })
+    //   }
+    // })
   })
 
 }
@@ -497,11 +505,14 @@ router.get("/getCustomerDetailsById/:customerId", (req, res) => {
     else {
       if (results.length) {
         let result = results[0];
-        let { gstNo, panNo, adharNo } = result;
+        let { gstNo, panNo, adharNo, mobileNumber } = result;
         let decryptedData = await utils.getDecryptedProofs({ gstNo, panNo, adharNo })
         if (result.gstNo) result.gstNo = decryptedData.gstNo
         if (result.panNo) result.panNo = decryptedData.panNo
         if (result.adharNo) result.adharNo = decryptedData.adharNo
+        let proofNumber = decryptedData.adharNo || decryptedData.panNo
+        let qrText = proofNumber + mobileNumber
+        result.qrCode = await createQrCode(qrText)
         res.json({ status: 200, statusMessage: "Success", data: [result] })
       } else res.send(404).json({ status: 200, statusMessage: "Success", data: results })
     }
