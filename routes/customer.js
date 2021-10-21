@@ -510,8 +510,8 @@ router.get("/getCustomerDetailsById/:customerId", (req, res) => {
         if (result.gstNo) result.gstNo = decryptedData.gstNo
         if (result.panNo) result.panNo = decryptedData.panNo
         if (result.adharNo) result.adharNo = decryptedData.adharNo
-        let proofNumber = decryptedData.adharNo || decryptedData.panNo
-        let qrText = proofNumber + mobileNumber
+        // let proofNumber = decryptedData.adharNo || decryptedData.panNo
+        let qrText = mobileNumber
         result.qrCode = await createQrCode(qrText)
         res.json({ status: 200, statusMessage: "Success", data: [result] })
       } else res.send(404).json({ status: 200, statusMessage: "Success", data: results })

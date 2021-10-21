@@ -24,11 +24,12 @@ router.get('/validateQRCode', (req, res) => {
     let result = db.query(query, (err, results) => {
         if (err) res.send(err);
         else {
-            if (req.query.qrcode == String(results[0].adharNo) + String(results[0].mobileNumber)) res.json({ status: 200, statusMessage: "Success" })
-            else res.json({ status: 200, statusMessage: "Invalid" })
+            if (req.query.qrcode == String(results[0].mobileNumber)) res.json({ status: 200, statusMessage: "Success" })
+            else res.json({ status: 400, statusMessage: "Invalid QR code" })
         }
     });
 });
+
 router.get('/getOrderDetails/:date', (req, res) => {
     var date = req.params.date;
     const { driverId, warehouseId } = req.query;
