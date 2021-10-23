@@ -2,17 +2,39 @@ var express = require('express');
 var router = express.Router();
 const reportsQueries = require('../../dbQueries/reports/index.js');
 const { utils } = require('../../utils/functions.js');
-let userId, adminUserName, userRole;
+let userId, adminUserName, userRole, departmentId;
 
 router.use(function timeLog(req, res, next) {
   userId = req.headers['userid']
   adminUserName = req.headers['username']
   userRole = req.headers['userrole']
+  departmentId = req.headers['departmentid']
   next();
 });
 
 router.get('/getNewCustomerBT', (req, res) => {
   reportsQueries.getNewCustomerBTDetails(req.query, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.json(results)
+  })
+})
+
+router.get('/getDaywiseDispatches', (req, res) => {
+  reportsQueries.getDaywiseDispatches({ departmentId, ...req.query }, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.json(results)
+  })
+})
+
+router.get('/getDispatchesByDate', (req, res) => {
+  reportsQueries.getDispatchesByDate({ departmentId, ...req.query }, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.json(results)
+  })
+})
+
+router.get('/getDepartmentwiseDispatches', (req, res) => {
+  reportsQueries.getDepartmentwiseDispatches({ departmentId, ...req.query }, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else res.json(results)
   })
