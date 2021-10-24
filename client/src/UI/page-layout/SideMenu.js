@@ -227,6 +227,12 @@ const SideMenu = () => {
                                 <Item key='/marketing-performance-report' icon={selected === '/marketing-performance-report' ? <FriendIcon /> : <FriendIconLight />}>
                                     Marketing Performance
                                 </Item>
+                                <Item key='/daywise-dispatches-report' icon={selected === '/daywise-dispatches-report' ? <FriendIcon /> : <FriendIconLight />}>
+                                    Day Wise Dispatches
+                                </Item>
+                                <Item key='/partywise-dispatches-report' icon={selected === '/partywise-dispatches-report' ? <FriendIcon /> : <FriendIconLight />}>
+                                    Party Wise Dispatches
+                                </Item>
                             </SubMenu>
                             <Item key='/settings' style={{ pointerEvents: 'none' }} icon={selected === '/settings' ? <SettingIcon /> : <SettingIconLight />}>
                                 Settings

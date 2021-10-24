@@ -55,9 +55,11 @@ import WarehouseStockRequest from './UI/stock-request/warehouse';
 import ClosedCustomersReport from './UI/reports/closed-customers';
 import { StatusFilterProvider } from './modules/statusFilterContext';
 import MotherplantStockRequest from './UI/stock-request/motherplant';
+import DaywiseDispatchesReport from './UI/reports/daywise-dispatches';
 import InactiveCustomersReport from './UI/reports/inactive-customers';
 import { CustomerFilterProvider } from './modules/customerFilterContext';
 import DispensersViabilityReport from './UI/reports/dispensers-viability';
+import PartywiseDispatchesReport from './UI/reports/partywise-dispatches';
 import MarketingPerformanceReport from './UI/reports/marketing-performance';
 import CollectionPerformanceReport from './UI/reports/collection-performance';
 import { MultiStatusFilterProvider } from './modules/multiStatusFilterContext';
@@ -180,6 +182,8 @@ const App = () => {
                               <Route path='/closed-customers-report' render={byRole(<ClosedCustomersReport />)} />
                               <Route path='/dispensers-viability-report' render={byRole(<DispensersViabilityReport />)} />
                               <Route path='/collection-performance-report' render={byRole(<CollectionPerformanceReport />)} />
+                              <Route path='/daywise-dispatches-report' render={byRole(<DaywiseDispatchesReport />)} />
+                              <Route path='/partywise-dispatches-report' render={byRole(<PartywiseDispatchesReport />)} />
                               <Route path='/vendors/manage/:vendorId' render={byRole(<ManageVendor />)} />
                               <Route path='/vendors/:tab?/:page?' render={byRole(<Vendors />)} />
                               <Route path='/closed-customers/manage/:closingId' render={byRole(<ManageClosedCustomer />)} />

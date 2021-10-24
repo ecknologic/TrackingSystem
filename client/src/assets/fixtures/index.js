@@ -1286,6 +1286,70 @@ export const newCustomersReportColumns = [
         key: 'dispenserCount',
     }
 ]
+export const daywiseDispatchesReportColumns = [
+    {
+        title: 'Date',
+        dataIndex: 'Date',
+        key: 'Date',
+    },
+    {
+        title: 'Cans (20 ltr)',
+        dataIndex: 'total20LCans',
+        key: 'total20LCans',
+    },
+    {
+        title: '2 Ltr Boxes (1x9)',
+        dataIndex: 'total2LBoxes',
+        key: 'total2LBoxes',
+    },
+    {
+        title: '1 Ltr Boxes (1x12)',
+        dataIndex: 'total1LBoxes',
+        key: 'total1LBoxes',
+    },
+    {
+        title: '500 ml Boxes (1x24)',
+        dataIndex: 'total500MLBoxes',
+        key: 'total500MLBoxes',
+    },
+    {
+        title: '300 ml Boxes (1x30)',
+        dataIndex: 'total300MLBoxes',
+        key: 'total300MLBoxes',
+    }
+]
+export const partywiseDispatchesReportColumns = [
+    {
+        title: 'Party',
+        dataIndex: 'party',
+        key: 'party',
+    },
+    {
+        title: 'Cans (20 ltr)',
+        dataIndex: 'total20LCans',
+        key: 'total20LCans',
+    },
+    {
+        title: '2 Ltr Boxes (1x9)',
+        dataIndex: 'total2LBoxes',
+        key: 'total2LBoxes',
+    },
+    {
+        title: '1 Ltr Boxes (1x12)',
+        dataIndex: 'total1LBoxes',
+        key: 'total1LBoxes',
+    },
+    {
+        title: '500 ml Boxes (1x24)',
+        dataIndex: 'total500MLBoxes',
+        key: 'total500MLBoxes',
+    },
+    {
+        title: '300 ml Boxes (1x30)',
+        dataIndex: 'total300MLBoxes',
+        key: 'total300MLBoxes',
+    }
+]
 export const inactiveCustomersReportColumns = [
     {
         title: 'S. No',

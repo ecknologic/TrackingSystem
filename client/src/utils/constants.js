@@ -50,8 +50,8 @@ export const getRoutesByRole = (role) => {
             return ['/customers', '/materials', '/motherplants', '/warehouses', '/staff', '/drivers',
                 '/products', '/routes', '/distributors', '/invoices', '/roles', '/new-customers-report',
                 '/closed-customers-report', '/inactive-customers-report', '/dispensers-viability-report',
-                '/collection-performance-report', '/marketing-performance-report', '/visited-customers',
-                '/closed-customers', '/vendors']
+                '/collection-performance-report', '/marketing-performance-report', '/daywise-dispatches-report',
+                '/partywise-dispatches-report', '/visited-customers', '/closed-customers', '/vendors']
 
         case ACCOUNTSADMIN:
             return ['/customers', '/invoices', '/receipts', '/closed-customers']
