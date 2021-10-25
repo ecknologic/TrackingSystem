@@ -1288,66 +1288,66 @@ export const newCustomersReportColumns = [
 ]
 export const daywiseDispatchesReportColumns = [
     {
-        title: 'Date',
-        dataIndex: 'Date',
-        key: 'Date',
+        title: 'Dispatched Date',
+        dataIndex: 'dispatchedDate',
+        key: 'dispatchedDate',
     },
     {
         title: 'Cans (20 ltr)',
-        dataIndex: 'total20LCans',
-        key: 'total20LCans',
+        dataIndex: 'product20L',
+        key: 'product20L',
     },
     {
         title: '2 Ltr Boxes (1x9)',
-        dataIndex: 'total2LBoxes',
-        key: 'total2LBoxes',
+        dataIndex: 'product2L',
+        key: 'product2L',
     },
     {
         title: '1 Ltr Boxes (1x12)',
-        dataIndex: 'total1LBoxes',
-        key: 'total1LBoxes',
+        dataIndex: 'product1L',
+        key: 'product1L',
     },
     {
         title: '500 ml Boxes (1x24)',
-        dataIndex: 'total500MLBoxes',
-        key: 'total500MLBoxes',
+        dataIndex: 'product500ML',
+        key: 'product500ML',
     },
     {
         title: '300 ml Boxes (1x30)',
-        dataIndex: 'total300MLBoxes',
-        key: 'total300MLBoxes',
+        dataIndex: 'product300ML',
+        key: 'product300ML',
     }
 ]
 export const partywiseDispatchesReportColumns = [
     {
         title: 'Party',
-        dataIndex: 'party',
-        key: 'party',
+        dataIndex: 'warehouseName',
+        key: 'warehouseName',
     },
     {
         title: 'Cans (20 ltr)',
-        dataIndex: 'total20LCans',
-        key: 'total20LCans',
+        dataIndex: 'product20L',
+        key: 'product20L',
     },
     {
         title: '2 Ltr Boxes (1x9)',
-        dataIndex: 'total2LBoxes',
-        key: 'total2LBoxes',
+        dataIndex: 'product2L',
+        key: 'product2L',
     },
     {
         title: '1 Ltr Boxes (1x12)',
-        dataIndex: 'total1LBoxes',
-        key: 'total1LBoxes',
+        dataIndex: 'product1L',
+        key: 'product1L',
     },
     {
         title: '500 ml Boxes (1x24)',
-        dataIndex: 'total500MLBoxes',
-        key: 'total500MLBoxes',
+        dataIndex: 'product500ML',
+        key: 'product500ML',
     },
     {
         title: '300 ml Boxes (1x30)',
-        dataIndex: 'total300MLBoxes',
-        key: 'total300MLBoxes',
+        dataIndex: 'product300ML',
+        key: 'product300ML',
     }
 ]
 export const inactiveCustomersReportColumns = [

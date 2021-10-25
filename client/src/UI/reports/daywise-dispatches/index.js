@@ -1,6 +1,7 @@
 import axios from 'axios';
+import dayjs from 'dayjs';
 import { Table } from 'antd';
-import React, { Fragment, useEffect, useMemo, useState } from 'react';
+import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { http } from '../../../modules/http';
 import Spinner from '../../../components/Spinner';
 import { TODAYDATE } from '../../../utils/constants';
@@ -8,12 +9,13 @@ import DateValue from '../../../components/DateValue';
 import Header from '../../../components/SimpleHeader';
 import Worksheet from '../../../components/Worksheet';
 import SearchInput from '../../../components/SearchInput';
+import SelectInput from '../../../components/SelectInput';
 import DateDropdown from '../../../components/DateDropdown';
 import CustomButton from '../../../components/CustomButton';
 import CustomDateInput from '../../../components/CustomDateInput';
 import CustomPagination from '../../../components/CustomPagination';
 import CustomRangeInput from '../../../components/CustomRangeInput';
-import { daywiseDispatchesReportColumns } from '../../../assets/fixtures';
+import { daywiseDispatchesReportColumns, getDepartmentOptions } from '../../../assets/fixtures';
 import { doubleKeyComplexSearch, isEmpty } from '../../../utils/Functions';
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
@@ -30,29 +32,35 @@ const DaywiseDispatchesReport = () => {
     const [endDate, setEndDate] = useState(TODAYDATE)
     const [selectedDate, setSelectedDate] = useState(TODAYDATE)
     const [selectedRange, setSelectedRange] = useState([])
+    const [motherplantList, setMotherplantList] = useState([])
     const [resetSearch, setResetSearch] = useState(false)
     const [searchON, setSeachON] = useState(false)
     const [dateOpen, setDateOpen] = useState(false)
     const [rangeOpen, setRangeOpen] = useState(false)
+    const [departmentId, setDepartmentId] = useState(null)
     const [excelRows, setExelRows] = useState([])
+    let firstRow = useRef(defaultfirstRow)
 
+    const motherplantOptions = useMemo(() => getDepartmentOptions(motherplantList), [motherplantList])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
         setLoading(true)
-        getReports({ fromStart: true, startDate: TODAYDATE, endDate: TODAYDATE })
+        getMotherplantList()
+        getReports({ fromStart: true, startDate: TODAYDATE, endDate: TODAYDATE, departmentId })
 
         return () => {
             http.ABORT(source)
         }
     }, [])
 
-    const getReports = async ({ fromStart = true, startDate, endDate }) => {
-        const url = `reports/getDaywiseDispatches?fromDate=${startDate}&toDate=${endDate}&fromStart=${fromStart}`
+    const getReports = async ({ fromStart = true, startDate, endDate, departmentId }) => {
+        const url = `reports/getDaywiseDispatches?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}&departmentId=${departmentId}`
 
         try {
             const data = await http.GET(axios, url, config)
+            firstRow.current = defaultfirstRow
             setPageNumber(1)
             setLoading(false)
             setTotalCount(data.length)
@@ -60,6 +68,15 @@ const DaywiseDispatchesReport = () => {
             setReports(data)
             searchON && setResetSearch(!resetSearch)
             generateExcelRows(data)
+        } catch (error) { }
+    }
+
+    const getMotherplantList = async () => {
+        const url = 'bibo/getDepartmentsList?departmentType=MotherPlant'
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setMotherplantList(data)
         } catch (error) { }
     }
 
@@ -107,7 +124,7 @@ const DaywiseDispatchesReport = () => {
         setClearBtnDisabled(false)
         setFilterBtnDisabled(true)
         setLoading(true)
-        getReports({ fromStart: false, startDate, endDate })
+        getReports({ fromStart: false, startDate, endDate, departmentId })
     }
 
     const handleFilterClear = async () => {
@@ -116,8 +133,9 @@ const DaywiseDispatchesReport = () => {
         setSelectedDate(TODAYDATE)
         setStartDate(TODAYDATE)
         setEndDate(TODAYDATE)
+        setDepartmentId(null)
         setLoading(true)
-        await getReports({ fromStart: true, startDate: TODAYDATE, endDate: TODAYDATE })
+        await getReports({ fromStart: true, startDate: TODAYDATE, endDate: TODAYDATE, departmentId })
     }
 
     const handlePageChange = (number) => {
@@ -143,8 +161,24 @@ const DaywiseDispatchesReport = () => {
         setSeachON(true)
     }
 
-    const dataSource = useMemo(() => reports.map((dc, index, thisArray) => ({ ...dc, sNo: thisArray.length - index })), [reports])
+    const dataSource = useMemo(() => reports.map((item, idx) => {
+        const { dispatchedDate: key, ...rest } = item
+        const { product20L, product2L, product1L, product500ML, product300ML } = rest
 
+        firstRow.current.product20L += product20L
+        firstRow.current.product2L += product2L
+        firstRow.current.product1L += product1L
+        firstRow.current.product500ML += product500ML
+        firstRow.current.product300ML += product300ML
+
+        return {
+            key: idx,
+            dispatchedDate: dayjs(key).format('DD/MM/YYYY'),
+            ...rest
+        }
+    }), [reports])
+
+    const modifiedDataSource = dataSource.length ? [firstRow.current, ...dataSource] : []
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
 
@@ -159,15 +193,22 @@ const DaywiseDispatchesReport = () => {
                             <DateValue date={startDate} to={endDate} />
                             <div className='app-date-picker-wrapper'>
                                 <DateDropdown onSelect={onDateOptionSelect} />
+                                <SelectInput
+                                    style={{ marginLeft: '1em', width: '200px' }}
+                                    value={departmentId}
+                                    options={motherplantOptions}
+                                    placeholder='Select Motherplant'
+                                    onSelect={(value) => setDepartmentId(value, 'departmentId')}
+                                />
                                 <CustomButton
                                     style={{ marginLeft: '1em' }}
-                                    className={`${filterBtnDisabled ? 'disabled' : ''}`}
+                                    className={`${filterBtnDisabled || !departmentId ? 'disabled' : ''}`}
                                     text='Apply'
                                     onClick={handleFilter}
                                 />
                                 <CustomButton
                                     style={{ marginLeft: '1em', marginRight: '1em' }}
-                                    className={`app-cancel-btn border-btn ${clearBtnDisabled ? 'disabled' : ''}`}
+                                    className={`app-cancel-btn border-btn ${clearBtnDisabled || !departmentId ? 'disabled' : ''}`}
                                     text='Clear'
                                     onClick={handleFilterClear}
                                 />
@@ -208,7 +249,7 @@ const DaywiseDispatchesReport = () => {
                     <div className='app-table delivery-table'>
                         <Table
                             loading={{ spinning: loading, indicator: <Spinner /> }}
-                            dataSource={dataSource.slice(sliceFrom, sliceTo)}
+                            dataSource={modifiedDataSource.slice(sliceFrom, sliceTo)}
                             columns={daywiseDispatchesReportColumns}
                             pagination={false}
                             scroll={{ x: true }}
@@ -241,4 +282,13 @@ const columns = [
     { label: 'Deposit', value: 'depositAmount' },
     { label: 'Dispensers Placed', value: 'dispenserCount' },
 ]
+
+const defaultfirstRow = {
+    dispatchedDate: 'Total',
+    product20L: 0,
+    product2L: 0,
+    product1L: 0,
+    product500ML: 0,
+    product300ML: 0
+}
 export default DaywiseDispatchesReport
