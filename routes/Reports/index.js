@@ -20,21 +20,43 @@ router.get('/getNewCustomerBT', (req, res) => {
 })
 
 router.get('/getDaywiseDispatches', (req, res) => {
-  reportsQueries.getDaywiseDispatches({ departmentId, ...req.query }, (err, results) => {
+  reportsQueries.getDaywiseDispatches(req.query, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else res.json(results)
   })
 })
 
 router.get('/getDispatchesByDate', (req, res) => {
-  reportsQueries.getDispatchesByDate({ departmentId, ...req.query }, (err, results) => {
+  reportsQueries.getDispatchesByDate(req.query, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else res.json(results)
   })
 })
 
+router.get('/getProductionByProduct', async (req, res) => {
+  let startDate = utils.getRequiredDate(-1, req.query.startDate)
+  let productName = await utils.getProductName(req.query.productName)
+  reportsQueries.getProductionByProduct({ productName, ...req.query }, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else {
+      reportsQueries.getProductionByProductOpeningCount({ productName, startDate, ...req.query }, (err1, count) => {
+        if (err1) res.status(500).json({ status: 500, message: err1.sqlMessage });
+        else {
+          let openingQuantity = count[0]?.openingQuantity || 0, finalData = []
+          for (let i of results) {
+            i.openingQuantity = openingQuantity
+            openingQuantity = Math.abs((openingQuantity + i.total) - i.dispatches)
+            finalData.push(i)
+          }
+          res.json(finalData)
+        }
+      })
+    }
+  })
+})
+
 router.get('/getDepartmentwiseDispatches', (req, res) => {
-  reportsQueries.getDepartmentwiseDispatches({ departmentId, ...req.query }, (err, results) => {
+  reportsQueries.getDepartmentwiseDispatches(req.query, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else res.json(results)
   })
