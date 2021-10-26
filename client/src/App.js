@@ -53,6 +53,7 @@ import ManageVisitedCustomer from './UI/visited-customers/view';
 import DeliveredDC from './UI/invoices/super-admin/delivered-dc';
 import WarehouseStockRequest from './UI/stock-request/warehouse';
 import ClosedCustomersReport from './UI/reports/closed-customers';
+import DCwiseDispatchesReport from './UI/reports/dcwise-dispatches';
 import { StatusFilterProvider } from './modules/statusFilterContext';
 import MotherplantStockRequest from './UI/stock-request/motherplant';
 import DaywiseDispatchesReport from './UI/reports/daywise-dispatches';
@@ -184,6 +185,7 @@ const App = () => {
                               <Route path='/collection-performance-report' render={byRole(<CollectionPerformanceReport />)} />
                               <Route path='/daywise-dispatches-report' render={byRole(<DaywiseDispatchesReport />)} />
                               <Route path='/partywise-dispatches-report' render={byRole(<PartywiseDispatchesReport />)} />
+                              <Route path='/dcwise-dispatches-report' render={byRole(<DCwiseDispatchesReport />)} />
                               <Route path='/vendors/manage/:vendorId' render={byRole(<ManageVendor />)} />
                               <Route path='/vendors/:tab?/:page?' render={byRole(<Vendors />)} />
                               <Route path='/closed-customers/manage/:closingId' render={byRole(<ManageClosedCustomer />)} />

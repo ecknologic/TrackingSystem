@@ -1288,7 +1288,7 @@ export const newCustomersReportColumns = [
 ]
 export const daywiseDispatchesReportColumns = [
     {
-        title: 'Dispatched Date',
+        title: 'Date',
         dataIndex: 'dispatchedDate',
         key: 'dispatchedDate',
     },
@@ -1319,6 +1319,48 @@ export const daywiseDispatchesReportColumns = [
     }
 ]
 export const partywiseDispatchesReportColumns = [
+    {
+        title: 'Party',
+        dataIndex: 'warehouseName',
+        key: 'warehouseName',
+    },
+    {
+        title: 'Cans (20 ltr)',
+        dataIndex: 'product20L',
+        key: 'product20L',
+    },
+    {
+        title: '2 Ltr Boxes (1x9)',
+        dataIndex: 'product2L',
+        key: 'product2L',
+    },
+    {
+        title: '1 Ltr Boxes (1x12)',
+        dataIndex: 'product1L',
+        key: 'product1L',
+    },
+    {
+        title: '500 ml Boxes (1x24)',
+        dataIndex: 'product500ML',
+        key: 'product500ML',
+    },
+    {
+        title: '300 ml Boxes (1x30)',
+        dataIndex: 'product300ML',
+        key: 'product300ML',
+    }
+]
+export const DCwiseDispatchesReportColumns = [
+    {
+        title: 'Date',
+        dataIndex: 'dispatchedDate',
+        key: 'dispatchedDate',
+    },
+    {
+        title: 'DC No.',
+        dataIndex: 'DCNO',
+        key: 'DCNO',
+    },
     {
         title: 'Party',
         dataIndex: 'warehouseName',

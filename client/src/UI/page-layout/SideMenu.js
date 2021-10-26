@@ -233,6 +233,9 @@ const SideMenu = () => {
                                 <Item key='/partywise-dispatches-report' icon={selected === '/partywise-dispatches-report' ? <FriendIcon /> : <FriendIconLight />}>
                                     Party Wise Dispatches
                                 </Item>
+                                <Item key='/dcwise-dispatches-report' icon={selected === '/partywise-dispatches-report' ? <FriendIcon /> : <FriendIconLight />}>
+                                    DC Wise Dispatches
+                                </Item>
                             </SubMenu>
                             <Item key='/settings' style={{ pointerEvents: 'none' }} icon={selected === '/settings' ? <SettingIcon /> : <SettingIconLight />}>
                                 Settings
