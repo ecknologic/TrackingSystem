@@ -34,7 +34,7 @@ router.get('/getDispatchesByDate', (req, res) => {
 })
 
 router.get('/getProductionByProduct', async (req, res) => {
-  let startDate = utils.getRequiredDate(-1, req.query.startDate)
+  let startDate = utils.getRequiredDate(-1, req.query.fromDate)
   let productName = await utils.getProductName(req.query.productName)
   reportsQueries.getProductionByProduct({ productName, ...req.query }, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });

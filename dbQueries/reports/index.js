@@ -214,14 +214,14 @@ reportsQueries.getCustomerCountBySalesAgent = async (input, callback) => {
 }
 
 reportsQueries.getDaywiseDispatches = async (input, callback) => {
-    const { startDate, endDate, departmentId } = input
+    const { fromDate: startDate, toDate: endDate, departmentId } = input
     let query = `SELECT dispatchedDate,SUM(product20L) AS product20L,SUM(product2L) AS product2L,SUM(product1L) AS product1L,
     SUM(product500ML) AS product500ML,SUM(product300ML) AS product300ML FROM dispatches WHERE departmentId=? AND DATE(dispatchedDate) BETWEEN ? AND ? GROUP BY dispatchedDate`;
     return executeGetParamsQuery(query, [departmentId, startDate, endDate], callback)
 }
 
 reportsQueries.getDispatchesByDate = async (input, callback) => {
-    const { startDate, endDate, departmentId } = input
+    const { fromDate: startDate, toDate: endDate, departmentId } = input
     let query = `SELECT d.dispatchedDate,DCNO,dep.departmentName AS warehouseName,SUM(d.product20L) AS product20L,SUM(d.product2L) AS product2L,
     SUM(d.product1L) AS product1L,SUM(d.product500ML) AS product500ML,SUM(d.product300ML) AS product300ML FROM dispatches d
     INNER JOIN departmentmaster dep ON dep.departmentId=d.dispatchTo WHERE d.departmentId=? AND  DATE(d.dispatchedDate) BETWEEN ? AND ? GROUP BY d.dispatchedDate,d.dispatchTo,d.DCNO`;
@@ -229,7 +229,7 @@ reportsQueries.getDispatchesByDate = async (input, callback) => {
 }
 
 reportsQueries.getDepartmentwiseDispatches = async (input, callback) => {
-    const { startDate, endDate, departmentId } = input
+    const { fromDate: startDate, toDate: endDate, departmentId } = input
     let query = `SELECT dep.departmentName AS warehouseName,SUM(d.product20L) AS product20L,SUM(d.product2L) AS product2L,
     SUM(d.product1L) AS product1L,SUM(d.product500ML) AS product500ML,SUM(d.product300ML) AS product300ML FROM dispatches d
     INNER JOIN departmentmaster dep ON dep.departmentId=d.dispatchTo WHERE d.departmentId=? AND  DATE(d.dispatchedDate) BETWEEN ? AND ? GROUP BY d.dispatchTo`;
@@ -237,7 +237,7 @@ reportsQueries.getDepartmentwiseDispatches = async (input, callback) => {
 }
 
 reportsQueries.getProductionByProduct = async (input, callback) => {
-    const { startDate, endDate, departmentId, productName } = input
+    const { fromDate: startDate, toDate: endDate, departmentId, productName } = input
     let query = `SELECT p.productionDate,SUM(CASE WHEN p.shiftType='Morning' THEN p.${productName} ELSE 0  END) AS shiftA,
     SUM(CASE WHEN p.shiftType='Evening' THEN p.${productName} ELSE 0  END) AS shiftB,
     SUM(CASE WHEN p.shiftType='Night' THEN p.${productName} ELSE 0  END) AS shiftC,
