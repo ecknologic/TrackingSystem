@@ -11,13 +11,11 @@ const Worksheet = ({
     sheetName = 'Sheet 1'
 }) => {
 
-    const renderButton = () => (
-        <CustomButton text='Download' className='app-extra-btn inverse' disabled={disabled} suffix={<XLSIcon />} />
-    )
+    const DownloadBtn = <CustomButton text='Download' className='app-extra-btn inverse' suffix={<XLSIcon />} />
 
     return (
         <div className="row text-center">
-            <Workbook filename={`${fileName}.xlsx`} element={renderButton()}>
+            <Workbook filename={`${fileName}.xlsx`} element={disabled ? <></> : DownloadBtn}>
                 <Workbook.Sheet data={rows} name={sheetName}>
                     {
                         columns.map((item) => <Workbook.Column key={item.value} label={item.label} value={item.value} />)

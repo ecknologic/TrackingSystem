@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { Table } from 'antd';
-import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react';
+import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../modules/http';
 import Spinner from '../../../components/Spinner';
 import { TODAYDATE } from '../../../utils/constants';
@@ -9,13 +9,12 @@ import Header from '../../../components/SimpleHeader';
 import Worksheet from '../../../components/Worksheet';
 import SearchInput from '../../../components/SearchInput';
 import SelectInput from '../../../components/SelectInput';
-import DateDropdown from '../../../components/DateDropdown';
 import CustomButton from '../../../components/CustomButton';
-import CustomDateInput from '../../../components/CustomDateInput';
 import CustomPagination from '../../../components/CustomPagination';
 import CustomRangeInput from '../../../components/CustomRangeInput';
 import { getDepartmentOptions, partywiseDispatchesReportColumns } from '../../../assets/fixtures';
 import { doubleKeyComplexSearch, isEmpty } from '../../../utils/Functions';
+import { ScheduleIcon } from '../../../components/SVG_Icons';
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
 const PartywiseDispatchesReport = () => {
@@ -30,15 +29,12 @@ const PartywiseDispatchesReport = () => {
     const [startDate, setStartDate] = useState(TODAYDATE)
     const [endDate, setEndDate] = useState(TODAYDATE)
     const [motherplantList, setMotherplantList] = useState([])
-    const [selectedDate, setSelectedDate] = useState(TODAYDATE)
     const [selectedRange, setSelectedRange] = useState([])
     const [resetSearch, setResetSearch] = useState(false)
     const [searchON, setSeachON] = useState(false)
-    const [dateOpen, setDateOpen] = useState(false)
     const [rangeOpen, setRangeOpen] = useState(false)
     const [departmentId, setDepartmentId] = useState(null)
     const [excelRows, setExelRows] = useState([])
-    let firstRow = useRef(defaultfirstRow)
 
     const motherplantOptions = useMemo(() => getDepartmentOptions(motherplantList), [motherplantList])
     const source = useMemo(() => axios.CancelToken.source(), []);
@@ -59,7 +55,6 @@ const PartywiseDispatchesReport = () => {
 
         try {
             const data = await http.GET(axios, url, config)
-            firstRow.current = defaultfirstRow
             setPageNumber(1)
             setLoading(false)
             setTotalCount(data.length)
@@ -88,7 +83,6 @@ const PartywiseDispatchesReport = () => {
     }
 
     const datePickerStatus = (status) => {
-        !status && setDateOpen(false)
         !status && setRangeOpen(false)
     }
 
@@ -103,22 +97,6 @@ const PartywiseDispatchesReport = () => {
         setFilterBtnDisabled(false)
     }
 
-    const handleDateSelect = (value) => {
-        setStartDate(value.format(APIDATEFORMAT))
-        setEndDate(value.format(APIDATEFORMAT))
-        setDateOpen(false)
-        setSelectedDate(value)
-        setPageNumber(1)
-        setFilterBtnDisabled(false)
-    }
-
-    const onDateOptionSelect = ({ key }) => {
-        if (key === 'range') {
-            setRangeOpen(true)
-        }
-        else setDateOpen(true)
-    }
-
     const handleFilter = () => {
         setClearBtnDisabled(false)
         setFilterBtnDisabled(true)
@@ -129,7 +107,6 @@ const PartywiseDispatchesReport = () => {
     const handleFilterClear = async () => {
         setClearBtnDisabled(true)
         setFilterBtnDisabled(true)
-        setSelectedDate(TODAYDATE)
         setStartDate(TODAYDATE)
         setEndDate(TODAYDATE)
         setDepartmentId(null)
@@ -160,19 +137,16 @@ const PartywiseDispatchesReport = () => {
         setSeachON(true)
     }
 
-    const dataSource = useMemo(() => reports.map((item, idx) => {
-        const { product20L, product2L, product1L, product500ML, product300ML } = item
+    const dataSource = useMemo(() => ([{
+        warehouseName: 'Total',
+        product20L: reports.map(({ product20L }) => product20L).reduce((a, c) => a + c, 0).toLocaleString('en-IN'),
+        product2L: reports.map(({ product2L }) => product2L).reduce((a, c) => a + c, 0).toLocaleString('en-IN'),
+        product1L: reports.map(({ product1L }) => product1L).reduce((a, c) => a + c, 0).toLocaleString('en-IN'),
+        product500ML: reports.map(({ product500ML }) => product500ML).reduce((a, c) => a + c, 0).toLocaleString('en-IN'),
+        product300ML: reports.map(({ product300ML }) => product300ML).reduce((a, c) => a + c, 0).toLocaleString('en-IN')
+    }, ...reports]), [reports])
 
-        firstRow.current.product20L += product20L
-        firstRow.current.product2L += product2L
-        firstRow.current.product1L += product1L
-        firstRow.current.product500ML += product500ML
-        firstRow.current.product300ML += product300ML
-
-        return { key: idx, ...item }
-    }), [reports])
-
-    const modifiedDataSource = dataSource.length ? [firstRow.current, ...dataSource] : []
+    const finalDataSource = reports.length ? dataSource : []
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
@@ -187,7 +161,10 @@ const PartywiseDispatchesReport = () => {
                         <div className='left fit'>
                             <DateValue date={startDate} to={endDate} />
                             <div className='app-date-picker-wrapper'>
-                                <DateDropdown onSelect={onDateOptionSelect} />
+                                <div className='date-picker' onClick={() => setRangeOpen(true)}>
+                                    <ScheduleIcon />
+                                    <span>Select Date</span>
+                                </div>
                                 <SelectInput
                                     style={{ marginLeft: '1em', width: '200px' }}
                                     value={departmentId}
@@ -215,14 +192,6 @@ const PartywiseDispatchesReport = () => {
                                     onChange={handleRangeSelect}
                                     onOpenChange={datePickerStatus}
                                 />
-                                <CustomDateInput // Hidden in the DOM
-                                    open={dateOpen}
-                                    value={selectedDate}
-                                    style={{ left: 0 }}
-                                    className='app-date-panel-picker'
-                                    onChange={handleDateSelect}
-                                    onOpenChange={datePickerStatus}
-                                />
                             </div>
                             <Worksheet
                                 fileName='New Customers Report'
@@ -244,7 +213,7 @@ const PartywiseDispatchesReport = () => {
                     <div className='app-table delivery-table'>
                         <Table
                             loading={{ spinning: loading, indicator: <Spinner /> }}
-                            dataSource={modifiedDataSource.slice(sliceFrom, sliceTo)}
+                            dataSource={finalDataSource.slice(sliceFrom, sliceTo)}
                             columns={partywiseDispatchesReportColumns}
                             pagination={false}
                             scroll={{ x: true }}
@@ -278,12 +247,4 @@ const columns = [
     { label: 'Dispensers Placed', value: 'dispenserCount' },
 ]
 
-const defaultfirstRow = {
-    warehouseName: 'Total',
-    product20L: 0,
-    product2L: 0,
-    product1L: 0,
-    product500ML: 0,
-    product300ML: 0
-}
 export default PartywiseDispatchesReport
