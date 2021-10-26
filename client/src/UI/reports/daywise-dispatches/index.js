@@ -56,7 +56,7 @@ const DaywiseDispatchesReport = () => {
     }, [])
 
     const getReports = async ({ fromStart = true, startDate, endDate, departmentId }) => {
-        const url = `reports/getDaywiseDispatches?startDate=${startDate}&endDate=${endDate}&fromStart=${fromStart}&departmentId=${departmentId}`
+        const url = `reports/getDaywiseDispatches?fromDate=${startDate}&toDate=${endDate}&fromStart=${fromStart}&departmentId=${departmentId}`
 
         try {
             const data = await http.GET(axios, url, config)
