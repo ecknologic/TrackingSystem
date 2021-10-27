@@ -1117,6 +1117,13 @@ textarea.ant-input {
   }
 }
 
+.app-excel-download-btn {
+
+  .prefix svg {
+    transform: none;
+  }
+}
+
 .app-extra-btn.inverse {
   background-color: transparent;
   color: #5c63ab;
@@ -1612,7 +1619,7 @@ textarea.ant-input {
     }
   }
 
-  .ant-table-thead > tr > th {
+  .ant-table-thead > tr > th, .ant-table-title {
     color: #333333;
     font-family: "PoppinsSemiBold600";
     background-color: #fff;
@@ -1621,7 +1628,8 @@ textarea.ant-input {
     white-space: nowrap;
   }
 
-  .ant-table-tbody > tr > td {
+  .ant-table-tbody > tr > td,
+  .ant-table-summary > tr > td {
     color: #333333;
     font-family: "PoppinsRegular400";
     font-size: 0.9em;
@@ -1636,7 +1644,7 @@ textarea.ant-input {
     background-color: inherit;
   }
 
-  .ant-table-tbody {
+  .ant-table-tbody, .ant-table-summary {
     .ant-dropdown-menu-item {
       font-size: 0.9em;
     }

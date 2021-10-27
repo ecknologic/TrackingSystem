@@ -1392,6 +1392,48 @@ export const DCwiseDispatchesReportColumns = [
         key: 'product300ML',
     }
 ]
+export const ProductwiseDispatchesReportColumns = [
+    {
+        title: 'Date',
+        dataIndex: 'productionDate',
+        key: 'productionDate',
+    },
+    {
+        title: 'Opening',
+        dataIndex: 'openingQuantity',
+        key: 'openingQuantity',
+    },
+    {
+        title: 'Production',
+        children: [
+            {
+                title: 'Shift A',
+                dataIndex: 'shiftA',
+                key: 'shiftA',
+            },
+            {
+                title: 'Shift B',
+                dataIndex: 'shiftB',
+                key: 'shiftB',
+            },
+            {
+                title: 'Shift C',
+                dataIndex: 'shiftC',
+                key: 'shiftC',
+            },
+            {
+                title: 'Total',
+                dataIndex: 'total',
+                key: 'total',
+            }
+        ]
+    },
+    {
+        title: 'Dispatches',
+        dataIndex: 'dispatches',
+        key: 'dispatches',
+    }
+]
 export const inactiveCustomersReportColumns = [
     {
         title: 'S. No',

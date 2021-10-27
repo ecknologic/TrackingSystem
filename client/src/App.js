@@ -62,6 +62,7 @@ import { CustomerFilterProvider } from './modules/customerFilterContext';
 import DispensersViabilityReport from './UI/reports/dispensers-viability';
 import PartywiseDispatchesReport from './UI/reports/partywise-dispatches';
 import MarketingPerformanceReport from './UI/reports/marketing-performance';
+import ProductwiseDispatchesReport from './UI/reports/productwise-dispatches';
 import CollectionPerformanceReport from './UI/reports/collection-performance';
 import { MultiStatusFilterProvider } from './modules/multiStatusFilterContext';
 
@@ -186,6 +187,7 @@ const App = () => {
                               <Route path='/daywise-dispatches-report' render={byRole(<DaywiseDispatchesReport />)} />
                               <Route path='/partywise-dispatches-report' render={byRole(<PartywiseDispatchesReport />)} />
                               <Route path='/dcwise-dispatches-report' render={byRole(<DCwiseDispatchesReport />)} />
+                              <Route path='/productwise-dispatches-report' render={byRole(<ProductwiseDispatchesReport />)} />
                               <Route path='/vendors/manage/:vendorId' render={byRole(<ManageVendor />)} />
                               <Route path='/vendors/:tab?/:page?' render={byRole(<Vendors />)} />
                               <Route path='/closed-customers/manage/:closingId' render={byRole(<ManageClosedCustomer />)} />

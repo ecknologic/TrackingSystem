@@ -1,5 +1,6 @@
+import dayjs from 'dayjs';
 import axios from 'axios';
-import { Table } from 'antd';
+import { Table, Typography } from 'antd';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { http } from '../../../modules/http';
 import Spinner from '../../../components/Spinner';
@@ -10,14 +11,15 @@ import Worksheet from '../../../components/Worksheet';
 import SearchInput from '../../../components/SearchInput';
 import SelectInput from '../../../components/SelectInput';
 import CustomButton from '../../../components/CustomButton';
+import { ScheduleIcon } from '../../../components/SVG_Icons';
 import CustomPagination from '../../../components/CustomPagination';
 import CustomRangeInput from '../../../components/CustomRangeInput';
-import { getDepartmentOptions, partywiseDispatchesReportColumns } from '../../../assets/fixtures';
 import { doubleKeyComplexSearch, isEmpty } from '../../../utils/Functions';
-import { ScheduleIcon } from '../../../components/SVG_Icons';
+import { getDepartmentOptions, ProductwiseDispatchesReportColumns, getProductOptions } from '../../../assets/fixtures';
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
-const PartywiseDispatchesReport = () => {
+const ProductwiseDispatchesReport = () => {
+    const { Text } = Typography
     const [loading, setLoading] = useState(true)
     const [filterBtnDisabled, setFilterBtnDisabled] = useState(true)
     const [clearBtnDisabled, setClearBtnDisabled] = useState(true)
@@ -28,30 +30,35 @@ const PartywiseDispatchesReport = () => {
     const [pageNumber, setPageNumber] = useState(1)
     const [startDate, setStartDate] = useState(TODAYDATE)
     const [endDate, setEndDate] = useState(TODAYDATE)
+    const [productList, setProductList] = useState([])
     const [motherplantList, setMotherplantList] = useState([])
     const [selectedRange, setSelectedRange] = useState([])
     const [resetSearch, setResetSearch] = useState(false)
     const [searchON, setSeachON] = useState(false)
     const [rangeOpen, setRangeOpen] = useState(false)
     const [departmentId, setDepartmentId] = useState(null)
+    const [productName, setProductName] = useState(null)
     const [excelRows, setExelRows] = useState([])
+    const [tableTitle, setTableTitle] = useState(null)
 
+    const productOptions = useMemo(() => getProductOptions(productList), [productList])
     const motherplantOptions = useMemo(() => getDepartmentOptions(motherplantList), [motherplantList])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
 
     useEffect(() => {
         setLoading(true)
+        getProductList()
         getMotherplantList()
-        getReports({ fromStart: true, startDate: TODAYDATE, endDate: TODAYDATE, departmentId })
+        getReports({ fromStart: true, startDate: TODAYDATE, endDate: TODAYDATE, departmentId, productName })
 
         return () => {
             http.ABORT(source)
         }
     }, [])
 
-    const getReports = async ({ fromStart = true, startDate, endDate, departmentId }) => {
-        const url = `reports/getDepartmentwiseDispatches?fromDate=${startDate}&toDate=${endDate}&fromStart=${fromStart}&departmentId=${departmentId}`
+    const getReports = async ({ fromStart = true, startDate, endDate, departmentId, productName }) => {
+        const url = `reports/getProductionByProduct?fromDate=${startDate}&toDate=${endDate}&fromStart=${fromStart}&departmentId=${departmentId}&productName=${productName}`
 
         try {
             const data = await http.GET(axios, url, config)
@@ -62,6 +69,7 @@ const PartywiseDispatchesReport = () => {
             setReports(data)
             searchON && setResetSearch(!resetSearch)
             generateExcelRows(data)
+            setTableTitle(productName)
         } catch (error) { }
     }
 
@@ -71,6 +79,15 @@ const PartywiseDispatchesReport = () => {
         try {
             const data = await http.GET(axios, url, config)
             setMotherplantList(data)
+        } catch (error) { }
+    }
+
+    const getProductList = async () => {
+        const url = 'products/getProducts'
+
+        try {
+            const data = await http.GET(axios, url, config)
+            setProductList(data)
         } catch (error) { }
     }
 
@@ -101,7 +118,7 @@ const PartywiseDispatchesReport = () => {
         setClearBtnDisabled(false)
         setFilterBtnDisabled(true)
         setLoading(true)
-        getReports({ fromStart: false, startDate, endDate, departmentId })
+        getReports({ fromStart: false, startDate, endDate, departmentId, productName })
     }
 
     const handleFilterClear = async () => {
@@ -110,8 +127,9 @@ const PartywiseDispatchesReport = () => {
         setStartDate(TODAYDATE)
         setEndDate(TODAYDATE)
         setDepartmentId(null)
+        setProductName(null)
         setLoading(true)
-        await getReports({ fromStart: true, startDate: TODAYDATE, endDate: TODAYDATE, departmentId })
+        await getReports({ fromStart: true, startDate: TODAYDATE, endDate: TODAYDATE, departmentId, productName })
     }
 
     const handlePageChange = (number) => {
@@ -137,14 +155,7 @@ const PartywiseDispatchesReport = () => {
         setSeachON(true)
     }
 
-    const dataSource = useMemo(() => ([{
-        warehouseName: 'Total',
-        product20L: reports.map(({ product20L }) => product20L).reduce((a, c) => a + c, 0).toLocaleString('en-IN'),
-        product2L: reports.map(({ product2L }) => product2L).reduce((a, c) => a + c, 0).toLocaleString('en-IN'),
-        product1L: reports.map(({ product1L }) => product1L).reduce((a, c) => a + c, 0).toLocaleString('en-IN'),
-        product500ML: reports.map(({ product500ML }) => product500ML).reduce((a, c) => a + c, 0).toLocaleString('en-IN'),
-        product300ML: reports.map(({ product300ML }) => product300ML).reduce((a, c) => a + c, 0).toLocaleString('en-IN')
-    }, ...reports]), [reports])
+    const dataSource = useMemo(() => reports.map((item) => ({ ...item, productionDate: dayjs(item.productionDate).format('DD/MM/YYYY') })), [reports])
 
     const finalDataSource = reports.length ? dataSource : []
 
@@ -153,7 +164,7 @@ const PartywiseDispatchesReport = () => {
 
     return (
         <Fragment>
-            <Header title='Party Wise Dispatches Report' />
+            <Header title='Product Wise Dispatches Report' />
             <div className='stock-manager-content'>
 
                 <div className='stock-delivery-container'>
@@ -166,24 +177,33 @@ const PartywiseDispatchesReport = () => {
                                     <span>Select Date</span>
                                 </div>
                                 {
-                                    clearBtnDisabled
-                                    && (<SelectInput
-                                        style={{ marginLeft: '1em', width: '200px' }}
-                                        value={departmentId}
-                                        options={motherplantOptions}
-                                        placeholder='Select Motherplant'
-                                        onSelect={(value) => setDepartmentId(value, 'departmentId')}
-                                    />)
+                                    clearBtnDisabled &&
+                                    (<>
+                                        <SelectInput
+                                            style={{ marginLeft: '1em', width: '200px' }}
+                                            value={departmentId}
+                                            options={motherplantOptions}
+                                            placeholder='Select Motherplant'
+                                            onSelect={(value) => setDepartmentId(value, 'departmentId')}
+                                        />
+                                        <SelectInput
+                                            style={{ marginLeft: '1em', marginRight: '1em', width: '150px' }}
+                                            value={productName}
+                                            options={productOptions}
+                                            placeholder='Select Product'
+                                            onSelect={(value) => setProductName(value, 'productName')}
+                                        />
+                                    </>)
                                 }
                                 <CustomButton
                                     style={{ marginLeft: '1em' }}
-                                    className={`${filterBtnDisabled ? 'disabled' : ''}`}
+                                    className={`${filterBtnDisabled || !departmentId || !productName ? 'disabled' : ''}`}
                                     text='Apply'
                                     onClick={handleFilter}
                                 />
                                 <CustomButton
                                     style={{ marginLeft: '1em', marginRight: '1em' }}
-                                    className={`app-cancel-btn border-btn ${clearBtnDisabled ? 'disabled' : ''}`}
+                                    className={`app-cancel-btn border-btn ${clearBtnDisabled || !departmentId || !productName ? 'disabled' : ''}`}
                                     text='Clear'
                                     onClick={handleFilterClear}
                                 />
@@ -217,9 +237,60 @@ const PartywiseDispatchesReport = () => {
                         <Table
                             loading={{ spinning: loading, indicator: <Spinner /> }}
                             dataSource={finalDataSource.slice(sliceFrom, sliceTo)}
-                            columns={partywiseDispatchesReportColumns}
+                            columns={ProductwiseDispatchesReportColumns}
                             pagination={false}
                             scroll={{ x: true }}
+                            bordered
+                            title={tableTitle ? () => tableTitle : null}
+                            summary={pageData => {
+                                let totalOpening = 0;
+                                let totalShiftA = 0;
+                                let totalShiftB = 0;
+                                let totalShiftC = 0;
+                                let totalShifts = 0;
+                                let totalDispatches = 0;
+
+                                pageData.forEach(({
+                                    dispatches,
+                                    openingQuantity,
+                                    shiftA,
+                                    shiftB,
+                                    shiftC,
+                                    total }) => {
+                                    totalOpening += openingQuantity;
+                                    totalShiftA += shiftA;
+                                    totalShiftB += shiftB;
+                                    totalShiftC += shiftC;
+                                    totalShifts += total;
+                                    totalDispatches += dispatches;
+                                });
+
+                                return (
+                                    <>
+                                        <Table.Summary.Row>
+                                            <Table.Summary.Cell >Total</Table.Summary.Cell>
+                                            <Table.Summary.Cell>
+                                                <Text strong>{totalOpening}</Text>
+                                            </Table.Summary.Cell>
+                                            <Table.Summary.Cell>
+                                                <Text>{totalShiftA}</Text>
+                                            </Table.Summary.Cell>
+                                            <Table.Summary.Cell>
+                                                <Text>{totalShiftB}</Text>
+                                            </Table.Summary.Cell>
+                                            <Table.Summary.Cell>
+                                                <Text>{totalShiftC}</Text>
+                                            </Table.Summary.Cell>
+                                            <Table.Summary.Cell>
+                                                <Text>{totalShifts}</Text>
+                                            </Table.Summary.Cell>
+                                            <Table.Summary.Cell>
+                                                <Text>{totalDispatches}</Text>
+                                            </Table.Summary.Cell>
+                                        </Table.Summary.Row>
+                                    </>
+                                );
+                            }}
                         />
                     </div>
                     {
@@ -250,4 +321,4 @@ const columns = [
     { label: 'Dispensers Placed', value: 'dispenserCount' },
 ]
 
-export default PartywiseDispatchesReport
+export default ProductwiseDispatchesReport

@@ -168,13 +168,16 @@ const DaywiseDispatchesReport = () => {
                                     <ScheduleIcon />
                                     <span>Select Date</span>
                                 </div>
-                                <SelectInput
-                                    style={{ marginLeft: '1em', width: '200px' }}
-                                    value={departmentId}
-                                    options={motherplantOptions}
-                                    placeholder='Select Motherplant'
-                                    onSelect={(value) => setDepartmentId(value, 'departmentId')}
-                                />
+                                {
+                                    clearBtnDisabled
+                                    && (<SelectInput
+                                        style={{ marginLeft: '1em', width: '200px' }}
+                                        value={departmentId}
+                                        options={motherplantOptions}
+                                        placeholder='Select Motherplant'
+                                        onSelect={(value) => setDepartmentId(value, 'departmentId')}
+                                    />)
+                                }
                                 <CustomButton
                                     style={{ marginLeft: '1em' }}
                                     className={`${filterBtnDisabled || !departmentId ? 'disabled' : ''}`}

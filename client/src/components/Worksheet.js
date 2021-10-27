@@ -2,6 +2,7 @@ import React from 'react';
 import Workbook from 'react-excel-workbook'
 import CustomButton from './CustomButton';
 import { XLSIcon } from './SVG_Icons';
+import { DownloadOutlined } from '@ant-design/icons';
 
 const Worksheet = ({
     disabled,
@@ -11,7 +12,7 @@ const Worksheet = ({
     sheetName = 'Sheet 1'
 }) => {
 
-    const DownloadBtn = <CustomButton text='Download' className='app-extra-btn inverse' suffix={<XLSIcon />} />
+    const DownloadBtn = <CustomButton icon={<DownloadOutlined />} className='app-extra-btn inverse app-excel-download-btn' suffix={<XLSIcon />} />
 
     return (
         <div className="row text-center">

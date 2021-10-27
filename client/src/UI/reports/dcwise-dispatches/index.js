@@ -168,22 +168,25 @@ const DCwiseDispatchesReport = () => {
                                     <ScheduleIcon />
                                     <span>Select Date</span>
                                 </div>
-                                <SelectInput
-                                    style={{ marginLeft: '1em', width: '200px' }}
-                                    value={departmentId}
-                                    options={motherplantOptions}
-                                    placeholder='Select Motherplant'
-                                    onSelect={(value) => setDepartmentId(value, 'departmentId')}
-                                />
+                                {
+                                    clearBtnDisabled
+                                    && (<SelectInput
+                                        style={{ marginLeft: '1em', width: '200px' }}
+                                        value={departmentId}
+                                        options={motherplantOptions}
+                                        placeholder='Select Motherplant'
+                                        onSelect={(value) => setDepartmentId(value, 'departmentId')}
+                                    />)
+                                }
                                 <CustomButton
                                     style={{ marginLeft: '1em' }}
-                                    className={`${filterBtnDisabled ? 'disabled' : ''}`}
+                                    className={`${filterBtnDisabled || !departmentId ? 'disabled' : ''}`}
                                     text='Apply'
                                     onClick={handleFilter}
                                 />
                                 <CustomButton
                                     style={{ marginLeft: '1em', marginRight: '1em' }}
-                                    className={`app-cancel-btn border-btn ${clearBtnDisabled ? 'disabled' : ''}`}
+                                    className={`app-cancel-btn border-btn ${clearBtnDisabled || !departmentId ? 'disabled' : ''}`}
                                     text='Clear'
                                     onClick={handleFilterClear}
                                 />
