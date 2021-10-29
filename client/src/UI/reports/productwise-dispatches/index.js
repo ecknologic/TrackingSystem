@@ -20,7 +20,7 @@ const APIDATEFORMAT = 'YYYY-MM-DD'
 
 const ProductwiseDispatchesReport = () => {
     const { Text } = Typography
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(false)
     const [filterBtnDisabled, setFilterBtnDisabled] = useState(true)
     const [clearBtnDisabled, setClearBtnDisabled] = useState(true)
     const [reports, setReports] = useState([])
@@ -47,29 +47,31 @@ const ProductwiseDispatchesReport = () => {
     const config = { cancelToken: source.token }
 
     useEffect(() => {
-        setLoading(true)
         getProductList()
         getMotherplantList()
-        getReports({ fromStart: true, startDate: TODAYDATE, endDate: TODAYDATE, departmentId, productName })
 
         return () => {
             http.ABORT(source)
         }
     }, [])
 
+    const postFetch = (data) => {
+        setPageNumber(1)
+        setLoading(false)
+        setTotalCount(data.length)
+        setReportsClone(data)
+        setReports(data)
+        searchON && setResetSearch(!resetSearch)
+        generateExcelRows(data)
+        setTableTitle(productName)
+    }
+
     const getReports = async ({ fromStart = true, startDate, endDate, departmentId, productName }) => {
         const url = `reports/getProductionByProduct?fromDate=${startDate}&toDate=${endDate}&fromStart=${fromStart}&departmentId=${departmentId}&productName=${productName}`
 
         try {
             const data = await http.GET(axios, url, config)
-            setPageNumber(1)
-            setLoading(false)
-            setTotalCount(data.length)
-            setReportsClone(data)
-            setReports(data)
-            searchON && setResetSearch(!resetSearch)
-            generateExcelRows(data)
-            setTableTitle(productName)
+            postFetch(data)
         } catch (error) { }
     }
 
@@ -128,8 +130,7 @@ const ProductwiseDispatchesReport = () => {
         setEndDate(TODAYDATE)
         setDepartmentId(null)
         setProductName(null)
-        setLoading(true)
-        await getReports({ fromStart: true, startDate: TODAYDATE, endDate: TODAYDATE, departmentId, productName })
+        postFetch([])
     }
 
     const handlePageChange = (number) => {
@@ -155,9 +156,34 @@ const ProductwiseDispatchesReport = () => {
         setSeachON(true)
     }
 
-    const dataSource = useMemo(() => reports.map((item) => ({ ...item, productionDate: dayjs(item.productionDate).format('DD/MM/YYYY') })), [reports])
+    const generateCollapsible = (reports) => {
+        let collapsedRows = []
+        reports.forEach((item, itemIndex) => {
+            const index = collapsedRows.findIndex((obj) => obj.productionDate === dayjs(item.productionDate).format('DD/MM/YYYY'))
+            const newItem = {
+                ...item,
+                productionDate: dayjs(item.productionDate).format('DD/MM/YYYY'),
+                key: `${itemIndex}${index}`
+            }
 
-    const finalDataSource = reports.length ? dataSource : []
+            if (index >= 0) {
+                const row = collapsedRows[index]
+                delete newItem.productionDate
+                if (row.children) {
+                    row.children.push(newItem)
+                }
+                else row.children = [newItem]
+            }
+            else {
+                collapsedRows.push(newItem)
+            }
+        })
+        return collapsedRows
+    }
+
+    const dataSource = useMemo(() => generateCollapsible(reports), [reports])
+
+    const finalDataSource = dataSource.length ? dataSource : []
 
     const sliceFrom = (pageNumber - 1) * pageSize
     const sliceTo = sliceFrom + pageSize
@@ -242,6 +268,7 @@ const ProductwiseDispatchesReport = () => {
                             scroll={{ x: true }}
                             bordered
                             title={tableTitle ? () => tableTitle : null}
+                            expandable={{ defaultExpandAllRows: true }}
                             summary={pageData => {
                                 let totalOpening = 0;
                                 let totalShiftA = 0;
@@ -250,27 +277,35 @@ const ProductwiseDispatchesReport = () => {
                                 let totalShifts = 0;
                                 let totalDispatches = 0;
 
-                                pageData.forEach(({
-                                    dispatches,
-                                    openingQuantity,
-                                    shiftA,
-                                    shiftB,
-                                    shiftC,
-                                    total }) => {
+                                pageData.forEach(item => calculateTotal(item))
+
+                                function calculateTotal(item) {
+                                    const {
+                                        dispatches,
+                                        openingQuantity,
+                                        shiftA,
+                                        shiftB,
+                                        shiftC,
+                                        total,
+                                        children } = item;
                                     totalOpening += openingQuantity;
                                     totalShiftA += shiftA;
                                     totalShiftB += shiftB;
                                     totalShiftC += shiftC;
                                     totalShifts += total;
                                     totalDispatches += dispatches;
-                                });
+
+                                    if (children) {
+                                        children.forEach(item => calculateTotal(item))
+                                    }
+                                }
 
                                 return (
                                     <>
                                         <Table.Summary.Row>
                                             <Table.Summary.Cell >Total</Table.Summary.Cell>
                                             <Table.Summary.Cell>
-                                                <Text strong>{totalOpening}</Text>
+                                                <Text>{totalOpening}</Text>
                                             </Table.Summary.Cell>
                                             <Table.Summary.Cell>
                                                 <Text>{totalShiftA}</Text>
