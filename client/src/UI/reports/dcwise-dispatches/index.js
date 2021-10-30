@@ -138,6 +138,31 @@ const DCwiseDispatchesReport = () => {
         setSeachON(true)
     }
 
+    const generateCollapsible = (reports) => {
+        let collapsedRows = []
+        reports.forEach((item, itemIndex) => {
+            const index = collapsedRows.findIndex((obj) => obj.dispatchedDate === dayjs(item.dispatchedDate).format('DD/MM/YYYY'))
+            const newItem = {
+                ...item,
+                dispatchedDate: dayjs(item.dispatchedDate).format('DD/MM/YYYY'),
+                key: `${itemIndex}${index}`
+            }
+
+            if (index >= 0) {
+                const row = collapsedRows[index]
+                delete newItem.dispatchedDate
+                if (row.children) {
+                    row.children.push(newItem)
+                }
+                else row.children = [newItem]
+            }
+            else {
+                collapsedRows.push(newItem)
+            }
+        })
+        return collapsedRows
+    }
+
     const dataSource = useMemo(() => ([{
         DCNO: 'Total',
         product20L: reports.map(({ product20L }) => product20L).reduce((a, c) => a + c, 0).toLocaleString('en-IN'),
@@ -146,7 +171,7 @@ const DCwiseDispatchesReport = () => {
         product500ML: reports.map(({ product500ML }) => product500ML).reduce((a, c) => a + c, 0).toLocaleString('en-IN'),
         product300ML: reports.map(({ product300ML }) => product300ML).reduce((a, c) => a + c, 0).toLocaleString('en-IN')
     },
-    ...reports.map((item) => ({ ...item, dispatchedDate: dayjs(item.dispatchedDate).format('DD/MM/YYYY') }))]
+    ...generateCollapsible(reports)]
     ), [reports])
 
     const finalDataSource = reports.length ? dataSource : []
@@ -221,6 +246,7 @@ const DCwiseDispatchesReport = () => {
                             loading={{ spinning: loading, indicator: <Spinner /> }}
                             dataSource={finalDataSource.slice(sliceFrom, sliceTo)}
                             columns={DCwiseDispatchesReportColumns}
+                            expandable={{ defaultExpandAllRows: true }}
                             pagination={false}
                             scroll={{ x: true }}
                         />

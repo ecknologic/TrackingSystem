@@ -156,32 +156,7 @@ const ProductwiseDispatchesReport = () => {
         setSeachON(true)
     }
 
-    const generateCollapsible = (reports) => {
-        let collapsedRows = []
-        reports.forEach((item, itemIndex) => {
-            const index = collapsedRows.findIndex((obj) => obj.productionDate === dayjs(item.productionDate).format('DD/MM/YYYY'))
-            const newItem = {
-                ...item,
-                productionDate: dayjs(item.productionDate).format('DD/MM/YYYY'),
-                key: `${itemIndex}${index}`
-            }
-
-            if (index >= 0) {
-                const row = collapsedRows[index]
-                delete newItem.productionDate
-                if (row.children) {
-                    row.children.push(newItem)
-                }
-                else row.children = [newItem]
-            }
-            else {
-                collapsedRows.push(newItem)
-            }
-        })
-        return collapsedRows
-    }
-
-    const dataSource = useMemo(() => generateCollapsible(reports), [reports])
+    const dataSource = useMemo(() => reports.map((item) => ({ ...item, productionDate: dayjs(item.productionDate).format('DD/MM/YYYY') })), [reports])
 
     const finalDataSource = dataSource.length ? dataSource : []
 
@@ -268,7 +243,6 @@ const ProductwiseDispatchesReport = () => {
                             scroll={{ x: true }}
                             bordered
                             title={tableTitle ? () => tableTitle : null}
-                            expandable={{ defaultExpandAllRows: true }}
                             summary={pageData => {
                                 let totalOpening = 0;
                                 let totalShiftA = 0;
