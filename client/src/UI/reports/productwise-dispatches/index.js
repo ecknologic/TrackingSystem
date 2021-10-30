@@ -218,7 +218,7 @@ const ProductwiseDispatchesReport = () => {
                                 />
                             </div>
                             <Worksheet
-                                fileName='New Customers Report'
+                                fileName='Product Wise Report'
                                 rows={excelRows}
                                 columns={columns}
                                 disabled={loading || isEmpty(reports)}

@@ -200,7 +200,7 @@ const DaywiseDispatchesReport = () => {
                                 />
                             </div>
                             <Worksheet
-                                fileName='New Customers Report'
+                                fileName='Day Wise Report'
                                 rows={excelRows}
                                 columns={columns}
                                 disabled={loading || isEmpty(reports)}

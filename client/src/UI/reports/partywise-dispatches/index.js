@@ -197,7 +197,7 @@ const PartywiseDispatchesReport = () => {
                                 />
                             </div>
                             <Worksheet
-                                fileName='New Customers Report'
+                                fileName='Party Wise Report'
                                 rows={excelRows}
                                 columns={columns}
                                 disabled={loading || isEmpty(reports)}
