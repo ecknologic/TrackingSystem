@@ -94,11 +94,48 @@ const ProductwiseDispatchesReport = () => {
     }
 
     const generateExcelRows = (data) => {
-        const rows = data.map((item, index, thisArray) => {
-            return { ...item, sNo: thisArray.length - index }
+        const rows = data.map((item) => {
+            return { ...item, productionDate: dayjs(item.productionDate).format('DD/MM/YYYY') }
         })
 
-        setExelRows(rows)
+        let totalOpening = 0;
+        let totalShiftA = 0;
+        let totalShiftB = 0;
+        let totalShiftC = 0;
+        let totalShifts = 0;
+        let totalDispatches = 0;
+
+        data.forEach(item => calculateTotal(item))
+
+        function calculateTotal(item) {
+            const {
+                dispatches,
+                openingQuantity,
+                shiftA,
+                shiftB,
+                shiftC,
+                total } = item;
+            totalOpening += openingQuantity;
+            totalShiftA += shiftA;
+            totalShiftB += shiftB;
+            totalShiftC += shiftC;
+            totalShifts += total;
+            totalDispatches += dispatches;
+        }
+
+        const lastRow = {
+            productionDate: 'Total',
+            dispatches: totalDispatches,
+            openingQuantity: totalOpening,
+            shiftA: totalShiftA,
+            shiftB: totalShiftB,
+            shiftC: totalShiftC,
+            total: totalShifts
+        }
+
+        const finalRows = [...rows, lastRow]
+
+        setExelRows(finalRows)
     }
 
     const datePickerStatus = (status) => {
@@ -320,14 +357,13 @@ const ProductwiseDispatchesReport = () => {
 }
 
 const columns = [
-    { label: 'S. No', value: 'sNo' },
-    { label: 'Customer ID', value: 'customerNo' },
-    { label: 'Customer Name', value: 'customerName' },
-    { label: 'Executive Name', value: 'salesAgent' },
-    { label: 'No. of Bottles Placed', value: 'quantity' },
-    { label: 'Price', value: 'productPrice' },
-    { label: 'Deposit', value: 'depositAmount' },
-    { label: 'Dispensers Placed', value: 'dispenserCount' },
+    { label: 'Date', value: 'productionDate' },
+    { label: 'Opening', value: 'openingQuantity' },
+    { label: 'Production - Shift A', value: 'shiftA' },
+    { label: 'Production - Shift B', value: 'shiftB' },
+    { label: 'Production - Shift C', value: 'shiftC' },
+    { label: 'Production - Total', value: 'total' },
+    { label: 'Dispatches', value: 'dispatches' }
 ]
 
 export default ProductwiseDispatchesReport

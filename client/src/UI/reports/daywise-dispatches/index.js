@@ -76,12 +76,46 @@ const DaywiseDispatchesReport = () => {
     }
 
     const generateExcelRows = (data) => {
-        const rows = data.map((item, index, thisArray) => {
-            return { ...item, sNo: thisArray.length - index }
+        const rows = data.map((item) => {
+            return { ...item, dispatchedDate: dayjs(item.dispatchedDate).format('DD/MM/YYYY') }
         })
 
-        setExelRows(rows)
+        let totalProduct20L = 0;
+        let totalProduct2L = 0;
+        let totalProduct1L = 0;
+        let totalProduct500ML = 0;
+        let totalProduct300ML = 0;
+
+        data.forEach(item => calculateTotal(item))
+
+        function calculateTotal(item) {
+            const {
+                product20L,
+                product2L,
+                product1L,
+                product500ML,
+                product300ML } = item;
+            totalProduct20L += product20L;
+            totalProduct2L += product2L;
+            totalProduct1L += product1L;
+            totalProduct500ML += product500ML;
+            totalProduct300ML += product300ML;
+        }
+
+        const firstRow = {
+            product20L: totalProduct20L,
+            product2L: totalProduct2L,
+            product1L: totalProduct1L,
+            product500ML: totalProduct500ML,
+            product300ML: totalProduct300ML,
+            dispatchedDate: 'Total'
+        }
+
+        const finalRows = [firstRow, ...rows]
+
+        setExelRows(finalRows)
     }
+
 
     const datePickerStatus = (status) => {
         !status && setRangeOpen(false)
@@ -243,14 +277,12 @@ const DaywiseDispatchesReport = () => {
 }
 
 const columns = [
-    { label: 'S. No', value: 'sNo' },
-    { label: 'Customer ID', value: 'customerNo' },
-    { label: 'Customer Name', value: 'customerName' },
-    { label: 'Executive Name', value: 'salesAgent' },
-    { label: 'No. of Bottles Placed', value: 'quantity' },
-    { label: 'Price', value: 'productPrice' },
-    { label: 'Deposit', value: 'depositAmount' },
-    { label: 'Dispensers Placed', value: 'dispenserCount' },
+    { label: 'Date', value: 'dispatchedDate' },
+    { label: 'Cans (20 ltr)', value: 'product20L' },
+    { label: '2 Ltr Boxes (1x9)', value: 'product2L' },
+    { label: '1 Ltr Boxes (1x12)', value: 'product1L' },
+    { label: '500 ml Boxes (1x24)', value: 'product500ML' },
+    { label: '300 ml Boxes (1x30)', value: 'product300ML' }
 ]
 
 export default DaywiseDispatchesReport
