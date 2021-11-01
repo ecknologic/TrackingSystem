@@ -25,4 +25,11 @@ productQueries.updateProducts = (input, callback) => {
     let requestBody = [productName, price, tax, totalAmount, hsnCode]
     return executePostOrUpdateQuery(query, requestBody, callback)
 }
+
+productQueries.updateProductStatus = (input, callback) => {
+    const { status, productId } = input
+    let query = `update productdetails set status=? where productId=${productId}`;
+    let requestBody = [status]
+    return executePostOrUpdateQuery(query, requestBody, callback)
+}
 module.exports = productQueries

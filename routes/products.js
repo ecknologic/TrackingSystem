@@ -28,4 +28,11 @@ router.post('/updateProduct', (req, res) => {
   })
 });
 
+router.put('/updateProductStatus', (req, res) => {
+  productQueries.updateProductStatus(req.body, (err, results) => {
+    if (err) res.status(500).json(dbError(err));
+    else res.json(results)
+  })
+});
+
 module.exports = router;
