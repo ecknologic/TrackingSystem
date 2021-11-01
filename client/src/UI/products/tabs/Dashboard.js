@@ -9,7 +9,7 @@ import { TRACKFORM } from '../../../utils/constants';
 import ConfirmMessage from '../../../components/ConfirmMessage';
 import CustomModal from '../../../components/CustomModal';
 import { productColumns } from '../../../assets/fixtures';
-import { EditIconGrey } from '../../../components/SVG_Icons';
+import { EditIconGrey, HomeIconGrey } from '../../../components/SVG_Icons';
 import ConfirmModal from '../../../components/CustomModal';
 import { deepClone, isAlphaNum, isEmpty, resetTrackForm, showToast } from '../../../utils/Functions';
 import { validateIntFloat, validateNumber, validateProductValues } from '../../../utils/validations';
@@ -52,6 +52,12 @@ const Dashboard = ({ reFetch }) => {
         if (key === 'edit') {
             setFormData(data)
             setEditModal(true)
+        }
+        else if (key === 'outOfStock') {
+            handleStatusUpdate(data, 'OUTOFSTOCK')
+        }
+        else if (key === 'inStock') {
+            handleStatusUpdate(data, 'AVIALABLE')
         }
     }
 
@@ -112,6 +118,27 @@ const Dashboard = ({ reFetch }) => {
         }
     }
 
+    const handleStatusUpdate = async ({ productId }, status) => {
+        const options = { item: 'Product status', v1Ing: 'Updating', v2: 'updated' }
+        const url = 'products/updateProductStatus'
+        const body = { status, productId }
+        try {
+            showToast({ ...options, action: 'loading' })
+            await http.PUT(axios, url, body, config)
+            optimisticKeyUpdate(productId, status, 'status')
+            showToast(options)
+        } catch (error) {
+            message.destroy()
+        }
+    }
+
+    const optimisticKeyUpdate = (id, value, key) => {
+        let clone = deepClone(products);
+        const index = clone.findIndex(item => item.productId === id)
+        clone[index][key] = value;
+        setProducts(clone)
+    }
+
     const onModalClose = (hasUpdated) => {
         const formHasChanged = sessionStorage.getItem(TRACKFORM)
         if (formHasChanged && !hasUpdated) {
@@ -135,7 +162,18 @@ const Dashboard = ({ reFetch }) => {
     }
 
     const dataSource = useMemo(() => products.map((product) => {
-        const { productId: key, productName, price, tax, totalAmount, hsnCode } = product
+        const { productId: key, productName, price, tax, totalAmount, hsnCode, status } = product
+
+        let options = [
+            <Menu.Item key="edit" icon={<EditIconGrey />}>Edit</Menu.Item>,
+        ]
+
+        if (status === 'OUTOFSTOCK') {
+            options = [...options, <Menu.Item key="inStock" icon={<HomeIconGrey />}>In Stock</Menu.Item>]
+        }
+        else {
+            options = [...options, <Menu.Item key="outOfStock" icon={<HomeIconGrey />}>Out Of Stock</Menu.Item>]
+        }
 
         return {
             key,
@@ -196,5 +234,4 @@ const Dashboard = ({ reFetch }) => {
     )
 }
 
-const options = [<Menu.Item key="edit" icon={<EditIconGrey />}>Edit</Menu.Item>]
 export default Dashboard
