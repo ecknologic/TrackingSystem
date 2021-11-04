@@ -122,6 +122,12 @@ export const blobToBase64 = (blob) => {
     );
 }
 
+export const base64ToURL = async (base64) => {
+    const content = await fetch(base64)
+    const contentBlob = await content.blob()
+    return URL.createObjectURL(contentBlob)
+}
+
 export const getToFixed = (value, digits = 2) => {
     if (value % 1 !== 0) {
         return value.toFixed(digits);

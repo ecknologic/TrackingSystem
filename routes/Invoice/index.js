@@ -40,6 +40,13 @@ router.get('/getInvoicesByRole/:roleId', (req, res) => {
     });
 });
 
+router.get('/getInvoicesBySalesAgent', (req, res) => {
+    invoiceQueries.getInvoicesBySalesAgent(userId, (err, results) => {
+        if (err) res.status(500).json(dbError(err));
+        else res.send(results);
+    });
+});
+
 router.get('/getCustomerInvoices/:customerId', (req, res) => {
     invoiceQueries.getCustomerInvoices(req.params.customerId, (err, results) => {
         if (err) res.status(500).json(dbError(err));
@@ -190,7 +197,7 @@ router.post("/generateMultipleInvoices", (req, res) => {
                                 if (product['20LCans'] > 0) {
                                     if (!addedProducts.includes("20LCans")) {
                                         finalProducts.push({
-                                            "productName": "20 Lt Bibo Water Jar",
+                                            "productName": "20Lt Bibo Water Jar",
                                             "quantity": product['20LCans'],
                                             "productPrice": price20L,
                                             "discount": 0,
@@ -205,7 +212,7 @@ router.post("/generateMultipleInvoices", (req, res) => {
                                 if (product['1LBoxes'] > 0) {
                                     if (!addedProducts.includes("1LBoxes")) {
                                         finalProducts.push({
-                                            "productName": "1 Lt Bibo Water Jar",
+                                            "productName": "1Lt Bibo Water Jar",
                                             "quantity": product['1LBoxes'],
                                             "productPrice": price1L,
                                             "discount": 0,
@@ -237,7 +244,7 @@ router.post("/generateMultipleInvoices", (req, res) => {
                                 if (product['300MLBoxes'] > 0) {
                                     if (!addedProducts.includes("300MLBoxes")) {
                                         finalProducts.push({
-                                            "productName": "300ML Lt Bibo Water Jar",
+                                            "productName": "300ML Bibo Water Jar",
                                             "quantity": product['300MLBoxes'],
                                             "productPrice": price300ML,
                                             "discount": 0,
@@ -252,7 +259,7 @@ router.post("/generateMultipleInvoices", (req, res) => {
                                 if (product['2LBoxes'] > 0) {
                                     if (!addedProducts.includes("2LBoxes")) {
                                         finalProducts.push({
-                                            "productName": "2 Lt Bibo Water Jar",
+                                            "productName": "2Lt Bibo Water Jar",
                                             "quantity": product['2LBoxes'],
                                             "productPrice": price2L,
                                             "discount": 0,

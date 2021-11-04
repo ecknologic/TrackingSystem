@@ -408,8 +408,8 @@ utils.getDiffBtwDates = (startDate, endDate) => {
     return date1.diff(date2, 'day')
 }
 
-utils.getRequiredDate = (requiredDays) => {
-    return dayjs(dayjs().add(requiredDays, 'day')).format('YYYY-MM-DD')
+utils.getRequiredDate = (requiredDays, startDate = new Date()) => {
+    return dayjs(dayjs(startDate).add(requiredDays, 'day')).format('YYYY-MM-DD')
 }
 
 utils.getPrevMonthStartAndEndDates = (prevMonthLength, startDate) => {
@@ -495,6 +495,16 @@ utils.getKeyName = async (key) => {
         else if (key == 'driverId') keyName = 'driver'
         else if (key == 'departmentId') keyName = 'department'
         resolve(getKeyName)
+    })
+}
+
+utils.getProductName = async (name) => {
+    return new Promise((resolve) => {
+        if (name.includes('20L')) resolve('product20L');
+        else if (name.includes('2L')) resolve('product2L');
+        else if (name.includes('1L')) resolve('product1L');
+        else if (name.includes('500ML')) resolve('product500ML');
+        else if (name.includes('300ML')) resolve('product300ML');
     })
 }
 

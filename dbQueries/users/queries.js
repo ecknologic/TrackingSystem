@@ -38,6 +38,11 @@ usersQueries.getUserIdsByRole = async (roles, callback) => {
     let query = "SELECT u.userId from usermaster u INNER JOIN rolemaster r on u.RoleId=r.RoleId where r.RoleName in (?) AND u.deleted='0' ORDER BY createdDateTime DESC";
     return executeGetParamsQuery(query, [roles], callback)
 }
+usersQueries.getUserMailIdsByRole = async (roles, callback) => {
+    let query = "SELECT JSON_ARRAYAGG(u.emailid) as mailId FROM usermaster u INNER JOIN rolemaster r on u.RoleId=r.RoleId where r.RoleName in (?) AND u.deleted='0' ORDER BY createdDateTime DESC";
+    return executeGetParamsQuery(query, [roles], callback)
+}
+
 usersQueries.getSalesPersons = async (callback) => {
     let query = "SELECT userId,userName from usermaster u where (roleId=4 or roleId=5) AND isActive=1 AND deleted='0' ORDER BY createdDateTime DESC";
     return executeGetParamsQuery(query, callback)

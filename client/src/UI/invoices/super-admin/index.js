@@ -7,7 +7,7 @@ import CreateInvoice from './tabs/CreateInvoice';
 import useUser from '../../../utils/hooks/useUser';
 import Header from '../../../components/SimpleHeader';
 import WarehouseInvoices from './tabs/WarehouseInvoices';
-import { MARKETINGMANAGER } from '../../../utils/constants';
+import { ACCOUNTSADMIN, SUPERADMIN } from '../../../utils/constants';
 import '../../../sass/invoices.scss';
 
 const Invoices = () => {
@@ -16,7 +16,7 @@ const Invoices = () => {
     const [activeTab, setActiveTab] = useState(tab)
     const [reFetch1, setreFetch1] = useState(false)
     const [reFetch2, setreFetch2] = useState(false)
-    const isSMManager = useMemo(() => ROLE === MARKETINGMANAGER, [ROLE])
+    const isAdmin = useMemo(() => ROLE === SUPERADMIN || ROLE === ACCOUNTSADMIN, [ROLE])
 
     const handleGoToTab1 = (key) => {
         setActiveTab(key)
@@ -37,10 +37,10 @@ const Invoices = () => {
                         activeKey={activeTab}
                     >
                         <TabPane tab="Invoices" key="1">
-                            <Dashboard reFetch={reFetch1} onUpdate={() => setreFetch2(!reFetch2)} />
+                            <Dashboard reFetch={reFetch1} onUpdate={() => setreFetch2(!reFetch2)} isAdmin={isAdmin} />
                         </TabPane>
                         {
-                            !isSMManager &&
+                            (isAdmin) &&
                             (
                                 <>
                                     <TabPane tab="Create New Invoice" key="2">

@@ -1286,6 +1286,154 @@ export const newCustomersReportColumns = [
         key: 'dispenserCount',
     }
 ]
+export const daywiseDispatchesReportColumns = [
+    {
+        title: 'Date',
+        dataIndex: 'dispatchedDate',
+        key: 'dispatchedDate',
+    },
+    {
+        title: 'Cans (20 ltr)',
+        dataIndex: 'product20L',
+        key: 'product20L',
+    },
+    {
+        title: '2 Ltr Boxes (1x9)',
+        dataIndex: 'product2L',
+        key: 'product2L',
+    },
+    {
+        title: '1 Ltr Boxes (1x12)',
+        dataIndex: 'product1L',
+        key: 'product1L',
+    },
+    {
+        title: '500 ml Boxes (1x24)',
+        dataIndex: 'product500ML',
+        key: 'product500ML',
+    },
+    {
+        title: '300 ml Boxes (1x30)',
+        dataIndex: 'product300ML',
+        key: 'product300ML',
+    }
+]
+export const partywiseDispatchesReportColumns = [
+    {
+        title: 'Party',
+        dataIndex: 'warehouseName',
+        key: 'warehouseName',
+    },
+    {
+        title: 'Cans (20 ltr)',
+        dataIndex: 'product20L',
+        key: 'product20L',
+    },
+    {
+        title: '2 Ltr Boxes (1x9)',
+        dataIndex: 'product2L',
+        key: 'product2L',
+    },
+    {
+        title: '1 Ltr Boxes (1x12)',
+        dataIndex: 'product1L',
+        key: 'product1L',
+    },
+    {
+        title: '500 ml Boxes (1x24)',
+        dataIndex: 'product500ML',
+        key: 'product500ML',
+    },
+    {
+        title: '300 ml Boxes (1x30)',
+        dataIndex: 'product300ML',
+        key: 'product300ML',
+    }
+]
+export const DCwiseDispatchesReportColumns = [
+    {
+        title: 'Date',
+        dataIndex: 'dispatchedDate',
+        key: 'dispatchedDate',
+    },
+    {
+        title: 'DC No.',
+        dataIndex: 'DCNO',
+        key: 'DCNO',
+    },
+    {
+        title: 'Party',
+        dataIndex: 'warehouseName',
+        key: 'warehouseName',
+    },
+    {
+        title: 'Cans (20 ltr)',
+        dataIndex: 'product20L',
+        key: 'product20L',
+    },
+    {
+        title: '2 Ltr Boxes (1x9)',
+        dataIndex: 'product2L',
+        key: 'product2L',
+    },
+    {
+        title: '1 Ltr Boxes (1x12)',
+        dataIndex: 'product1L',
+        key: 'product1L',
+    },
+    {
+        title: '500 ml Boxes (1x24)',
+        dataIndex: 'product500ML',
+        key: 'product500ML',
+    },
+    {
+        title: '300 ml Boxes (1x30)',
+        dataIndex: 'product300ML',
+        key: 'product300ML',
+    }
+]
+export const ProductwiseDispatchesReportColumns = [
+    {
+        title: 'Date',
+        dataIndex: 'productionDate',
+        key: 'productionDate',
+    },
+    {
+        title: 'Opening',
+        dataIndex: 'openingQuantity',
+        key: 'openingQuantity',
+    },
+    {
+        title: 'Production',
+        children: [
+            {
+                title: 'Shift A',
+                dataIndex: 'shiftA',
+                key: 'shiftA',
+            },
+            {
+                title: 'Shift B',
+                dataIndex: 'shiftB',
+                key: 'shiftB',
+            },
+            {
+                title: 'Shift C',
+                dataIndex: 'shiftC',
+                key: 'shiftC',
+            },
+            {
+                title: 'Total',
+                dataIndex: 'total',
+                key: 'total',
+            }
+        ]
+    },
+    {
+        title: 'Dispatches',
+        dataIndex: 'dispatches',
+        key: 'dispatches',
+    }
+]
 export const inactiveCustomersReportColumns = [
     {
         title: 'S. No',

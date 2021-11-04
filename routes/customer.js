@@ -24,6 +24,7 @@ const { encrypt, decrypt } = require('../utils/crypto.js');
 const customerClosingControllers = require('./Customers/closing.js');
 const customerClosingQueries = require('../dbQueries/Customer/closing.js');
 const { createNotifications } = require('./Notifications/functions.js');
+const { sendMail } = require('./mailTemplate.js');
 let departmentId, userId, userName, userRole;
 
 var storage = multer.diskStorage({
@@ -271,26 +272,34 @@ const updateProductDetails = (products, customerId) => {
     }
   })
 }
+
 const createQrCode = (qrcodeText) => {
   return new Promise((resolve, reject) => {
-    filePath = "assests/QRImages/" + qrcodeText + ".png";
-    QRCode.toFile(filePath, qrcodeText, {
-      color: {
-        dark: '#00F'  // Blue dots
-      }
-    }, function (err) {
-      if (err) reject(err)
-      else {
-        let customerDetailsQuery = "insert  into QRDetails (QRImage) values(?)";
-        let insertQueryValues = [fs.readFileSync(filePath)]
-        db.query(customerDetailsQuery, insertQueryValues, (err, results) => {
-          if (err) reject(err);
-          else {
-            resolve(results.insertId);
-          }
-        })
-      }
-    })
+    QRCode.toDataURL(qrcodeText)
+      .then(url => {
+        resolve(url)
+      })
+      .catch(err => {
+        reject(err)
+      })
+    // filePath = "assests/QRImages/" + qrcodeText + ".png";
+    // QRCode.toFile(filePath, qrcodeText, {
+    //   color: {
+    //     dark: '#00F'  // Blue dots
+    //   }
+    // }, function (err) {
+    //   if (err) reject(err)
+    //   else {
+    //     let customerDetailsQuery = "insert  into QRDetails (QRImage) values(?)";
+    //     let insertQueryValues = [fs.readFileSync(filePath)]
+    //     db.query(customerDetailsQuery, insertQueryValues, (err, results) => {
+    //       if (err) reject(err);
+    //       else {
+    //         resolve(results.insertId);
+    //       }
+    //     })
+    //   }
+    // })
   })
 
 }
@@ -500,9 +509,14 @@ router.get("/getCustomerDetailsById/:customerId", (req, res) => {
     else {
       if (results.length) {
         let result = results[0];
-        // if (result.gstNo) result.gstNo = decrypt(result.gstNo)
-        // if (result.panNo) result.panNo = decrypt(result.panNo)
-        // if (result.adharNo) result.adharNo = decrypt(result.adharNo)
+        let { gstNo, panNo, adharNo, mobileNumber } = result;
+        // let decryptedData = await utils.getDecryptedProofs({ gstNo, panNo, adharNo })
+        // if (result.gstNo) result.gstNo = decryptedData.gstNo
+        // if (result.panNo) result.panNo = decryptedData.panNo
+        // if (result.adharNo) result.adharNo = decryptedData.adharNo
+        // let proofNumber = decryptedData.adharNo || decryptedData.panNo
+        let qrText = String(mobileNumber)
+        result.qrCode = await createQrCode(qrText)
         res.json({ status: 200, statusMessage: "Success", data: [result] })
       } else res.send(404).json({ status: 200, statusMessage: "Success", data: results })
     }
@@ -936,7 +950,24 @@ router.get('/customerDCDetails/:customerId', (req, res) => {
 router.post('/createQuote', (req, res) => {
   customerQueries.createQuote(req.body, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
-    else res.json({ status: 200, message: "Quote created successfully" })
+    else {
+      usersQueries.getUserMailIdsByRole([constants.MARKETINGMANAGER], (err, results1) => {
+        if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+        else {
+          if (results1.length) {
+            let body = "";
+            let { product20L = 0, product2L = 0, product1L = 0, product500ML = 0, product300ML = 0 } = req.body
+            if (product20L) body = body + `<p><b>Requested 20L cans quantity:</b> ${product20L}</p><br/>`
+            if (product2L) body = body + `<p><b>Requested 2L Boxes  quantity:</b> ${product2L}</p><br/>`
+            if (product1L) body = body + `<p><b>Requested 1L Boxes  quantity:</b> ${product1L}</p><br/>`
+            if (product500ML) body = body + `<p><b>Requested 500ML Boxes  quantity:</b> ${product500ML}</p><br/>`
+            if (product300ML) body = body + `<p><b>Requested 300ML Boxes  quantity:</b> ${product300ML}</p><br/>`
+            sendMail({ message: `Requested Quote from ${req.body.customerName}`, body, mailId: results1[0].mailId.toString() })
+          }
+          else res.json({ status: 200, message: "Quote created successfully" })
+        }
+      })
+    }
   });
 });
 
@@ -957,7 +988,21 @@ router.get('/getQuotes', (req, res) => {
 router.post('/requestBusinessAccount', (req, res) => {
   customerQueries.createBusinessRequest(req.body, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
-    else res.json({ status: 200, message: "Your request received successfully" })
+    else {
+      usersQueries.getUserMailIdsByRole([constants.MARKETINGMANAGER], (err, results1) => {
+        if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+        else {
+          if (results1.length) {
+            const { organizationName, email, mobileNumber } = req.body
+            let body = `<p><b>Customer Name:</b> ${organizationName}</p><br/>
+            <p><b>Email Id:</b> ${email}</p><br/>
+            <p><b>Mobile Number:</b> ${mobileNumber}</p><br/>`
+            sendMail({ message: `Business Request from ${organizationName}`, mailId: results1[0].mailId.toString(), body })
+          }
+          res.json({ status: 200, message: "Your request received successfully" })
+        }
+      })
+    }
   });
 });
 

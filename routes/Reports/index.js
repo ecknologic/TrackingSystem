@@ -2,17 +2,61 @@ var express = require('express');
 var router = express.Router();
 const reportsQueries = require('../../dbQueries/reports/index.js');
 const { utils } = require('../../utils/functions.js');
-let userId, adminUserName, userRole;
+let userId, adminUserName, userRole, departmentId;
 
 router.use(function timeLog(req, res, next) {
   userId = req.headers['userid']
   adminUserName = req.headers['username']
   userRole = req.headers['userrole']
+  departmentId = req.headers['departmentid']
   next();
 });
 
 router.get('/getNewCustomerBT', (req, res) => {
   reportsQueries.getNewCustomerBTDetails(req.query, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.json(results)
+  })
+})
+
+router.get('/getDaywiseDispatches', (req, res) => {
+  reportsQueries.getDaywiseDispatches(req.query, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.json(results)
+  })
+})
+
+router.get('/getDispatchesByDate', (req, res) => {
+  reportsQueries.getDispatchesByDate(req.query, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else res.json(results)
+  })
+})
+
+router.get('/getProductionByProduct', async (req, res) => {
+  let startDate = utils.getRequiredDate(-1, req.query.fromDate)
+  let productName = await utils.getProductName(req.query.productName)
+  reportsQueries.getProductionByProduct({ ...req.query, productName }, (err, results) => {
+    if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
+    else {
+      reportsQueries.getProductionByProductOpeningCount({ ...req.query, productName, startDate }, (err1, count) => {
+        if (err1) res.status(500).json({ status: 500, message: err1.sqlMessage });
+        else {
+          let openingQuantity = count[0]?.openingQuantity || 0, finalData = []
+          for (let i of results) {
+            i.openingQuantity = openingQuantity
+            openingQuantity = Math.abs((openingQuantity + i.total) - i.dispatches)
+            finalData.push(i)
+          }
+          res.json(finalData)
+        }
+      })
+    }
+  })
+})
+
+router.get('/getDepartmentwiseDispatches', (req, res) => {
+  reportsQueries.getDepartmentwiseDispatches(req.query, (err, results) => {
     if (err) res.status(500).json({ status: 500, message: err.sqlMessage });
     else res.json(results)
   })

@@ -9,7 +9,7 @@ import Spinner from '../../../../components/Spinner'
 import useUser from '../../../../utils/hooks/useUser';
 import NoContent from '../../../../components/NoContent'
 import { getMainPathname } from '../../../../utils/Functions';
-import { ACCOUNTSADMIN, MARKETINGMANAGER, SUPERADMIN } from '../../../../utils/constants';
+import { ACCOUNTSADMIN, MARKETINGADMIN, MARKETINGMANAGER, SUPERADMIN } from '../../../../utils/constants';
 import '../../../../sass/invoices.scss';
 
 const Invoices = () => {
@@ -70,6 +70,9 @@ const Invoices = () => {
         }
         else if (FOR === MARKETINGMANAGER) {
             url = 'invoice/getInvoicesByRole/5' // 5 is Sales and Marketing Admin Role
+        }
+        else if (FOR === MARKETINGADMIN) {
+            url = 'invoice/getInvoicesBySalesAgent'
         }
 
         try {

@@ -354,6 +354,7 @@ const CheckSvg = () => <CheckComponent color={primaryColor} />
 const StackSvgLight = () => <StackComponent color={secondaryColor} />
 const StackSvg = () => <StackComponent color={primaryColor} />
 const HomeSvgLight = () => <HomeComponent color={secondaryColor} />
+const HomeSvgGrey = () => <HomeComponent color={greyColor} />
 const HomeSvg = () => <HomeComponent color={primaryColor} />
 
 export const RightChevronIconGrey = ({ currentSlide, slideCount, ...props }) => <Icon component={RightChevronSvgGrey} {...props} />
@@ -429,5 +430,6 @@ export const CheckIcon = props => <Icon component={CheckSvg} {...props} />
 export const StackIconLight = props => <Icon component={StackSvgLight} {...props} />
 export const StackIcon = props => <Icon component={StackSvg} {...props} />
 export const HomeIconLight = props => <Icon component={HomeSvgLight} {...props} />
+export const HomeIconGrey = props => <Icon component={HomeSvgGrey} {...props} />
 export const HomeIcon = props => <Icon component={HomeSvg} {...props} />
 export const XLSIcon = props => <Icon component={XLSSvg} {...props} />

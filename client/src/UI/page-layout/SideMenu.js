@@ -121,6 +121,9 @@ const SideMenu = () => {
                             <Item key='/add-customer' icon={selected === '/add-customer' ? <FriendReqIcon /> : <FriendReqIconLight />}>
                                 Add Customer
                             </Item>
+                            <Item key='/invoices' icon={selected === '/invoices' ? <DocIcon /> : <DocIconLight />}>
+                                Invoices
+                            </Item>
                             <Item key='/distributors' icon={selected === '/distributors' ? <FriendsIcon /> : <FriendsIconLight />}>
                                 Distributors
                             </Item>
@@ -222,6 +225,18 @@ const SideMenu = () => {
                                 </Item>
                                 <Item key='/marketing-performance-report' icon={selected === '/marketing-performance-report' ? <FriendIcon /> : <FriendIconLight />}>
                                     Marketing Performance
+                                </Item>
+                                <Item key='/daywise-dispatches-report' icon={selected === '/daywise-dispatches-report' ? <FriendIcon /> : <FriendIconLight />}>
+                                    Day Wise Dispatches
+                                </Item>
+                                <Item key='/partywise-dispatches-report' icon={selected === '/partywise-dispatches-report' ? <FriendIcon /> : <FriendIconLight />}>
+                                    Party Wise Dispatches
+                                </Item>
+                                <Item key='/dcwise-dispatches-report' icon={selected === '/dcwise-dispatches-report' ? <FriendIcon /> : <FriendIconLight />}>
+                                    DC Wise Dispatches
+                                </Item>
+                                <Item key='/productwise-dispatches-report' icon={selected === '/productwise-dispatches-report' ? <FriendIcon /> : <FriendIconLight />}>
+                                    Product Wise Production
                                 </Item>
                             </SubMenu>
                             {/* <Item key='/settings' style={{ pointerEvents: 'none' }} icon={selected === '/settings' ? <SettingIcon /> : <SettingIconLight />}>

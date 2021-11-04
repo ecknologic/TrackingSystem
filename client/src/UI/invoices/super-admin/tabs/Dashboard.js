@@ -23,15 +23,15 @@ import CustomDateInput from '../../../../components/CustomDateInput';
 import CustomPagination from '../../../../components/CustomPagination';
 import CustomRangeInput from '../../../../components/CustomRangeInput';
 import ActivityLogContent from '../../../../components/ActivityLogContent';
-import { MARKETINGMANAGER, TODAYDATE, TRACKFORM } from '../../../../utils/constants';
 import { validateIntFloat, validatePaymentValues } from '../../../../utils/validations';
+import { MARKETINGADMIN, MARKETINGMANAGER, TODAYDATE, TRACKFORM } from '../../../../utils/constants';
 import { getDropdownOptions, getInvoiceColumns, getStaffOptions } from '../../../../assets/fixtures';
 import { ListViewIconGrey, PlusIconGrey, ScheduleIcon, SendIconGrey, TickIconGrey } from '../../../../components/SVG_Icons';
 import { computeTotalAmount, deepClone, disableFutureDates, doubleKeyComplexSearch, getStatusColor, isEmpty, resetTrackForm, showToast } from '../../../../utils/Functions';
 const DATEFORMAT = 'DD/MM/YYYY'
 const APIDATEFORMAT = 'YYYY-MM-DD'
 
-const Dashboard = ({ reFetch, onUpdate }) => {
+const Dashboard = ({ reFetch, onUpdate, isAdmin }) => {
     const { ROLE } = useUser()
     const history = useHistory()
     const [invoices, setInvoices] = useState([])
@@ -69,6 +69,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
     const paymentOptions = useMemo(() => getDropdownOptions(paymentList), [paymentList])
     const isSMManager = useMemo(() => ROLE === MARKETINGMANAGER, [ROLE])
     const invoiceColumns = useMemo(() => getInvoiceColumns(), [])
+    const isSalesAdmin = useMemo(() => ROLE === MARKETINGADMIN, [ROLE])
     const totalAmount = useMemo(() => computeTotalAmount(invoices, 'pendingAmount'), [invoices, payModal])
     const source = useMemo(() => axios.CancelToken.source(), []);
     const config = { cancelToken: source.token }
@@ -114,6 +115,9 @@ const Dashboard = ({ reFetch, onUpdate }) => {
 
         if (isSMManager) {
             url = 'invoice/getInvoicesByRole/5' // 5 is Sales and Marketing Admin Role
+        }
+        else if (isSalesAdmin) {
+            url = 'invoice/getInvoicesBySalesAgent'
         }
 
         try {
@@ -417,13 +421,23 @@ const Dashboard = ({ reFetch, onUpdate }) => {
     const dataSource = useMemo(() => invoices.map((invoice) => {
         const { invoiceId, invoiceDate, totalAmount, customerName, dueDate, status, billingAddress, pendingAmount, salesAgent } = invoice
 
-        const options = [
+        let options = [
             <Menu.Item key="resend" icon={<SendIconGrey />}>Resend</Menu.Item>,
-            <Menu.Item key="dcList" icon={<ListViewIconGrey />}>DC List</Menu.Item>,
             <Menu.Item key="assignTo" icon={<PlusIconGrey />}>Assign To</Menu.Item>,
-            <Menu.Item key="paid" className={status === 'Paid' ? 'disabled' : ''} icon={<TickIconGrey />}>Paid</Menu.Item>,
+            <Menu.Item key="paid" className={status === 'Paid' ? 'disabled' : ''} icon={<TickIconGrey />}>Paid</Menu.Item>
+        ]
+
+        const otherOptions = [
+            <Menu.Item key="dcList" icon={<ListViewIconGrey />}>DC List</Menu.Item>,
             <Menu.Item key="logs" icon={<ListViewIconGrey />}>Acvitity Logs</Menu.Item>
         ]
+
+        if (isAdmin || isSMManager) {
+            options = [...options, ...otherOptions]
+        }
+        else {
+            options = otherOptions
+        }
 
         return {
             key: invoiceId,
@@ -505,7 +519,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
                                         </>)
                                 }
                             </div>
-                        ) : (
+                        ) : isAdmin ? (
                             <div className='left'>
                                 {
                                     hasSelection ?
@@ -542,7 +556,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
                                         </>)
                                 }
                             </div>
-                        )
+                        ) : <div className='left'></div>
                 }
                 <div className='right'>
                     <div className='field'>
@@ -562,7 +576,7 @@ const Dashboard = ({ reFetch, onUpdate }) => {
                 <Table
                     loading={{ spinning: loading, indicator: <Spinner /> }}
                     dataSource={dataSource.slice(sliceFrom, sliceTo)}
-                    rowSelection={rowSelection}
+                    rowSelection={(isAdmin || isSMManager) ? rowSelection : null}
                     columns={invoiceColumns}
                     pagination={false}
                     scroll={{ x: true }}
