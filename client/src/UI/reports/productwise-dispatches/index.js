@@ -202,7 +202,7 @@ const ProductwiseDispatchesReport = () => {
 
     return (
         <Fragment>
-            <Header title='Product Wise Dispatches Report' />
+            <Header title='Product Wise Production Report' />
             <div className='stock-manager-content'>
 
                 <div className='stock-delivery-container'>
@@ -255,7 +255,7 @@ const ProductwiseDispatchesReport = () => {
                                 />
                             </div>
                             <Worksheet
-                                fileName='Product Wise Report'
+                                fileName='Product Wise Production Report'
                                 rows={excelRows}
                                 columns={columns}
                                 disabled={loading || isEmpty(reports)}
