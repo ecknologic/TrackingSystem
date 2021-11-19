@@ -851,7 +851,7 @@ router.post('/updateDeliveryDetails', async (req, res) => {
           var gstProof = i.gstProof ? i.test ? Buffer.from(i.gstProof, 'base64') : Buffer.from(i.gstProof.replace(/^data:image\/\w+;base64,/, ""), 'base64') : null
           let registeredDate = new Date()
           // let gstNo = encrypt(i.gstNo)
-          let insertQueryValues = [gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, deliveryDays.insertId, i.depositAmount, i.customer_Id, i.departmentId, i.isApproved, gstProof, registeredDate, latLong.latitude, latLong.longitude, i.routeId]
+          let insertQueryValues = [i.gstNo, i.deliveryLocation, i.address, i.phoneNumber, i.contactPerson, deliveryDays.insertId, i.depositAmount, i.customer_Id, i.departmentId, i.isApproved, gstProof, registeredDate, latLong.latitude, latLong.longitude, i.routeId]
           db.query(deliveryDetailsQuery, insertQueryValues, (err, results) => {
             if (err) res.json({ status: 500, message: err.sqlMessage });
             else {
