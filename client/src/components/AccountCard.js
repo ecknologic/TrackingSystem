@@ -2,12 +2,16 @@ import React from 'react';
 import { Menu } from 'antd';
 import Actions from './Actions';
 import NameCard from './NameCard';
+import useUser from '../utils/hooks/useUser';
 import PrimaryButton from './PrimaryButton';
+import { SUPERADMIN } from '../utils/constants';
 import { getBusinessTypes } from '../utils/Functions';
 import { FriendsIconGrey, FriendIconGrey, TrashIconGrey, TickIconGrey, BlockIconGrey, CrossIconDark } from './SVG_Icons';
 import '../sass/accountCard.scss'
 
 const AccountCard = ({ data, onClick, btnTxt = 'Manage Account', onSelect, isAdmin, optionOneLabel = 'Active' }) => {
+    const { ROLE } = useUser()
+
     const { customerId, isApproved, contactpersons, customerName, organizationName, address, natureOfBussiness,
         isSuperAdminApproved, depositAmount, customerNo, isClosed } = data
 
@@ -21,7 +25,7 @@ const AccountCard = ({ data, onClick, btnTxt = 'Manage Account', onSelect, isAdm
     const NOB = getBusinessTypes(natureOfBussiness)
 
     const handleSelect = ({ key }) => {
-        const isSAApproved = isSuperAdminApproved || (Number(depositAmount) === 0 ? Number(isAdmin) : 0)
+        const isSAApproved = isSuperAdminApproved || (Number(depositAmount) === 0 ? Number(isAdmin) : 0) || Number(ROLE == SUPERADMIN)
         onSelect(key, data, isSAApproved)
     }
 
