@@ -10,7 +10,7 @@ customerQueries.getLastestDCByCustomerId = (customerId, callback) => {
 }
 
 customerQueries.getCustomerDetails = (customerId, callback) => {
-    let query = "SELECT isSuperAdminApproved,isReceiptCreated,contactPerson,salesAgent,rocNo,poNo,depositAmount,customerId,customerName,c.mobileNumber,c.EmailId,c.Address1,c.gstNo,c.panNo,c.adharNo,c.registeredDate,c.invoicetype,c.natureOfBussiness,c.creditPeriodInDays,referredBy,isApproved,customertype,organizationName,idProofType,pincode as pinCode, dispenserCount, contractPeriod,customer_id_proof,d.idProof_backside,d.idProof_frontside,d.gstProof,u.userName as createdUserName,s.userName as salesAgentName from customerdetails c LEFT JOIN customerDocStore d ON c.customer_id_proof=d.docId INNER JOIN usermaster u ON u.userId=c.createdBy LEFT JOIN usermaster s ON c.salesAgent=s.userId WHERE c.customerId=" + customerId
+    let query = "SELECT c.customerNo,isSuperAdminApproved,isReceiptCreated,contactPerson,salesAgent,rocNo,poNo,depositAmount,customerId,customerName,c.mobileNumber,c.EmailId,c.Address1,c.gstNo,c.panNo,c.adharNo,c.registeredDate,c.invoicetype,c.natureOfBussiness,c.creditPeriodInDays,referredBy,isApproved,customertype,organizationName,idProofType,pincode as pinCode, dispenserCount, contractPeriod,customer_id_proof,d.idProof_backside,d.idProof_frontside,d.gstProof,u.userName as createdUserName,s.userName as salesAgentName from customerdetails c LEFT JOIN customerDocStore d ON c.customer_id_proof=d.docId INNER JOIN usermaster u ON u.userId=c.createdBy LEFT JOIN usermaster s ON c.salesAgent=s.userId WHERE c.customerId=" + customerId
     executeGetQuery(query, callback)
 }
 customerQueries.getCustomerDetailsForDC = (customerId, callback) => {
@@ -480,10 +480,10 @@ customerQueries.saveCustomerOrderDetails = (input, callback) => {
     executePostOrUpdateQuery(query, requestBody, callback)
 }
 customerQueries.approveCustomer = (input, callback) => {
-    const { customerId, isSuperAdminApproved } = input
+    const { customerId, isSuperAdminApproved, userRole } = input
     let currentDate = new Date();
     let query = `UPDATE customerdetails set isApproved=?,approvedDate=?,lastApprovedDate=?,isSuperAdminApproved=? where customerId=?`
-    let options = [isSuperAdminApproved == 1 ? 0 : 1, currentDate, currentDate, isSuperAdminApproved, customerId]
+    let options = [isSuperAdminApproved == 1 && userRole == constants.SUPERADMIN ? 0 : 1, currentDate, currentDate, isSuperAdminApproved, customerId]
     executePostOrUpdateQuery(query, options, callback)
 }
 

@@ -124,12 +124,13 @@ router.get('/getPhoto', (req, res) => {
 })
 router.get('/getQrcode/:customerId', (req, res) => {
   let customerId = req.params.customerId;
-  let query = "SELECT mobileNumber,adharNo FROM customerdetails WHERE customerId=" + customerId;
+  let query = "SELECT mobileNumber,adharNo,customerNo FROM customerdetails WHERE customerId=" + customerId;
   let result = db.query(query, (err, results) => {
     let qrText;
     if (err) res.status(500).json(err);
     if (results.length) {
-      qrText = results[0].adharNo + results[0].mobileNumber
+      // qrText = results[0].adharNo + results[0].mobileNumber
+      qrText = String(results[0].customerNo)
     }
     res.send(JSON.stringify(qrText));
 
@@ -320,15 +321,18 @@ const getLatLongDetails = (req) => {
 router.post("/approveCustomer/:customerId", (req, res) => {
   const { customerId } = req.params;
   const { isSuperAdminApproved, customerName, salesAgent } = req.body
-  customerQueries.approveCustomer({ customerId, isSuperAdminApproved }, (err, results) => {
+  customerQueries.approveCustomer({ customerId, isSuperAdminApproved, userRole }, (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
       customerQueries.approveDeliveryDetails(req.body.deliveryDetailsIds, (err, updatedDelivery) => {
         if (err) res.json({ status: 500, message: err.sqlMessage });
         else {
-          saveToCustomerOrderDetails(customerId, res, null, userId, userRole, userName)
-          if (isSuperAdminApproved) createNotifications({ name: customerName, id: customerId, userName, isSuperAdminApproved }, 'customerCreated')
-          else {
+          if (isSuperAdminApproved == 1 && userRole == constants.SUPERADMIN) {
+            createNotifications({ name: customerName, id: customerId, userId: salesAgent, userName }, 'customerApproved')
+            res.send('Customer Approved successfully')
+          } else {
+            createNotifications({ name: customerName, id: customerId, userId: salesAgent, userName }, 'customerApproved')
+            saveToCustomerOrderDetails(customerId, res, null, userId, userRole, userName)
             customerQueries.getWarehouseIdsByDeliveryIds(req.body.deliveryDetailsIds, (err1, data) => {
               if (err1) console.log(err1)
               else if (data.length) {
@@ -350,10 +354,10 @@ router.post("/approveCustomer/:customerId", (req, res) => {
 router.post("/approveCustomerDirectly/:customerId", (req, res) => {
   const { customerId } = req.params;
   const { isSuperAdminApproved, customerName, salesAgent } = req.body
-  customerQueries.approveCustomer({ customerId, isSuperAdminApproved }, (err, results) => {
+  customerQueries.approveCustomer({ customerId, isSuperAdminApproved, userRole }, (err, results) => {
     if (err) res.json({ status: 500, message: err.sqlMessage });
     else {
-      if (isSuperAdminApproved == 1) {
+      if (isSuperAdminApproved == 1 && userRole == constants.SUPERADMIN) {
         createNotifications({ name: customerName, id: customerId, userId: salesAgent, userName }, 'customerApproved')
         res.send('Customer Approved successfully')
       } else {
@@ -514,13 +518,13 @@ router.get("/getCustomerDetailsById/:customerId", (req, res) => {
     else {
       if (results.length) {
         let result = results[0];
-        let { gstNo, panNo, adharNo, mobileNumber } = result;
+        let { gstNo, panNo, adharNo, mobileNumber, customerNo } = result;
         // let decryptedData = await utils.getDecryptedProofs({ gstNo, panNo, adharNo })
         // if (result.gstNo) result.gstNo = decryptedData.gstNo
         // if (result.panNo) result.panNo = decryptedData.panNo
         // if (result.adharNo) result.adharNo = decryptedData.adharNo
         // let proofNumber = decryptedData.adharNo || decryptedData.panNo
-        let qrText = String(mobileNumber)
+        let qrText = String(customerNo)
         result.qrCode = await createQrCode(qrText)
         res.json({ status: 200, statusMessage: "Success", data: [result] })
       } else res.send(404).json({ status: 200, statusMessage: "Success", data: results })
